@@ -7,6 +7,7 @@ import { useContentStore } from '../../../stores/contentStore.js';
 import { useEquipmentStore } from '../../../stores/equipmentStore.js';
 import { useExpeditionStore } from '../../../stores/expeditionStore.js';
 import { useGameStore } from '../../../stores/gameStore.js';
+import { useInventoryStore } from '../../../stores/inventoryStore.js';
 import { useMedicinePouchStore } from '../../../stores/medicinePouchStore.js';
 import { useOutskirtsStore } from '../../../stores/outskirtsStore.js';
 import { useTechniqueStore } from '../../../stores/techniqueStore.js';
@@ -16,6 +17,7 @@ import type {
   OutskirtsEncounterNodeState,
   OutskirtsMockupRuntimeSnapshot,
   OutskirtsMockupSurface,
+  OutskirtsSetupEquipmentSlot,
   OutskirtsSeverity,
   OutskirtsSurfaceValue,
   SurfaceValueSource,
@@ -23,6 +25,7 @@ import type {
 
 const CLAMP_MINUTE_GOLD = 70;
 const CLAMP_MAX_MINUTE_GOLD = 220;
+const MEDICINE_POUCH_CAPACITY = 20;
 
 function toInt(value: string): number {
   const parsed = Number(value);
@@ -78,13 +81,95 @@ function inferGoldRange(totalKills: number): OutskirtsSurfaceValue {
 
 function inferGoldPerHour(totalKills: number): OutskirtsSurfaceValue {
   const lowPerMinute = Math.max(CLAMP_MINUTE_GOLD, Math.round(totalKills * 1.2) + 90);
-  const projectedHourly = lowPerMinute * 60;
-  return asDisplay(`${projectedHourly} / hr`, 'synthetic', 'Gold/hr is a synthetic projection from planning-state gold-range assumptions.');
+  return asDisplay(`${lowPerMinute * 60} / hr`, 'synthetic', 'Gold/hr is a synthetic projection from planning-state gold-range assumptions.');
 }
 
 function summarizeMedicinePouch(snapshot: OutskirtsMockupRuntimeSnapshot): OutskirtsSurfaceValue {
   if (snapshot.medicinePouchLine) return asDisplay(snapshot.medicinePouchLine, 'live');
   return asDisplay('No healing consumable equipped', 'derived');
+}
+
+function normalizeAiProfile(raw: string | null): OutskirtsSurfaceValue {
+  if (!raw) return asDisplay('Balanced', 'derived');
+  const normalized = raw
+    .replace(/[_-]/g, ' ')
+    .replace(/\b\w/g, (match) => match.toUpperCase());
+  return asDisplay(normalized, 'live');
+}
+
+function normalizeAttackFocus(raw: string | null): OutskirtsSurfaceValue {
+  if (!raw) return asDisplay('Boss', 'derived');
+  switch (raw) {
+    case 'lowest_hp':
+      return asDisplay('Lowest HP', 'live');
+    case 'weakest':
+      return asDisplay('Weakest', 'live');
+    case 'boss':
+      return asDisplay('Boss', 'live');
+    default:
+      return asDisplay(raw.replace(/[_-]/g, ' ').replace(/\b\w/g, (match) => match.toUpperCase()), 'derived');
+  }
+}
+
+function inferLoadoutBadge(loadoutName: string | null): OutskirtsSurfaceValue {
+  if (!loadoutName) return asDisplay('1', 'derived');
+  const match = loadoutName.match(/(\d+)/);
+  if (match) return asDisplay(match[1], 'derived');
+  return asDisplay('1', 'derived', 'Loadout badge is normalized to a stable set number for the setup card.');
+}
+
+function buildEquipmentSlots(snapshot: OutskirtsMockupRuntimeSnapshot): [
+  OutskirtsSetupEquipmentSlot,
+  OutskirtsSetupEquipmentSlot,
+  OutskirtsSetupEquipmentSlot,
+  OutskirtsSetupEquipmentSlot,
+  OutskirtsSetupEquipmentSlot,
+  OutskirtsSetupEquipmentSlot,
+] {
+  return [
+    {
+      id: 'weapon',
+      label: 'Weapon',
+      iconText: 'W',
+      isEmpty: !snapshot.weaponName,
+      itemName: asDisplay(snapshot.weaponName ?? 'Empty', snapshot.weaponName ? 'live' : 'derived'),
+    },
+    {
+      id: 'armor',
+      label: 'Armor',
+      iconText: 'A',
+      isEmpty: true,
+      itemName: asDisplay('Empty', 'derived'),
+    },
+    {
+      id: 'ring',
+      label: 'Ring',
+      iconText: 'R',
+      isEmpty: !snapshot.accessoryName,
+      itemName: asDisplay(snapshot.accessoryName ?? 'Empty', snapshot.accessoryName ? 'live' : 'derived'),
+    },
+    {
+      id: 'talisman',
+      label: 'Talisman',
+      iconText: 'T',
+      isEmpty: true,
+      itemName: asDisplay('Empty', 'derived'),
+    },
+    {
+      id: 'boots',
+      label: 'Boots',
+      iconText: 'B',
+      isEmpty: true,
+      itemName: asDisplay('Empty', 'derived'),
+    },
+    {
+      id: 'charm',
+      label: 'Charm',
+      iconText: 'C',
+      isEmpty: true,
+      itemName: asDisplay('Empty', 'derived'),
+    },
+  ];
 }
 
 export function buildOutskirtsMockupSurface(snapshot: OutskirtsMockupRuntimeSnapshot): OutskirtsMockupSurface {
@@ -117,22 +202,27 @@ export function buildOutskirtsMockupSurface(snapshot: OutskirtsMockupRuntimeSnap
   const canMoveLeft = selectedNodeIndex > 0;
   const canMoveRight = selectedNodeIndex < encounterNodes.length - 1;
 
-  const attackFocusLabel = snapshot.preferredTarget === 'lowest_hp'
-    ? 'Lowest HP'
-    : snapshot.preferredTarget === 'weakest'
-      ? 'Weakest'
-      : 'Boss';
-
-  const loadoutName = snapshot.selectedLoadoutName ?? 'Loadout unavailable';
-  const aiLabel = snapshot.aiProfile ?? 'balanced';
-  const trackingLine = snapshot.trackedBountyLine ?? 'No tracked bounty selected';
+  const loadoutValue = asDisplay(snapshot.selectedLoadoutName ?? 'Loadout 1', snapshot.selectedLoadoutName ? 'live' : 'derived');
+  const aiValue = normalizeAiProfile(snapshot.aiProfile);
+  const attackFocusValue = normalizeAttackFocus(snapshot.preferredTarget);
 
   const offenseAtk = `${toInt(snapshot.playerStats.atk)}`;
   const critPct = `${Math.round(snapshot.playerStats.crit)}%`;
 
   const totalKills = Math.max(0, snapshot.progress.totalKills);
   const killsToBoss = Math.max(1, snapshot.killsToBoss);
-  const totalExpeditionRuns = snapshot.expeditionLine;
+
+  const setupOffense = {
+    atk: { id: 'atk', label: 'ATK', value: asDisplay(offenseAtk, 'live') },
+    acc: { id: 'acc', label: 'ACC', value: inferAccuracy(snapshot) },
+    crit: { id: 'crit', label: 'CRIT', value: asDisplay(critPct, 'live') },
+  } as const;
+
+  const setupDefense = {
+    hp: { id: 'hp', label: 'HP', value: asDisplay(`${maxHp}`, 'live') },
+    eva: { id: 'eva', label: 'EVA', value: asDisplay(`${Math.round(snapshot.playerStats.dodge)}%`, 'derived', 'EVA approximates dodge chance for planning-state preview.') },
+    res: { id: 'res', label: 'RES', value: inferResistance(snapshot) },
+  } as const;
 
   return {
     page: {
@@ -166,13 +256,13 @@ export function buildOutskirtsMockupSurface(snapshot: OutskirtsMockupRuntimeSnap
         {
           id: 'loadout',
           label: 'Loadout',
-          value: asDisplay(loadoutName, snapshot.selectedLoadoutName ? 'live' : 'derived'),
+          value: loadoutValue,
           iconKey: 'blade',
         },
         {
           id: 'aiProfile',
           label: 'AI Profile',
-          value: asDisplay(aiLabel, snapshot.aiProfile ? 'live' : 'derived'),
+          value: aiValue,
           iconKey: 'spark',
         },
         {
@@ -184,13 +274,13 @@ export function buildOutskirtsMockupSurface(snapshot: OutskirtsMockupRuntimeSnap
         {
           id: 'bounty',
           label: 'Bounty',
-          value: asDisplay(trackingLine, snapshot.trackedBountyLine ? 'live' : 'derived'),
+          value: asDisplay(snapshot.trackedBountyLine ?? 'No tracked bounty selected', snapshot.trackedBountyLine ? 'live' : 'derived'),
           iconKey: 'target',
         },
         {
           id: 'expedition',
           label: 'Expedition',
-          value: asDisplay(totalExpeditionRuns, totalExpeditionRuns === 'No expedition overlap' ? 'derived' : 'live'),
+          value: asDisplay(snapshot.expeditionLine, snapshot.expeditionLine === 'No expedition overlap' ? 'derived' : 'live'),
           iconKey: 'map',
         },
       ],
@@ -215,19 +305,28 @@ export function buildOutskirtsMockupSurface(snapshot: OutskirtsMockupRuntimeSnap
       chipSeverity: danger.severity,
     },
     setupCard: {
-      loadoutSet: asDisplay(loadoutName, snapshot.selectedLoadoutName ? 'live' : 'derived'),
-      aiProfile: asDisplay(aiLabel, snapshot.aiProfile ? 'live' : 'derived'),
-      attackFocus: asDisplay(attackFocusLabel, snapshot.preferredTarget ? 'live' : 'derived'),
-      offense: {
-        atk: { id: 'atk', label: 'ATK', value: asDisplay(offenseAtk, 'live') },
-        acc: { id: 'acc', label: 'ACC', value: inferAccuracy(snapshot) },
-        crit: { id: 'crit', label: 'CRIT', value: asDisplay(critPct, 'live') },
+      title: 'Your Setup',
+      loadoutBadge: inferLoadoutBadge(snapshot.selectedLoadoutName),
+      primaryRows: [
+        { id: 'loadoutSet', label: 'Loadout Set', value: loadoutValue, iconKey: 'loadout' },
+        { id: 'aiProfile', label: 'AI Profile', value: aiValue, iconKey: 'ai' },
+        { id: 'attackFocus', label: 'Attack Focus', value: attackFocusValue, iconKey: 'focus' },
+      ],
+      offenseRows: [setupOffense.atk, setupOffense.acc, setupOffense.crit],
+      defenseRows: [setupDefense.hp, setupDefense.eva, setupDefense.res],
+      medicinePouchRow: {
+        label: 'Medicine Pouch',
+        iconKey: 'pouch',
+        count: asDisplay(`${snapshot.medicinePouchCountCurrent} / ${snapshot.medicinePouchCountCap}`, 'derived'),
+        affordanceLabel: '+',
+        affordanceEnabled: true,
       },
-      defense: {
-        hp: { id: 'hp', label: 'HP', value: asDisplay(`${maxHp}`, 'live') },
-        eva: { id: 'eva', label: 'EVA', value: asDisplay(`${Math.round(snapshot.playerStats.dodge)}%`, 'derived', 'EVA approximates dodge chance for planning-state preview.') },
-        res: { id: 'res', label: 'RES', value: inferResistance(snapshot) },
-      },
+      equipmentSlots: buildEquipmentSlots(snapshot),
+      loadoutSet: loadoutValue,
+      aiProfile: aiValue,
+      attackFocus: attackFocusValue,
+      offense: setupOffense,
+      defense: setupDefense,
       medicinePouch: summarizeMedicinePouch(snapshot),
       equipmentGrid: {
         weapon: {
@@ -247,7 +346,7 @@ export function buildOutskirtsMockupSurface(snapshot: OutskirtsMockupRuntimeSnap
     rewardsCard: {
       goldRange: inferGoldRange(totalKills),
       commonMaterials: asDisplay(snapshot.commonMaterialsLine ?? 'Common mats: broad field drops.', snapshot.commonMaterialsLine ? 'live' : 'derived'),
-      trackedBountyProgress: asDisplay(trackingLine, snapshot.trackedBountyLine ? 'live' : 'derived'),
+      trackedBountyProgress: asDisplay(snapshot.trackedBountyLine ?? 'No tracked bounty selected', snapshot.trackedBountyLine ? 'live' : 'derived'),
       estimatedEfficiency: inferEfficiency(snapshot.progress.killsSinceBoss, killsToBoss),
       autoRepeatState: asDisplay(snapshot.autoRepeatLine, 'live'),
     },
@@ -338,6 +437,8 @@ export function buildOutskirtsMockupRuntimeSnapshotFromStores(cityId?: string): 
   const settings = useUIStore.getState().settings;
   const gameStats = useGameStore.getState().stats;
   const equipment = useEquipmentStore.getState();
+  const medicineSlot = useMedicinePouchStore.getState().slots.healing;
+  const medicineCurrent = medicineSlot.equippedItemId ? useInventoryStore.getState().getItemCount(medicineSlot.equippedItemId) : 0;
 
   const weaponName = equipment.equippedWeaponId ? content.maps.itemsById[equipment.equippedWeaponId]?.name ?? equipment.equippedWeaponId : null;
   const accessoryName = equipment.equippedAccessoryId ? content.maps.itemsById[equipment.equippedAccessoryId]?.name ?? equipment.equippedAccessoryId : null;
@@ -359,6 +460,8 @@ export function buildOutskirtsMockupRuntimeSnapshotFromStores(cityId?: string): 
     aiProfile: settings.combatAIProfile,
     preferredTarget: settings.preferredTarget,
     medicinePouchLine: summarizeMedicinePouchFromStore(),
+    medicinePouchCountCurrent: Math.max(0, Math.min(MEDICINE_POUCH_CAPACITY, medicineCurrent)),
+    medicinePouchCountCap: MEDICINE_POUCH_CAPACITY,
     trackedBountyLine: summarizeTrackedBounty(resolvedCityId),
     commonMaterialsLine: resolveCommonMaterialsLine(resolvedCityId),
     autoRepeatLine: `Auto-continue ${useOutskirtsStore.getState().autoContinue ? 'On' : 'Off'} • Stop at boss ${useOutskirtsStore.getState().stopAtBoss ? 'On' : 'Off'}`,

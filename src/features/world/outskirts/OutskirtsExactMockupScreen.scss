@@ -158,21 +158,158 @@
   color: rgba(59, 45, 33, 0.82);
 }
 
-.outskirtsExactLower {
+.outskirtsExactBody {
   min-height: 0;
   display: grid;
-  grid-template-rows: minmax(0, 1fr) auto auto;
-  gap: 10px;
+  grid-template-columns: 250px minmax(0, 1fr) 250px;
+  gap: 12px;
+  align-items: start;
+}
+
+.outskirtsSetupCard {
+  border-radius: 10px;
+  border: 1px solid rgba(121, 94, 58, 0.3);
+  background: linear-gradient(180deg, rgba(244, 235, 216, 0.95), rgba(233, 216, 187, 0.92));
+  box-shadow: inset 0 1px 0 rgba(255, 248, 236, 0.6);
+  padding: 10px 10px 12px;
+}
+
+.outskirtsSetupCard__title {
+  margin: 0 0 8px;
+  text-align: center;
+  font-size: 17px;
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+.outskirtsSetupCard__rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.outskirtsSetupCard__row {
+  min-height: 24px;
+  display: grid;
+  grid-template-columns: 14px 80px minmax(0, 1fr) 24px;
+  align-items: center;
+  column-gap: 6px;
+}
+
+.outskirtsSetupCard__icon {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  border: 1px solid rgba(90, 67, 45, 0.42);
+  background: rgba(122, 94, 57, 0.2);
+}
+
+.outskirtsSetupCard__label {
+  font-size: 11px;
+  color: rgba(74, 54, 37, 0.9);
+}
+
+.outskirtsSetupCard__value {
+  font-size: 11px;
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.outskirtsSetupCard__badge,
+.outskirtsSetupCard__badgeSpacer {
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  justify-self: end;
+}
+
+.outskirtsSetupCard__badge {
+  border: 1px solid rgba(94, 71, 45, 0.54);
+  background: rgba(241, 226, 199, 0.96);
+  font-size: 11px;
+  display: grid;
+  place-items: center;
+}
+
+.outskirtsSetupCard__section {
+  margin: 7px 0 2px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(87, 64, 42, 0.82);
+}
+
+.outskirtsSetupCard__section--divider {
+  border-top: 1px solid rgba(101, 75, 47, 0.25);
+  padding-top: 7px;
+}
+
+.outskirtsSetupCard__pouchRow {
+  min-height: 24px;
+  display: grid;
+  grid-template-columns: 14px 1fr 18px;
+  align-items: center;
+  column-gap: 6px;
+}
+
+.outskirtsSetupCard__pouchValue {
+  text-align: right;
+  font-size: 11px;
+}
+
+.outskirtsSetupCard__pouchAffordance {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  border: 1px solid rgba(92, 67, 45, 0.46);
+  background: rgba(242, 229, 202, 0.9);
+  padding: 0;
+  line-height: 1;
+  font-size: 12px;
+}
+
+.outskirtsSetupCard__equipmentGrid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.outskirtsSetupCard__equipmentCell {
+  aspect-ratio: 1 / 1;
+  border-radius: 6px;
+  border: 1px solid rgba(99, 72, 45, 0.3);
+  background: rgba(250, 242, 229, 0.84);
+  display: grid;
+  place-items: center;
+}
+
+.outskirtsSetupCard__equipmentCell--empty {
+  background: rgba(242, 232, 214, 0.72);
+}
+
+.outskirtsSetupCard__equipmentIcon {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  border: 1px solid rgba(96, 71, 44, 0.44);
+  color: rgba(82, 61, 42, 0.76);
+  font-size: 10px;
+  display: grid;
+  place-items: center;
 }
 
 .outskirtsExactField {
   min-height: 0;
+  height: 100%;
   border-radius: 10px;
   border: 1px solid rgba(98, 75, 53, 0.28);
   overflow: hidden;
   position: relative;
-  display: grid;
-  grid-template-rows: minmax(0, 1fr);
 }
 
 .outskirtsExactField__plate {
@@ -191,7 +328,6 @@
 
 .outskirtsExactField__enemy {
   position: absolute;
-  image-rendering: auto;
   filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.45));
 }
 
@@ -224,13 +360,11 @@
   margin: 0;
   font-size: 11px;
   letter-spacing: 0.03em;
-  color: rgba(240, 222, 189, 0.88);
 }
 
 .outskirtsExactField__name {
   margin: 2px 0 6px;
   font-size: 20px;
-  line-height: 1.1;
 }
 
 .outskirtsExactField__chip {
@@ -238,181 +372,25 @@
   border-radius: 999px;
   padding: 3px 8px;
   font-size: 10px;
-  letter-spacing: 0.05em;
   text-transform: uppercase;
-  border: 1px solid transparent;
 }
 
 .outskirtsExactField__chip--safe {
   background: rgba(72, 115, 66, 0.36);
-  border-color: rgba(191, 230, 182, 0.4);
 }
 
 .outskirtsExactField__chip--watch {
   background: rgba(142, 121, 66, 0.34);
-  border-color: rgba(244, 224, 173, 0.42);
 }
 
 .outskirtsExactField__chip--risk,
 .outskirtsExactField__chip--critical {
   background: rgba(148, 76, 57, 0.38);
-  border-color: rgba(247, 196, 177, 0.42);
 }
 
-.outskirtsExactCards {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.outskirtsExactCard {
-  border-radius: 8px;
-  border: 1px solid rgba(98, 75, 53, 0.24);
-  background: rgba(246, 237, 224, 0.82);
-  padding: 8px 10px;
-  min-height: 0;
-}
-
-.outskirtsExactCard__title {
-  margin: 0;
-  font-size: 14px;
-}
-
-.outskirtsExactCard__sectionTitle {
-  margin: 7px 0 4px;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: rgba(82, 61, 43, 0.78);
-}
-
-.outskirtsExactCard__rows p {
-  margin: 4px 0;
-  font-size: 12px;
-}
-
-.outskirtsExactCard__stats,
-.outskirtsExactCard__list {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.outskirtsExactCard__stat {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  font-size: 12px;
-  padding: 2px 0;
-}
-
-.outskirtsExactCard__statLabel {
-  color: rgba(82, 61, 43, 0.78);
-}
-
-.outskirtsExactCard__statValue {
-  color: rgba(34, 24, 16, 0.92);
-}
-
-.outskirtsExactCard__list li {
-  font-size: 12px;
-  padding: 2px 0;
-}
-
-.outskirtsExactActionBar {
-  display: grid;
-  grid-template-columns: 1fr auto minmax(260px, 0.8fr);
-  gap: 10px;
-  align-items: stretch;
-}
-
-.outskirtsExactEncounterStrip {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  gap: 8px;
-  align-items: center;
-  border-radius: 8px;
-  border: 1px solid rgba(98, 75, 53, 0.24);
-  background: rgba(246, 237, 224, 0.82);
-  padding: 8px;
-}
-
-.outskirtsExactEncounterStrip__arrow {
-  color: rgba(86, 64, 45, 0.7);
-  font-size: 18px;
-}
-
-.outskirtsExactEncounterStrip__nodes {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 6px;
-}
-
-.outskirtsExactEncounterStrip__node {
-  border-radius: 6px;
-  border: 1px solid rgba(98, 75, 53, 0.2);
-  padding: 4px 5px;
-  min-width: 0;
-  background: rgba(255, 250, 241, 0.65);
-}
-
-.outskirtsExactEncounterStrip__node--current,
-.outskirtsExactEncounterStrip__node[data-selected='1'] {
-  border-color: rgba(102, 75, 43, 0.56);
-  background: rgba(243, 230, 206, 0.96);
-}
-
-.outskirtsExactEncounterStrip__name,
-.outskirtsExactEncounterStrip__level {
-  display: block;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  font-size: 11px;
-}
-
-.outskirtsExactEncounterStrip__level {
-  color: rgba(77, 56, 39, 0.72);
-}
-
-.outskirtsExactPrimaryAction {
-  align-self: stretch;
-  min-width: 140px;
-  border-radius: 8px;
-  border: 1px solid rgba(124, 89, 44, 0.5);
-  background: linear-gradient(180deg, rgba(201, 165, 101, 0.96), rgba(166, 126, 64, 0.98));
-  color: #2b1f13;
-  font-size: 16px;
-  font-weight: 700;
-  padding: 0 14px;
-}
-
-.outskirtsExactPrimaryAction:disabled {
-  opacity: 0.5;
-}
-
-.outskirtsExactSummary {
-  border-radius: 8px;
-  border: 1px solid rgba(98, 75, 53, 0.24);
-  background: rgba(246, 237, 224, 0.82);
-  padding: 8px 10px;
-}
-
-.outskirtsExactSummary__title {
-  margin: 0;
-  font-size: 14px;
-}
-
-.outskirtsExactSummary__list {
-  margin: 5px 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-.outskirtsExactSummary__list li {
-  font-size: 12px;
-  padding: 2px 0;
+.outskirtsExactRightReserve {
+  height: 100%;
+  border-radius: 10px;
+  border: 1px dashed rgba(98, 75, 53, 0.2);
+  background: rgba(233, 220, 199, 0.22);
 }

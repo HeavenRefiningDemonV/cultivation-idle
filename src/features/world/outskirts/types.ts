@@ -92,7 +92,48 @@ export interface OutskirtsEquipmentCell {
   refineLevel: OutskirtsSurfaceValue;
 }
 
+export interface OutskirtsSetupCardDisplayRow {
+  id: 'loadoutSet' | 'aiProfile' | 'attackFocus';
+  label: string;
+  value: OutskirtsSurfaceValue;
+  iconKey: 'loadout' | 'ai' | 'focus';
+}
+
+export interface OutskirtsSetupPouchRegion {
+  label: string;
+  iconKey: 'pouch';
+  count: OutskirtsSurfaceValue;
+  affordanceLabel: string;
+  affordanceEnabled: boolean;
+}
+
+export interface OutskirtsSetupEquipmentSlot {
+  id: 'weapon' | 'armor' | 'ring' | 'talisman' | 'boots' | 'charm';
+  label: string;
+  iconText: string;
+  isEmpty: boolean;
+  itemName: OutskirtsSurfaceValue;
+}
+
 export interface OutskirtsSetupCardRegion {
+  title: string;
+  loadoutBadge: OutskirtsSurfaceValue;
+  primaryRows: [
+    OutskirtsSetupCardDisplayRow,
+    OutskirtsSetupCardDisplayRow,
+    OutskirtsSetupCardDisplayRow,
+  ];
+  offenseRows: [OutskirtsSetupStatField, OutskirtsSetupStatField, OutskirtsSetupStatField];
+  defenseRows: [OutskirtsSetupStatField, OutskirtsSetupStatField, OutskirtsSetupStatField];
+  medicinePouchRow: OutskirtsSetupPouchRegion;
+  equipmentSlots: [
+    OutskirtsSetupEquipmentSlot,
+    OutskirtsSetupEquipmentSlot,
+    OutskirtsSetupEquipmentSlot,
+    OutskirtsSetupEquipmentSlot,
+    OutskirtsSetupEquipmentSlot,
+    OutskirtsSetupEquipmentSlot,
+  ];
   loadoutSet: OutskirtsSurfaceValue;
   aiProfile: OutskirtsSurfaceValue;
   attackFocus: OutskirtsSurfaceValue;
@@ -225,6 +266,8 @@ export interface OutskirtsMockupRuntimeSnapshot {
   aiProfile: string | null;
   preferredTarget: string | null;
   medicinePouchLine: string | null;
+  medicinePouchCountCurrent: number;
+  medicinePouchCountCap: number;
   trackedBountyLine: string | null;
   commonMaterialsLine: string | null;
   autoRepeatLine: string;

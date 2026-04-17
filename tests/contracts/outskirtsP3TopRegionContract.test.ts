@@ -22,6 +22,8 @@ function makeSnapshot(overrides: Partial<OutskirtsMockupRuntimeSnapshot> = {}): 
     aiProfile: 'balanced',
     preferredTarget: 'boss',
     medicinePouchLine: 'Minor Tonic (hpBelowPct)',
+    medicinePouchCountCurrent: 12,
+    medicinePouchCountCap: 20,
     trackedBountyLine: 'Cull field beasts: 4 / 10',
     commonMaterialsLine: 'Common mats: Fur, Bone, Bark',
     autoRepeatLine: 'Auto-continue On • Stop at boss Off',
