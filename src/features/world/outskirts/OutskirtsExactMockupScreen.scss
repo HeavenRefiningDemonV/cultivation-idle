@@ -1,0 +1,183 @@
+.outskirtsExactScreen {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 22px 28px 20px;
+  color: #2a2018;
+  background: linear-gradient(180deg, rgba(244, 234, 216, 0.9) 0%, rgba(229, 213, 190, 0.86) 100%);
+}
+
+.outskirtsExactTop {
+  display: grid;
+  grid-template-columns: minmax(320px, 1fr) minmax(260px, auto) minmax(320px, 1fr);
+  grid-template-rows: auto auto auto auto;
+  row-gap: 8px;
+  align-items: start;
+}
+
+.outskirtsExactTop__titleWrap {
+  grid-column: 1 / 2;
+  grid-row: 1 / 2;
+}
+
+.outskirtsExactTop__title {
+  margin: 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 56px;
+  line-height: 0.95;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: #2f2117;
+}
+
+.outskirtsExactTop__macro {
+  grid-column: 1 / -1;
+  grid-row: 2 / 3;
+  margin-top: 4px;
+}
+
+.outskirtsExactTop__macroList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.outskirtsExactTop__macroNode {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  border-top: 1px solid rgba(76, 58, 41, 0.24);
+  padding-top: 7px;
+}
+
+.outskirtsExactTop__macroNode--current {
+  border-top-color: rgba(88, 66, 40, 0.88);
+}
+
+.outskirtsExactTop__macroDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(106, 84, 59, 0.35);
+  flex: 0 0 auto;
+}
+
+.outskirtsExactTop__macroNode--current .outskirtsExactTop__macroDot,
+.outskirtsExactTop__macroNode--completed .outskirtsExactTop__macroDot {
+  background: rgba(90, 64, 36, 0.82);
+}
+
+.outskirtsExactTop__macroLabel {
+  min-width: 0;
+  font-size: 12px;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: rgba(60, 46, 34, 0.84);
+}
+
+.outskirtsExactTop__tactical {
+  grid-column: 1 / -1;
+  grid-row: 3 / 4;
+  margin-top: 2px;
+}
+
+.outskirtsExactTop__tacticalList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  border: 1px solid rgba(83, 62, 43, 0.25);
+  border-radius: 6px;
+  background: rgba(244, 236, 224, 0.8);
+}
+
+.outskirtsExactTop__tacticalCell {
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 7px 10px;
+  border-right: 1px solid rgba(83, 62, 43, 0.2);
+}
+
+.outskirtsExactTop__tacticalCell:last-child {
+  border-right: none;
+}
+
+.outskirtsExactTop__tacticalLabel {
+  flex: 0 0 auto;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(88, 69, 47, 0.75);
+}
+
+.outskirtsExactTop__tacticalValue {
+  min-width: 0;
+  font-size: 12px;
+  color: rgba(42, 31, 22, 0.92);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.outskirtsExactTop__plaqueWrap {
+  grid-column: 2 / 3;
+  grid-row: 4 / 5;
+  justify-self: center;
+  margin-top: 6px;
+  text-align: center;
+}
+
+.outskirtsExactTop__plaque {
+  min-width: 280px;
+  padding: 9px 16px;
+  border-radius: 7px;
+  background: linear-gradient(180deg, rgba(41, 36, 33, 0.92) 0%, rgba(24, 21, 20, 0.95) 100%);
+  border: 1px solid rgba(232, 218, 189, 0.24);
+  color: #f3e4c9;
+  font-size: 15px;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.outskirtsExactTop__subtitle {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: rgba(59, 45, 33, 0.82);
+}
+
+.outskirtsExactScaffold {
+  flex: 1;
+  margin-top: 14px;
+  display: grid;
+  grid-template-rows: 1fr auto auto;
+  row-gap: 14px;
+}
+
+.outskirtsExactScaffold__lane {
+  border-radius: 8px;
+  border: 1px dashed rgba(98, 75, 53, 0.22);
+  background: rgba(232, 218, 195, 0.18);
+}
+
+.outskirtsExactScaffold__lane--field {
+  min-height: 260px;
+}
+
+.outskirtsExactScaffold__lane--cards {
+  min-height: 110px;
+}
+
+.outskirtsExactScaffold__lane--footer {
+  min-height: 82px;
+}

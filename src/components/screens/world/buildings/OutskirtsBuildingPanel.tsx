@@ -27,6 +27,9 @@ import { buildOutskirtsSupportContextSurface } from '../../../../ui/world/buildO
 import { openWorldModule } from '../../../../systems/world/openWorldModule.js';
 import { useFxQuality } from '../../../../ui/fx/FxQualityProvider.js';
 import { buildOutskirtsFxProfile } from '../../../../ui/world/buildOutskirtsFxProfile.js';
+import { useOutskirtsMockupSurface } from '../../../../features/world/outskirts/useOutskirtsMockupSurface.js';
+import { OutskirtsExactMockupScreen } from '../../../../features/world/outskirts/OutskirtsExactMockupScreen.js';
+import '../../../../features/world/outskirts/OutskirtsExactMockupScreen.scss';
 
 import wildBoar from "../../../../assets/enemies/widboar.png";
 
@@ -80,7 +83,7 @@ interface OutskirtsBuildingPanelProps {
   cityId: string;
 }
 
-export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) {
+function OutskirtsBuildingPanelLegacy({ cityId }: OutskirtsBuildingPanelProps) {
   const city = useContentStore((state) => state.maps.citiesById[cityId]);
   const outskirtsById = useContentStore((state) => state.maps.outskirtsById);
   const enemiesById = useContentStore((state) => state.maps.enemiesById);
@@ -637,4 +640,16 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
       />
     </div>
   );
+}
+
+export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) {
+  const activity = useActivityStore((state) => state.active);
+  const isPlanningState = !(activity && activity.type === 'outskirts' && activity.cityId === cityId);
+  const planningSurface = useOutskirtsMockupSurface(cityId);
+
+  if (isPlanningState) {
+    return <OutskirtsExactMockupScreen surface={planningSurface} />;
+  }
+
+  return <OutskirtsBuildingPanelLegacy cityId={cityId} />;
 }

@@ -77,7 +77,7 @@ void test('pinewind encounter node sequence is locked and ordered', () => {
 
 void test('builder returns fully shaped OutskirtsMockupSurface', () => {
   const surface = buildOutskirtsMockupSurface(makeSnapshot());
-  assert.equal(surface.page.title, 'Outskirts Hunt Plan');
+  assert.equal(surface.page.title, 'Outskirts');
   assert.equal(surface.tacticalStrip.cells.length, 7);
   assert.equal(surface.selectorPlaque.selectorLabel.length > 0, true);
   assert.equal(surface.setupCard.offense.acc.id, 'acc');
@@ -104,22 +104,17 @@ void test('builder emits explicit synthetic/derived fallbacks when first-class f
   assert.equal(surface.rewardsCard.trackedBountyProgress.source, 'derived');
 });
 
-void test('exact mockup entry component renders A-K regions from one surface object with no store imports', () => {
+void test('exact mockup entry component renders top-region scaffold from one surface object with no store imports', () => {
   const surface = buildOutskirtsMockupSurface(makeSnapshot());
   const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
 
   [
-    'region-a-page-title',
-    'region-b-macro-track',
-    'region-c-tactical-strip',
-    'region-d-selector-plaque',
-    'region-e-scenic-field',
-    'region-f-encounter-identity',
-    'region-g-setup-card',
-    'region-h-rewards-card',
-    'region-i-encounter-strip',
-    'region-j-primary-cta',
-    'region-k-grind-summary',
+    'outskirts-exact-top-region',
+    'outskirts-top-title',
+    'outskirts-macro-line',
+    'outskirts-tactical-strip',
+    'outskirts-area-plaque',
+    'outskirts-exact-lower-scaffold',
   ].forEach((testId) => {
     assert.match(html, new RegExp(testId));
   });

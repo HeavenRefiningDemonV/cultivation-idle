@@ -87,24 +87,6 @@ function summarizeMedicinePouch(snapshot: OutskirtsMockupRuntimeSnapshot): Outsk
   return asDisplay('No healing consumable equipped', 'derived');
 }
 
-function resolveMacroTrack(snapshot: OutskirtsMockupRuntimeSnapshot) {
-  const target = Math.max(1, snapshot.killsToBoss);
-  const ratio = Math.min(1, Math.max(0, snapshot.progress.killsSinceBoss / target));
-  const currentNodeId = ratio >= 1 ? 'boss-window' : ratio >= 0.45 ? 'field-control' : 'patrol';
-  return {
-    currentNodeId,
-    nodes: [
-      { id: 'patrol', label: 'Patrol', state: (currentNodeId === 'patrol' ? 'current' : 'completed') as const },
-      {
-        id: 'field-control',
-        label: 'Field Control',
-        state: (currentNodeId === 'field-control' ? 'current' : currentNodeId === 'boss-window' ? 'completed' : 'future') as const,
-      },
-      { id: 'boss-window', label: 'Boss Window', state: (currentNodeId === 'boss-window' ? 'current' : 'future') as const },
-    ],
-  };
-}
-
 export function buildOutskirtsMockupSurface(snapshot: OutskirtsMockupRuntimeSnapshot): OutskirtsMockupSurface {
   const presentation = getOutskirtsMockupPresentation(snapshot.cityId);
   const selectedNode = presentation.encounterNodes.find((entry) => entry.id === presentation.selectedEncounterId)
@@ -115,7 +97,14 @@ export function buildOutskirtsMockupSurface(snapshot: OutskirtsMockupRuntimeSnap
   const maxHp = toInt(snapshot.playerStats.maxHp);
   const danger = toDangerFromHp(hp, maxHp);
 
-  const macroTrack = resolveMacroTrack(snapshot);
+  const macroTrack = {
+    currentNodeId: selectedNode.id,
+    nodes: presentation.encounterNodes.map((node, index) => ({
+      id: node.id,
+      label: node.displayName,
+      state: deriveEncounterState(index, selectedNodeIndex),
+    })),
+  };
   const encounterNodes = presentation.encounterNodes.map((entry, index) => ({
     id: entry.id,
     displayName: entry.displayName,

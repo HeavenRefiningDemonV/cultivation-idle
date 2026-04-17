@@ -7,7 +7,7 @@ import type { OutskirtsCityMockupPresentation } from './types.js';
 export const OUTSKIRTS_MOCKUP_PRESENTATION_BY_CITY: Readonly<Record<string, OutskirtsCityMockupPresentation>> = {
   city_pinewind_hamlet: {
     cityId: 'city_pinewind_hamlet',
-    screenTitle: 'Outskirts Hunt Plan',
+    screenTitle: 'Outskirts',
     selectorLabel: 'Pinewind Outskirts',
     subtitle: 'Plan your next low-risk field cycle before committing.',
     selectedEncounterId: 'quiet-glade',
