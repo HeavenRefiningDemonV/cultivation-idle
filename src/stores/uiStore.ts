@@ -61,6 +61,7 @@ export type WorldBuildingKey =
 
 export type WorldBuildingModalIntent = null | {
   apothecarySurface?: 'buy' | 'brew' | 'pouch';
+  outskirtsSurface?: 'live' | 'exact-mockup-prep';
 };
 export type LifeSummaryModalMode = 'current' | 'last_completed';
 export type MigrationIssueModalPayload = {
@@ -839,6 +840,7 @@ export const useUIStore = create<UIState>()(
         && snapshot.worldBuildingModalCityId === cityId
         && snapshot.worldBuildingModalKey === normalizedBuildingKey
         && (snapshot.worldBuildingModalIntent?.apothecarySurface ?? null) === ((intent ?? null)?.apothecarySurface ?? null)
+        && (snapshot.worldBuildingModalIntent?.outskirtsSurface ?? null) === ((intent ?? null)?.outskirtsSurface ?? null)
       ) {
         return;
       }
