@@ -27,6 +27,9 @@ import { buildOutskirtsSupportContextSurface } from '../../../../ui/world/buildO
 import { openWorldModule } from '../../../../systems/world/openWorldModule.js';
 import { useFxQuality } from '../../../../ui/fx/FxQualityProvider.js';
 import { buildOutskirtsFxProfile } from '../../../../ui/world/buildOutskirtsFxProfile.js';
+import { buildOutskirtsMockupSurfaceFromStores } from '../../../../features/world/outskirts/buildOutskirtsMockupSurface.js';
+import { OutskirtsExactMockupScreen } from '../../../../features/world/outskirts/OutskirtsExactMockupScreen.js';
+import '../../../../features/world/outskirts/OutskirtsExactMockupScreen.scss';
 
 import wildBoar from "../../../../assets/enemies/widboar.png";
 
@@ -357,6 +360,11 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
     [autoContinue, isOutskirtsActive, killsSinceBoss, killsToBoss, stopAtBoss],
   );
   const handlePrimaryAction = isOutskirtsActive ? handleStopOutskirts : handleStartOutskirts;
+  const planningSurface = useMemo(
+    () => buildOutskirtsMockupSurfaceFromStores(cityId),
+    [cityId, killsSinceBoss, killsToBoss, trackedOutskirtsBounty?.instanceId, uiSettings.profile, uiSettings.preferredTarget, uiSettings.useConsumablesInCombat],
+  );
+
   const outskirtsFxProfile = useMemo(
     () => buildOutskirtsFxProfile({
       effectiveQuality,
@@ -378,6 +386,14 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
         <div className={'worldScreenPlaceholderBody'}>
           <div className={'worldScreenPlaceholderLine'}>Unavailable for this city.</div>
         </div>
+      </div>
+    );
+  }
+
+  if (!isOutskirtsActive) {
+    return (
+      <div className="outskirtsPlanningOwner" data-testid="outskirts-planning-owner">
+        <OutskirtsExactMockupScreen surface={planningSurface} />
       </div>
     );
   }

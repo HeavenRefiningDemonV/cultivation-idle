@@ -69,9 +69,10 @@ void test('outskirts support context only emits adjacent route modules and keeps
   assert.equal(surface.routeHints[0]?.destination, 'ruins');
 });
 
-void test('outskirts panel keeps shell-header suppression and single top-lane ownership', async () => {
+void test('outskirts panel planning state is owned by exact mockup surface in P3', async () => {
   const source = await readFile(new URL('../../src/components/screens/world/buildings/OutskirtsBuildingPanel.tsx', import.meta.url), 'utf8');
-  const topLaneMatches = source.match(/<CombatModuleTopLane/g) ?? [];
-  assert.equal(topLaneMatches.length, 1);
-  assert.match(source, /suppressHeader/);
+  assert.match(source, /buildOutskirtsMockupSurfaceFromStores/);
+  assert.match(source, /OutskirtsExactMockupScreen/);
+  assert.match(source, /if \(!isOutskirtsActive\)/);
+  assert.match(source, /data-testid="outskirts-planning-owner"/);
 });
