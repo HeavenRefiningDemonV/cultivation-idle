@@ -259,6 +259,26 @@ export interface OutskirtsPrimaryActionRegion {
   styleToken: 'primary-start';
 }
 
+export interface OutskirtsPrimaryCtaRegion {
+  label: 'Start Hunt';
+  ariaLabel: string;
+  enabled: boolean;
+  disabledReason: string | null;
+}
+
+export interface OutskirtsGrindSummaryRow {
+  key: 'runs' | 'goldPerHour' | 'mainDrop';
+  label: string;
+  value: string;
+  iconText: string;
+}
+
+export interface OutskirtsGrindSummaryCardRegion {
+  title: 'Grind Summary';
+  scopeLabel: 'This Area';
+  rows: [OutskirtsGrindSummaryRow, OutskirtsGrindSummaryRow, OutskirtsGrindSummaryRow];
+}
+
 export interface OutskirtsGrindSummaryRegion {
   label: string;
   runs: OutskirtsSurfaceValue;
@@ -278,6 +298,8 @@ export interface OutskirtsMockupSurface {
   expectedRewardsCard: OutskirtsExpectedRewardsCardRegion;
   rewardsCard: OutskirtsRewardsCardRegion;
   encounterProgressStrip: OutskirtsEncounterProgressStripRegion;
+  primaryCta: OutskirtsPrimaryCtaRegion;
+  grindSummaryCard: OutskirtsGrindSummaryCardRegion;
   encounterStrip: OutskirtsEncounterStripRegion;
   primaryAction: OutskirtsPrimaryActionRegion;
   grindSummary: OutskirtsGrindSummaryRegion;

@@ -644,3 +644,99 @@
   color: rgba(77, 56, 39, 0.72);
   white-space: nowrap;
 }
+
+.outskirtsExactActionZone {
+  width: min(960px, 100%);
+  justify-self: center;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 260px;
+  align-items: end;
+  column-gap: 14px;
+}
+
+.outskirtsStartHuntCta {
+  justify-self: center;
+  width: min(420px, 88%);
+  min-height: 58px;
+  border-radius: 14px;
+  border: 1px solid rgba(115, 82, 42, 0.68);
+  background:
+    linear-gradient(180deg, rgba(247, 219, 147, 0.98) 0%, rgba(210, 166, 82, 0.97) 52%, rgba(173, 127, 57, 0.98) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 240, 201, 0.76),
+    0 4px 10px rgba(44, 28, 13, 0.28);
+  color: #2e1f11;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 24px;
+  letter-spacing: 0.01em;
+  padding: 0 20px;
+}
+
+.outskirtsStartHuntCta:focus-visible,
+.outskirtsStartHuntCta:hover {
+  filter: brightness(1.03);
+}
+
+.outskirtsStartHuntCta:disabled {
+  opacity: 0.55;
+}
+
+.outskirtsStartHuntCta__label {
+  display: block;
+  text-align: center;
+}
+
+.outskirtsGrindSummaryCard {
+  border-radius: 10px;
+  border: 1px solid rgba(116, 89, 58, 0.24);
+  background: rgba(246, 237, 223, 0.88);
+  padding: 8px 10px;
+  position: relative;
+  min-height: 96px;
+}
+
+.outskirtsGrindSummaryCard__title {
+  margin: 0;
+  font-size: 13px;
+}
+
+.outskirtsGrindSummaryCard__scope {
+  position: absolute;
+  top: 7px;
+  right: 8px;
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  border: 1px solid rgba(106, 79, 50, 0.3);
+  background: rgba(241, 228, 201, 0.86);
+}
+
+.outskirtsGrindSummaryCard__rows {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+}
+
+.outskirtsGrindSummaryCard__row {
+  min-height: 22px;
+  display: grid;
+  grid-template-columns: 14px 1fr auto;
+  align-items: center;
+  column-gap: 6px;
+}
+
+.outskirtsGrindSummaryCard__icon {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  border: 1px solid rgba(96, 71, 44, 0.4);
+  font-size: 8px;
+  display: grid;
+  place-items: center;
+}
+
+.outskirtsGrindSummaryCard__label,
+.outskirtsGrindSummaryCard__value {
+  font-size: 11px;
+  white-space: nowrap;
+}

@@ -10,9 +10,12 @@ import { OutskirtsAreaPlaque } from './components/OutskirtsAreaPlaque.js';
 import { OutskirtsSetupCard } from './components/OutskirtsSetupCard.js';
 import { OutskirtsExpectedRewardsCard } from './components/OutskirtsExpectedRewardsCard.js';
 import { OutskirtsEncounterProgressStrip } from './components/OutskirtsEncounterProgressStrip.js';
+import { OutskirtsStartHuntCta } from './components/OutskirtsStartHuntCta.js';
+import { OutskirtsGrindSummaryCard } from './components/OutskirtsGrindSummaryCard.js';
 
 export interface OutskirtsExactMockupScreenProps {
   surface: OutskirtsMockupSurface;
+  onStartHunt?: () => void;
 }
 
 const SCENIC_ASSET_BY_KEY: Record<string, string> = {
@@ -36,7 +39,7 @@ function resolveEncounterAsset(assetKey: string): string {
   return ENCOUNTER_ASSET_BY_KEY[assetKey] ?? wolfPupImage;
 }
 
-export function OutskirtsExactMockupScreen({ surface }: OutskirtsExactMockupScreenProps) {
+export function OutskirtsExactMockupScreen({ surface, onStartHunt }: OutskirtsExactMockupScreenProps) {
   const scenicPlate = resolveScenicPlate(surface.scenicField.scenicPlateAssetKey);
   const encounterAsset = resolveEncounterAsset(surface.scenicField.encounterAssetKey);
 
@@ -98,5 +101,11 @@ export function OutskirtsExactMockupScreen({ surface }: OutskirtsExactMockupScre
       React.createElement(OutskirtsExpectedRewardsCard, { card: surface.expectedRewardsCard }),
     ),
     React.createElement(OutskirtsEncounterProgressStrip, { strip: surface.encounterProgressStrip }),
+    React.createElement(
+      'section',
+      { className: 'outskirtsExactActionZone', 'data-testid': 'outskirts-exact-action-zone' },
+      React.createElement(OutskirtsStartHuntCta, { cta: surface.primaryCta, onStartHunt }),
+      React.createElement(OutskirtsGrindSummaryCard, { card: surface.grindSummaryCard }),
+    ),
   );
 }

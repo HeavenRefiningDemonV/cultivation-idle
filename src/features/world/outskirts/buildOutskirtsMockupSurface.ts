@@ -452,6 +452,26 @@ export function buildOutskirtsMockupSurface(snapshot: OutskirtsMockupRuntimeSnap
         ariaLabel: `${node.displayName}${node.displayLevel ? ` ${node.displayLevel}` : ''}${node.id === selectedNode.id ? ', current' : ''}`,
       })),
     },
+    primaryCta: {
+      label: 'Start Hunt',
+      ariaLabel: 'Start Hunt in Outskirts',
+      enabled: Boolean(snapshot.outskirtsId),
+      disabledReason: snapshot.outskirtsId ? null : 'Outskirts module unavailable for current city.',
+    },
+    grindSummaryCard: {
+      title: 'Grind Summary',
+      scopeLabel: 'This Area',
+      rows: [
+        { key: 'runs', label: 'Runs', value: '—', iconText: 'R' },
+        { key: 'goldPerHour', label: 'Gold / hr', value: inferHourlyYieldText(totalKills), iconText: 'G' },
+        {
+          key: 'mainDrop',
+          label: 'Main Drop',
+          value: (buildCommonMaterials(snapshot.commonMaterialsLine).find((entry) => !entry.isPlaceholder)?.label ?? '—'),
+          iconText: 'D',
+        },
+      ],
+    },
     rewardsCard: {
       goldRange: inferGoldRange(totalKills),
       commonMaterials: asDisplay(snapshot.commonMaterialsLine ?? 'Common mats: broad field drops.', snapshot.commonMaterialsLine ? 'live' : 'derived'),

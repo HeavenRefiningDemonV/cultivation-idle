@@ -643,12 +643,37 @@ function OutskirtsBuildingPanelLegacy({ cityId }: OutskirtsBuildingPanelProps) {
 }
 
 export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) {
+  const city = useContentStore((state) => state.maps.citiesById[cityId]);
+  const outskirtsById = useContentStore((state) => state.maps.outskirtsById);
   const activity = useActivityStore((state) => state.active);
+  const startActivity = useActivityStore((state) => state.startActivity);
+  const setAutoAttack = useCombatStore((state) => state.setAutoAttack);
+  const startCombat = useCombatStore((state) => state.startCombat);
+  const getProgress = useOutskirtsStore((state) => state.getProgress);
   const isPlanningState = !(activity && activity.type === 'outskirts' && activity.cityId === cityId);
   const planningSurface = useOutskirtsMockupSurface(cityId);
+  const outskirtsRefId = resolveModuleRef(city ?? null, 'outskirts');
+  const outskirtsDef = outskirtsRefId ? outskirtsById[outskirtsRefId] : undefined;
+
+  const handleStartHunt = () => {
+    if (!outskirtsDef) return;
+    const progressSnapshot = getProgress(outskirtsDef.id);
+    const nextIsBoss = progressSnapshot.killsSinceBoss >= outskirtsDef.killsToBoss;
+    const nextEnemyId = nextIsBoss ? outskirtsDef.bossId : pickEnemyFromPool(outskirtsDef.mobPool);
+    if (!nextEnemyId) return;
+    startActivity('outskirts', { cityId, sourceId: outskirtsDef.id });
+    setAutoAttack(true);
+    startCombat(nextEnemyId, {
+      type: 'outskirts',
+      cityId,
+      sourceId: outskirtsDef.id,
+      cityIndex: outskirtsDef.cityIndex,
+      isBoss: nextIsBoss,
+    });
+  };
 
   if (isPlanningState) {
-    return <OutskirtsExactMockupScreen surface={planningSurface} />;
+    return <OutskirtsExactMockupScreen surface={planningSurface} onStartHunt={handleStartHunt} />;
   }
 
   return <OutskirtsBuildingPanelLegacy cityId={cityId} />;
