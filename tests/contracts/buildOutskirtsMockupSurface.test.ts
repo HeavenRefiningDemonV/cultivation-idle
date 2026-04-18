@@ -21,6 +21,9 @@ void test('buildOutskirtsMockupSurface returns fully populated stable contract o
   assert.equal(surface.encounterProgressStrip.nodes.length, 6);
   assert.equal(surface.encounterProgressStrip.leftArrow.visible, true);
   assert.equal(surface.encounterProgressStrip.rightArrow.visible, true);
+  assert.equal(surface.primaryCta.visible, true);
+  assert.equal(surface.primaryCta.isPrimary, true);
+  assert.equal(surface.grindSummary.visible, true);
   assert.equal(typeof surface.encounterHero.scenicImageSrc === 'string', true);
   assert.equal(surface.actionZone.singleDominantCta, true);
   assert.equal(surface.shell.singleDominantCta, true);
@@ -76,4 +79,5 @@ void test('buildOutskirtsMockupSurface keeps encounter strip stable with placeho
   }));
   assert.equal(surface.encounterProgressStrip.nodes.length, 6);
   assert.equal(surface.encounterProgressStrip.nodes.every((node) => node.label.length > 0), true);
+  assert.equal(surface.grindSummary.title?.length ? true : false, true);
 });

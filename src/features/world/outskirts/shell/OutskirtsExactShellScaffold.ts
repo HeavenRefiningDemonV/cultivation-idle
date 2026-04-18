@@ -42,9 +42,15 @@ export function OutskirtsExactShellScaffold({ surface }: OutskirtsExactShellScaf
       React.createElement(
         'section',
         { className: 'frameCard frameCard--panel' },
-        React.createElement('h3', null, surface.grindSummary.title),
-        React.createElement('p', null, surface.grindSummary.statusLine),
-        React.createElement('ul', null, ...surface.grindSummary.rows.map((entry) => React.createElement('li', { key: entry.id }, `${entry.label}: ${entry.value}`))),
+        React.createElement('h3', null, surface.grindSummary.title ?? 'Grind Summary'),
+        React.createElement('p', null, surface.grindSummary.progressText ?? surface.grindSummary.areaFilterText ?? 'Outskirts baseline lane'),
+        React.createElement(
+          'ul',
+          null,
+          React.createElement('li', null, `Runs: ${surface.grindSummary.runsText ?? 'Steady loop'}`),
+          React.createElement('li', null, `Gold/hr: ${surface.grindSummary.goldPerHourText ?? 'Est. stable income'}`),
+          React.createElement('li', null, `Drop: ${surface.grindSummary.mainDropLabel ?? 'Broad field drops'}`),
+        ),
       ),
     ),
   );

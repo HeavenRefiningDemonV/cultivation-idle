@@ -393,7 +393,7 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
   if (!isOutskirtsActive) {
     return (
       <div className="outskirtsPlanningOwner" data-testid="outskirts-planning-owner">
-        <OutskirtsExactMockupScreen surface={planningSurface} />
+        <OutskirtsExactMockupScreen surface={planningSurface} onStartHunt={handleStartOutskirts} />
       </div>
     );
   }

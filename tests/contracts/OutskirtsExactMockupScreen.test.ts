@@ -111,7 +111,7 @@ void test('P7 strip order is locked to Pinewind exact-mockup sequence', () => {
   assert.deepEqual(labels, ['Quiet Glade', 'Rockjaw Boar', 'Snarling Wolf', 'Venomcoil', 'Shade Stalker', 'Mire Serpent']);
 });
 
-void test('P7 strip state mapping renders completed/current/future classes without adding CTA/grind-summary/active controls', () => {
+void test('P7 strip state mapping renders completed/current/future classes without legacy bottom utility owners', () => {
   const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture({ selectedEncounterId: 'snarling-wolf' }));
   const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
 
@@ -119,8 +119,6 @@ void test('P7 strip state mapping renders completed/current/future classes witho
   assert.match(html, /outskirtsEncounterProgressStrip__node--current/);
   assert.match(html, /outskirtsEncounterProgressStrip__node--future/);
 
-  assert.equal(html.includes('Start Hunt'), false);
-  assert.equal(html.includes('Grind Summary'), false);
   assert.equal(html.includes('outskirtsActionStrip'), false);
 });
 
@@ -135,4 +133,37 @@ void test('P7 strip placeholder stability keeps six fixed nodes when optional le
     assert.equal(html.includes(`outskirts-encounter-progress-node-${nodeId}`), true);
   }
   assert.equal((html.match(/outskirtsEncounterProgressStrip__thumb/g) ?? []).length, 6);
+});
+
+void test('P8 structure renders one encounter strip, one primary CTA, and one grind summary card', () => {
+  const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture());
+  const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
+
+  assert.equal((html.match(/outskirts-encounter-progress-strip/g) ?? []).length, 1);
+  assert.equal((html.match(/outskirts-start-hunt-cta/g) ?? []).length, 1);
+  assert.equal((html.match(/outskirts-grind-summary/g) ?? []).length, 1);
+});
+
+void test('P8 single-CTA ownership keeps rewards card CTA-free', () => {
+  const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture());
+  const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
+
+  assert.equal((html.match(/outskirts-start-hunt-cta/g) ?? []).length, 1);
+  assert.equal(html.includes('outskirts-rewards-card'), true);
+  assert.equal(html.includes('outskirtsRewardsCard__cta'), false);
+});
+
+void test('P8 grind-summary fallback remains rendered when partial summary data is missing', () => {
+  const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture());
+  surface.grindSummary = { visible: true, title: undefined, runsText: undefined, goldPerHourText: undefined };
+
+  const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
+  assert.equal(html.includes('outskirts-grind-summary'), true);
+  assert.equal(html.includes('outskirtsGrindSummaryCard__row'), true);
+});
+
+void test('P8 wiring: planning CTA is forwarded to existing Outskirts start handler path', async () => {
+  const panelSource = await readFile(new URL('../../src/components/screens/world/buildings/OutskirtsBuildingPanel.tsx', import.meta.url), 'utf8');
+  assert.match(panelSource, /<OutskirtsExactMockupScreen surface=\{planningSurface\} onStartHunt=\{handleStartOutskirts\} \/>/);
+  assert.match(panelSource, /const handleStartOutskirts = \(\) =>/);
 });

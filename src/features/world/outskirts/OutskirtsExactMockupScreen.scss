@@ -360,6 +360,134 @@
   text-overflow: ellipsis;
 }
 
+.outskirtsStartHuntCta {
+  width: min(26rem, 92%);
+  min-height: 3.2rem;
+  justify-self: center;
+  border-radius: 999px;
+  border: 1px solid rgba(88, 61, 42, 0.52);
+  background: linear-gradient(180deg, rgba(104, 79, 58, 0.98), rgba(72, 52, 38, 0.98));
+  color: rgba(250, 239, 216, 0.98);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.07rem;
+  letter-spacing: 0.03em;
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  box-shadow: inset 0 0 0 1px rgba(241, 224, 191, 0.32);
+}
+
+.outskirtsStartHuntCta:disabled {
+  opacity: 0.64;
+  cursor: not-allowed;
+}
+
+.outskirtsStartHuntCta__label {
+  white-space: nowrap;
+}
+
+.outskirtsGrindSummaryCard {
+  min-height: 4.45rem;
+  max-width: 100%;
+  display: grid;
+  align-content: start;
+  gap: 0.32rem;
+  padding: 0.55rem 0.62rem;
+  border-radius: 0.62rem;
+  border: 1px solid rgba(86, 64, 49, 0.26);
+  background: rgba(247, 238, 219, 0.8);
+  box-sizing: border-box;
+}
+
+.outskirtsGrindSummaryCard__title {
+  margin: 0;
+  font-size: 0.77rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(73, 55, 44, 0.88);
+}
+
+.outskirtsGrindSummaryCard__rows {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.outskirtsGrindSummaryCard__row {
+  margin: 0;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: 0.45rem;
+  align-items: center;
+}
+
+.outskirtsGrindSummaryCard__label {
+  font-size: 0.61rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(74, 56, 45, 0.76);
+}
+
+.outskirtsGrindSummaryCard__value {
+  min-width: 0;
+  font-size: 0.66rem;
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.outskirtsRewardsCard {
+  height: 100%;
+  min-width: 0;
+  display: grid;
+  align-content: start;
+  gap: 0.42rem;
+  padding: 0.68rem 0.6rem;
+  border-radius: 0.9rem;
+  border: 1px solid rgba(83, 62, 49, 0.23);
+  background: linear-gradient(180deg, rgba(252, 246, 233, 0.93), rgba(243, 233, 211, 0.92));
+}
+
+.outskirtsRewardsCard__title {
+  margin: 0;
+  text-align: center;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.01rem;
+}
+
+.outskirtsRewardsCard__group {
+  display: grid;
+  gap: 0.24rem;
+}
+
+.outskirtsRewardsCard__row {
+  margin: 0;
+  min-height: 1.55rem;
+  padding: 0.2rem 0.32rem;
+  border-radius: 0.42rem;
+  background: rgba(245, 235, 214, 0.72);
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: 0.4rem;
+  align-items: center;
+}
+
+.outskirtsRewardsCard__label {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(75, 56, 45, 0.82);
+}
+
+.outskirtsRewardsCard__value {
+  font-size: 0.66rem;
+  text-align: right;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .outskirtsSetupCard {
   height: 100%;
   display: grid;

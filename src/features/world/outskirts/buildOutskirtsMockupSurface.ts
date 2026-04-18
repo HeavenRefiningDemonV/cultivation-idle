@@ -127,6 +127,23 @@ function buildEncounterProgressStrip(snapshot: OutskirtsMockupRuntimeSnapshot): 
   };
 }
 
+function buildGrindSummary(snapshot: OutskirtsMockupRuntimeSnapshot): OutskirtsMockupSurface['grindSummary'] {
+  const mainDrop = snapshot.expectedRewards.find((entry) => entry.id !== 'gold')?.value ?? 'Broad field drops';
+  const safeRunsPerHour = Math.max(1, Math.round(3600 / 18));
+  const estimatedGoldPerHour = Math.max(1, safeRunsPerHour * 150);
+  return {
+    visible: true,
+    title: OUTSKIRTS_MOCKUP_COPY.grindSummaryTitle,
+    runsText: `${safeRunsPerHour} runs / hr (est.)`,
+    goldPerHourText: `${estimatedGoldPerHour.toLocaleString()} gold / hr (est.)`,
+    mainDropLabel: mainDrop,
+    mainDropIconKey: snapshot.scenicArtKey,
+    areaFilterText: snapshot.boundaryLine,
+    rewardIconKeys: snapshot.expectedRewards.map((entry) => `${OUTSKIRTS_PLACEHOLDER_POLICY.iconFallbackPrefix}${entry.id}`).slice(0, 3),
+    progressText: `Boss cadence ${snapshot.killsSinceBoss} / ${snapshot.killsToBoss}`,
+  };
+}
+
 export function buildOutskirtsMockupSurface(snapshot: OutskirtsMockupRuntimeSnapshot): OutskirtsMockupSurface {
   const fallbacks: string[] = [];
   const unresolved: string[] = [];
@@ -216,6 +233,14 @@ export function buildOutskirtsMockupSurface(snapshot: OutskirtsMockupRuntimeSnap
       connectorState: snapshot.encounterNodes.every((node) => node.state === 'completed') ? 'complete' : 'partial',
     },
     encounterProgressStrip: buildEncounterProgressStrip(snapshot),
+    primaryCta: {
+      label: OUTSKIRTS_MOCKUP_COPY.fallbackCtaLabel,
+      ariaLabel: 'Start Outskirts hunt',
+      visible: true,
+      enabled: Boolean(snapshot.outskirtsId) && !snapshot.isOutskirtsActive,
+      disabledReason: snapshot.isOutskirtsActive ? 'Outskirts run already active.' : undefined,
+      isPrimary: true,
+    },
     actionZone: {
       primaryCtaLabel: OUTSKIRTS_MOCKUP_COPY.fallbackCtaLabel,
       primaryCtaIntent: 'start-hunt',
@@ -224,16 +249,7 @@ export function buildOutskirtsMockupSurface(snapshot: OutskirtsMockupRuntimeSnap
       secondaryHints: snapshot.supportHints,
       singleDominantCta: true,
     },
-    grindSummary: {
-      title: OUTSKIRTS_MOCKUP_COPY.grindSummaryTitle,
-      rows: [
-        { id: 'kills', label: 'Total Kills', value: `${snapshot.totalKills}`, source: 'live' },
-        { id: 'bossCadence', label: 'Boss Cadence', value: `${snapshot.killsSinceBoss} / ${snapshot.killsToBoss}`, source: 'live' },
-        { id: 'cadence', label: 'Cadence', value: snapshot.cadenceSupport.value, source: snapshot.cadenceSupport.source },
-      ],
-      statusLine: snapshot.supportHints[0] ?? OUTSKIRTS_BEST_USED_WHEN,
-      reserveWhenEmpty: true,
-    },
+    grindSummary: buildGrindSummary(snapshot),
     shell: OUTSKIRTS_ALLOWED_PLANNING_SHELL,
     debug: {
       missingDataFallbacks: fallbacks,

@@ -156,11 +156,25 @@ export interface OutskirtsMockupActionZone {
   singleDominantCta: true;
 }
 
+export interface OutskirtsMockupPrimaryCta {
+  label: string;
+  ariaLabel: string;
+  visible: boolean;
+  enabled: boolean;
+  disabledReason?: string;
+  isPrimary: true;
+}
+
 export interface OutskirtsMockupGrindSummary {
-  title: string;
-  rows: OutskirtsMockupLabeledValue[];
-  statusLine: string;
-  reserveWhenEmpty: boolean;
+  visible: boolean;
+  title?: string;
+  runsText?: string;
+  goldPerHourText?: string;
+  mainDropLabel?: string;
+  mainDropIconKey?: string;
+  areaFilterText?: string;
+  rewardIconKeys?: string[];
+  progressText?: string;
 }
 
 export interface OutskirtsMockupShellFlags {
@@ -196,6 +210,7 @@ export interface OutskirtsMockupSurface {
   encounterHero: OutskirtsMockupEncounterHero;
   encounterChain: OutskirtsMockupEncounterChain;
   encounterProgressStrip: OutskirtsMockupEncounterProgressStrip;
+  primaryCta: OutskirtsMockupPrimaryCta;
   actionZone: OutskirtsMockupActionZone;
   grindSummary: OutskirtsMockupGrindSummary;
   shell: OutskirtsMockupShellFlags;

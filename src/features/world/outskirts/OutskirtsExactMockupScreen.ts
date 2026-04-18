@@ -5,12 +5,16 @@ import { OutskirtsScenicStage } from './components/OutskirtsScenicStage.js';
 import { OutskirtsEncounterIdentityRow } from './components/OutskirtsEncounterIdentityRow.js';
 import { OutskirtsSetupCard } from './components/OutskirtsSetupCard.js';
 import { OutskirtsEncounterProgressStrip } from './components/OutskirtsEncounterProgressStrip.js';
+import { OutskirtsStartHuntCta } from './components/OutskirtsStartHuntCta.js';
+import { OutskirtsGrindSummaryCard } from './components/OutskirtsGrindSummaryCard.js';
+import { OutskirtsRewardsCard } from './components/OutskirtsRewardsCard.js';
 
 export interface OutskirtsExactMockupScreenProps {
   surface: OutskirtsMockupSurface;
+  onStartHunt?: () => void;
 }
 
-export function OutskirtsExactMockupScreen({ surface }: OutskirtsExactMockupScreenProps) {
+export function OutskirtsExactMockupScreen({ surface, onStartHunt }: OutskirtsExactMockupScreenProps) {
   return React.createElement(
     'article',
     { className: 'outskirtsExactMockup', 'data-testid': 'outskirts-exact-mockup-screen' },
@@ -73,7 +77,11 @@ export function OutskirtsExactMockupScreen({ surface }: OutskirtsExactMockupScre
         { className: 'outskirtsExactMockup__slot outskirtsExactMockup__slot--scenic', 'data-testid': 'outskirts-exact-scenic-slot' },
         React.createElement(OutskirtsScenicStage, { encounter: surface.encounterHero }),
       ),
-      React.createElement('div', { className: 'outskirtsExactMockup__slot outskirtsExactMockup__slot--rewards', 'data-testid': 'outskirts-exact-rewards-slot', 'aria-hidden': 'true' }),
+      React.createElement(
+        'div',
+        { className: 'outskirtsExactMockup__slot outskirtsExactMockup__slot--rewards', 'data-testid': 'outskirts-exact-rewards-slot' },
+        React.createElement(OutskirtsRewardsCard, { rewards: surface.rewardsCard }),
+      ),
       React.createElement(
         'div',
         { className: 'outskirtsExactMockup__slot outskirtsExactMockup__slot--encounterIdentity', 'data-testid': 'outskirts-exact-encounter-identity-slot' },
@@ -84,8 +92,16 @@ export function OutskirtsExactMockupScreen({ surface }: OutskirtsExactMockupScre
         { className: 'outskirtsExactMockup__slot outskirtsExactMockup__slot--encounterStrip', 'data-testid': 'outskirts-exact-encounter-strip-slot' },
         React.createElement(OutskirtsEncounterProgressStrip, { strip: surface.encounterProgressStrip }),
       ),
-      React.createElement('div', { className: 'outskirtsExactMockup__slot outskirtsExactMockup__slot--cta', 'data-testid': 'outskirts-exact-cta-slot', 'aria-hidden': 'true' }),
-      React.createElement('div', { className: 'outskirtsExactMockup__slot outskirtsExactMockup__slot--grindSummary', 'data-testid': 'outskirts-exact-grind-summary-slot', 'aria-hidden': 'true' }),
+      React.createElement(
+        'div',
+        { className: 'outskirtsExactMockup__slot outskirtsExactMockup__slot--cta', 'data-testid': 'outskirts-exact-cta-slot' },
+        React.createElement(OutskirtsStartHuntCta, { cta: surface.primaryCta, onStartHunt }),
+      ),
+      React.createElement(
+        'div',
+        { className: 'outskirtsExactMockup__slot outskirtsExactMockup__slot--grindSummary', 'data-testid': 'outskirts-exact-grind-summary-slot' },
+        React.createElement(OutskirtsGrindSummaryCard, { summary: surface.grindSummary }),
+      ),
     ),
     React.createElement('aside', { 'data-testid': 'outskirts-exact-shell-flags', hidden: true }, JSON.stringify(surface.shell)),
     React.createElement('aside', { 'data-testid': 'outskirts-exact-region-order', hidden: true }, OUTSKIRTS_MOCKUP_REGION_ORDER.join('|')),
