@@ -224,6 +224,30 @@ export interface OutskirtsEncounterStripRegion {
   };
 }
 
+export interface OutskirtsEncounterProgressArrow {
+  visible: boolean;
+  enabled: boolean;
+  ariaLabel: string;
+}
+
+export interface OutskirtsEncounterProgressNode {
+  id: string;
+  label: string;
+  displayLevelText: string | null;
+  state: OutskirtsEncounterNodeState;
+  art: string | null;
+  silhouetteArt: string | null;
+  isClickable: boolean;
+  isSelected: boolean;
+  ariaLabel: string;
+}
+
+export interface OutskirtsEncounterProgressStripRegion {
+  leftArrow: OutskirtsEncounterProgressArrow;
+  rightArrow: OutskirtsEncounterProgressArrow;
+  nodes: OutskirtsEncounterProgressNode[];
+}
+
 export interface OutskirtsPrimaryActionRegion {
   label: string;
   enabled: boolean;
@@ -253,6 +277,7 @@ export interface OutskirtsMockupSurface {
   setupCard: OutskirtsSetupCardRegion;
   expectedRewardsCard: OutskirtsExpectedRewardsCardRegion;
   rewardsCard: OutskirtsRewardsCardRegion;
+  encounterProgressStrip: OutskirtsEncounterProgressStripRegion;
   encounterStrip: OutskirtsEncounterStripRegion;
   primaryAction: OutskirtsPrimaryActionRegion;
   grindSummary: OutskirtsGrindSummaryRegion;

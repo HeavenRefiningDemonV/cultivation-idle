@@ -429,6 +429,29 @@ export function buildOutskirtsMockupSurface(snapshot: OutskirtsMockupRuntimeSnap
         iconText: 'R',
       },
     },
+    encounterProgressStrip: {
+      leftArrow: {
+        visible: true,
+        enabled: canMoveLeft,
+        ariaLabel: 'Previous encounter',
+      },
+      rightArrow: {
+        visible: true,
+        enabled: canMoveRight,
+        ariaLabel: 'Next encounter',
+      },
+      nodes: encounterNodes.map((node) => ({
+        id: node.id,
+        label: node.displayName,
+        displayLevelText: node.displayLevel ?? null,
+        state: node.state,
+        art: node.thumbnailAssetKey ?? null,
+        silhouetteArt: node.scenicBindingKey ?? null,
+        isClickable: false,
+        isSelected: node.id === selectedNode.id,
+        ariaLabel: `${node.displayName}${node.displayLevel ? ` ${node.displayLevel}` : ''}${node.id === selectedNode.id ? ', current' : ''}`,
+      })),
+    },
     rewardsCard: {
       goldRange: inferGoldRange(totalKills),
       commonMaterials: asDisplay(snapshot.commonMaterialsLine ?? 'Common mats: broad field drops.', snapshot.commonMaterialsLine ? 'live' : 'derived'),

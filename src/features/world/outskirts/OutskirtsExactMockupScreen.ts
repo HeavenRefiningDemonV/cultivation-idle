@@ -9,6 +9,7 @@ import { OutskirtsTacticalStrip } from './components/OutskirtsTacticalStrip.js';
 import { OutskirtsAreaPlaque } from './components/OutskirtsAreaPlaque.js';
 import { OutskirtsSetupCard } from './components/OutskirtsSetupCard.js';
 import { OutskirtsExpectedRewardsCard } from './components/OutskirtsExpectedRewardsCard.js';
+import { OutskirtsEncounterProgressStrip } from './components/OutskirtsEncounterProgressStrip.js';
 
 export interface OutskirtsExactMockupScreenProps {
   surface: OutskirtsMockupSurface;
@@ -96,5 +97,6 @@ export function OutskirtsExactMockupScreen({ surface }: OutskirtsExactMockupScre
       ),
       React.createElement(OutskirtsExpectedRewardsCard, { card: surface.expectedRewardsCard }),
     ),
+    React.createElement(OutskirtsEncounterProgressStrip, { strip: surface.encounterProgressStrip }),
   );
 }
