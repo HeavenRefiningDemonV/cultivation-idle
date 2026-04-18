@@ -13,9 +13,12 @@ import { OutskirtsEncounterProgressStrip } from './components/OutskirtsEncounter
 import { OutskirtsStartHuntCta } from './components/OutskirtsStartHuntCta.js';
 import { OutskirtsGrindSummaryCard } from './components/OutskirtsGrindSummaryCard.js';
 
+export type OutskirtsExactMockupQualityMode = 'high-fx' | 'low-fx' | 'reduced-motion';
+
 export interface OutskirtsExactMockupScreenProps {
   surface: OutskirtsMockupSurface;
   onStartHunt?: () => void;
+  qualityMode?: OutskirtsExactMockupQualityMode;
 }
 
 const SCENIC_ASSET_BY_KEY: Record<string, string> = {
@@ -39,13 +42,21 @@ function resolveEncounterAsset(assetKey: string): string {
   return ENCOUNTER_ASSET_BY_KEY[assetKey] ?? wolfPupImage;
 }
 
-export function OutskirtsExactMockupScreen({ surface, onStartHunt }: OutskirtsExactMockupScreenProps) {
+export function OutskirtsExactMockupScreen({
+  surface,
+  onStartHunt,
+  qualityMode = 'high-fx',
+}: OutskirtsExactMockupScreenProps) {
   const scenicPlate = resolveScenicPlate(surface.scenicField.scenicPlateAssetKey);
   const encounterAsset = resolveEncounterAsset(surface.scenicField.encounterAssetKey);
 
   return React.createElement(
     'article',
-    { className: 'outskirtsExactScreen', 'data-testid': 'outskirts-exact-screen' },
+    {
+      className: `outskirtsExactScreen outskirtsExactScreen--${qualityMode}`,
+      'data-testid': 'outskirts-exact-screen',
+      'data-quality-mode': qualityMode,
+    },
     React.createElement(
       'section',
       { className: 'outskirtsExactTop', 'data-testid': 'outskirts-exact-top-region' },

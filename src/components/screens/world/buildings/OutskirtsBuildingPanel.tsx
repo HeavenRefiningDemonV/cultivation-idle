@@ -653,6 +653,7 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
   const setAutoAttack = useCombatStore((state) => state.setAutoAttack);
   const startCombat = useCombatStore((state) => state.startCombat);
   const getProgress = useOutskirtsStore((state) => state.getProgress);
+  const { effectiveQuality, prefersReducedMotion } = useFxQuality();
   const planningSurface = useOutskirtsMockupSurface(cityId);
   const outskirtsRefId = resolveModuleRef(city ?? null, 'outskirts');
   const outskirtsDef = outskirtsRefId ? outskirtsById[outskirtsRefId] : undefined;
@@ -686,7 +687,18 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
   }
 
   if (viewState === 'planning') {
-    return <OutskirtsExactMockupScreen surface={planningSurface} onStartHunt={handleStartHunt} />;
+    const qualityMode = prefersReducedMotion || effectiveQuality === 'reducedMotion'
+      ? 'reduced-motion'
+      : effectiveQuality === 'low'
+        ? 'low-fx'
+        : 'high-fx';
+    return (
+      <OutskirtsExactMockupScreen
+        surface={planningSurface}
+        onStartHunt={handleStartHunt}
+        qualityMode={qualityMode}
+      />
+    );
   }
 
   return (

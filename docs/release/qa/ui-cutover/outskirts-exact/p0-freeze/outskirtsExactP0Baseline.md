@@ -1,6 +1,6 @@
 # Outskirts Exact Mockup — P0 Freeze Baseline
 
-- Generated at: 2026-04-17T17:26:24.908Z
+- Generated at: 2026-04-18T09:49:18.528Z
 - Packet: P0
 - Objective: Freeze and evidence-capture the current live Outskirts surface so later exact-mockup work can diff against a deterministic baseline.
 - Why now: Outskirts replacement work is expected to move from combat-shell composition to exact-mockup composition; this packet freezes current truth before that change starts.
@@ -94,7 +94,7 @@
 - Audit pass: FAIL
 - Screenshot capture status: pending
 - Screenshots captured in this run: no
-- Capture attempted at: 2026-04-17T17:25:56.959Z
+- Capture attempted at: 2026-04-18T09:49:15.242Z
 - Capture command: npm run release:phase6-combat-capture -- --surface=outskirts --json
 - Capture command success: no
 - Capture failure reason: [phase6-combat-capture] failed: Playwright is required for release:phase6-combat-capture. Install it with `npm i -D playwright` and run `npx playwright install chromium`.

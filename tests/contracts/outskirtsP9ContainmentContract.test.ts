@@ -68,7 +68,7 @@ void test('P9 outskirts panel wires planning to exact mockup and active to conta
 
   assert.match(source, /const viewState = getOutskirtsModuleViewState\(/);
   assert.match(source, /if \(viewState === 'planning'\) \{/);
-  assert.match(source, /OutskirtsExactMockupScreen surface=\{planningSurface\} onStartHunt=\{handleStartHunt\}/);
+  assert.match(source, /<OutskirtsExactMockupScreen[\s\S]*surface=\{planningSurface\}[\s\S]*onStartHunt=\{handleStartHunt\}/);
   assert.match(source, /<OutskirtsActiveCombatContainment>/);
   assert.doesNotMatch(source, /if \(isPlanningState\) \{/);
 });
