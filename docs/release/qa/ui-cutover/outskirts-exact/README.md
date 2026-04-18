@@ -9,6 +9,7 @@ Outskirts implementation is now **exact-mockup-driven**.
 
 ## Packet index
 - `p0-freeze/` — freeze-and-evidence baseline package for the current live Outskirts surface.
+- `p2-shell-prep/` — shell scaffold preparation package (non-live, no cutover).
 
 ## P0 documentation map
 - `capture-instructions.md` — deterministic capture route/slot contract for Outskirts.
