@@ -17,6 +17,7 @@ void test('buildOutskirtsMockupSurface returns fully populated stable contract o
   assert.equal(surface.setupCard.equipmentGrid.length, 6);
   assert.equal(surface.rewardsCard.noPrimaryCta, true);
   assert.equal(surface.encounterChain.nodes.length >= 1, true);
+  assert.equal(typeof surface.encounterHero.scenicImageSrc === 'string', true);
   assert.equal(surface.actionZone.singleDominantCta, true);
   assert.equal(surface.shell.singleDominantCta, true);
   assert.equal(surface.shell.showRunCompass, false);
@@ -40,4 +41,5 @@ void test('buildOutskirtsMockupSurface fallback handling is deterministic', () =
   assert.equal(surface.debug?.placeholderAssetKeysInUse.includes('placeholder/scenic/fallback'), true);
   assert.equal(surface.debug?.missingDataFallbacks.includes('medicinePouchLabel'), true);
   assert.equal(surface.debug?.missingDataFallbacks.includes('bountyLabel'), true);
+  assert.equal(surface.encounterHero.scenicImageSrc === null, false);
 });

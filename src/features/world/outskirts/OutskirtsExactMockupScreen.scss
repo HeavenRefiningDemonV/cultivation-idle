@@ -1,6 +1,6 @@
 .outskirtsExactMockup {
   display: grid;
-  grid-template-rows: auto auto auto auto minmax(320px, 1fr);
+  grid-template-rows: auto auto auto auto minmax(420px, 1fr);
   row-gap: 0.85rem;
   padding: 1rem 1.1rem 1.2rem;
   color: #281c16;
@@ -125,13 +125,92 @@
 
 .outskirtsExactMockup__futureScaffold {
   display: grid;
-  grid-template-rows: minmax(8.4rem, 1fr) minmax(2.4rem, auto) minmax(10.2rem, 1.05fr) minmax(3rem, auto) minmax(2.8rem, auto) minmax(4rem, auto);
+  grid-template-rows: minmax(14rem, 1.25fr) minmax(2.6rem, auto) minmax(10.2rem, 1.05fr) minmax(3rem, auto) minmax(2.8rem, auto) minmax(4rem, auto);
   gap: 0.75rem;
 }
 
 .outskirtsExactMockup__slot {
   border-radius: 0.4rem;
   background: transparent;
+}
+
+.outskirtsScenicStage {
+  position: relative;
+  min-height: 100%;
+  border-radius: 1rem;
+  overflow: hidden;
+  background: linear-gradient(180deg, rgba(54, 43, 35, 0.18), rgba(40, 31, 24, 0.2));
+}
+
+.outskirtsScenicStage__image,
+.outskirtsScenicStage__fallback {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.outskirtsScenicStage__fallback {
+  display: grid;
+  place-items: center;
+  color: rgba(249, 240, 222, 0.9);
+  background: linear-gradient(180deg, rgba(75, 60, 48, 0.6), rgba(58, 44, 36, 0.7));
+  padding: 1rem;
+  text-align: center;
+}
+
+.outskirtsScenicStage__veil {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(250, 243, 226, 0.08) 4%, rgba(34, 24, 18, 0.24) 96%);
+  pointer-events: none;
+}
+
+.outskirtsEncounterIdentityRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  column-gap: 0.7rem;
+  min-height: 2.5rem;
+  padding: 0.45rem 0.8rem;
+  background: rgba(247, 241, 224, 0.72);
+  border-radius: 0.7rem;
+}
+
+.outskirtsEncounterIdentityRow__name {
+  margin: 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.04rem;
+  font-weight: 600;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.outskirtsEncounterIdentityRow__level {
+  margin: 0;
+  font-size: 0.86rem;
+  color: rgba(56, 41, 33, 0.84);
+  white-space: nowrap;
+}
+
+.outskirtsEncounterIdentityRow__safety {
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 0.2rem 0.56rem;
+  border-radius: 999px;
+  border: 1px solid rgba(45, 31, 24, 0.35);
+}
+
+.outskirtsEncounterIdentityRow__safety--safe {
+  background: rgba(156, 188, 126, 0.35);
+}
+
+.outskirtsEncounterIdentityRow__safety--watch,
+.outskirtsEncounterIdentityRow__safety--risk,
+.outskirtsEncounterIdentityRow__safety--critical {
+  background: rgba(201, 167, 108, 0.3);
 }
 
 .outskirtsExactMockup__slotGrid {
@@ -147,5 +226,15 @@
 
   .outskirtsExactMockup__tacticalStrip {
     grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .outskirtsEncounterIdentityRow {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 0.2rem;
+  }
+
+  .outskirtsEncounterIdentityRow__level,
+  .outskirtsEncounterIdentityRow__safety {
+    justify-self: start;
   }
 }

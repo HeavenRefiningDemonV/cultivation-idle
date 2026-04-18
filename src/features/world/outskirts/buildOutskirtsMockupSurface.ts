@@ -42,6 +42,12 @@ function resolveSafetyFromPosture(cityId: string): { label: string; state: Outsk
   return { label: cityId.includes('pinewind') ? 'Watch' : 'Risk', state: 'watch' };
 }
 
+function resolveScenicImageSrc(scenicBackgroundKey: string): string | null {
+  if (scenicBackgroundKey.startsWith('placeholder/scenic/outskirts-field')) return '/assets/background/citystates/city_outskirts.png';
+  if (scenicBackgroundKey.includes('outskirts')) return '/assets/background/citystates/city_outskirts.png';
+  return '/assets/background/citystates/city_outskirts.png';
+}
+
 function buildEncounterNodes(killsSinceBoss: number): OutskirtsMockupEncounterChainNode[] {
   const labels = ['Quiet Glade', 'Rockjaw Boar', 'Snarling Wolf', 'Venomcoil', 'Shade Stalker', 'Mire Serpent'];
   const idx = Math.max(0, Math.min(labels.length - 1, Math.floor((killsSinceBoss / 10) * labels.length)));
@@ -132,6 +138,7 @@ export function buildOutskirtsMockupSurface(snapshot: OutskirtsMockupRuntimeSnap
       safetyChip: { state: snapshot.safetyChipState, label: snapshot.safetyChipLabel },
       scenicArtKey: snapshot.scenicArtKey,
       scenicBackgroundKey: snapshot.scenicBackgroundKey,
+      scenicImageSrc: resolveScenicImageSrc(snapshot.scenicBackgroundKey),
       descriptor: snapshot.encounterDescriptor || OUTSKIRTS_MOCKUP_COPY.fallbackEncounterDescriptor,
     },
     encounterChain: {

@@ -104,6 +104,7 @@ export interface OutskirtsMockupEncounterHero {
   };
   scenicArtKey: string;
   scenicBackgroundKey: string;
+  scenicImageSrc: string | null;
   descriptor: string;
 }
 
