@@ -87,7 +87,7 @@ void test('P5 preserves World -> WorldBuildingModal -> OutskirtsBuildingPanel ro
   assert.match(modalSource, /case 'outskirts':\s*content = <OutskirtsBuildingPanel cityId=\{storeCityId\} \/>/);
 
   const panelSource = await readFile(new URL('../../src/components/screens/world/buildings/OutskirtsBuildingPanel.tsx', import.meta.url), 'utf8');
-  assert.match(panelSource, /data-testid="outskirts-planning-owner"/);
+  assert.match(panelSource, /data-testid="outskirts-view-planning"/);
   assert.match(panelSource, /OutskirtsExactMockupScreen/);
 });
 
@@ -166,4 +166,21 @@ void test('P8 wiring: planning CTA is forwarded to existing Outskirts start hand
   const panelSource = await readFile(new URL('../../src/components/screens/world/buildings/OutskirtsBuildingPanel.tsx', import.meta.url), 'utf8');
   assert.match(panelSource, /<OutskirtsExactMockupScreen surface=\{planningSurface\} onStartHunt=\{handleStartOutskirts\} \/>/);
   assert.match(panelSource, /const handleStartOutskirts = \(\) =>/);
+});
+
+void test('P9 wrapper contains dedicated planning/active/unavailable branches', async () => {
+  const panelSource = await readFile(new URL('../../src/components/screens/world/buildings/OutskirtsBuildingPanel.tsx', import.meta.url), 'utf8');
+  assert.match(panelSource, /getOutskirtsModuleViewState/);
+  assert.match(panelSource, /data-testid=\"outskirts-view-planning\"/);
+  assert.match(panelSource, /data-testid=\"outskirts-view-unavailable\"/);
+  assert.match(panelSource, /OutskirtsActiveContainment/);
+});
+
+void test('P9 no-bleed: exact planning screen still excludes active-combat ownership widgets', () => {
+  const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture());
+  const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
+  assert.equal(html.includes('ink-combat-shell__healthbar'), false);
+  assert.equal(html.includes('ink-combat-shell__log'), false);
+  assert.equal(html.includes('outskirtsActiveContainment'), false);
+  assert.equal(html.includes('combatPathModule__actionZone'), false);
 });

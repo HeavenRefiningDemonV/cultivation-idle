@@ -29,6 +29,8 @@ import { useFxQuality } from '../../../../ui/fx/FxQualityProvider.js';
 import { buildOutskirtsFxProfile } from '../../../../ui/world/buildOutskirtsFxProfile.js';
 import { buildOutskirtsMockupSurfaceFromStores } from '../../../../features/world/outskirts/buildOutskirtsMockupSurface.js';
 import { OutskirtsExactMockupScreen } from '../../../../features/world/outskirts/OutskirtsExactMockupScreen.js';
+import { OutskirtsActiveContainment } from '../../../../features/world/outskirts/components/OutskirtsActiveContainment.js';
+import { getOutskirtsModuleViewState } from '../../../../features/world/outskirts/getOutskirtsModuleViewState.js';
 import '../../../../features/world/outskirts/OutskirtsExactMockupScreen.scss';
 
 import wildBoar from "../../../../assets/enemies/widboar.png";
@@ -344,11 +346,13 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
     }
   };
 
-  const isOutskirtsActive =
-    combatContext.type === 'outskirts' ||
-    (activity?.type === 'outskirts' &&
-      (activity?.sourceId === outskirtsDef?.id ||
-        (activity?.payload as { sourceId?: string } | undefined)?.sourceId === outskirtsDef?.id));
+  const viewState = getOutskirtsModuleViewState({
+    cityId,
+    outskirtsId: outskirtsDef?.id ?? null,
+    activity,
+    combatContext,
+  });
+  const isOutskirtsActive = viewState === 'activeContained';
   const actionStripState = useMemo(
     () => buildOutskirtsActionStripState({
       isOutskirtsActive,
@@ -376,9 +380,9 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
     [cityId, effectiveQuality, isOutskirtsActive, killsSinceBoss, killsToBoss, prefersReducedMotion],
   );
 
-  if (!outskirtsDef) {
+  if (viewState === 'unavailable') {
     return (
-      <div className={'worldScreenPlaceholder'}>
+      <div className={'worldScreenPlaceholder'} data-testid="outskirts-view-unavailable">
         <div className={'worldScreenPlaceholderHeader'}>
           <div className={'worldScreenPlaceholderTitle'}>Outskirts</div>
           <div className={'worldScreenPlaceholderKey'}>outskirts</div>
@@ -390,16 +394,17 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
     );
   }
 
-  if (!isOutskirtsActive) {
+  if (viewState === 'planning') {
     return (
-      <div className="outskirtsPlanningOwner" data-testid="outskirts-planning-owner">
+      <div className="outskirtsPlanningOwner" data-testid="outskirts-view-planning">
         <OutskirtsExactMockupScreen surface={planningSurface} onStartHunt={handleStartOutskirts} />
       </div>
     );
   }
 
   return (
-    <div className={'worldScreenPlaceholder combatPathModule combatPathModule--outskirts'}>
+    <OutskirtsActiveContainment>
+      <div className={'worldScreenPlaceholder combatPathModule combatPathModule--outskirts'}>
       <InkCombatShell
         title="Outskirts Combat"
         subtitle={isOutskirtsActive ? 'Live battle in progress.' : 'Ready to start a new run.'}
@@ -651,6 +656,7 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
           </div>
         }
       />
-    </div>
+      </div>
+    </OutskirtsActiveContainment>
   );
 }
