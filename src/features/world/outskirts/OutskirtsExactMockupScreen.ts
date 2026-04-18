@@ -8,6 +8,7 @@ import { OutskirtsMacroProgressLine } from './components/OutskirtsMacroProgressL
 import { OutskirtsTacticalStrip } from './components/OutskirtsTacticalStrip.js';
 import { OutskirtsAreaPlaque } from './components/OutskirtsAreaPlaque.js';
 import { OutskirtsSetupCard } from './components/OutskirtsSetupCard.js';
+import { OutskirtsExpectedRewardsCard } from './components/OutskirtsExpectedRewardsCard.js';
 
 export interface OutskirtsExactMockupScreenProps {
   surface: OutskirtsMockupSurface;
@@ -93,7 +94,7 @@ export function OutskirtsExactMockupScreen({ surface }: OutskirtsExactMockupScre
           ),
         ),
       ),
-      React.createElement('aside', { className: 'outskirtsExactRightReserve', 'aria-hidden': 'true' }),
+      React.createElement(OutskirtsExpectedRewardsCard, { card: surface.expectedRewardsCard }),
     ),
   );
 }

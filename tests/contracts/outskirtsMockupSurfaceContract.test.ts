@@ -41,6 +41,7 @@ function makeSnapshot(overrides: Partial<OutskirtsMockupRuntimeSnapshot> = {}): 
     trackedBountyLine: 'Cull field beasts: 4 / 10',
     commonMaterialsLine: 'Common mats: Fur, Bone, Bark',
     autoRepeatLine: 'Auto-continue On • Stop at boss Off',
+    autoRepeatEnabled: true,
     expeditionLine: '1 running • 0 complete',
     weaponName: 'Pinewind Saber',
     accessoryName: 'Warden Charm',

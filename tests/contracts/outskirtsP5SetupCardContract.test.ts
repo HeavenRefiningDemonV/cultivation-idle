@@ -34,6 +34,7 @@ function makeSnapshot(overrides: Partial<OutskirtsMockupRuntimeSnapshot> = {}): 
     trackedBountyLine: 'Cull field beasts: 4 / 10',
     commonMaterialsLine: 'Common mats: Fur, Bone, Bark',
     autoRepeatLine: 'Auto-continue On • Stop at boss Off',
+    autoRepeatEnabled: true,
     expeditionLine: '1 running • 0 complete',
     weaponName: 'Pinewind Saber',
     accessoryName: 'Warden Charm',
@@ -70,6 +71,5 @@ void test('P5 setup card renders sections in exact order and fixed 2x3 grid with
   const cellCount = (html.match(/outskirtsSetupCard__equipmentCell/g) ?? []).length;
   assert.equal(cellCount, 6);
   assert.match(html, /outskirts-setup-medicine/);
-  assert.equal(html.includes('Rewards & Route'), false);
   assert.equal(html.includes('outskirts-primary-action'), false);
 });

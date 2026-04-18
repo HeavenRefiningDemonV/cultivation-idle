@@ -84,6 +84,76 @@ function inferGoldPerHour(totalKills: number): OutskirtsSurfaceValue {
   return asDisplay(`${lowPerMinute * 60} / hr`, 'synthetic', 'Gold/hr is a synthetic projection from planning-state gold-range assumptions.');
 }
 
+function formatRange(low: number, high: number): string {
+  return `${low.toLocaleString('en-US')} – ${high.toLocaleString('en-US')}`;
+}
+
+function inferExpectedGoldRangeText(totalKills: number): string {
+  const low = Math.max(900, Math.round(totalKills * 14) + 950);
+  const high = Math.max(low + 120, low + 260);
+  return formatRange(low, high);
+}
+
+function inferTimePerRunText(killsToBoss: number): string {
+  const seconds = Math.max(35, Math.min(120, 32 + killsToBoss * 3));
+  return `~ ${seconds}s / run`;
+}
+
+function inferHourlyYieldText(totalKills: number): string {
+  const low = Math.max(1600, Math.round(totalKills * 11) + 1700);
+  const high = low + 220;
+  return `${formatRange(low, high)} / hour`;
+}
+
+function parseTrackedBounty(raw: string | null) {
+  const fallback = {
+    hasTrackedBounty: false,
+    title: 'No tracked bounty',
+    objectiveText: 'Track a bounty to monitor Outskirts progress here.',
+    progressCurrent: 0,
+    progressTarget: 1,
+    progressPct: 0,
+    iconText: 'S',
+  };
+  if (!raw) return fallback;
+  const match = raw.match(/^(.*?):\s*(\d+)\s*\/\s*(\d+)/);
+  if (!match) return { ...fallback, hasTrackedBounty: true, title: raw, objectiveText: 'Progress tracked in the Outskirts.' };
+  const current = Number(match[2]);
+  const target = Math.max(1, Number(match[3]));
+  return {
+    hasTrackedBounty: true,
+    title: match[1].trim(),
+    objectiveText: 'Progress tracked in the Outskirts.',
+    progressCurrent: current,
+    progressTarget: target,
+    progressPct: Math.max(0, Math.min(100, Math.round((current / target) * 100))),
+    iconText: 'S',
+  };
+}
+
+function buildCommonMaterials(commonMaterialsLine: string | null) {
+  const labels = (commonMaterialsLine ?? '')
+    .replace(/^Common mats:\s*/i, '')
+    .split(',')
+    .map((entry) => entry.trim())
+    .filter(Boolean)
+    .slice(0, 4);
+
+  while (labels.length < 4) labels.push('—');
+
+  return labels.map((label, index) => ({
+    itemId: label === '—' ? `placeholder-${index + 1}` : `material-${label.toLowerCase().replace(/\s+/g, '-')}`,
+    label,
+    iconText: label === '—' ? '·' : label.slice(0, 1).toUpperCase(),
+    isPlaceholder: label === '—',
+  })) as [
+    { itemId: string; label: string; iconText: string; isPlaceholder: boolean },
+    { itemId: string; label: string; iconText: string; isPlaceholder: boolean },
+    { itemId: string; label: string; iconText: string; isPlaceholder: boolean },
+    { itemId: string; label: string; iconText: string; isPlaceholder: boolean },
+  ];
+}
+
 function summarizeMedicinePouch(snapshot: OutskirtsMockupRuntimeSnapshot): OutskirtsSurfaceValue {
   if (snapshot.medicinePouchLine) return asDisplay(snapshot.medicinePouchLine, 'live');
   return asDisplay('No healing consumable equipped', 'derived');
@@ -343,6 +413,22 @@ export function buildOutskirtsMockupSurface(snapshot: OutskirtsMockupRuntimeSnap
         },
       },
     },
+    expectedRewardsCard: {
+      title: 'Expected Rewards',
+      goldRangeText: inferExpectedGoldRangeText(totalKills),
+      commonMaterials: buildCommonMaterials(snapshot.commonMaterialsLine),
+      trackedBounty: parseTrackedBounty(snapshot.trackedBountyLine),
+      estimatedEfficiency: {
+        timePerRunText: inferTimePerRunText(killsToBoss),
+        hourlyYieldText: inferHourlyYieldText(totalKills),
+      },
+      autoRepeat: {
+        enabled: snapshot.autoRepeatEnabled,
+        label: 'Auto-Repeat',
+        canToggle: true,
+        iconText: 'R',
+      },
+    },
     rewardsCard: {
       goldRange: inferGoldRange(totalKills),
       commonMaterials: asDisplay(snapshot.commonMaterialsLine ?? 'Common mats: broad field drops.', snapshot.commonMaterialsLine ? 'live' : 'derived'),
@@ -465,6 +551,7 @@ export function buildOutskirtsMockupRuntimeSnapshotFromStores(cityId?: string): 
     trackedBountyLine: summarizeTrackedBounty(resolvedCityId),
     commonMaterialsLine: resolveCommonMaterialsLine(resolvedCityId),
     autoRepeatLine: `Auto-continue ${useOutskirtsStore.getState().autoContinue ? 'On' : 'Off'} • Stop at boss ${useOutskirtsStore.getState().stopAtBoss ? 'On' : 'Off'}`,
+    autoRepeatEnabled: useOutskirtsStore.getState().autoContinue,
     expeditionLine: summarizeExpeditions(resolvedCityId),
     weaponName,
     accessoryName,

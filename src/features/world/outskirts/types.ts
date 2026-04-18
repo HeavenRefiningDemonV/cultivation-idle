@@ -154,6 +154,50 @@ export interface OutskirtsSetupCardRegion {
   };
 }
 
+
+export interface OutskirtsExpectedRewardMaterialEntry {
+  itemId: string;
+  label: string;
+  iconText: string;
+  isPlaceholder: boolean;
+}
+
+export interface OutskirtsExpectedRewardsTrackedBounty {
+  hasTrackedBounty: boolean;
+  title: string;
+  objectiveText: string;
+  progressCurrent: number;
+  progressTarget: number;
+  progressPct: number;
+  iconText: string;
+}
+
+export interface OutskirtsExpectedRewardsEfficiency {
+  timePerRunText: string;
+  hourlyYieldText: string;
+}
+
+export interface OutskirtsExpectedRewardsAutoRepeat {
+  enabled: boolean;
+  label: string;
+  canToggle: boolean;
+  iconText: string;
+}
+
+export interface OutskirtsExpectedRewardsCardRegion {
+  title: string;
+  goldRangeText: string;
+  commonMaterials: [
+    OutskirtsExpectedRewardMaterialEntry,
+    OutskirtsExpectedRewardMaterialEntry,
+    OutskirtsExpectedRewardMaterialEntry,
+    OutskirtsExpectedRewardMaterialEntry,
+  ];
+  trackedBounty: OutskirtsExpectedRewardsTrackedBounty;
+  estimatedEfficiency: OutskirtsExpectedRewardsEfficiency;
+  autoRepeat: OutskirtsExpectedRewardsAutoRepeat;
+}
+
 export interface OutskirtsRewardsCardRegion {
   goldRange: OutskirtsSurfaceValue;
   commonMaterials: OutskirtsSurfaceValue;
@@ -207,6 +251,7 @@ export interface OutskirtsMockupSurface {
   scenicField: OutskirtsScenicFieldRegion;
   encounterIdentity: OutskirtsEncounterIdentityRegion;
   setupCard: OutskirtsSetupCardRegion;
+  expectedRewardsCard: OutskirtsExpectedRewardsCardRegion;
   rewardsCard: OutskirtsRewardsCardRegion;
   encounterStrip: OutskirtsEncounterStripRegion;
   primaryAction: OutskirtsPrimaryActionRegion;
@@ -271,6 +316,7 @@ export interface OutskirtsMockupRuntimeSnapshot {
   trackedBountyLine: string | null;
   commonMaterialsLine: string | null;
   autoRepeatLine: string;
+  autoRepeatEnabled: boolean;
   expeditionLine: string;
   weaponName: string | null;
   accessoryName: string | null;
