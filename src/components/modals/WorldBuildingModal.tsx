@@ -141,17 +141,12 @@ export function WorldBuildingModal({
       open={open}
       onClose={close}
       overlayClassName={`worldBuildingOverlay worldBuildingOverlay--${entrySurface.shellFamily}`}
-      panelClassName={`worldBuildingModal worldBuildingModal--${entrySurface.backgroundVariant} worldBuildingModal--${entrySurface.shellFamily} worldBuildingModal--content-${entrySurface.contentPaddingMode}`}
+      panelClassName={`worldBuildingModal worldBuildingModal--${entrySurface.backgroundVariant} worldBuildingModal--${entrySurface.shellFamily}`}
       ariaLabel={entrySurface.title}
     >
       {entrySurface.backgroundVariant === 'forge' && <img className="hammer" src={hammer} alt="" aria-hidden="true" />}
       {entrySurface.showShellClose ? (
-        <button
-          type="button"
-          className={`worldBuildingClose ${entrySurface.closeButtonMode === 'overlay-corner' ? 'worldBuildingClose--overlay-corner' : ''}`.trim()}
-          onClick={close}
-          aria-label="Close"
-        >
+        <button type="button" className="worldBuildingClose" onClick={close} aria-label="Close">
           <GameIcon icon="inkX" size={14} decorative />
         </button>
       ) : null}
@@ -161,7 +156,7 @@ export function WorldBuildingModal({
           {entrySurface.contextReason ? <p className="worldBuildingSubtitle">{entrySurface.contextReason}</p> : null}
         </div>
       ) : null}
-      <div className={`worldBuildingBody worldBuildingBody--${entrySurface.contentPaddingMode}`}>{content}</div>
+      <div className="worldBuildingBody">{content}</div>
     </Modal>
   );
 }

@@ -1,11 +1,9 @@
 import type { WorldBuildingKey, WorldBuildingModalIntent } from '../../../stores/uiStore.js';
 import { formatWorldModuleLabel } from '../../../ui/text/playerFacingFormatters.js';
 
-export type BackgroundVariant = 'manual-pavilion' | 'apothecary' | 'bounty-board' | 'inside-dungeon' | 'forge' | 'outskirts-exact-prep';
-export type WorldModalShellFamily = 'prep-room' | 'support-board' | 'combat-path' | 'outskirts-exact';
+export type BackgroundVariant = 'manual-pavilion' | 'apothecary' | 'bounty-board' | 'inside-dungeon' | 'forge';
+export type WorldModalShellFamily = 'prep-room' | 'support-board' | 'combat-path';
 export type WorldModalShellMode = 'context-strip' | 'close-only';
-export type WorldModalContentPaddingMode = 'default' | 'outskirts-exact';
-export type WorldModalCloseButtonMode = 'default' | 'overlay-corner';
 
 export type WorldModalEntrySurface = {
   title: string;
@@ -17,8 +15,6 @@ export type WorldModalEntrySurface = {
   shellMode: WorldModalShellMode;
   showShellClose: boolean;
   showContextStrip: boolean;
-  contentPaddingMode: WorldModalContentPaddingMode;
-  closeButtonMode: WorldModalCloseButtonMode;
 };
 
 function formatIntentReason(
@@ -55,8 +51,6 @@ export function resolveWorldModalEntrySurface(args: {
   let shellFamily: WorldModalShellFamily = 'prep-room';
   let shellMode: WorldModalShellMode = 'context-strip';
   let showShellClose = true;
-  let contentPaddingMode: WorldModalContentPaddingMode = 'default';
-  let closeButtonMode: WorldModalCloseButtonMode = 'default';
 
   switch (buildingKey) {
     case 'apothecary':
@@ -72,20 +66,6 @@ export function resolveWorldModalEntrySurface(args: {
       backgroundVariant = 'forge';
       break;
     case 'outskirts':
-      if (intent?.outskirtsSurface === 'exact-mockup-prep') {
-        backgroundVariant = 'outskirts-exact-prep';
-        shellFamily = 'outskirts-exact';
-        shellMode = 'close-only';
-        showShellClose = true;
-        contentPaddingMode = 'outskirts-exact';
-        closeButtonMode = 'overlay-corner';
-        break;
-      }
-      backgroundVariant = 'inside-dungeon';
-      shellFamily = 'combat-path';
-      shellMode = 'close-only';
-      showShellClose = false;
-      break;
     case 'gateTrial':
     case 'ruins':
       backgroundVariant = 'inside-dungeon';
@@ -109,7 +89,5 @@ export function resolveWorldModalEntrySurface(args: {
     shellMode,
     showShellClose,
     showContextStrip: shellMode === 'context-strip',
-    contentPaddingMode,
-    closeButtonMode,
   };
 }

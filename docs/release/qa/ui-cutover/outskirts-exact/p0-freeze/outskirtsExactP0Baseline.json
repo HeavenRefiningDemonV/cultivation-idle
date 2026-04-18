@@ -1,6 +1,6 @@
 {
   "schemaVersion": "outskirts-exact-p0-baseline.v1",
-  "generatedAt": "2026-04-18T09:49:18.528Z",
+  "generatedAt": "2026-04-18T12:42:47.297Z",
   "packetId": "P0",
   "packetObjective": "Freeze and evidence-capture the current live Outskirts surface so later exact-mockup work can diff against a deterministic baseline.",
   "whyNow": "Outskirts replacement work is expected to move from combat-shell composition to exact-mockup composition; this packet freezes current truth before that change starts.",
@@ -114,7 +114,7 @@
     "screenshotCaptureStatus": "pending",
     "captureAttempt": {
       "attempted": true,
-      "generatedAt": "2026-04-18T09:49:15.242Z",
+      "generatedAt": "2026-04-18T12:42:40.612Z",
       "command": "npm run release:phase6-combat-capture -- --surface=outskirts --json",
       "ok": false,
       "failureReason": "[phase6-combat-capture] failed: Playwright is required for release:phase6-combat-capture. Install it with `npm i -D playwright` and run `npx playwright install chromium`."

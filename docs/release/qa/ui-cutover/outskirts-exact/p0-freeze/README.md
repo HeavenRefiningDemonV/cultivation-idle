@@ -28,3 +28,9 @@ Required slots:
 4. `npm run release:outskirts-exact-p0:report`
 
 If capture fails due environment limitations (e.g., Playwright/Chromium unavailable), do not create fake PNGs; keep status explicit in baseline outputs.
+
+## Companion docs
+- `../capture-instructions.md`
+- `../mockup-binding.md`
+- `../current-owner-inventory.md`
+- `../visible-regressions.md`

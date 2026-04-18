@@ -9,3 +9,9 @@ Outskirts implementation is now **exact-mockup-driven**.
 
 ## Packet index
 - `p0-freeze/` — freeze-and-evidence baseline package for the current live Outskirts surface.
+
+## P0 documentation map
+- `capture-instructions.md` — deterministic capture route/slot contract for Outskirts.
+- `mockup-binding.md` — approved mockup binding note and guardrails.
+- `current-owner-inventory.md` — current live owner files and truth surfaces.
+- `visible-regressions.md` — known drift to preserve until intentional replacement packets.
