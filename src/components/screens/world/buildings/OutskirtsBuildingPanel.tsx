@@ -29,6 +29,8 @@ import { useFxQuality } from '../../../../ui/fx/FxQualityProvider.js';
 import { buildOutskirtsFxProfile } from '../../../../ui/world/buildOutskirtsFxProfile.js';
 import { useOutskirtsMockupSurface } from '../../../../features/world/outskirts/useOutskirtsMockupSurface.js';
 import { OutskirtsExactMockupScreen } from '../../../../features/world/outskirts/OutskirtsExactMockupScreen.js';
+import { OutskirtsActiveCombatContainment } from '../../../../features/world/outskirts/components/OutskirtsActiveCombatContainment.js';
+import { getOutskirtsModuleViewState } from '../../../../features/world/outskirts/getOutskirtsModuleViewState.js';
 import '../../../../features/world/outskirts/OutskirtsExactMockupScreen.scss';
 
 import wildBoar from "../../../../assets/enemies/widboar.png";
@@ -647,10 +649,10 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
   const outskirtsById = useContentStore((state) => state.maps.outskirtsById);
   const activity = useActivityStore((state) => state.active);
   const startActivity = useActivityStore((state) => state.startActivity);
+  const combatContext = useCombatStore((state) => state.combatContext);
   const setAutoAttack = useCombatStore((state) => state.setAutoAttack);
   const startCombat = useCombatStore((state) => state.startCombat);
   const getProgress = useOutskirtsStore((state) => state.getProgress);
-  const isPlanningState = !(activity && activity.type === 'outskirts' && activity.cityId === cityId);
   const planningSurface = useOutskirtsMockupSurface(cityId);
   const outskirtsRefId = resolveModuleRef(city ?? null, 'outskirts');
   const outskirtsDef = outskirtsRefId ? outskirtsById[outskirtsRefId] : undefined;
@@ -672,9 +674,24 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
     });
   };
 
-  if (isPlanningState) {
+  const viewState = getOutskirtsModuleViewState({
+    cityId,
+    outskirtsDefId: outskirtsDef?.id ?? null,
+    activity,
+    combatContext,
+  });
+
+  if (viewState === 'unavailable') {
+    return <OutskirtsBuildingPanelLegacy cityId={cityId} />;
+  }
+
+  if (viewState === 'planning') {
     return <OutskirtsExactMockupScreen surface={planningSurface} onStartHunt={handleStartHunt} />;
   }
 
-  return <OutskirtsBuildingPanelLegacy cityId={cityId} />;
+  return (
+    <OutskirtsActiveCombatContainment>
+      <OutskirtsBuildingPanelLegacy cityId={cityId} />
+    </OutskirtsActiveCombatContainment>
+  );
 }
