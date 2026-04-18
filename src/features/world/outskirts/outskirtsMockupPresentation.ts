@@ -104,7 +104,7 @@ export const OUTSKIRTS_ENCOUNTER_PROGRESS_DEFAULT_ID = 'quiet-glade' as const;
 
 export const OUTSKIRTS_MOCKUP_COPY = {
   pageTitle: 'Outskirts',
-  pageSubtitleFallback: 'Calm the route before committing the next hunt.',
+  pageSubtitleFallback: 'Prepare a calm field route before committing the hunt.',
   topProgressLabel: 'Hunt Cadence',
   setupCardTitle: 'Your Setup',
   rewardsCardTitle: 'Expected Rewards',
@@ -113,7 +113,7 @@ export const OUTSKIRTS_MOCKUP_COPY = {
   fallbackCtaLabel: 'Start Hunt',
   fallbackBountyLine: 'No tracked bounty selected',
   fallbackCadenceLine: 'Auto-continue Off • Stop at boss On',
-  fallbackEncounterDescriptor: 'Low-risk field route for repeated setup testing.',
+  fallbackEncounterDescriptor: 'Low-risk field route for build and AI verification.',
 } as const;
 
 export const OUTSKIRTS_PLACEHOLDER_POLICY = {

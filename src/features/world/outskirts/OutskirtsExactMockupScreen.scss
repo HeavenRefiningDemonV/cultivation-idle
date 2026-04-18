@@ -410,6 +410,7 @@
 .outskirtsGrindSummaryCard__rows {
   display: grid;
   gap: 0.2rem;
+  min-height: 4.2rem;
 }
 
 .outskirtsGrindSummaryCard__row {
@@ -439,6 +440,7 @@
 .outskirtsRewardsCard {
   height: 100%;
   min-width: 0;
+  min-height: 13.8rem;
   display: grid;
   align-content: start;
   gap: 0.42rem;
@@ -458,6 +460,7 @@
 .outskirtsRewardsCard__group {
   display: grid;
   gap: 0.24rem;
+  min-height: 3.35rem;
 }
 
 .outskirtsRewardsCard__row {

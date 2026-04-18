@@ -184,3 +184,56 @@ void test('P9 no-bleed: exact planning screen still excludes active-combat owner
   assert.equal(html.includes('outskirtsActiveContainment'), false);
   assert.equal(html.includes('combatPathModule__actionZone'), false);
 });
+
+void test('P10 exact-surface smoke: one planning owner for every major region and one dominant CTA', () => {
+  const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture());
+  const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
+
+  assert.equal((html.match(/outskirts-exact-page-title/g) ?? []).length, 1);
+  assert.equal((html.match(/outskirts-exact-top-progress/g) ?? []).length, 1);
+  assert.equal((html.match(/outskirts-exact-tactical-strip/g) ?? []).length, 1);
+  assert.equal((html.match(/outskirts-exact-scenic-stage/g) ?? []).length, 1);
+  assert.equal((html.match(/outskirts-setup-card/g) ?? []).length, 1);
+  assert.equal((html.match(/outskirts-rewards-card/g) ?? []).length, 1);
+  assert.equal((html.match(/outskirts-encounter-progress-strip/g) ?? []).length, 1);
+  assert.equal((html.match(/outskirts-start-hunt-cta/g) ?? []).length, 1);
+  assert.equal((html.match(/outskirts-grind-summary/g) ?? []).length, 1);
+
+  assert.equal(html.includes('runCompassSurface'), false);
+  assert.equal(html.includes('combatPathModule__chip'), false);
+  assert.equal(html.includes('outskirtsPanel__summary'), false);
+  assert.equal(html.includes('Utility Tray'), false);
+  assert.equal(html.includes('ink-combat-shell__log'), false);
+  assert.equal(html.includes('InkHealthBar'), false);
+  assert.equal(html.includes('outskirts-view-active-contained'), false);
+});
+
+void test('P10 no-layout-shift contract keeps stable node/card/cta structure across bounty and boss-ready state changes', () => {
+  const defaultSurface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture({
+    bountyLabel: 'Cull field beasts: 4 / 10',
+    killsSinceBoss: 3,
+  }));
+  const changedSurface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture({
+    bountyLabel: null,
+    killsSinceBoss: 10,
+  }));
+  const defaultHtml = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface: defaultSurface }));
+  const changedHtml = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface: changedSurface }));
+
+  const tokens = [
+    'outskirts-encounter-progress-node-quiet-glade',
+    'outskirts-encounter-progress-node-rockjaw-boar',
+    'outskirts-encounter-progress-node-snarling-wolf',
+    'outskirts-encounter-progress-node-venomcoil',
+    'outskirts-encounter-progress-node-shade-stalker',
+    'outskirts-encounter-progress-node-mire-serpent',
+    'outskirts-rewards-card',
+    'outskirts-start-hunt-cta',
+    'outskirts-grind-summary',
+  ];
+
+  for (const token of tokens) {
+    assert.equal(defaultHtml.includes(token), true);
+    assert.equal(changedHtml.includes(token), true);
+  }
+});
