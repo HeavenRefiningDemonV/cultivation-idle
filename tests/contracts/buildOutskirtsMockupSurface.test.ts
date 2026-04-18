@@ -12,8 +12,8 @@ void test('buildOutskirtsMockupSurface returns fully populated stable contract o
   assert.equal(surface.header.pageTitle.length > 0, true);
   assert.equal(surface.topProgress.nodes.length >= 1, true);
   assert.equal(surface.tacticalStrip.cells.length, 7);
-  assert.equal(surface.setupCard.offense.length >= 1, true);
-  assert.equal(surface.setupCard.defense.length >= 1, true);
+  assert.equal(surface.setupCard.offense.length, 3);
+  assert.equal(surface.setupCard.defense.length, 3);
   assert.equal(surface.setupCard.equipmentGrid.length, 6);
   assert.equal(surface.rewardsCard.noPrimaryCta, true);
   assert.equal(surface.encounterChain.nodes.length >= 1, true);
@@ -25,6 +25,9 @@ void test('buildOutskirtsMockupSurface returns fully populated stable contract o
   assert.equal(surface.shell.showCombatTheater, false);
   assert.equal(surface.shell.showCombatHpBars, false);
   assert.equal(surface.shell.showCombatOptions, false);
+
+  assert.deepEqual(surface.setupCard.offense.map((row) => row.label), ['ATK', 'ACC', 'CRIT']);
+  assert.deepEqual(surface.setupCard.defense.map((row) => row.label), ['HP', 'EVA', 'RES']);
 });
 
 void test('buildOutskirtsMockupSurface fallback handling is deterministic', () => {
@@ -42,4 +45,7 @@ void test('buildOutskirtsMockupSurface fallback handling is deterministic', () =
   assert.equal(surface.debug?.missingDataFallbacks.includes('medicinePouchLabel'), true);
   assert.equal(surface.debug?.missingDataFallbacks.includes('bountyLabel'), true);
   assert.equal(surface.encounterHero.scenicImageSrc === null, false);
+
+  const defenseValues = surface.setupCard.defense.map((row) => row.value);
+  assert.equal(defenseValues.length, 3);
 });

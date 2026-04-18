@@ -125,13 +125,49 @@
 
 .outskirtsExactMockup__futureScaffold {
   display: grid;
-  grid-template-rows: minmax(14rem, 1.25fr) minmax(2.6rem, auto) minmax(10.2rem, 1.05fr) minmax(3rem, auto) minmax(2.8rem, auto) minmax(4rem, auto);
+  grid-template-columns: minmax(14rem, 0.9fr) minmax(24rem, 1.55fr) minmax(12rem, 0.9fr);
+  grid-template-rows: minmax(14rem, 1.2fr) minmax(2.6rem, auto) minmax(3rem, auto) minmax(2.8rem, auto) minmax(4rem, auto);
+  grid-template-areas:
+    'setup scenic rewards'
+    'setup identity rewards'
+    'setup encounterStrip rewards'
+    'setup cta rewards'
+    'setup grindSummary rewards';
   gap: 0.75rem;
 }
 
 .outskirtsExactMockup__slot {
   border-radius: 0.4rem;
   background: transparent;
+}
+
+.outskirtsExactMockup__slot--setup {
+  grid-area: setup;
+  min-width: 0;
+}
+
+.outskirtsExactMockup__slot--scenic {
+  grid-area: scenic;
+}
+
+.outskirtsExactMockup__slot--rewards {
+  grid-area: rewards;
+}
+
+.outskirtsExactMockup__slot--encounterIdentity {
+  grid-area: identity;
+}
+
+.outskirtsExactMockup__slot--encounterStrip {
+  grid-area: encounterStrip;
+}
+
+.outskirtsExactMockup__slot--cta {
+  grid-area: cta;
+}
+
+.outskirtsExactMockup__slot--grindSummary {
+  grid-area: grindSummary;
 }
 
 .outskirtsScenicStage {
@@ -213,10 +249,152 @@
   background: rgba(201, 167, 108, 0.3);
 }
 
-.outskirtsExactMockup__slotGrid {
+.outskirtsSetupCard {
+  height: 100%;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 0.75rem;
+  grid-template-rows: auto auto auto auto auto auto;
+  gap: 0.5rem;
+  padding: 0.7rem 0.62rem;
+  border-radius: 0.9rem;
+  border: 1px solid rgba(83, 62, 49, 0.23);
+  background: linear-gradient(180deg, rgba(252, 246, 233, 0.93), rgba(243, 233, 211, 0.92));
+  min-width: 0;
+}
+
+.outskirtsSetupCard__title {
+  margin: 0;
+  text-align: center;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.07rem;
+}
+
+.outskirtsSetupCard__primaryRows {
+  display: grid;
+  gap: 0.36rem;
+}
+
+.outskirtsSetupCard__primaryRow {
+  min-height: 1.8rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 0.4rem;
+  padding: 0.2rem 0.35rem;
+  border-radius: 0.5rem;
+  background: rgba(246, 237, 219, 0.74);
+}
+
+.outskirtsSetupCard__primaryLabel {
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+.outskirtsSetupCard__primaryValue {
+  font-size: 0.73rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 6.8rem;
+}
+
+.outskirtsSetupCard__loadoutBadge {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 999px;
+  border: 1px solid rgba(81, 58, 46, 0.5);
+  display: grid;
+  place-items: center;
+  font-size: 0.73rem;
+  font-weight: 700;
+  background: radial-gradient(circle at 30% 30%, rgba(255, 248, 233, 0.9), rgba(218, 193, 158, 0.88));
+}
+
+.outskirtsSetupCard__section {
+  display: grid;
+  gap: 0.24rem;
+}
+
+.outskirtsSetupCard__sectionTitle {
+  margin: 0;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: rgba(63, 45, 36, 0.9);
+}
+
+.outskirtsSetupCard__statRow {
+  min-height: 1.45rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+}
+
+.outskirtsSetupCard__statLabel {
+  font-size: 0.72rem;
+}
+
+.outskirtsSetupCard__statValue {
+  font-size: 0.72rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.outskirtsSetupCard__pouchRow {
+  min-height: 1.6rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 1.2rem;
+  align-items: center;
+  gap: 0.34rem;
+}
+
+.outskirtsSetupCard__pouchValue {
+  font-size: 0.73rem;
+  white-space: nowrap;
+}
+
+.outskirtsSetupCard__pouchAction {
+  width: 1.2rem;
+  height: 1.2rem;
+  border-radius: 0.22rem;
+  border: 1px solid rgba(70, 51, 40, 0.48);
+  background: rgba(250, 242, 224, 0.95);
+  line-height: 1;
+  padding: 0;
+}
+
+.outskirtsSetupCard__equipmentGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.32rem;
+}
+
+.outskirtsSetupCard__equipmentCell {
+  aspect-ratio: 1 / 1;
+  min-height: 2.55rem;
+  border: 1px solid rgba(71, 51, 41, 0.35);
+  border-radius: 0.34rem;
+  padding: 0.18rem;
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  gap: 0.08rem;
+}
+
+.outskirtsSetupCard__equipmentIcon {
+  font-size: 0.66rem;
+}
+
+.outskirtsSetupCard__equipmentLabel {
+  font-size: 0.56rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.outskirtsSetupCard__equipmentValue {
+  font-size: 0.56rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 @media (max-width: 960px) {
@@ -226,6 +404,22 @@
 
   .outskirtsExactMockup__tacticalStrip {
     grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .outskirtsExactMockup__futureScaffold {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(13rem, auto) minmax(2.4rem, auto) minmax(13rem, auto) minmax(3rem, auto) minmax(2.8rem, auto) minmax(4rem, auto);
+    grid-template-areas:
+      'scenic'
+      'identity'
+      'setup'
+      'encounterStrip'
+      'cta'
+      'grindSummary';
+  }
+
+  .outskirtsExactMockup__slot--rewards {
+    display: none;
   }
 
   .outskirtsEncounterIdentityRow {

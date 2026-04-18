@@ -5,9 +5,13 @@ import { useActivityStore } from '../../../stores/activityStore.js';
 import { useBountyStore } from '../../../stores/bountyStore.js';
 import { useCityStore } from '../../../stores/cityStore.js';
 import { useContentStore } from '../../../stores/contentStore.js';
+import { useEquipmentStore } from '../../../stores/equipmentStore.js';
 import { useExpeditionStore } from '../../../stores/expeditionStore.js';
+import { useGameStore } from '../../../stores/gameStore.js';
+import { useInventoryStore } from '../../../stores/inventoryStore.js';
 import { useMedicinePouchStore } from '../../../stores/medicinePouchStore.js';
 import { useOutskirtsStore } from '../../../stores/outskirtsStore.js';
+import { useTechniqueStore } from '../../../stores/techniqueStore.js';
 import { useUIStore } from '../../../stores/uiStore.js';
 import { resolveModuleRef } from '../../../components/screens/world/worldUtils.js';
 import { OUTSKIRTS_ALLOWED_PLANNING_SHELL, OUTSKIRTS_MOCKUP_COPY, OUTSKIRTS_MOCKUP_VERSION, OUTSKIRTS_PLACEHOLDER_POLICY, OUTSKIRTS_TACTICAL_CELL_ORDER } from './outskirtsMockupPresentation.js';
@@ -46,6 +50,18 @@ function resolveScenicImageSrc(scenicBackgroundKey: string): string | null {
   if (scenicBackgroundKey.startsWith('placeholder/scenic/outskirts-field')) return '/assets/background/citystates/city_outskirts.png';
   if (scenicBackgroundKey.includes('outskirts')) return '/assets/background/citystates/city_outskirts.png';
   return '/assets/background/citystates/city_outskirts.png';
+}
+
+function formatWhole(value: number | string): string {
+  const numeric = typeof value === 'number' ? value : Number(value);
+  if (!Number.isFinite(numeric)) return OUTSKIRTS_PLACEHOLDER_POLICY.lineFallback;
+  return `${Math.max(0, Math.round(numeric))}`;
+}
+
+function formatPercent(value: number): string {
+  if (!Number.isFinite(value)) return OUTSKIRTS_PLACEHOLDER_POLICY.lineFallback;
+  const clamped = Math.max(0, Math.min(100, value));
+  return `${clamped.toFixed(0)}%`;
 }
 
 function buildEncounterNodes(killsSinceBoss: number): OutskirtsMockupEncounterChainNode[] {
@@ -205,14 +221,40 @@ export function buildOutskirtsMockupRuntimeSnapshotFromStores(cityId?: string): 
   const trackedText = tracked ? `${tracked.title}: ${tracked.progress} / ${tracked.target}${tracked.progress >= tracked.target ? ' • Ready' : ''}` : null;
   const pouch = useMedicinePouchStore.getState().slots.healing;
   const pouchName = pouch?.equippedItemId ? content.maps.itemsById[pouch.equippedItemId]?.name ?? pouch.equippedItemId : null;
+  const pouchQty = pouch?.equippedItemId ? useInventoryStore.getState().getItemCount(pouch.equippedItemId) : 0;
+  const gameStats = useGameStore.getState().stats;
+  const selectedLoadout = useTechniqueStore.getState().getSelectedLoadout?.();
+  const selectedLoadoutName = selectedLoadout?.name ?? 'Loadout 1';
+  const selectedAiProfile = selectedLoadout?.aiProfile ?? ui.settings.combatAIProfile;
+  const selectedLoadoutMatch = selectedLoadoutName.match(/(\d+)/);
+  const selectedLoadoutLabel = selectedLoadoutMatch ? `Set ${selectedLoadoutMatch[1]}` : selectedLoadoutName;
+  const attackFocusLabel = ui.settings.preferredTarget === 'boss'
+    ? 'Boss'
+    : ui.settings.preferredTarget === 'elite'
+      ? 'Elite'
+      : 'Weakest';
 
   const aiRecommendation = evaluateAiProfileFit({
     encounterType: 'outskirts',
-    aiProfile: ui.settings.combatAIProfile,
+    aiProfile: selectedAiProfile,
     loadoutSignals: postureContext.loadoutSignals,
     path: postureContext.path,
   });
   const safety = resolveSafetyFromPosture(resolvedCityId);
+  const derivedAccuracyPct = aiRecommendation.rating === 'good'
+    ? 92
+    : aiRecommendation.rating === 'risky'
+      ? 86
+      : 82;
+  const derivedResPct = (() => {
+    const defense = Number(gameStats.def);
+    if (!Number.isFinite(defense) || defense <= 0) return 0;
+    return (defense / (defense + 250)) * 100;
+  })();
+  const equippedWeaponId = useEquipmentStore.getState().equippedWeaponId;
+  const equippedAccessoryId = useEquipmentStore.getState().equippedAccessoryId;
+  const resolveItemName = (itemId: string | null): string =>
+    itemId ? content.maps.itemsById[itemId]?.name ?? itemId : OUTSKIRTS_PLACEHOLDER_POLICY.lineFallback;
 
   return {
     sourceMode: 'stores',
@@ -224,29 +266,29 @@ export function buildOutskirtsMockupRuntimeSnapshotFromStores(cityId?: string): 
     killsToBoss: outskirts?.killsToBoss ?? 10,
     totalKills: progress.totalKills,
     isOutskirtsActive: activity?.type === 'outskirts' && activity.cityId === resolvedCityId,
-    hpLabel: `HP ${useUIStore.getState().settings?.combatAIProfile ? 'stable' : 'unknown'}`,
+    hpLabel: `HP ${formatWhole(gameStats.maxHp)}`,
     dangerLabel: progress.killsSinceBoss >= (outskirts?.killsToBoss ?? 10) ? 'Boss ready' : 'Low-risk route',
-    loadoutLabel: 'Loadout 1',
-    aiProfile: ui.settings.combatAIProfile,
-    aiProfileLabel: ui.settings.combatAIProfile[0].toUpperCase() + ui.settings.combatAIProfile.slice(1),
-    attackFocusLabel: ui.settings.preferredTarget === 'boss' ? 'Boss' : 'Weakest',
-    medicinePouchLabel: pouchName ? `${pouchName} (${pouch?.trigger ?? 'manual'})` : null,
+    loadoutLabel: selectedLoadoutLabel,
+    aiProfile: selectedAiProfile,
+    aiProfileLabel: selectedAiProfile[0].toUpperCase() + selectedAiProfile.slice(1),
+    attackFocusLabel,
+    medicinePouchLabel: pouchName ? `${pouchQty} / 20` : null,
     bountyLabel: trackedText,
     expeditionLabel: summarizeExpeditions(resolvedCityId),
     offenseRows: [
-      { id: 'atk', label: 'ATK', value: 'Derived from combat build', source: 'derived' },
-      { id: 'acc', label: 'ACC', value: `${posture.aiFit === 'good' ? 'Good' : 'Watch'}`, source: 'derived' },
-      { id: 'crit', label: 'CRIT', value: 'Adaptive', source: 'synthetic' },
+      { id: 'atk', label: 'ATK', value: formatWhole(gameStats.atk), source: 'derived' },
+      { id: 'acc', label: 'ACC', value: formatPercent(derivedAccuracyPct), source: 'derived' },
+      { id: 'crit', label: 'CRIT', value: formatPercent(gameStats.crit), source: 'derived' },
     ],
     defenseRows: [
-      { id: 'hp', label: 'HP', value: 'Runtime', source: 'derived' },
-      { id: 'eva', label: 'EVA', value: posture.pouchFit === 'good' ? 'Stable' : 'Watch', source: 'derived' },
-      { id: 'res', label: 'RES', value: 'Field baseline', source: 'synthetic' },
+      { id: 'hp', label: 'HP', value: formatWhole(gameStats.maxHp), source: 'derived' },
+      { id: 'eva', label: 'EVA', value: formatPercent(gameStats.dodge), source: 'derived' },
+      { id: 'res', label: 'RES', value: formatPercent(derivedResPct), source: 'derived' },
     ],
     equipmentGrid: [
-      { slotId: 'weapon', label: 'Weapon', iconKey: 'weapon', value: 'Active loadout', source: 'derived' },
-      { slotId: 'armor', label: 'Armor', iconKey: 'armor', value: 'Active loadout', source: 'derived' },
-      { slotId: 'ring', label: 'Ring', iconKey: 'ring', value: 'Active loadout', source: 'derived' },
+      { slotId: 'weapon', label: 'Weapon', iconKey: 'weapon', value: resolveItemName(equippedWeaponId), source: equippedWeaponId ? 'live' : 'synthetic' },
+      { slotId: 'armor', label: 'Armor', iconKey: 'armor', value: resolveItemName(equippedAccessoryId), source: equippedAccessoryId ? 'live' : 'synthetic' },
+      { slotId: 'ring', label: 'Ring', iconKey: 'ring', value: resolveItemName(equippedAccessoryId), source: equippedAccessoryId ? 'derived' : 'synthetic' },
       { slotId: 'talisman', label: 'Talisman', iconKey: 'talisman', value: OUTSKIRTS_PLACEHOLDER_POLICY.lineFallback, source: 'synthetic' },
       { slotId: 'boots', label: 'Boots', iconKey: 'boots', value: OUTSKIRTS_PLACEHOLDER_POLICY.lineFallback, source: 'synthetic' },
       { slotId: 'charm', label: 'Charm', iconKey: 'charm', value: OUTSKIRTS_PLACEHOLDER_POLICY.lineFallback, source: 'synthetic' },
