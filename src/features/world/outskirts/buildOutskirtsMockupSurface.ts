@@ -100,6 +100,10 @@ export function buildOutskirtsMockupSurface(snapshot: OutskirtsMockupRuntimeSnap
     expedition: { id: 'expedition', label: 'Expedition', value: snapshot.expeditionLabel, tone: 'neutral' as OutskirtsTacticalTone, iconKey: 'expedition', visible: true, reserveWhenEmpty: true },
   } as const;
 
+  const ownershipNote = snapshot.isOutskirtsActive
+    ? 'Active Outskirts combat still renders the legacy combat shell owner.'
+    : 'Idle Outskirts route renders this exact-mockup surface as the live owner.';
+
   return {
     meta: {
       surfaceId: 'outskirts-exact-mockup',
@@ -186,7 +190,7 @@ export function buildOutskirtsMockupSurface(snapshot: OutskirtsMockupRuntimeSnap
       missingDataFallbacks: fallbacks,
       placeholderAssetKeysInUse: placeholders,
       unresolvedSourceFields: unresolved,
-      notes: ['P1 contract surface only; not wired as live Outskirts owner.'],
+      notes: [ownershipNote],
     },
   };
 }

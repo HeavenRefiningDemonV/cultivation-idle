@@ -49,3 +49,11 @@ void test('buildOutskirtsMockupSurface fallback handling is deterministic', () =
   const defenseValues = surface.setupCard.defense.map((row) => row.value);
   assert.equal(defenseValues.length, 3);
 });
+
+void test('buildOutskirtsMockupSurface debug ownership note reflects active state handoff', () => {
+  const idleSurface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture({ isOutskirtsActive: false }));
+  assert.equal(idleSurface.debug?.notes.includes('Idle Outskirts route renders this exact-mockup surface as the live owner.'), true);
+
+  const activeSurface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture({ isOutskirtsActive: true }));
+  assert.equal(activeSurface.debug?.notes.includes('Active Outskirts combat still renders the legacy combat shell owner.'), true);
+});
