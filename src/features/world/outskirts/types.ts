@@ -123,6 +123,30 @@ export interface OutskirtsMockupEncounterChain {
   connectorState: 'locked' | 'partial' | 'complete';
 }
 
+export interface OutskirtsMockupEncounterProgressArrow {
+  visible: boolean;
+  enabled: boolean;
+  ariaLabel: string;
+}
+
+export interface OutskirtsMockupEncounterProgressNode {
+  id: string;
+  label: string;
+  displayLevelText?: string;
+  state: OutskirtsEncounterNodeState;
+  artKey?: string;
+  silhouetteKey?: string;
+  isSelected: boolean;
+  isClickable: boolean;
+  ariaLabel: string;
+}
+
+export interface OutskirtsMockupEncounterProgressStrip {
+  leftArrow: OutskirtsMockupEncounterProgressArrow;
+  rightArrow: OutskirtsMockupEncounterProgressArrow;
+  nodes: OutskirtsMockupEncounterProgressNode[];
+}
+
 export interface OutskirtsMockupActionZone {
   primaryCtaLabel: string;
   primaryCtaIntent: 'start-hunt';
@@ -171,6 +195,7 @@ export interface OutskirtsMockupSurface {
   rewardsCard: OutskirtsMockupRewardsCard;
   encounterHero: OutskirtsMockupEncounterHero;
   encounterChain: OutskirtsMockupEncounterChain;
+  encounterProgressStrip: OutskirtsMockupEncounterProgressStrip;
   actionZone: OutskirtsMockupActionZone;
   grindSummary: OutskirtsMockupGrindSummary;
   shell: OutskirtsMockupShellFlags;

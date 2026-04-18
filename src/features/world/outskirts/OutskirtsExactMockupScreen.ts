@@ -4,6 +4,7 @@ import type { OutskirtsMockupSurface } from './types.js';
 import { OutskirtsScenicStage } from './components/OutskirtsScenicStage.js';
 import { OutskirtsEncounterIdentityRow } from './components/OutskirtsEncounterIdentityRow.js';
 import { OutskirtsSetupCard } from './components/OutskirtsSetupCard.js';
+import { OutskirtsEncounterProgressStrip } from './components/OutskirtsEncounterProgressStrip.js';
 
 export interface OutskirtsExactMockupScreenProps {
   surface: OutskirtsMockupSurface;
@@ -78,7 +79,11 @@ export function OutskirtsExactMockupScreen({ surface }: OutskirtsExactMockupScre
         { className: 'outskirtsExactMockup__slot outskirtsExactMockup__slot--encounterIdentity', 'data-testid': 'outskirts-exact-encounter-identity-slot' },
         React.createElement(OutskirtsEncounterIdentityRow, { encounter: surface.encounterHero }),
       ),
-      React.createElement('div', { className: 'outskirtsExactMockup__slot outskirtsExactMockup__slot--encounterStrip', 'data-testid': 'outskirts-exact-encounter-strip-slot', 'aria-hidden': 'true' }),
+      React.createElement(
+        'div',
+        { className: 'outskirtsExactMockup__slot outskirtsExactMockup__slot--encounterStrip', 'data-testid': 'outskirts-exact-encounter-strip-slot' },
+        React.createElement(OutskirtsEncounterProgressStrip, { strip: surface.encounterProgressStrip }),
+      ),
       React.createElement('div', { className: 'outskirtsExactMockup__slot outskirtsExactMockup__slot--cta', 'data-testid': 'outskirts-exact-cta-slot', 'aria-hidden': 'true' }),
       React.createElement('div', { className: 'outskirtsExactMockup__slot outskirtsExactMockup__slot--grindSummary', 'data-testid': 'outskirts-exact-grind-summary-slot', 'aria-hidden': 'true' }),
     ),

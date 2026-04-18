@@ -14,9 +14,18 @@ import { useOutskirtsStore } from '../../../stores/outskirtsStore.js';
 import { useTechniqueStore } from '../../../stores/techniqueStore.js';
 import { useUIStore } from '../../../stores/uiStore.js';
 import { resolveModuleRef } from '../../../components/screens/world/worldUtils.js';
-import { OUTSKIRTS_ALLOWED_PLANNING_SHELL, OUTSKIRTS_MOCKUP_COPY, OUTSKIRTS_MOCKUP_VERSION, OUTSKIRTS_PLACEHOLDER_POLICY, OUTSKIRTS_TACTICAL_CELL_ORDER } from './outskirtsMockupPresentation.js';
+import {
+  OUTSKIRTS_ALLOWED_PLANNING_SHELL,
+  OUTSKIRTS_ENCOUNTER_PROGRESS_DEFAULT_ID,
+  OUTSKIRTS_ENCOUNTER_PROGRESS_STRIP_MANIFEST,
+  OUTSKIRTS_MOCKUP_COPY,
+  OUTSKIRTS_MOCKUP_VERSION,
+  OUTSKIRTS_PLACEHOLDER_POLICY,
+  OUTSKIRTS_TACTICAL_CELL_ORDER,
+} from './outskirtsMockupPresentation.js';
 import type {
   OutskirtsEncounterNodeState,
+  OutskirtsMockupEncounterProgressStrip,
   OutskirtsMockupEncounterChainNode,
   OutskirtsMockupRuntimeSnapshot,
   OutskirtsMockupSurface,
@@ -65,18 +74,57 @@ function formatPercent(value: number): string {
 }
 
 function buildEncounterNodes(killsSinceBoss: number): OutskirtsMockupEncounterChainNode[] {
-  const labels = ['Quiet Glade', 'Rockjaw Boar', 'Snarling Wolf', 'Venomcoil', 'Shade Stalker', 'Mire Serpent'];
-  const idx = Math.max(0, Math.min(labels.length - 1, Math.floor((killsSinceBoss / 10) * labels.length)));
-  return labels.map((label, index) => {
+  const idx = Math.max(0, Math.min(OUTSKIRTS_ENCOUNTER_PROGRESS_STRIP_MANIFEST.length - 1, Math.floor((killsSinceBoss / 10) * OUTSKIRTS_ENCOUNTER_PROGRESS_STRIP_MANIFEST.length)));
+  return OUTSKIRTS_ENCOUNTER_PROGRESS_STRIP_MANIFEST.map((entry, index) => {
     const state: OutskirtsEncounterNodeState = index < idx ? 'completed' : index === idx ? 'current' : 'future';
     return {
-      id: label.toLowerCase().replace(/\s+/g, '-'),
-      label,
+      id: entry.id,
+      label: entry.label,
       state,
-      thumbnailKey: `${OUTSKIRTS_PLACEHOLDER_POLICY.iconFallbackPrefix}${label.toLowerCase().replace(/\s+/g, '-')}`,
+      thumbnailKey: `${OUTSKIRTS_PLACEHOLDER_POLICY.iconFallbackPrefix}${entry.id}`,
       stateLabel: state === 'completed' ? 'Cleared' : state === 'current' ? 'Current' : 'Future',
     };
   });
+}
+
+function normalizeEncounterId(value: string): string {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+}
+
+function buildEncounterProgressStrip(snapshot: OutskirtsMockupRuntimeSnapshot): OutskirtsMockupEncounterProgressStrip {
+  const selectedId = normalizeEncounterId(snapshot.selectedEncounterId);
+  const fallbackCurrentId = snapshot.encounterNodes.find((node) => node.state === 'current')?.id ?? OUTSKIRTS_ENCOUNTER_PROGRESS_DEFAULT_ID;
+  const currentId = [selectedId, normalizeEncounterId(fallbackCurrentId), OUTSKIRTS_ENCOUNTER_PROGRESS_DEFAULT_ID]
+    .find((id) => OUTSKIRTS_ENCOUNTER_PROGRESS_STRIP_MANIFEST.some((entry) => entry.id === id))
+    ?? OUTSKIRTS_ENCOUNTER_PROGRESS_DEFAULT_ID;
+  const currentIndex = OUTSKIRTS_ENCOUNTER_PROGRESS_STRIP_MANIFEST.findIndex((entry) => entry.id === currentId);
+
+  return {
+    leftArrow: {
+      visible: true,
+      enabled: false,
+      ariaLabel: 'Previous encounter (presentation-only; unavailable in P7)',
+    },
+    rightArrow: {
+      visible: true,
+      enabled: false,
+      ariaLabel: 'Next encounter (presentation-only; unavailable in P7)',
+    },
+    nodes: OUTSKIRTS_ENCOUNTER_PROGRESS_STRIP_MANIFEST.map((entry, index) => {
+      const state: OutskirtsEncounterNodeState = index < currentIndex ? 'completed' : index === currentIndex ? 'current' : 'future';
+      return {
+        id: entry.id,
+        label: entry.label,
+        displayLevelText: entry.displayLevelText,
+        state,
+        artKey: state === 'future' ? undefined : entry.artKey,
+        silhouetteKey: state === 'future' ? entry.silhouetteKey : undefined,
+        isSelected: index === currentIndex,
+        isClickable: false,
+        ariaLabel: `${entry.label} ${entry.displayLevelText ?? ''} ${state}`.trim(),
+      };
+    }),
+  };
 }
 
 export function buildOutskirtsMockupSurface(snapshot: OutskirtsMockupRuntimeSnapshot): OutskirtsMockupSurface {
@@ -167,6 +215,7 @@ export function buildOutskirtsMockupSurface(snapshot: OutskirtsMockupRuntimeSnap
       canMoveRight: snapshot.canMoveEncounterRight,
       connectorState: snapshot.encounterNodes.every((node) => node.state === 'completed') ? 'complete' : 'partial',
     },
+    encounterProgressStrip: buildEncounterProgressStrip(snapshot),
     actionZone: {
       primaryCtaLabel: OUTSKIRTS_MOCKUP_COPY.fallbackCtaLabel,
       primaryCtaIntent: 'start-hunt',

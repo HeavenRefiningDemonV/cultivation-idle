@@ -90,3 +90,49 @@ void test('P5 preserves World -> WorldBuildingModal -> OutskirtsBuildingPanel ro
   assert.match(panelSource, /data-testid="outskirts-planning-owner"/);
   assert.match(panelSource, /OutskirtsExactMockupScreen/);
 });
+
+void test('P7 strip structure renders one progression strip with arrows and six nodes', () => {
+  const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture());
+  const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
+
+  const count = (token: string) => (html.match(new RegExp(token, 'g')) ?? []).length;
+  assert.equal(count('outskirts-encounter-progress-strip'), 1);
+  assert.equal(count('outskirts-encounter-progress-left-arrow'), 1);
+  assert.equal(count('outskirts-encounter-progress-right-arrow'), 1);
+  const nodeIds = ['quiet-glade', 'rockjaw-boar', 'snarling-wolf', 'venomcoil', 'shade-stalker', 'mire-serpent'];
+  for (const nodeId of nodeIds) {
+    assert.equal(html.includes(`outskirts-encounter-progress-node-${nodeId}`), true);
+  }
+});
+
+void test('P7 strip order is locked to Pinewind exact-mockup sequence', () => {
+  const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture({ selectedEncounterId: 'snarling-wolf' }));
+  const labels = surface.encounterProgressStrip.nodes.map((node) => node.label);
+  assert.deepEqual(labels, ['Quiet Glade', 'Rockjaw Boar', 'Snarling Wolf', 'Venomcoil', 'Shade Stalker', 'Mire Serpent']);
+});
+
+void test('P7 strip state mapping renders completed/current/future classes without adding CTA/grind-summary/active controls', () => {
+  const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture({ selectedEncounterId: 'snarling-wolf' }));
+  const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
+
+  assert.match(html, /outskirtsEncounterProgressStrip__node--completed/);
+  assert.match(html, /outskirtsEncounterProgressStrip__node--current/);
+  assert.match(html, /outskirtsEncounterProgressStrip__node--future/);
+
+  assert.equal(html.includes('Start Hunt'), false);
+  assert.equal(html.includes('Grind Summary'), false);
+  assert.equal(html.includes('outskirtsActionStrip'), false);
+});
+
+void test('P7 strip placeholder stability keeps six fixed nodes when optional level text is missing', () => {
+  const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture());
+  for (const node of surface.encounterProgressStrip.nodes) {
+    node.displayLevelText = undefined;
+  }
+  const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
+  const nodeIds = ['quiet-glade', 'rockjaw-boar', 'snarling-wolf', 'venomcoil', 'shade-stalker', 'mire-serpent'];
+  for (const nodeId of nodeIds) {
+    assert.equal(html.includes(`outskirts-encounter-progress-node-${nodeId}`), true);
+  }
+  assert.equal((html.match(/outskirtsEncounterProgressStrip__thumb/g) ?? []).length, 6);
+});
