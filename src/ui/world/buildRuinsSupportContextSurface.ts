@@ -39,8 +39,8 @@ export interface BuildRuinsSupportContextSurfaceArgs {
   leadMaterialIds: readonly string[];
   itemCountsById: Record<string, number>;
   itemNamesById: Record<string, string | undefined>;
-  forgeBlueprints: readonly Array<{ id: string; unlocksAtCityId: string; inputs?: Record<string, number> }>;
-  alchemyRecipes: readonly Array<{ id: string; unlocksAtCityId: string; inputs: Record<string, number> }>;
+  forgeBlueprints: ReadonlyArray<{ id: string; unlocksAtCityId: string; inputs?: Record<string, number> }>;
+  alchemyRecipes: ReadonlyArray<{ id: string; unlocksAtCityId: string; inputs: Record<string, number> }>;
   gateReadiness: {
     readinessLabel: GateTrialReadinessLabel;
     readinessDetail: string;
