@@ -28,8 +28,12 @@ void test('P5 setup card visible order is locked', () => {
   const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture());
   const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
 
+  const setupStart = html.indexOf('data-testid="outskirts-setup-card"');
+  const setupEnd = html.indexOf('data-testid="outskirts-rewards-card"');
+  const setupRegion = setupStart >= 0 && setupEnd > setupStart ? html.slice(setupStart, setupEnd) : html;
+
   const order = ['Loadout Set', 'AI Profile', 'Attack Focus', 'Offense', 'Defense', 'Medicine Pouch', 'Equipment'];
-  const indices = order.map((token) => html.indexOf(token));
+  const indices = order.map((token) => setupRegion.indexOf(token));
   assert.equal(indices.every((value) => value >= 0), true);
   for (let i = 1; i < indices.length; i += 1) {
     assert.equal(indices[i] > indices[i - 1], true);
@@ -236,4 +240,73 @@ void test('P10 no-layout-shift contract keeps stable node/card/cta structure acr
     assert.equal(defaultHtml.includes(token), true);
     assert.equal(changedHtml.includes(token), true);
   }
+});
+
+void test('Stage1 skeleton owner: planning screen exposes top/body clusters with rail and dock ownership', () => {
+  const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture());
+  const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
+
+  const required = [
+    'outskirts-exact-top-cluster',
+    'outskirts-exact-body-cluster',
+    'outskirts-exact-left-rail',
+    'outskirts-exact-center-column',
+    'outskirts-exact-right-rail',
+    'outskirts-exact-summary-dock',
+  ];
+
+  for (const token of required) {
+    assert.equal(html.includes(token), true, `missing ${token}`);
+  }
+
+  assert.equal(html.includes('outskirts-exact-future-scaffold'), false);
+});
+
+void test('Stage1 planning owner excludes legacy combat-shell owners from visible planning composition', () => {
+  const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture());
+  const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
+
+  assert.equal(html.includes('ink-combat-shell'), false);
+  assert.equal(html.includes('combatModuleTopLane'), false);
+  assert.equal(html.includes('runCompassSurface'), false);
+  assert.equal(html.includes('outskirtsPanel__summary'), false);
+  assert.equal(html.includes('tracked-bounty-progress-line'), false);
+});
+
+void test('Stage1 top-level copy contract locks title/plaque/subtitle and tactical AI Profile label', () => {
+  const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture());
+  const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
+
+  assert.equal(html.includes('data-testid="outskirts-exact-page-title">Outskirts<'), true);
+  assert.equal(html.includes('data-testid="outskirts-exact-area-plaque">Outskirts<'), true);
+  assert.equal(html.includes('data-testid="outskirts-exact-subtitle">Gold and common materials<'), true);
+  assert.equal(html.includes('outskirtsExactPage__tacticalLabel">AI Profile<'), true);
+  assert.equal(html.includes('Area: Training Forest'), false);
+  assert.equal(html.includes('Calm the route before committing the next hunt.'), false);
+});
+
+void test('Stage1 desktop geometry contract: center column dominates and rails stop before CTA row', async () => {
+  const stylesheet = await readFile(new URL('../../src/features/world/outskirts/OutskirtsExactMockupScreen.scss', import.meta.url), 'utf8');
+
+  assert.match(stylesheet, /grid-template-columns:\s*220px 28px minmax\(0, 1fr\) 28px 220px;/);
+  assert.match(stylesheet, /grid-template-rows:\s*300px 40px 92px 78px;/);
+  assert.match(stylesheet, /\.outskirtsExactPage__centerColumn\s*\{[\s\S]*grid-column:\s*3;[\s\S]*grid-row:\s*1 \/ 5;/);
+  assert.match(stylesheet, /\.outskirtsExactPage__leftRail\s*\{[\s\S]*grid-row:\s*1 \/ 4;/);
+  assert.match(stylesheet, /\.outskirtsExactPage__rightRail\s*\{[\s\S]*grid-row:\s*1 \/ 4;/);
+});
+
+void test('Stage1 summary ownership contract keeps grind summary in lower-right dock, not inside right rail stack', () => {
+  const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture());
+  const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
+
+  const rightRailIdx = html.indexOf('data-testid="outskirts-exact-right-rail"');
+  const summaryDockIdx = html.indexOf('data-testid="outskirts-exact-summary-dock"');
+  const rewardsCardIdx = html.indexOf('data-testid="outskirts-rewards-card"');
+  const grindSummaryIdx = html.indexOf('data-testid="outskirts-grind-summary"');
+
+  assert.equal(rightRailIdx >= 0, true);
+  assert.equal(summaryDockIdx >= 0, true);
+  assert.equal(rewardsCardIdx > rightRailIdx, true);
+  assert.equal(grindSummaryIdx > summaryDockIdx, true);
+  assert.equal(grindSummaryIdx > rewardsCardIdx, true);
 });

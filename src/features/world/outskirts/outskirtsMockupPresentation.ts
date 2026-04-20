@@ -104,12 +104,12 @@ export const OUTSKIRTS_ENCOUNTER_PROGRESS_DEFAULT_ID = 'quiet-glade' as const;
 
 export const OUTSKIRTS_MOCKUP_COPY = {
   pageTitle: 'Outskirts',
-  pageSubtitleFallback: 'Prepare a calm field route before committing the hunt.',
+  pageSubtitleFallback: 'Gold and common materials',
   topProgressLabel: 'Hunt Cadence',
   setupCardTitle: 'Your Setup',
   rewardsCardTitle: 'Expected Rewards',
   grindSummaryTitle: 'Grind Summary',
-  defaultAreaPlaquePrefix: 'Area:',
+  defaultAreaPlaquePrefix: '',
   fallbackCtaLabel: 'Start Hunt',
   fallbackBountyLine: 'No tracked bounty selected',
   fallbackCadenceLine: 'Auto-continue Off • Stop at boss On',

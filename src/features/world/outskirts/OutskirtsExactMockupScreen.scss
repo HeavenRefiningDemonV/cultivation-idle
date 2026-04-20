@@ -1,13 +1,33 @@
-.outskirtsExactMockup {
+.outskirtsExactPage {
+  position: relative;
   display: grid;
-  grid-template-rows: auto auto auto auto minmax(420px, 1fr);
-  row-gap: 0.85rem;
-  padding: 1rem 1.1rem 1.2rem;
+  grid-template-rows: auto minmax(0, 1fr);
+  row-gap: 0.8rem;
+  min-height: 100%;
+  padding: 18px 28px 20px;
   color: #281c16;
-  background: linear-gradient(180deg, rgba(242, 235, 217, 0.72), rgba(236, 227, 204, 0.46));
+  isolation: isolate;
+  overflow: hidden;
 }
 
-.outskirtsExactMockup__titleRow h1 {
+.outskirtsExactPage__underlay {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(120% 68% at 50% 58%, rgba(173, 187, 164, 0.18), rgba(173, 187, 164, 0) 62%),
+    radial-gradient(96% 52% at 12% 20%, rgba(112, 136, 120, 0.14), rgba(112, 136, 120, 0) 58%),
+    linear-gradient(180deg, rgba(246, 240, 224, 0.8), rgba(235, 226, 206, 0.54));
+  pointer-events: none;
+}
+
+.outskirtsExactPage__topCluster {
+  display: grid;
+  grid-template-rows: auto auto auto auto;
+  row-gap: 0.56rem;
+}
+
+.outskirtsExactPage__titleRow h1 {
   margin: 0;
   font-family: Georgia, 'Times New Roman', serif;
   font-size: clamp(2rem, 3.6vw, 2.5rem);
@@ -15,19 +35,19 @@
   letter-spacing: 0.01em;
 }
 
-.outskirtsExactMockup__macroProgress {
+.outskirtsExactPage__macroRow {
   position: relative;
   min-height: 0.95rem;
 }
 
-.outskirtsExactMockup__macroLine {
+.outskirtsExactPage__macroLine {
   position: absolute;
   inset: 50% 0 auto;
-  border-top: 1px solid rgba(60, 39, 31, 0.36);
+  border-top: 1px solid rgba(60, 39, 31, 0.32);
   transform: translateY(-50%);
 }
 
-.outskirtsExactMockup__macroNodes {
+.outskirtsExactPage__macroNodes {
   margin: 0;
   padding: 0;
   list-style: none;
@@ -36,51 +56,58 @@
   align-items: center;
 }
 
-.outskirtsExactMockup__macroNode {
+.outskirtsExactPage__macroNode {
   justify-self: center;
-  width: 0.52rem;
-  height: 0.52rem;
+  width: 0.5rem;
+  height: 0.5rem;
   border-radius: 999px;
-  border: 1px solid rgba(58, 39, 31, 0.58);
-  background: rgba(247, 241, 222, 0.72);
+  border: 1px solid rgba(58, 39, 31, 0.56);
+  background: rgba(247, 241, 222, 0.7);
 }
 
-.outskirtsExactMockup__macroNode--active {
-  width: 0.68rem;
-  height: 0.68rem;
+.outskirtsExactPage__macroNode--active {
+  width: 0.66rem;
+  height: 0.66rem;
   border-width: 2px;
-  border-color: rgba(43, 23, 15, 0.86);
-  background: rgba(72, 44, 33, 0.78);
+  border-color: rgba(43, 23, 15, 0.82);
+  background: rgba(72, 44, 33, 0.74);
 }
 
-.outskirtsExactMockup__tacticalStrip {
+.outskirtsExactPage__tacticalRow {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 0.45rem;
+  gap: 0;
+  border: 1px solid rgba(58, 41, 32, 0.24);
+  border-radius: 0.55rem;
+  overflow: hidden;
+  background: rgba(248, 241, 224, 0.84);
 }
 
-.outskirtsExactMockup__tacticalCell {
-  min-height: 3.65rem;
+.outskirtsExactPage__tacticalCell {
+  min-height: 3.35rem;
   display: grid;
   grid-template-columns: 0.8rem 1fr;
   grid-template-rows: auto auto;
-  column-gap: 0.36rem;
+  column-gap: 0.35rem;
   align-content: center;
-  padding: 0.4rem 0.45rem;
-  border: 1px solid rgba(61, 42, 34, 0.22);
-  border-radius: 0.35rem;
-  background: rgba(249, 243, 226, 0.9);
+  padding: 0.38rem 0.52rem;
+  border-right: 1px solid rgba(58, 41, 32, 0.15);
+  background: transparent;
 }
 
-.outskirtsExactMockup__tacticalIcon {
+.outskirtsExactPage__tacticalCell:last-child {
+  border-right: 0;
+}
+
+.outskirtsExactPage__tacticalIcon {
   grid-row: 1 / span 2;
   align-self: center;
   justify-self: center;
   opacity: 0.68;
 }
 
-.outskirtsExactMockup__tacticalLabel {
-  font-size: 0.62rem;
+.outskirtsExactPage__tacticalLabel {
+  font-size: 0.64rem;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -88,7 +115,7 @@
   white-space: nowrap;
 }
 
-.outskirtsExactMockup__tacticalValue {
+.outskirtsExactPage__tacticalValue {
   font-size: 0.74rem;
   line-height: 1.25;
   min-height: 1.1rem;
@@ -97,77 +124,79 @@
   white-space: nowrap;
 }
 
-.outskirtsExactMockup__area {
+.outskirtsExactPage__plaqueCluster {
   display: grid;
   justify-items: center;
-  row-gap: 0.35rem;
+  row-gap: 0.28rem;
   padding-top: 0.2rem;
+  margin-bottom: 0.14rem;
 }
 
-.outskirtsExactMockup__areaPlaque {
-  min-width: min(24rem, 80%);
+.outskirtsExactPage__areaPlaque {
+  min-width: min(18rem, 78%);
   text-align: center;
-  padding: 0.52rem 1.4rem;
+  padding: 0.45rem 1.36rem;
+  border: 1px solid rgba(84, 63, 49, 0.45);
   border-radius: 999px;
-  background: linear-gradient(180deg, #5d4c41, #352822);
+  background: linear-gradient(180deg, rgba(69, 56, 48, 0.92), rgba(53, 42, 36, 0.92));
+  box-shadow: inset 0 0 0 1px rgba(230, 218, 194, 0.24);
   color: #f4eee2;
   font-family: Georgia, 'Times New Roman', serif;
   font-size: clamp(1rem, 2.2vw, 1.24rem);
   letter-spacing: 0.015em;
 }
 
-.outskirtsExactMockup__subtitle {
+.outskirtsExactPage__subtitle {
   margin: 0;
   text-align: center;
   color: rgba(59, 41, 32, 0.84);
   font-size: 0.9rem;
 }
 
-.outskirtsExactMockup__futureScaffold {
+.outskirtsExactPage__bodyCluster {
   display: grid;
-  grid-template-columns: minmax(14rem, 0.9fr) minmax(24rem, 1.55fr) minmax(12rem, 0.9fr);
-  grid-template-rows: minmax(14rem, 1.2fr) minmax(2.6rem, auto) minmax(3rem, auto) minmax(2.8rem, auto) minmax(4rem, auto);
-  grid-template-areas:
-    'setup scenic rewards'
-    'setup identity rewards'
-    'setup encounterStrip rewards'
-    'setup cta rewards'
-    'setup grindSummary rewards';
-  gap: 0.75rem;
+  grid-template-columns: 220px 28px minmax(0, 1fr) 28px 220px;
+  grid-template-rows: 300px 40px 92px 78px;
 }
 
-.outskirtsExactMockup__slot {
-  border-radius: 0.4rem;
-  background: transparent;
-}
-
-.outskirtsExactMockup__slot--setup {
-  grid-area: setup;
+.outskirtsExactPage__leftRail {
+  grid-column: 1;
+  grid-row: 1 / 4;
   min-width: 0;
 }
 
-.outskirtsExactMockup__slot--scenic {
-  grid-area: scenic;
+.outskirtsExactPage__centerColumn {
+  grid-column: 3;
+  grid-row: 1 / 5;
+  min-width: 0;
+  display: grid;
+  grid-template-rows: 300px 40px 92px 78px;
 }
 
-.outskirtsExactMockup__slot--rewards {
-  grid-area: rewards;
+.outskirtsExactPage__rightRail {
+  grid-column: 5;
+  grid-row: 1 / 4;
+  min-width: 0;
 }
 
-.outskirtsExactMockup__slot--encounterIdentity {
-  grid-area: identity;
+.outskirtsExactPage__summaryDock {
+  grid-column: 5;
+  grid-row: 4;
+  align-self: start;
+  justify-self: stretch;
+  min-width: 0;
 }
 
-.outskirtsExactMockup__slot--encounterStrip {
-  grid-area: encounterStrip;
+.outskirtsExactPage__centerScenic,
+.outskirtsExactPage__centerIdentity,
+.outskirtsExactPage__centerStrip,
+.outskirtsExactPage__centerCta {
+  min-width: 0;
 }
 
-.outskirtsExactMockup__slot--cta {
-  grid-area: cta;
-}
-
-.outskirtsExactMockup__slot--grindSummary {
-  grid-area: grindSummary;
+.outskirtsExactPage__centerCta {
+  display: grid;
+  align-items: center;
 }
 
 .outskirtsScenicStage {
@@ -669,29 +698,42 @@
   white-space: nowrap;
 }
 
-@media (max-width: 960px) {
-  .outskirtsExactMockup {
-    row-gap: 0.7rem;
+@media (max-width: 1120px) {
+  .outskirtsExactPage {
+    padding: 14px 16px 16px;
   }
 
-  .outskirtsExactMockup__tacticalStrip {
+  .outskirtsExactPage__bodyCluster {
+    grid-template-columns: 200px 18px minmax(0, 1fr) 18px 200px;
+  }
+}
+
+@media (max-width: 960px) {
+  .outskirtsExactPage__topCluster {
+    row-gap: 0.46rem;
+  }
+
+  .outskirtsExactPage__tacticalRow {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
-  .outskirtsExactMockup__futureScaffold {
+  .outskirtsExactPage__bodyCluster {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: minmax(13rem, auto) minmax(2.4rem, auto) minmax(13rem, auto) minmax(3rem, auto) minmax(2.8rem, auto) minmax(4rem, auto);
-    grid-template-areas:
-      'scenic'
-      'identity'
-      'setup'
-      'encounterStrip'
-      'cta'
-      'grindSummary';
+    grid-template-rows: auto;
+    row-gap: 0.7rem;
   }
 
-  .outskirtsExactMockup__slot--rewards {
-    display: none;
+  .outskirtsExactPage__leftRail,
+  .outskirtsExactPage__centerColumn,
+  .outskirtsExactPage__rightRail,
+  .outskirtsExactPage__summaryDock {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .outskirtsExactPage__centerColumn {
+    grid-template-rows: minmax(13rem, auto) minmax(2.4rem, auto) minmax(5rem, auto) minmax(4rem, auto);
+    row-gap: 0.5rem;
   }
 
   .outskirtsEncounterIdentityRow {
