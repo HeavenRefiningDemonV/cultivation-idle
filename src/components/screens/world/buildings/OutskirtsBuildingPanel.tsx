@@ -364,6 +364,10 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
     [autoContinue, isOutskirtsActive, killsSinceBoss, killsToBoss, stopAtBoss],
   );
   const handlePrimaryAction = isOutskirtsActive ? handleStopOutskirts : handleStartOutskirts;
+  const handleOpenSettings = useCallback(() => {
+    useUIStore.getState().setActiveTab('settings');
+    closeWorldBuildingModal();
+  }, [closeWorldBuildingModal]);
   const planningSurface = useMemo(
     () => buildOutskirtsMockupSurfaceFromStores(cityId),
     [cityId, killsSinceBoss, killsToBoss, trackedOutskirtsBounty?.instanceId, uiSettings.profile, uiSettings.preferredTarget, uiSettings.useConsumablesInCombat],
@@ -397,7 +401,7 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
   if (viewState === 'planning') {
     return (
       <div className="outskirtsPlanningOwner" data-testid="outskirts-view-planning">
-        <OutskirtsExactMockupScreen surface={planningSurface} onStartHunt={handleStartOutskirts} />
+        <OutskirtsExactMockupScreen surface={planningSurface} onStartHunt={handleStartOutskirts} onOpenSettings={handleOpenSettings} />
       </div>
     );
   }

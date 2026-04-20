@@ -73,6 +73,77 @@ function formatPercent(value: number): string {
   return `${clamped.toFixed(0)}%`;
 }
 
+function clamp01(value: number): number {
+  if (!Number.isFinite(value)) return 0;
+  return Math.max(0, Math.min(1, value));
+}
+
+function parseHpLabel(hpLabel: string): { current: number; max: number } {
+  const matches = hpLabel.match(/(\d[\d,]*)\s*\/\s*(\d[\d,]*)/);
+  if (!matches) return { current: 0, max: 0 };
+  const current = Number(matches[1].replace(/,/g, ''));
+  const max = Number(matches[2].replace(/,/g, ''));
+  return {
+    current: Number.isFinite(current) ? current : 0,
+    max: Number.isFinite(max) ? max : 0,
+  };
+}
+
+function formatHpCell(snapshot: OutskirtsMockupRuntimeSnapshot): { primaryText: string; underlineBarPct: number } {
+  const parsed = parseHpLabel(snapshot.hpLabel);
+  if (parsed.max > 0) {
+    return {
+      primaryText: `${formatWhole(parsed.current)} / ${formatWhole(parsed.max)}`,
+      underlineBarPct: clamp01(parsed.current / parsed.max) * 100,
+    };
+  }
+  const fallbackMax = Number(snapshot.defenseRows.find((entry) => entry.id === 'hp')?.value ?? 0);
+  const normalized = Number.isFinite(fallbackMax) && fallbackMax > 0 ? Math.round(fallbackMax) : 0;
+  return {
+    primaryText: `${formatWhole(normalized)} / ${formatWhole(normalized)}`,
+    underlineBarPct: normalized > 0 ? 100 : 0,
+  };
+}
+
+function formatDangerCell(snapshot: OutskirtsMockupRuntimeSnapshot): string {
+  const level = snapshot.selectedEncounterLevelLabel.match(/\d+/)?.[0] ?? '1';
+  const bossReady = snapshot.killsSinceBoss >= snapshot.killsToBoss;
+  const qualitative = bossReady ? 'Boss' : snapshot.safetyChipState === 'safe' ? 'Low' : snapshot.safetyChipState === 'watch' ? 'Guarded' : 'Risk';
+  return `${qualitative} · Lv. ${level}`;
+}
+
+function normalizeLoadoutCell(label: string): string {
+  const match = label.match(/set\s*(\d+)/i) ?? label.match(/loadout\s*(\d+)/i) ?? label.match(/(\d+)/);
+  return match ? `Set ${match[1]}` : 'Set 1';
+}
+
+function normalizeAiProfileCell(label: string): string {
+  const trimmed = label.trim();
+  if (!trimmed) return 'Balanced';
+  return `${trimmed.charAt(0).toUpperCase()}${trimmed.slice(1).toLowerCase()}`;
+}
+
+function formatHealingCell(label: string | null): string {
+  if (!label) return '0 / 20';
+  const match = label.match(/(\d[\d,]*)\s*\/\s*(\d[\d,]*)/);
+  if (!match) return '0 / 20';
+  return `${match[1].replace(/,/g, '')} / ${match[2].replace(/,/g, '')}`;
+}
+
+function formatBountyCell(label: string | null): string {
+  if (!label) return OUTSKIRTS_MOCKUP_COPY.fallbackBountyLine;
+  const normalized = label.replace(/\s*:\s*/, ' ').replace(/\s*•.*$/i, '').trim();
+  return normalized.length > 24 ? `${normalized.slice(0, 21).trimEnd()}…` : normalized;
+}
+
+function formatExpeditionCell(label: string): { primaryText: string; showDot: boolean } {
+  const idle = Number(label.match(/(\d+)\s*(idle|complete)/i)?.[1] ?? 0);
+  const running = Number(label.match(/(\d+)\s*running/i)?.[1] ?? 0);
+  if (idle > 0) return { primaryText: `${idle} Idle`, showDot: true };
+  if (running > 0) return { primaryText: `${running} Running`, showDot: false };
+  return { primaryText: 'No expedition', showDot: false };
+}
+
 function buildEncounterNodes(killsSinceBoss: number): OutskirtsMockupEncounterChainNode[] {
   const idx = Math.max(0, Math.min(OUTSKIRTS_ENCOUNTER_PROGRESS_STRIP_MANIFEST.length - 1, Math.floor((killsSinceBoss / 10) * OUTSKIRTS_ENCOUNTER_PROGRESS_STRIP_MANIFEST.length)));
   return OUTSKIRTS_ENCOUNTER_PROGRESS_STRIP_MANIFEST.map((entry, index) => {
@@ -150,19 +221,21 @@ export function buildOutskirtsMockupSurface(snapshot: OutskirtsMockupRuntimeSnap
   const placeholders = [snapshot.scenicArtKey, snapshot.scenicBackgroundKey].filter((entry) => entry.startsWith('placeholder/'));
   const currentProgressIndex = snapshot.encounterNodes.findIndex((node) => node.state === 'current');
 
-  const medicine = asText(snapshot.medicinePouchLabel, 'No medicine pouch configured');
+  const medicine = asText(snapshot.medicinePouchLabel, '0 / 20');
   if (medicine.source !== 'live') fallbacks.push('medicinePouchLabel');
   const bounty = asText(snapshot.bountyLabel, OUTSKIRTS_MOCKUP_COPY.fallbackBountyLine);
   if (bounty.source !== 'live') fallbacks.push('bountyLabel');
+  const hp = formatHpCell(snapshot);
+  const expedition = formatExpeditionCell(snapshot.expeditionLabel);
 
   const tacticalCells = {
-    hp: { id: 'hp', label: 'HP', value: snapshot.hpLabel, tone: 'neutral' as OutskirtsTacticalTone, iconKey: 'hp', visible: true, reserveWhenEmpty: true },
-    danger: { id: 'danger', label: 'Danger', value: snapshot.dangerLabel, tone: resolveDangerTone(snapshot.killsSinceBoss, snapshot.killsToBoss), iconKey: 'danger', visible: true, reserveWhenEmpty: true },
-    loadout: { id: 'loadout', label: 'Loadout', value: snapshot.loadoutLabel, tone: 'neutral' as OutskirtsTacticalTone, iconKey: 'loadout', visible: true, reserveWhenEmpty: true },
-    aiProfile: { id: 'aiProfile', label: 'AI Profile', value: snapshot.aiProfileLabel, tone: 'neutral' as OutskirtsTacticalTone, iconKey: 'ai', visible: true, reserveWhenEmpty: true },
-    healing: { id: 'healing', label: 'Healing', value: medicine.text, tone: medicine.source === 'live' ? 'positive' : 'warning' as OutskirtsTacticalTone, iconKey: 'healing', visible: true, reserveWhenEmpty: true },
-    bounty: { id: 'bounty', label: 'Bounty', value: bounty.text, tone: bounty.source === 'live' ? 'positive' : 'neutral' as OutskirtsTacticalTone, iconKey: 'bounty', visible: true, reserveWhenEmpty: true },
-    expedition: { id: 'expedition', label: 'Expedition', value: snapshot.expeditionLabel, tone: 'neutral' as OutskirtsTacticalTone, iconKey: 'expedition', visible: true, reserveWhenEmpty: true },
+    hp: { id: 'hp', label: 'HP', primaryText: hp.primaryText, tone: 'neutral' as OutskirtsTacticalTone, iconKey: 'hp', iconKind: 'lucide' as const, showCaret: false, showNotificationDot: false, showUnderlineBar: true, underlineBarPct: hp.underlineBarPct, reserveAdornmentSpace: true, visible: true },
+    danger: { id: 'danger', label: 'Danger', primaryText: formatDangerCell(snapshot), tone: resolveDangerTone(snapshot.killsSinceBoss, snapshot.killsToBoss), iconKey: 'danger', iconKind: 'lucide' as const, showCaret: false, showNotificationDot: false, showUnderlineBar: false, reserveAdornmentSpace: true, visible: true },
+    loadout: { id: 'loadout', label: 'Loadout', primaryText: normalizeLoadoutCell(snapshot.loadoutLabel), tone: 'neutral' as OutskirtsTacticalTone, iconKey: 'loadout', iconKind: 'lucide' as const, showCaret: true, showNotificationDot: false, showUnderlineBar: false, reserveAdornmentSpace: true, visible: true },
+    aiProfile: { id: 'aiProfile', label: 'AI Profile', primaryText: normalizeAiProfileCell(snapshot.aiProfileLabel), tone: 'neutral' as OutskirtsTacticalTone, iconKey: 'aiProfile', iconKind: 'lucide' as const, showCaret: true, showNotificationDot: false, showUnderlineBar: false, reserveAdornmentSpace: true, visible: true },
+    healing: { id: 'healing', label: 'Healing', primaryText: formatHealingCell(medicine.text), tone: medicine.source === 'live' ? 'positive' : 'warning' as OutskirtsTacticalTone, iconKey: 'healing', iconKind: 'lucide' as const, showCaret: false, showNotificationDot: false, showUnderlineBar: false, reserveAdornmentSpace: true, visible: true },
+    bounty: { id: 'bounty', label: 'Bounty', primaryText: formatBountyCell(bounty.text), tone: bounty.source === 'live' ? 'positive' : 'neutral' as OutskirtsTacticalTone, iconKey: 'bounty', iconKind: 'lucide' as const, showCaret: false, showNotificationDot: false, showUnderlineBar: false, reserveAdornmentSpace: true, visible: true },
+    expedition: { id: 'expedition', label: 'Expedition', primaryText: expedition.primaryText, tone: 'neutral' as OutskirtsTacticalTone, iconKey: 'expedition', iconKind: 'lucide' as const, showCaret: false, showNotificationDot: expedition.showDot, showUnderlineBar: false, reserveAdornmentSpace: true, visible: true },
   } as const;
 
   const ownershipNote = snapshot.isOutskirtsActive
@@ -190,8 +263,15 @@ export function buildOutskirtsMockupSurface(snapshot: OutskirtsMockupRuntimeSnap
     topProgress: {
       label: OUTSKIRTS_MOCKUP_COPY.topProgressLabel,
       helperText: `Boss in ${Math.max(0, snapshot.killsToBoss - snapshot.killsSinceBoss)} kills`,
-      currentIndex: currentProgressIndex >= 0 ? currentProgressIndex : 0,
-      nodes: snapshot.encounterNodes.map((node) => ({ id: node.id, label: node.label, state: node.state })),
+      decorative: true,
+      leftOrnament: 'vine',
+      terminalCap: 'temple',
+      nodes: snapshot.encounterNodes.map((node, index) => ({
+        id: node.id,
+        label: node.label,
+        state: node.state,
+        variant: index === (currentProgressIndex >= 0 ? currentProgressIndex : 0) ? 'active' : 'muted',
+      })),
     },
     tacticalStrip: {
       label: 'Tactical Readout',
@@ -262,10 +342,12 @@ export function buildOutskirtsMockupSurface(snapshot: OutskirtsMockupRuntimeSnap
 
 function summarizeExpeditions(cityId: string): string {
   const active = useExpeditionStore.getState().active.filter((entry) => entry.cityId === cityId);
-  if (active.length === 0) return 'No expedition overlap';
+  if (active.length === 0) return 'No expedition';
   const running = active.filter((entry) => entry.status === 'running').length;
   const complete = active.filter((entry) => entry.status === 'complete').length;
-  return `${running} running • ${complete} complete`;
+  if (complete > 0) return `${complete} Idle`;
+  if (running > 0) return `${running} Running`;
+  return 'No expedition';
 }
 
 export function buildOutskirtsMockupRuntimeSnapshotFromStores(cityId?: string): OutskirtsMockupRuntimeSnapshot {
@@ -335,13 +417,13 @@ export function buildOutskirtsMockupRuntimeSnapshotFromStores(cityId?: string): 
     killsToBoss: outskirts?.killsToBoss ?? 10,
     totalKills: progress.totalKills,
     isOutskirtsActive: activity?.type === 'outskirts' && activity.cityId === resolvedCityId,
-    hpLabel: `HP ${formatWhole(gameStats.maxHp)}`,
-    dangerLabel: progress.killsSinceBoss >= (outskirts?.killsToBoss ?? 10) ? 'Boss ready' : 'Low-risk route',
+    hpLabel: `${formatWhole(gameStats.maxHp)} / ${formatWhole(gameStats.maxHp)}`,
+    dangerLabel: progress.killsSinceBoss >= (outskirts?.killsToBoss ?? 10) ? 'Boss' : 'Low',
     loadoutLabel: selectedLoadoutLabel,
     aiProfile: selectedAiProfile,
     aiProfileLabel: selectedAiProfile[0].toUpperCase() + selectedAiProfile.slice(1),
     attackFocusLabel,
-    medicinePouchLabel: pouchName ? `${pouchQty} / 20` : null,
+    medicinePouchLabel: pouchName ? `${pouchQty} / 20` : '0 / 20',
     bountyLabel: trackedText,
     expeditionLabel: summarizeExpeditions(resolvedCityId),
     offenseRows: [

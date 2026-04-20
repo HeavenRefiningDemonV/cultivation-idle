@@ -168,7 +168,7 @@ void test('P8 grind-summary fallback remains rendered when partial summary data 
 
 void test('P8 wiring: planning CTA is forwarded to existing Outskirts start handler path', async () => {
   const panelSource = await readFile(new URL('../../src/components/screens/world/buildings/OutskirtsBuildingPanel.tsx', import.meta.url), 'utf8');
-  assert.match(panelSource, /<OutskirtsExactMockupScreen surface=\{planningSurface\} onStartHunt=\{handleStartOutskirts\} \/>/);
+  assert.match(panelSource, /<OutskirtsExactMockupScreen surface=\{planningSurface\} onStartHunt=\{handleStartOutskirts\} onOpenSettings=\{handleOpenSettings\} \/>/);
   assert.match(panelSource, /const handleStartOutskirts = \(\) =>/);
 });
 
@@ -195,7 +195,7 @@ void test('P10 exact-surface smoke: one planning owner for every major region an
 
   assert.equal((html.match(/outskirts-exact-page-title/g) ?? []).length, 1);
   assert.equal((html.match(/outskirts-exact-top-progress/g) ?? []).length, 1);
-  assert.equal((html.match(/outskirts-exact-tactical-strip/g) ?? []).length, 1);
+  assert.equal((html.match(/outskirts-exact-status-band/g) ?? []).length, 1);
   assert.equal((html.match(/outskirts-exact-scenic-stage/g) ?? []).length, 1);
   assert.equal((html.match(/outskirts-setup-card/g) ?? []).length, 1);
   assert.equal((html.match(/outskirts-rewards-card/g) ?? []).length, 1);
@@ -210,6 +210,57 @@ void test('P10 exact-surface smoke: one planning owner for every major region an
   assert.equal(html.includes('ink-combat-shell__log'), false);
   assert.equal(html.includes('InkHealthBar'), false);
   assert.equal(html.includes('outskirts-view-active-contained'), false);
+});
+
+void test('Stage2 top cluster ownership renders three-band model with settings gear', () => {
+  const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture());
+  const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
+
+  assert.equal((html.match(/outskirts-exact-top-band/g) ?? []).length, 1);
+  assert.equal((html.match(/outskirts-exact-status-band/g) ?? []).length, 1);
+  assert.equal((html.match(/outskirts-exact-plaque-cluster/g) ?? []).length, 1);
+  assert.equal((html.match(/outskirts-exact-settings-gear/g) ?? []).length, 1);
+});
+
+void test('Stage2 top cluster copy and tactical order stay locked', () => {
+  const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture());
+  const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
+
+  assert.equal(html.includes('data-testid="outskirts-exact-page-title">Outskirts<'), true);
+  assert.equal(html.includes('data-testid="outskirts-exact-area-plaque">Outskirts<'), true);
+  assert.equal(html.includes('data-testid="outskirts-exact-subtitle">Gold and common materials<'), true);
+
+  const order = ['HP', 'Danger', 'Loadout', 'AI Profile', 'Healing', 'Bounty', 'Expedition'];
+  const indices = order.map((label) => html.indexOf(`outskirtsExactPage__tacticalLabel">${label}<`));
+  assert.equal(indices.every((value) => value >= 0), true);
+  for (let i = 1; i < indices.length; i += 1) {
+    assert.equal(indices[i] > indices[i - 1], true);
+  }
+});
+
+void test('Stage2 removes bullet placeholder icon and old stacked rows from top owners', () => {
+  const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture());
+  const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
+
+  assert.equal(html.includes('◦'), false);
+  assert.equal(html.includes('outskirtsExactPage__titleRow'), false);
+  assert.equal(html.includes('outskirtsExactPage__tacticalRow'), false);
+});
+
+void test('Stage2 planning owner top cluster excludes combat shell/compass/top lane owners', () => {
+  const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture());
+  const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
+
+  assert.equal(html.includes('CombatModuleTopLane'), false);
+  assert.equal(html.includes('RunCompassCompact'), false);
+  assert.equal(html.includes('InkCombatShell'), false);
+});
+
+void test('Stage2 settings gear wiring uses existing settings tab + close modal flow', async () => {
+  const panelSource = await readFile(new URL('../../src/components/screens/world/buildings/OutskirtsBuildingPanel.tsx', import.meta.url), 'utf8');
+  assert.match(panelSource, /const handleOpenSettings = useCallback\(\(\) =>/);
+  assert.match(panelSource, /useUIStore\.getState\(\)\.setActiveTab\('settings'\);/);
+  assert.match(panelSource, /closeWorldBuildingModal\(\);/);
 });
 
 void test('P10 no-layout-shift contract keeps stable node/card/cta structure across bounty and boss-ready state changes', () => {

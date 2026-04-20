@@ -46,8 +46,8 @@ void test('buildOutskirtsMockupSurface fallback handling is deterministic', () =
     scenicBackgroundKey: 'placeholder/scenic/fallback',
   }));
 
-  assert.match(surface.setupCard.medicinePouch.value, /No medicine pouch configured/i);
-  assert.match(surface.tacticalStrip.cells[5].value, /No tracked bounty selected/i);
+  assert.match(surface.setupCard.medicinePouch.value, /0 \/ 20/i);
+  assert.match(surface.tacticalStrip.cells[5].primaryText, /No tracked bounty/i);
   assert.equal(surface.debug?.placeholderAssetKeysInUse.includes('placeholder/encounter/fallback'), true);
   assert.equal(surface.debug?.placeholderAssetKeysInUse.includes('placeholder/scenic/fallback'), true);
   assert.equal(surface.debug?.missingDataFallbacks.includes('medicinePouchLabel'), true);

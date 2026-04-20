@@ -3,11 +3,9 @@ import type { OutskirtsMockupShellFlags } from './types.js';
 export const OUTSKIRTS_MOCKUP_VERSION = 'p1.v1' as const;
 
 export const OUTSKIRTS_MOCKUP_REGION_ORDER = [
-  'pageTitle',
-  'topProgress',
-  'tacticalStrip',
-  'areaPlaque',
-  'subtitle',
+  'topBand',
+  'statusBand',
+  'plaqueCluster',
   'scenicEncounterField',
   'setupCard',
   'rewardsCard',
@@ -109,9 +107,8 @@ export const OUTSKIRTS_MOCKUP_COPY = {
   setupCardTitle: 'Your Setup',
   rewardsCardTitle: 'Expected Rewards',
   grindSummaryTitle: 'Grind Summary',
-  defaultAreaPlaquePrefix: '',
   fallbackCtaLabel: 'Start Hunt',
-  fallbackBountyLine: 'No tracked bounty selected',
+  fallbackBountyLine: 'No tracked bounty',
   fallbackCadenceLine: 'Auto-continue Off • Stop at boss On',
   fallbackEncounterDescriptor: 'Low-risk field route for build and AI verification.',
 } as const;

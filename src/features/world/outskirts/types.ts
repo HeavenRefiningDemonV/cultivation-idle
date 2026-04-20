@@ -28,23 +28,32 @@ export interface OutskirtsMockupProgressNode {
   id: string;
   label: string;
   state: OutskirtsEncounterNodeState;
+  variant: 'muted' | 'active';
 }
 
 export interface OutskirtsMockupTopProgress {
   label: string;
   helperText: string;
-  currentIndex: number;
+  decorative: true;
+  leftOrnament: 'vine';
+  terminalCap: 'temple';
   nodes: OutskirtsMockupProgressNode[];
 }
 
 export interface OutskirtsMockupTacticalCell {
   id: 'hp' | 'danger' | 'loadout' | 'aiProfile' | 'healing' | 'bounty' | 'expedition';
   label: string;
-  value: string;
+  primaryText: string;
+  secondaryText?: string;
   tone: OutskirtsTacticalTone;
   iconKey: string;
+  iconKind: 'lucide';
+  showCaret: boolean;
+  showNotificationDot: boolean;
+  showUnderlineBar: boolean;
+  underlineBarPct?: number;
   visible: boolean;
-  reserveWhenEmpty: boolean;
+  reserveAdornmentSpace: boolean;
 }
 
 export interface OutskirtsMockupTacticalStrip {
