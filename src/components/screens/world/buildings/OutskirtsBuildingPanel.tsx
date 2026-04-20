@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
 import { useShallow } from 'zustand/shallow';
 import { useActivityStore } from '../../../../stores/activityStore.js';
