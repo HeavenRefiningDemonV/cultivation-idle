@@ -122,8 +122,7 @@ function toActionLabel(actionKind: string): string {
 }
 
 export function buildLiveRunCompassSurface(): RunCompassSurface | null {
-  const contentStore = useContentStore.getState();
-  const content = contentStore.raw;
+  const content = useContentStore.getState().raw;
   if (!content) return null;
 
   try {
@@ -137,9 +136,9 @@ export function buildLiveRunCompassSurface(): RunCompassSurface | null {
     const nextRealm = getNextLiveRealm(currentRealm);
     const atCap = economic.snapshot.phase.atContentCap || isAtSemesterCap(currentRealm);
     const activeTransition = economic.snapshot.phase.currentGateTransition;
-    const activeTrial = activeTransition ? contentStore.maps.trialsById[activeTransition.trialId] ?? null : null;
+    const activeTrial = activeTransition ? content.maps.trialsById[activeTransition.trialId] ?? null : null;
     const gateItemId = activeTrial ? getTrialGateItemId(content, activeTrial) : null;
-    const gateItemDef = gateItemId ? contentStore.maps.itemsById[gateItemId] ?? null : null;
+    const gateItemDef = gateItemId ? content.maps.itemsById[gateItemId] ?? null : null;
     const gateItemCount = gateItemId ? inventory.getItemCount(gateItemId) : 0;
     const breakthroughRequirement = game.getBreakthroughRequirement();
     const qiReady = Number(game.qi) >= Number(breakthroughRequirement ?? '0');
@@ -161,7 +160,7 @@ export function buildLiveRunCompassSurface(): RunCompassSurface | null {
       ? 'No future city or gate is shown beyond the live semester slice.'
       : `Current realm ${game.realm.name} → Next realm ${nextRealm?.name ?? 'Unknown'}`;
     const milestoneReadinessLabel = atCap
-      ? 'Cap Reached'
+      ? getReadinessBandLabel('cap_reached')
       : breakthroughPending
         ? (qiReady ? 'Ready' : 'Preparing')
         : readiness.overallBand
@@ -185,7 +184,7 @@ export function buildLiveRunCompassSurface(): RunCompassSurface | null {
       {
         id: 'readiness-diagnosis',
         label: 'Diagnosis',
-        detail: readiness.currentDiagnosis ? getDiagnosisLabel(readiness.currentDiagnosis.primary) : (atCap ? 'No active gate diagnosis' : 'No recent gate diagnosis'),
+        detail: readiness.currentDiagnosis ? getDiagnosisLabel(readiness.currentDiagnosis.code) : (atCap ? 'No active gate diagnosis' : 'No recent gate diagnosis'),
         tone: readiness.currentDiagnosis ? 'warning' : 'muted',
       },
       {
@@ -207,7 +206,7 @@ export function buildLiveRunCompassSurface(): RunCompassSurface | null {
         missingRequirements.push({ id: 'gate-item', label: gateItemDef?.name ?? 'Gate proof', detail: 'Required before the breakthrough can proceed.', tone: 'warning' });
       }
     } else {
-      missingRequirements.push(...economic.orderedShortfalls.slice(0, 3).map((shortfall): RunCompassInfoLine => ({
+      missingRequirements.push(...economic.orderedShortfalls.slice(0, 3).map((shortfall) => ({
         id: shortfall.id,
         label: shortfall.label,
         detail: `Gap ${formatNumber(shortfall.gap)} • priority ${shortfall.priorityBand}`,
@@ -239,10 +238,10 @@ export function buildLiveRunCompassSurface(): RunCompassSurface | null {
     }
 
     const economicActions = economic.topRouteCandidates.map((candidate, index) => {
-      const target: RunCompassActionTarget | null = candidate.destinationCityId
-        ? { kind: 'world_module', cityId: candidate.destinationCityId, moduleKey: candidate.destinationModuleKey }
+      const target = candidate.destinationCityId
+        ? { kind: 'world_module' as const, cityId: candidate.destinationCityId, moduleKey: candidate.destinationModuleKey }
         : candidate.actionKind === 'hold_and_cultivate'
-          ? { kind: 'tab', tab: 'cultivation' }
+          ? { kind: 'tab' as const, tab: 'cultivation' }
           : null;
       return {
         id: `${candidate.problemKind}-${index}`,
@@ -274,7 +273,7 @@ export function buildLiveRunCompassSurface(): RunCompassSurface | null {
           : atCap
             ? 'Current live content is complete.'
             : 'Use this section to judge whether the next Gate Trial is truly ready.',
-        diagnosisLabel: readiness.currentDiagnosis ? getDiagnosisLabel(readiness.currentDiagnosis.primary) : null,
+        diagnosisLabel: readiness.currentDiagnosis ? getDiagnosisLabel(readiness.currentDiagnosis.code) : null,
         rows: fillInfoLines(readinessRows, 3, 'No major blockers', 'No major blockers are surfaced right now.'),
       },
       missingRequirements: fillInfoLines(missingRequirements, 3, 'No major blockers', 'No major blockers are surfaced right now.'),
