@@ -31,7 +31,7 @@ export function OutskirtsTacticalStrip({ strip }: OutskirtsTacticalStripProps) {
       React.createElement(
         'span',
         { className: 'outskirtsTopRegion__tacticalIconDock', 'aria-hidden': 'true' },
-        React.createElement('img', { src: ICON_MAP[cell.id], alt: '', className: 'outskirtsTopRegion__tacticalIcon', loading: 'lazy' }),
+        React.createElement('img', { src: ICON_MAP[cell.id], alt: '', className: 'outskirtsTopRegion__tacticalIcon' }),
       ),
       React.createElement(
         'div',
