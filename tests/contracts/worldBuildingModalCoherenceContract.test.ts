@@ -16,18 +16,19 @@ const LIVE_MODULE_CASES = [
   'ruins',
 ] as const;
 
-test('world building modal keeps one centralized entry surface model and explicit live module mounts', async () => {
+test('world building modal keeps centralized entry surface model and explicit live module mounts', async () => {
   const modalSource = await readRepoFile('src/components/modals/WorldBuildingModal.tsx');
+  const entrySurfaceSource = await readRepoFile('src/systems/ui/world/worldBuildingModalEntrySurface.ts');
 
-  assert.match(modalSource, /type WorldModalEntrySurface/);
-  assert.match(modalSource, /function resolveWorldModalEntrySurface/);
-  assert.match(modalSource, /showContextStrip: shellMode === 'context-strip'/);
+  assert.match(modalSource, /resolveWorldModalEntrySurface/);
+  assert.match(entrySurfaceSource, /export type WorldModalEntrySurface/);
+  assert.match(entrySurfaceSource, /showContextStrip: shellMode === 'context-strip'/);
   assert.match(modalSource, /WORLD_MODAL_LIVE_KEYS/);
 
   LIVE_MODULE_CASES.forEach((moduleKey) => {
     assert.match(modalSource, new RegExp(`case '${moduleKey}'\\s*:`));
   });
 
-  assert.match(modalSource, /case 'apothecary':\s+case 'alchemy':\s+backgroundVariant = 'apothecary'/s);
+  assert.match(entrySurfaceSource, /case 'apothecary':\s+case 'alchemy':\s+backgroundVariant = 'apothecary'/s);
   assert.match(modalSource, /default:\s+content = isCombatModule\(buildingKey\)\s+\? null/s);
 });

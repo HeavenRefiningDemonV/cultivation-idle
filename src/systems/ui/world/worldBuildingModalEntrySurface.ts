@@ -1,9 +1,9 @@
 import type { WorldBuildingKey, WorldBuildingModalIntent } from '../../../stores/uiStore.js';
 import { formatWorldModuleLabel } from '../../../ui/text/playerFacingFormatters.js';
 
-export type BackgroundVariant = 'manual-pavilion' | 'apothecary' | 'bounty-board' | 'inside-dungeon' | 'forge';
-export type WorldModalShellFamily = 'prep-room' | 'support-board' | 'combat-path';
-export type WorldModalShellMode = 'context-strip' | 'close-only';
+export type BackgroundVariant = 'manual-pavilion' | 'apothecary' | 'bounty-board' | 'inside-dungeon' | 'forge' | 'outskirts-exact';
+export type WorldModalShellFamily = 'prep-room' | 'support-board' | 'combat-path' | 'outskirts-scenic';
+export type WorldModalShellMode = 'context-strip' | 'close-only' | 'screen-owned';
 
 export type WorldModalEntrySurface = {
   title: string;
@@ -66,6 +66,11 @@ export function resolveWorldModalEntrySurface(args: {
       backgroundVariant = 'forge';
       break;
     case 'outskirts':
+      backgroundVariant = 'outskirts-exact';
+      shellFamily = 'outskirts-scenic';
+      shellMode = 'screen-owned';
+      showShellClose = false;
+      break;
     case 'gateTrial':
     case 'ruins':
       backgroundVariant = 'inside-dungeon';

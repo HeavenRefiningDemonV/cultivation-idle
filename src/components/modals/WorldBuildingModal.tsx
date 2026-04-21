@@ -141,7 +141,7 @@ export function WorldBuildingModal({
       open={open}
       onClose={close}
       overlayClassName={`worldBuildingOverlay worldBuildingOverlay--${entrySurface.shellFamily}`}
-      panelClassName={`worldBuildingModal worldBuildingModal--${entrySurface.backgroundVariant} worldBuildingModal--${entrySurface.shellFamily}`}
+      panelClassName={`worldBuildingModal worldBuildingModal--${entrySurface.backgroundVariant} worldBuildingModal--${entrySurface.shellFamily} worldBuildingModal--${entrySurface.shellMode}`}
       ariaLabel={entrySurface.title}
     >
       {entrySurface.backgroundVariant === 'forge' && <img className="hammer" src={hammer} alt="" aria-hidden="true" />}
@@ -156,7 +156,7 @@ export function WorldBuildingModal({
           {entrySurface.contextReason ? <p className="worldBuildingSubtitle">{entrySurface.contextReason}</p> : null}
         </div>
       ) : null}
-      <div className="worldBuildingBody">{content}</div>
+      <div className={`worldBuildingBody worldBuildingBody--${entrySurface.backgroundVariant} worldBuildingBody--${entrySurface.shellFamily} worldBuildingBody--${entrySurface.shellMode}`}>{content}</div>
     </Modal>
   );
 }
