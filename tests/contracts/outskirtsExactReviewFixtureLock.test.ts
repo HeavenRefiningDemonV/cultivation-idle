@@ -6,7 +6,7 @@ import { createOutskirtsMockupFixture } from '../../src/features/world/outskirts
 import { buildOutskirtsMockupSurface } from '../../src/features/world/outskirts/buildOutskirtsMockupSurface.js';
 import {
   OUTSKIRTS_ENCOUNTER_PROGRESS_DEFAULT_ID,
-  OUTSKIRTS_ENCOUNTER_PROGRESS_STRIP_MANIFEST,
+  OUTSKIRTS_ENCOUNTER_STRIP_MANIFEST,
 } from '../../src/features/world/outskirts/outskirtsMockupPresentation.js';
 
 void test('P0 exact review fixture locks approved target anchors', () => {
@@ -27,7 +27,7 @@ void test('P0 exact review fixture locks approved target anchors', () => {
   assert.deepEqual(fixture.offenseRows.map((r) => r.value), ['318', '92%', '18%']);
   assert.deepEqual(fixture.defenseRows.map((r) => r.value), ['3,120', '84%', '76%']);
 
-  assert.deepEqual(surface.encounterProgressStrip.nodes.map((n) => n.label), [
+  assert.deepEqual(surface.encounterStrip.nodes.map((n) => n.label), [
     'Quiet Glade',
     'Rockjaw Boar',
     'Snarling Wolf',
@@ -35,7 +35,7 @@ void test('P0 exact review fixture locks approved target anchors', () => {
     'Shade Stalker',
     'Mire Serpent',
   ]);
-  assert.deepEqual(surface.encounterProgressStrip.nodes.map((n) => n.displayLevelText), [
+  assert.deepEqual(surface.encounterStrip.nodes.map((n) => n.levelLabel), [
     'Lv. 8',
     'Lv. 9',
     'Lv. 11',
@@ -43,7 +43,7 @@ void test('P0 exact review fixture locks approved target anchors', () => {
     'Lv. 15',
     'Lv. 17',
   ]);
-  assert.deepEqual(surface.encounterProgressStrip.nodes.map((n) => n.state), [
+  assert.deepEqual(surface.encounterStrip.nodes.map((n) => n.state), [
     'completed',
     'completed',
     'current',
@@ -51,15 +51,15 @@ void test('P0 exact review fixture locks approved target anchors', () => {
     'future',
     'future',
   ]);
-  assert.equal(surface.grindSummary.runsText, 'Runs: 128');
-  assert.equal(surface.grindSummary.goldPerHourText, 'Gold / hr: 1,900');
+  assert.equal(surface.grindSummary.runsText, '128');
+  assert.equal(surface.grindSummary.goldPerHourText, '1,900');
   assert.equal(surface.grindSummary.mainDropLabel, 'Wolf Pelt');
-  assert.equal(surface.grindSummary.areaFilterText, 'This Area');
+  assert.equal(surface.grindSummary.scopeChipLabel, 'This Area');
 });
 
 void test('P0 encounter manifest immutable order/levels/default are locked for review fixture', () => {
   assert.equal(OUTSKIRTS_ENCOUNTER_PROGRESS_DEFAULT_ID, 'snarling-wolf');
-  assert.deepEqual(OUTSKIRTS_ENCOUNTER_PROGRESS_STRIP_MANIFEST.map((entry) => entry.id), [
+  assert.deepEqual(OUTSKIRTS_ENCOUNTER_STRIP_MANIFEST.map((entry) => entry.id), [
     'quiet-glade',
     'rockjaw-boar',
     'snarling-wolf',
@@ -67,7 +67,7 @@ void test('P0 encounter manifest immutable order/levels/default are locked for r
     'shade-stalker',
     'mire-serpent',
   ]);
-  assert.deepEqual(OUTSKIRTS_ENCOUNTER_PROGRESS_STRIP_MANIFEST.map((entry) => entry.displayLevelText), [
+  assert.deepEqual(OUTSKIRTS_ENCOUNTER_STRIP_MANIFEST.map((entry) => entry.levelLabel), [
     'Lv. 8',
     'Lv. 9',
     'Lv. 11',

@@ -1,8 +1,8 @@
 import React from 'react';
-import type { OutskirtsMockupSetupCard } from '../types.js';
+import type { OutskirtsSetupCard as OutskirtsSetupCardModel } from '../types.js';
 
 export interface OutskirtsSetupCardProps {
-  setup: OutskirtsMockupSetupCard;
+  setup: OutskirtsSetupCardModel;
 }
 
 function resolveLoadoutBadge(value: string): string {
@@ -10,7 +10,7 @@ function resolveLoadoutBadge(value: string): string {
   return match ? match[1] : value.slice(0, 3).toUpperCase();
 }
 
-function renderStatRows(rows: OutskirtsMockupSetupCard['offense'] | OutskirtsMockupSetupCard['defense']) {
+function renderStatRows(rows: OutskirtsSetupCardModel['offenseRows'] | OutskirtsSetupCardModel['defenseRows']) {
   return rows.map((row) => React.createElement(
     'div',
     { key: row.id, className: 'outskirtsSetupCard__statRow', 'data-testid': `outskirts-setup-stat-${row.id}` },
@@ -30,33 +30,33 @@ export function OutskirtsSetupCard({ setup }: OutskirtsSetupCardProps) {
       React.createElement(
         'div',
         { className: 'outskirtsSetupCard__primaryRow outskirtsSetupCard__primaryRow--loadout' },
-        React.createElement('span', { className: 'outskirtsSetupCard__primaryLabel' }, setup.loadoutSet.label),
-        React.createElement('span', { className: 'outskirtsSetupCard__loadoutBadge' }, resolveLoadoutBadge(setup.loadoutSet.value)),
+        React.createElement('span', { className: 'outskirtsSetupCard__primaryLabel' }, setup.loadoutRow.label),
+        React.createElement('span', { className: 'outskirtsSetupCard__loadoutBadge' }, resolveLoadoutBadge(setup.loadoutRow.value)),
       ),
       React.createElement(
         'div',
         { className: 'outskirtsSetupCard__primaryRow' },
-        React.createElement('span', { className: 'outskirtsSetupCard__primaryLabel' }, setup.aiProfile.label),
-        React.createElement('span', { className: 'outskirtsSetupCard__primaryValue' }, setup.aiProfile.value),
+        React.createElement('span', { className: 'outskirtsSetupCard__primaryLabel' }, setup.aiProfileRow.label),
+        React.createElement('span', { className: 'outskirtsSetupCard__primaryValue' }, setup.aiProfileRow.value),
       ),
       React.createElement(
         'div',
         { className: 'outskirtsSetupCard__primaryRow' },
-        React.createElement('span', { className: 'outskirtsSetupCard__primaryLabel' }, setup.attackFocus.label),
-        React.createElement('span', { className: 'outskirtsSetupCard__primaryValue' }, setup.attackFocus.value),
+        React.createElement('span', { className: 'outskirtsSetupCard__primaryLabel' }, setup.attackFocusRow.label),
+        React.createElement('span', { className: 'outskirtsSetupCard__primaryValue' }, setup.attackFocusRow.value),
       ),
     ),
     React.createElement(
       'section',
       { className: 'outskirtsSetupCard__section', 'data-testid': 'outskirts-setup-offense' },
       React.createElement('h4', { className: 'outskirtsSetupCard__sectionTitle' }, 'Offense'),
-      ...renderStatRows(setup.offense),
+      ...renderStatRows(setup.offenseRows),
     ),
     React.createElement(
       'section',
       { className: 'outskirtsSetupCard__section', 'data-testid': 'outskirts-setup-defense' },
       React.createElement('h4', { className: 'outskirtsSetupCard__sectionTitle' }, 'Defense'),
-      ...renderStatRows(setup.defense),
+      ...renderStatRows(setup.defenseRows),
     ),
     React.createElement(
       'section',
@@ -65,7 +65,7 @@ export function OutskirtsSetupCard({ setup }: OutskirtsSetupCardProps) {
       React.createElement(
         'div',
         { className: 'outskirtsSetupCard__pouchRow' },
-        React.createElement('span', { className: 'outskirtsSetupCard__pouchValue' }, setup.medicinePouch.value),
+        React.createElement('span', { className: 'outskirtsSetupCard__pouchValue' }, setup.medicinePouchRow.value),
         React.createElement('button', { type: 'button', className: 'outskirtsSetupCard__pouchAction', tabIndex: -1, 'aria-label': 'Open medicine pouch (P5 display affordance)' }, '+'),
       ),
     ),

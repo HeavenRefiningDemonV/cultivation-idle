@@ -11,6 +11,8 @@ void test('P8 CTA component forwards click to existing handler when enabled', ()
       ariaLabel: 'Start Outskirts hunt',
       visible: true,
       enabled: true,
+      intent: 'start-hunt',
+      singleDominantCta: true,
       isPrimary: true,
     },
     onStartHunt: () => {
