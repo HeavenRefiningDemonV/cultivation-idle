@@ -1,66 +1,37 @@
 import assert from 'node:assert/strict';
-import fs from 'node:fs/promises';
 import test from 'node:test';
 
-import { PHASE6_COMBAT_CAPTURE_SLOT_FILES } from '../../src/dev/phase6CombatAudit/phase6CombatSurfaceIds.js';
-import { PHASE6_COMBAT_EVIDENCE_TARGETS } from '../../src/dev/phase6CombatAudit/phase6CombatEvidenceManifest.js';
+import { createOutskirtsMockupFixture } from '../../src/features/world/outskirts/fixtures/createOutskirtsMockupFixture.js';
+import { buildOutskirtsMockupSurface } from '../../src/features/world/outskirts/buildOutskirtsMockupSurface.js';
 
-void test('outskirts P0 docs wrapper files exist and point to canonical phase-6 evidence root', async () => {
-  const docs = [
-    'docs/release/qa/ui-cutover/outskirts-exact/README.md',
-    'docs/release/qa/ui-cutover/outskirts-exact/p0-freeze/README.md',
-    'docs/release/qa/ui-cutover/outskirts-exact/capture-instructions.md',
-    'docs/release/qa/ui-cutover/outskirts-exact/mockup-binding.md',
-    'docs/release/qa/ui-cutover/outskirts-exact/current-owner-inventory.md',
-    'docs/release/qa/ui-cutover/outskirts-exact/visible-regressions.md',
-    'docs/release/qa/ui-cutover/outskirts-exact/p0-freeze/review-anchor-sheet.md',
-    'docs/release/qa/ui-cutover/outskirts-exact/p0-freeze/outskirtsExactReviewFixture.json',
-  ];
+void test('outskirts freeze contract locks approved realistic review fixture values', () => {
+  const fixture = createOutskirtsMockupFixture();
+  const surface = buildOutskirtsMockupSurface(fixture);
 
-  for (const docPath of docs) {
-    const source = await fs.readFile(docPath, 'utf8');
-    assert.match(source, /outskirts/i);
-  }
+  assert.equal(surface.page.title, 'Outskirts');
+  assert.equal(surface.areaHeader.plaqueLabel, 'Outskirts');
+  assert.equal(surface.areaHeader.subtitle, 'Gold and common materials');
+  assert.equal(surface.encounterIdentity.selectedEncounterId, 'snarling-wolf');
+  assert.equal(surface.encounterIdentity.displayName, 'Snarling Wolf');
+  assert.equal(surface.encounterIdentity.levelLabel, 'Lv. 11');
+  assert.equal(surface.encounterIdentity.safetyChip.label, 'Safe');
 
-  const captureDoc = await fs.readFile('docs/release/qa/ui-cutover/outskirts-exact/capture-instructions.md', 'utf8');
-  assert.match(captureDoc, /phase-6-combat-preflight\/01-outskirts/);
-  assert.match(captureDoc, /surface=outskirts&slot=<slot>&fx=<mode>&controls=0/);
-});
-
-void test('outskirts P0 slot contract remains six canonical files with explicit semantic notes', async () => {
-  assert.deepEqual(PHASE6_COMBAT_CAPTURE_SLOT_FILES, [
-    '01-base.png',
-    '02-interaction.png',
-    '03-truth-states.png',
-    '04-high-fx.png',
-    '05-low-fx.png',
-    '06-reduced-motion.png',
+  assert.deepEqual(surface.encounterStrip.nodes.map((n) => `${n.label} ${n.levelLabel}`), [
+    'Quiet Glade Lv. 8',
+    'Rockjaw Boar Lv. 9',
+    'Snarling Wolf Lv. 11',
+    'Venomcoil Lv. 13',
+    'Shade Stalker Lv. 15',
+    'Mire Serpent Lv. 17',
   ]);
+  assert.deepEqual(surface.encounterStrip.nodes.map((n) => n.state), ['completed', 'completed', 'current', 'future', 'future', 'future']);
 
-  const outskirtsTarget = PHASE6_COMBAT_EVIDENCE_TARGETS.find((entry) => entry.id === 'outskirts');
-  assert.ok(outskirtsTarget);
-  assert.match(outskirtsTarget?.slotNotes['01-base.png'] ?? '', /idle/i);
-  assert.match(outskirtsTarget?.slotNotes['02-interaction.png'] ?? '', /HP bars/i);
-  assert.match(outskirtsTarget?.slotNotes['03-truth-states.png'] ?? '', /RunCompass/i);
-});
-
-void test('outskirts P0 wrappers are wired in package scripts', async () => {
-  const pkg = JSON.parse(await fs.readFile('package.json', 'utf8')) as {
-    scripts?: Record<string, string>;
-  };
-
-  const scripts = pkg.scripts ?? {};
-  assert.match(scripts['release:outskirts-exact-p0:capture'] ?? '', /runOutskirtsExactP0Capture/);
-  assert.match(scripts['release:outskirts-exact-p0:audit'] ?? '', /release:phase6-combat-evidence-audit/);
-  assert.match(scripts['release:outskirts-exact-p0:report'] ?? '', /buildOutskirtsExactP0Baseline/);
-});
-
-void test('outskirts P0 split is explicit: baseline truth and target truth are separate', async () => {
-  const readme = await fs.readFile('docs/release/qa/ui-cutover/outskirts-exact/README.md', 'utf8');
-  const binding = await fs.readFile('docs/release/qa/ui-cutover/outskirts-exact/mockup-binding.md', 'utf8');
-
-  assert.match(readme, /Truth A — Current live baseline/);
-  assert.match(readme, /Truth B — Exact target review fixture/);
-  assert.match(binding, /Primary visual authority/);
-  assert.match(binding, /legacy context only/i);
+  assert.equal(surface.setupCard.loadoutRow.value, 'Set 2');
+  assert.equal(surface.setupCard.attackFocusRow.value, 'Balanced');
+  assert.equal(surface.rewardsCard.trackedBounty.itemLabel, 'Wolf Pelt');
+  assert.equal(surface.rewardsCard.autoRepeat.value, 'On');
+  assert.equal(surface.grindSummary.scopeChipLabel, 'This Area');
+  assert.equal(surface.grindSummary.runsText, '128');
+  assert.equal(surface.grindSummary.goldPerHourText, '1,900');
+  assert.equal(surface.grindSummary.mainDropLabel, 'Wolf Pelt');
 });
