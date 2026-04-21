@@ -13,6 +13,8 @@ void test('outskirts P0 docs wrapper files exist and point to canonical phase-6 
     'docs/release/qa/ui-cutover/outskirts-exact/mockup-binding.md',
     'docs/release/qa/ui-cutover/outskirts-exact/current-owner-inventory.md',
     'docs/release/qa/ui-cutover/outskirts-exact/visible-regressions.md',
+    'docs/release/qa/ui-cutover/outskirts-exact/p0-freeze/review-anchor-sheet.md',
+    'docs/release/qa/ui-cutover/outskirts-exact/p0-freeze/outskirtsExactReviewFixture.json',
   ];
 
   for (const docPath of docs) {
@@ -51,4 +53,14 @@ void test('outskirts P0 wrappers are wired in package scripts', async () => {
   assert.match(scripts['release:outskirts-exact-p0:capture'] ?? '', /runOutskirtsExactP0Capture/);
   assert.match(scripts['release:outskirts-exact-p0:audit'] ?? '', /release:phase6-combat-evidence-audit/);
   assert.match(scripts['release:outskirts-exact-p0:report'] ?? '', /buildOutskirtsExactP0Baseline/);
+});
+
+void test('outskirts P0 split is explicit: baseline truth and target truth are separate', async () => {
+  const readme = await fs.readFile('docs/release/qa/ui-cutover/outskirts-exact/README.md', 'utf8');
+  const binding = await fs.readFile('docs/release/qa/ui-cutover/outskirts-exact/mockup-binding.md', 'utf8');
+
+  assert.match(readme, /Truth A — Current live baseline/);
+  assert.match(readme, /Truth B — Exact target review fixture/);
+  assert.match(binding, /Primary visual authority/);
+  assert.match(binding, /legacy context only/i);
 });

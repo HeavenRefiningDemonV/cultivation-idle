@@ -1,0 +1,85 @@
+{
+  "schemaVersion": "outskirts-exact-review-fixture.v1",
+  "authority": {
+    "approvedMockupPrimaryPath": "/mnt/data/ChatGPT Image Apr 17, 2026, 04_24_04 PM.png",
+    "legacyConceptPath": "/mnt/data/Outskirts.png",
+    "legacyConceptPolicy": "context-only-not-exact-authority"
+  },
+  "visibleAnchors": {
+    "header": {
+      "pageTitle": "Outskirts",
+      "areaPlaqueLabel": "Outskirts",
+      "subtitle": "Gold and common materials"
+    },
+    "tacticalStrip": {
+      "hp": "2,860 / 3,120",
+      "danger": "Low · Lv. 11",
+      "loadout": "Set 2",
+      "aiProfile": "Balanced",
+      "healing": "12 / 20",
+      "bounty": "Wolf Pelt 7/15",
+      "expedition": "2 Idle"
+    },
+    "setupCard": {
+      "title": "Your Setup",
+      "loadoutSet": "2",
+      "aiProfile": "Balanced",
+      "attackFocus": "Balanced",
+      "offense": {
+        "ATK": "318",
+        "ACC": "92%",
+        "CRIT": "18%"
+      },
+      "defense": {
+        "HP": "3,120",
+        "EVA": "84%",
+        "RES": "76%"
+      },
+      "medicinePouch": "12 / 20"
+    },
+    "encounter": {
+      "selectedEncounterId": "snarling-wolf",
+      "name": "Snarling Wolf",
+      "level": "Lv. 11",
+      "safety": "Safe"
+    },
+    "encounterProgress": [
+      { "id": "quiet-glade", "label": "Quiet Glade", "level": "Lv. 8", "state": "completed" },
+      { "id": "rockjaw-boar", "label": "Rockjaw Boar", "level": "Lv. 9", "state": "completed" },
+      { "id": "snarling-wolf", "label": "Snarling Wolf", "level": "Lv. 11", "state": "current" },
+      { "id": "venomcoil", "label": "Venomcoil", "level": "Lv. 13", "state": "future" },
+      { "id": "shade-stalker", "label": "Shade Stalker", "level": "Lv. 15", "state": "future" },
+      { "id": "mire-serpent", "label": "Mire Serpent", "level": "Lv. 17", "state": "future" }
+    ],
+    "rewardsCard": {
+      "title": "Expected Rewards",
+      "gold": "1,250 – 1,480",
+      "commonMaterials": ["Wolf Pelt", "Beast Bone", "Green Herb", "Spirit Stone"],
+      "trackedBounty": {
+        "item": "Wolf Pelt",
+        "helper": "Defeat wolves in the Outskirts",
+        "progress": "7 / 15"
+      },
+      "efficiency": ["~45s / run", "1,800 – 2,000 / hour"],
+      "autoRepeat": "On"
+    },
+    "bottom": {
+      "primaryCta": "Start Hunt",
+      "grindSummaryTitle": "Grind Summary",
+      "scope": "This Area",
+      "runs": "128",
+      "goldPerHour": "1,900",
+      "mainDrop": "Wolf Pelt"
+    }
+  },
+  "deterministicInternalPlaceholders": {
+    "equipmentNames": ["Steel Sword", "Field Robe", "Focus Ring", "Hunter Charm", "Trail Boots", "Jade Sigil"],
+    "scenicArtKey": "placeholder/encounter/snarling-wolf",
+    "scenicBackgroundKey": "placeholder/scenic/outskirts-wolf-field"
+  },
+  "intentionallyNotOverGuessed": [
+    "macro-top-ribbon-node semantics",
+    "exact production equipment item IDs",
+    "scenic art internal production asset IDs"
+  ]
+}

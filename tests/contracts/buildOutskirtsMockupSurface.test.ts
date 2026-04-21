@@ -60,7 +60,7 @@ void test('buildOutskirtsMockupSurface fallback handling is deterministic', () =
 
 void test('buildOutskirtsMockupSurface debug ownership note reflects active state handoff', () => {
   const idleSurface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture({ isOutskirtsActive: false }));
-  assert.equal(idleSurface.debug?.notes.includes('Idle Outskirts route renders this exact-mockup surface as the live owner.'), true);
+  assert.equal(idleSurface.debug?.notes.includes('Planning exact surface is a review fixture and does not change baseline live-screen ownership in P0.'), true);
 
   const activeSurface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture({ isOutskirtsActive: true }));
   assert.equal(activeSurface.debug?.notes.includes('Active Outskirts combat still renders the legacy combat shell owner.'), true);

@@ -1,23 +1,23 @@
-# Outskirts current-owner inventory (P0 freeze)
+# Outskirts current owner inventory (baseline truth only)
 
-This inventory captures current live ownership/truth surfaces prior to exact visual replacement.
+This file inventories **current live ownership** and does not define the exact target fixture.
 
-## Primary visible owners
-- `src/components/screens/world/buildings/OutskirtsBuildingPanel.tsx`
+## Live owner path (preserved in P0)
+- `World -> WorldBuildingModal -> OutskirtsBuildingPanel`
+- Current live Outskirts remains inside the combat-path shell family and boxed modal host.
+
+## Primary live owner files
 - `src/components/modals/WorldBuildingModal.tsx`
-- `src/components/screens/world/buildings/CombatStyles.scss`
+- `src/components/screens/world/buildings/OutskirtsBuildingPanel.tsx`
+- `src/systems/ui/world/worldBuildingModalEntrySurface.ts`
 
-## Supporting visible truth surfaces
+## Context-only supporting surfaces
+- `src/components/screens/world/buildings/CombatStyles.scss`
 - `src/ui/world/OutskirtsSummaryCard.tsx`
 - `src/ui/world/TrackedBountyProgressLine.tsx`
 - `src/ui/status/RunCompassCompact.tsx`
 - `src/ui/world/combat/CombatModuleTopLane.tsx`
-- `src/ui/world/combat/combatModuleTopLaneModel.ts`
 
-## Current truth surface checklist
-- Title/role/best-used/boundary truth through Outskirts summary surfaces.
-- RunCompassCompact placement in the current support lane.
-- Tracked bounty line when OUTSKIRTS kill kinds are active.
-- AI posture hint line when posture fit emits warnings/recommendations.
-- Primary CTA semantics: Start/Stop (stateful).
-- Combat truth surfaces: HP bars, active enemy state, combat log excerpt.
+## P0 guardrail
+- This baseline owner inventory is frozen for evidence/diffing.
+- Exact review fixture values are defined separately in `p0-freeze/review-anchor-sheet.md` and `p0-freeze/outskirtsExactReviewFixture.json`.

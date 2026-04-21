@@ -57,48 +57,48 @@ export const OUTSKIRTS_ENCOUNTER_PROGRESS_STRIP_MANIFEST = [
   {
     id: 'quiet-glade',
     label: 'Quiet Glade',
-    displayLevelText: 'Lv. 18',
+    displayLevelText: 'Lv. 8',
     artKey: 'outskirts/encounter/quiet-glade',
     silhouetteKey: 'outskirts/silhouette/quiet-glade',
   },
   {
     id: 'rockjaw-boar',
     label: 'Rockjaw Boar',
-    displayLevelText: 'Lv. 19',
+    displayLevelText: 'Lv. 9',
     artKey: 'outskirts/encounter/rockjaw-boar',
     silhouetteKey: 'outskirts/silhouette/rockjaw-boar',
   },
   {
     id: 'snarling-wolf',
     label: 'Snarling Wolf',
-    displayLevelText: 'Lv. 20',
+    displayLevelText: 'Lv. 11',
     artKey: 'outskirts/encounter/snarling-wolf',
     silhouetteKey: 'outskirts/silhouette/snarling-wolf',
   },
   {
     id: 'venomcoil',
     label: 'Venomcoil',
-    displayLevelText: 'Lv. 21',
+    displayLevelText: 'Lv. 13',
     artKey: 'outskirts/encounter/venomcoil',
     silhouetteKey: 'outskirts/silhouette/venomcoil',
   },
   {
     id: 'shade-stalker',
     label: 'Shade Stalker',
-    displayLevelText: 'Lv. 22',
+    displayLevelText: 'Lv. 15',
     artKey: 'outskirts/encounter/shade-stalker',
     silhouetteKey: 'outskirts/silhouette/shade-stalker',
   },
   {
     id: 'mire-serpent',
     label: 'Mire Serpent',
-    displayLevelText: 'Lv. 23',
+    displayLevelText: 'Lv. 17',
     artKey: 'outskirts/encounter/mire-serpent',
     silhouetteKey: 'outskirts/silhouette/mire-serpent',
   },
 ] as const;
 
-export const OUTSKIRTS_ENCOUNTER_PROGRESS_DEFAULT_ID = 'quiet-glade' as const;
+export const OUTSKIRTS_ENCOUNTER_PROGRESS_DEFAULT_ID = 'snarling-wolf' as const;
 
 export const OUTSKIRTS_MOCKUP_COPY = {
   pageTitle: 'Outskirts',

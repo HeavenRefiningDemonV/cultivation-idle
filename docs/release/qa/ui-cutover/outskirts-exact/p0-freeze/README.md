@@ -1,36 +1,30 @@
 # Outskirts exact P0 freeze package
 
-Packet: `P0 — Freeze and evidence capture`
+Packet objective: freeze current live baseline and lock exact target review fixture without redesigning live ownership/layout.
 
-This folder stores the Outskirts-only baseline package that freezes the current live screen before exact-mockup implementation begins.
-
-## Canonical raw capture source
-Raw screenshots stay in the existing Phase 6 canonical folder:
+## Canonical baseline evidence source (current live truth)
 - `docs/release/qa/ui-cutover/phase-6-combat-preflight/01-outskirts/`
+- Required slots:
+  - `01-base.png`
+  - `02-interaction.png`
+  - `03-truth-states.png`
+  - `04-high-fx.png`
+  - `05-low-fx.png`
+  - `06-reduced-motion.png`
 
-Required slots:
-- `01-base.png`
-- `02-interaction.png`
-- `03-truth-states.png`
-- `04-high-fx.png`
-- `05-low-fx.png`
-- `06-reduced-motion.png`
+## Target fixture lock artifacts (exact future truth)
+- `review-anchor-sheet.md`
+- `outskirtsExactReviewFixture.json`
 
 ## Baseline artifacts in this folder
 - `outskirtsExactP0Baseline.md`
 - `outskirtsExactP0Baseline.json`
-- `outskirtsExactP0CaptureAttempt.json` (written when capture is attempted)
+- `outskirtsExactP0CaptureAttempt.json` (capture attempt record, including honest failure)
 
 ## Regeneration commands
 1. `npm run typecheck`
-2. `npm run release:outskirts-exact-p0:capture`
+2. `npm run release:outskirts-exact-p0:report`
 3. `npm run release:outskirts-exact-p0:audit`
-4. `npm run release:outskirts-exact-p0:report`
+4. `npm run release:outskirts-exact-p0:capture`
 
-If capture fails due environment limitations (e.g., Playwright/Chromium unavailable), do not create fake PNGs; keep status explicit in baseline outputs.
-
-## Companion docs
-- `../capture-instructions.md`
-- `../mockup-binding.md`
-- `../current-owner-inventory.md`
-- `../visible-regressions.md`
+If capture is blocked, keep explicit failure status and do not fabricate PNGs.

@@ -1,22 +1,19 @@
-# Outskirts exact-mockup binding note (P0)
+# Outskirts approved mockup binding (P0)
 
-Status: **bound visual contract** for future rebuild packets.
+## Primary visual authority
+- Primary exact authority is the approved realistic Outskirts mockup:
+  - `/mnt/data/ChatGPT Image Apr 17, 2026, 04_24_04 PM.png`
 
-## Binding statement
-- Outskirts is now **exact-mockup-driven** for upcoming visual packets.
-- The approved Outskirts mockup is the visual contract for P1+ implementation packets.
-- Future visual packets may **not** inherit generalized combat-shell assumptions unless explicitly approved.
-
-## Preservation requirements during rebuild
-- Preserve world-routing contract: `World -> WorldBuildingModal -> OutskirtsBuildingPanel`.
-- Preserve role/boundary gameplay truth:
-  - role: gold + common-material lane
-  - boundary: not best source for targeted city materials
-- Preserve no-layout-shift discipline for dynamic truth surfaces.
-- Preserve adjacent-module expectations and route continuity.
-
-## Approved mockup reference
-- Expected repository reference path (if/when binary is landed):
+## Repository binding status
+- Expected in-repo location for approved binary:
   - `docs/release/qa/ui-cutover/outskirts-exact/approved-mockup/outskirts-approved-exact.png`
-- Current state: approved image binary is treated as an **external bound artifact** and is not present here yet.
-- This packet does **not** fabricate placeholder mockup art.
+- Current status: **external-only in this environment**.
+  - Copy attempt was executed during P0, but source file was not present at `/mnt/data/...` in this runtime.
+  - P0 therefore binds to the external authoritative path above and does not fabricate/recompress substitute art.
+
+## Legacy mockup policy
+- Older concept image (`/mnt/data/Outskirts.png`) is legacy context only.
+- Legacy concept material is **not** the exact visual contract for P0+ exact recovery assertions.
+
+## Guardrail
+- Baseline live evidence (phase-6 combat preflight) and exact review fixture must remain separate authorities.

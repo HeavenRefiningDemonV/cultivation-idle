@@ -199,6 +199,20 @@ function buildEncounterProgressStrip(snapshot: OutskirtsMockupRuntimeSnapshot): 
 }
 
 function buildGrindSummary(snapshot: OutskirtsMockupRuntimeSnapshot): OutskirtsMockupSurface['grindSummary'] {
+  if (snapshot.sourceMode === 'fixture') {
+    return {
+      visible: true,
+      title: OUTSKIRTS_MOCKUP_COPY.grindSummaryTitle,
+      runsText: `Runs: ${snapshot.totalKills}`,
+      goldPerHourText: 'Gold / hr: 1,900',
+      mainDropLabel: 'Wolf Pelt',
+      mainDropIconKey: snapshot.scenicArtKey,
+      areaFilterText: 'This Area',
+      rewardIconKeys: snapshot.expectedRewards.map((entry) => `${OUTSKIRTS_PLACEHOLDER_POLICY.iconFallbackPrefix}${entry.id}`).slice(0, 3),
+      progressText: undefined,
+    };
+  }
+
   const mainDrop = snapshot.expectedRewards.find((entry) => entry.id !== 'gold')?.value ?? 'Broad field drops';
   const safeRunsPerHour = Math.max(1, Math.round(3600 / 18));
   const estimatedGoldPerHour = Math.max(1, safeRunsPerHour * 150);
@@ -240,7 +254,7 @@ export function buildOutskirtsMockupSurface(snapshot: OutskirtsMockupRuntimeSnap
 
   const ownershipNote = snapshot.isOutskirtsActive
     ? 'Active Outskirts combat still renders the legacy combat shell owner.'
-    : 'Idle Outskirts route renders this exact-mockup surface as the live owner.';
+    : 'Planning exact surface is a review fixture and does not change baseline live-screen ownership in P0.';
 
   return {
     meta: {
