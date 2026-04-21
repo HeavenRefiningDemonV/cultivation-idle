@@ -59,6 +59,57 @@ void test('P5 planning state excludes legacy combat-shell owners', () => {
   assert.equal(html.includes('ink-combat-shell__healthbar'), false);
 });
 
+void test('P6 scenic center renders as composition surface with no visible descriptor fallback text', () => {
+  const fixture = createOutskirtsMockupFixture();
+  const surface = buildOutskirtsMockupSurface(fixture);
+  const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
+
+  assert.equal((html.match(/outskirts-exact-scenic-stage/g) ?? []).length, 1);
+  assert.equal((html.match(/outskirts-exact-scenic-image/g) ?? []).length, 1);
+  assert.equal((html.match(/outskirts-exact-encounter-identity-row/g) ?? []).length, 1);
+  assert.equal(html.includes('outskirtsScenicStage__plate'), true);
+  assert.equal(html.includes('outskirtsScenicStage__fallback">'), false);
+  assert.equal(html.includes(`>${fixture.encounterDescriptor}<`), false);
+});
+
+void test('P6 review fixture identity remains target-faithful and does not render watch control', () => {
+  const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture());
+  const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
+
+  assert.equal(html.includes('outskirts-exact-encounter-name">Snarling Wolf<'), true);
+  assert.equal(html.includes('outskirts-exact-encounter-level">Lv. 11<'), true);
+  assert.equal(html.includes('outskirts-exact-encounter-safe-chip">Safe<'), true);
+  assert.equal(html.includes('Watch'), false);
+  assert.equal(html.includes('/assets/mockups/ChatGPT Image Apr 17, 2026, 04_24_04 PM.png'), true);
+});
+
+void test('P6 scenic placeholder suppression keeps stage rendered when scenic image source is absent', () => {
+  const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture());
+  surface.scenicStage.scenicImageSrc = null;
+  surface.scenicStage.reviewFixtureImageSrc = null;
+  surface.scenicStage.useApprovedMockupCrop = false;
+  const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
+
+  assert.equal((html.match(/outskirts-exact-scenic-stage/g) ?? []).length, 1);
+  assert.equal((html.match(/outskirts-exact-scenic-image/g) ?? []).length, 1);
+  assert.equal(html.includes('outskirtsScenicStage__fallback">'), false);
+  assert.equal(html.includes(`>${surface.scenicStage.environmentDescriptor}<`), false);
+});
+
+void test('P6 no-scope-widening smoke: side cards, strip, CTA, and summary owners remain mounted', () => {
+  const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture());
+  const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
+
+  const unchangedOwners = [
+    'outskirts-setup-card',
+    'outskirts-rewards-card',
+    'outskirts-encounter-progress-strip',
+    'outskirts-start-hunt-cta',
+    'outskirts-grind-summary',
+  ];
+  for (const token of unchangedOwners) assert.equal(html.includes(token), true);
+});
+
 void test('P5 top region element count remains stable across fixture/live and bounty/expedition shifts', () => {
   const fixtureSurface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture());
   const liveLikeSurface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture({

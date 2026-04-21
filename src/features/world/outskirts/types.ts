@@ -65,6 +65,9 @@ export interface OutskirtsAreaHeader {
 export interface OutskirtsScenicStage {
   scenicBackgroundKey: string;
   scenicImageSrc: string | null;
+  reviewFixtureImageSrc: string | null;
+  liveFallbackImageSrc: string | null;
+  useApprovedMockupCrop: boolean;
   encounterArtKey: string;
   environmentDescriptor: string;
 }

@@ -13,6 +13,8 @@ void test('buildOutskirtsMockupSurface emits v2 shape with explicit shell contra
   assert.equal(surface.topRibbon.nodes.length, 6);
   assert.equal(surface.tacticalStrip.cells.length, 7);
   assert.equal(surface.areaHeader.subtitle, 'Gold and common materials');
+  assert.equal(surface.scenicStage.useApprovedMockupCrop, true);
+  assert.equal(surface.scenicStage.reviewFixtureImageSrc, '/assets/mockups/ChatGPT Image Apr 17, 2026, 04_24_04 PM.png');
   assert.equal(surface.rewardsCard.goldHeadline.value, '1,250 – 1,480');
   assert.deepEqual(surface.rewardsCard.commonMaterials.items.map((item) => item.label), ['Wolf Pelt', 'Beast Bone', 'Green Herb', 'Spirit Stone']);
   assert.equal(surface.encounterIdentity.selectedEncounterId, 'snarling-wolf');
@@ -39,6 +41,8 @@ void test('buildOutskirtsMockupSurface preserves v2 structure for live-like valu
   assert.equal(surface.meta.mode, 'live');
   assert.equal(surface.encounterStrip.nodes.length, 6);
   assert.equal(surface.encounterStrip.selectedEncounterId, 'venomcoil');
+  assert.equal(surface.scenicStage.useApprovedMockupCrop, false);
+  assert.equal(surface.scenicStage.liveFallbackImageSrc, '/assets/background/citystates/city_outskirts.png');
   assert.equal(surface.rewardsCard.estimatedEfficiency.title, 'Estimated Efficiency');
   assert.equal(surface.debug.missingDataFallbacks.includes('bountyLabel'), true);
 });

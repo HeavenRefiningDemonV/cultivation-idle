@@ -18,6 +18,7 @@ import {
   OUTSKIRTS_ALLOWED_PLANNING_SHELL,
   OUTSKIRTS_ENCOUNTER_DEFAULT_ID,
   OUTSKIRTS_ENCOUNTER_STRIP_MANIFEST,
+  OUTSKIRTS_APPROVED_SCENIC_MOCKUP_SRC,
   OUTSKIRTS_MOCKUP_VERSION,
   OUTSKIRTS_PLACEHOLDER_POLICY,
   OUTSKIRTS_REVIEW_COPY,
@@ -71,8 +72,10 @@ function normalizeEncounterId(value: string): string {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 }
 
-function resolveScenicImageSrc(_: string): string | null {
-  return '/assets/background/citystates/city_outskirts.png';
+function resolveScenicImageSrc(sourceMode: OutskirtsMockupRuntimeSnapshot['sourceMode']): string | null {
+  return sourceMode === 'fixture'
+    ? OUTSKIRTS_APPROVED_SCENIC_MOCKUP_SRC
+    : '/assets/background/citystates/city_outskirts.png';
 }
 
 function buildEncounterStrip(snapshot: OutskirtsMockupRuntimeSnapshot): OutskirtsExactSurfaceV2['encounterStrip'] {
@@ -161,7 +164,10 @@ export function buildOutskirtsMockupSurface(snapshot: OutskirtsMockupRuntimeSnap
     },
     scenicStage: {
       scenicBackgroundKey: snapshot.scenicBackgroundKey,
-      scenicImageSrc: resolveScenicImageSrc(snapshot.scenicBackgroundKey),
+      scenicImageSrc: resolveScenicImageSrc(snapshot.sourceMode),
+      reviewFixtureImageSrc: snapshot.sourceMode === 'fixture' ? OUTSKIRTS_APPROVED_SCENIC_MOCKUP_SRC : null,
+      liveFallbackImageSrc: '/assets/background/citystates/city_outskirts.png',
+      useApprovedMockupCrop: snapshot.sourceMode === 'fixture',
       encounterArtKey: snapshot.scenicArtKey,
       environmentDescriptor: snapshot.encounterDescriptor,
     },
