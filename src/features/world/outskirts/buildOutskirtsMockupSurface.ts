@@ -341,7 +341,7 @@ export function buildOutskirtsMockupRuntimeSnapshotFromStores(cityId?: string): 
     ],
     equipmentGrid: [
       { slotId: 'weapon', label: 'Weapon', iconKey: 'weapon', value: resolveItemName(equippedWeaponId), source: equippedWeaponId ? 'live' : 'synthetic' },
-      { slotId: 'armor', label: 'Armor', iconKey: 'armor', value: resolveItemName(equippedAccessoryId), source: equippedAccessoryId ? 'live' : 'synthetic' },
+      { slotId: 'armor', label: 'Armor', iconKey: 'armor', value: OUTSKIRTS_PLACEHOLDER_POLICY.lineFallback, source: 'synthetic' },
       { slotId: 'ring', label: 'Ring', iconKey: 'ring', value: resolveItemName(equippedAccessoryId), source: equippedAccessoryId ? 'derived' : 'synthetic' },
       { slotId: 'talisman', label: 'Talisman', iconKey: 'talisman', value: OUTSKIRTS_PLACEHOLDER_POLICY.lineFallback, source: 'synthetic' },
       { slotId: 'boots', label: 'Boots', iconKey: 'boots', value: OUTSKIRTS_PLACEHOLDER_POLICY.lineFallback, source: 'synthetic' },

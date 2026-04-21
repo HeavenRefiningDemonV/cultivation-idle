@@ -110,6 +110,61 @@ void test('P6 no-scope-widening smoke: side cards, strip, CTA, and summary owner
   for (const token of unchangedOwners) assert.equal(html.includes(token), true);
 });
 
+void test('P7 setup-card structure renders exact ordered sections and six equipment slots', () => {
+  const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture());
+  const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
+
+  assert.equal((html.match(/outskirts-exact-setup-card/g) ?? []).length, 1);
+  assert.equal((html.match(/outskirts-exact-setup-title/g) ?? []).length, 1);
+  assert.equal((html.match(/outskirts-exact-setup-primary/g) ?? []).length, 3);
+  assert.equal((html.match(/outskirts-exact-setup-offense/g) ?? []).length, 1);
+  assert.equal((html.match(/outskirts-exact-setup-defense/g) ?? []).length, 1);
+  assert.equal((html.match(/outskirts-exact-setup-pouch/g) ?? []).length, 1);
+  assert.equal((html.match(/outskirts-exact-setup-equipment-grid/g) ?? []).length, 1);
+  assert.equal((html.match(/outskirts-exact-setup-equipment-slot/g) ?? []).length, 6);
+
+  for (const token of ['Your Setup', 'Loadout Set', 'AI Profile', 'Attack Focus', 'Offense', 'Defense', 'Medicine Pouch', 'Equipment']) {
+    assert.equal(html.includes(token), true);
+  }
+});
+
+void test('P7 review fixture setup values remain locked to approved target', () => {
+  const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture());
+  const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
+
+  assert.equal(html.includes('Loadout Set'), true);
+  assert.equal(html.includes('AI Profile'), true);
+  assert.equal(html.includes('Attack Focus'), true);
+  assert.equal(html.includes('>2<'), true);
+  assert.equal(html.includes('Balanced'), true);
+  assert.equal(html.includes('>318<'), true);
+  assert.equal(html.includes('>92%<'), true);
+  assert.equal(html.includes('>18%<'), true);
+  assert.equal(html.includes('>3,120<'), true);
+  assert.equal(html.includes('>84%<'), true);
+  assert.equal(html.includes('>76%<'), true);
+  assert.equal(html.includes('12 / 20'), true);
+});
+
+void test('P7 equipment grid remains six icon-first slots in live partial-truth mode', () => {
+  const liveLikeSurface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture({
+    sourceMode: 'stores',
+    equipmentGrid: [
+      { slotId: 'weapon', label: 'Weapon', iconKey: 'weapon', value: 'Rusty Sword', source: 'live' },
+      { slotId: 'armor', label: 'Armor', iconKey: 'armor', value: '—', source: 'synthetic' },
+      { slotId: 'ring', label: 'Ring', iconKey: 'ring', value: 'Prayer Beads', source: 'derived' },
+      { slotId: 'talisman', label: 'Talisman', iconKey: 'talisman', value: '—', source: 'synthetic' },
+      { slotId: 'boots', label: 'Boots', iconKey: 'boots', value: '—', source: 'synthetic' },
+      { slotId: 'charm', label: 'Charm', iconKey: 'charm', value: '—', source: 'synthetic' },
+    ],
+  }));
+  const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface: liveLikeSurface }));
+
+  assert.equal((html.match(/outskirts-exact-setup-equipment-slot/g) ?? []).length, 6);
+  assert.equal(html.includes('outskirtsSetupCard__equipmentLabel'), false);
+  assert.equal(html.includes('◦'), false);
+});
+
 void test('P5 top region element count remains stable across fixture/live and bounty/expedition shifts', () => {
   const fixtureSurface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture());
   const liveLikeSurface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture({

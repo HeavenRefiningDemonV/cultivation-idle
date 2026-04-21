@@ -41,6 +41,10 @@ void test('buildOutskirtsMockupSurface preserves v2 structure for live-like valu
   assert.equal(surface.meta.mode, 'live');
   assert.equal(surface.encounterStrip.nodes.length, 6);
   assert.equal(surface.encounterStrip.selectedEncounterId, 'venomcoil');
+  assert.equal(surface.setupCard.equipmentGrid[0].slotId, 'weapon');
+  assert.equal(surface.setupCard.equipmentGrid[1].slotId, 'armor');
+  assert.equal(surface.setupCard.equipmentGrid[1].source, 'synthetic');
+  assert.equal(surface.setupCard.equipmentGrid[2].slotId, 'ring');
   assert.equal(surface.scenicStage.useApprovedMockupCrop, false);
   assert.equal(surface.scenicStage.liveFallbackImageSrc, '/assets/background/citystates/city_outskirts.png');
   assert.equal(surface.rewardsCard.estimatedEfficiency.title, 'Estimated Efficiency');
