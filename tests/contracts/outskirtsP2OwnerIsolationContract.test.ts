@@ -22,6 +22,8 @@ void test('P2 planning owner is pure and does not depend on legacy combat-shell 
     /useRunCompassSurface/,
     /buildOutskirtsFxProfile/,
     /CombatStyles\.scss/,
+    /buildOutskirtsMockupSurfaceFromStores/,
+    /OutskirtsExactMockupScreen\.scss/,
   ];
 
   for (const token of forbiddenInRouter) {
@@ -31,6 +33,7 @@ void test('P2 planning owner is pure and does not depend on legacy combat-shell 
 
   assert.match(planningOwner, /OutskirtsExactMockupScreen/);
   assert.match(planningOwner, /buildOutskirtsMockupSurfaceFromStores/);
+  assert.match(planningOwner, /OutskirtsExactMockupScreen\.scss/);
   assert.match(planningOwner, /data-testid="outskirts-view-planning"/);
 });
 
