@@ -1,8 +1,8 @@
 import React from 'react';
-import type { OutskirtsMockupEncounterProgressStrip } from '../types.js';
+import type { OutskirtsEncounterStrip } from '../types.js';
 
 export interface OutskirtsEncounterProgressStripProps {
-  strip: OutskirtsMockupEncounterProgressStrip;
+  strip: OutskirtsEncounterStrip;
 }
 
 export function OutskirtsEncounterProgressStrip({ strip }: OutskirtsEncounterProgressStripProps) {
@@ -45,7 +45,7 @@ export function OutskirtsEncounterProgressStrip({ strip }: OutskirtsEncounterPro
           React.createElement(
             'span',
             { className: 'outskirtsEncounterProgressStrip__level' },
-            node.displayLevelText ?? ' ',
+            node.levelLabel,
           ),
         ),
       )),
