@@ -1,7 +1,7 @@
 import React from 'react';
 import { Bot, ChevronDown, FlaskConical, Heart, Mountain, ScrollText, Settings, ShieldAlert, Swords } from 'lucide-react';
 import { OUTSKIRTS_MOCKUP_REGION_ORDER } from './outskirtsMockupPresentation.js';
-import type { OutskirtsMockupSurface } from './types.js';
+import type { OutskirtsExactSurfaceV2 } from './types.js';
 import { OutskirtsScenicStage } from './components/OutskirtsScenicStage.js';
 import { OutskirtsEncounterIdentityRow } from './components/OutskirtsEncounterIdentityRow.js';
 import { OutskirtsSetupCard } from './components/OutskirtsSetupCard.js';
@@ -11,7 +11,7 @@ import { OutskirtsGrindSummaryCard } from './components/OutskirtsGrindSummaryCar
 import { OutskirtsRewardsCard } from './components/OutskirtsRewardsCard.js';
 
 export interface OutskirtsExactMockupScreenProps {
-  surface: OutskirtsMockupSurface;
+  surface: OutskirtsExactSurfaceV2;
   onStartHunt?: () => void;
   onOpenSettings?: () => void;
 }
@@ -40,17 +40,17 @@ export function OutskirtsExactMockupScreen({ surface, onStartHunt, onOpenSetting
         React.createElement(
           'div',
           { className: 'outskirtsExactPage__titleAnchor', 'data-testid': 'outskirts-exact-title-row' },
-          React.createElement('h1', { 'data-testid': 'outskirts-exact-page-title' }, surface.header.pageTitle),
+          React.createElement('h1', { 'data-testid': 'outskirts-exact-page-title' }, surface.page.title),
         ),
         React.createElement(
           'section',
-          { className: 'outskirtsExactPage__macroRow', 'data-testid': 'outskirts-exact-top-progress', 'aria-label': surface.topProgress.label },
+          { className: 'outskirtsExactPage__macroRow', 'data-testid': 'outskirts-exact-top-progress', 'aria-label': surface.topRibbon.ariaLabel },
           React.createElement('span', { className: 'outskirtsExactPage__macroLeftOrnament', 'aria-hidden': 'true' }),
           React.createElement('div', { className: 'outskirtsExactPage__macroLine', 'aria-hidden': 'true' }),
           React.createElement(
             'ol',
             { className: 'outskirtsExactPage__macroNodes', 'aria-hidden': 'true' },
-            ...surface.topProgress.nodes.map((node) => React.createElement('li', {
+            ...surface.topRibbon.nodes.map((node) => React.createElement('li', {
               key: node.id,
               'data-testid': 'outskirts-exact-macro-node',
               className: `outskirtsExactPage__macroNode outskirtsExactPage__macroNode--${node.variant}`,
@@ -58,7 +58,7 @@ export function OutskirtsExactMockupScreen({ surface, onStartHunt, onOpenSetting
             })),
           ),
           React.createElement('span', { className: 'outskirtsExactPage__macroTerminalCap', 'aria-hidden': 'true' }),
-          React.createElement('span', { className: 'outskirtsExactPage__macroAria', 'aria-label': `${surface.topProgress.label}. ${surface.topProgress.helperText}` }),
+          React.createElement('span', { className: 'outskirtsExactPage__macroAria', 'aria-label': `${surface.topRibbon.ariaLabel}` }),
         ),
         React.createElement(
           'button',
@@ -78,7 +78,7 @@ export function OutskirtsExactMockupScreen({ surface, onStartHunt, onOpenSetting
           className: 'outskirtsExactPage__statusBand',
           'data-testid': 'outskirts-exact-status-band',
           'data-legacy-testid': 'outskirts-exact-tactical-strip',
-          'aria-label': surface.tacticalStrip.label,
+          'aria-label': surface.tacticalStrip.ariaLabel,
         },
         ...surface.tacticalStrip.cells.map((cell) => React.createElement(
           'div',
@@ -119,8 +119,8 @@ export function OutskirtsExactMockupScreen({ surface, onStartHunt, onOpenSetting
       React.createElement(
         'section',
         { className: 'outskirtsExactPage__plaqueCluster', 'data-testid': 'outskirts-exact-plaque-cluster', 'data-legacy-testid': 'outskirts-exact-area-region' },
-        React.createElement('div', { className: 'outskirtsExactPage__areaPlaque', 'data-testid': 'outskirts-exact-area-plaque' }, surface.header.areaPlaqueLabel),
-        React.createElement('p', { className: 'outskirtsExactPage__subtitle', 'data-testid': 'outskirts-exact-subtitle' }, surface.header.subtitle),
+        React.createElement('div', { className: 'outskirtsExactPage__areaPlaque', 'data-testid': 'outskirts-exact-area-plaque' }, surface.areaHeader.plaqueLabel),
+        React.createElement('p', { className: 'outskirtsExactPage__subtitle', 'data-testid': 'outskirts-exact-subtitle' }, surface.areaHeader.subtitle),
       ),
     ),
     React.createElement(
@@ -134,10 +134,10 @@ export function OutskirtsExactMockupScreen({ surface, onStartHunt, onOpenSetting
       React.createElement(
         'main',
         { className: 'outskirtsExactPage__centerColumn', 'data-testid': 'outskirts-exact-center-column' },
-        React.createElement('div', { className: 'outskirtsExactPage__centerScenic' }, React.createElement(OutskirtsScenicStage, { encounter: surface.encounterHero })),
-        React.createElement('div', { className: 'outskirtsExactPage__centerIdentity' }, React.createElement(OutskirtsEncounterIdentityRow, { encounter: surface.encounterHero })),
-        React.createElement('div', { className: 'outskirtsExactPage__centerStrip' }, React.createElement(OutskirtsEncounterProgressStrip, { strip: surface.encounterProgressStrip })),
-        React.createElement('div', { className: 'outskirtsExactPage__centerCta' }, React.createElement(OutskirtsStartHuntCta, { cta: surface.primaryCta, onStartHunt })),
+        React.createElement('div', { className: 'outskirtsExactPage__centerScenic' }, React.createElement(OutskirtsScenicStage, { scenic: surface.scenicStage, identity: surface.encounterIdentity })),
+        React.createElement('div', { className: 'outskirtsExactPage__centerIdentity' }, React.createElement(OutskirtsEncounterIdentityRow, { identity: surface.encounterIdentity })),
+        React.createElement('div', { className: 'outskirtsExactPage__centerStrip' }, React.createElement(OutskirtsEncounterProgressStrip, { strip: surface.encounterStrip })),
+        React.createElement('div', { className: 'outskirtsExactPage__centerCta' }, React.createElement(OutskirtsStartHuntCta, { cta: surface.primaryAction, onStartHunt })),
       ),
       React.createElement(
         'aside',

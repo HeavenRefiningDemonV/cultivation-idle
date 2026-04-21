@@ -1,22 +1,23 @@
 import React from 'react';
-import type { OutskirtsMockupEncounterHero } from '../types.js';
+import type { OutskirtsEncounterIdentity, OutskirtsScenicStage as OutskirtsScenicStageModel } from '../types.js';
 
 export interface OutskirtsScenicStageProps {
-  encounter: OutskirtsMockupEncounterHero;
+  scenic: OutskirtsScenicStageModel;
+  identity: OutskirtsEncounterIdentity;
 }
 
-export function OutskirtsScenicStage({ encounter }: OutskirtsScenicStageProps) {
+export function OutskirtsScenicStage({ scenic, identity }: OutskirtsScenicStageProps) {
   return React.createElement(
     'section',
     { className: 'outskirtsScenicStage', 'data-testid': 'outskirts-exact-scenic-stage' },
-    encounter.scenicImageSrc
+    scenic.scenicImageSrc
       ? React.createElement('img', {
           className: 'outskirtsScenicStage__image',
-          src: encounter.scenicImageSrc,
-          alt: `${encounter.encounterDisplayName} scenic field`,
+          src: scenic.scenicImageSrc,
+          alt: `${identity.displayName} scenic field`,
           loading: 'lazy',
         })
-      : React.createElement('div', { className: 'outskirtsScenicStage__fallback', 'data-testid': 'outskirts-exact-scenic-fallback' }, encounter.descriptor),
+      : React.createElement('div', { className: 'outskirtsScenicStage__fallback', 'data-testid': 'outskirts-exact-scenic-fallback' }, scenic.environmentDescriptor),
     React.createElement('span', { className: 'outskirtsScenicStage__veil', 'aria-hidden': 'true' }),
   );
 }

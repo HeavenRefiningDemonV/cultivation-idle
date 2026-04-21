@@ -1,8 +1,8 @@
 import React from 'react';
-import type { OutskirtsMockupPrimaryCta } from '../types.js';
+import type { OutskirtsPrimaryAction } from '../types.js';
 
 export interface OutskirtsStartHuntCtaProps {
-  cta: OutskirtsMockupPrimaryCta;
+  cta: OutskirtsPrimaryAction;
   onStartHunt?: () => void;
 }
 

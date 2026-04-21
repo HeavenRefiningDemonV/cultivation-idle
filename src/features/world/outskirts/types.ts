@@ -5,42 +5,37 @@ export type OutskirtsTacticalTone = 'neutral' | 'positive' | 'warning' | 'critic
 export type OutskirtsEncounterNodeState = 'completed' | 'current' | 'future';
 export type OutskirtsEncounterSafety = 'safe' | 'watch' | 'risk' | 'critical';
 
-export interface OutskirtsMockupMeta {
+export interface OutskirtsExactSurfaceMeta {
   surfaceId: 'outskirts-exact-mockup';
-  version: 'p1.v1';
-  sourceMode: 'fixture' | 'stores';
+  version: 'p3.v2';
+  mode: 'live' | 'fixture';
   cityId: string;
   outskirtsId: string | null;
-  planningState: boolean;
-  exactMockup: true;
+  source: 'stores' | 'fixture';
+  targetMockupId: 'outskirts-approved-apr-17-2026';
 }
 
-export interface OutskirtsMockupHeader {
-  pageTitle: string;
-  subtitle: string;
-  areaPlaqueLabel: string;
-  roleTag: string;
-  bestUsedWhen: string;
-  boundaryLine: string;
+export interface OutskirtsExactSurfacePage {
+  title: string;
 }
 
-export interface OutskirtsMockupProgressNode {
+export interface OutskirtsTopRibbonNode {
   id: string;
   label: string;
   state: OutskirtsEncounterNodeState;
   variant: 'muted' | 'active';
 }
 
-export interface OutskirtsMockupTopProgress {
-  label: string;
-  helperText: string;
+export interface OutskirtsTopRibbon {
+  ariaLabel: string;
   decorative: true;
   leftOrnament: 'vine';
   terminalCap: 'temple';
-  nodes: OutskirtsMockupProgressNode[];
+  nodes: OutskirtsTopRibbonNode[];
+  activeNodeId: string;
 }
 
-export interface OutskirtsMockupTacticalCell {
+export interface OutskirtsTacticalCell {
   id: 'hp' | 'danger' | 'loadout' | 'aiProfile' | 'healing' | 'bounty' | 'expedition';
   label: string;
   primaryText: string;
@@ -56,34 +51,49 @@ export interface OutskirtsMockupTacticalCell {
   reserveAdornmentSpace: boolean;
 }
 
-export interface OutskirtsMockupTacticalStrip {
-  label: string;
-  cells: [
-    OutskirtsMockupTacticalCell,
-    OutskirtsMockupTacticalCell,
-    OutskirtsMockupTacticalCell,
-    OutskirtsMockupTacticalCell,
-    OutskirtsMockupTacticalCell,
-    OutskirtsMockupTacticalCell,
-    OutskirtsMockupTacticalCell,
-  ];
+export interface OutskirtsTacticalStrip {
+  ariaLabel: string;
+  cells: [OutskirtsTacticalCell, OutskirtsTacticalCell, OutskirtsTacticalCell, OutskirtsTacticalCell, OutskirtsTacticalCell, OutskirtsTacticalCell, OutskirtsTacticalCell];
 }
 
-export interface OutskirtsMockupLabeledValue {
+export interface OutskirtsAreaHeader {
+  plaqueLabel: string;
+  subtitle: string;
+  showDropdownCaret: boolean;
+}
+
+export interface OutskirtsScenicStage {
+  scenicBackgroundKey: string;
+  scenicImageSrc: string | null;
+  encounterArtKey: string;
+  environmentDescriptor: string;
+}
+
+export interface OutskirtsEncounterIdentity {
+  selectedEncounterId: string;
+  displayName: string;
+  levelLabel: string;
+  safetyChip: {
+    state: OutskirtsEncounterSafety;
+    label: string;
+  };
+}
+
+export interface OutskirtsLabeledValue {
   id: string;
   label: string;
   value: string;
   source: OutskirtsSurfaceValueSource;
 }
 
-export interface OutskirtsMockupSetupCard {
+export interface OutskirtsSetupCard {
   title: string;
-  loadoutSet: OutskirtsMockupLabeledValue;
-  aiProfile: OutskirtsMockupLabeledValue;
-  attackFocus: OutskirtsMockupLabeledValue;
-  offense: OutskirtsMockupLabeledValue[];
-  defense: OutskirtsMockupLabeledValue[];
-  medicinePouch: OutskirtsMockupLabeledValue;
+  loadoutRow: OutskirtsLabeledValue;
+  aiProfileRow: OutskirtsLabeledValue;
+  attackFocusRow: OutskirtsLabeledValue;
+  offenseRows: OutskirtsLabeledValue[];
+  defenseRows: OutskirtsLabeledValue[];
+  medicinePouchRow: OutskirtsLabeledValue;
   equipmentGrid: Array<{
     slotId: 'weapon' | 'armor' | 'ring' | 'talisman' | 'boots' | 'charm';
     label: string;
@@ -93,55 +103,53 @@ export interface OutskirtsMockupSetupCard {
   }>;
 }
 
-export interface OutskirtsMockupRewardsCard {
+export interface OutskirtsRewardsCard {
   title: string;
-  expectedRewards: OutskirtsMockupLabeledValue[];
-  guaranteedOrLikely: OutskirtsMockupLabeledValue[];
-  bountyOverlap: OutskirtsMockupLabeledValue;
-  efficiency: OutskirtsMockupLabeledValue[];
-  cadenceSupport: OutskirtsMockupLabeledValue;
-  noPrimaryCta: true;
-}
-
-export interface OutskirtsMockupEncounterHero {
-  selectedEncounterId: string;
-  encounterDisplayName: string;
-  encounterLevelLabel: string;
-  safetyChip: {
-    state: OutskirtsEncounterSafety;
+  goldHeadline: {
     label: string;
+    value: string;
+    source: OutskirtsSurfaceValueSource;
   };
-  scenicArtKey: string;
-  scenicBackgroundKey: string;
-  scenicImageSrc: string | null;
-  descriptor: string;
+  commonMaterials: {
+    title: string;
+    items: Array<{
+      id: string;
+      label: string;
+      iconKey: string;
+      source: OutskirtsSurfaceValueSource;
+    }>;
+  };
+  trackedBounty: {
+    title: string;
+    itemLabel: string;
+    helperLine: string;
+    progressLabel: string;
+    source: OutskirtsSurfaceValueSource;
+  };
+  estimatedEfficiency: {
+    title: string;
+    runTimeLabel: string;
+    hourlyLabel: string;
+    source: OutskirtsSurfaceValueSource;
+  };
+  autoRepeat: {
+    label: string;
+    value: string;
+    enabled: boolean;
+    source: OutskirtsSurfaceValueSource;
+  };
 }
 
-export interface OutskirtsMockupEncounterChainNode {
-  id: string;
-  label: string;
-  state: OutskirtsEncounterNodeState;
-  thumbnailKey: string;
-  stateLabel: string;
-}
-
-export interface OutskirtsMockupEncounterChain {
-  nodes: OutskirtsMockupEncounterChainNode[];
-  canMoveLeft: boolean;
-  canMoveRight: boolean;
-  connectorState: 'locked' | 'partial' | 'complete';
-}
-
-export interface OutskirtsMockupEncounterProgressArrow {
+export interface OutskirtsEncounterStripArrow {
   visible: boolean;
   enabled: boolean;
   ariaLabel: string;
 }
 
-export interface OutskirtsMockupEncounterProgressNode {
+export interface OutskirtsEncounterStripNode {
   id: string;
   label: string;
-  displayLevelText?: string;
+  levelLabel: string;
   state: OutskirtsEncounterNodeState;
   artKey?: string;
   silhouetteKey?: string;
@@ -150,40 +158,32 @@ export interface OutskirtsMockupEncounterProgressNode {
   ariaLabel: string;
 }
 
-export interface OutskirtsMockupEncounterProgressStrip {
-  leftArrow: OutskirtsMockupEncounterProgressArrow;
-  rightArrow: OutskirtsMockupEncounterProgressArrow;
-  nodes: OutskirtsMockupEncounterProgressNode[];
+export interface OutskirtsEncounterStrip {
+  leftArrow: OutskirtsEncounterStripArrow;
+  rightArrow: OutskirtsEncounterStripArrow;
+  nodes: OutskirtsEncounterStripNode[];
+  selectedEncounterId: string;
 }
 
-export interface OutskirtsMockupActionZone {
-  primaryCtaLabel: string;
-  primaryCtaIntent: 'start-hunt';
-  primaryCtaTone: 'primary';
-  primaryCtaEnabled: boolean;
-  secondaryHints: string[];
-  singleDominantCta: true;
-}
-
-export interface OutskirtsMockupPrimaryCta {
+export interface OutskirtsPrimaryAction {
   label: string;
   ariaLabel: string;
   visible: boolean;
   enabled: boolean;
+  intent?: 'start-hunt';
+  singleDominantCta?: true;
+  isPrimary?: true;
   disabledReason?: string;
-  isPrimary: true;
 }
 
-export interface OutskirtsMockupGrindSummary {
+export interface OutskirtsGrindSummary {
   visible: boolean;
-  title?: string;
-  runsText?: string;
-  goldPerHourText?: string;
-  mainDropLabel?: string;
-  mainDropIconKey?: string;
-  areaFilterText?: string;
-  rewardIconKeys?: string[];
-  progressText?: string;
+  title: string;
+  scopeChipLabel: string;
+  runsText: string;
+  goldPerHourText: string;
+  mainDropLabel: string;
+  mainDropIconKey: string;
 }
 
 export interface OutskirtsMockupShellFlags {
@@ -202,28 +202,33 @@ export interface OutskirtsMockupShellFlags {
   usePlanningState: boolean;
 }
 
-export interface OutskirtsMockupDebug {
+export interface OutskirtsExactSurfaceDebug {
   missingDataFallbacks: string[];
   placeholderAssetKeysInUse: string[];
-  unresolvedSourceFields: string[];
+  unresolvedLiveSourceNotes: string[];
+  supportTruth: {
+    roleTag: string;
+    bestUsedWhen: string;
+    boundaryLine: string;
+  };
   notes: string[];
 }
 
-export interface OutskirtsMockupSurface {
-  meta: OutskirtsMockupMeta;
-  header: OutskirtsMockupHeader;
-  topProgress: OutskirtsMockupTopProgress;
-  tacticalStrip: OutskirtsMockupTacticalStrip;
-  setupCard: OutskirtsMockupSetupCard;
-  rewardsCard: OutskirtsMockupRewardsCard;
-  encounterHero: OutskirtsMockupEncounterHero;
-  encounterChain: OutskirtsMockupEncounterChain;
-  encounterProgressStrip: OutskirtsMockupEncounterProgressStrip;
-  primaryCta: OutskirtsMockupPrimaryCta;
-  actionZone: OutskirtsMockupActionZone;
-  grindSummary: OutskirtsMockupGrindSummary;
+export interface OutskirtsExactSurfaceV2 {
+  meta: OutskirtsExactSurfaceMeta;
+  page: OutskirtsExactSurfacePage;
+  topRibbon: OutskirtsTopRibbon;
+  tacticalStrip: OutskirtsTacticalStrip;
+  areaHeader: OutskirtsAreaHeader;
+  scenicStage: OutskirtsScenicStage;
+  encounterIdentity: OutskirtsEncounterIdentity;
+  setupCard: OutskirtsSetupCard;
+  rewardsCard: OutskirtsRewardsCard;
+  encounterStrip: OutskirtsEncounterStrip;
+  primaryAction: OutskirtsPrimaryAction;
+  grindSummary: OutskirtsGrindSummary;
   shell: OutskirtsMockupShellFlags;
-  debug?: OutskirtsMockupDebug;
+  debug: OutskirtsExactSurfaceDebug;
 }
 
 export interface OutskirtsMockupRuntimeSnapshot {
@@ -245,14 +250,17 @@ export interface OutskirtsMockupRuntimeSnapshot {
   medicinePouchLabel: string | null;
   bountyLabel: string | null;
   expeditionLabel: string;
-  offenseRows: OutskirtsMockupLabeledValue[];
-  defenseRows: OutskirtsMockupLabeledValue[];
-  equipmentGrid: OutskirtsMockupSetupCard['equipmentGrid'];
-  expectedRewards: OutskirtsMockupLabeledValue[];
-  guaranteedOrLikely: OutskirtsMockupLabeledValue[];
-  bountyOverlap: OutskirtsMockupLabeledValue;
-  efficiencyRows: OutskirtsMockupLabeledValue[];
-  cadenceSupport: OutskirtsMockupLabeledValue;
+  offenseRows: OutskirtsLabeledValue[];
+  defenseRows: OutskirtsLabeledValue[];
+  equipmentGrid: OutskirtsSetupCard['equipmentGrid'];
+  rewardsGoldLabel: string;
+  rewardMaterialLabels: string[];
+  trackedBountyTitle: string;
+  trackedBountyHelper: string;
+  trackedBountyProgress: string;
+  efficiencyRunTimeLabel: string;
+  efficiencyHourlyLabel: string;
+  autoRepeatLabel: string;
   selectedEncounterId: string;
   selectedEncounterName: string;
   selectedEncounterLevelLabel: string;
@@ -261,7 +269,7 @@ export interface OutskirtsMockupRuntimeSnapshot {
   scenicArtKey: string;
   scenicBackgroundKey: string;
   encounterDescriptor: string;
-  encounterNodes: OutskirtsMockupEncounterChainNode[];
+  encounterNodes: Array<{ id: string; label: string; state: OutskirtsEncounterNodeState }>;
   canMoveEncounterLeft: boolean;
   canMoveEncounterRight: boolean;
   roleTag: string;

@@ -16,61 +16,36 @@ import { useUIStore } from '../../../stores/uiStore.js';
 import { resolveModuleRef } from '../../../components/screens/world/worldUtils.js';
 import {
   OUTSKIRTS_ALLOWED_PLANNING_SHELL,
-  OUTSKIRTS_ENCOUNTER_PROGRESS_DEFAULT_ID,
-  OUTSKIRTS_ENCOUNTER_PROGRESS_STRIP_MANIFEST,
-  OUTSKIRTS_MOCKUP_COPY,
+  OUTSKIRTS_ENCOUNTER_DEFAULT_ID,
+  OUTSKIRTS_ENCOUNTER_STRIP_MANIFEST,
   OUTSKIRTS_MOCKUP_VERSION,
   OUTSKIRTS_PLACEHOLDER_POLICY,
+  OUTSKIRTS_REVIEW_COPY,
   OUTSKIRTS_TACTICAL_CELL_ORDER,
+  OUTSKIRTS_TARGET_MOCKUP_ID,
 } from './outskirtsMockupPresentation.js';
 import type {
   OutskirtsEncounterNodeState,
-  OutskirtsMockupEncounterProgressStrip,
-  OutskirtsMockupEncounterChainNode,
+  OutskirtsExactSurfaceV2,
   OutskirtsMockupRuntimeSnapshot,
-  OutskirtsMockupSurface,
   OutskirtsSurfaceValueSource,
   OutskirtsTacticalTone,
 } from './types.js';
 
 function asText(value: string | null | undefined, fallback: string): { text: string; source: OutskirtsSurfaceValueSource } {
-  if (value && value.trim().length > 0) {
-    return { text: value, source: 'live' };
-  }
+  if (value && value.trim().length > 0) return { text: value, source: 'live' };
   return { text: fallback, source: 'synthetic' };
-}
-
-function resolveDangerTone(killsSinceBoss: number, killsToBoss: number): OutskirtsTacticalTone {
-  const ratio = killsToBoss <= 0 ? 1 : killsSinceBoss / killsToBoss;
-  if (ratio >= 1) return 'warning';
-  if (ratio >= 0.7) return 'neutral';
-  return 'positive';
-}
-
-function resolveSafetyFromPosture(cityId: string): { label: string; state: OutskirtsMockupRuntimeSnapshot['safetyChipState'] } {
-  const fit = evaluateCurrentCombatPostureFit('outskirts');
-  if (fit.aiFit === 'good' && fit.pouchFit === 'good') return { label: 'Safe', state: 'safe' };
-  if (fit.aiFit === 'risky' || fit.pouchFit === 'risky') return { label: 'Watch', state: 'watch' };
-  if (fit.aiFit === 'bad' || fit.pouchFit === 'bad') return { label: 'Risk', state: 'risk' };
-  return { label: cityId.includes('pinewind') ? 'Watch' : 'Risk', state: 'watch' };
-}
-
-function resolveScenicImageSrc(scenicBackgroundKey: string): string | null {
-  if (scenicBackgroundKey.startsWith('placeholder/scenic/outskirts-field')) return '/assets/background/citystates/city_outskirts.png';
-  if (scenicBackgroundKey.includes('outskirts')) return '/assets/background/citystates/city_outskirts.png';
-  return '/assets/background/citystates/city_outskirts.png';
 }
 
 function formatWhole(value: number | string): string {
   const numeric = typeof value === 'number' ? value : Number(value);
   if (!Number.isFinite(numeric)) return OUTSKIRTS_PLACEHOLDER_POLICY.lineFallback;
-  return `${Math.max(0, Math.round(numeric))}`;
+  return `${Math.max(0, Math.round(numeric)).toLocaleString()}`;
 }
 
 function formatPercent(value: number): string {
   if (!Number.isFinite(value)) return OUTSKIRTS_PLACEHOLDER_POLICY.lineFallback;
-  const clamped = Math.max(0, Math.min(100, value));
-  return `${clamped.toFixed(0)}%`;
+  return `${Math.max(0, Math.min(100, value)).toFixed(0)}%`;
 }
 
 function clamp01(value: number): number {
@@ -81,275 +56,192 @@ function clamp01(value: number): number {
 function parseHpLabel(hpLabel: string): { current: number; max: number } {
   const matches = hpLabel.match(/(\d[\d,]*)\s*\/\s*(\d[\d,]*)/);
   if (!matches) return { current: 0, max: 0 };
-  const current = Number(matches[1].replace(/,/g, ''));
-  const max = Number(matches[2].replace(/,/g, ''));
-  return {
-    current: Number.isFinite(current) ? current : 0,
-    max: Number.isFinite(max) ? max : 0,
-  };
-}
-
-function formatHpCell(snapshot: OutskirtsMockupRuntimeSnapshot): { primaryText: string; underlineBarPct: number } {
-  const parsed = parseHpLabel(snapshot.hpLabel);
-  if (parsed.max > 0) {
-    return {
-      primaryText: `${formatWhole(parsed.current)} / ${formatWhole(parsed.max)}`,
-      underlineBarPct: clamp01(parsed.current / parsed.max) * 100,
-    };
-  }
-  const fallbackMax = Number(snapshot.defenseRows.find((entry) => entry.id === 'hp')?.value ?? 0);
-  const normalized = Number.isFinite(fallbackMax) && fallbackMax > 0 ? Math.round(fallbackMax) : 0;
-  return {
-    primaryText: `${formatWhole(normalized)} / ${formatWhole(normalized)}`,
-    underlineBarPct: normalized > 0 ? 100 : 0,
-  };
+  return { current: Number(matches[1].replace(/,/g, '')) || 0, max: Number(matches[2].replace(/,/g, '')) || 0 };
 }
 
 function formatDangerCell(snapshot: OutskirtsMockupRuntimeSnapshot): string {
+  if (snapshot.sourceMode === 'fixture') return snapshot.dangerLabel;
   const level = snapshot.selectedEncounterLevelLabel.match(/\d+/)?.[0] ?? '1';
   const bossReady = snapshot.killsSinceBoss >= snapshot.killsToBoss;
-  const qualitative = bossReady ? 'Boss' : snapshot.safetyChipState === 'safe' ? 'Low' : snapshot.safetyChipState === 'watch' ? 'Guarded' : 'Risk';
+  const qualitative = bossReady ? 'Boss' : snapshot.safetyChipState === 'safe' ? 'Low' : snapshot.safetyChipState === 'watch' ? 'Watch' : 'Risk';
   return `${qualitative} · Lv. ${level}`;
-}
-
-function normalizeLoadoutCell(label: string): string {
-  const match = label.match(/set\s*(\d+)/i) ?? label.match(/loadout\s*(\d+)/i) ?? label.match(/(\d+)/);
-  return match ? `Set ${match[1]}` : 'Set 1';
-}
-
-function normalizeAiProfileCell(label: string): string {
-  const trimmed = label.trim();
-  if (!trimmed) return 'Balanced';
-  return `${trimmed.charAt(0).toUpperCase()}${trimmed.slice(1).toLowerCase()}`;
-}
-
-function formatHealingCell(label: string | null): string {
-  if (!label) return '0 / 20';
-  const match = label.match(/(\d[\d,]*)\s*\/\s*(\d[\d,]*)/);
-  if (!match) return '0 / 20';
-  return `${match[1].replace(/,/g, '')} / ${match[2].replace(/,/g, '')}`;
-}
-
-function formatBountyCell(label: string | null): string {
-  if (!label) return OUTSKIRTS_MOCKUP_COPY.fallbackBountyLine;
-  const normalized = label.replace(/\s*:\s*/, ' ').replace(/\s*•.*$/i, '').trim();
-  return normalized.length > 24 ? `${normalized.slice(0, 21).trimEnd()}…` : normalized;
-}
-
-function formatExpeditionCell(label: string): { primaryText: string; showDot: boolean } {
-  const idle = Number(label.match(/(\d+)\s*(idle|complete)/i)?.[1] ?? 0);
-  const running = Number(label.match(/(\d+)\s*running/i)?.[1] ?? 0);
-  if (idle > 0) return { primaryText: `${idle} Idle`, showDot: true };
-  if (running > 0) return { primaryText: `${running} Running`, showDot: false };
-  return { primaryText: 'No expedition', showDot: false };
-}
-
-function buildEncounterNodes(killsSinceBoss: number): OutskirtsMockupEncounterChainNode[] {
-  const idx = Math.max(0, Math.min(OUTSKIRTS_ENCOUNTER_PROGRESS_STRIP_MANIFEST.length - 1, Math.floor((killsSinceBoss / 10) * OUTSKIRTS_ENCOUNTER_PROGRESS_STRIP_MANIFEST.length)));
-  return OUTSKIRTS_ENCOUNTER_PROGRESS_STRIP_MANIFEST.map((entry, index) => {
-    const state: OutskirtsEncounterNodeState = index < idx ? 'completed' : index === idx ? 'current' : 'future';
-    return {
-      id: entry.id,
-      label: entry.label,
-      state,
-      thumbnailKey: `${OUTSKIRTS_PLACEHOLDER_POLICY.iconFallbackPrefix}${entry.id}`,
-      stateLabel: state === 'completed' ? 'Cleared' : state === 'current' ? 'Current' : 'Future',
-    };
-  });
 }
 
 function normalizeEncounterId(value: string): string {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 }
 
-function buildEncounterProgressStrip(snapshot: OutskirtsMockupRuntimeSnapshot): OutskirtsMockupEncounterProgressStrip {
-  const selectedId = normalizeEncounterId(snapshot.selectedEncounterId);
-  const fallbackCurrentId = snapshot.encounterNodes.find((node) => node.state === 'current')?.id ?? OUTSKIRTS_ENCOUNTER_PROGRESS_DEFAULT_ID;
-  const currentId = [selectedId, normalizeEncounterId(fallbackCurrentId), OUTSKIRTS_ENCOUNTER_PROGRESS_DEFAULT_ID]
-    .find((id) => OUTSKIRTS_ENCOUNTER_PROGRESS_STRIP_MANIFEST.some((entry) => entry.id === id))
-    ?? OUTSKIRTS_ENCOUNTER_PROGRESS_DEFAULT_ID;
-  const currentIndex = OUTSKIRTS_ENCOUNTER_PROGRESS_STRIP_MANIFEST.findIndex((entry) => entry.id === currentId);
+function resolveScenicImageSrc(_: string): string | null {
+  return '/assets/background/citystates/city_outskirts.png';
+}
+
+function buildEncounterStrip(snapshot: OutskirtsMockupRuntimeSnapshot): OutskirtsExactSurfaceV2['encounterStrip'] {
+  const selected = normalizeEncounterId(snapshot.selectedEncounterId);
+  const fallback = snapshot.encounterNodes.find((node) => node.state === 'current')?.id ?? OUTSKIRTS_ENCOUNTER_DEFAULT_ID;
+  const selectedEncounterId = [selected, normalizeEncounterId(fallback), OUTSKIRTS_ENCOUNTER_DEFAULT_ID]
+    .find((id) => OUTSKIRTS_ENCOUNTER_STRIP_MANIFEST.some((entry) => entry.id === id)) ?? OUTSKIRTS_ENCOUNTER_DEFAULT_ID;
+  const selectedIndex = OUTSKIRTS_ENCOUNTER_STRIP_MANIFEST.findIndex((entry) => entry.id === selectedEncounterId);
 
   return {
-    leftArrow: {
-      visible: true,
-      enabled: false,
-      ariaLabel: 'Previous encounter (presentation-only; unavailable in P7)',
-    },
-    rightArrow: {
-      visible: true,
-      enabled: false,
-      ariaLabel: 'Next encounter (presentation-only; unavailable in P7)',
-    },
-    nodes: OUTSKIRTS_ENCOUNTER_PROGRESS_STRIP_MANIFEST.map((entry, index) => {
-      const state: OutskirtsEncounterNodeState = index < currentIndex ? 'completed' : index === currentIndex ? 'current' : 'future';
+    selectedEncounterId,
+    leftArrow: { visible: true, enabled: false, ariaLabel: 'Previous encounter (presentation only)' },
+    rightArrow: { visible: true, enabled: false, ariaLabel: 'Next encounter (presentation only)' },
+    nodes: OUTSKIRTS_ENCOUNTER_STRIP_MANIFEST.map((entry, index) => {
+      const state: OutskirtsEncounterNodeState = index < selectedIndex ? 'completed' : index === selectedIndex ? 'current' : 'future';
       return {
         id: entry.id,
         label: entry.label,
-        displayLevelText: entry.displayLevelText,
+        levelLabel: entry.levelLabel,
         state,
         artKey: state === 'future' ? undefined : entry.artKey,
         silhouetteKey: state === 'future' ? entry.silhouetteKey : undefined,
-        isSelected: index === currentIndex,
+        isSelected: index === selectedIndex,
         isClickable: false,
-        ariaLabel: `${entry.label} ${entry.displayLevelText ?? ''} ${state}`.trim(),
+        ariaLabel: `${entry.label} ${entry.levelLabel} ${state}`,
       };
     }),
   };
 }
 
-function buildGrindSummary(snapshot: OutskirtsMockupRuntimeSnapshot): OutskirtsMockupSurface['grindSummary'] {
-  if (snapshot.sourceMode === 'fixture') {
-    return {
-      visible: true,
-      title: OUTSKIRTS_MOCKUP_COPY.grindSummaryTitle,
-      runsText: `Runs: ${snapshot.totalKills}`,
-      goldPerHourText: 'Gold / hr: 1,900',
-      mainDropLabel: 'Wolf Pelt',
-      mainDropIconKey: snapshot.scenicArtKey,
-      areaFilterText: 'This Area',
-      rewardIconKeys: snapshot.expectedRewards.map((entry) => `${OUTSKIRTS_PLACEHOLDER_POLICY.iconFallbackPrefix}${entry.id}`).slice(0, 3),
-      progressText: undefined,
-    };
-  }
-
-  const mainDrop = snapshot.expectedRewards.find((entry) => entry.id !== 'gold')?.value ?? 'Broad field drops';
-  const safeRunsPerHour = Math.max(1, Math.round(3600 / 18));
-  const estimatedGoldPerHour = Math.max(1, safeRunsPerHour * 150);
-  return {
-    visible: true,
-    title: OUTSKIRTS_MOCKUP_COPY.grindSummaryTitle,
-    runsText: `${safeRunsPerHour} runs / hr (est.)`,
-    goldPerHourText: `${estimatedGoldPerHour.toLocaleString()} gold / hr (est.)`,
-    mainDropLabel: mainDrop,
-    mainDropIconKey: snapshot.scenicArtKey,
-    areaFilterText: snapshot.boundaryLine,
-    rewardIconKeys: snapshot.expectedRewards.map((entry) => `${OUTSKIRTS_PLACEHOLDER_POLICY.iconFallbackPrefix}${entry.id}`).slice(0, 3),
-    progressText: `Boss cadence ${snapshot.killsSinceBoss} / ${snapshot.killsToBoss}`,
-  };
-}
-
-export function buildOutskirtsMockupSurface(snapshot: OutskirtsMockupRuntimeSnapshot): OutskirtsMockupSurface {
-  const fallbacks: string[] = [];
-  const unresolved: string[] = [];
-  const placeholders = [snapshot.scenicArtKey, snapshot.scenicBackgroundKey].filter((entry) => entry.startsWith('placeholder/'));
-  const currentProgressIndex = snapshot.encounterNodes.findIndex((node) => node.state === 'current');
+export function buildOutskirtsMockupSurface(snapshot: OutskirtsMockupRuntimeSnapshot): OutskirtsExactSurfaceV2 {
+  const missingDataFallbacks: string[] = [];
+  const unresolvedLiveSourceNotes: string[] = [];
+  const placeholderAssetKeysInUse = [snapshot.scenicArtKey, snapshot.scenicBackgroundKey].filter((k) => k.startsWith('placeholder/'));
 
   const medicine = asText(snapshot.medicinePouchLabel, '0 / 20');
-  if (medicine.source !== 'live') fallbacks.push('medicinePouchLabel');
-  const bounty = asText(snapshot.bountyLabel, OUTSKIRTS_MOCKUP_COPY.fallbackBountyLine);
-  if (bounty.source !== 'live') fallbacks.push('bountyLabel');
-  const hp = formatHpCell(snapshot);
-  const expedition = formatExpeditionCell(snapshot.expeditionLabel);
+  const bounty = asText(snapshot.bountyLabel, 'No tracked bounty');
+  if (medicine.source !== 'live') missingDataFallbacks.push('medicinePouchLabel');
+  if (bounty.source !== 'live') missingDataFallbacks.push('bountyLabel');
+
+  const hp = parseHpLabel(snapshot.hpLabel);
+  const hpPrimary = hp.max > 0 ? `${formatWhole(hp.current)} / ${formatWhole(hp.max)}` : snapshot.hpLabel;
+  const topNodes = buildEncounterStrip(snapshot).nodes;
 
   const tacticalCells = {
-    hp: { id: 'hp', label: 'HP', primaryText: hp.primaryText, tone: 'neutral' as OutskirtsTacticalTone, iconKey: 'hp', iconKind: 'lucide' as const, showCaret: false, showNotificationDot: false, showUnderlineBar: true, underlineBarPct: hp.underlineBarPct, reserveAdornmentSpace: true, visible: true },
-    danger: { id: 'danger', label: 'Danger', primaryText: formatDangerCell(snapshot), tone: resolveDangerTone(snapshot.killsSinceBoss, snapshot.killsToBoss), iconKey: 'danger', iconKind: 'lucide' as const, showCaret: false, showNotificationDot: false, showUnderlineBar: false, reserveAdornmentSpace: true, visible: true },
-    loadout: { id: 'loadout', label: 'Loadout', primaryText: normalizeLoadoutCell(snapshot.loadoutLabel), tone: 'neutral' as OutskirtsTacticalTone, iconKey: 'loadout', iconKind: 'lucide' as const, showCaret: true, showNotificationDot: false, showUnderlineBar: false, reserveAdornmentSpace: true, visible: true },
-    aiProfile: { id: 'aiProfile', label: 'AI Profile', primaryText: normalizeAiProfileCell(snapshot.aiProfileLabel), tone: 'neutral' as OutskirtsTacticalTone, iconKey: 'aiProfile', iconKind: 'lucide' as const, showCaret: true, showNotificationDot: false, showUnderlineBar: false, reserveAdornmentSpace: true, visible: true },
-    healing: { id: 'healing', label: 'Healing', primaryText: formatHealingCell(medicine.text), tone: medicine.source === 'live' ? 'positive' : 'warning' as OutskirtsTacticalTone, iconKey: 'healing', iconKind: 'lucide' as const, showCaret: false, showNotificationDot: false, showUnderlineBar: false, reserveAdornmentSpace: true, visible: true },
-    bounty: { id: 'bounty', label: 'Bounty', primaryText: formatBountyCell(bounty.text), tone: bounty.source === 'live' ? 'positive' : 'neutral' as OutskirtsTacticalTone, iconKey: 'bounty', iconKind: 'lucide' as const, showCaret: false, showNotificationDot: false, showUnderlineBar: false, reserveAdornmentSpace: true, visible: true },
-    expedition: { id: 'expedition', label: 'Expedition', primaryText: expedition.primaryText, tone: 'neutral' as OutskirtsTacticalTone, iconKey: 'expedition', iconKind: 'lucide' as const, showCaret: false, showNotificationDot: expedition.showDot, showUnderlineBar: false, reserveAdornmentSpace: true, visible: true },
+    hp: { id: 'hp', label: 'HP', primaryText: hpPrimary, tone: 'neutral' as OutskirtsTacticalTone, iconKey: 'hp', iconKind: 'lucide' as const, showCaret: false, showNotificationDot: false, showUnderlineBar: true, underlineBarPct: clamp01(hp.max > 0 ? hp.current / hp.max : 1) * 100, visible: true, reserveAdornmentSpace: true },
+    danger: { id: 'danger', label: 'Danger', primaryText: formatDangerCell(snapshot), tone: 'neutral' as OutskirtsTacticalTone, iconKey: 'danger', iconKind: 'lucide' as const, showCaret: false, showNotificationDot: false, showUnderlineBar: false, visible: true, reserveAdornmentSpace: true },
+    loadout: { id: 'loadout', label: 'Loadout', primaryText: snapshot.loadoutLabel, tone: 'neutral' as OutskirtsTacticalTone, iconKey: 'loadout', iconKind: 'lucide' as const, showCaret: true, showNotificationDot: false, showUnderlineBar: false, visible: true, reserveAdornmentSpace: true },
+    aiProfile: { id: 'aiProfile', label: 'AI Profile', primaryText: snapshot.aiProfileLabel, tone: 'neutral' as OutskirtsTacticalTone, iconKey: 'aiProfile', iconKind: 'lucide' as const, showCaret: true, showNotificationDot: false, showUnderlineBar: false, visible: true, reserveAdornmentSpace: true },
+    healing: { id: 'healing', label: 'Healing', primaryText: medicine.text, tone: medicine.source === 'live' ? 'positive' : 'warning' as OutskirtsTacticalTone, iconKey: 'healing', iconKind: 'lucide' as const, showCaret: false, showNotificationDot: false, showUnderlineBar: false, visible: true, reserveAdornmentSpace: true },
+    bounty: { id: 'bounty', label: 'Bounty', primaryText: bounty.text, tone: bounty.source === 'live' ? 'positive' : 'neutral' as OutskirtsTacticalTone, iconKey: 'bounty', iconKind: 'lucide' as const, showCaret: false, showNotificationDot: false, showUnderlineBar: false, visible: true, reserveAdornmentSpace: true },
+    expedition: { id: 'expedition', label: 'Expedition', primaryText: snapshot.expeditionLabel, tone: 'neutral' as OutskirtsTacticalTone, iconKey: 'expedition', iconKind: 'lucide' as const, showCaret: false, showNotificationDot: /idle/i.test(snapshot.expeditionLabel), showUnderlineBar: false, visible: true, reserveAdornmentSpace: true },
   } as const;
 
-  const ownershipNote = snapshot.isOutskirtsActive
+  const notes = [snapshot.isOutskirtsActive
     ? 'Active Outskirts combat still renders the legacy combat shell owner.'
-    : 'Planning exact surface is a review fixture and does not change baseline live-screen ownership in P0.';
+    : 'Planning exact surface is a review fixture and does not change baseline live-screen ownership in P0.'];
 
   return {
     meta: {
       surfaceId: 'outskirts-exact-mockup',
       version: OUTSKIRTS_MOCKUP_VERSION,
-      sourceMode: snapshot.sourceMode,
+      mode: snapshot.sourceMode === 'fixture' ? 'fixture' : 'live',
       cityId: snapshot.cityId,
       outskirtsId: snapshot.outskirtsId,
-      planningState: true,
-      exactMockup: true,
+      source: snapshot.sourceMode === 'fixture' ? 'fixture' : 'stores',
+      targetMockupId: OUTSKIRTS_TARGET_MOCKUP_ID,
     },
-    header: {
-      pageTitle: OUTSKIRTS_MOCKUP_COPY.pageTitle,
-      subtitle: OUTSKIRTS_MOCKUP_COPY.pageSubtitleFallback,
-      areaPlaqueLabel: OUTSKIRTS_MOCKUP_COPY.pageTitle,
-      roleTag: snapshot.roleTag,
-      bestUsedWhen: snapshot.bestUsedWhen,
-      boundaryLine: snapshot.boundaryLine,
-    },
-    topProgress: {
-      label: OUTSKIRTS_MOCKUP_COPY.topProgressLabel,
-      helperText: `Boss in ${Math.max(0, snapshot.killsToBoss - snapshot.killsSinceBoss)} kills`,
+    page: { title: OUTSKIRTS_REVIEW_COPY.pageTitle },
+    topRibbon: {
+      ariaLabel: 'Outskirts macro progression',
       decorative: true,
       leftOrnament: 'vine',
       terminalCap: 'temple',
-      nodes: snapshot.encounterNodes.map((node, index) => ({
-        id: node.id,
-        label: node.label,
-        state: node.state,
-        variant: index === (currentProgressIndex >= 0 ? currentProgressIndex : 0) ? 'active' : 'muted',
-      })),
+      nodes: topNodes.map((node) => ({ id: node.id, label: node.label, state: node.state, variant: node.isSelected ? 'active' : 'muted' })),
+      activeNodeId: topNodes.find((node) => node.isSelected)?.id ?? OUTSKIRTS_ENCOUNTER_DEFAULT_ID,
     },
     tacticalStrip: {
-      label: 'Tactical Readout',
-      cells: OUTSKIRTS_TACTICAL_CELL_ORDER.map((id) => tacticalCells[id]) as OutskirtsMockupSurface['tacticalStrip']['cells'],
+      ariaLabel: 'Tactical Readout',
+      cells: OUTSKIRTS_TACTICAL_CELL_ORDER.map((id) => tacticalCells[id]) as OutskirtsExactSurfaceV2['tacticalStrip']['cells'],
+    },
+    areaHeader: {
+      plaqueLabel: OUTSKIRTS_REVIEW_COPY.pageTitle,
+      subtitle: snapshot.pageSubtitle,
+      showDropdownCaret: true,
+    },
+    scenicStage: {
+      scenicBackgroundKey: snapshot.scenicBackgroundKey,
+      scenicImageSrc: resolveScenicImageSrc(snapshot.scenicBackgroundKey),
+      encounterArtKey: snapshot.scenicArtKey,
+      environmentDescriptor: snapshot.encounterDescriptor,
+    },
+    encounterIdentity: {
+      selectedEncounterId: snapshot.selectedEncounterId,
+      displayName: snapshot.selectedEncounterName,
+      levelLabel: snapshot.selectedEncounterLevelLabel,
+      safetyChip: { state: snapshot.safetyChipState, label: snapshot.safetyChipLabel },
     },
     setupCard: {
-      title: OUTSKIRTS_MOCKUP_COPY.setupCardTitle,
-      loadoutSet: { id: 'loadoutSet', label: 'Loadout Set', value: snapshot.loadoutLabel, source: 'live' },
-      aiProfile: { id: 'aiProfile', label: 'AI Profile', value: snapshot.aiProfileLabel, source: 'live' },
-      attackFocus: { id: 'attackFocus', label: 'Attack Focus', value: snapshot.attackFocusLabel, source: 'live' },
-      offense: snapshot.offenseRows,
-      defense: snapshot.defenseRows,
-      medicinePouch: { id: 'medicinePouch', label: 'Medicine Pouch', value: medicine.text, source: medicine.source },
+      title: OUTSKIRTS_REVIEW_COPY.setupCardTitle,
+      loadoutRow: { id: 'loadoutSet', label: 'Loadout Set', value: snapshot.loadoutLabel, source: 'live' },
+      aiProfileRow: { id: 'aiProfile', label: 'AI Profile', value: snapshot.aiProfileLabel, source: 'live' },
+      attackFocusRow: { id: 'attackFocus', label: 'Attack Focus', value: snapshot.attackFocusLabel, source: 'live' },
+      offenseRows: snapshot.offenseRows,
+      defenseRows: snapshot.defenseRows,
+      medicinePouchRow: { id: 'medicinePouch', label: 'Medicine Pouch', value: medicine.text, source: medicine.source },
       equipmentGrid: snapshot.equipmentGrid,
     },
     rewardsCard: {
-      title: OUTSKIRTS_MOCKUP_COPY.rewardsCardTitle,
-      expectedRewards: snapshot.expectedRewards,
-      guaranteedOrLikely: snapshot.guaranteedOrLikely,
-      bountyOverlap: snapshot.bountyOverlap,
-      efficiency: snapshot.efficiencyRows,
-      cadenceSupport: snapshot.cadenceSupport,
-      noPrimaryCta: true,
+      title: OUTSKIRTS_REVIEW_COPY.rewardsCardTitle,
+      goldHeadline: { label: 'Gold', value: snapshot.rewardsGoldLabel, source: snapshot.sourceMode === 'fixture' ? 'manifest' : 'derived' },
+      commonMaterials: {
+        title: OUTSKIRTS_REVIEW_COPY.commonMaterialsTitle,
+        items: snapshot.rewardMaterialLabels.map((label) => ({
+          id: normalizeEncounterId(label), label, iconKey: `${OUTSKIRTS_PLACEHOLDER_POLICY.iconFallbackPrefix}${normalizeEncounterId(label)}`,
+          source: snapshot.sourceMode === 'fixture' ? 'manifest' : 'derived',
+        })),
+      },
+      trackedBounty: {
+        title: OUTSKIRTS_REVIEW_COPY.trackedBountyTitle,
+        itemLabel: snapshot.trackedBountyTitle,
+        helperLine: snapshot.trackedBountyHelper,
+        progressLabel: snapshot.trackedBountyProgress,
+        source: snapshot.sourceMode === 'fixture' ? 'manifest' : 'live',
+      },
+      estimatedEfficiency: {
+        title: OUTSKIRTS_REVIEW_COPY.estimatedEfficiencyTitle,
+        runTimeLabel: snapshot.efficiencyRunTimeLabel,
+        hourlyLabel: snapshot.efficiencyHourlyLabel,
+        source: snapshot.sourceMode === 'fixture' ? 'manifest' : 'derived',
+      },
+      autoRepeat: {
+        label: OUTSKIRTS_REVIEW_COPY.autoRepeatLabel,
+        value: snapshot.autoRepeatLabel,
+        enabled: /^on$/i.test(snapshot.autoRepeatLabel),
+        source: snapshot.sourceMode === 'fixture' ? 'manifest' : 'derived',
+      },
     },
-    encounterHero: {
-      selectedEncounterId: snapshot.selectedEncounterId,
-      encounterDisplayName: snapshot.selectedEncounterName,
-      encounterLevelLabel: snapshot.selectedEncounterLevelLabel,
-      safetyChip: { state: snapshot.safetyChipState, label: snapshot.safetyChipLabel },
-      scenicArtKey: snapshot.scenicArtKey,
-      scenicBackgroundKey: snapshot.scenicBackgroundKey,
-      scenicImageSrc: resolveScenicImageSrc(snapshot.scenicBackgroundKey),
-      descriptor: snapshot.encounterDescriptor || OUTSKIRTS_MOCKUP_COPY.fallbackEncounterDescriptor,
-    },
-    encounterChain: {
-      nodes: snapshot.encounterNodes,
-      canMoveLeft: snapshot.canMoveEncounterLeft,
-      canMoveRight: snapshot.canMoveEncounterRight,
-      connectorState: snapshot.encounterNodes.every((node) => node.state === 'completed') ? 'complete' : 'partial',
-    },
-    encounterProgressStrip: buildEncounterProgressStrip(snapshot),
-    primaryCta: {
-      label: OUTSKIRTS_MOCKUP_COPY.fallbackCtaLabel,
+    encounterStrip: buildEncounterStrip(snapshot),
+    primaryAction: {
+      label: OUTSKIRTS_REVIEW_COPY.ctaLabel,
       ariaLabel: 'Start Outskirts hunt',
       visible: true,
       enabled: Boolean(snapshot.outskirtsId) && !snapshot.isOutskirtsActive,
-      disabledReason: snapshot.isOutskirtsActive ? 'Outskirts run already active.' : undefined,
-      isPrimary: true,
-    },
-    actionZone: {
-      primaryCtaLabel: OUTSKIRTS_MOCKUP_COPY.fallbackCtaLabel,
-      primaryCtaIntent: 'start-hunt',
-      primaryCtaTone: 'primary',
-      primaryCtaEnabled: Boolean(snapshot.outskirtsId),
-      secondaryHints: snapshot.supportHints,
+      intent: 'start-hunt',
       singleDominantCta: true,
+      isPrimary: true,
+      disabledReason: snapshot.isOutskirtsActive ? 'Outskirts run already active.' : undefined,
     },
-    grindSummary: buildGrindSummary(snapshot),
+    grindSummary: {
+      visible: true,
+      title: OUTSKIRTS_REVIEW_COPY.grindSummaryTitle,
+      scopeChipLabel: OUTSKIRTS_REVIEW_COPY.grindScope,
+      runsText: snapshot.sourceMode === 'fixture' ? '128' : `${Math.max(1, Math.round(3600 / 18))}`,
+      goldPerHourText: snapshot.sourceMode === 'fixture' ? '1,900' : '1,800',
+      mainDropLabel: snapshot.sourceMode === 'fixture' ? 'Wolf Pelt' : (snapshot.rewardMaterialLabels[0] ?? 'Common Material'),
+      mainDropIconKey: snapshot.scenicArtKey,
+    },
     shell: OUTSKIRTS_ALLOWED_PLANNING_SHELL,
     debug: {
-      missingDataFallbacks: fallbacks,
-      placeholderAssetKeysInUse: placeholders,
-      unresolvedSourceFields: unresolved,
-      notes: [ownershipNote],
+      missingDataFallbacks,
+      placeholderAssetKeysInUse,
+      unresolvedLiveSourceNotes,
+      supportTruth: {
+        roleTag: snapshot.roleTag,
+        bestUsedWhen: snapshot.bestUsedWhen,
+        boundaryLine: snapshot.boundaryLine,
+      },
+      notes,
     },
   };
 }
@@ -362,6 +254,15 @@ function summarizeExpeditions(cityId: string): string {
   if (complete > 0) return `${complete} Idle`;
   if (running > 0) return `${running} Running`;
   return 'No expedition';
+}
+
+function buildEncounterNodesFromKills(killsSinceBoss: number): Array<{ id: string; label: string; state: OutskirtsEncounterNodeState }> {
+  const idx = Math.max(0, Math.min(OUTSKIRTS_ENCOUNTER_STRIP_MANIFEST.length - 1, Math.floor((killsSinceBoss / 10) * OUTSKIRTS_ENCOUNTER_STRIP_MANIFEST.length)));
+  return OUTSKIRTS_ENCOUNTER_STRIP_MANIFEST.map((entry, index) => ({
+    id: entry.id,
+    label: entry.label,
+    state: index < idx ? 'completed' : index === idx ? 'current' : 'future',
+  }));
 }
 
 export function buildOutskirtsMockupRuntimeSnapshotFromStores(cityId?: string): OutskirtsMockupRuntimeSnapshot {
@@ -379,38 +280,21 @@ export function buildOutskirtsMockupRuntimeSnapshotFromStores(cityId?: string): 
   const rewardModel = content.raw
     ? buildOutskirtsActivityRewardReadModel(content.raw, resolvedCityId)
     : { roleTag: OUTSKIRTS_ROLE_TAG, bestUsedWhen: OUTSKIRTS_BEST_USED_WHEN, boundaryLine: OUTSKIRTS_BOUNDARY_LINE, keyExpectedOutputs: ['gold'] };
+
   const activity = useActivityStore.getState().active;
   const posture = evaluateCurrentCombatPostureFit('outskirts');
   const postureContext = buildCurrentCombatPostureContext('outskirts');
   const tracked = useBountyStore.getState().getTrackedBounty(resolvedCityId);
-  const trackedText = tracked ? `${tracked.title}: ${tracked.progress} / ${tracked.target}${tracked.progress >= tracked.target ? ' • Ready' : ''}` : null;
   const pouch = useMedicinePouchStore.getState().slots.healing;
-  const pouchName = pouch?.equippedItemId ? content.maps.itemsById[pouch.equippedItemId]?.name ?? pouch.equippedItemId : null;
   const pouchQty = pouch?.equippedItemId ? useInventoryStore.getState().getItemCount(pouch.equippedItemId) : 0;
   const gameStats = useGameStore.getState().stats;
   const selectedLoadout = useTechniqueStore.getState().getSelectedLoadout?.();
-  const selectedLoadoutName = selectedLoadout?.name ?? 'Loadout 1';
+  const selectedLoadoutName = selectedLoadout?.name ?? 'Set 2';
   const selectedAiProfile = selectedLoadout?.aiProfile ?? ui.settings.combatAIProfile;
-  const selectedLoadoutMatch = selectedLoadoutName.match(/(\d+)/);
-  const selectedLoadoutLabel = selectedLoadoutMatch ? `Set ${selectedLoadoutMatch[1]}` : selectedLoadoutName;
-  const attackFocusLabel = ui.settings.preferredTarget === 'boss'
-    ? 'Boss'
-    : ui.settings.preferredTarget === 'elite'
-      ? 'Elite'
-      : 'Weakest';
+  const attackFocusLabel = ui.settings.preferredTarget === 'boss' ? 'Boss' : ui.settings.preferredTarget === 'elite' ? 'Elite' : 'Balanced';
 
-  const aiRecommendation = evaluateAiProfileFit({
-    encounterType: 'outskirts',
-    aiProfile: selectedAiProfile,
-    loadoutSignals: postureContext.loadoutSignals,
-    path: postureContext.path,
-  });
-  const safety = resolveSafetyFromPosture(resolvedCityId);
-  const derivedAccuracyPct = aiRecommendation.rating === 'good'
-    ? 92
-    : aiRecommendation.rating === 'risky'
-      ? 86
-      : 82;
+  const aiRecommendation = evaluateAiProfileFit({ encounterType: 'outskirts', aiProfile: selectedAiProfile, loadoutSignals: postureContext.loadoutSignals, path: postureContext.path });
+  const derivedAccuracyPct = aiRecommendation.rating === 'good' ? 92 : aiRecommendation.rating === 'risky' ? 86 : 82;
   const derivedResPct = (() => {
     const defense = Number(gameStats.def);
     if (!Number.isFinite(defense) || defense <= 0) return 0;
@@ -418,8 +302,7 @@ export function buildOutskirtsMockupRuntimeSnapshotFromStores(cityId?: string): 
   })();
   const equippedWeaponId = useEquipmentStore.getState().equippedWeaponId;
   const equippedAccessoryId = useEquipmentStore.getState().equippedAccessoryId;
-  const resolveItemName = (itemId: string | null): string =>
-    itemId ? content.maps.itemsById[itemId]?.name ?? itemId : OUTSKIRTS_PLACEHOLDER_POLICY.lineFallback;
+  const resolveItemName = (itemId: string | null): string => itemId ? content.maps.itemsById[itemId]?.name ?? itemId : OUTSKIRTS_PLACEHOLDER_POLICY.lineFallback;
 
   return {
     sourceMode: 'stores',
@@ -432,13 +315,13 @@ export function buildOutskirtsMockupRuntimeSnapshotFromStores(cityId?: string): 
     totalKills: progress.totalKills,
     isOutskirtsActive: activity?.type === 'outskirts' && activity.cityId === resolvedCityId,
     hpLabel: `${formatWhole(gameStats.maxHp)} / ${formatWhole(gameStats.maxHp)}`,
-    dangerLabel: progress.killsSinceBoss >= (outskirts?.killsToBoss ?? 10) ? 'Boss' : 'Low',
-    loadoutLabel: selectedLoadoutLabel,
+    dangerLabel: 'Low',
+    loadoutLabel: selectedLoadoutName,
     aiProfile: selectedAiProfile,
     aiProfileLabel: selectedAiProfile[0].toUpperCase() + selectedAiProfile.slice(1),
     attackFocusLabel,
-    medicinePouchLabel: pouchName ? `${pouchQty} / 20` : '0 / 20',
-    bountyLabel: trackedText,
+    medicinePouchLabel: `${pouchQty} / 20`,
+    bountyLabel: tracked ? `${tracked.title} ${tracked.progress}/${tracked.target}` : null,
     expeditionLabel: summarizeExpeditions(resolvedCityId),
     offenseRows: [
       { id: 'atk', label: 'ATK', value: formatWhole(gameStats.atk), source: 'derived' },
@@ -458,39 +341,33 @@ export function buildOutskirtsMockupRuntimeSnapshotFromStores(cityId?: string): 
       { slotId: 'boots', label: 'Boots', iconKey: 'boots', value: OUTSKIRTS_PLACEHOLDER_POLICY.lineFallback, source: 'synthetic' },
       { slotId: 'charm', label: 'Charm', iconKey: 'charm', value: OUTSKIRTS_PLACEHOLDER_POLICY.lineFallback, source: 'synthetic' },
     ],
-    expectedRewards: [
-      { id: 'gold', label: 'Gold', value: 'Steady baseline income', source: 'derived' },
-      { id: 'common', label: 'Common Materials', value: rewardModel.keyExpectedOutputs.filter((id) => id !== 'gold').slice(0, 3).join(', ') || 'Broad field drops', source: 'derived' },
-    ],
-    guaranteedOrLikely: [
-      { id: 'role', label: 'Role', value: OUTSKIRTS_ROLE_TAG, source: 'manifest' },
-      { id: 'boundary', label: 'Boundary', value: OUTSKIRTS_BOUNDARY_LINE, source: 'manifest' },
-    ],
-    bountyOverlap: { id: 'bounty', label: 'Tracked Bounty', value: trackedText ?? OUTSKIRTS_MOCKUP_COPY.fallbackBountyLine, source: trackedText ? 'live' : 'synthetic' },
-    efficiencyRows: [
-      { id: 'best-used', label: 'Best used when', value: OUTSKIRTS_BEST_USED_WHEN, source: 'manifest' },
-      { id: 'profile', label: 'AI fit', value: aiRecommendation.rating, source: 'derived' },
-    ],
-    cadenceSupport: { id: 'cadence', label: 'Cadence', value: `Boss in ${Math.max(0, (outskirts?.killsToBoss ?? 10) - progress.killsSinceBoss)} kills`, source: 'derived' },
-    selectedEncounterId: 'quiet-glade',
-    selectedEncounterName: 'Field Patrol',
-    selectedEncounterLevelLabel: `Lv. ${Math.max(1, (outskirts?.cityIndex ?? 0) * 5 + 10)}`,
-    safetyChipState: safety.state,
-    safetyChipLabel: safety.label,
+    rewardsGoldLabel: '1,250 – 1,480',
+    rewardMaterialLabels: ['Wolf Pelt', 'Beast Bone', 'Green Herb', 'Spirit Stone'],
+    trackedBountyTitle: tracked?.title ?? 'None',
+    trackedBountyHelper: 'Defeat wolves in the Outskirts',
+    trackedBountyProgress: tracked ? `${tracked.progress} / ${tracked.target}` : '0 / 0',
+    efficiencyRunTimeLabel: '~45s / run',
+    efficiencyHourlyLabel: '1,800 – 2,000 / hour',
+    autoRepeatLabel: 'On',
+    selectedEncounterId: OUTSKIRTS_ENCOUNTER_DEFAULT_ID,
+    selectedEncounterName: 'Snarling Wolf',
+    selectedEncounterLevelLabel: 'Lv. 11',
+    safetyChipState: posture.warnings.length > 0 ? 'watch' : 'safe',
+    safetyChipLabel: posture.warnings.length > 0 ? 'Watch' : 'Safe',
     scenicArtKey: OUTSKIRTS_PLACEHOLDER_POLICY.encounterFallbackKey,
     scenicBackgroundKey: OUTSKIRTS_PLACEHOLDER_POLICY.scenicFallbackKey,
-    encounterDescriptor: posture.warnings[0] ?? OUTSKIRTS_MOCKUP_COPY.fallbackEncounterDescriptor,
-    encounterNodes: buildEncounterNodes(progress.killsSinceBoss),
+    encounterDescriptor: 'Outskirts lane',
+    encounterNodes: buildEncounterNodesFromKills(progress.killsSinceBoss),
     canMoveEncounterLeft: false,
     canMoveEncounterRight: true,
     roleTag: rewardModel.roleTag,
     bestUsedWhen: rewardModel.bestUsedWhen,
     boundaryLine: rewardModel.boundaryLine,
-    pageSubtitle: OUTSKIRTS_MOCKUP_COPY.pageSubtitleFallback,
+    pageSubtitle: OUTSKIRTS_REVIEW_COPY.subtitle,
     supportHints: [],
   };
 }
 
-export function buildOutskirtsMockupSurfaceFromStores(cityId?: string): OutskirtsMockupSurface {
+export function buildOutskirtsMockupSurfaceFromStores(cityId?: string): OutskirtsExactSurfaceV2 {
   return buildOutskirtsMockupSurface(buildOutskirtsMockupRuntimeSnapshotFromStores(cityId));
 }
