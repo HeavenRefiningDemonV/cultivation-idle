@@ -1,13 +1,23 @@
 .outskirtsExactPage {
+  --outskirts-page-inline-padding: clamp(18px, 2.4vw, 34px);
+  --outskirts-page-block-padding: clamp(14px, 1.8vh, 24px);
+  --outskirts-left-rail-width: clamp(250px, 14vw, 300px);
+  --outskirts-right-rail-width: clamp(265px, 15vw, 320px);
+  --outskirts-rail-gap: clamp(20px, 1.8vw, 32px);
+  --outskirts-scenic-min-height: clamp(340px, 38vh, 500px);
+  --outskirts-identity-row-height: clamp(44px, 5.2vh, 70px);
+  --outskirts-strip-row-min-height: clamp(104px, 13vh, 150px);
+  --outskirts-cta-row-min-height: clamp(112px, 14vh, 164px);
+  --outskirts-summary-row-min-height: clamp(132px, 18vh, 204px);
   position: relative;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
-  row-gap: 1rem;
+  row-gap: clamp(14px, 1.8vh, 24px);
   min-height: 100%;
-  padding: 18px 24px 20px;
+  padding: var(--outskirts-page-block-padding) var(--outskirts-page-inline-padding);
   color: #281c16;
   isolation: isolate;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .outskirtsExactPage__underlay {
@@ -23,15 +33,32 @@
 
 .outskirtsExactPage__topCluster {
   display: grid;
-  row-gap: 0.56rem;
+  grid-template-columns:
+    var(--outskirts-left-rail-width)
+    var(--outskirts-rail-gap)
+    minmax(0, 1fr)
+    var(--outskirts-rail-gap)
+    var(--outskirts-right-rail-width);
+  row-gap: clamp(8px, 1.1vh, 14px);
+  align-items: start;
 }
 
 .outskirtsExactPage__topBand {
   display: grid;
-  grid-template-columns: 230px minmax(0, 1fr) 32px;
-  column-gap: 16px;
+  grid-column: 1 / -1;
+  grid-template-columns:
+    var(--outskirts-left-rail-width)
+    var(--outskirts-rail-gap)
+    minmax(0, 1fr)
+    var(--outskirts-rail-gap)
+    var(--outskirts-right-rail-width);
+  column-gap: 0;
   align-items: center;
-  min-height: 46px;
+  min-height: clamp(46px, 5.8vh, 72px);
+}
+
+.outskirtsExactPage__titleAnchor {
+  grid-column: 1;
 }
 
 .outskirtsExactPage__titleAnchor h1 {
@@ -44,6 +71,7 @@
 }
 
 .outskirtsExactPage__macroRow {
+  grid-column: 3;
   position: relative;
   min-height: 24px;
   display: grid;
@@ -119,6 +147,8 @@
 }
 
 .outskirtsExactPage__settingsButton {
+  grid-column: 5;
+  justify-self: end;
   width: 28px;
   height: 28px;
   border: 0;
@@ -135,11 +165,10 @@
 
 .outskirtsExactPage__statusBand {
   display: grid;
-  grid-column: 2 / 4;
+  grid-column: 3;
   grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 8px;
-  min-height: 56px;
-  margin-left: calc(230px + 16px);
+  gap: clamp(8px, 0.8vw, 12px);
+  min-height: clamp(56px, 7vh, 84px);
 }
 
 .outskirtsExactPage__tacticalCell {
@@ -229,12 +258,13 @@
 
 .outskirtsExactPage__plaqueCluster {
   display: grid;
-  width: auto;
+  grid-column: 3;
+  width: 100%;
+  max-width: clamp(460px, 58vw, 760px);
   justify-items: center;
   row-gap: 0.4rem;
-  margin-top: 14px;
-  margin-left: 248px;
-  margin-right: 220px;
+  justify-self: center;
+  margin-top: clamp(8px, 1.6vh, 18px);
   margin-bottom: 0.1rem;
 }
 
@@ -264,48 +294,71 @@
 
 .outskirtsExactPage__bodyCluster {
   display: grid;
-  grid-template-columns: 220px 28px minmax(0, 1fr) 28px 220px;
-  grid-template-rows: 300px 40px 92px 78px;
+  grid-template-columns:
+    var(--outskirts-left-rail-width)
+    var(--outskirts-rail-gap)
+    minmax(0, 1fr)
+    var(--outskirts-rail-gap)
+    var(--outskirts-right-rail-width);
+  grid-template-rows:
+    minmax(var(--outskirts-scenic-min-height), 1fr)
+    minmax(var(--outskirts-identity-row-height), auto)
+    minmax(var(--outskirts-strip-row-min-height), auto)
+    minmax(max(var(--outskirts-cta-row-min-height), var(--outskirts-summary-row-min-height)), auto);
+  grid-template-areas:
+    'leftRail . scenicStage . rightRail'
+    'leftRail . encounterIdentity . rightRail'
+    '. . encounterStrip . .'
+    '. . ctaLane . summaryDock';
+  column-gap: 0;
+  row-gap: clamp(8px, 1.5vh, 16px);
+  align-items: stretch;
 }
 
 .outskirtsExactPage__leftRail {
-  grid-column: 1;
-  grid-row: 1 / 4;
+  grid-area: leftRail;
   min-width: 0;
+  min-height: 0;
 }
 
-.outskirtsExactPage__centerColumn {
-  grid-column: 3;
-  grid-row: 1 / 5;
+.outskirtsExactPage__centerScenic {
+  grid-area: scenicStage;
   min-width: 0;
-  display: grid;
-  grid-template-rows: 300px 40px 92px 78px;
+  min-height: var(--outskirts-scenic-min-height);
+}
+
+.outskirtsExactPage__centerIdentity {
+  grid-area: encounterIdentity;
+  min-width: 0;
+  min-height: var(--outskirts-identity-row-height);
 }
 
 .outskirtsExactPage__rightRail {
-  grid-column: 5;
-  grid-row: 1 / 4;
+  grid-area: rightRail;
   min-width: 0;
+  min-height: 0;
+}
+
+.outskirtsExactPage__centerStrip {
+  grid-area: encounterStrip;
+  min-width: 0;
+  min-height: var(--outskirts-strip-row-min-height);
+}
+
+.outskirtsExactPage__centerCta {
+  grid-area: ctaLane;
+  min-width: 0;
+  min-height: var(--outskirts-cta-row-min-height);
+  display: grid;
+  align-items: center;
 }
 
 .outskirtsExactPage__summaryDock {
-  grid-column: 5;
-  grid-row: 4;
+  grid-area: summaryDock;
   align-self: start;
   justify-self: stretch;
   min-width: 0;
-}
-
-.outskirtsExactPage__centerScenic,
-.outskirtsExactPage__centerIdentity,
-.outskirtsExactPage__centerStrip,
-.outskirtsExactPage__centerCta {
-  min-width: 0;
-}
-
-.outskirtsExactPage__centerCta {
-  display: grid;
-  align-items: center;
+  min-height: var(--outskirts-summary-row-min-height);
 }
 
 .outskirtsScenicStage {
@@ -809,24 +862,14 @@
 
 @media (max-width: 1120px) {
   .outskirtsExactPage {
-    padding: 14px 16px 16px;
-  }
-
-  .outskirtsExactPage__bodyCluster {
-    grid-template-columns: 200px 18px minmax(0, 1fr) 18px 200px;
-  }
-
-  .outskirtsExactPage__topBand {
-    grid-template-columns: 200px minmax(0, 1fr) 32px;
-  }
-
-  .outskirtsExactPage__statusBand {
-    margin-left: calc(200px + 16px);
-  }
-
-  .outskirtsExactPage__plaqueCluster {
-    margin-left: 216px;
-    margin-right: 200px;
+    --outskirts-page-inline-padding: clamp(14px, 2vw, 20px);
+    --outskirts-left-rail-width: clamp(220px, 23vw, 268px);
+    --outskirts-right-rail-width: clamp(230px, 24vw, 282px);
+    --outskirts-rail-gap: clamp(14px, 1.4vw, 22px);
+    --outskirts-scenic-min-height: clamp(300px, 35vh, 430px);
+    --outskirts-strip-row-min-height: clamp(96px, 11vh, 132px);
+    --outskirts-cta-row-min-height: clamp(100px, 11vh, 146px);
+    --outskirts-summary-row-min-height: clamp(118px, 14vh, 176px);
   }
 }
 
@@ -840,32 +883,35 @@
   }
 
   .outskirtsExactPage__statusBand {
-    margin-left: 0;
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   .outskirtsExactPage__plaqueCluster {
-    margin-left: 0;
-    margin-right: 0;
+    max-width: 100%;
   }
 
   .outskirtsExactPage__bodyCluster {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto;
+    grid-template-rows: repeat(7, auto);
+    grid-template-areas:
+      'scenicStage'
+      'encounterIdentity'
+      'leftRail'
+      'rightRail'
+      'encounterStrip'
+      'ctaLane'
+      'summaryDock';
     row-gap: 0.7rem;
   }
 
   .outskirtsExactPage__leftRail,
-  .outskirtsExactPage__centerColumn,
+  .outskirtsExactPage__centerScenic,
+  .outskirtsExactPage__centerIdentity,
+  .outskirtsExactPage__centerStrip,
+  .outskirtsExactPage__centerCta,
   .outskirtsExactPage__rightRail,
   .outskirtsExactPage__summaryDock {
-    grid-column: 1;
-    grid-row: auto;
-  }
-
-  .outskirtsExactPage__centerColumn {
-    grid-template-rows: minmax(13rem, auto) minmax(2.4rem, auto) minmax(5rem, auto) minmax(4rem, auto);
-    row-gap: 0.5rem;
+    min-height: 0;
   }
 
   .outskirtsEncounterIdentityRow {
