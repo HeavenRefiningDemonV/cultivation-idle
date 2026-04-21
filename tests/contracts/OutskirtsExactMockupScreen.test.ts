@@ -165,6 +165,32 @@ void test('P7 equipment grid remains six icon-first slots in live partial-truth 
   assert.equal(html.includes('◦'), false);
 });
 
+void test('P8 rewards-card renders icon-first shell with ordered sections', () => {
+  const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture());
+  const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
+
+  assert.equal((html.match(/outskirts-exact-rewards-card/g) ?? []).length, 1);
+  assert.equal((html.match(/outskirts-exact-rewards-title/g) ?? []).length, 1);
+  assert.equal((html.match(/outskirts-exact-rewards-gold/g) ?? []).length, 1);
+  assert.equal((html.match(/outskirts-exact-rewards-materials/g) ?? []).length, 1);
+  assert.equal((html.match(/outskirts-exact-rewards-material-item/g) ?? []).length, 4);
+  assert.equal((html.match(/outskirts-exact-rewards-bounty/g) ?? []).length, 1);
+  assert.equal((html.match(/outskirts-exact-rewards-efficiency/g) ?? []).length, 1);
+  assert.equal((html.match(/outskirts-exact-rewards-auto-repeat/g) ?? []).length, 1);
+});
+
+void test('P8 review fixture reward values remain exact and visible', () => {
+  const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture());
+  const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
+
+  for (const token of ['Expected Rewards', 'Gold', '1,250 – 1,480', 'Common Materials', 'Wolf Pelt', 'Beast Bone', 'Green Herb', 'Spirit Stone']) {
+    assert.equal(html.includes(token), true);
+  }
+  for (const token of ['Tracked Bounty', 'Defeat wolves in the Outskirts', '7 / 15', 'Estimated Efficiency', '~45s / run', '1,800 – 2,000 / hour', 'Auto-Repeat', '>On<']) {
+    assert.equal(html.includes(token), true);
+  }
+});
+
 void test('P5 top region element count remains stable across fixture/live and bounty/expedition shifts', () => {
   const fixtureSurface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture());
   const liveLikeSurface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture({

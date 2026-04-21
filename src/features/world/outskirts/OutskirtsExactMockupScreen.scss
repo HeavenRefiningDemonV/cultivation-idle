@@ -781,44 +781,70 @@
   min-width: 0;
   min-height: 13.8rem;
   display: grid;
+  grid-template-rows: auto auto repeat(3, auto) auto;
   align-content: start;
-  gap: 0.42rem;
-  padding: 0.68rem 0.6rem;
-  border-radius: 0.9rem;
-  border: 1px solid rgba(83, 62, 49, 0.23);
-  background: linear-gradient(180deg, rgba(252, 246, 233, 0.93), rgba(243, 233, 211, 0.92));
+  gap: 0.38rem;
+  padding: 0.72rem 0.64rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(91, 68, 52, 0.28);
+  background:
+    linear-gradient(180deg, rgba(250, 243, 227, 0.96), rgba(237, 225, 199, 0.94)),
+    url('../../../assets/Generated assets/Aged parchment vignette for game.png') center / cover no-repeat;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 246, 224, 0.38),
+    0 4px 10px rgba(72, 56, 42, 0.14);
 }
 
 .outskirtsRewardsCard__title {
   margin: 0;
   text-align: center;
   font-family: Georgia, 'Times New Roman', serif;
-  font-size: 1.01rem;
+  font-size: 1.02rem;
+  color: rgba(51, 35, 24, 0.94);
 }
 
-.outskirtsRewardsCard__group {
+.outskirtsRewardsCard__goldPanel {
   display: grid;
-  gap: 0.24rem;
-  min-height: 3.35rem;
-}
-
-.outskirtsRewardsCard__row {
-  margin: 0;
-  min-height: 1.55rem;
-  padding: 0.2rem 0.32rem;
-  border-radius: 0.42rem;
-  background: rgba(245, 235, 214, 0.72);
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  column-gap: 0.4rem;
+  grid-template-columns: 1.5rem auto minmax(0, 1fr);
+  column-gap: 0.42rem;
   align-items: center;
+  min-height: 2rem;
+  padding: 0.24rem 0.34rem;
+  border-radius: 0.52rem;
+  border: 1px solid rgba(129, 96, 57, 0.28);
+  background: linear-gradient(180deg, rgba(255, 249, 230, 0.95), rgba(240, 226, 186, 0.9));
+}
+
+.outskirtsRewardsCard__iconDock {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 0.42rem;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle at 35% 30%, rgba(255, 246, 220, 0.96), rgba(212, 184, 126, 0.92));
+  border: 1px solid rgba(129, 96, 57, 0.34);
+}
+
+.outskirtsRewardsCard__icon {
+  width: 0.95rem;
+  height: 0.95rem;
+  object-fit: contain;
+}
+
+.outskirtsRewardsCard__section {
+  display: grid;
+  gap: 0.22rem;
+  padding: 0.26rem 0.3rem 0.34rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(107, 81, 61, 0.2);
+  background: rgba(246, 236, 215, 0.6);
 }
 
 .outskirtsRewardsCard__label {
-  font-size: 0.62rem;
+  font-size: 0.6rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: rgba(75, 56, 45, 0.82);
+  color: rgba(86, 61, 35, 0.9);
 }
 
 .outskirtsRewardsCard__value {
@@ -828,6 +854,122 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.outskirtsRewardsCard__value--gold {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: rgba(104, 65, 28, 0.94);
+}
+
+.outskirtsRewardsCard__subtitle {
+  margin: 0;
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.045em;
+  color: rgba(77, 57, 43, 0.83);
+}
+
+.outskirtsRewardsCard__materialsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.22rem;
+}
+
+.outskirtsRewardsCard__materialChip {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 0.9rem minmax(0, 1fr);
+  column-gap: 0.24rem;
+  align-items: center;
+  min-height: 1.3rem;
+  padding: 0.16rem 0.24rem;
+  border-radius: 0.38rem;
+  background: rgba(255, 251, 241, 0.66);
+  border: 1px solid rgba(122, 90, 69, 0.16);
+}
+
+.outskirtsRewardsCard__materialIcon {
+  width: 0.8rem;
+  height: 0.8rem;
+  object-fit: contain;
+}
+
+.outskirtsRewardsCard__materialLabel {
+  min-width: 0;
+  font-size: 0.6rem;
+  color: rgba(57, 39, 28, 0.92);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.outskirtsRewardsCard__detailRows {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.outskirtsRewardsCard__row {
+  margin: 0;
+  min-height: 1.15rem;
+  padding: 0.15rem 0.24rem;
+  border-radius: 0.34rem;
+  background: rgba(255, 251, 242, 0.58);
+  font-size: 0.61rem;
+  color: rgba(61, 44, 34, 0.92);
+}
+
+.outskirtsRewardsCard__row--compact {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.outskirtsRewardsCard__row--accent {
+  font-weight: 640;
+  color: rgba(84, 46, 35, 0.95);
+}
+
+.outskirtsRewardsCard__helper {
+  margin: 0;
+  font-size: 0.58rem;
+  color: rgba(90, 68, 50, 0.84);
+}
+
+.outskirtsRewardsCard__toggleRow {
+  margin-top: 0.12rem;
+  min-height: 1.55rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  padding: 0.2rem 0.28rem;
+  border-radius: 0.44rem;
+  border: 1px solid rgba(101, 79, 57, 0.2);
+  background: rgba(245, 236, 216, 0.74);
+}
+
+.outskirtsRewardsCard__toggleLabel {
+  min-width: 0;
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(73, 54, 43, 0.86);
+}
+
+.outskirtsRewardsCard__togglePill {
+  padding: 0.14rem 0.44rem;
+  border-radius: 999px;
+  font-size: 0.58rem;
+  font-weight: 640;
+  color: rgba(95, 68, 44, 0.9);
+  border: 1px solid rgba(116, 88, 63, 0.26);
+  background: rgba(255, 247, 225, 0.8);
+}
+
+.outskirtsRewardsCard__togglePill--enabled {
+  color: rgba(28, 82, 46, 0.96);
+  border-color: rgba(58, 127, 78, 0.45);
+  background: linear-gradient(180deg, rgba(216, 241, 208, 0.92), rgba(175, 221, 163, 0.88));
 }
 
 .outskirtsActiveContainment {
