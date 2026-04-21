@@ -91,8 +91,9 @@ void test('P5 preserves World -> WorldBuildingModal -> OutskirtsBuildingPanel ro
   assert.match(modalSource, /case 'outskirts':\s*content = <OutskirtsBuildingPanel cityId=\{storeCityId\} \/>/);
 
   const panelSource = await readFile(new URL('../../src/components/screens/world/buildings/OutskirtsBuildingPanel.tsx', import.meta.url), 'utf8');
-  assert.match(panelSource, /data-testid="outskirts-view-planning"/);
-  assert.match(panelSource, /OutskirtsExactMockupScreen/);
+  const planningOwnerSource = await readFile(new URL('../../src/features/world/outskirts/OutskirtsPlanningOwner.tsx', import.meta.url), 'utf8');
+  assert.match(panelSource, /OutskirtsPlanningOwner/);
+  assert.match(planningOwnerSource, /OutskirtsExactMockupScreen/);
 });
 
 void test('P7 strip structure renders one progression strip with arrows and six nodes', () => {
@@ -167,9 +168,9 @@ void test('P8 grind-summary fallback remains rendered when partial summary data 
 });
 
 void test('P8 wiring: planning CTA is forwarded to existing Outskirts start handler path', async () => {
-  const panelSource = await readFile(new URL('../../src/components/screens/world/buildings/OutskirtsBuildingPanel.tsx', import.meta.url), 'utf8');
-  assert.match(panelSource, /<OutskirtsExactMockupScreen surface=\{planningSurface\} onStartHunt=\{handleStartOutskirts\} onOpenSettings=\{handleOpenSettings\} \/>/);
-  assert.match(panelSource, /const handleStartOutskirts = \(\) =>/);
+  const planningOwnerSource = await readFile(new URL('../../src/features/world/outskirts/OutskirtsPlanningOwner.tsx', import.meta.url), 'utf8');
+  assert.match(planningOwnerSource, /<OutskirtsExactMockupScreen/);
+  assert.match(planningOwnerSource, /const handleStartOutskirts = useCallback/);
 });
 
 void test('P9 wrapper contains dedicated planning/active/unavailable branches', async () => {
@@ -257,10 +258,10 @@ void test('Stage2 planning owner top cluster excludes combat shell/compass/top l
 });
 
 void test('Stage2 settings gear wiring uses existing settings tab + close modal flow', async () => {
-  const panelSource = await readFile(new URL('../../src/components/screens/world/buildings/OutskirtsBuildingPanel.tsx', import.meta.url), 'utf8');
-  assert.match(panelSource, /const handleOpenSettings = useCallback\(\(\) =>/);
-  assert.match(panelSource, /useUIStore\.getState\(\)\.setActiveTab\('settings'\);/);
-  assert.match(panelSource, /closeWorldBuildingModal\(\);/);
+  const planningOwnerSource = await readFile(new URL('../../src/features/world/outskirts/OutskirtsPlanningOwner.tsx', import.meta.url), 'utf8');
+  assert.match(planningOwnerSource, /const handleOpenSettings = useCallback\(\(\) =>/);
+  assert.match(planningOwnerSource, /useUIStore\.getState\(\)\.setActiveTab\('settings'\);/);
+  assert.match(planningOwnerSource, /closeWorldBuildingModal\(\);/);
 });
 
 void test('P10 no-layout-shift contract keeps stable node/card/cta structure across bounty and boss-ready state changes', () => {

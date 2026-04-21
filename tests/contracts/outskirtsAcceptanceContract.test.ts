@@ -69,10 +69,12 @@ void test('outskirts support context only emits adjacent route modules and keeps
   assert.equal(surface.routeHints[0]?.destination, 'ruins');
 });
 
-void test('outskirts panel planning state is owned by exact mockup surface in P3', async () => {
-  const source = await readFile(new URL('../../src/components/screens/world/buildings/OutskirtsBuildingPanel.tsx', import.meta.url), 'utf8');
-  assert.match(source, /buildOutskirtsMockupSurfaceFromStores/);
-  assert.match(source, /OutskirtsExactMockupScreen/);
-  assert.match(source, /if \(!isOutskirtsActive\)/);
-  assert.match(source, /data-testid="outskirts-planning-owner"/);
+void test('outskirts planning owner is routed through dedicated exact planning owner component in P2', async () => {
+  const panelSource = await readFile(new URL('../../src/components/screens/world/buildings/OutskirtsBuildingPanel.tsx', import.meta.url), 'utf8');
+  const planningOwnerSource = await readFile(new URL('../../src/features/world/outskirts/OutskirtsPlanningOwner.tsx', import.meta.url), 'utf8');
+  assert.match(panelSource, /OutskirtsPlanningOwner/);
+  assert.match(panelSource, /OutskirtsLegacyActiveSurface/);
+  assert.match(planningOwnerSource, /buildOutskirtsMockupSurfaceFromStores/);
+  assert.match(planningOwnerSource, /OutskirtsExactMockupScreen/);
+  assert.match(planningOwnerSource, /data-testid="outskirts-view-planning"/);
 });
