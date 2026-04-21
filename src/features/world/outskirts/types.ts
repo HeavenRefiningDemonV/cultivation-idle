@@ -170,8 +170,8 @@ export interface OutskirtsPrimaryAction {
   ariaLabel: string;
   visible: boolean;
   enabled: boolean;
-  intent?: 'start-hunt';
-  singleDominantCta?: true;
+  intent: 'start-hunt';
+  singleDominantCta: true;
   isPrimary?: true;
   disabledReason?: string;
 }
