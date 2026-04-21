@@ -33,3 +33,17 @@ void test('gateTrial/ruins remain on existing combat-path host contract', () => 
     assert.equal(surface.showShellClose, false, `${buildingKey} should keep close ownership in panel chrome`);
   });
 });
+
+
+void test('non-outskirts modules that use context-strip mode still expose shell context/close semantics', () => {
+  const surface = resolveWorldModalEntrySurface({
+    buildingKey: 'apothecary',
+    cityName: 'Spirit Cavern',
+    intent: { apothecarySurface: 'buy' },
+    isStoreMode: true,
+  });
+
+  assert.equal(surface.shellMode, 'context-strip');
+  assert.equal(surface.showContextStrip, true);
+  assert.equal(surface.showShellClose, true);
+});
