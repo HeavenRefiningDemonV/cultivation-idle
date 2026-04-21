@@ -863,10 +863,10 @@
 @media (max-width: 1120px) {
   .outskirtsExactPage {
     --outskirts-page-inline-padding: clamp(14px, 2vw, 20px);
-    --outskirts-left-rail-width: clamp(220px, 23vw, 268px);
+    --outskirts-left-rail-width: clamp(226px, 23vw, 268px);
     --outskirts-right-rail-width: clamp(230px, 24vw, 282px);
     --outskirts-rail-gap: clamp(14px, 1.4vw, 22px);
-    --outskirts-scenic-min-height: clamp(300px, 35vh, 430px);
+    --outskirts-scenic-min-height: clamp(304px, 35vh, 430px);
     --outskirts-strip-row-min-height: clamp(96px, 11vh, 132px);
     --outskirts-cta-row-min-height: clamp(100px, 11vh, 146px);
     --outskirts-summary-row-min-height: clamp(118px, 14vh, 176px);
@@ -876,10 +876,6 @@
 @media (max-width: 960px) {
   .outskirtsExactPage__topCluster {
     row-gap: 0.46rem;
-  }
-
-  .outskirtsExactPage__topBand {
-    grid-template-columns: minmax(0, 1fr) 1fr 32px;
   }
 
   .outskirtsExactPage__statusBand {
@@ -892,7 +888,14 @@
 
   .outskirtsExactPage__bodyCluster {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: repeat(7, auto);
+    grid-template-rows:
+      minmax(220px, auto)
+      minmax(48px, auto)
+      minmax(220px, auto)
+      minmax(220px, auto)
+      minmax(92px, auto)
+      minmax(102px, auto)
+      minmax(118px, auto);
     grid-template-areas:
       'scenicStage'
       'encounterIdentity'
