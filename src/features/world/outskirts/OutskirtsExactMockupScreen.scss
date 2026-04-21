@@ -31,7 +31,7 @@
   pointer-events: none;
 }
 
-.outskirtsExactPage__topCluster {
+.outskirtsTopRegion {
   display: grid;
   grid-template-columns:
     var(--outskirts-left-rail-width)
@@ -39,11 +39,12 @@
     minmax(0, 1fr)
     var(--outskirts-rail-gap)
     var(--outskirts-right-rail-width);
-  row-gap: clamp(8px, 1.1vh, 14px);
+  row-gap: clamp(10px, 1.35vh, 16px);
   align-items: start;
+  padding-top: clamp(4px, 0.7vh, 10px);
 }
 
-.outskirtsExactPage__topBand {
+.outskirtsTopRegion__topBand {
   display: grid;
   grid-column: 1 / -1;
   grid-template-columns:
@@ -54,90 +55,92 @@
     var(--outskirts-right-rail-width);
   column-gap: 0;
   align-items: center;
-  min-height: clamp(46px, 5.8vh, 72px);
+  min-height: clamp(56px, 7.1vh, 84px);
 }
 
-.outskirtsExactPage__titleAnchor {
+.outskirtsTopRegion__titleAnchor {
   grid-column: 1;
 }
 
-.outskirtsExactPage__titleAnchor h1 {
+.outskirtsTopRegion__titleAnchor h1 {
   margin: 0;
   font-family: Georgia, 'Times New Roman', serif;
-  font-size: clamp(2.75rem, 4.4vw, 3.25rem);
-  font-weight: 600;
-  letter-spacing: 0.01em;
-  line-height: 0.98;
+  font-size: clamp(3.2rem, 5.2vw, 4.5rem);
+  font-weight: 560;
+  letter-spacing: 0.005em;
+  line-height: 0.92;
+  text-shadow: 0 1px 0 rgba(255, 250, 242, 0.5);
 }
 
-.outskirtsExactPage__macroRow {
-  grid-column: 3;
+.outskirtsTopRegion__macroRibbon {
+  grid-column: 2 / 5;
   position: relative;
-  min-height: 24px;
+  min-height: clamp(28px, 3.8vh, 42px);
   display: grid;
   align-items: center;
 }
 
-.outskirtsExactPage__macroLine {
+.outskirtsTopRegion__macroTrack {
   position: absolute;
-  inset: 50% 0 auto 0;
-  border-top: 1px solid rgba(63, 52, 39, 0.38);
+  inset: 50% clamp(32px, 3.4vw, 52px) auto clamp(32px, 3.2vw, 52px);
+  border-top: 2px solid rgba(67, 94, 79, 0.58);
   transform: translateY(-50%);
+  box-shadow: 0 0 0 1px rgba(226, 216, 187, 0.24);
 }
 
-.outskirtsExactPage__macroLeftOrnament {
+.outskirtsTopRegion__macroFlourish {
   position: absolute;
-  left: 0;
   top: 50%;
-  width: 32px;
-  height: 10px;
+  width: clamp(44px, 5.5vw, 70px);
+  height: clamp(12px, 1.7vh, 20px);
   transform: translateY(-50%);
-  background: linear-gradient(90deg, rgba(73, 95, 79, 0.6), rgba(73, 95, 79, 0));
-  clip-path: polygon(0 50%, 14% 22%, 28% 50%, 42% 22%, 56% 50%, 70% 26%, 84% 50%, 100% 50%, 100% 100%, 0 100%);
+  background: url('../../../assets/menus/bar_short.png') center / cover no-repeat;
+  opacity: 0.58;
 }
 
-.outskirtsExactPage__macroNodes {
+.outskirtsTopRegion__macroFlourish--left {
+  left: 0;
+}
+
+.outskirtsTopRegion__macroFlourish--right {
+  right: 0;
+  transform: translateY(-50%) scaleX(-1);
+}
+
+.outskirtsTopRegion__macroNodes {
   margin: 0;
-  padding: 0 34px 0 36px;
+  padding: 0 clamp(38px, 4.3vw, 62px);
   list-style: none;
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
   align-items: center;
 }
 
-.outskirtsExactPage__macroNode {
+.outskirtsTopRegion__macroNode {
   justify-self: center;
-  width: 10px;
-  height: 10px;
-  border-radius: 999px;
-  border: 1px solid rgba(51, 74, 60, 0.52);
-  background: rgba(118, 152, 131, 0.8);
-}
-
-.outskirtsExactPage__macroNode--muted {
-  background: rgba(105, 141, 120, 0.86);
-}
-
-.outskirtsExactPage__macroNode--active {
   width: 12px;
   height: 12px;
-  border-width: 2px;
-  border-color: rgba(140, 112, 57, 0.85);
-  background: rgba(231, 199, 120, 0.95);
+  border-radius: 999px;
+  border: 2px solid rgba(86, 118, 96, 0.68);
+  background: radial-gradient(circle at 35% 30%, rgba(217, 236, 210, 0.92), rgba(124, 156, 134, 0.94));
+  box-shadow: 0 0 0 1px rgba(238, 224, 186, 0.4);
 }
 
-.outskirtsExactPage__macroTerminalCap {
-  position: absolute;
-  right: 2px;
-  top: 50%;
-  width: 34px;
-  height: 14px;
-  transform: translateY(-50%);
-  background: linear-gradient(180deg, rgba(57, 64, 63, 0.92), rgba(37, 43, 42, 0.9));
-  clip-path: polygon(0 84%, 10% 62%, 24% 54%, 30% 26%, 50% 10%, 70% 26%, 76% 54%, 90% 62%, 100% 84%);
+.outskirtsTopRegion__macroNode--muted {
+  opacity: 0.84;
 }
 
-.outskirtsExactPage__macroAria {
+.outskirtsTopRegion__macroNode--active {
+  width: 16px;
+  height: 16px;
+  border-color: rgba(154, 124, 68, 0.95);
+  background: radial-gradient(circle at 35% 25%, rgba(255, 238, 190, 0.96), rgba(205, 166, 87, 0.94));
+  box-shadow:
+    0 0 0 2px rgba(237, 221, 180, 0.7),
+    0 0 16px rgba(168, 146, 93, 0.36);
+}
+
+.outskirtsTopRegion__macroAria {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -146,151 +149,203 @@
   clip: rect(0, 0, 0, 0);
 }
 
-.outskirtsExactPage__settingsButton {
+.outskirtsTopRegion__settingsButton {
   grid-column: 5;
   justify-self: end;
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 36px;
   border: 0;
   background: transparent;
-  color: rgba(64, 49, 38, 0.78);
-  display: grid;
-  place-items: center;
-  border-radius: 8px;
-}
-
-.outskirtsExactPage__settingsButton:hover {
-  background: rgba(131, 118, 95, 0.12);
-}
-
-.outskirtsExactPage__statusBand {
-  display: grid;
-  grid-column: 3;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: clamp(8px, 0.8vw, 12px);
-  min-height: clamp(56px, 7vh, 84px);
-}
-
-.outskirtsExactPage__tacticalCell {
-  position: relative;
-  min-height: 56px;
-  display: grid;
-  grid-template-columns: 22px minmax(0, 1fr) 14px;
-  align-items: center;
-  column-gap: 8px;
-  padding: 9px 11px;
-  border: 1px solid rgba(93, 72, 56, 0.2);
-  border-radius: 0.55rem;
-  background: linear-gradient(180deg, rgba(248, 242, 227, 0.95), rgba(244, 236, 220, 0.91));
-}
-
-.outskirtsExactPage__tacticalIconDock {
-  width: 22px;
-  height: 22px;
+  color: rgba(64, 49, 38, 0.74);
   display: grid;
   place-items: center;
   border-radius: 999px;
-  color: rgba(76, 97, 77, 0.9);
-  background: radial-gradient(circle at 35% 30%, rgba(255, 247, 227, 0.85), rgba(188, 204, 176, 0.5));
+  padding: 0;
 }
 
-.outskirtsExactPage__tacticalText {
+.outskirtsTopRegion__settingsButtonInner {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(180deg, rgba(246, 236, 214, 0.9), rgba(226, 208, 172, 0.88));
+  border: 1px solid rgba(119, 92, 66, 0.34);
+  box-shadow: inset 0 0 0 1px rgba(255, 248, 230, 0.52);
+}
+
+.outskirtsTopRegion__settingsButton:hover .outskirtsTopRegion__settingsButtonInner {
+  filter: brightness(1.04);
+}
+
+.outskirtsTopRegion__tacticalStrip {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: clamp(10px, 1vw, 14px);
+  min-height: clamp(70px, 8.6vh, 102px);
+}
+
+.outskirtsTopRegion__tacticalCell {
+  position: relative;
+  min-height: clamp(70px, 8.4vh, 98px);
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) 16px 10px;
+  align-items: center;
+  column-gap: 10px;
+  padding: 11px 12px;
+  border: 1px solid rgba(112, 89, 69, 0.26);
+  border-radius: 0.78rem;
+  background:
+    linear-gradient(180deg, rgba(254, 248, 236, 0.96), rgba(238, 226, 199, 0.92)),
+    url('../../../assets/menus/block_fancy.png') center / cover no-repeat;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 246, 221, 0.42),
+    0 2px 10px rgba(77, 63, 46, 0.12);
+}
+
+.outskirtsTopRegion__tacticalIconDock {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 0.7rem;
+  background: radial-gradient(circle at 30% 25%, rgba(255, 248, 227, 0.9), rgba(214, 194, 152, 0.85));
+  border: 1px solid rgba(117, 90, 61, 0.28);
+}
+
+.outskirtsTopRegion__tacticalIcon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  filter: saturate(0.92) contrast(1.05);
+}
+
+.outskirtsTopRegion__tacticalText {
   min-width: 0;
   display: grid;
-  row-gap: 1px;
+  row-gap: 2px;
 }
 
-.outskirtsExactPage__tacticalLabel {
-  font-size: 10.5px;
+.outskirtsTopRegion__tacticalLabel {
+  font-size: 11.5px;
   font-weight: 600;
   letter-spacing: 0.01em;
   line-height: 1.2;
   white-space: nowrap;
+  color: rgba(68, 50, 39, 0.84);
 }
 
-.outskirtsExactPage__tacticalPrimary {
-  font-size: 13px;
+.outskirtsTopRegion__tacticalPrimary {
+  font-size: 16px;
   font-weight: 600;
-  line-height: 1.25;
+  line-height: 1.18;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  color: rgba(42, 30, 24, 0.95);
 }
 
-.outskirtsExactPage__tacticalSecondary {
+.outskirtsTopRegion__tacticalSecondary {
   margin-left: 6px;
-  font-size: 11px;
+  font-size: 12px;
   font-style: normal;
   font-weight: 400;
   color: rgba(86, 70, 56, 0.78);
 }
 
-.outskirtsExactPage__tacticalUnderlineTrack {
+.outskirtsTopRegion__tacticalUnderlineTrack {
   display: block;
   margin-top: 2px;
-  height: 3px;
+  height: 4px;
   border-radius: 999px;
   background: rgba(122, 66, 56, 0.22);
   overflow: hidden;
 }
 
-.outskirtsExactPage__tacticalUnderlineFill {
+.outskirtsTopRegion__tacticalUnderlineFill {
   display: block;
   height: 100%;
   background: linear-gradient(90deg, rgba(181, 59, 47, 0.86), rgba(206, 98, 83, 0.88));
 }
 
-.outskirtsExactPage__tacticalCaret {
-  color: rgba(88, 72, 57, 0.65);
+.outskirtsTopRegion__tacticalAdornment {
+  width: 16px;
+  height: 16px;
+  color: rgba(88, 72, 57, 0.72);
   display: grid;
   place-items: center;
 }
 
-.outskirtsExactPage__tacticalDot {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 6px;
-  height: 6px;
+.outskirtsTopRegion__tacticalDotDock {
+  width: 10px;
+  height: 10px;
+  display: grid;
+  place-items: center;
+}
+
+.outskirtsTopRegion__tacticalDot {
+  width: 7px;
+  height: 7px;
   border-radius: 999px;
   background: rgba(186, 80, 79, 0.9);
 }
 
-.outskirtsExactPage__plaqueCluster {
+.outskirtsTopRegion__plaqueCluster {
   display: grid;
   grid-column: 3;
   width: 100%;
-  max-width: clamp(460px, 58vw, 760px);
+  max-width: clamp(480px, 59vw, 790px);
   justify-items: center;
-  row-gap: 0.4rem;
+  row-gap: clamp(10px, 1.3vh, 16px);
   justify-self: center;
-  margin-top: clamp(8px, 1.6vh, 18px);
-  margin-bottom: 0.1rem;
+  margin-top: clamp(8px, 1.3vh, 14px);
+  margin-bottom: clamp(2px, 0.4vh, 6px);
 }
 
-.outskirtsExactPage__areaPlaque {
-  min-width: min(320px, 90%);
-  min-height: 54px;
+.outskirtsTopRegion__areaPlaque {
+  min-width: min(420px, 95%);
+  min-height: 64px;
   text-align: center;
-  padding: 10px 24px;
-  border: 1px solid rgba(89, 69, 55, 0.52);
-  border-radius: 12px;
-  background: linear-gradient(180deg, rgba(57, 51, 45, 0.96), rgba(37, 33, 30, 0.94));
+  padding: 10px 28px;
+  border: 1px solid rgba(89, 69, 55, 0.58);
+  border-radius: 14px;
+  background:
+    linear-gradient(180deg, rgba(57, 51, 45, 0.96), rgba(35, 31, 28, 0.95)),
+    url('../../../assets/menus/bar_long.png') center / cover no-repeat;
   box-shadow:
-    inset 0 0 0 1px rgba(230, 218, 194, 0.24),
-    0 5px 14px rgba(48, 39, 31, 0.24);
+    inset 0 0 0 1px rgba(230, 218, 194, 0.28),
+    0 6px 16px rgba(48, 39, 31, 0.24);
   color: #f4eee2;
+  display: grid;
+  grid-template-columns: auto 20px;
+  column-gap: 10px;
+  align-items: center;
+  justify-content: center;
+}
+
+.outskirtsTopRegion__plaqueLabel {
   font-family: Georgia, 'Times New Roman', serif;
-  font-size: clamp(1.2rem, 2.3vw, 1.9rem);
+  font-size: clamp(2rem, 3.2vw, 2.6rem);
+  line-height: 1;
   letter-spacing: 0.015em;
 }
 
-.outskirtsExactPage__subtitle {
+.outskirtsTopRegion__plaqueCaret {
+  color: rgba(233, 221, 192, 0.94);
+  display: grid;
+  place-items: center;
+}
+
+.outskirtsTopRegion__subtitle {
   margin: 0;
   text-align: center;
-  color: rgba(59, 41, 32, 0.84);
-  font-size: 15px;
+  color: rgba(71, 51, 37, 0.82);
+  font-size: 22px;
+  font-family: Georgia, 'Times New Roman', serif;
+  line-height: 1.1;
 }
+
 
 .outskirtsExactPage__bodyCluster {
   display: grid;
@@ -874,15 +929,15 @@
 }
 
 @media (max-width: 960px) {
-  .outskirtsExactPage__topCluster {
+  .outskirtsTopRegion {
     row-gap: 0.46rem;
   }
 
-  .outskirtsExactPage__statusBand {
+  .outskirtsTopRegion__tacticalStrip {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
-  .outskirtsExactPage__plaqueCluster {
+  .outskirtsTopRegion__plaqueCluster {
     max-width: 100%;
   }
 
