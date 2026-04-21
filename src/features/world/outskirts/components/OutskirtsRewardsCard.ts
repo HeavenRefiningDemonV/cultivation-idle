@@ -1,17 +1,8 @@
 import React from 'react';
-import type { OutskirtsMockupRewardsCard } from '../types.js';
+import type { OutskirtsRewardsCard as OutskirtsRewardsCardModel } from '../types.js';
 
 export interface OutskirtsRewardsCardProps {
-  rewards: OutskirtsMockupRewardsCard;
-}
-
-function renderRows(rows: OutskirtsMockupRewardsCard['expectedRewards'] | OutskirtsMockupRewardsCard['guaranteedOrLikely'] | OutskirtsMockupRewardsCard['efficiency']) {
-  return rows.map((row) => React.createElement(
-    'p',
-    { key: row.id, className: 'outskirtsRewardsCard__row' },
-    React.createElement('span', { className: 'outskirtsRewardsCard__label' }, row.label),
-    React.createElement('span', { className: 'outskirtsRewardsCard__value' }, row.value),
-  ));
+  rewards: OutskirtsRewardsCardModel;
 }
 
 export function OutskirtsRewardsCard({ rewards }: OutskirtsRewardsCardProps) {
@@ -19,24 +10,20 @@ export function OutskirtsRewardsCard({ rewards }: OutskirtsRewardsCardProps) {
     'section',
     { className: 'outskirtsRewardsCard', 'data-testid': 'outskirts-rewards-card' },
     React.createElement('h3', { className: 'outskirtsRewardsCard__title' }, rewards.title),
-    React.createElement('div', { className: 'outskirtsRewardsCard__group' }, ...renderRows(rewards.expectedRewards)),
-    React.createElement('div', { className: 'outskirtsRewardsCard__group' }, ...renderRows(rewards.guaranteedOrLikely)),
-    React.createElement(
-      'div',
-      { className: 'outskirtsRewardsCard__group' },
-      React.createElement(
-        'p',
-        { className: 'outskirtsRewardsCard__row' },
-        React.createElement('span', { className: 'outskirtsRewardsCard__label' }, rewards.bountyOverlap.label),
-        React.createElement('span', { className: 'outskirtsRewardsCard__value' }, rewards.bountyOverlap.value),
-      ),
-      ...renderRows(rewards.efficiency),
-      React.createElement(
-        'p',
-        { className: 'outskirtsRewardsCard__row' },
-        React.createElement('span', { className: 'outskirtsRewardsCard__label' }, rewards.cadenceSupport.label),
-        React.createElement('span', { className: 'outskirtsRewardsCard__value' }, rewards.cadenceSupport.value),
-      ),
+    React.createElement('p', { className: 'outskirtsRewardsCard__row' }, React.createElement('span', { className: 'outskirtsRewardsCard__label' }, rewards.goldHeadline.label), React.createElement('span', { className: 'outskirtsRewardsCard__value' }, rewards.goldHeadline.value)),
+    React.createElement('h4', { className: 'outskirtsRewardsCard__subtitle' }, rewards.commonMaterials.title),
+    React.createElement('div', { className: 'outskirtsRewardsCard__group' }, ...rewards.commonMaterials.items.map((item) => React.createElement('p', { key: item.id, className: 'outskirtsRewardsCard__row' }, item.label))),
+    React.createElement('h4', { className: 'outskirtsRewardsCard__subtitle' }, rewards.trackedBounty.title),
+    React.createElement('div', { className: 'outskirtsRewardsCard__group' },
+      React.createElement('p', { className: 'outskirtsRewardsCard__row' }, rewards.trackedBounty.itemLabel),
+      React.createElement('p', { className: 'outskirtsRewardsCard__row' }, rewards.trackedBounty.helperLine),
+      React.createElement('p', { className: 'outskirtsRewardsCard__row' }, rewards.trackedBounty.progressLabel),
     ),
+    React.createElement('h4', { className: 'outskirtsRewardsCard__subtitle' }, rewards.estimatedEfficiency.title),
+    React.createElement('div', { className: 'outskirtsRewardsCard__group' },
+      React.createElement('p', { className: 'outskirtsRewardsCard__row' }, rewards.estimatedEfficiency.runTimeLabel),
+      React.createElement('p', { className: 'outskirtsRewardsCard__row' }, rewards.estimatedEfficiency.hourlyLabel),
+    ),
+    React.createElement('p', { className: 'outskirtsRewardsCard__row' }, `${rewards.autoRepeat.label} ${rewards.autoRepeat.value}`),
   );
 }
