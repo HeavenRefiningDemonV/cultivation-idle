@@ -48,6 +48,7 @@ export function createOutskirtsMockupFixture(
     efficiencyRunTimeLabel: '~45s / run',
     efficiencyHourlyLabel: '1,800 – 2,000 / hour',
     autoRepeatLabel: 'On',
+    autoRepeatEnabled: true,
     selectedEncounterId: 'snarling-wolf',
     selectedEncounterName: 'Snarling Wolf',
     selectedEncounterLevelLabel: 'Lv. 11',
