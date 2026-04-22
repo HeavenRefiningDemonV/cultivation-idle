@@ -50,7 +50,19 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
   }
 
   return (
-    <Suspense fallback={<div className="worldScreenPlaceholder" data-testid="outskirts-active-boundary-loading" />}>
+    <Suspense
+      fallback={(
+        <div className="worldScreenPlaceholder" data-testid="outskirts-active-boundary-loading">
+          <div className="worldScreenPlaceholderHeader">
+            <div className="worldScreenPlaceholderTitle">Outskirts</div>
+            <div className="worldScreenPlaceholderKey">outskirts</div>
+          </div>
+          <div className="worldScreenPlaceholderBody">
+            <div className="worldScreenPlaceholderLine">Resuming active run…</div>
+          </div>
+        </div>
+      )}
+    >
       <OutskirtsLegacyActiveSurface cityId={cityId} />
     </Suspense>
   );
