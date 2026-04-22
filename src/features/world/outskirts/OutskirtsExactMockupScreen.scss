@@ -1398,3 +1398,13 @@
     justify-self: center;
   }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .outskirtsEncounterProgressStrip__node,
+  .outskirtsEncounterProgressStrip__thumb,
+  .outskirtsEncounterProgressStrip__silhouette,
+  .outskirtsEncounterProgressStrip__arrow {
+    transition: none !important;
+    animation: none !important;
+  }
+}

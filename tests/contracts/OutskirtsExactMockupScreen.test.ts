@@ -271,6 +271,13 @@ void test('P9 encounter strip visual-state stability keeps lane footprint with m
   assert.equal(html.includes('outskirtsEncounterProgressStrip__thumb--current'), true);
 });
 
+void test('P9 strip includes reduced-motion guardrails without geometry drift hooks', async () => {
+  const styleSource = await readFile(new URL('../../src/features/world/outskirts/OutskirtsExactMockupScreen.scss', import.meta.url), 'utf8');
+  assert.match(styleSource, /@media \(prefers-reduced-motion: reduce\)/);
+  assert.match(styleSource, /outskirtsEncounterProgressStrip__node/);
+  assert.match(styleSource, /outskirtsEncounterProgressStrip__arrow/);
+});
+
 void test('P5 top region element count remains stable across fixture/live and bounty/expedition shifts', () => {
   const fixtureSurface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture());
   const liveLikeSurface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture({
