@@ -17,6 +17,25 @@ function readChildren(node: unknown): unknown[] {
   return (node as { props?: { children?: unknown[] } } | undefined)?.props?.children ?? [];
 }
 
+function findNode(
+  root: unknown,
+  predicate: (node: { props?: Record<string, unknown> }) => boolean,
+): { props?: Record<string, unknown> } | null {
+  const queue: unknown[] = [root];
+  while (queue.length > 0) {
+    const current = queue.shift() as { props?: Record<string, unknown> } | undefined;
+    if (!current) continue;
+    if (predicate(current)) return current;
+    const children = current.props?.children;
+    if (Array.isArray(children)) {
+      queue.push(...children);
+    } else if (children) {
+      queue.push(children);
+    }
+  }
+  return null;
+}
+
 void test('P5 top region structure renders title/ribbon/strip/plaque/subtitle/settings', () => {
   const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture());
   const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
@@ -200,7 +219,7 @@ void test('P8 rewards-card renders icon-first shell with ordered sections', () =
   assert.equal((html.match(/outskirts-exact-rewards-gold/g) ?? []).length, 1);
   assert.equal((html.match(/outskirts-exact-rewards-materials/g) ?? []).length, 1);
   assert.equal((html.match(/outskirts-exact-rewards-material-item/g) ?? []).length, 4);
-  assert.equal((html.match(/outskirts-exact-rewards-bounty/g) ?? []).length, 1);
+  assert.equal((html.match(/data-testid="outskirts-exact-rewards-bounty"/g) ?? []).length, 1);
   assert.equal((html.match(/outskirts-exact-rewards-efficiency/g) ?? []).length, 1);
   assert.equal((html.match(/outskirts-exact-rewards-auto-repeat/g) ?? []).length, 1);
 });
@@ -235,10 +254,10 @@ void test('P9 encounter strip renders one lane, arrows, six nodes, and distinct 
   const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture());
   const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
 
-  assert.equal((html.match(/outskirts-exact-encounter-strip/g) ?? []).length, 1);
+  assert.equal((html.match(/data-testid="outskirts-exact-encounter-strip"/g) ?? []).length, 1);
   assert.equal((html.match(/outskirts-exact-encounter-strip-left-arrow/g) ?? []).length, 1);
   assert.equal((html.match(/outskirts-exact-encounter-strip-right-arrow/g) ?? []).length, 1);
-  assert.equal((html.match(/outskirts-exact-encounter-strip-node/g) ?? []).length, 6);
+  assert.equal((html.match(/data-testid="outskirts-exact-encounter-strip-node"/g) ?? []).length, 6);
   assert.equal((html.match(/outskirts-exact-encounter-strip-node-current/g) ?? []).length, 1);
   assert.equal((html.match(/outskirts-exact-encounter-strip-node-completed/g) ?? []).length, 2);
   assert.equal((html.match(/outskirts-exact-encounter-strip-node-future/g) ?? []).length, 3);
@@ -290,7 +309,7 @@ void test('P9 encounter strip visual-state stability keeps lane footprint with m
   }));
   const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
 
-  assert.equal((html.match(/outskirts-exact-encounter-strip-node/g) ?? []).length, 6);
+  assert.equal((html.match(/data-testid="outskirts-exact-encounter-strip-node"/g) ?? []).length, 6);
   assert.equal((html.match(/outskirts-exact-encounter-strip-left-arrow/g) ?? []).length, 1);
   assert.equal((html.match(/outskirts-exact-encounter-strip-right-arrow/g) ?? []).length, 1);
   assert.equal(html.includes('outskirtsEncounterProgressStrip__lane'), true);
@@ -362,11 +381,11 @@ void test('P10 bottom-zone structure renders one strip, one dominant CTA, and on
   const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture());
   const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
 
-  assert.equal((html.match(/outskirts-exact-encounter-strip/g) ?? []).length, 1);
-  assert.equal((html.match(/outskirts-start-hunt-cta/g) ?? []).length, 1);
-  assert.equal((html.match(/outskirts-grind-summary/g) ?? []).length, 1);
-  assert.equal((html.match(/outskirts-grind-summary-chip/g) ?? []).length, 1);
-  assert.equal((html.match(/outskirts-grind-summary-row/g) ?? []).length, 3);
+  assert.equal((html.match(/data-testid="outskirts-exact-encounter-strip"/g) ?? []).length, 1);
+  assert.equal((html.match(/data-testid="outskirts-start-hunt-cta"/g) ?? []).length, 1);
+  assert.equal((html.match(/data-testid="outskirts-grind-summary"/g) ?? []).length, 1);
+  assert.equal((html.match(/data-testid="outskirts-grind-summary-chip"/g) ?? []).length, 1);
+  assert.equal((html.match(/data-testid="outskirts-grind-summary-row"/g) ?? []).length, 3);
   assert.equal(html.includes('Route'), false);
 });
 
@@ -383,7 +402,7 @@ void test('P10 single-dominant CTA is preserved and rewards card stays CTA-free'
   const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture());
   const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
 
-  assert.equal((html.match(/outskirts-start-hunt-cta/g) ?? []).length, 1);
+  assert.equal((html.match(/data-testid="outskirts-start-hunt-cta"/g) ?? []).length, 1);
   assert.equal(surface.primaryAction.singleDominantCta, true);
   assert.equal(surface.shell.rightCardHasPrimaryAction, false);
   assert.equal(html.includes('outskirts-exact-rewards-auto-repeat'), true);
@@ -415,10 +434,10 @@ void test('P11 medicine pouch affordance can use grounded callback route', () =>
       opened += 1;
     },
   });
-  const sections = readChildren(card);
-  const pouchSection = sections[5] as { props?: { children?: unknown[] } };
-  const pouchRow = readChildren(pouchSection)[1] as { props?: { children?: unknown[] } };
-  const pouchActionButton = readChildren(pouchRow)[2] as { props?: { onClick?: () => void } };
+  const pouchActionButton = findNode(card, (node) => {
+    const ariaLabel = node.props?.['aria-label'];
+    return typeof ariaLabel === 'string' && ariaLabel.includes('Open medicine pouch configuration');
+  }) as { props?: { onClick?: () => void } } | null;
   pouchActionButton?.props?.onClick?.();
   assert.equal(opened, 1);
 });
@@ -474,9 +493,9 @@ void test('P10 summary fallback stability preserves chip and row geometry with p
   ];
   const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
 
-  assert.equal((html.match(/outskirts-grind-summary/g) ?? []).length, 1);
-  assert.equal((html.match(/outskirts-grind-summary-chip/g) ?? []).length, 1);
-  assert.equal((html.match(/outskirts-grind-summary-row/g) ?? []).length, 3);
+  assert.equal((html.match(/data-testid="outskirts-grind-summary"/g) ?? []).length, 1);
+  assert.equal((html.match(/data-testid="outskirts-grind-summary-chip"/g) ?? []).length, 1);
+  assert.equal((html.match(/data-testid="outskirts-grind-summary-row"/g) ?? []).length, 3);
   assert.equal(html.includes('outskirtsGrindSummaryCard__row'), true);
 });
 
