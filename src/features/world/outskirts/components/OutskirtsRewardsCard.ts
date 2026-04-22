@@ -17,6 +17,11 @@ function resolveMaterialIcon(id: string): string {
 }
 
 export function OutskirtsRewardsCard({ rewards }: OutskirtsRewardsCardProps) {
+  const bountyTarget = Math.max(0, rewards.trackedBounty.progressTarget);
+  const bountyCurrent = Math.max(0, rewards.trackedBounty.progressCurrent);
+  const bountyFillPct = bountyTarget > 0 ? Math.max(0, Math.min(100, (bountyCurrent / bountyTarget) * 100)) : 0;
+  const hasTrackedBounty = bountyTarget > 0 && rewards.trackedBounty.itemLabel.trim().toLowerCase() !== 'none';
+
   return React.createElement(
     'section',
     { className: 'outskirtsRewardsCard', 'data-testid': 'outskirts-exact-rewards-card', 'data-legacy-testid': 'outskirts-rewards-card' },
@@ -52,6 +57,20 @@ export function OutskirtsRewardsCard({ rewards }: OutskirtsRewardsCardProps) {
         { className: 'outskirtsRewardsCard__detailRows' },
         React.createElement('p', { className: 'outskirtsRewardsCard__row outskirtsRewardsCard__row--compact' }, rewards.trackedBounty.itemLabel),
         React.createElement('p', { className: 'outskirtsRewardsCard__helper' }, rewards.trackedBounty.helperLine),
+        React.createElement(
+          'div',
+          {
+            className: `outskirtsRewardsCard__bountyProgress${hasTrackedBounty ? '' : ' outskirtsRewardsCard__bountyProgress--empty'}`,
+            'data-testid': 'outskirts-exact-rewards-bounty-progress',
+            role: 'meter',
+            'aria-valuemin': 0,
+            'aria-valuemax': bountyTarget || 1,
+            'aria-valuenow': hasTrackedBounty ? Math.min(bountyCurrent, bountyTarget) : 0,
+            'aria-valuetext': rewards.trackedBounty.progressLabel,
+            'aria-label': 'Tracked bounty progress',
+          },
+          React.createElement('span', { className: 'outskirtsRewardsCard__bountyProgressFill', style: { width: `${bountyFillPct}%` } }),
+        ),
         React.createElement('p', { className: 'outskirtsRewardsCard__row outskirtsRewardsCard__row--accent' }, rewards.trackedBounty.progressLabel),
       ),
     ),

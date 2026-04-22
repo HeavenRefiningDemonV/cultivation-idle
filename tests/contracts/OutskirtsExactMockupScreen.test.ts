@@ -189,6 +189,20 @@ void test('P8 review fixture reward values remain exact and visible', () => {
   for (const token of ['Tracked Bounty', 'Defeat wolves in the Outskirts', '7 / 15', 'Estimated Efficiency', '~45s / run', '1,800 – 2,000 / hour', 'Auto-Repeat', '>On<']) {
     assert.equal(html.includes(token), true);
   }
+  assert.equal((html.match(/outskirts-exact-rewards-bounty-progress/g) ?? []).length, 1);
+  assert.match(html, /outskirtsRewardsCard__bountyProgressFill" style="width:46\.666666666666664%"/);
+});
+
+void test('P8 tracked bounty section keeps progress geometry when bounty is empty', () => {
+  const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture({
+    trackedBountyTitle: 'None',
+    trackedBountyProgress: '0 / 0',
+  }));
+  const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
+
+  assert.equal((html.match(/outskirts-exact-rewards-bounty-progress/g) ?? []).length, 1);
+  assert.equal(html.includes('outskirtsRewardsCard__bountyProgress--empty'), true);
+  assert.match(html, /outskirtsRewardsCard__bountyProgressFill" style="width:0%"/);
 });
 
 void test('P5 top region element count remains stable across fixture/live and bounty/expedition shifts', () => {

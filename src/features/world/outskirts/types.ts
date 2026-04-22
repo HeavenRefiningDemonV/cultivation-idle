@@ -127,6 +127,8 @@ export interface OutskirtsRewardsCard {
     itemLabel: string;
     helperLine: string;
     progressLabel: string;
+    progressCurrent: number;
+    progressTarget: number;
     source: OutskirtsSurfaceValueSource;
   };
   estimatedEfficiency: {

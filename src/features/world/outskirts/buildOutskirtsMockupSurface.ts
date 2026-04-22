@@ -72,6 +72,17 @@ function normalizeEncounterId(value: string): string {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 }
 
+function parseProgressLabel(progressLabel: string): { current: number; target: number } {
+  const matches = progressLabel.match(/(\d[\d,]*)\s*\/\s*(\d[\d,]*)/);
+  if (!matches) return { current: 0, target: 0 };
+  const current = Number(matches[1].replace(/,/g, '')) || 0;
+  const target = Number(matches[2].replace(/,/g, '')) || 0;
+  return {
+    current: Math.max(0, current),
+    target: Math.max(0, target),
+  };
+}
+
 function resolveScenicImageSrc(sourceMode: OutskirtsMockupRuntimeSnapshot['sourceMode']): string | null {
   return sourceMode === 'fixture'
     ? OUTSKIRTS_APPROVED_SCENIC_MOCKUP_SRC
@@ -118,6 +129,7 @@ export function buildOutskirtsMockupSurface(snapshot: OutskirtsMockupRuntimeSnap
 
   const hp = parseHpLabel(snapshot.hpLabel);
   const hpPrimary = hp.max > 0 ? `${formatWhole(hp.current)} / ${formatWhole(hp.max)}` : snapshot.hpLabel;
+  const bountyProgress = parseProgressLabel(snapshot.trackedBountyProgress);
   const topNodes = buildEncounterStrip(snapshot).nodes;
 
   const tacticalCells = {
@@ -202,6 +214,8 @@ export function buildOutskirtsMockupSurface(snapshot: OutskirtsMockupRuntimeSnap
         itemLabel: snapshot.trackedBountyTitle,
         helperLine: snapshot.trackedBountyHelper,
         progressLabel: snapshot.trackedBountyProgress,
+        progressCurrent: bountyProgress.current,
+        progressTarget: bountyProgress.target,
         source: snapshot.sourceMode === 'fixture' ? 'manifest' : 'live',
       },
       estimatedEfficiency: {
