@@ -33,7 +33,7 @@ export function OutskirtsExactMockupScreen({
 }: OutskirtsExactMockupScreenProps) {
   return React.createElement(
     'article',
-    { className: 'outskirtsExactPage', 'data-testid': 'outskirts-exact-mockup-screen' },
+    { className: 'outskirtsExactPage', 'data-testid': 'outskirts-exact-page', 'data-legacy-testid': 'outskirts-exact-mockup-screen' },
     React.createElement('div', { className: 'outskirtsExactPage__underlay', 'aria-hidden': 'true' }),
     React.createElement(OutskirtsTopRegion, { surface, onOpenSettings }),
     React.createElement(
@@ -41,12 +41,12 @@ export function OutskirtsExactMockupScreen({
       { className: 'outskirtsExactPage__bodyCluster', 'data-testid': 'outskirts-exact-body-grid' },
       React.createElement(
         'aside',
-        { className: 'outskirtsExactPage__leftRail', 'data-testid': 'outskirts-exact-left-rail-slot' },
+        { className: 'outskirtsExactPage__leftRail', 'data-testid': 'outskirts-exact-left-rail', 'data-legacy-testid': 'outskirts-exact-left-rail-slot' },
         React.createElement(OutskirtsSetupCard, { setup: surface.setupCard, onOpenMedicinePouch }),
       ),
       React.createElement(
         'main',
-        { className: 'outskirtsExactPage__centerScenic', 'data-testid': 'outskirts-exact-center-slot' },
+        { className: 'outskirtsExactPage__centerScenic', 'data-testid': 'outskirts-exact-scenic-slot', 'data-legacy-testid': 'outskirts-exact-center-slot' },
         React.createElement(OutskirtsScenicStage, { scenic: surface.scenicStage, identity: surface.encounterIdentity }),
       ),
       React.createElement(
@@ -71,15 +71,16 @@ export function OutskirtsExactMockupScreen({
       ),
       React.createElement(
         'aside',
-        { className: 'outskirtsExactPage__rightRail', 'data-testid': 'outskirts-exact-right-rail-slot' },
+        { className: 'outskirtsExactPage__rightRail', 'data-testid': 'outskirts-exact-right-rail', 'data-legacy-testid': 'outskirts-exact-right-rail-slot' },
         React.createElement(OutskirtsRewardsCard, { rewards: surface.rewardsCard, onToggleAutoRepeat }),
       ),
       React.createElement(
         'aside',
-        { className: 'outskirtsExactPage__summaryDock', 'data-testid': 'outskirts-exact-summary-dock-slot' },
+        { className: 'outskirtsExactPage__summaryDock', 'data-testid': 'outskirts-exact-summary-dock', 'data-legacy-testid': 'outskirts-exact-summary-dock-slot' },
         React.createElement(OutskirtsGrindSummaryCard, { summary: surface.grindSummary }),
       ),
     ),
+    React.createElement('aside', { 'data-testid': 'outskirts-exact-quality-state', hidden: true }, 'layout-static'),
     React.createElement('aside', { 'data-testid': 'outskirts-exact-shell-flags', hidden: true }, JSON.stringify(surface.shell)),
     React.createElement('aside', { 'data-testid': 'outskirts-exact-region-order', hidden: true }, OUTSKIRTS_MOCKUP_REGION_ORDER.join('|')),
   );

@@ -14,7 +14,7 @@ export interface OutskirtsTopRegionProps {
 export function OutskirtsTopRegion({ surface, onOpenSettings }: OutskirtsTopRegionProps) {
   return React.createElement(
     'header',
-    { className: 'outskirtsTopRegion', 'data-testid': 'outskirts-top-region' },
+    { className: 'outskirtsTopRegion', 'data-testid': 'outskirts-exact-top-region', 'data-legacy-testid': 'outskirts-top-region' },
     React.createElement(
       'section',
       { className: 'outskirtsTopRegion__topBand' },

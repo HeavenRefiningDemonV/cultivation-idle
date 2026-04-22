@@ -36,7 +36,7 @@ export function OutskirtsRewardsCard({ rewards, onToggleAutoRepeat }: OutskirtsR
     ),
     React.createElement(
       'section',
-      { className: 'outskirtsRewardsCard__section', 'data-testid': 'outskirts-exact-rewards-materials' },
+      { className: 'outskirtsRewardsCard__section outskirtsRewardsCard__section--materials', 'data-testid': 'outskirts-exact-rewards-materials' },
       React.createElement('h4', { className: 'outskirtsRewardsCard__subtitle' }, rewards.commonMaterials.title),
       React.createElement(
         'div',
@@ -51,7 +51,7 @@ export function OutskirtsRewardsCard({ rewards, onToggleAutoRepeat }: OutskirtsR
     ),
     React.createElement(
       'section',
-      { className: 'outskirtsRewardsCard__section', 'data-testid': 'outskirts-exact-rewards-bounty' },
+      { className: 'outskirtsRewardsCard__section outskirtsRewardsCard__section--bounty', 'data-testid': 'outskirts-exact-rewards-bounty' },
       React.createElement('h4', { className: 'outskirtsRewardsCard__subtitle' }, rewards.trackedBounty.title),
       React.createElement(
         'div',
@@ -77,7 +77,7 @@ export function OutskirtsRewardsCard({ rewards, onToggleAutoRepeat }: OutskirtsR
     ),
     React.createElement(
       'section',
-      { className: 'outskirtsRewardsCard__section', 'data-testid': 'outskirts-exact-rewards-efficiency' },
+      { className: 'outskirtsRewardsCard__section outskirtsRewardsCard__section--efficiency', 'data-testid': 'outskirts-exact-rewards-efficiency' },
       React.createElement('h4', { className: 'outskirtsRewardsCard__subtitle' }, rewards.estimatedEfficiency.title),
       React.createElement(
         'div',
