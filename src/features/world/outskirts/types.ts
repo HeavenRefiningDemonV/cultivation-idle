@@ -189,6 +189,8 @@ export interface OutskirtsPrimaryAction {
   singleDominantCta: true;
   isPrimary?: true;
   disabledReason?: string;
+  plaqueVariant?: 'ornate-gold';
+  ornamentVariant?: 'leaf-cap';
 }
 
 export interface OutskirtsGrindSummary {
@@ -199,6 +201,12 @@ export interface OutskirtsGrindSummary {
   goldPerHourText: string;
   mainDropLabel: string;
   mainDropIconKey: string;
+  rows?: Array<{
+    id: 'runs' | 'goldPerHour' | 'mainDrop';
+    label: string;
+    value: string;
+    iconKey: 'runs' | 'gold' | 'drop';
+  }>;
 }
 
 export interface OutskirtsMockupShellFlags {

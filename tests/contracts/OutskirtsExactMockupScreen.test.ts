@@ -278,6 +278,55 @@ void test('P9 strip includes reduced-motion guardrails without geometry drift ho
   assert.match(styleSource, /outskirtsEncounterProgressStrip__arrow/);
 });
 
+void test('P10 bottom-zone structure renders one strip, one dominant CTA, and one grind summary with chip + three rows', () => {
+  const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture());
+  const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
+
+  assert.equal((html.match(/outskirts-exact-encounter-strip/g) ?? []).length, 1);
+  assert.equal((html.match(/outskirts-start-hunt-cta/g) ?? []).length, 1);
+  assert.equal((html.match(/outskirts-grind-summary/g) ?? []).length, 1);
+  assert.equal((html.match(/outskirts-grind-summary-chip/g) ?? []).length, 1);
+  assert.equal((html.match(/outskirts-grind-summary-row/g) ?? []).length, 3);
+  assert.equal(html.includes('Route'), false);
+});
+
+void test('P10 review fixture CTA and grind summary values remain exact', () => {
+  const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture());
+  const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
+
+  for (const token of ['Start Hunt', 'Grind Summary', 'This Area', '>128<', '1,900', 'Wolf Pelt']) {
+    assert.equal(html.includes(token), true);
+  }
+});
+
+void test('P10 single-dominant CTA is preserved and rewards card stays CTA-free', () => {
+  const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture());
+  const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
+
+  assert.equal((html.match(/outskirts-start-hunt-cta/g) ?? []).length, 1);
+  assert.equal(surface.primaryAction.singleDominantCta, true);
+  assert.equal(surface.shell.rightCardHasPrimaryAction, false);
+  assert.equal(html.includes('outskirts-exact-rewards-auto-repeat'), true);
+  assert.equal(html.includes('Stop'), false);
+});
+
+void test('P10 summary fallback stability preserves chip and row geometry with partial live values', () => {
+  const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture({
+    sourceMode: 'stores',
+  }));
+  surface.grindSummary.rows = [
+    { id: 'runs', label: 'Runs', value: '—', iconKey: 'runs' },
+    { id: 'goldPerHour', label: 'Gold / hr', value: '—', iconKey: 'gold' },
+    { id: 'mainDrop', label: 'Main Drop', value: '—', iconKey: 'drop' },
+  ];
+  const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
+
+  assert.equal((html.match(/outskirts-grind-summary/g) ?? []).length, 1);
+  assert.equal((html.match(/outskirts-grind-summary-chip/g) ?? []).length, 1);
+  assert.equal((html.match(/outskirts-grind-summary-row/g) ?? []).length, 3);
+  assert.equal(html.includes('outskirtsGrindSummaryCard__row'), true);
+});
+
 void test('P5 top region element count remains stable across fixture/live and bounty/expedition shifts', () => {
   const fixtureSurface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture());
   const liveLikeSurface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture({

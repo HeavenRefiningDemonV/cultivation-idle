@@ -252,6 +252,8 @@ export function buildOutskirtsMockupSurface(snapshot: OutskirtsMockupRuntimeSnap
       singleDominantCta: true,
       isPrimary: true,
       disabledReason: snapshot.isOutskirtsActive ? 'Outskirts run already active.' : undefined,
+      plaqueVariant: 'ornate-gold',
+      ornamentVariant: 'leaf-cap',
     },
     grindSummary: {
       visible: true,
@@ -261,6 +263,11 @@ export function buildOutskirtsMockupSurface(snapshot: OutskirtsMockupRuntimeSnap
       goldPerHourText: snapshot.sourceMode === 'fixture' ? '1,900' : '1,800',
       mainDropLabel: snapshot.sourceMode === 'fixture' ? 'Wolf Pelt' : (snapshot.rewardMaterialLabels[0] ?? 'Common Material'),
       mainDropIconKey: snapshot.scenicArtKey,
+      rows: [
+        { id: 'runs', label: 'Runs', value: snapshot.sourceMode === 'fixture' ? '128' : `${Math.max(1, Math.round(3600 / 18))}`, iconKey: 'runs' },
+        { id: 'goldPerHour', label: 'Gold / hr', value: snapshot.sourceMode === 'fixture' ? '1,900' : '1,800', iconKey: 'gold' },
+        { id: 'mainDrop', label: 'Main Drop', value: snapshot.sourceMode === 'fixture' ? 'Wolf Pelt' : (snapshot.rewardMaterialLabels[0] ?? 'Common Material'), iconKey: 'drop' },
+      ],
     },
     shell: OUTSKIRTS_ALLOWED_PLANNING_SHELL,
     debug: {

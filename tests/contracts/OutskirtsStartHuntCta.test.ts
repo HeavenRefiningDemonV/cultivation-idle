@@ -21,6 +21,8 @@ void test('P8 CTA component forwards click to existing handler when enabled', ()
   });
 
   assert.equal(element?.props['data-testid'], 'outskirts-start-hunt-cta');
+  assert.equal(element?.props.className.includes('outskirtsStartHuntCta--ornate-gold'), true);
+  assert.equal(element?.props.children[1].props['data-testid'], 'outskirts-start-hunt-cta-label');
   element?.props.onClick?.();
   assert.equal(invoked, 1);
 });
