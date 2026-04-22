@@ -19,6 +19,7 @@ No Packet B/C/D/E composition tuning was performed.
 - The provided runtime screenshot showing `Start Hunt` and `Snarling Wolf` is consistent with current exact-screen source.
 - A `Watch` control is **not** part of current identity-row render tree; source currently renders a safety chip only.
 - Lower band owners (encounter strip, CTA, grind summary) are present in source and verified in render-tree tests.
+- Stale-bundle/cache hypothesis is documented as **possible but unproven in this runner** because browser capture tooling is unavailable; owner-path/source contracts are used as the trustworthy fallback baseline.
 
 ## Asset issues found
 - Outskirts exact-screen modules used raw `/assets/...` strings for files living under `src/assets/...`.
