@@ -72,7 +72,7 @@ void test('P12 router boundary has no planning fallback on active-contained bran
   const router = await fs.readFile('src/components/screens/world/buildings/OutskirtsBuildingPanel.tsx', 'utf8');
 
   assert.match(router, /if \(viewState === 'planning'\) \{\s*return <OutskirtsPlanningOwner cityId=\{cityId\} \/>;\s*\}/);
-  assert.match(router, /return \(\s*<Suspense fallback=\{<div className=\"worldScreenPlaceholder\" data-testid=\"outskirts-active-boundary-loading\" \/>}/);
+  assert.match(router, /<Suspense[\s\S]*data-testid="outskirts-active-boundary-loading"/);
   assert.doesNotMatch(router, /outskirts-view-planning/);
   assert.match(router, /if \(viewState === 'unavailable'\)[\s\S]*if \(viewState === 'planning'\)[\s\S]*<OutskirtsLegacyActiveSurface cityId=\{cityId\} \/>/);
 });
