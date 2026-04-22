@@ -149,6 +149,7 @@ export interface OutskirtsEncounterStripArrow {
   visible: boolean;
   enabled: boolean;
   ariaLabel: string;
+  ornamentVariant?: 'jade' | 'parchment';
 }
 
 export interface OutskirtsEncounterStripNode {
@@ -157,7 +158,12 @@ export interface OutskirtsEncounterStripNode {
   levelLabel: string;
   state: OutskirtsEncounterNodeState;
   artKey?: string;
+  imageSrc?: string | null;
+  imagePosition?: string;
   silhouetteKey?: string;
+  silhouetteImageSrc?: string | null;
+  completionMark?: boolean;
+  medallionVariant?: 'wolf-jade' | 'quiet-field';
   isSelected: boolean;
   isClickable: boolean;
   ariaLabel: string;
@@ -166,6 +172,10 @@ export interface OutskirtsEncounterStripNode {
 export interface OutskirtsEncounterStrip {
   leftArrow: OutskirtsEncounterStripArrow;
   rightArrow: OutskirtsEncounterStripArrow;
+  lane: {
+    showConnector: boolean;
+    connectorVariant?: 'brush' | 'thread';
+  };
   nodes: OutskirtsEncounterStripNode[];
   selectedEncounterId: string;
 }

@@ -205,6 +205,72 @@ void test('P8 tracked bounty section keeps progress geometry when bounty is empt
   assert.match(html, /outskirtsRewardsCard__bountyProgressFill" style="width:0%"/);
 });
 
+void test('P9 encounter strip renders one lane, arrows, six nodes, and distinct states', () => {
+  const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture());
+  const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
+
+  assert.equal((html.match(/outskirts-exact-encounter-strip/g) ?? []).length, 1);
+  assert.equal((html.match(/outskirts-exact-encounter-strip-left-arrow/g) ?? []).length, 1);
+  assert.equal((html.match(/outskirts-exact-encounter-strip-right-arrow/g) ?? []).length, 1);
+  assert.equal((html.match(/outskirts-exact-encounter-strip-node/g) ?? []).length, 6);
+  assert.equal((html.match(/outskirts-exact-encounter-strip-node-current/g) ?? []).length, 1);
+  assert.equal((html.match(/outskirts-exact-encounter-strip-node-completed/g) ?? []).length, 2);
+  assert.equal((html.match(/outskirts-exact-encounter-strip-node-future/g) ?? []).length, 3);
+  assert.equal(html.includes('data-state="completed"'), true);
+  assert.equal(html.includes('data-state="current"'), true);
+  assert.equal(html.includes('data-state="future"'), true);
+});
+
+void test('P9 review fixture strip order, levels, and states remain locked to approved target', () => {
+  const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture());
+  const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
+
+  const ordered = [
+    'data-node-id="quiet-glade"',
+    'Quiet Glade',
+    'Lv. 8',
+    'data-node-id="rockjaw-boar"',
+    'Rockjaw Boar',
+    'Lv. 9',
+    'data-node-id="snarling-wolf"',
+    'Snarling Wolf',
+    'Lv. 11',
+    'data-node-id="venomcoil"',
+    'Venomcoil',
+    'Lv. 13',
+    'data-node-id="shade-stalker"',
+    'Shade Stalker',
+    'Lv. 15',
+    'data-node-id="mire-serpent"',
+    'Mire Serpent',
+    'Lv. 17',
+  ];
+  for (const token of ordered) assert.equal(html.includes(token), true);
+
+  assert.match(html, /data-node-id="quiet-glade"[\s\S]*?data-state="completed"/);
+  assert.match(html, /data-node-id="rockjaw-boar"[\s\S]*?data-state="completed"/);
+  assert.match(html, /data-node-id="snarling-wolf"[\s\S]*?data-state="current"/);
+  assert.match(html, /data-node-id="venomcoil"[\s\S]*?data-state="future"/);
+  assert.match(html, /data-node-id="shade-stalker"[\s\S]*?data-state="future"/);
+  assert.match(html, /data-node-id="mire-serpent"[\s\S]*?data-state="future"/);
+});
+
+void test('P9 encounter strip visual-state stability keeps lane footprint with mixed art availability', () => {
+  const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture());
+  surface.encounterStrip.nodes = surface.encounterStrip.nodes.map((node, idx) => ({
+    ...node,
+    imageSrc: idx % 2 === 0 ? null : node.imageSrc ?? null,
+    silhouetteImageSrc: idx % 2 === 1 ? null : node.silhouetteImageSrc ?? null,
+  }));
+  const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
+
+  assert.equal((html.match(/outskirts-exact-encounter-strip-node/g) ?? []).length, 6);
+  assert.equal((html.match(/outskirts-exact-encounter-strip-left-arrow/g) ?? []).length, 1);
+  assert.equal((html.match(/outskirts-exact-encounter-strip-right-arrow/g) ?? []).length, 1);
+  assert.equal(html.includes('outskirtsEncounterProgressStrip__lane'), true);
+  assert.equal(html.includes('outskirtsEncounterProgressStrip__thumb--current'), true);
+});
+
 void test('P5 top region element count remains stable across fixture/live and bounty/expedition shifts', () => {
   const fixtureSurface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture());
   const liveLikeSurface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture({

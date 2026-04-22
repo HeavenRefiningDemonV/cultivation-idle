@@ -25,6 +25,7 @@ import {
   OUTSKIRTS_TACTICAL_CELL_ORDER,
   OUTSKIRTS_TARGET_MOCKUP_ID,
 } from './outskirtsMockupPresentation.js';
+import { resolveOutskirtsEncounterStripArt } from './resolveOutskirtsEncounterStripArt.js';
 import type {
   OutskirtsEncounterNodeState,
   OutskirtsExactSurfaceV2,
@@ -98,17 +99,27 @@ function buildEncounterStrip(snapshot: OutskirtsMockupRuntimeSnapshot): Outskirt
 
   return {
     selectedEncounterId,
-    leftArrow: { visible: true, enabled: false, ariaLabel: 'Previous encounter (presentation only)' },
-    rightArrow: { visible: true, enabled: false, ariaLabel: 'Next encounter (presentation only)' },
+    leftArrow: { visible: true, enabled: false, ariaLabel: 'Previous encounter (presentation only)', ornamentVariant: 'parchment' },
+    rightArrow: { visible: true, enabled: false, ariaLabel: 'Next encounter (presentation only)', ornamentVariant: 'parchment' },
+    lane: {
+      showConnector: true,
+      connectorVariant: 'brush',
+    },
     nodes: OUTSKIRTS_ENCOUNTER_STRIP_MANIFEST.map((entry, index) => {
       const state: OutskirtsEncounterNodeState = index < selectedIndex ? 'completed' : index === selectedIndex ? 'current' : 'future';
+      const art = resolveOutskirtsEncounterStripArt({ id: entry.id, state, sourceMode: snapshot.sourceMode });
       return {
         id: entry.id,
         label: entry.label,
         levelLabel: entry.levelLabel,
         state,
         artKey: state === 'future' ? undefined : entry.artKey,
+        imageSrc: art.imageSrc,
+        imagePosition: art.imagePosition,
         silhouetteKey: state === 'future' ? entry.silhouetteKey : undefined,
+        silhouetteImageSrc: art.silhouetteImageSrc,
+        completionMark: art.completionMark,
+        medallionVariant: art.medallionVariant,
         isSelected: index === selectedIndex,
         isClickable: false,
         ariaLabel: `${entry.label} ${entry.levelLabel} ${state}`,
