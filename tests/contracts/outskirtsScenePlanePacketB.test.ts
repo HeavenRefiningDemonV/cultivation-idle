@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
@@ -62,4 +63,18 @@ void test('Packet B planning-state purity smoke keeps planning shell-only owners
   assert.equal(surface.shell.showCombatTheater, false);
   assert.equal(surface.shell.showCombatLog, false);
   assert.equal(surface.primaryAction.singleDominantCta, true);
+});
+
+void test('Packet B keeps title and tactical strip intact (no Packet C work)', () => {
+  const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture());
+  const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
+
+  assert.equal(html.includes('data-testid="outskirts-page-title"'), true);
+  assert.equal((html.match(/outskirts-tactical-cell-/g) ?? []).length, 7);
+});
+
+void test('Packet B scenic stylesheet removes legacy scenic card-shell selector', async () => {
+  const scss = await readFile(new URL('../../src/features/world/outskirts/OutskirtsExactMockupScreen.scss', import.meta.url), 'utf8');
+  assert.equal(scss.includes('.outskirtsScenicStage'), false);
+  assert.equal(scss.includes('.outskirtsScenePlane'), true);
 });
