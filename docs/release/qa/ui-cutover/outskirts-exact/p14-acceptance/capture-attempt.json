@@ -1,0 +1,8 @@
+{
+  "schemaVersion": "outskirts-exact-p14-capture-attempt.v1",
+  "attemptedAt": "2026-04-22T00:00:00.000Z",
+  "command": "npm run release:phase6-combat-capture -- --surface=outskirts --json",
+  "ok": false,
+  "failure": "Playwright is required for release:phase6-combat-capture. Install it with npm i -D playwright and run npx playwright install chromium.",
+  "notes": "Attempt recorded honestly; no screenshots were fabricated."
+}

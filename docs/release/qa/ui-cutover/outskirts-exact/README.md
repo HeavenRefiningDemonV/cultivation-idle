@@ -21,3 +21,4 @@ This directory now encodes **two separate truths** that must not be merged.
 - `p0-freeze/README.md` — freeze artifacts and baseline-vs-target contract.
 - `p0-freeze/review-anchor-sheet.md` — exact fixture anchors (visible vs internal vs ambiguous).
 - `p0-freeze/outskirtsExactReviewFixture.json` — deterministic fixture snapshot contract.
+- `p14-acceptance/README.md` — final acceptance gate package (current authority for sign-off status).

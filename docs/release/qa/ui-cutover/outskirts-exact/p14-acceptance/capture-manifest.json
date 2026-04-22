@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "outskirts-exact-p14-capture-manifest.v1",
+  "generatedAt": "2026-04-22T00:00:00.000Z",
+  "packet": "P14",
+  "visualAuthority": "src/assets/mockups/ChatGPT Image Apr 17, 2026, 04_24_04 PM.png",
+  "captureTooling": {
+    "required": "browser screenshot capture",
+    "availableInRun": false,
+    "status": "blocked",
+    "blocker": "Browser/screenshot capture tooling unavailable in this execution environment."
+  },
+  "slots": [
+    { "id": "01-review-fixture-default", "required": true, "status": "blocked", "artifact": null },
+    { "id": "02-live-default", "required": true, "status": "blocked", "artifact": null },
+    { "id": "03-bounty-absent", "required": true, "status": "blocked", "artifact": null },
+    { "id": "04-auto-repeat-off", "required": true, "status": "blocked", "artifact": null },
+    { "id": "05-expedition-none-or-changed", "required": true, "status": "blocked", "artifact": null },
+    { "id": "06-low-fx", "required": true, "status": "blocked", "artifact": null },
+    { "id": "07-reduced-motion", "required": true, "status": "blocked", "artifact": null },
+    { "id": "08-narrow-host", "required": true, "status": "blocked", "artifact": null },
+    { "id": "09-wide-host", "required": true, "status": "blocked", "artifact": null },
+    { "id": "10-active-contained-proof", "required": true, "status": "blocked", "artifact": null },
+    { "id": "11-overlay-composite", "required": false, "status": "blocked", "artifact": null }
+  ],
+  "notes": [
+    "No screenshots were fabricated in this blocked run.",
+    "Overlay anchors and acceptance contracts were still produced to lock final review criteria."
+  ]
+}

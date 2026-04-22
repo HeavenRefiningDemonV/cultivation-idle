@@ -1,5 +1,7 @@
 # Outskirts Exact Mockup — P10 Approval Checklist
 
+> Supersession note (2026-04-22): P10 is historical checklist context only. Current acceptance authority has moved to `docs/release/qa/ui-cutover/outskirts-exact/p14-acceptance/README.md`.
+
 Status: **pending screenshot gate review in this environment** (browser capture tool unavailable in this run).
 
 ## Required captures
