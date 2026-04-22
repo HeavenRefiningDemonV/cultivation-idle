@@ -40,6 +40,48 @@ void test('P12 view-state helper returns activeContained for same-city active tr
   assert.equal(fromCombat, 'activeContained');
 });
 
+
+void test('P12 view-state helper treats same-source activity-only and combat-only truth as activeContained when outskirtsId is resolved', () => {
+  const fromActivityOnly = getOutskirtsModuleViewState({
+    cityId: 'city_pinewind_hamlet',
+    outskirtsId: 'outskirts_pinewind',
+    activity: {
+      type: 'outskirts',
+      startedAt: 1,
+      cityId: 'city_pinewind_hamlet',
+      sourceId: 'outskirts_pinewind',
+    },
+    combatContext: { type: null },
+  });
+  assert.equal(fromActivityOnly, 'activeContained');
+
+  const fromCombatOnly = getOutskirtsModuleViewState({
+    cityId: 'city_pinewind_hamlet',
+    outskirtsId: 'outskirts_pinewind',
+    activity: null,
+    combatContext: {
+      type: 'outskirts',
+      cityId: 'city_pinewind_hamlet',
+      sourceId: 'outskirts_pinewind',
+    },
+  });
+  assert.equal(fromCombatOnly, 'activeContained');
+});
+
+void test('P12 view-state helper rejects mismatched city combat truth even when outskirtsId is unresolved', () => {
+  const mismatchedCity = getOutskirtsModuleViewState({
+    cityId: 'city_pinewind_hamlet',
+    outskirtsId: null,
+    activity: null,
+    combatContext: {
+      type: 'outskirts',
+      cityId: 'city_ember_falls',
+      sourceId: undefined,
+    },
+  });
+  assert.equal(mismatchedCity, 'unavailable');
+});
+
 void test('P9 view-state helper returns planning when no same-source outskirts run is active', () => {
   const state = getOutskirtsModuleViewState({
     cityId: 'city_pinewind_hamlet',

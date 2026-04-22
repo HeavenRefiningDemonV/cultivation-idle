@@ -23,14 +23,15 @@ void test('P2 planning owner is pure and does not depend on legacy combat-shell 
     /useRunCompassSurface/,
     /buildOutskirtsFxProfile/,
     /CombatStyles\.scss/,
-    /buildOutskirtsMockupSurfaceFromStores/,
-    /OutskirtsExactMockupScreen\.scss/,
   ];
 
   for (const token of forbiddenInRouter) {
     assert.doesNotMatch(router, token);
     assert.doesNotMatch(planningOwner, token);
   }
+
+  assert.doesNotMatch(router, /buildOutskirtsMockupSurfaceFromStores/);
+  assert.doesNotMatch(router, /OutskirtsExactMockupScreen\.scss/);
 
   assert.match(planningOwner, /OutskirtsExactMockupScreen/);
   assert.match(planningOwner, /buildOutskirtsMockupSurfaceFromStores/);
@@ -45,7 +46,7 @@ void test('P2 active-contained branch quarantines legacy combat-shell dependenci
   const activeScss = await fs.readFile('src/features/world/outskirts/components/OutskirtsActiveContainment.scss', 'utf8');
 
   assert.match(activeOwner, /OutskirtsActiveContainment/);
-  assert.match(activeOwner, /data-testid': 'outskirts-view-active-contained'/);
+  assert.match(activeContainment, /data-testid': 'outskirts-view-active-contained'/);
   assert.match(activeOwner, /InkCombatShell/);
   assert.match(activeOwner, /InkHealthBar/);
   assert.match(activeOwner, /CombatModuleTopLane/);
@@ -73,5 +74,5 @@ void test('P12 router boundary has no planning fallback on active-contained bran
   assert.match(router, /if \(viewState === 'planning'\) \{\s*return <OutskirtsPlanningOwner cityId=\{cityId\} \/>;\s*\}/);
   assert.match(router, /return \(\s*<Suspense fallback=\{<div className=\"worldScreenPlaceholder\" data-testid=\"outskirts-active-boundary-loading\" \/>}/);
   assert.doesNotMatch(router, /outskirts-view-planning/);
-  assert.doesNotMatch(router, /outskirts-view-unavailable[\s\S]*OutskirtsLegacyActiveSurface/);
+  assert.match(router, /if \(viewState === 'unavailable'\)[\s\S]*if \(viewState === 'planning'\)[\s\S]*<OutskirtsLegacyActiveSurface cityId=\{cityId\} \/>/);
 });
