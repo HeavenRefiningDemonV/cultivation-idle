@@ -680,6 +680,7 @@
 }
 
 .outskirtsEncounterProgressStrip__thumb {
+  appearance: none;
   position: relative;
   width: 4.5rem;
   height: 4.5rem;
@@ -694,6 +695,8 @@
   box-shadow:
     inset 0 0 0 1px rgba(255, 246, 224, 0.44),
     0 2px 7px rgba(59, 43, 33, 0.18);
+  padding: 0;
+  cursor: pointer;
 }
 
 .outskirtsEncounterProgressStrip__thumb--current {
@@ -716,6 +719,10 @@
 
 .outskirtsEncounterProgressStrip__thumb--quiet-field {
   border-radius: 1rem;
+}
+
+.outskirtsEncounterProgressStrip__thumb:disabled {
+  cursor: default;
 }
 
 .outskirtsEncounterProgressStrip__portrait {
@@ -1157,6 +1164,8 @@
 }
 
 .outskirtsRewardsCard__togglePill {
+  min-width: 2.8rem;
+  min-height: 1.25rem;
   padding: 0.14rem 0.44rem;
   border-radius: 999px;
   font-size: 0.58rem;
@@ -1164,6 +1173,8 @@
   color: rgba(95, 68, 44, 0.9);
   border: 1px solid rgba(116, 88, 63, 0.26);
   background: rgba(255, 247, 225, 0.8);
+  appearance: none;
+  cursor: pointer;
 }
 
 .outskirtsRewardsCard__togglePill--enabled {
@@ -1356,6 +1367,12 @@
   padding: 0;
   font-size: 1rem;
   font-weight: 700;
+  cursor: pointer;
+}
+
+.outskirtsSetupCard__pouchAction:disabled {
+  opacity: 0.66;
+  cursor: not-allowed;
 }
 
 .outskirtsSetupCard__equipmentGrid {

@@ -3,9 +3,12 @@ import type { OutskirtsEncounterStrip } from '../types.js';
 
 export interface OutskirtsEncounterProgressStripProps {
   strip: OutskirtsEncounterStrip;
+  onPreviewPrevious?: () => void;
+  onPreviewNext?: () => void;
+  onSelectEncounter?: (encounterId: string) => void;
 }
 
-export function OutskirtsEncounterProgressStrip({ strip }: OutskirtsEncounterProgressStripProps) {
+export function OutskirtsEncounterProgressStrip({ strip, onPreviewPrevious, onPreviewNext, onSelectEncounter }: OutskirtsEncounterProgressStripProps) {
   return React.createElement(
     'section',
     {
@@ -26,6 +29,7 @@ export function OutskirtsEncounterProgressStrip({ strip }: OutskirtsEncounterPro
         disabled: !strip.leftArrow.enabled,
         'aria-label': strip.leftArrow.ariaLabel,
         'aria-hidden': strip.leftArrow.visible ? undefined : 'true',
+        onClick: strip.leftArrow.enabled ? onPreviewPrevious : undefined,
       },
       React.createElement('span', { className: 'outskirtsEncounterProgressStrip__arrowGlyph', 'aria-hidden': 'true' }, '‹'),
     ),
@@ -43,14 +47,19 @@ export function OutskirtsEncounterProgressStrip({ strip }: OutskirtsEncounterPro
           'data-selected': node.isSelected ? '1' : '0',
         },
         React.createElement(
-          'div',
+          'button',
           {
+            type: 'button',
             className: `outskirtsEncounterProgressStrip__thumb outskirtsEncounterProgressStrip__thumb--${node.state} outskirtsEncounterProgressStrip__thumb--${node.medallionVariant ?? 'quiet-field'}`,
             'data-testid': node.state === 'current'
               ? 'outskirts-exact-encounter-strip-node-current'
               : node.state === 'completed'
                 ? 'outskirts-exact-encounter-strip-node-completed'
                 : 'outskirts-exact-encounter-strip-node-future',
+            disabled: !node.isClickable,
+            'aria-label': node.ariaLabel,
+            'aria-current': node.isSelected ? 'true' : undefined,
+            onClick: node.isClickable ? () => onSelectEncounter?.(node.id) : undefined,
             style: node.state === 'completed' && node.imageSrc ? { backgroundImage: `url('${node.imageSrc}')`, backgroundPosition: node.imagePosition ?? '50% 72%' } : undefined,
           },
           node.state === 'current'
@@ -93,6 +102,7 @@ export function OutskirtsEncounterProgressStrip({ strip }: OutskirtsEncounterPro
         disabled: !strip.rightArrow.enabled,
         'aria-label': strip.rightArrow.ariaLabel,
         'aria-hidden': strip.rightArrow.visible ? undefined : 'true',
+        onClick: strip.rightArrow.enabled ? onPreviewNext : undefined,
       },
       React.createElement('span', { className: 'outskirtsEncounterProgressStrip__arrowGlyph', 'aria-hidden': 'true' }, '›'),
     ),

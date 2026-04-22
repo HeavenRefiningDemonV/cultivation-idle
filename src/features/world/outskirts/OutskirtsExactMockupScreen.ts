@@ -14,9 +14,23 @@ export interface OutskirtsExactMockupScreenProps {
   surface: OutskirtsExactSurfaceV2;
   onStartHunt?: () => void;
   onOpenSettings?: () => void;
+  onPreviewPreviousEncounter?: () => void;
+  onPreviewNextEncounter?: () => void;
+  onSelectEncounterPreview?: (encounterId: string) => void;
+  onToggleAutoRepeat?: () => void;
+  onOpenMedicinePouch?: () => void;
 }
 
-export function OutskirtsExactMockupScreen({ surface, onStartHunt, onOpenSettings }: OutskirtsExactMockupScreenProps) {
+export function OutskirtsExactMockupScreen({
+  surface,
+  onStartHunt,
+  onOpenSettings,
+  onPreviewPreviousEncounter,
+  onPreviewNextEncounter,
+  onSelectEncounterPreview,
+  onToggleAutoRepeat,
+  onOpenMedicinePouch,
+}: OutskirtsExactMockupScreenProps) {
   return React.createElement(
     'article',
     { className: 'outskirtsExactPage', 'data-testid': 'outskirts-exact-mockup-screen' },
@@ -28,7 +42,7 @@ export function OutskirtsExactMockupScreen({ surface, onStartHunt, onOpenSetting
       React.createElement(
         'aside',
         { className: 'outskirtsExactPage__leftRail', 'data-testid': 'outskirts-exact-left-rail-slot' },
-        React.createElement(OutskirtsSetupCard, { setup: surface.setupCard }),
+        React.createElement(OutskirtsSetupCard, { setup: surface.setupCard, onOpenMedicinePouch }),
       ),
       React.createElement(
         'main',
@@ -43,7 +57,12 @@ export function OutskirtsExactMockupScreen({ surface, onStartHunt, onOpenSetting
       React.createElement(
         'section',
         { className: 'outskirtsExactPage__centerStrip', 'data-testid': 'outskirts-exact-strip-slot' },
-        React.createElement(OutskirtsEncounterProgressStrip, { strip: surface.encounterStrip }),
+        React.createElement(OutskirtsEncounterProgressStrip, {
+          strip: surface.encounterStrip,
+          onPreviewPrevious: onPreviewPreviousEncounter,
+          onPreviewNext: onPreviewNextEncounter,
+          onSelectEncounter: onSelectEncounterPreview,
+        }),
       ),
       React.createElement(
         'section',
@@ -53,7 +72,7 @@ export function OutskirtsExactMockupScreen({ surface, onStartHunt, onOpenSetting
       React.createElement(
         'aside',
         { className: 'outskirtsExactPage__rightRail', 'data-testid': 'outskirts-exact-right-rail-slot' },
-        React.createElement(OutskirtsRewardsCard, { rewards: surface.rewardsCard }),
+        React.createElement(OutskirtsRewardsCard, { rewards: surface.rewardsCard, onToggleAutoRepeat }),
       ),
       React.createElement(
         'aside',

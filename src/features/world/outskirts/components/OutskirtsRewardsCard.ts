@@ -3,6 +3,7 @@ import type { OutskirtsRewardsCard as OutskirtsRewardsCardModel } from '../types
 
 export interface OutskirtsRewardsCardProps {
   rewards: OutskirtsRewardsCardModel;
+  onToggleAutoRepeat?: () => void;
 }
 
 const MATERIAL_ICON_MAP: Record<string, string> = {
@@ -16,7 +17,7 @@ function resolveMaterialIcon(id: string): string {
   return MATERIAL_ICON_MAP[id] ?? '/assets/icons/dust_brown.png';
 }
 
-export function OutskirtsRewardsCard({ rewards }: OutskirtsRewardsCardProps) {
+export function OutskirtsRewardsCard({ rewards, onToggleAutoRepeat }: OutskirtsRewardsCardProps) {
   const bountyTarget = Math.max(0, rewards.trackedBounty.progressTarget);
   const bountyCurrent = Math.max(0, rewards.trackedBounty.progressCurrent);
   const bountyFillPct = bountyTarget > 0 ? Math.max(0, Math.min(100, (bountyCurrent / bountyTarget) * 100)) : 0;
@@ -89,7 +90,17 @@ export function OutskirtsRewardsCard({ rewards }: OutskirtsRewardsCardProps) {
       'div',
       { className: 'outskirtsRewardsCard__toggleRow', 'data-testid': 'outskirts-exact-rewards-auto-repeat' },
       React.createElement('span', { className: 'outskirtsRewardsCard__toggleLabel' }, rewards.autoRepeat.label),
-      React.createElement('span', { className: `outskirtsRewardsCard__togglePill${rewards.autoRepeat.enabled ? ' outskirtsRewardsCard__togglePill--enabled' : ''}` }, rewards.autoRepeat.value),
+      React.createElement(
+        'button',
+        {
+          type: 'button',
+          className: `outskirtsRewardsCard__togglePill${rewards.autoRepeat.enabled ? ' outskirtsRewardsCard__togglePill--enabled' : ''}`,
+          onClick: onToggleAutoRepeat,
+          'aria-pressed': rewards.autoRepeat.enabled,
+          'aria-label': `${rewards.autoRepeat.label}: ${rewards.autoRepeat.value}`,
+        },
+        rewards.autoRepeat.value,
+      ),
     ),
   );
 }

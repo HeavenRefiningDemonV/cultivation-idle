@@ -90,23 +90,44 @@ function resolveScenicImageSrc(sourceMode: OutskirtsMockupRuntimeSnapshot['sourc
     : '/assets/background/citystates/city_outskirts.png';
 }
 
-function buildEncounterStrip(snapshot: OutskirtsMockupRuntimeSnapshot): OutskirtsExactSurfaceV2['encounterStrip'] {
-  const selected = normalizeEncounterId(snapshot.selectedEncounterId);
-  const fallback = snapshot.encounterNodes.find((node) => node.state === 'current')?.id ?? OUTSKIRTS_ENCOUNTER_DEFAULT_ID;
-  const selectedEncounterId = [selected, normalizeEncounterId(fallback), OUTSKIRTS_ENCOUNTER_DEFAULT_ID]
+export interface BuildOutskirtsMockupSurfaceOptions {
+  previewEncounterId?: string;
+  allowEncounterPreviewSelection?: boolean;
+  medicinePouchActionEnabled?: boolean;
+}
+
+function resolveProgressionStateByEncounterId(snapshot: OutskirtsMockupRuntimeSnapshot): Record<string, OutskirtsEncounterNodeState> {
+  const bySnapshot = new Map(snapshot.encounterNodes.map((entry) => [normalizeEncounterId(entry.id), entry.state] as const));
+  return Object.fromEntries(OUTSKIRTS_ENCOUNTER_STRIP_MANIFEST.map((entry, index) => {
+    const normalizedId = normalizeEncounterId(entry.id);
+    const fallbackState: OutskirtsEncounterNodeState = index === 0 ? 'current' : 'future';
+    return [entry.id, bySnapshot.get(normalizedId) ?? fallbackState];
+  }));
+}
+
+function buildEncounterStrip(
+  snapshot: OutskirtsMockupRuntimeSnapshot,
+  options: BuildOutskirtsMockupSurfaceOptions = {},
+): OutskirtsExactSurfaceV2['encounterStrip'] {
+  const progressionStateByEncounterId = resolveProgressionStateByEncounterId(snapshot);
+  const defaultSelectedId = OUTSKIRTS_ENCOUNTER_STRIP_MANIFEST.find((entry) => progressionStateByEncounterId[entry.id] === 'current')?.id
+    ?? OUTSKIRTS_ENCOUNTER_DEFAULT_ID;
+  const selected = normalizeEncounterId(options.previewEncounterId ?? snapshot.selectedEncounterId);
+  const selectedEncounterId = [selected, normalizeEncounterId(defaultSelectedId), OUTSKIRTS_ENCOUNTER_DEFAULT_ID]
     .find((id) => OUTSKIRTS_ENCOUNTER_STRIP_MANIFEST.some((entry) => entry.id === id)) ?? OUTSKIRTS_ENCOUNTER_DEFAULT_ID;
-  const selectedIndex = OUTSKIRTS_ENCOUNTER_STRIP_MANIFEST.findIndex((entry) => entry.id === selectedEncounterId);
+  const selectedIndex = Math.max(0, OUTSKIRTS_ENCOUNTER_STRIP_MANIFEST.findIndex((entry) => entry.id === selectedEncounterId));
+  const interactive = options.allowEncounterPreviewSelection ?? snapshot.sourceMode === 'stores';
 
   return {
     selectedEncounterId,
-    leftArrow: { visible: true, enabled: false, ariaLabel: 'Previous encounter (presentation only)', ornamentVariant: 'parchment' },
-    rightArrow: { visible: true, enabled: false, ariaLabel: 'Next encounter (presentation only)', ornamentVariant: 'parchment' },
+    leftArrow: { visible: true, enabled: interactive && selectedIndex > 0, ariaLabel: 'Preview previous encounter', ornamentVariant: 'parchment' },
+    rightArrow: { visible: true, enabled: interactive && selectedIndex < OUTSKIRTS_ENCOUNTER_STRIP_MANIFEST.length - 1, ariaLabel: 'Preview next encounter', ornamentVariant: 'parchment' },
     lane: {
       showConnector: true,
       connectorVariant: 'brush',
     },
     nodes: OUTSKIRTS_ENCOUNTER_STRIP_MANIFEST.map((entry, index) => {
-      const state: OutskirtsEncounterNodeState = index < selectedIndex ? 'completed' : index === selectedIndex ? 'current' : 'future';
+      const state = progressionStateByEncounterId[entry.id];
       const art = resolveOutskirtsEncounterStripArt({ id: entry.id, state, sourceMode: snapshot.sourceMode });
       return {
         id: entry.id,
@@ -121,14 +142,17 @@ function buildEncounterStrip(snapshot: OutskirtsMockupRuntimeSnapshot): Outskirt
         completionMark: art.completionMark,
         medallionVariant: art.medallionVariant,
         isSelected: index === selectedIndex,
-        isClickable: false,
-        ariaLabel: `${entry.label} ${entry.levelLabel} ${state}`,
+        isClickable: interactive && index !== selectedIndex,
+        ariaLabel: `${entry.label} ${entry.levelLabel} ${state}${index === selectedIndex ? ' selected' : ''}`,
       };
     }),
   };
 }
 
-export function buildOutskirtsMockupSurface(snapshot: OutskirtsMockupRuntimeSnapshot): OutskirtsExactSurfaceV2 {
+export function buildOutskirtsMockupSurface(
+  snapshot: OutskirtsMockupRuntimeSnapshot,
+  options: BuildOutskirtsMockupSurfaceOptions = {},
+): OutskirtsExactSurfaceV2 {
   const missingDataFallbacks: string[] = [];
   const unresolvedLiveSourceNotes: string[] = [];
   const placeholderAssetKeysInUse = [snapshot.scenicArtKey, snapshot.scenicBackgroundKey].filter((k) => k.startsWith('placeholder/'));
@@ -141,7 +165,11 @@ export function buildOutskirtsMockupSurface(snapshot: OutskirtsMockupRuntimeSnap
   const hp = parseHpLabel(snapshot.hpLabel);
   const hpPrimary = hp.max > 0 ? `${formatWhole(hp.current)} / ${formatWhole(hp.max)}` : snapshot.hpLabel;
   const bountyProgress = parseProgressLabel(snapshot.trackedBountyProgress);
-  const topNodes = buildEncounterStrip(snapshot).nodes;
+  const encounterStrip = buildEncounterStrip(snapshot, options);
+  const topNodes = encounterStrip.nodes;
+  const selectedEncounter = encounterStrip.nodes.find((entry) => entry.isSelected) ?? encounterStrip.nodes.find((entry) => entry.state === 'current');
+  const selectedManifestNode = OUTSKIRTS_ENCOUNTER_STRIP_MANIFEST.find((entry) => entry.id === selectedEncounter?.id);
+  const autoRepeatEnabled = snapshot.autoRepeatEnabled ?? /^on$/i.test(snapshot.autoRepeatLabel);
 
   const tacticalCells = {
     hp: { id: 'hp', label: 'HP', primaryText: hpPrimary, tone: 'neutral' as OutskirtsTacticalTone, iconKey: 'hp', iconKind: 'lucide' as const, showCaret: false, showNotificationDot: false, showUnderlineBar: true, underlineBarPct: clamp01(hp.max > 0 ? hp.current / hp.max : 1) * 100, visible: true, reserveAdornmentSpace: true },
@@ -184,6 +212,7 @@ export function buildOutskirtsMockupSurface(snapshot: OutskirtsMockupRuntimeSnap
       plaqueLabel: OUTSKIRTS_REVIEW_COPY.pageTitle,
       subtitle: snapshot.pageSubtitle,
       showDropdownCaret: true,
+      hasGroundedSelector: false,
     },
     scenicStage: {
       scenicBackgroundKey: snapshot.scenicBackgroundKey,
@@ -191,13 +220,13 @@ export function buildOutskirtsMockupSurface(snapshot: OutskirtsMockupRuntimeSnap
       reviewFixtureImageSrc: snapshot.sourceMode === 'fixture' ? OUTSKIRTS_APPROVED_SCENIC_MOCKUP_SRC : null,
       liveFallbackImageSrc: '/assets/background/citystates/city_outskirts.png',
       useApprovedMockupCrop: snapshot.sourceMode === 'fixture',
-      encounterArtKey: snapshot.scenicArtKey,
-      environmentDescriptor: snapshot.encounterDescriptor,
+      encounterArtKey: selectedManifestNode?.artKey ?? snapshot.scenicArtKey,
+      environmentDescriptor: selectedEncounter ? `${selectedEncounter.label} preview in Outskirts lane.` : snapshot.encounterDescriptor,
     },
     encounterIdentity: {
-      selectedEncounterId: snapshot.selectedEncounterId,
-      displayName: snapshot.selectedEncounterName,
-      levelLabel: snapshot.selectedEncounterLevelLabel,
+      selectedEncounterId: selectedEncounter?.id ?? snapshot.selectedEncounterId,
+      displayName: selectedEncounter?.label ?? snapshot.selectedEncounterName,
+      levelLabel: selectedEncounter?.levelLabel ?? snapshot.selectedEncounterLevelLabel,
       safetyChip: { state: snapshot.safetyChipState, label: snapshot.safetyChipLabel },
     },
     setupCard: {
@@ -208,6 +237,7 @@ export function buildOutskirtsMockupSurface(snapshot: OutskirtsMockupRuntimeSnap
       offenseRows: snapshot.offenseRows,
       defenseRows: snapshot.defenseRows,
       medicinePouchRow: { id: 'medicinePouch', label: 'Medicine Pouch', value: medicine.text, source: medicine.source },
+      medicinePouchActionEnabled: options.medicinePouchActionEnabled ?? snapshot.sourceMode === 'stores',
       equipmentGrid: snapshot.equipmentGrid,
     },
     rewardsCard: {
@@ -237,12 +267,12 @@ export function buildOutskirtsMockupSurface(snapshot: OutskirtsMockupRuntimeSnap
       },
       autoRepeat: {
         label: OUTSKIRTS_REVIEW_COPY.autoRepeatLabel,
-        value: snapshot.autoRepeatLabel,
-        enabled: /^on$/i.test(snapshot.autoRepeatLabel),
+        value: autoRepeatEnabled ? 'On' : 'Off',
+        enabled: autoRepeatEnabled,
         source: snapshot.sourceMode === 'fixture' ? 'manifest' : 'derived',
       },
     },
-    encounterStrip: buildEncounterStrip(snapshot),
+    encounterStrip,
     primaryAction: {
       label: OUTSKIRTS_REVIEW_COPY.ctaLabel,
       ariaLabel: 'Start Outskirts hunt',
@@ -323,6 +353,7 @@ export function buildOutskirtsMockupRuntimeSnapshotFromStores(cityId?: string): 
   const posture = evaluateCurrentCombatPostureFit('outskirts');
   const postureContext = buildCurrentCombatPostureContext('outskirts');
   const tracked = useBountyStore.getState().getTrackedBounty(resolvedCityId);
+  const autoContinue = useOutskirtsStore.getState().autoContinue;
   const pouch = useMedicinePouchStore.getState().slots.healing;
   const pouchQty = pouch?.equippedItemId ? useInventoryStore.getState().getItemCount(pouch.equippedItemId) : 0;
   const gameStats = useGameStore.getState().stats;
@@ -333,6 +364,8 @@ export function buildOutskirtsMockupRuntimeSnapshotFromStores(cityId?: string): 
 
   const aiRecommendation = evaluateAiProfileFit({ encounterType: 'outskirts', aiProfile: selectedAiProfile, loadoutSignals: postureContext.loadoutSignals, path: postureContext.path });
   const derivedAccuracyPct = aiRecommendation.rating === 'good' ? 92 : aiRecommendation.rating === 'risky' ? 86 : 82;
+  const encounterNodes = buildEncounterNodesFromKills(progress.killsSinceBoss);
+  const currentProgressEncounterId = encounterNodes.find((entry) => entry.state === 'current')?.id ?? OUTSKIRTS_ENCOUNTER_DEFAULT_ID;
   const derivedResPct = (() => {
     const defense = Number(gameStats.def);
     if (!Number.isFinite(defense) || defense <= 0) return 0;
@@ -386,8 +419,9 @@ export function buildOutskirtsMockupRuntimeSnapshotFromStores(cityId?: string): 
     trackedBountyProgress: tracked ? `${tracked.progress} / ${tracked.target}` : '0 / 0',
     efficiencyRunTimeLabel: '~45s / run',
     efficiencyHourlyLabel: '1,800 – 2,000 / hour',
-    autoRepeatLabel: 'On',
-    selectedEncounterId: OUTSKIRTS_ENCOUNTER_DEFAULT_ID,
+    autoRepeatLabel: autoContinue ? 'On' : 'Off',
+    autoRepeatEnabled: autoContinue,
+    selectedEncounterId: currentProgressEncounterId,
     selectedEncounterName: 'Snarling Wolf',
     selectedEncounterLevelLabel: 'Lv. 11',
     safetyChipState: posture.warnings.length > 0 ? 'watch' : 'safe',
@@ -395,7 +429,7 @@ export function buildOutskirtsMockupRuntimeSnapshotFromStores(cityId?: string): 
     scenicArtKey: OUTSKIRTS_PLACEHOLDER_POLICY.encounterFallbackKey,
     scenicBackgroundKey: OUTSKIRTS_PLACEHOLDER_POLICY.scenicFallbackKey,
     encounterDescriptor: 'Outskirts lane',
-    encounterNodes: buildEncounterNodesFromKills(progress.killsSinceBoss),
+    encounterNodes,
     canMoveEncounterLeft: false,
     canMoveEncounterRight: true,
     roleTag: rewardModel.roleTag,
@@ -406,6 +440,9 @@ export function buildOutskirtsMockupRuntimeSnapshotFromStores(cityId?: string): 
   };
 }
 
-export function buildOutskirtsMockupSurfaceFromStores(cityId?: string): OutskirtsExactSurfaceV2 {
-  return buildOutskirtsMockupSurface(buildOutskirtsMockupRuntimeSnapshotFromStores(cityId));
+export function buildOutskirtsMockupSurfaceFromStores(
+  cityId?: string,
+  options: BuildOutskirtsMockupSurfaceOptions = {},
+): OutskirtsExactSurfaceV2 {
+  return buildOutskirtsMockupSurface(buildOutskirtsMockupRuntimeSnapshotFromStores(cityId), options);
 }

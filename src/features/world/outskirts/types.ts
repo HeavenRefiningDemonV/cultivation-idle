@@ -60,6 +60,7 @@ export interface OutskirtsAreaHeader {
   plaqueLabel: string;
   subtitle: string;
   showDropdownCaret: boolean;
+  hasGroundedSelector?: boolean;
 }
 
 export interface OutskirtsScenicStage {
@@ -97,6 +98,7 @@ export interface OutskirtsSetupCard {
   offenseRows: OutskirtsLabeledValue[];
   defenseRows: OutskirtsLabeledValue[];
   medicinePouchRow: OutskirtsLabeledValue;
+  medicinePouchActionEnabled?: boolean;
   equipmentGrid: Array<{
     slotId: 'weapon' | 'armor' | 'ring' | 'talisman' | 'boots' | 'charm';
     label: string;
@@ -284,6 +286,7 @@ export interface OutskirtsMockupRuntimeSnapshot {
   efficiencyRunTimeLabel: string;
   efficiencyHourlyLabel: string;
   autoRepeatLabel: string;
+  autoRepeatEnabled?: boolean;
   selectedEncounterId: string;
   selectedEncounterName: string;
   selectedEncounterLevelLabel: string;
