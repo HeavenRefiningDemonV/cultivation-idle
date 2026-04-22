@@ -395,7 +395,10 @@
   grid-area: scenicStage;
   min-width: 0;
   min-height: var(--outskirts-scenic-min-height);
+  position: relative;
+  isolation: isolate;
 }
+
 
 .outskirtsExactPage__centerIdentity {
   grid-area: encounterIdentity;
@@ -430,96 +433,68 @@
   min-width: 0;
   min-height: var(--outskirts-summary-row-min-height);
 }
-
-.outskirtsScenicStage {
-  position: relative;
-  min-height: 100%;
-  border-radius: 1.25rem;
-  overflow: hidden;
-  isolation: isolate;
-  background: radial-gradient(120% 95% at 50% 60%, rgba(63, 61, 52, 0.28), rgba(35, 26, 19, 0.64));
-  border: 1px solid rgba(120, 103, 79, 0.34);
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 244, 219, 0.2),
-    0 14px 24px rgba(56, 42, 30, 0.18);
-}
-
-.outskirtsScenicStage__plate {
+.outskirtsScenePlane {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
+  min-height: 100%;
+  overflow: hidden;
+  isolation: isolate;
+  background: radial-gradient(140% 88% at 50% 66%, rgba(65, 62, 52, 0.2), rgba(38, 28, 20, 0.35));
+}
+
+.outskirtsScenePlane__base {
+  position: absolute;
+  inset: 0;
   background-size: cover;
   background-repeat: no-repeat;
-  transform: scale(1.016);
+  transform: scale(1.01);
   filter: saturate(0.92) contrast(1.02);
 }
 
-.outskirtsScenicStage__wolf {
+.outskirtsScenePlane__encounter {
   position: absolute;
-  z-index: 2;
-  width: clamp(210px, 23vw, 340px);
-  max-width: 42%;
-  object-fit: contain;
-  pointer-events: none;
-  opacity: 0.94;
-  filter: drop-shadow(0 10px 16px rgba(39, 29, 22, 0.42));
+  left: 50%;
+  top: 58%;
+  width: min(56%, 520px);
+  height: min(68%, 430px);
+  background-size: contain;
+  background-repeat: no-repeat;
+  transform-origin: center;
+  opacity: 0.95;
+  filter: drop-shadow(0 16px 22px rgba(35, 26, 20, 0.42));
 }
 
-.outskirtsScenicStage__wolf--lead {
-  bottom: clamp(32px, 6.2vh, 52px);
-  left: 43%;
-  transform: translateX(-50%);
-}
-
-.outskirtsScenicStage__wolf--pack {
-  bottom: clamp(34px, 6.4vh, 58px);
-  left: 58%;
-  transform: translateX(-50%) scale(0.82);
-  opacity: 0.78;
-}
-
-.outskirtsScenicStage__mist {
-  position: absolute;
-  inset-inline: 0;
-  pointer-events: none;
-}
-
-.outskirtsScenicStage__mist--rear {
-  z-index: 1;
-  top: 46%;
-  bottom: 8%;
-  background: radial-gradient(70% 65% at 50% 100%, rgba(245, 238, 223, 0.72), rgba(245, 238, 223, 0));
-}
-
-.outskirtsScenicStage__mist--front {
-  z-index: 3;
-  top: 68%;
-  bottom: -2px;
-  background: linear-gradient(180deg, rgba(241, 234, 217, 0), rgba(241, 234, 217, 0.84) 80%, rgba(241, 234, 217, 0.93));
-}
-
-.outskirtsScenicStage__veil {
+.outskirtsScenePlane__atmosphere {
   position: absolute;
   inset: 0;
-  z-index: 4;
   background:
-    linear-gradient(180deg, rgba(248, 241, 225, 0.16), rgba(37, 27, 20, 0.22)),
-    radial-gradient(130% 84% at 50% 58%, rgba(255, 248, 233, 0) 58%, rgba(41, 29, 21, 0.35));
+    radial-gradient(95% 58% at 50% 78%, rgba(242, 235, 218, 0.28), rgba(242, 235, 218, 0) 72%),
+    linear-gradient(180deg, rgba(245, 238, 221, 0.08), rgba(34, 24, 17, 0.18));
   pointer-events: none;
 }
 
-.outskirtsScenicStage__descriptor {
+.outskirtsScenePlane__mist {
   position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
+  inset-inline: 0;
+  top: 64%;
+  bottom: -1px;
+  background: linear-gradient(180deg, rgba(241, 234, 217, 0), rgba(241, 234, 217, 0.8) 70%, rgba(241, 234, 217, 0.94));
+  pointer-events: none;
 }
 
-.outskirtsScenicStage--review .outskirtsScenicStage__wolf {
+.outskirtsScenePlane__edgeFade {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(130% 84% at 50% 62%, rgba(255, 249, 236, 0) 58%, rgba(255, 249, 236, 0.64));
+  pointer-events: none;
+}
+
+.outskirtsScenePlane--review .outskirtsScenePlane__encounter {
   display: none;
+}
+
+.outskirtsScenePlane--review .outskirtsScenePlane__base {
+  transform: scale(1.015);
 }
 
 .outskirtsEncounterIdentityRow {

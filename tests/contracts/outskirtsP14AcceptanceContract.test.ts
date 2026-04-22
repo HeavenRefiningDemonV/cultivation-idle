@@ -13,7 +13,7 @@ void test('P14 planning page keeps all required regions and one dominant CTA', a
 
   assert.match(source, /data-testid': 'outskirts-exact-page'/);
   assert.match(source, /data-testid': 'outskirts-exact-left-rail'/);
-  assert.match(source, /data-testid': 'outskirts-exact-scenic-slot'/);
+  assert.match(source, /data-testid': 'outskirts-exact-center-scenic-slot'/);
   assert.match(source, /data-testid': 'outskirts-exact-identity-slot'/);
   assert.match(source, /data-testid': 'outskirts-exact-strip-slot'/);
   assert.match(source, /data-testid': 'outskirts-exact-cta-slot'/);

@@ -110,11 +110,11 @@ void test('P6 scenic center renders as composition surface with no visible descr
   const surface = buildOutskirtsMockupSurface(fixture);
   const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
 
-  assert.equal((html.match(/outskirts-exact-scenic-stage/g) ?? []).length, 1);
-  assert.equal((html.match(/outskirts-exact-scenic-image/g) ?? []).length, 1);
+  assert.equal((html.match(/outskirts-exact-scene-plane/g) ?? []).length, 1);
+  assert.equal((html.match(/outskirts-exact-scene-layer-base/g) ?? []).length, 1);
   assert.equal((html.match(/outskirts-exact-encounter-identity-row/g) ?? []).length, 1);
-  assert.equal(html.includes('outskirtsScenicStage__plate'), true);
-  assert.equal(html.includes('outskirtsScenicStage__fallback">'), false);
+  assert.equal(html.includes('outskirtsScenePlane__base'), true);
+  assert.equal(html.includes('outskirts-exact-scenic-fallback'), false);
   assert.equal(html.includes(`>${fixture.encounterDescriptor}<`), false);
 });
 
@@ -136,9 +136,9 @@ void test('P6 scenic placeholder suppression keeps stage rendered when scenic im
   surface.scenicStage.useApprovedMockupCrop = false;
   const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
 
-  assert.equal((html.match(/outskirts-exact-scenic-stage/g) ?? []).length, 1);
-  assert.equal((html.match(/outskirts-exact-scenic-image/g) ?? []).length, 1);
-  assert.equal(html.includes('outskirtsScenicStage__fallback">'), false);
+  assert.equal((html.match(/outskirts-exact-scene-plane/g) ?? []).length, 1);
+  assert.equal((html.match(/outskirts-exact-scene-layer-base/g) ?? []).length, 1);
+  assert.equal(html.includes('outskirts-exact-scenic-fallback'), false);
   assert.equal(html.includes(`>${surface.scenicStage.environmentDescriptor}<`), false);
 });
 

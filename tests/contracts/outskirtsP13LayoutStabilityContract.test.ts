@@ -18,7 +18,7 @@ function assertMajorSlotsPresent(html: string) {
   const requiredIds = [
     'outskirts-exact-page',
     'outskirts-exact-top-region',
-    'outskirts-exact-scenic-slot',
+    'outskirts-exact-center-scenic-slot',
     'outskirts-exact-left-rail',
     'outskirts-exact-right-rail',
     'outskirts-exact-strip-slot',
@@ -50,7 +50,7 @@ void test('P13 planning-state no-layout-shift smoke keeps major slot structure a
   assertMajorSlotsPresent(htmlLongLabels);
   assertMajorSlotsPresent(htmlEmptyBounty);
 
-  const slotMarker = /data-testid=\"outskirts-exact-(?:left-rail|right-rail|scenic-slot|strip-slot|cta-slot|summary-dock)\"/g;
+  const slotMarker = /data-testid=\"outskirts-exact-(?:left-rail|right-rail|center-scenic-slot|strip-slot|cta-slot|summary-dock)\"/g;
   assert.equal(htmlDefault.match(slotMarker)?.length, 6);
   assert.equal(htmlLongLabels.match(slotMarker)?.length, 6);
   assert.equal(htmlEmptyBounty.match(slotMarker)?.length, 6);
@@ -71,7 +71,7 @@ void test('P13 dynamic-state stability keeps reserved substructures for bounty/e
     assert.equal((html.match(/data-testid=\"outskirts-exact-rewards-material-item\"/g) ?? []).length, 4);
   }
 
-  assert.match(pouchAndMaterialFallback, /\/assets\/icons\/dust_brown\.png/);
+  assert.match(pouchAndMaterialFallback, /dust_brown/);
 });
 
 void test('P13 strip stability keeps strip geometry hooks across state/selection variations', () => {

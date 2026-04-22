@@ -8,32 +8,34 @@ export interface OutskirtsScenicStageProps {
 }
 
 export function OutskirtsScenicStage({ scenic, identity }: OutskirtsScenicStageProps) {
-  const bindings = resolveOutskirtsScenicAsset(scenic);
-  const scenicStyle = bindings.scenicPlateSrc
-    ? { backgroundImage: `url('${bindings.scenicPlateSrc}')`, backgroundPosition: bindings.scenicBackdropPosition }
+  const bindings = resolveOutskirtsScenicAsset({ scenic, selectedEncounterId: identity.selectedEncounterId });
+  const baseStyle = bindings.sceneBaseSrc
+    ? { backgroundImage: `url('${bindings.sceneBaseSrc}')`, backgroundPosition: bindings.sceneBasePosition }
+    : undefined;
+  const encounterStyle = bindings.encounterLayerSrc
+    ? {
+        backgroundImage: `url('${bindings.encounterLayerSrc}')`,
+        backgroundPosition: bindings.encounterLayerPosition,
+        transform: `translate(-50%, -50%) scale(${bindings.encounterLayerScale})`,
+      }
     : undefined;
 
   return React.createElement(
     'section',
     {
-      className: `outskirtsScenicStage outskirtsScenicStage--${bindings.usesApprovedReviewCrop ? 'review' : 'live'}`,
-      'data-testid': 'outskirts-exact-scenic-stage',
+      className: `outskirtsScenePlane outskirtsScenePlane--${bindings.maskVariant}`,
+      'data-testid': 'outskirts-exact-scene-plane',
+      'data-scene-variant': bindings.sceneVariantId,
       role: 'img',
       'aria-label': `${identity.displayName} scenic field`,
       'aria-description': scenic.environmentDescriptor,
     },
-    React.createElement('div', { className: 'outskirtsScenicStage__plate', 'data-testid': 'outskirts-exact-scenic-image', style: scenicStyle, 'aria-hidden': 'true' }),
-    bindings.wolfOverlaySrc
-      ? React.createElement(
-          React.Fragment,
-          null,
-          React.createElement('img', { src: bindings.wolfOverlaySrc, alt: '', className: 'outskirtsScenicStage__wolf outskirtsScenicStage__wolf--lead', loading: 'eager', 'aria-hidden': 'true' }),
-          React.createElement('img', { src: bindings.wolfOverlaySrc, alt: '', className: 'outskirtsScenicStage__wolf outskirtsScenicStage__wolf--pack', loading: 'eager', 'aria-hidden': 'true' }),
-        )
+    React.createElement('div', { className: 'outskirtsScenePlane__base', 'data-testid': 'outskirts-exact-scene-layer-base', style: baseStyle, 'aria-hidden': 'true' }),
+    bindings.encounterLayerSrc
+      ? React.createElement('div', { className: 'outskirtsScenePlane__encounter', 'data-testid': 'outskirts-exact-scene-layer-encounter', style: encounterStyle, 'aria-hidden': 'true' })
       : null,
-    React.createElement('span', { className: 'outskirtsScenicStage__mist outskirtsScenicStage__mist--rear', 'aria-hidden': 'true' }),
-    React.createElement('span', { className: 'outskirtsScenicStage__mist outskirtsScenicStage__mist--front', 'aria-hidden': 'true' }),
-    React.createElement('span', { className: 'outskirtsScenicStage__veil', 'aria-hidden': 'true' }),
-    React.createElement('span', { className: 'outskirtsScenicStage__descriptor', 'data-testid': 'outskirts-exact-scenic-fallback', 'aria-hidden': 'true' }),
+    bindings.showAtmosphere ? React.createElement('span', { className: 'outskirtsScenePlane__atmosphere', 'aria-hidden': 'true' }) : null,
+    bindings.showForegroundMist ? React.createElement('span', { className: 'outskirtsScenePlane__mist', 'aria-hidden': 'true' }) : null,
+    bindings.showEdgeFade ? React.createElement('span', { className: 'outskirtsScenePlane__edgeFade', 'aria-hidden': 'true' }) : null,
   );
 }

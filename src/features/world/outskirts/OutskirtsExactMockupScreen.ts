@@ -46,7 +46,7 @@ export function OutskirtsExactMockupScreen({
       ),
       React.createElement(
         'main',
-        { className: 'outskirtsExactPage__centerScenic', 'data-testid': 'outskirts-exact-scenic-slot', 'data-legacy-testid': 'outskirts-exact-center-slot' },
+        { className: 'outskirtsExactPage__centerScenic', 'data-testid': 'outskirts-exact-center-scenic-slot', 'data-legacy-testid': 'outskirts-exact-center-slot' },
         React.createElement(OutskirtsScenicStage, { scenic: surface.scenicStage, identity: surface.encounterIdentity }),
       ),
       React.createElement(
