@@ -1183,36 +1183,6 @@
   background: linear-gradient(180deg, rgba(216, 241, 208, 0.92), rgba(175, 221, 163, 0.88));
 }
 
-.outskirtsActiveContainment {
-  min-height: 100%;
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
-  gap: 0.6rem;
-}
-
-.outskirtsActiveContainment__header {
-  padding: 0.55rem 0.75rem;
-  border-radius: 0.62rem;
-  border: 1px solid rgba(84, 63, 50, 0.28);
-  background: rgba(246, 238, 220, 0.76);
-}
-
-.outskirtsActiveContainment__title {
-  margin: 0;
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: 1.04rem;
-}
-
-.outskirtsActiveContainment__subtitle {
-  margin: 0.14rem 0 0;
-  font-size: 0.74rem;
-  color: rgba(71, 53, 43, 0.86);
-}
-
-.outskirtsActiveContainment__body {
-  min-height: 0;
-}
-
 .outskirtsSetupCard {
   height: 100%;
   display: grid;

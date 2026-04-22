@@ -16,19 +16,20 @@ function getActivitySourceId(activity: ActiveActivity | null): string | null {
   return activity.sourceId ?? payloadSourceId ?? null;
 }
 
-function isSameOutskirtsCombatSource(cityId: string, outskirtsId: string, combatContext: CombatContext): boolean {
+function isSameOutskirtsCombatSource(cityId: string, outskirtsId: string | null, combatContext: CombatContext): boolean {
   if (combatContext.type !== 'outskirts') return false;
-  if (combatContext.sourceId && combatContext.sourceId === outskirtsId) return true;
+  if (outskirtsId && combatContext.sourceId && combatContext.sourceId === outskirtsId) return true;
   return !combatContext.sourceId && combatContext.cityId === cityId;
 }
 
 export function getOutskirtsModuleViewState(input: ResolveOutskirtsModuleViewStateInput): OutskirtsModuleViewState {
   const { cityId, outskirtsId, activity, combatContext } = input;
-  if (!outskirtsId) return 'unavailable';
-
   const activitySourceId = getActivitySourceId(activity);
-  const activityMatches = activity?.type === 'outskirts' && activitySourceId === outskirtsId && (!activity.cityId || activity.cityId === cityId);
+  const activityCityMatches = activity?.type === 'outskirts' && (!activity.cityId || activity.cityId === cityId);
+  const activityMatches = Boolean(activityCityMatches && (outskirtsId ? activitySourceId === outskirtsId : true));
   const combatMatches = isSameOutskirtsCombatSource(cityId, outskirtsId, combatContext);
 
-  return activityMatches || combatMatches ? 'activeContained' : 'planning';
+  if (activityMatches || combatMatches) return 'activeContained';
+  if (!outskirtsId) return 'unavailable';
+  return 'planning';
 }

@@ -1,11 +1,15 @@
-import { useMemo } from 'react';
+import { Suspense, lazy, useMemo } from 'react';
 import { useActivityStore } from '../../../../stores/activityStore.js';
 import { useCombatStore } from '../../../../stores/combatStore.js';
 import { useContentStore } from '../../../../stores/contentStore.js';
 import { resolveModuleRef } from '../worldUtils.js';
 import { getOutskirtsModuleViewState } from '../../../../features/world/outskirts/getOutskirtsModuleViewState.js';
 import { OutskirtsPlanningOwner } from '../../../../features/world/outskirts/OutskirtsPlanningOwner.js';
-import { OutskirtsLegacyActiveSurface } from '../../../../features/world/outskirts/OutskirtsLegacyActiveSurface.js';
+
+const OutskirtsLegacyActiveSurface = lazy(async () => {
+  const module = await import('../../../../features/world/outskirts/OutskirtsLegacyActiveSurface.js');
+  return { default: module.OutskirtsLegacyActiveSurface };
+});
 
 interface OutskirtsBuildingPanelProps {
   cityId: string;
@@ -45,5 +49,9 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
     return <OutskirtsPlanningOwner cityId={cityId} />;
   }
 
-  return <OutskirtsLegacyActiveSurface cityId={cityId} />;
+  return (
+    <Suspense fallback={<div className="worldScreenPlaceholder" data-testid="outskirts-active-boundary-loading" />}>
+      <OutskirtsLegacyActiveSurface cityId={cityId} />
+    </Suspense>
+  );
 }
