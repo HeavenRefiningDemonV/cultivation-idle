@@ -12,7 +12,11 @@ export function OutskirtsAreaPlaque({ areaHeader }: OutskirtsAreaPlaqueProps) {
     { className: 'outskirtsTopRegion__plaqueCluster', 'data-testid': 'outskirts-exact-plaque-cluster' },
     React.createElement(
       'div',
-      { className: 'outskirtsTopRegion__areaPlaque', 'data-testid': 'outskirts-area-plaque' },
+      {
+        className: 'outskirtsTopRegion__areaPlaque',
+        'data-testid': 'outskirts-area-plaque',
+        'aria-disabled': areaHeader.hasGroundedSelector === false ? 'true' : undefined,
+      },
       React.createElement('span', { className: 'outskirtsTopRegion__plaqueLabel' }, areaHeader.plaqueLabel),
       areaHeader.showDropdownCaret ? React.createElement('span', { className: 'outskirtsTopRegion__plaqueCaret', 'aria-hidden': 'true' }, React.createElement(ChevronDown, { size: 16, strokeWidth: 2.2 })) : null,
     ),

@@ -3,6 +3,7 @@ import type { OutskirtsLabeledValue, OutskirtsSetupCard as OutskirtsSetupCardMod
 
 export interface OutskirtsSetupCardProps {
   setup: OutskirtsSetupCardModel;
+  onOpenMedicinePouch?: () => void;
 }
 
 const PRIMARY_ROW_ICON_MAP = {
@@ -56,7 +57,7 @@ function renderStatRows(rows: OutskirtsSetupCardModel['offenseRows'] | Outskirts
   ));
 }
 
-export function OutskirtsSetupCard({ setup }: OutskirtsSetupCardProps) {
+export function OutskirtsSetupCard({ setup, onOpenMedicinePouch }: OutskirtsSetupCardProps) {
   return React.createElement(
     'section',
     { className: 'outskirtsSetupCard', 'data-testid': 'outskirts-exact-setup-card', 'data-legacy-testid': 'outskirts-setup-card' },
@@ -89,7 +90,17 @@ export function OutskirtsSetupCard({ setup }: OutskirtsSetupCardProps) {
         { className: 'outskirtsSetupCard__pouchRow' },
         React.createElement('span', { className: 'outskirtsSetupCard__iconDock', 'aria-hidden': 'true' }, React.createElement('img', { src: '/assets/icons/hourglass_empty.png', alt: '', className: 'outskirtsSetupCard__icon' })),
         React.createElement('span', { className: 'outskirtsSetupCard__pouchValue' }, setup.medicinePouchRow.value),
-        React.createElement('button', { type: 'button', className: 'outskirtsSetupCard__pouchAction', tabIndex: -1, 'aria-label': 'Medicine pouch quick action (display only)' }, '+'),
+        React.createElement(
+          'button',
+          {
+            type: 'button',
+            className: 'outskirtsSetupCard__pouchAction',
+            disabled: !setup.medicinePouchActionEnabled,
+            onClick: setup.medicinePouchActionEnabled ? onOpenMedicinePouch : undefined,
+            'aria-label': setup.medicinePouchActionEnabled ? 'Open medicine pouch configuration' : 'Medicine pouch action unavailable',
+          },
+          '+',
+        ),
       ),
     ),
     React.createElement(

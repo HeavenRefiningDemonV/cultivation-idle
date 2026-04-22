@@ -13,6 +13,33 @@ void test('P9 view-state helper returns unavailable when no outskirts definition
   assert.equal(state, 'unavailable');
 });
 
+void test('P12 view-state helper returns activeContained for same-city active truth even when outskirtsId is temporarily unresolved', () => {
+  const fromActivity = getOutskirtsModuleViewState({
+    cityId: 'city_pinewind_hamlet',
+    outskirtsId: null,
+    activity: {
+      type: 'outskirts',
+      startedAt: 1,
+      cityId: 'city_pinewind_hamlet',
+      sourceId: 'outskirts_pinewind',
+    },
+    combatContext: { type: null },
+  });
+  assert.equal(fromActivity, 'activeContained');
+
+  const fromCombat = getOutskirtsModuleViewState({
+    cityId: 'city_pinewind_hamlet',
+    outskirtsId: null,
+    activity: null,
+    combatContext: {
+      type: 'outskirts',
+      cityId: 'city_pinewind_hamlet',
+      sourceId: undefined,
+    },
+  });
+  assert.equal(fromCombat, 'activeContained');
+});
+
 void test('P9 view-state helper returns planning when no same-source outskirts run is active', () => {
   const state = getOutskirtsModuleViewState({
     cityId: 'city_pinewind_hamlet',

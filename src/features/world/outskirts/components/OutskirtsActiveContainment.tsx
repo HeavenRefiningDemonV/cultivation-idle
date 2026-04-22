@@ -1,4 +1,5 @@
 import React from 'react';
+import './OutskirtsActiveContainment.scss';
 
 export interface OutskirtsActiveContainmentProps {
   children: React.ReactNode;

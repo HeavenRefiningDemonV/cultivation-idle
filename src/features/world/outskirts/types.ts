@@ -60,6 +60,7 @@ export interface OutskirtsAreaHeader {
   plaqueLabel: string;
   subtitle: string;
   showDropdownCaret: boolean;
+  hasGroundedSelector?: boolean;
 }
 
 export interface OutskirtsScenicStage {
@@ -97,6 +98,7 @@ export interface OutskirtsSetupCard {
   offenseRows: OutskirtsLabeledValue[];
   defenseRows: OutskirtsLabeledValue[];
   medicinePouchRow: OutskirtsLabeledValue;
+  medicinePouchActionEnabled?: boolean;
   equipmentGrid: Array<{
     slotId: 'weapon' | 'armor' | 'ring' | 'talisman' | 'boots' | 'charm';
     label: string;
@@ -127,6 +129,8 @@ export interface OutskirtsRewardsCard {
     itemLabel: string;
     helperLine: string;
     progressLabel: string;
+    progressCurrent: number;
+    progressTarget: number;
     source: OutskirtsSurfaceValueSource;
   };
   estimatedEfficiency: {
@@ -147,6 +151,7 @@ export interface OutskirtsEncounterStripArrow {
   visible: boolean;
   enabled: boolean;
   ariaLabel: string;
+  ornamentVariant?: 'jade' | 'parchment';
 }
 
 export interface OutskirtsEncounterStripNode {
@@ -155,7 +160,12 @@ export interface OutskirtsEncounterStripNode {
   levelLabel: string;
   state: OutskirtsEncounterNodeState;
   artKey?: string;
+  imageSrc?: string | null;
+  imagePosition?: string;
   silhouetteKey?: string;
+  silhouetteImageSrc?: string | null;
+  completionMark?: boolean;
+  medallionVariant?: 'wolf-jade' | 'quiet-field';
   isSelected: boolean;
   isClickable: boolean;
   ariaLabel: string;
@@ -164,6 +174,10 @@ export interface OutskirtsEncounterStripNode {
 export interface OutskirtsEncounterStrip {
   leftArrow: OutskirtsEncounterStripArrow;
   rightArrow: OutskirtsEncounterStripArrow;
+  lane: {
+    showConnector: boolean;
+    connectorVariant?: 'brush' | 'thread';
+  };
   nodes: OutskirtsEncounterStripNode[];
   selectedEncounterId: string;
 }
@@ -177,6 +191,8 @@ export interface OutskirtsPrimaryAction {
   singleDominantCta: true;
   isPrimary?: true;
   disabledReason?: string;
+  plaqueVariant?: 'ornate-gold';
+  ornamentVariant?: 'leaf-cap';
 }
 
 export interface OutskirtsGrindSummary {
@@ -187,6 +203,12 @@ export interface OutskirtsGrindSummary {
   goldPerHourText: string;
   mainDropLabel: string;
   mainDropIconKey: string;
+  rows?: Array<{
+    id: 'runs' | 'goldPerHour' | 'mainDrop';
+    label: string;
+    value: string;
+    iconKey: 'runs' | 'gold' | 'drop';
+  }>;
 }
 
 export interface OutskirtsMockupShellFlags {
@@ -264,6 +286,7 @@ export interface OutskirtsMockupRuntimeSnapshot {
   efficiencyRunTimeLabel: string;
   efficiencyHourlyLabel: string;
   autoRepeatLabel: string;
+  autoRepeatEnabled?: boolean;
   selectedEncounterId: string;
   selectedEncounterName: string;
   selectedEncounterLevelLabel: string;
