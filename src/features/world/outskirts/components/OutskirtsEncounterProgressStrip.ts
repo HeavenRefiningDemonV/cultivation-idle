@@ -1,5 +1,6 @@
 import React from 'react';
 import type { OutskirtsEncounterStrip } from '../types.js';
+import { OUTSKIRTS_ASSETS } from '../outskirtsAssetRegistry.js';
 
 export interface OutskirtsEncounterProgressStripProps {
   strip: OutskirtsEncounterStrip;
@@ -63,7 +64,7 @@ export function OutskirtsEncounterProgressStrip({ strip, onPreviewPrevious, onPr
             style: node.state === 'completed' && node.imageSrc ? { backgroundImage: `url('${node.imageSrc}')`, backgroundPosition: node.imagePosition ?? '50% 72%' } : undefined,
           },
           node.state === 'current'
-            ? React.createElement('img', { src: node.imageSrc ?? '/assets/enemies/wolfpup.png', alt: '', className: 'outskirtsEncounterProgressStrip__portrait', loading: 'eager', 'aria-hidden': 'true' })
+            ? React.createElement('img', { src: node.imageSrc ?? OUTSKIRTS_ASSETS.stripArt.wolfEnemy, alt: '', className: 'outskirtsEncounterProgressStrip__portrait', loading: 'eager', 'aria-hidden': 'true' })
             : null,
           node.state === 'future'
             ? React.createElement(
@@ -74,7 +75,7 @@ export function OutskirtsEncounterProgressStrip({ strip, onPreviewPrevious, onPr
                   style: node.imageSrc ? { backgroundImage: `url('${node.imageSrc}')`, backgroundPosition: node.imagePosition ?? '75% 72%' } : undefined,
                   'aria-hidden': 'true',
                 }),
-                React.createElement('img', { src: node.silhouetteImageSrc ?? '/assets/enemies/slime.png', alt: '', className: 'outskirtsEncounterProgressStrip__silhouette', loading: 'eager', 'aria-hidden': 'true' }),
+                React.createElement('img', { src: node.silhouetteImageSrc ?? OUTSKIRTS_ASSETS.stripArt.slimeEnemy, alt: '', className: 'outskirtsEncounterProgressStrip__silhouette', loading: 'eager', 'aria-hidden': 'true' }),
               )
             : null,
           node.completionMark

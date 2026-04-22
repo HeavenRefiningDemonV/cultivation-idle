@@ -1,5 +1,6 @@
 import type { OutskirtsEncounterNodeState } from './types.js';
 import { OUTSKIRTS_APPROVED_SCENIC_MOCKUP_SRC } from './outskirtsMockupPresentation.js';
+import { OUTSKIRTS_ASSETS } from './outskirtsAssetRegistry.js';
 
 interface ResolveOutskirtsEncounterStripArtArgs {
   id: string;
@@ -25,18 +26,18 @@ const SCENIC_CROP_POSITION: Record<string, string> = {
 };
 
 const FUTURE_SILHOUETTE_SRC: Record<string, string> = {
-  venomcoil: '/assets/enemies/slime.png',
-  'shade-stalker': '/assets/enemies/forestrabbit.png',
-  'mire-serpent': '/assets/enemies/spiritdeer.png',
+  venomcoil: OUTSKIRTS_ASSETS.stripArt.slimeEnemy,
+  'shade-stalker': OUTSKIRTS_ASSETS.stripArt.forestRabbitEnemy,
+  'mire-serpent': OUTSKIRTS_ASSETS.stripArt.spiritDeerEnemy,
 };
 
 const COMPLETED_ART_SRC: Record<string, string> = {
-  'quiet-glade': '/assets/background/citystates/city_outskirts.png',
-  'rockjaw-boar': '/assets/enemies/widboar.png',
+  'quiet-glade': OUTSKIRTS_ASSETS.stripArt.cityOutskirtsBackdrop,
+  'rockjaw-boar': OUTSKIRTS_ASSETS.stripArt.boarEnemy,
 };
 
 const CURRENT_ART_SRC: Record<string, string> = {
-  'snarling-wolf': '/assets/enemies/wolfpup.png',
+  'snarling-wolf': OUTSKIRTS_ASSETS.stripArt.wolfEnemy,
 };
 
 export function resolveOutskirtsEncounterStripArt({
@@ -44,7 +45,7 @@ export function resolveOutskirtsEncounterStripArt({
   state,
   sourceMode,
 }: ResolveOutskirtsEncounterStripArtArgs): OutskirtsEncounterStripArtBindings {
-  const scenicCropSrc = sourceMode === 'fixture' ? OUTSKIRTS_APPROVED_SCENIC_MOCKUP_SRC : '/assets/background/citystates/city_outskirts.png';
+  const scenicCropSrc = sourceMode === 'fixture' ? OUTSKIRTS_APPROVED_SCENIC_MOCKUP_SRC : OUTSKIRTS_ASSETS.stripArt.cityOutskirtsBackdrop;
   if (state === 'completed') {
     return {
       imageSrc: COMPLETED_ART_SRC[id] ?? scenicCropSrc,
@@ -57,7 +58,7 @@ export function resolveOutskirtsEncounterStripArt({
 
   if (state === 'current') {
     return {
-      imageSrc: CURRENT_ART_SRC[id] ?? '/assets/enemies/wolfpup.png',
+      imageSrc: CURRENT_ART_SRC[id] ?? OUTSKIRTS_ASSETS.stripArt.wolfEnemy,
       imagePosition: '50% 68%',
       silhouetteImageSrc: null,
       completionMark: false,
@@ -68,7 +69,7 @@ export function resolveOutskirtsEncounterStripArt({
   return {
     imageSrc: scenicCropSrc,
     imagePosition: SCENIC_CROP_POSITION[id] ?? '78% 74%',
-    silhouetteImageSrc: FUTURE_SILHOUETTE_SRC[id] ?? '/assets/enemies/slime.png',
+    silhouetteImageSrc: FUTURE_SILHOUETTE_SRC[id] ?? OUTSKIRTS_ASSETS.stripArt.slimeEnemy,
     completionMark: false,
     medallionVariant: 'quiet-field',
   };

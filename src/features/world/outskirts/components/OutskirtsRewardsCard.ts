@@ -1,20 +1,16 @@
 import React from 'react';
 import type { OutskirtsRewardsCard as OutskirtsRewardsCardModel } from '../types.js';
+import { OUTSKIRTS_ASSETS } from '../outskirtsAssetRegistry.js';
 
 export interface OutskirtsRewardsCardProps {
   rewards: OutskirtsRewardsCardModel;
   onToggleAutoRepeat?: () => void;
 }
 
-const MATERIAL_ICON_MAP: Record<string, string> = {
-  'wolf-pelt': '/assets/icons/beastblood.png',
-  'beast-bone': '/assets/icons/metalchunk.png',
-  'green-herb': '/assets/icons/herbbundle.png',
-  'spirit-stone': '/assets/icons/artifactshard.png',
-};
+const MATERIAL_ICON_MAP: Record<string, string> = OUTSKIRTS_ASSETS.icons.rewards.materials;
 
 function resolveMaterialIcon(id: string): string {
-  return MATERIAL_ICON_MAP[id] ?? '/assets/icons/dust_brown.png';
+  return MATERIAL_ICON_MAP[id] ?? OUTSKIRTS_ASSETS.icons.rewards.materialsFallback;
 }
 
 export function OutskirtsRewardsCard({ rewards, onToggleAutoRepeat }: OutskirtsRewardsCardProps) {
@@ -30,7 +26,7 @@ export function OutskirtsRewardsCard({ rewards, onToggleAutoRepeat }: OutskirtsR
     React.createElement(
       'div',
       { className: 'outskirtsRewardsCard__goldPanel', 'data-testid': 'outskirts-exact-rewards-gold' },
-      React.createElement('span', { className: 'outskirtsRewardsCard__iconDock', 'aria-hidden': 'true' }, React.createElement('img', { src: '/assets/icons/artifactbundle.png', alt: '', className: 'outskirtsRewardsCard__icon' })),
+      React.createElement('span', { className: 'outskirtsRewardsCard__iconDock', 'aria-hidden': 'true' }, React.createElement('img', { src: OUTSKIRTS_ASSETS.icons.rewards.goldHeadline, alt: '', className: 'outskirtsRewardsCard__icon' })),
       React.createElement('span', { className: 'outskirtsRewardsCard__label' }, rewards.goldHeadline.label),
       React.createElement('span', { className: 'outskirtsRewardsCard__value outskirtsRewardsCard__value--gold' }, rewards.goldHeadline.value),
     ),

@@ -1,8 +1,9 @@
 import type { OutskirtsMockupShellFlags } from './types.js';
+import { OUTSKIRTS_ASSETS } from './outskirtsAssetRegistry.js';
 
 export const OUTSKIRTS_MOCKUP_VERSION = 'p3.v2' as const;
 export const OUTSKIRTS_TARGET_MOCKUP_ID = 'outskirts-approved-apr-17-2026' as const;
-export const OUTSKIRTS_APPROVED_SCENIC_MOCKUP_SRC = '/assets/mockups/ChatGPT Image Apr 17, 2026, 04_24_04 PM.png' as const;
+export const OUTSKIRTS_APPROVED_SCENIC_MOCKUP_SRC = OUTSKIRTS_ASSETS.scenic.approvedMockup as string;
 
 export const OUTSKIRTS_MOCKUP_REGION_ORDER = [
   'topRibbon',

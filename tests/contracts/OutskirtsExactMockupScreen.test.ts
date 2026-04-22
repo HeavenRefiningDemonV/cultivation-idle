@@ -12,6 +12,7 @@ import { OutskirtsEncounterProgressStrip } from '../../src/features/world/outski
 import { OutskirtsRewardsCard } from '../../src/features/world/outskirts/components/OutskirtsRewardsCard.js';
 import { OutskirtsSetupCard } from '../../src/features/world/outskirts/components/OutskirtsSetupCard.js';
 import { OutskirtsAreaPlaque } from '../../src/features/world/outskirts/components/OutskirtsAreaPlaque.js';
+import { OUTSKIRTS_APPROVED_SCENIC_MOCKUP_SRC } from '../../src/features/world/outskirts/outskirtsMockupPresentation.js';
 
 function readChildren(node: unknown): unknown[] {
   return (node as { props?: { children?: unknown[] } } | undefined)?.props?.children ?? [];
@@ -125,7 +126,7 @@ void test('P6 review fixture identity remains target-faithful and does not rende
   assert.equal(html.includes('outskirts-exact-encounter-level">Lv. 11<'), true);
   assert.equal(html.includes('outskirts-exact-encounter-safe-chip">Safe<'), true);
   assert.equal(html.includes('Watch'), false);
-  assert.equal(html.includes('/assets/mockups/ChatGPT Image Apr 17, 2026, 04_24_04 PM.png'), true);
+  assert.equal(html.includes(OUTSKIRTS_APPROVED_SCENIC_MOCKUP_SRC), true);
 });
 
 void test('P6 scenic placeholder suppression keeps stage rendered when scenic image source is absent', () => {

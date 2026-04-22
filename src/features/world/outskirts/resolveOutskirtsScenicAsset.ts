@@ -1,4 +1,5 @@
 import type { OutskirtsScenicStage } from './types.js';
+import { OUTSKIRTS_ASSETS } from './outskirtsAssetRegistry.js';
 
 export interface OutskirtsScenicBindings {
   scenicPlateSrc: string | null;
@@ -15,7 +16,7 @@ export function resolveOutskirtsScenicAsset(scenic: OutskirtsScenicStage): Outsk
   return {
     scenicPlateSrc,
     usesApprovedReviewCrop: scenic.useApprovedMockupCrop,
-    wolfOverlaySrc: scenic.useApprovedMockupCrop ? null : '/assets/enemies/wolfpup.png',
+    wolfOverlaySrc: scenic.useApprovedMockupCrop ? null : OUTSKIRTS_ASSETS.scenic.wolfEnemy,
     scenicBackdropPosition: scenic.useApprovedMockupCrop ? '50% 56%' : '50% 58%',
   };
 }

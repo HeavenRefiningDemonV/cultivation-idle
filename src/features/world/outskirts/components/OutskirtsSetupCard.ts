@@ -1,34 +1,17 @@
 import React from 'react';
 import type { OutskirtsLabeledValue, OutskirtsSetupCard as OutskirtsSetupCardModel } from '../types.js';
+import { OUTSKIRTS_ASSETS } from '../outskirtsAssetRegistry.js';
 
 export interface OutskirtsSetupCardProps {
   setup: OutskirtsSetupCardModel;
   onOpenMedicinePouch?: () => void;
 }
 
-const PRIMARY_ROW_ICON_MAP = {
-  loadoutSet: '/assets/icons/foundationpill.png',
-  aiProfile: '/assets/icons/book_martial.png',
-  attackFocus: '/assets/icons/rustysword.png',
-} as const;
+const PRIMARY_ROW_ICON_MAP = OUTSKIRTS_ASSETS.icons.setupPrimary;
 
-const STAT_ICON_MAP: Record<string, string> = {
-  atk: '/assets/icons/rustysword.png',
-  acc: '/assets/icons/foundationpill.png',
-  crit: '/assets/icons/dust_brown.png',
-  hp: '/assets/icons/foundationpill.png',
-  eva: '/assets/icons/spiritgrass.png',
-  res: '/assets/icons/metalchunk.png',
-};
+const STAT_ICON_MAP: Record<string, string> = OUTSKIRTS_ASSETS.icons.setupStats;
 
-const EQUIPMENT_ICON_MAP = {
-  weapon: '/assets/icons/rustysword.png',
-  armor: '/assets/icons/book_heaven.png',
-  ring: '/assets/icons/placeholder_ring_small.png',
-  talisman: '/assets/icons/prayerbeads.png',
-  boots: '/assets/icons/spiritgrass.png',
-  charm: '/assets/icons/jadesword.png',
-} as const;
+const EQUIPMENT_ICON_MAP = OUTSKIRTS_ASSETS.icons.setupEquipment;
 
 function resolveLoadoutBadge(value: string): string {
   const match = value.match(/(\d+)/);
@@ -51,7 +34,7 @@ function renderStatRows(rows: OutskirtsSetupCardModel['offenseRows'] | Outskirts
   return rows.map((row) => React.createElement(
     'div',
     { key: row.id, className: 'outskirtsSetupCard__statRow', 'data-testid': `outskirts-setup-stat-${row.id}` },
-    React.createElement('span', { className: 'outskirtsSetupCard__iconDock', 'aria-hidden': 'true' }, React.createElement('img', { src: STAT_ICON_MAP[row.id] ?? '/assets/icons/foundationpill.png', alt: '', className: 'outskirtsSetupCard__icon' })),
+    React.createElement('span', { className: 'outskirtsSetupCard__iconDock', 'aria-hidden': 'true' }, React.createElement('img', { src: STAT_ICON_MAP[row.id] ?? OUTSKIRTS_ASSETS.icons.setupPrimary.loadoutSet, alt: '', className: 'outskirtsSetupCard__icon' })),
     React.createElement('span', { className: 'outskirtsSetupCard__statLabel' }, row.label),
     React.createElement('span', { className: 'outskirtsSetupCard__statValue' }, row.value),
   ));
@@ -88,7 +71,7 @@ export function OutskirtsSetupCard({ setup, onOpenMedicinePouch }: OutskirtsSetu
       React.createElement(
         'div',
         { className: 'outskirtsSetupCard__pouchRow' },
-        React.createElement('span', { className: 'outskirtsSetupCard__iconDock', 'aria-hidden': 'true' }, React.createElement('img', { src: '/assets/icons/hourglass_empty.png', alt: '', className: 'outskirtsSetupCard__icon' })),
+        React.createElement('span', { className: 'outskirtsSetupCard__iconDock', 'aria-hidden': 'true' }, React.createElement('img', { src: OUTSKIRTS_ASSETS.icons.setupPouch, alt: '', className: 'outskirtsSetupCard__icon' })),
         React.createElement('span', { className: 'outskirtsSetupCard__pouchValue' }, setup.medicinePouchRow.value),
         React.createElement(
           'button',

@@ -1,16 +1,9 @@
 import React from 'react';
 import { ChevronDown } from 'lucide-react';
 import type { OutskirtsTacticalStrip as OutskirtsTacticalStripModel } from '../types.js';
+import { OUTSKIRTS_ASSETS } from '../outskirtsAssetRegistry.js';
 
-const ICON_MAP = {
-  hp: '/assets/icons/foundationpill.png',
-  danger: '/assets/icons/dust_green.png',
-  loadout: '/assets/icons/rustysword.png',
-  aiProfile: '/assets/icons/book_martial.png',
-  healing: '/assets/icons/hourglass_progress.png',
-  bounty: '/assets/menus/scroll.png',
-  expedition: '/assets/icons/task_complete.png',
-} as const;
+const ICON_MAP = OUTSKIRTS_ASSETS.icons.tactical;
 
 export interface OutskirtsTacticalStripProps {
   strip: OutskirtsTacticalStripModel;

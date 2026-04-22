@@ -1,11 +1,8 @@
 import React from 'react';
 import type { OutskirtsGrindSummary } from '../types.js';
+import { OUTSKIRTS_ASSETS } from '../outskirtsAssetRegistry.js';
 
-const ICON_BY_KEY: Record<'runs' | 'gold' | 'drop', string> = {
-  runs: '/assets/icons/task_complete.png',
-  gold: '/assets/icons/artifactbundle.png',
-  drop: '/assets/icons/beastblood.png',
-};
+const ICON_BY_KEY: Record<'runs' | 'gold' | 'drop', string> = OUTSKIRTS_ASSETS.icons.grindSummary;
 
 export interface OutskirtsGrindSummaryCardProps {
   summary: OutskirtsGrindSummary;

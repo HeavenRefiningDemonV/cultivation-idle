@@ -26,6 +26,7 @@ import {
   OUTSKIRTS_TARGET_MOCKUP_ID,
 } from './outskirtsMockupPresentation.js';
 import { resolveOutskirtsEncounterStripArt } from './resolveOutskirtsEncounterStripArt.js';
+import { OUTSKIRTS_ASSETS } from './outskirtsAssetRegistry.js';
 import type {
   OutskirtsEncounterNodeState,
   OutskirtsExactSurfaceV2,
@@ -87,7 +88,7 @@ function parseProgressLabel(progressLabel: string): { current: number; target: n
 function resolveScenicImageSrc(sourceMode: OutskirtsMockupRuntimeSnapshot['sourceMode']): string | null {
   return sourceMode === 'fixture'
     ? OUTSKIRTS_APPROVED_SCENIC_MOCKUP_SRC
-    : '/assets/background/citystates/city_outskirts.png';
+    : OUTSKIRTS_ASSETS.scenic.cityOutskirtsBackdrop;
 }
 
 export interface BuildOutskirtsMockupSurfaceOptions {
@@ -218,7 +219,7 @@ export function buildOutskirtsMockupSurface(
       scenicBackgroundKey: snapshot.scenicBackgroundKey,
       scenicImageSrc: resolveScenicImageSrc(snapshot.sourceMode),
       reviewFixtureImageSrc: snapshot.sourceMode === 'fixture' ? OUTSKIRTS_APPROVED_SCENIC_MOCKUP_SRC : null,
-      liveFallbackImageSrc: '/assets/background/citystates/city_outskirts.png',
+      liveFallbackImageSrc: OUTSKIRTS_ASSETS.scenic.cityOutskirtsBackdrop,
       useApprovedMockupCrop: snapshot.sourceMode === 'fixture',
       encounterArtKey: selectedManifestNode?.artKey ?? snapshot.scenicArtKey,
       environmentDescriptor: selectedEncounter ? `${selectedEncounter.label} preview in Outskirts lane.` : snapshot.encounterDescriptor,
