@@ -397,6 +397,8 @@
   grid-area: encounterStrip;
   min-width: 0;
   min-height: var(--outskirts-strip-row-min-height);
+  display: grid;
+  align-items: end;
 }
 
 .outskirtsExactPage__centerCta {
@@ -404,7 +406,7 @@
   min-width: 0;
   min-height: var(--outskirts-cta-row-min-height);
   display: grid;
-  align-items: center;
+  align-items: start;
 }
 
 .outskirtsExactPage__summaryDock {
@@ -568,8 +570,8 @@
   display: grid;
   grid-template-columns: 2.76rem minmax(0, 1fr) 2.76rem;
   align-items: center;
-  column-gap: 0.9rem;
-  padding: 0.34rem 0.26rem 0.52rem;
+  column-gap: 0.7rem;
+  padding: 0.26rem 0.22rem 0.42rem;
 }
 
 .outskirtsEncounterProgressStrip__lane {
@@ -577,12 +579,14 @@
   left: 3.26rem;
   right: 3.26rem;
   top: 2.9rem;
-  height: 0.48rem;
+  height: 0.36rem;
   border-radius: 999px;
-  background: linear-gradient(90deg, rgba(191, 175, 139, 0.58), rgba(146, 124, 94, 0.44), rgba(191, 175, 139, 0.58));
+  background:
+    linear-gradient(90deg, rgba(212, 196, 159, 0.48), rgba(147, 126, 97, 0.36), rgba(212, 196, 159, 0.48)),
+    repeating-linear-gradient(90deg, rgba(255, 247, 225, 0.22) 0 10px, rgba(0, 0, 0, 0) 10px 20px);
   box-shadow:
-    inset 0 0 0 1px rgba(255, 248, 222, 0.44),
-    0 0 0 1px rgba(103, 82, 64, 0.24);
+    inset 0 0 0 1px rgba(255, 248, 222, 0.32),
+    0 0 0 1px rgba(103, 82, 64, 0.16);
   pointer-events: none;
   z-index: 0;
 }
@@ -593,7 +597,7 @@
   width: 2.76rem;
   height: 2.76rem;
   border-radius: 999px;
-  border: 1px solid rgba(120, 95, 71, 0.4);
+  border: 1px solid rgba(120, 95, 71, 0.34);
   background:
     linear-gradient(180deg, rgba(252, 246, 233, 0.94), rgba(222, 201, 167, 0.92)),
     url('../../../assets/Generated assets/frame_light_square_default.png') center / cover no-repeat;
@@ -602,14 +606,15 @@
   place-items: center;
   box-sizing: border-box;
   box-shadow:
-    inset 0 0 0 1px rgba(255, 248, 232, 0.56),
-    0 1px 6px rgba(71, 52, 39, 0.22);
+    inset 0 0 0 1px rgba(255, 248, 232, 0.5),
+    0 1px 5px rgba(71, 52, 39, 0.16);
 }
 
 .outskirtsEncounterProgressStrip__arrowGlyph {
-  font-size: 1.4rem;
+  font-size: 1.28rem;
   line-height: 1;
   transform: translateY(-1px);
+  text-shadow: 0 1px 0 rgba(255, 247, 226, 0.45);
 }
 
 .outskirtsEncounterProgressStrip__arrow:disabled {
@@ -625,7 +630,7 @@
   list-style: none;
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
-  column-gap: 0.6rem;
+  column-gap: 0.48rem;
 }
 
 .outskirtsEncounterProgressStrip__node {
@@ -635,13 +640,13 @@
   grid-template-rows: 3.95rem auto;
   justify-items: center;
   align-content: start;
-  row-gap: 0.22rem;
+  row-gap: 0.18rem;
   padding: 0.26rem 0.1rem 0.16rem;
   box-sizing: border-box;
 }
 
 .outskirtsEncounterProgressStrip__node--completed {
-  opacity: 0.98;
+  opacity: 1;
 }
 
 .outskirtsEncounterProgressStrip__node--current {
@@ -659,7 +664,7 @@
   width: 3.7rem;
   height: 3.7rem;
   border-radius: 999px;
-  border: 1px solid rgba(98, 77, 58, 0.34);
+  border: 1px solid rgba(98, 77, 58, 0.3);
   background: linear-gradient(180deg, rgba(166, 145, 116, 0.42), rgba(108, 89, 72, 0.5));
   background-size: cover;
   background-repeat: no-repeat;
@@ -668,7 +673,7 @@
   box-sizing: border-box;
   box-shadow:
     inset 0 0 0 1px rgba(255, 246, 224, 0.44),
-    0 2px 7px rgba(59, 43, 33, 0.18);
+    0 1px 5px rgba(59, 43, 33, 0.14);
   padding: 0;
   cursor: pointer;
 }
@@ -676,19 +681,26 @@
 .outskirtsEncounterProgressStrip__thumb--current {
   width: 4.55rem;
   height: 4.55rem;
-  border-width: 2px;
+  border-width: 1.8px;
   border-color: rgba(176, 141, 82, 0.72);
   background:
     radial-gradient(circle at 50% 35%, rgba(255, 246, 219, 0.86), rgba(200, 162, 94, 0.4)),
     linear-gradient(180deg, rgba(217, 197, 157, 0.64), rgba(118, 97, 76, 0.54));
   box-shadow:
     inset 0 0 0 1px rgba(255, 248, 227, 0.6),
-    0 4px 10px rgba(80, 59, 43, 0.24);
+    0 3px 8px rgba(80, 59, 43, 0.2);
+}
+
+.outskirtsEncounterProgressStrip__thumb--completed {
+  border-color: rgba(88, 128, 94, 0.44);
+  box-shadow:
+    inset 0 0 0 1px rgba(236, 249, 231, 0.42),
+    0 1px 5px rgba(58, 84, 62, 0.14);
 }
 
 .outskirtsEncounterProgressStrip__thumb--future {
-  background: rgba(176, 161, 133, 0.4);
-  border-color: rgba(111, 91, 72, 0.28);
+  background: rgba(176, 161, 133, 0.32);
+  border-color: rgba(111, 91, 72, 0.24);
 }
 
 .outskirtsEncounterProgressStrip__thumb--quiet-field {
@@ -721,22 +733,22 @@
   width: 84%;
   height: 84%;
   object-fit: contain;
-  opacity: 0.55;
-  filter: grayscale(1) brightness(0.32) contrast(1.2);
+  opacity: 0.58;
+  filter: grayscale(1) brightness(0.3) contrast(1.26);
 }
 
 .outskirtsEncounterProgressStrip__completeMark {
   position: absolute;
   right: -0.16rem;
   top: -0.22rem;
-  width: 1.32rem;
-  height: 1.32rem;
+  width: 1.2rem;
+  height: 1.2rem;
   border-radius: 999px;
   border: 1px solid rgba(67, 120, 84, 0.56);
   background:
     linear-gradient(180deg, rgba(101, 161, 113, 0.96), rgba(72, 126, 87, 0.9)),
     url('../../../assets/icons/task_complete.png') center / 0.9rem 0.9rem no-repeat;
-  box-shadow: 0 1px 4px rgba(49, 78, 58, 0.36);
+  box-shadow: 0 1px 3px rgba(49, 78, 58, 0.3);
 }
 
 .outskirtsEncounterProgressStrip__text {
@@ -744,13 +756,13 @@
   min-width: 0;
   display: grid;
   justify-items: center;
-  min-height: 2.2rem;
+  min-height: 2.05rem;
 }
 
 .outskirtsEncounterProgressStrip__label {
   max-width: 100%;
   min-height: 1.1rem;
-  font-size: 0.92rem;
+  font-size: 0.9rem;
   font-family: Georgia, 'Times New Roman', serif;
   font-weight: 560;
   line-height: 1.15;
@@ -764,7 +776,7 @@
 .outskirtsEncounterProgressStrip__level {
   max-width: 100%;
   min-height: 0.98rem;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-family: Georgia, 'Times New Roman', serif;
   color: rgba(78, 59, 46, 0.86);
   white-space: nowrap;
@@ -773,8 +785,8 @@
 }
 
 .outskirtsStartHuntCta {
-  width: min(37rem, 96%);
-  min-height: 4.35rem;
+  width: min(35rem, 94%);
+  min-height: 4.28rem;
   justify-self: center;
   border-radius: 999px;
   border: 0;
@@ -791,7 +803,7 @@
 }
 
 .outskirtsStartHuntCta__plate {
-  min-height: 4.12rem;
+  min-height: 4.02rem;
   border-radius: 999px;
   display: grid;
   place-items: center;
@@ -832,6 +844,7 @@
 
 .outskirtsStartHuntCta__label {
   white-space: nowrap;
+  letter-spacing: 0.01em;
   text-shadow:
     0 1px 0 rgba(255, 244, 208, 0.72),
     0 1px 6px rgba(93, 59, 24, 0.22);
@@ -843,8 +856,8 @@
 }
 
 .outskirtsGrindSummaryCard {
-  min-height: 6.9rem;
-  max-width: min(100%, 14.4rem);
+  min-height: 6.74rem;
+  max-width: min(100%, 14rem);
   justify-self: end;
   display: grid;
   align-content: start;
@@ -855,12 +868,14 @@
   background:
     linear-gradient(180deg, rgba(249, 242, 224, 0.95), rgba(233, 219, 189, 0.93)),
     url('../../../assets/Generated assets/frame_light_square_default.png') center / cover no-repeat;
-  box-shadow: inset 0 0 0 1px rgba(255, 247, 227, 0.45);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 247, 227, 0.4),
+    0 1px 5px rgba(69, 53, 40, 0.1);
   box-sizing: border-box;
 }
 
 .outskirtsGrindSummaryCard__header {
-  min-height: 1.52rem;
+  min-height: 1.46rem;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
@@ -892,8 +907,8 @@
 
 .outskirtsGrindSummaryCard__rows {
   display: grid;
-  gap: 0.18rem;
-  min-height: 4.58rem;
+  gap: 0.16rem;
+  min-height: 4.46rem;
 }
 
 .outskirtsGrindSummaryCard__row {

@@ -570,6 +570,43 @@ void test('P12 Packet D host-size smoke keeps lower action owners mounted (jsdom
   }
 });
 
+void test('P15 Packet E lower-band keeps one dominant CTA with no secondary action owners', () => {
+  const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture());
+  const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
+
+  assert.equal((html.match(/data-testid="outskirts-start-hunt-cta"/g) ?? []).length, 1);
+  assert.equal(html.includes('outskirtsRewardsCard__startAction'), false);
+  assert.equal(html.includes('>Watch<'), false);
+});
+
+void test('P15 Packet E strip state semantics stay locked to exact review order', () => {
+  const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture());
+  const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
+
+  assert.match(html, /data-node-id="quiet-glade"[^>]*data-state="completed"/);
+  assert.match(html, /data-node-id="rockjaw-boar"[^>]*data-state="completed"/);
+  assert.match(html, /data-node-id="snarling-wolf"[^>]*data-state="current"/);
+  assert.match(html, /data-node-id="venomcoil"[^>]*data-state="future"/);
+  assert.match(html, /data-node-id="shade-stalker"[^>]*data-state="future"/);
+  assert.match(html, /data-node-id="mire-serpent"[^>]*data-state="future"/);
+
+  for (const token of ['Quiet Glade', 'Rockjaw Boar', 'Snarling Wolf', 'Venomcoil', 'Shade Stalker', 'Mire Serpent', 'Lv. 8', 'Lv. 9', 'Lv. 11', 'Lv. 13', 'Lv. 15', 'Lv. 17']) {
+    assert.equal(html.includes(token), true);
+  }
+});
+
+void test('P15 Packet E grind summary remains subordinate memo with chip and three rows', () => {
+  const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture());
+  const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
+
+  assert.equal(html.includes('>Grind Summary<'), true);
+  assert.equal(html.includes('>This Area<'), true);
+  assert.equal(html.includes('>Runs<'), true);
+  assert.equal(html.includes('>Gold / hr<'), true);
+  assert.equal(html.includes('>Main Drop<'), true);
+  assert.equal((html.match(/data-testid="outskirts-grind-summary-row"/g) ?? []).length, 3);
+});
+
 void test('P5 top region element count remains stable across fixture/live and bounty/expedition shifts', () => {
   const fixtureSurface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture());
   const liveLikeSurface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture({
