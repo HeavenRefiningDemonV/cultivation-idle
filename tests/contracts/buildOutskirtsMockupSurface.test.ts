@@ -22,6 +22,7 @@ void test('buildOutskirtsMockupSurface emits v2 shape with explicit shell contra
   assert.equal(surface.encounterIdentity.selectedEncounterId, 'snarling-wolf');
   assert.deepEqual(surface.encounterStrip.nodes.map((node) => node.levelLabel), ['Lv. 8', 'Lv. 9', 'Lv. 11', 'Lv. 13', 'Lv. 15', 'Lv. 17']);
   assert.equal(surface.primaryAction.label, 'Start Hunt');
+  assert.equal(surface.primaryAction.visible, true);
   assert.equal(surface.grindSummary.runsText, '128');
   assert.equal(surface.shell.singleDominantCta, true);
   assert.equal(surface.shell.showRunCompass, false);
@@ -51,4 +52,5 @@ void test('buildOutskirtsMockupSurface preserves v2 structure for live-like valu
   assert.equal(surface.scenicStage.liveFallbackImageSrc, OUTSKIRTS_ASSETS.scenic.cityOutskirtsBackdrop);
   assert.equal(surface.rewardsCard.estimatedEfficiency.title, 'Estimated Efficiency');
   assert.equal(surface.debug.missingDataFallbacks.includes('bountyLabel'), true);
+  assert.equal(surface.primaryAction.visible, true);
 });

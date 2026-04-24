@@ -423,6 +423,41 @@ void test('P10 single-dominant CTA is preserved and rewards card stays CTA-free'
   assert.equal(html.includes('Stop'), false);
 });
 
+void test('P16 Start Hunt CTA remains mounted in preview states (completed and future selections)', () => {
+  const completedPreview = buildOutskirtsMockupSurface(createOutskirtsMockupFixture(), {
+    allowEncounterPreviewSelection: true,
+    previewEncounterId: 'quiet-glade',
+  });
+  const futurePreview = buildOutskirtsMockupSurface(createOutskirtsMockupFixture(), {
+    allowEncounterPreviewSelection: true,
+    previewEncounterId: 'mire-serpent',
+  });
+
+  const completedHtml = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface: completedPreview }));
+  const futureHtml = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface: futurePreview }));
+
+  assert.equal(completedPreview.primaryAction.visible, true);
+  assert.equal(futurePreview.primaryAction.visible, true);
+  assert.equal(completedHtml.includes('data-testid="outskirts-exact-cta-slot"'), true);
+  assert.equal(futureHtml.includes('data-testid="outskirts-exact-cta-slot"'), true);
+  assert.equal(completedHtml.includes('data-testid="outskirts-start-hunt-cta"'), true);
+  assert.equal(futureHtml.includes('data-testid="outskirts-start-hunt-cta"'), true);
+  assert.equal(completedHtml.includes('>Start Hunt<'), true);
+  assert.equal(futureHtml.includes('>Start Hunt<'), true);
+});
+
+void test('P16 Watch is never a replacement for Start Hunt CTA', () => {
+  const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, {
+    surface: buildOutskirtsMockupSurface(createOutskirtsMockupFixture(), {
+      allowEncounterPreviewSelection: true,
+      previewEncounterId: 'venomcoil',
+    }),
+  }));
+
+  assert.equal(html.includes('>Watch<'), false);
+  assert.equal((html.match(/data-testid="outskirts-start-hunt-cta"/g) ?? []).length, 1);
+});
+
 void test('P11 auto-repeat pill reflects boolean state and dispatches toggle callback', () => {
   let toggled = 0;
   const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture({ autoRepeatEnabled: false, autoRepeatLabel: 'Off' }));
@@ -623,9 +658,9 @@ void test('P12 Packet D static budget guard prevents inflated legacy defaults', 
   assert.equal(scss.includes('--outskirts-summary-row-min-height: clamp(136px, 17vh, 196px);'), false);
   assert.equal(scss.includes('min-height: 9.8rem;'), false);
 
-  assert.equal(scss.includes('--outskirts-strip-row-min-height: clamp(104px, 12vh, 142px);'), true);
-  assert.equal(scss.includes('--outskirts-cta-row-min-height: clamp(86px, 9.5vh, 122px);'), true);
-  assert.equal(scss.includes('--outskirts-summary-row-min-height: clamp(88px, 10vh, 126px);'), true);
+  assert.equal(scss.includes('--outskirts-strip-row-min-height: clamp(92px, 10.5vh, 124px);'), true);
+  assert.equal(scss.includes('--outskirts-cta-row-min-height: clamp(74px, 8vh, 102px);'), true);
+  assert.equal(scss.includes('--outskirts-summary-row-min-height: clamp(76px, 8.4vh, 106px);'), true);
 });
 
 void test('P12 Packet D host-size smoke keeps lower action owners mounted (jsdom static)', () => {
