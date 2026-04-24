@@ -511,6 +511,65 @@ void test('P10 summary fallback stability preserves chip and row geometry with p
   assert.equal(html.includes('outskirtsGrindSummaryCard__row'), true);
 });
 
+void test('P12 Packet D lower action spine owners stay mounted in planning render', () => {
+  const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture());
+  const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
+
+  const requiredTokens = [
+    'data-testid="outskirts-exact-strip-slot"',
+    'data-testid="outskirts-exact-cta-slot"',
+    'data-legacy-testid="outskirts-exact-summary-dock-slot"',
+    'data-testid="outskirts-exact-encounter-strip"',
+    'data-testid="outskirts-start-hunt-cta"',
+    'data-testid="outskirts-grind-summary"',
+  ];
+  for (const token of requiredTokens) assert.equal(html.includes(token), true);
+});
+
+void test('P12 Packet D no-title/no-combat regression remains locked', () => {
+  const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture());
+  const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
+
+  const forbiddenTokens = [
+    'data-testid="outskirts-page-title"',
+    'runCompassSurface',
+    'utilityTrayShell',
+    'ink-combat-shell__healthbar',
+  ];
+  for (const token of forbiddenTokens) assert.equal(html.includes(token), false, `forbidden token present: ${token}`);
+});
+
+void test('P12 Packet D static budget guard prevents inflated legacy defaults', async () => {
+  const scss = await readFile(new URL('../../src/features/world/outskirts/OutskirtsExactMockupScreen.scss', import.meta.url), 'utf8');
+
+  assert.equal(scss.includes('--outskirts-strip-row-min-height: clamp(156px, 19vh, 220px);'), false);
+  assert.equal(scss.includes('--outskirts-cta-row-min-height: clamp(136px, 16vh, 196px);'), false);
+  assert.equal(scss.includes('--outskirts-summary-row-min-height: clamp(136px, 17vh, 196px);'), false);
+  assert.equal(scss.includes('min-height: 9.8rem;'), false);
+
+  assert.equal(scss.includes('--outskirts-strip-row-min-height: clamp(104px, 12vh, 142px);'), true);
+  assert.equal(scss.includes('--outskirts-cta-row-min-height: clamp(86px, 9.5vh, 122px);'), true);
+  assert.equal(scss.includes('--outskirts-summary-row-min-height: clamp(88px, 10vh, 126px);'), true);
+});
+
+void test('P12 Packet D host-size smoke keeps lower action owners mounted (jsdom static)', () => {
+  const baseline = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, {
+    surface: buildOutskirtsMockupSurface(createOutskirtsMockupFixture()),
+  }));
+  const longValueVariant = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, {
+    surface: buildOutskirtsMockupSurface(createOutskirtsMockupFixture({
+      rewardMaterialLabels: ['Very Long Material Name 1', 'Very Long Material Name 2', 'Very Long Material Name 3', 'Very Long Material Name 4'],
+      selectedEncounterName: 'Snarling Wolf',
+    })),
+  }));
+
+  for (const html of [baseline, longValueVariant]) {
+    assert.equal(html.includes('data-testid="outskirts-exact-strip-slot"'), true);
+    assert.equal(html.includes('data-testid="outskirts-exact-cta-slot"'), true);
+    assert.equal(html.includes('data-testid="outskirts-exact-summary-dock"'), true);
+  }
+});
+
 void test('P5 top region element count remains stable across fixture/live and bounty/expedition shifts', () => {
   const fixtureSurface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture());
   const liveLikeSurface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture({
