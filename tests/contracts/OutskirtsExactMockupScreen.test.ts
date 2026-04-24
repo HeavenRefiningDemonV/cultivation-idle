@@ -8,11 +8,13 @@ import { OutskirtsExactMockupScreen } from '../../src/features/world/outskirts/O
 import { buildOutskirtsMockupSurface } from '../../src/features/world/outskirts/buildOutskirtsMockupSurface.js';
 import { createOutskirtsMockupFixture } from '../../src/features/world/outskirts/fixtures/createOutskirtsMockupFixture.js';
 import { OutskirtsTopRegion } from '../../src/features/world/outskirts/components/OutskirtsTopRegion.js';
+import { OutskirtsTacticalStrip } from '../../src/features/world/outskirts/components/OutskirtsTacticalStrip.js';
 import { OutskirtsEncounterProgressStrip } from '../../src/features/world/outskirts/components/OutskirtsEncounterProgressStrip.js';
 import { OutskirtsRewardsCard } from '../../src/features/world/outskirts/components/OutskirtsRewardsCard.js';
 import { OutskirtsSetupCard } from '../../src/features/world/outskirts/components/OutskirtsSetupCard.js';
 import { OutskirtsAreaPlaque } from '../../src/features/world/outskirts/components/OutskirtsAreaPlaque.js';
 import { OUTSKIRTS_APPROVED_SCENIC_MOCKUP_SRC } from '../../src/features/world/outskirts/outskirtsMockupPresentation.js';
+import { OUTSKIRTS_PLANNING_AFFORDANCE_CLASSIFICATION } from '../../src/features/world/outskirts/outskirtsPlanningAffordances.js';
 
 function readChildren(node: unknown): unknown[] {
   return (node as { props?: { children?: unknown[] } } | undefined)?.props?.children ?? [];
@@ -467,6 +469,80 @@ void test('P11 area plaque remains intentionally inert when no grounded selector
   const html = renderToStaticMarkup(element);
   assert.equal(plaque?.props?.['aria-disabled'], 'true');
   assert.equal(html.includes('<button'), false);
+});
+
+void test('P16 Packet F planning affordance matrix keeps grounded/inert classification explicit', () => {
+  assert.equal(OUTSKIRTS_PLANNING_AFFORDANCE_CLASSIFICATION.settingsGear, 'grounded');
+  assert.equal(OUTSKIRTS_PLANNING_AFFORDANCE_CLASSIFICATION.tacticalLoadout, 'grounded');
+  assert.equal(OUTSKIRTS_PLANNING_AFFORDANCE_CLASSIFICATION.rewardsTrackedBounty, 'grounded');
+  assert.equal(OUTSKIRTS_PLANNING_AFFORDANCE_CLASSIFICATION.areaPlaqueSelect, 'intentionally-inert');
+});
+
+void test('P16 Packet F tactical and setup affordances dispatch grounded callbacks', () => {
+  const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture(), { medicinePouchActionEnabled: true });
+  let loadoutOpens = 0;
+  let aiOpens = 0;
+  let focusOpens = 0;
+  let equipmentSlot: string | null = null;
+
+  const tacticalHtml = renderToStaticMarkup(React.createElement(OutskirtsTacticalStrip, {
+    strip: surface.tacticalStrip,
+    onOpenCell: () => undefined,
+  }));
+
+  const setupCard = OutskirtsSetupCard({
+    setup: surface.setupCard,
+    onOpenLoadout: () => { loadoutOpens += 1; },
+    onOpenAiProfile: () => { aiOpens += 1; },
+    onOpenAttackFocus: () => { focusOpens += 1; },
+    onOpenEquipmentSlot: (slotId) => { equipmentSlot = slotId; },
+  });
+  const setupButtons = readChildren(readChildren(setupCard)[1]) as Array<{ props?: { onClick?: () => void } }>;
+  setupButtons[0]?.props?.onClick?.();
+  setupButtons[1]?.props?.onClick?.();
+  setupButtons[2]?.props?.onClick?.();
+  const weaponSlot = findNode(setupCard, (node) => node.props?.['aria-label'] === 'Weapon: Steel Sword') as { props?: { onClick?: () => void } } | null;
+  weaponSlot?.props?.onClick?.();
+
+  assert.equal(tacticalHtml.includes('data-testid="outskirts-tactical-cell-loadout"'), true);
+  assert.equal(loadoutOpens, 1);
+  assert.equal(aiOpens, 1);
+  assert.equal(focusOpens, 1);
+  assert.equal(equipmentSlot, 'weapon');
+});
+
+void test('P16 Packet F rewards and strip callbacks stay wired while plaque selector remains inert by default', () => {
+  const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture(), { allowEncounterPreviewSelection: true });
+  let openedBounties = 0;
+  let movedPrev = 0;
+  let movedNext = 0;
+
+  const rewards = OutskirtsRewardsCard({
+    rewards: surface.rewardsCard,
+    onOpenTrackedBounties: () => {
+      openedBounties += 1;
+    },
+  });
+  const bountySection = findNode(rewards, (node) => node.props?.['data-testid'] === 'outskirts-exact-rewards-bounty') as { props?: { onClick?: () => void } } | null;
+  bountySection?.props?.onClick?.();
+
+  const strip = OutskirtsEncounterProgressStrip({
+    strip: surface.encounterStrip,
+    onPreviewPrevious: () => { movedPrev += 1; },
+    onPreviewNext: () => { movedNext += 1; },
+  });
+  const leftArrow = findNode(strip, (node) => node.props?.['data-testid'] === 'outskirts-exact-encounter-strip-left-arrow') as { props?: { onClick?: () => void } } | null;
+  const rightArrow = findNode(strip, (node) => node.props?.['data-testid'] === 'outskirts-exact-encounter-strip-right-arrow') as { props?: { onClick?: () => void } } | null;
+  leftArrow?.props?.onClick?.();
+  rightArrow?.props?.onClick?.();
+
+  const plaque = OutskirtsAreaPlaque({ areaHeader: surface.areaHeader });
+  const plaqueHtml = renderToStaticMarkup(plaque);
+
+  assert.equal(openedBounties, 1);
+  assert.equal(movedPrev, 1);
+  assert.equal(movedNext, 1);
+  assert.equal(plaqueHtml.includes('<button'), false);
 });
 
 void test('P11 no-layout-shift smoke keeps key slots stable across auto-repeat and preview variants', () => {

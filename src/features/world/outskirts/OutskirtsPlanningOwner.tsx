@@ -7,6 +7,7 @@ import { useUIStore } from '../../../stores/uiStore.js';
 import { pickEnemyFromPool, resolveModuleRef } from '../../../components/screens/world/worldUtils.js';
 import { buildOutskirtsMockupSurfaceFromStores } from './buildOutskirtsMockupSurface.js';
 import { OutskirtsExactMockupScreen } from './OutskirtsExactMockupScreen.js';
+import { useOutskirtsPlanningActionController } from './useOutskirtsPlanningActionController.js';
 import './OutskirtsExactMockupScreen.scss';
 
 interface OutskirtsPlanningOwnerProps {
@@ -93,17 +94,36 @@ export function OutskirtsPlanningOwner({ cityId }: OutskirtsPlanningOwnerProps) 
     });
   }, [cityId, openWorldBuildingModal]);
 
+  const actionController = useOutskirtsPlanningActionController({
+    cityId,
+    outskirtsDef,
+    onStartOutskirts: handleStartOutskirts,
+    onOpenSettings: handleOpenSettings,
+    onToggleAutoRepeat: handleToggleAutoRepeat,
+    onPreviewPreviousEncounter: handlePreviewPreviousEncounter,
+    onPreviewNextEncounter: handlePreviewNextEncounter,
+    onSelectEncounterPreview: handleSelectEncounterPreview,
+    onOpenMedicinePouch: handleOpenMedicinePouch,
+  });
+
   return (
     <div className="outskirtsPlanningOwner" data-testid="outskirts-view-planning">
       <OutskirtsExactMockupScreen
         surface={planningSurface}
-        onStartHunt={handleStartOutskirts}
-        onOpenSettings={handleOpenSettings}
-        onPreviewPreviousEncounter={handlePreviewPreviousEncounter}
-        onPreviewNextEncounter={handlePreviewNextEncounter}
-        onSelectEncounterPreview={handleSelectEncounterPreview}
-        onToggleAutoRepeat={handleToggleAutoRepeat}
-        onOpenMedicinePouch={handleOpenMedicinePouch}
+        onStartHunt={actionController.onStartHunt}
+        onOpenSettings={actionController.onOpenSettings}
+        onPreviewPreviousEncounter={actionController.onPreviewPreviousEncounter}
+        onPreviewNextEncounter={actionController.onPreviewNextEncounter}
+        onSelectEncounterPreview={actionController.onSelectEncounterPreview}
+        onToggleAutoRepeat={actionController.onToggleAutoRepeat}
+        onOpenMedicinePouch={actionController.onOpenMedicinePouch}
+        onOpenLoadout={actionController.onOpenLoadout}
+        onOpenAiProfile={actionController.onOpenAiProfile}
+        onOpenAttackFocus={actionController.onOpenAttackFocus}
+        onOpenEquipmentSlot={actionController.onOpenEquipmentSlot}
+        onOpenTrackedBounties={actionController.onOpenTrackedBounties}
+        onOpenTacticalCell={actionController.onOpenTacticalCell}
+        onOpenAreaSelector={actionController.onOpenAreaSelector}
       />
     </div>
   );

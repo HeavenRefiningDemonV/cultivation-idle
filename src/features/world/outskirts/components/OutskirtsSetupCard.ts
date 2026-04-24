@@ -5,6 +5,10 @@ import { OUTSKIRTS_ASSETS } from '../outskirtsAssetRegistry.js';
 export interface OutskirtsSetupCardProps {
   setup: OutskirtsSetupCardModel;
   onOpenMedicinePouch?: () => void;
+  onOpenLoadout?: () => void;
+  onOpenAiProfile?: () => void;
+  onOpenAttackFocus?: () => void;
+  onOpenEquipmentSlot?: (slotId: OutskirtsSetupCardModel['equipmentGrid'][number]['slotId']) => void;
 }
 
 const PRIMARY_ROW_ICON_MAP = OUTSKIRTS_ASSETS.icons.setupPrimary;
@@ -18,10 +22,17 @@ function resolveLoadoutBadge(value: string): string {
   return match ? match[1] : value.slice(0, 3).toUpperCase();
 }
 
-function renderPrimaryRow(row: OutskirtsLabeledValue, isLoadout = false) {
+function renderPrimaryRow(row: OutskirtsLabeledValue, onClick?: () => void, isLoadout = false) {
   return React.createElement(
-    'div',
-    { className: `outskirtsSetupCard__primaryRow${isLoadout ? ' outskirtsSetupCard__primaryRow--loadout' : ''}`, 'data-testid': 'outskirts-exact-setup-primary' },
+    'button',
+    {
+      type: 'button',
+      className: `outskirtsSetupCard__primaryRow${isLoadout ? ' outskirtsSetupCard__primaryRow--loadout' : ''}`,
+      'data-testid': 'outskirts-exact-setup-primary',
+      onClick,
+      disabled: !onClick,
+      'aria-label': `${row.label}: ${row.value}`,
+    },
     React.createElement('span', { className: 'outskirtsSetupCard__iconDock', 'aria-hidden': 'true' }, React.createElement('img', { src: PRIMARY_ROW_ICON_MAP[row.id as keyof typeof PRIMARY_ROW_ICON_MAP], alt: '', className: 'outskirtsSetupCard__icon' })),
     React.createElement('span', { className: 'outskirtsSetupCard__primaryLabel' }, row.label),
     isLoadout
@@ -40,7 +51,14 @@ function renderStatRows(rows: OutskirtsSetupCardModel['offenseRows'] | Outskirts
   ));
 }
 
-export function OutskirtsSetupCard({ setup, onOpenMedicinePouch }: OutskirtsSetupCardProps) {
+export function OutskirtsSetupCard({
+  setup,
+  onOpenMedicinePouch,
+  onOpenLoadout,
+  onOpenAiProfile,
+  onOpenAttackFocus,
+  onOpenEquipmentSlot,
+}: OutskirtsSetupCardProps) {
   return React.createElement(
     'section',
     { className: 'outskirtsSetupCard', 'data-testid': 'outskirts-exact-setup-card', 'data-legacy-testid': 'outskirts-setup-card' },
@@ -48,9 +66,9 @@ export function OutskirtsSetupCard({ setup, onOpenMedicinePouch }: OutskirtsSetu
     React.createElement(
       'div',
       { className: 'outskirtsSetupCard__primaryRows' },
-      renderPrimaryRow(setup.loadoutRow, true),
-      renderPrimaryRow(setup.aiProfileRow),
-      renderPrimaryRow(setup.attackFocusRow),
+      renderPrimaryRow(setup.loadoutRow, onOpenLoadout, true),
+      renderPrimaryRow(setup.aiProfileRow, onOpenAiProfile),
+      renderPrimaryRow(setup.attackFocusRow, onOpenAttackFocus),
     ),
     React.createElement(
       'section',
@@ -94,12 +112,15 @@ export function OutskirtsSetupCard({ setup, onOpenMedicinePouch }: OutskirtsSetu
         'div',
         { className: 'outskirtsSetupCard__equipmentGrid', 'data-testid': 'outskirts-exact-setup-equipment-wrap' },
         ...setup.equipmentGrid.map((slot) => React.createElement(
-          'div',
+          'button',
           {
             key: slot.slotId,
+            type: 'button',
             className: `outskirtsSetupCard__equipmentCell outskirtsSetupCard__equipmentCell--${slot.source}`,
             'data-testid': 'outskirts-exact-setup-equipment-slot',
             'aria-label': `${slot.label}: ${slot.value}`,
+            onClick: onOpenEquipmentSlot ? () => onOpenEquipmentSlot(slot.slotId) : undefined,
+            disabled: !onOpenEquipmentSlot,
           },
           React.createElement('img', { src: EQUIPMENT_ICON_MAP[slot.slotId], alt: '', className: 'outskirtsSetupCard__equipmentIcon', 'aria-hidden': 'true' }),
           React.createElement('span', { className: 'outskirtsSetupCard__equipmentSr' }, `${slot.label} ${slot.value}`),

@@ -5,6 +5,7 @@ import { OUTSKIRTS_ASSETS } from '../outskirtsAssetRegistry.js';
 export interface OutskirtsRewardsCardProps {
   rewards: OutskirtsRewardsCardModel;
   onToggleAutoRepeat?: () => void;
+  onOpenTrackedBounties?: () => void;
 }
 
 const MATERIAL_ICON_MAP: Record<string, string> = OUTSKIRTS_ASSETS.icons.rewards.materials;
@@ -13,7 +14,7 @@ function resolveMaterialIcon(id: string): string {
   return MATERIAL_ICON_MAP[id] ?? OUTSKIRTS_ASSETS.icons.rewards.materialsFallback;
 }
 
-export function OutskirtsRewardsCard({ rewards, onToggleAutoRepeat }: OutskirtsRewardsCardProps) {
+export function OutskirtsRewardsCard({ rewards, onToggleAutoRepeat, onOpenTrackedBounties }: OutskirtsRewardsCardProps) {
   const bountyTarget = Math.max(0, rewards.trackedBounty.progressTarget);
   const bountyCurrent = Math.max(0, rewards.trackedBounty.progressCurrent);
   const bountyFillPct = bountyTarget > 0 ? Math.max(0, Math.min(100, (bountyCurrent / bountyTarget) * 100)) : 0;
@@ -46,8 +47,15 @@ export function OutskirtsRewardsCard({ rewards, onToggleAutoRepeat }: OutskirtsR
       ),
     ),
     React.createElement(
-      'section',
-      { className: 'outskirtsRewardsCard__section outskirtsRewardsCard__section--bounty', 'data-testid': 'outskirts-exact-rewards-bounty' },
+      'button',
+      {
+        className: 'outskirtsRewardsCard__section outskirtsRewardsCard__section--bounty',
+        'data-testid': 'outskirts-exact-rewards-bounty',
+        type: 'button',
+        onClick: onOpenTrackedBounties,
+        disabled: !onOpenTrackedBounties,
+        'aria-label': 'Open bounties',
+      },
       React.createElement('h4', { className: 'outskirtsRewardsCard__subtitle' }, rewards.trackedBounty.title),
       React.createElement(
         'div',

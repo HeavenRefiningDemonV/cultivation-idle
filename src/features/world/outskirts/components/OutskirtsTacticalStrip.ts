@@ -7,19 +7,24 @@ const ICON_MAP = OUTSKIRTS_ASSETS.icons.tactical;
 
 export interface OutskirtsTacticalStripProps {
   strip: OutskirtsTacticalStripModel;
+  onOpenCell?: (cellId: OutskirtsTacticalStripModel['cells'][number]['id']) => void;
 }
 
-export function OutskirtsTacticalStrip({ strip }: OutskirtsTacticalStripProps) {
+export function OutskirtsTacticalStrip({ strip, onOpenCell }: OutskirtsTacticalStripProps) {
   return React.createElement(
     'section',
     { className: 'outskirtsTopRegion__tacticalStrip', 'data-testid': 'outskirts-tactical-strip', 'aria-label': strip.ariaLabel },
     ...strip.cells.map((cell) => React.createElement(
-      'div',
+      'button',
       {
         key: cell.id,
+        type: 'button',
         className: 'outskirtsTopRegion__tacticalCell',
         'data-testid': `outskirts-tactical-cell-${cell.id}`,
         'data-tone': cell.tone,
+        onClick: onOpenCell ? () => onOpenCell(cell.id) : undefined,
+        disabled: !onOpenCell || (!cell.showCaret && cell.id !== 'bounty' && cell.id !== 'expedition'),
+        'aria-label': `${cell.label}: ${cell.primaryText}`,
       },
       React.createElement(
         'span',

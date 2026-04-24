@@ -19,6 +19,13 @@ export interface OutskirtsExactMockupScreenProps {
   onSelectEncounterPreview?: (encounterId: string) => void;
   onToggleAutoRepeat?: () => void;
   onOpenMedicinePouch?: () => void;
+  onOpenLoadout?: () => void;
+  onOpenAiProfile?: () => void;
+  onOpenAttackFocus?: () => void;
+  onOpenEquipmentSlot?: (slotId: OutskirtsExactSurfaceV2['setupCard']['equipmentGrid'][number]['slotId']) => void;
+  onOpenTrackedBounties?: () => void;
+  onOpenTacticalCell?: (cellId: OutskirtsExactSurfaceV2['tacticalStrip']['cells'][number]['id']) => void;
+  onOpenAreaSelector?: () => void;
 }
 
 export function OutskirtsExactMockupScreen({
@@ -30,19 +37,26 @@ export function OutskirtsExactMockupScreen({
   onSelectEncounterPreview,
   onToggleAutoRepeat,
   onOpenMedicinePouch,
+  onOpenLoadout,
+  onOpenAiProfile,
+  onOpenAttackFocus,
+  onOpenEquipmentSlot,
+  onOpenTrackedBounties,
+  onOpenTacticalCell,
+  onOpenAreaSelector,
 }: OutskirtsExactMockupScreenProps) {
   return React.createElement(
     'article',
     { className: 'outskirtsExactPage', 'data-testid': 'outskirts-exact-page', 'data-legacy-testid': 'outskirts-exact-mockup-screen' },
     React.createElement('div', { className: 'outskirtsExactPage__underlay', 'aria-hidden': 'true' }),
-    React.createElement(OutskirtsTopRegion, { surface, onOpenSettings }),
+    React.createElement(OutskirtsTopRegion, { surface, onOpenSettings, onOpenTacticalCell, onOpenAreaSelector }),
     React.createElement(
       'section',
       { className: 'outskirtsExactPage__bodyCluster', 'data-testid': 'outskirts-exact-body-grid' },
       React.createElement(
         'aside',
         { className: 'outskirtsExactPage__leftRail', 'data-testid': 'outskirts-exact-left-rail', 'data-legacy-testid': 'outskirts-exact-left-rail-slot' },
-        React.createElement(OutskirtsSetupCard, { setup: surface.setupCard, onOpenMedicinePouch }),
+        React.createElement(OutskirtsSetupCard, { setup: surface.setupCard, onOpenMedicinePouch, onOpenLoadout, onOpenAiProfile, onOpenAttackFocus, onOpenEquipmentSlot }),
       ),
       React.createElement(
         'main',
@@ -72,7 +86,7 @@ export function OutskirtsExactMockupScreen({
       React.createElement(
         'aside',
         { className: 'outskirtsExactPage__rightRail', 'data-testid': 'outskirts-exact-right-rail', 'data-legacy-testid': 'outskirts-exact-right-rail-slot' },
-        React.createElement(OutskirtsRewardsCard, { rewards: surface.rewardsCard, onToggleAutoRepeat }),
+        React.createElement(OutskirtsRewardsCard, { rewards: surface.rewardsCard, onToggleAutoRepeat, onOpenTrackedBounties }),
       ),
       React.createElement(
         'aside',
