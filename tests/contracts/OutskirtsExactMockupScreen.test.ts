@@ -37,12 +37,12 @@ function findNode(
   return null;
 }
 
-void test('P5 top region structure renders title/ribbon/strip/plaque/subtitle/settings', () => {
+void test('P5 top region structure renders ribbon/strip/plaque/subtitle/settings without page title', () => {
   const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture());
   const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
 
   assert.equal((html.match(/outskirts-top-region/g) ?? []).length, 1);
-  assert.equal((html.match(/outskirts-page-title/g) ?? []).length, 1);
+  assert.equal((html.match(/outskirts-page-title/g) ?? []).length, 0);
   assert.equal((html.match(/outskirts-macro-ribbon/g) ?? []).length, 1);
   assert.equal((html.match(/outskirts-tactical-strip/g) ?? []).length, 1);
   assert.equal((html.match(/outskirts-area-plaque/g) ?? []).length, 1);
@@ -77,6 +77,14 @@ void test('P5 plaque renders dropdown affordance', () => {
   assert.equal(html.includes('outskirts-page-subtitle">Gold and common materials<'), true);
 });
 
+void test('P5 no-title regression: visible page title owner is removed from mounted top region', () => {
+  const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture());
+  const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
+
+  assert.equal(html.includes('data-testid="outskirts-page-title"'), false);
+  assert.equal(html.includes('<h1'), false);
+});
+
 void test('P11 settings gear keeps existing real callback path contract', () => {
   let opened = 0;
   const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture());
@@ -89,7 +97,10 @@ void test('P11 settings gear keeps existing real callback path contract', () => 
 
   const topBand = readChildren(topRegion)[0];
   const topBandChildren = readChildren(topBand);
-  const gearButton = topBandChildren[2] as { props?: { onClick?: () => void } };
+  const gearButton = topBandChildren.find(
+    (child) => typeof (child as { props?: { className?: string } })?.props?.className === 'string'
+      && (child as { props?: { className?: string } }).props?.className?.includes('outskirtsTopRegion__settingsButton'),
+  ) as { props?: { onClick?: () => void } } | undefined;
   gearButton?.props?.onClick?.();
   assert.equal(opened, 1);
 });
@@ -510,13 +521,15 @@ void test('P5 top region element count remains stable across fixture/live and bo
   const fixtureHtml = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface: fixtureSurface }));
   const liveLikeHtml = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface: liveLikeSurface }));
 
-  const tokens = ['outskirts-top-region', 'outskirts-page-title', 'outskirts-macro-ribbon', 'outskirts-tactical-strip', 'outskirts-area-plaque', 'outskirts-page-subtitle', 'outskirts-settings-gear'];
+  const tokens = ['outskirts-top-region', 'outskirts-macro-ribbon', 'outskirts-tactical-strip', 'outskirts-area-plaque', 'outskirts-page-subtitle', 'outskirts-settings-gear'];
   for (const token of tokens) {
     assert.equal((fixtureHtml.match(new RegExp(token, 'g')) ?? []).length, 1);
     assert.equal((liveLikeHtml.match(new RegExp(token, 'g')) ?? []).length, 1);
   }
   assert.equal((fixtureHtml.match(/outskirts-tactical-cell-/g) ?? []).length, 7);
   assert.equal((liveLikeHtml.match(/outskirts-tactical-cell-/g) ?? []).length, 7);
+  assert.equal((fixtureHtml.match(/outskirts-page-title/g) ?? []).length, 0);
+  assert.equal((liveLikeHtml.match(/outskirts-page-title/g) ?? []).length, 0);
 });
 
 void test('P4/P5 route preservation: World modal route still mounts Outskirts planning owner', async () => {

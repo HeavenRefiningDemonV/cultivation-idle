@@ -65,11 +65,11 @@ void test('Packet B planning-state purity smoke keeps planning shell-only owners
   assert.equal(surface.primaryAction.singleDominantCta, true);
 });
 
-void test('Packet B keeps title and tactical strip intact (no Packet C work)', () => {
+void test('Packet C keeps tactical strip continuity while removing visible page title owner', () => {
   const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture());
   const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
 
-  assert.equal(html.includes('data-testid="outskirts-page-title"'), true);
+  assert.equal(html.includes('data-testid="outskirts-page-title"'), false);
   assert.equal((html.match(/outskirts-tactical-cell-/g) ?? []).length, 7);
 });
 
