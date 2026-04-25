@@ -108,6 +108,36 @@ export interface OutskirtsSetupCard {
   }>;
 }
 
+export type OutskirtsInnerPalaceSlotType = 'active' | 'passive' | 'ultimate';
+export type OutskirtsInnerPalaceSlotState = 'equipped' | 'empty' | 'locked';
+
+export interface OutskirtsInnerPalacePreviewSlot {
+  key: string;
+  label: string;
+  slotType: OutskirtsInnerPalaceSlotType;
+  slotIndex: number;
+  state: OutskirtsInnerPalaceSlotState;
+  techId: string | null;
+  techniqueName: string | null;
+  isUnlocked: boolean;
+  unlockLabel?: string;
+}
+
+export interface OutskirtsInnerPalacePreview {
+  visible: boolean;
+  title: string;
+  subtitle: string;
+  loadoutName: string;
+  footerLine: string;
+  emptyUnlockedSlots: number;
+  activeEquipped: number;
+  passiveEquipped: number;
+  ultimateEquipped: boolean;
+  manageLabel: string;
+  source: OutskirtsSurfaceValueSource;
+  slots: OutskirtsInnerPalacePreviewSlot[];
+}
+
 export interface OutskirtsRewardsCard {
   title: string;
   goldHeadline: {
@@ -145,6 +175,7 @@ export interface OutskirtsRewardsCard {
     enabled: boolean;
     source: OutskirtsSurfaceValueSource;
   };
+  innerPalacePreview: OutskirtsInnerPalacePreview;
 }
 
 export interface OutskirtsEncounterStripArrow {
@@ -303,4 +334,5 @@ export interface OutskirtsMockupRuntimeSnapshot {
   boundaryLine: string;
   pageSubtitle: string;
   supportHints: string[];
+  innerPalacePreview?: OutskirtsInnerPalacePreview;
 }

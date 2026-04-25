@@ -30,6 +30,8 @@ import { OUTSKIRTS_ASSETS } from './outskirtsAssetRegistry.js';
 import type {
   OutskirtsEncounterNodeState,
   OutskirtsExactSurfaceV2,
+  OutskirtsInnerPalacePreview,
+  OutskirtsInnerPalacePreviewSlot,
   OutskirtsMockupRuntimeSnapshot,
   OutskirtsSurfaceValueSource,
   OutskirtsTacticalTone,
@@ -89,6 +91,98 @@ function resolveScenicImageSrc(sourceMode: OutskirtsMockupRuntimeSnapshot['sourc
   return sourceMode === 'fixture'
     ? OUTSKIRTS_APPROVED_SCENIC_MOCKUP_SRC
     : OUTSKIRTS_ASSETS.scenic.cityOutskirtsBackdrop;
+}
+
+const INNER_PALACE_SLOT_FRAME: ReadonlyArray<Pick<OutskirtsInnerPalacePreviewSlot, 'key' | 'slotType' | 'slotIndex' | 'label'>> = Object.freeze([
+  { key: 'active-0', slotType: 'active', slotIndex: 0, label: 'Active I' },
+  { key: 'active-1', slotType: 'active', slotIndex: 1, label: 'Active II' },
+  { key: 'active-2', slotType: 'active', slotIndex: 2, label: 'Active III' },
+  { key: 'active-3', slotType: 'active', slotIndex: 3, label: 'Active IV' },
+  { key: 'passive-0', slotType: 'passive', slotIndex: 0, label: 'Passive I' },
+  { key: 'passive-1', slotType: 'passive', slotIndex: 1, label: 'Passive II' },
+  { key: 'passive-2', slotType: 'passive', slotIndex: 2, label: 'Passive III' },
+  { key: 'ultimate-0', slotType: 'ultimate', slotIndex: 0, label: 'Ultimate' },
+]);
+
+function sanitizeSlottedTechId(techId: string | null | undefined): string | null {
+  if (typeof techId !== 'string') return null;
+  const normalized = techId.trim();
+  return normalized.length > 0 ? normalized : null;
+}
+
+function resolveTechniqueName(techniquesById: Record<string, { name?: string } | undefined>, techId: string | null): string | null {
+  if (!techId) return null;
+  const fallback = techId;
+  const name = techniquesById[techId]?.name;
+  return typeof name === 'string' && name.trim().length > 0 ? name : fallback;
+}
+
+function buildInnerPalacePreviewSnapshot(source: OutskirtsSurfaceValueSource): OutskirtsInnerPalacePreview {
+  const techniqueStore = useTechniqueStore.getState();
+  const currentRealmIndex = useGameStore.getState().realm.index;
+  const techniquesById = useContentStore.getState().maps.techniquesById;
+  const selectedLoadout = techniqueStore.getSelectedLoadout();
+  const progression = techniqueStore.getSlotProgressionSnapshot(currentRealmIndex);
+  const activeSlots = selectedLoadout?.slots.active ?? [];
+  const passiveSlots = selectedLoadout?.slots.passive ?? [];
+  const ultimateSlot = selectedLoadout?.slots.ultimate ?? null;
+  const loadoutName = selectedLoadout?.name?.trim() ? selectedLoadout.name : 'Loadout 1';
+
+  const slots = INNER_PALACE_SLOT_FRAME.map((frame): OutskirtsInnerPalacePreviewSlot => {
+    const unlocked = frame.slotType === 'active'
+      ? frame.slotIndex < progression.unlocked.active
+      : frame.slotType === 'passive'
+        ? frame.slotIndex < progression.unlocked.passive
+        : progression.unlocked.ultimate;
+    const rawTechId = frame.slotType === 'active'
+      ? activeSlots[frame.slotIndex] ?? null
+      : frame.slotType === 'passive'
+        ? passiveSlots[frame.slotIndex] ?? null
+        : ultimateSlot;
+    const techId = sanitizeSlottedTechId(rawTechId);
+    const state = unlocked ? (techId ? 'equipped' : 'empty') : 'locked';
+    const unlockRequirement = frame.slotType === 'ultimate'
+      ? progression.unlockRequirements.ultimate
+      : progression.unlockRequirements[frame.slotType][frame.slotIndex];
+    return {
+      ...frame,
+      state,
+      techId,
+      techniqueName: resolveTechniqueName(techniquesById, techId),
+      isUnlocked: unlocked,
+      unlockLabel: unlockRequirement?.reasonText,
+    };
+  });
+
+  const activeEquipped = slots.filter((slot) => slot.slotType === 'active' && slot.state === 'equipped').length;
+  const passiveEquipped = slots.filter((slot) => slot.slotType === 'passive' && slot.state === 'equipped').length;
+  const ultimateEquipped = slots.some((slot) => slot.slotType === 'ultimate' && slot.state === 'equipped');
+  const emptyUnlockedSlots = slots.filter((slot) => slot.state === 'empty').length;
+  const footerLine = activeEquipped === 0 && passiveEquipped === 0 && !ultimateEquipped
+    ? `${loadoutName} · No techniques slotted`
+    : `${loadoutName} · ${activeEquipped} Active · ${passiveEquipped} Passive`;
+
+  return {
+    visible: true,
+    title: 'Inner Palace',
+    subtitle: 'Equipped Techniques',
+    loadoutName,
+    footerLine,
+    emptyUnlockedSlots,
+    activeEquipped,
+    passiveEquipped,
+    ultimateEquipped,
+    manageLabel: 'Manage',
+    source,
+    slots,
+  };
+}
+
+function cloneInnerPalacePreview(preview: OutskirtsInnerPalacePreview): OutskirtsInnerPalacePreview {
+  return {
+    ...preview,
+    slots: preview.slots.map((slot) => ({ ...slot })),
+  };
 }
 
 export interface BuildOutskirtsMockupSurfaceOptions {
@@ -272,6 +366,9 @@ export function buildOutskirtsMockupSurface(
         enabled: autoRepeatEnabled,
         source: snapshot.sourceMode === 'fixture' ? 'manifest' : 'derived',
       },
+      innerPalacePreview: snapshot.sourceMode === 'fixture' && snapshot.innerPalacePreview
+        ? cloneInnerPalacePreview(snapshot.innerPalacePreview)
+        : buildInnerPalacePreviewSnapshot(snapshot.sourceMode === 'fixture' ? 'manifest' : 'live'),
     },
     encounterStrip,
     primaryAction: {

@@ -86,7 +86,7 @@ export function OutskirtsExactMockupScreen({
       React.createElement(
         'aside',
         { className: 'outskirtsExactPage__rightRail', 'data-testid': 'outskirts-exact-right-rail', 'data-legacy-testid': 'outskirts-exact-right-rail-slot' },
-        React.createElement(OutskirtsRewardsCard, { rewards: surface.rewardsCard, onToggleAutoRepeat, onOpenTrackedBounties }),
+        React.createElement(OutskirtsRewardsCard, { rewards: surface.rewardsCard, onToggleAutoRepeat, onOpenTrackedBounties, onOpenTechniques: onOpenLoadout }),
       ),
       React.createElement(
         'aside',

@@ -1,11 +1,13 @@
 import React from 'react';
 import type { OutskirtsRewardsCard as OutskirtsRewardsCardModel } from '../types.js';
 import { OUTSKIRTS_ASSETS } from '../outskirtsAssetRegistry.js';
+import { OutskirtsInnerPalacePreview } from './OutskirtsInnerPalacePreview.js';
 
 export interface OutskirtsRewardsCardProps {
   rewards: OutskirtsRewardsCardModel;
   onToggleAutoRepeat?: () => void;
   onOpenTrackedBounties?: () => void;
+  onOpenTechniques?: () => void;
 }
 
 const MATERIAL_ICON_MAP: Record<string, string> = OUTSKIRTS_ASSETS.icons.rewards.materials;
@@ -14,7 +16,7 @@ function resolveMaterialIcon(id: string): string {
   return MATERIAL_ICON_MAP[id] ?? OUTSKIRTS_ASSETS.icons.rewards.materialsFallback;
 }
 
-export function OutskirtsRewardsCard({ rewards, onToggleAutoRepeat, onOpenTrackedBounties }: OutskirtsRewardsCardProps) {
+export function OutskirtsRewardsCard({ rewards, onToggleAutoRepeat, onOpenTrackedBounties, onOpenTechniques }: OutskirtsRewardsCardProps) {
   const bountyTarget = Math.max(0, rewards.trackedBounty.progressTarget);
   const bountyCurrent = Math.max(0, rewards.trackedBounty.progressCurrent);
   const bountyFillPct = bountyTarget > 0 ? Math.max(0, Math.min(100, (bountyCurrent / bountyTarget) * 100)) : 0;
@@ -106,5 +108,6 @@ export function OutskirtsRewardsCard({ rewards, onToggleAutoRepeat, onOpenTracke
         rewards.autoRepeat.value,
       ),
     ),
+    React.createElement(OutskirtsInnerPalacePreview, { preview: rewards.innerPalacePreview, onOpenTechniques }),
   );
 }
