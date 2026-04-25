@@ -1,3 +1,15 @@
+.outskirtsPlanningOwner {
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+}
+
+.outskirtsPlanningOwner > .outskirtsExactPage {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
 .outskirtsExactPage {
   --outskirts-page-inline-padding: clamp(18px, 2.4vw, 34px);
   --outskirts-page-block-padding: clamp(8px, 1.1vh, 16px);
@@ -13,11 +25,13 @@
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
   row-gap: clamp(8px, 1vh, 14px);
-  min-height: 100%;
+  height: 100%;
+  min-height: 0;
+  box-sizing: border-box;
   padding: var(--outskirts-page-block-padding) var(--outskirts-page-inline-padding);
   color: #281c16;
   isolation: isolate;
-  overflow: visible;
+  overflow: hidden;
 }
 
 .outskirtsExactPage__underlay {
@@ -364,6 +378,8 @@
   column-gap: 0;
   row-gap: clamp(3px, 0.55vh, 7px);
   align-items: stretch;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .outskirtsExactPage__leftRail {
@@ -384,7 +400,7 @@
 .outskirtsExactPage__centerIdentity {
   grid-area: encounterIdentity;
   min-width: 0;
-  min-height: var(--outskirts-identity-row-height);
+  min-height: 0;
 }
 
 .outskirtsExactPage__rightRail {
@@ -396,7 +412,7 @@
 .outskirtsExactPage__centerStrip {
   grid-area: encounterStrip;
   min-width: 0;
-  min-height: var(--outskirts-strip-row-min-height);
+  min-height: 0;
   display: grid;
   align-items: center;
 }
@@ -404,7 +420,7 @@
 .outskirtsExactPage__centerCta {
   grid-area: ctaLane;
   min-width: 0;
-  min-height: var(--outskirts-cta-row-min-height);
+  min-height: 0;
   display: grid;
   align-items: start;
   margin-top: clamp(1px, 0.15vh, 3px);
@@ -416,7 +432,7 @@
   align-self: start;
   justify-self: stretch;
   min-width: 0;
-  min-height: var(--outskirts-summary-row-min-height);
+  min-height: 0;
 }
 .outskirtsScenePlane {
   position: absolute;
@@ -959,7 +975,8 @@
 .outskirtsRewardsCard {
   height: 100%;
   min-width: 0;
-  min-height: 13.8rem;
+  min-height: 0;
+  overflow: hidden;
   display: grid;
   grid-template-rows: auto auto minmax(4.15rem, auto) minmax(5.7rem, auto) minmax(3.25rem, auto) auto;
   align-content: start;
@@ -1203,6 +1220,8 @@
 
 .outskirtsSetupCard {
   height: 100%;
+  min-height: 0;
+  overflow: hidden;
   display: grid;
   grid-template-rows: auto auto auto auto auto auto;
   gap: 0.62rem;
@@ -1407,6 +1426,88 @@
   margin: -1px;
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
+}
+
+
+@media (max-height: 1050px) {
+  .outskirtsExactPage {
+    --outskirts-page-block-padding: clamp(6px, 0.75vh, 10px);
+    --outskirts-identity-row-height: clamp(34px, 3.8vh, 46px);
+    --outskirts-strip-row-min-height: clamp(78px, 8.2vh, 98px);
+    --outskirts-cta-row-min-height: clamp(58px, 6.4vh, 76px);
+    --outskirts-summary-row-min-height: clamp(60px, 6.8vh, 80px);
+    row-gap: clamp(4px, 0.55vh, 8px);
+  }
+
+  .outskirtsTopRegion { row-gap: clamp(4px, 0.55vh, 7px); }
+  .outskirtsTopRegion__topBand { min-height: clamp(26px, 3.2vh, 36px); }
+  .outskirtsTopRegion__tacticalStrip { min-height: clamp(40px, 4.8vh, 52px); }
+  .outskirtsTopRegion__tacticalCell { min-height: clamp(38px, 4.6vh, 50px); padding: 5px 7px; }
+  .outskirtsTopRegion__plaqueCluster { min-height: clamp(48px, 5.5vh, 62px); margin-top: 2px; margin-bottom: 0; }
+  .outskirtsTopRegion__areaPlaque { min-height: clamp(38px, 4.6vh, 42px); }
+
+  .outskirtsEncounterIdentityRow { min-height: clamp(36px, 4.1vh, 48px); }
+  .outskirtsEncounterIdentityRow__nameplate { min-height: clamp(34px, 4vh, 44px); }
+
+  .outskirtsEncounterProgressStrip { min-height: 5.4rem; padding: 0.2rem 0.2rem 0.34rem; }
+  .outskirtsEncounterProgressStrip__node { min-height: 5.4rem; grid-template-rows: 3.2rem auto; }
+  .outskirtsEncounterProgressStrip__thumb { width: 3.05rem; height: 3.05rem; }
+  .outskirtsEncounterProgressStrip__thumb--current { width: 3.75rem; height: 3.75rem; }
+
+  .outskirtsStartHuntCta { min-height: 3.45rem; }
+  .outskirtsStartHuntCta__plate { min-height: 3.25rem; }
+
+  .outskirtsGrindSummaryCard { min-height: 5.1rem; padding: 0.32rem 0.46rem 0.42rem; }
+
+  .outskirtsSetupCard { gap: 0.42rem; padding: 0.62rem 0.56rem; }
+  .outskirtsRewardsCard { gap: 0.28rem; padding: 0.56rem 0.54rem; }
+}
+
+@media (max-height: 900px) {
+  .outskirtsExactPage {
+    --outskirts-page-block-padding: clamp(4px, 0.55vh, 8px);
+    --outskirts-identity-row-height: clamp(30px, 3.4vh, 40px);
+    --outskirts-strip-row-min-height: clamp(66px, 7.3vh, 84px);
+    --outskirts-cta-row-min-height: clamp(48px, 5.6vh, 64px);
+    --outskirts-summary-row-min-height: clamp(50px, 5.9vh, 66px);
+    row-gap: clamp(3px, 0.45vh, 6px);
+  }
+
+  .outskirtsTopRegion { row-gap: clamp(3px, 0.45vh, 6px); }
+  .outskirtsTopRegion__topBand { min-height: clamp(24px, 2.8vh, 32px); }
+  .outskirtsTopRegion__tacticalStrip { min-height: clamp(34px, 4.2vh, 46px); }
+  .outskirtsTopRegion__tacticalCell { min-height: clamp(32px, 3.9vh, 42px); padding: 4px 6px; }
+  .outskirtsTopRegion__plaqueCluster { min-height: clamp(42px, 4.8vh, 54px); row-gap: clamp(3px, 0.4vh, 5px); }
+  .outskirtsTopRegion__areaPlaque { min-height: clamp(34px, 3.9vh, 38px); padding: 5px 16px; }
+
+  .outskirtsEncounterProgressStrip { min-height: 4.7rem; grid-template-columns: 2.4rem minmax(0, 1fr) 2.4rem; padding: 0.14rem 0.16rem 0.28rem; }
+  .outskirtsEncounterProgressStrip__arrow { width: 2.4rem; height: 2.4rem; }
+  .outskirtsEncounterProgressStrip__lane { left: 2.8rem; right: 2.8rem; top: 2.35rem; }
+  .outskirtsEncounterProgressStrip__node { min-height: 4.72rem; grid-template-rows: 2.8rem auto; row-gap: 0.08rem; }
+  .outskirtsEncounterProgressStrip__thumb { width: 2.7rem; height: 2.7rem; }
+  .outskirtsEncounterProgressStrip__thumb--current { width: 3.2rem; height: 3.2rem; }
+  .outskirtsEncounterProgressStrip__text { min-height: 1.7rem; }
+  .outskirtsEncounterProgressStrip__label { font-size: 0.79rem; min-height: 0.94rem; }
+  .outskirtsEncounterProgressStrip__level { font-size: 0.68rem; min-height: 0.74rem; }
+
+  .outskirtsStartHuntCta { min-height: 3rem; font-size: 1.08rem; }
+  .outskirtsStartHuntCta__plate { min-height: 2.82rem; }
+
+  .outskirtsGrindSummaryCard { min-height: 4.35rem; padding: 0.24rem 0.38rem 0.3rem; gap: 0.2rem; }
+  .outskirtsGrindSummaryCard__header { min-height: 1.2rem; }
+  .outskirtsGrindSummaryCard__rows { min-height: 3.1rem; gap: 0.1rem; }
+  .outskirtsGrindSummaryCard__row { min-height: 0.96rem; }
+
+  .outskirtsSetupCard { gap: 0.32rem; padding: 0.5rem 0.46rem; }
+  .outskirtsSetupCard__primaryRow { min-height: 1.84rem; }
+  .outskirtsSetupCard__statRow { min-height: 1.34rem; }
+  .outskirtsSetupCard__pouchRow { min-height: 1.52rem; }
+  .outskirtsSetupCard__equipmentCell { min-height: 2.28rem; }
+
+  .outskirtsRewardsCard { gap: 0.22rem; padding: 0.46rem 0.44rem; grid-template-rows: auto auto minmax(3.3rem, auto) minmax(4.5rem, auto) minmax(2.66rem, auto) auto; }
+  .outskirtsRewardsCard__section--materials { min-height: 3.3rem; }
+  .outskirtsRewardsCard__section--bounty { min-height: 4.5rem; }
+  .outskirtsRewardsCard__section--efficiency { min-height: 2.66rem; }
 }
 
 @media (max-width: 1280px) {

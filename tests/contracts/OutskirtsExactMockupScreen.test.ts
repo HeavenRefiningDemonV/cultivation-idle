@@ -650,17 +650,36 @@ void test('P12 Packet D no-title/no-combat regression remains locked', () => {
   for (const token of forbiddenTokens) assert.equal(html.includes(token), false, `forbidden token present: ${token}`);
 });
 
-void test('P12 Packet D static budget guard prevents inflated legacy defaults', async () => {
+void test('Outskirts exact page has a hard height containment chain', async () => {
   const scss = await readFile(new URL('../../src/features/world/outskirts/OutskirtsExactMockupScreen.scss', import.meta.url), 'utf8');
 
+  assert.match(scss, /\.outskirtsPlanningOwner\s*\{[\s\S]*height:\s*100%;[\s\S]*min-height:\s*0;[\s\S]*overflow:\s*hidden;/);
+  assert.match(scss, /\.outskirtsPlanningOwner > \.outskirtsExactPage\s*\{[\s\S]*flex:\s*1 1 auto;[\s\S]*min-height:\s*0;/);
+  assert.match(scss, /\.outskirtsExactPage\s*\{[\s\S]*height:\s*100%;[\s\S]*min-height:\s*0;[\s\S]*box-sizing:\s*border-box;[\s\S]*overflow:\s*hidden;/);
+  assert.match(scss, /\.outskirtsExactPage__bodyCluster\s*\{[\s\S]*min-height:\s*0;[\s\S]*overflow:\s*hidden;/);
+});
+
+void test('Outskirts exact body grid reserves lower action owners inside contained page', async () => {
+  const scss = await readFile(new URL('../../src/features/world/outskirts/OutskirtsExactMockupScreen.scss', import.meta.url), 'utf8');
+
+  assert.match(scss, /grid-template-rows:[\s\S]*minmax\(0, 1fr\)[\s\S]*minmax\(var\(--outskirts-identity-row-height\), auto\)[\s\S]*minmax\(var\(--outskirts-strip-row-min-height\), auto\)[\s\S]*minmax\(max\(var\(--outskirts-cta-row-min-height\), var\(--outskirts-summary-row-min-height\)\), auto\);/);
   assert.equal(scss.includes('--outskirts-strip-row-min-height: clamp(156px, 19vh, 220px);'), false);
   assert.equal(scss.includes('--outskirts-cta-row-min-height: clamp(136px, 16vh, 196px);'), false);
   assert.equal(scss.includes('--outskirts-summary-row-min-height: clamp(136px, 17vh, 196px);'), false);
   assert.equal(scss.includes('min-height: 9.8rem;'), false);
+});
 
-  assert.equal(scss.includes('--outskirts-strip-row-min-height: clamp(92px, 10.5vh, 124px);'), true);
-  assert.equal(scss.includes('--outskirts-cta-row-min-height: clamp(74px, 8vh, 102px);'), true);
-  assert.equal(scss.includes('--outskirts-summary-row-min-height: clamp(76px, 8.4vh, 106px);'), true);
+void test('Outskirts exact compact-height budget keeps CTA and summary in the layout contract', async () => {
+  const scss = await readFile(new URL('../../src/features/world/outskirts/OutskirtsExactMockupScreen.scss', import.meta.url), 'utf8');
+
+  assert.match(scss, /@media \(max-height: 1050px\)/);
+  assert.match(scss, /@media \(max-height: 900px\)/);
+  assert.match(scss, /--outskirts-cta-row-min-height:\s*clamp\(58px, 6.4vh, 76px\);/);
+  assert.match(scss, /--outskirts-summary-row-min-height:\s*clamp\(60px, 6.8vh, 80px\);/);
+  assert.match(scss, /--outskirts-cta-row-min-height:\s*clamp\(48px, 5.6vh, 64px\);/);
+  assert.match(scss, /--outskirts-summary-row-min-height:\s*clamp\(50px, 5.9vh, 66px\);/);
+  assert.match(scss, /\.outskirtsSetupCard,?[\s\S]*min-height:\s*0;[\s\S]*overflow:\s*hidden;/);
+  assert.match(scss, /\.outskirtsRewardsCard\s*\{[\s\S]*min-height:\s*0;[\s\S]*overflow:\s*hidden;/);
 });
 
 void test('P12 Packet D host-size smoke keeps lower action owners mounted (jsdom static)', () => {

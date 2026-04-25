@@ -22,7 +22,9 @@
 .worldBuildingOverlay--outskirts-scenic {
   background: rgba(14, 17, 12, 0.28);
   backdrop-filter: blur(1.5px);
-  padding: clamp(12px, 2.2vh, 24px);
+  align-items: stretch;
+  justify-content: stretch;
+  padding: clamp(8px, 1.2vh, 16px) clamp(10px, 1.2vw, 20px);
 }
 
 .worldBuildingModal {
@@ -80,10 +82,10 @@
 
 .worldBuildingModal--outskirts-exact {
   background-image: url('../../assets/background/citystates/city_outskirts.png');
-  width: min(96vw, 120rem);
-  height: min(94vh, 72rem);
-  max-width: 120rem;
-  max-height: 72rem;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
   color: #1f2937;
 }
 
@@ -181,6 +183,8 @@
 .worldBuildingBody--screen-owned {
   width: 100%;
   height: 100%;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .worldBuildingPlaceholder {
