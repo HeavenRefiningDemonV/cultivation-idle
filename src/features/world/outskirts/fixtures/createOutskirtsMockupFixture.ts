@@ -1,4 +1,45 @@
-import type { OutskirtsMockupRuntimeSnapshot } from '../types.js';
+import type { OutskirtsCombatStage, OutskirtsMockupRuntimeSnapshot } from '../types.js';
+
+function createPlanningCombatStage(): OutskirtsCombatStage {
+  return {
+    active: false,
+    hasLiveCombat: false,
+    lifecycle: 'planning',
+    visualContract: 'outskirts-center-combat-theater-v1',
+    player: {
+      role: 'player',
+      side: 'left',
+      name: 'Cultivator',
+      hpCurrent: 0,
+      hpMax: 0,
+      hpLabel: '0 / 0',
+      hpPct: 0,
+      actorImageKey: 'outskirts/actor/cultivator',
+      motionState: 'idle',
+    },
+    enemy: {
+      role: 'enemy',
+      side: 'right',
+      id: null,
+      name: '',
+      levelLabel: '',
+      hpCurrent: 0,
+      hpMax: 0,
+      hpLabel: '0 / 0',
+      hpPct: 0,
+      actorImageKey: 'outskirts/enemy/unknown',
+      motionState: 'idle',
+      isBoss: false,
+    },
+    versusSeal: {
+      iconKey: 'crossed-swords',
+      label: 'Duel',
+    },
+    chips: [],
+    logLines: [],
+    floatingHits: [],
+  };
+}
 
 export function createOutskirtsMockupFixture(
   overrides: Partial<OutskirtsMockupRuntimeSnapshot> = {},
@@ -72,6 +113,7 @@ export function createOutskirtsMockupFixture(
     boundaryLine: 'Legacy baseline is tracked separately in phase-6 evidence.',
     pageSubtitle: 'Gold and common materials',
     supportHints: [],
+    combatStage: createPlanningCombatStage(),
     innerPalacePreview: {
       visible: true,
       title: 'Inner Palace',
@@ -97,4 +139,65 @@ export function createOutskirtsMockupFixture(
     },
     ...overrides,
   };
+}
+
+export function createActiveOutskirtsMockupFixture(
+  overrides: Partial<OutskirtsMockupRuntimeSnapshot> = {},
+): OutskirtsMockupRuntimeSnapshot {
+  return createOutskirtsMockupFixture({
+    isOutskirtsActive: true,
+    hpLabel: '131 / 131',
+    pageSubtitle: 'Quiet Glade hunt in progress',
+    combatStage: {
+      active: true,
+      hasLiveCombat: true,
+      lifecycle: 'active',
+      visualContract: 'outskirts-center-combat-theater-v1',
+      player: {
+        role: 'player',
+        side: 'left',
+        name: 'Cultivator',
+        hpCurrent: 131,
+        hpMax: 131,
+        hpLabel: '131 / 131',
+        hpPct: 100,
+        actorImageKey: 'outskirts/actor/cultivator',
+        motionState: 'idle',
+      },
+      enemy: {
+        role: 'enemy',
+        side: 'right',
+        id: 'snarling-wolf',
+        name: 'Snarling Wolf',
+        levelLabel: 'Lv. 11',
+        hpCurrent: 78,
+        hpMax: 126,
+        hpLabel: '78 / 126',
+        hpPct: 61.9047619,
+        actorImageKey: 'outskirts/enemy/snarling-wolf',
+        motionState: 'idle',
+        isBoss: false,
+      },
+      versusSeal: {
+        iconKey: 'crossed-swords',
+        label: 'Duel',
+      },
+      chips: [
+        { id: 'ai-profile', label: 'AI: Balanced', tone: 'neutral', source: 'manifest' },
+        { id: 'auto-use', label: 'Auto-use On', tone: 'ready', source: 'manifest' },
+        { id: 'boss-countdown', label: 'Boss in 6', tone: 'neutral', source: 'manifest' },
+        { id: 'tech-ready-iron-palm', label: 'Iron Palm Ready', tone: 'ready', source: 'manifest' },
+        { id: 'tech-cooldown-wind-step', label: 'Wind Step 2.1s', tone: 'cooldown', source: 'manifest' },
+      ],
+      logLines: [
+        { id: 'fixture-log-0', text: 'You struck Snarling Wolf.', tone: 'player', timestamp: null, source: 'manifest' },
+        { id: 'fixture-log-1', text: 'Wolf missed.', tone: 'enemy', timestamp: null, source: 'manifest' },
+        { id: 'fixture-log-2', text: 'Iron Palm is ready.', tone: 'system', timestamp: null, source: 'manifest' },
+      ],
+      floatingHits: [
+        { id: 'fixture-hit-0', text: '-23', x: 72, y: 42, kind: 'normal', target: 'enemy', source: 'manifest' },
+      ],
+    },
+    ...overrides,
+  });
 }

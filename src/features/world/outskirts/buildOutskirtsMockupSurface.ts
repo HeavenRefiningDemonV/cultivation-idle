@@ -15,6 +15,7 @@ import { useOutskirtsStore } from '../../../stores/outskirtsStore.js';
 import { useTechniqueStore } from '../../../stores/techniqueStore.js';
 import { useUIStore } from '../../../stores/uiStore.js';
 import { resolveModuleRef } from '../../../components/screens/world/worldUtils.js';
+import type { CombatLogEntry } from '../../../types/index.js';
 import {
   OUTSKIRTS_ALLOWED_ACTIVE_CONTRACT_SHELL,
   OUTSKIRTS_ALLOWED_PLANNING_SHELL,
@@ -27,11 +28,15 @@ import {
   OUTSKIRTS_TACTICAL_CELL_ORDER,
   OUTSKIRTS_TARGET_MOCKUP_ID,
 } from './outskirtsMockupPresentation.js';
-import { isSameOutskirtsCombatSource } from './getOutskirtsModuleViewState.js';
+import { isSameOutskirtsActivitySource, isSameOutskirtsCombatSource } from './getOutskirtsModuleViewState.js';
 import { resolveOutskirtsEncounterStripArt } from './resolveOutskirtsEncounterStripArt.js';
 import { OUTSKIRTS_ASSETS } from './outskirtsAssetRegistry.js';
 import type {
   OutskirtsEncounterNodeState,
+  OutskirtsCombatStage,
+  OutskirtsCombatStageChip,
+  OutskirtsCombatStageLogLine,
+  OutskirtsCombatLogTone,
   OutskirtsExactSurfaceV2,
   OutskirtsInnerPalacePreview,
   OutskirtsInnerPalacePreviewSlot,
@@ -57,9 +62,245 @@ function formatPercent(value: number): string {
   return `${Math.max(0, Math.min(100, value)).toFixed(0)}%`;
 }
 
+function toSafeCombatNumber(value: string | number | null | undefined): number {
+  const parsed = typeof value === 'number' ? value : Number(value);
+  if (!Number.isFinite(parsed)) return 0;
+  return Math.max(0, Math.round(parsed));
+}
+
+function clampPct(value: number): number {
+  if (!Number.isFinite(value)) return 0;
+  return Math.max(0, Math.min(100, value));
+}
+
+function formatCombatHpLabel(current: number, max: number): string {
+  return `${formatWhole(current)} / ${formatWhole(max)}`;
+}
+
 function clamp01(value: number): number {
   if (!Number.isFinite(value)) return 0;
   return Math.max(0, Math.min(1, value));
+}
+
+function normalizeCombatActorKeyPart(value: string): string {
+  const normalized = value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  return normalized.length > 0 ? normalized : 'unknown';
+}
+
+function mapCombatLogLineTone(type: CombatLogEntry['type']): OutskirtsCombatLogTone {
+  if (type === 'enemy') return 'enemy';
+  if (type === 'loot') return 'loot';
+  if (type === 'victory') return 'victory';
+  if (type === 'defeat') return 'defeat';
+  if (type === 'player' || type === 'damage') return 'player';
+  return 'system';
+}
+
+function buildCombatStageChips(input: {
+  aiProfileLabel: string;
+  autoUseOn: boolean;
+  isBossFight: boolean;
+  killsToBoss: number;
+  killsSinceBoss: number;
+  source: OutskirtsSurfaceValueSource;
+  extraChips?: OutskirtsCombatStageChip[];
+}): OutskirtsCombatStageChip[] {
+  const remainingBossKills = Math.max(0, input.killsToBoss - input.killsSinceBoss);
+  const chips: OutskirtsCombatStageChip[] = [
+    { id: 'ai-profile', label: `AI: ${input.aiProfileLabel}`, tone: 'neutral', source: input.source },
+    { id: 'auto-use', label: input.autoUseOn ? 'Auto-use On' : 'Auto-use Off', tone: input.autoUseOn ? 'ready' : 'warning', source: input.source },
+    {
+      id: 'boss-countdown',
+      label: input.isBossFight ? 'Boss fight' : `Boss in ${remainingBossKills}`,
+      tone: input.isBossFight ? 'warning' : 'neutral',
+      source: 'derived',
+    },
+  ];
+  if (input.extraChips?.length) chips.push(...input.extraChips);
+  return chips.slice(0, 5);
+}
+
+function buildInactiveCombatStage(lifecycle: OutskirtsSurfaceMode = 'planning'): OutskirtsCombatStage {
+  return {
+    active: false,
+    hasLiveCombat: false,
+    lifecycle,
+    visualContract: 'outskirts-center-combat-theater-v1',
+    player: {
+      role: 'player',
+      side: 'left',
+      name: 'Cultivator',
+      hpCurrent: 0,
+      hpMax: 0,
+      hpLabel: '0 / 0',
+      hpPct: 0,
+      actorImageKey: 'outskirts/actor/cultivator',
+      motionState: 'idle',
+    },
+    enemy: {
+      role: 'enemy',
+      side: 'right',
+      id: null,
+      name: '',
+      levelLabel: '',
+      hpCurrent: 0,
+      hpMax: 0,
+      hpLabel: '0 / 0',
+      hpPct: 0,
+      actorImageKey: 'outskirts/enemy/unknown',
+      motionState: 'idle',
+      isBoss: false,
+    },
+    versusSeal: { iconKey: 'crossed-swords', label: 'Duel' },
+    chips: [],
+    logLines: [],
+    floatingHits: [],
+  };
+}
+
+function buildStartingCombatStage(input: {
+  lifecycle: OutskirtsSurfaceMode;
+  playerHpCurrent: number;
+  playerHpMax: number;
+  aiProfileLabel: string;
+  autoUseOn: boolean;
+  killsToBoss: number;
+  killsSinceBoss: number;
+  isBossFight: boolean;
+}): OutskirtsCombatStage {
+  const hpMax = Math.max(0, input.playerHpMax);
+  const hpCurrent = hpMax > 0 ? Math.min(Math.max(0, input.playerHpCurrent), hpMax) : 0;
+  return {
+    ...buildInactiveCombatStage(input.lifecycle),
+    active: true,
+    lifecycle: input.lifecycle,
+    player: {
+      role: 'player',
+      side: 'left',
+      name: 'Cultivator',
+      hpCurrent,
+      hpMax,
+      hpLabel: formatCombatHpLabel(hpCurrent, hpMax),
+      hpPct: hpMax > 0 ? clampPct((hpCurrent / hpMax) * 100) : 0,
+      actorImageKey: 'outskirts/actor/cultivator',
+      motionState: hpCurrent <= 0 ? 'defeat' : 'idle',
+    },
+    enemy: {
+      role: 'enemy',
+      side: 'right',
+      id: null,
+      name: 'Seeking foe',
+      levelLabel: '',
+      hpCurrent: 0,
+      hpMax: 0,
+      hpLabel: '0 / 0',
+      hpPct: 0,
+      actorImageKey: 'outskirts/enemy/unknown',
+      motionState: 'idle',
+      isBoss: input.isBossFight,
+    },
+    chips: buildCombatStageChips({
+      aiProfileLabel: input.aiProfileLabel,
+      autoUseOn: input.autoUseOn,
+      isBossFight: input.isBossFight,
+      killsToBoss: input.killsToBoss,
+      killsSinceBoss: input.killsSinceBoss,
+      source: 'live',
+    }),
+  };
+}
+
+function buildLiveCombatStageFromStores(input: {
+  lifecycle: OutskirtsSurfaceMode;
+  playerHp: string | number;
+  playerMaxHp: string | number;
+  enemyHp: string | number;
+  enemyMaxHp: string | number;
+  enemy: { id?: string | null; name?: string; level?: number; isBoss?: boolean } | null;
+  combatLog: CombatLogEntry[];
+  aiProfileLabel: string;
+  autoUseOn: boolean;
+  killsToBoss: number;
+  killsSinceBoss: number;
+  isBossFight: boolean;
+}): OutskirtsCombatStage {
+  const playerMax = toSafeCombatNumber(input.playerMaxHp);
+  const playerCurrentRaw = toSafeCombatNumber(input.playerHp);
+  const playerCurrent = playerMax > 0 ? Math.min(playerCurrentRaw, playerMax) : 0;
+  const enemyMax = toSafeCombatNumber(input.enemyMaxHp);
+  const enemyCurrentRaw = toSafeCombatNumber(input.enemyHp);
+  const enemyCurrent = enemyMax > 0 ? Math.min(enemyCurrentRaw, enemyMax) : 0;
+  const enemyName = input.enemy?.name?.trim() ? input.enemy.name : 'Unknown Foe';
+  const enemyId = input.enemy?.id?.trim() ? input.enemy.id : null;
+  const enemyLevelLabel = typeof input.enemy?.level === 'number' && Number.isFinite(input.enemy.level)
+    ? `Lv. ${Math.max(1, Math.round(input.enemy.level))}`
+    : '';
+  const actorKeyPart = normalizeCombatActorKeyPart(enemyId ?? enemyName);
+  const logLines: OutskirtsCombatStageLogLine[] = input.combatLog.slice(-3).map((entry, index) => {
+    const timestamp = Number.isFinite(entry.timestamp) ? entry.timestamp : null;
+    return {
+      id: timestamp === null ? `combat-log-live-${index}` : `combat-log-${timestamp}-${index}`,
+      text: entry.text,
+      tone: mapCombatLogLineTone(entry.type),
+      timestamp,
+      source: 'live',
+    };
+  });
+
+  return {
+    active: true,
+    hasLiveCombat: true,
+    lifecycle: input.lifecycle,
+    visualContract: 'outskirts-center-combat-theater-v1',
+    player: {
+      role: 'player',
+      side: 'left',
+      name: 'Cultivator',
+      hpCurrent: playerCurrent,
+      hpMax: playerMax,
+      hpLabel: formatCombatHpLabel(playerCurrent, playerMax),
+      hpPct: playerMax > 0 ? clampPct((playerCurrent / playerMax) * 100) : 0,
+      actorImageKey: 'outskirts/actor/cultivator',
+      motionState: playerCurrent <= 0 ? 'defeat' : 'idle',
+    },
+    enemy: {
+      role: 'enemy',
+      side: 'right',
+      id: enemyId,
+      name: enemyName,
+      levelLabel: enemyLevelLabel,
+      hpCurrent: enemyCurrent,
+      hpMax: enemyMax,
+      hpLabel: formatCombatHpLabel(enemyCurrent, enemyMax),
+      hpPct: enemyMax > 0 ? clampPct((enemyCurrent / enemyMax) * 100) : 0,
+      actorImageKey: `outskirts/enemy/${actorKeyPart}`,
+      motionState: enemyCurrent <= 0 ? 'defeat' : 'idle',
+      isBoss: input.isBossFight || Boolean(input.enemy?.isBoss),
+    },
+    versusSeal: { iconKey: 'crossed-swords', label: 'Duel' },
+    chips: buildCombatStageChips({
+      aiProfileLabel: input.aiProfileLabel,
+      autoUseOn: input.autoUseOn,
+      isBossFight: input.isBossFight,
+      killsToBoss: input.killsToBoss,
+      killsSinceBoss: input.killsSinceBoss,
+      source: 'live',
+    }),
+    logLines,
+    floatingHits: [],
+  };
+}
+
+function cloneCombatStage(stage: OutskirtsCombatStage): OutskirtsCombatStage {
+  return {
+    ...stage,
+    player: { ...stage.player },
+    enemy: { ...stage.enemy },
+    versusSeal: { ...stage.versusSeal },
+    chips: stage.chips.map((chip) => ({ ...chip })),
+    logLines: stage.logLines.map((line) => ({ ...line })),
+    floatingHits: stage.floatingHits.map((hit) => ({ ...hit })),
+  };
 }
 
 function parseHpLabel(hpLabel: string): { current: number; max: number } {
@@ -254,6 +495,7 @@ export function buildOutskirtsMockupSurface(
   options: BuildOutskirtsMockupSurfaceOptions = {},
 ): OutskirtsExactSurfaceV2 {
   const activityMode = options.activityMode ?? (snapshot.isOutskirtsActive ? 'active' : 'planning');
+  const combatStage = cloneCombatStage(snapshot.combatStage);
   const missingDataFallbacks: string[] = [];
   const unresolvedLiveSourceNotes: string[] = [];
   const placeholderAssetKeysInUse = [snapshot.scenicArtKey, snapshot.scenicBackgroundKey].filter((k) => k.startsWith('placeholder/'));
@@ -263,8 +505,8 @@ export function buildOutskirtsMockupSurface(
   if (medicine.source !== 'live') missingDataFallbacks.push('medicinePouchLabel');
   if (bounty.source !== 'live') missingDataFallbacks.push('bountyLabel');
 
-  const hp = parseHpLabel(snapshot.hpLabel);
-  const hpPrimary = hp.max > 0 ? `${formatWhole(hp.current)} / ${formatWhole(hp.max)}` : snapshot.hpLabel;
+  const hp = parseHpLabel(combatStage.hasLiveCombat ? combatStage.player.hpLabel : snapshot.hpLabel);
+  const hpPrimary = hp.max > 0 ? `${formatWhole(hp.current)} / ${formatWhole(hp.max)}` : (combatStage.hasLiveCombat ? combatStage.player.hpLabel : snapshot.hpLabel);
   const bountyProgress = parseProgressLabel(snapshot.trackedBountyProgress);
   const encounterStrip = buildEncounterStrip(snapshot, options);
   const topNodes = encounterStrip.nodes;
@@ -389,6 +631,7 @@ export function buildOutskirtsMockupSurface(
       plaqueVariant: 'ornate-gold',
       ornamentVariant: 'leaf-cap',
     },
+    combatStage,
     grindSummary: {
       visible: true,
       title: OUTSKIRTS_REVIEW_COPY.grindSummaryTitle,
@@ -460,13 +703,16 @@ export function buildOutskirtsMockupRuntimeSnapshotFromStores(cityId?: string): 
   const postureContext = buildCurrentCombatPostureContext('outskirts');
   const tracked = useBountyStore.getState().getTrackedBounty(resolvedCityId);
   const autoContinue = useOutskirtsStore.getState().autoContinue;
-  const pouch = useMedicinePouchStore.getState().slots.healing;
+  const pouchSlots = useMedicinePouchStore.getState().slots;
+  const pouch = pouchSlots.healing;
   const pouchQty = pouch?.equippedItemId ? useInventoryStore.getState().getItemCount(pouch.equippedItemId) : 0;
   const gameStats = useGameStore.getState().stats;
   const selectedLoadout = useTechniqueStore.getState().getSelectedLoadout?.();
   const selectedLoadoutName = selectedLoadout?.name ?? 'Set 2';
   const selectedAiProfile = selectedLoadout?.aiProfile ?? ui.settings.combatAIProfile;
   const attackFocusLabel = ui.settings.preferredTarget === 'boss' ? 'Boss' : ui.settings.preferredTarget === 'elite' ? 'Elite' : 'Balanced';
+  const aiProfileLabel = selectedAiProfile[0].toUpperCase() + selectedAiProfile.slice(1);
+  const autoUseOn = Object.values(pouchSlots).some((slot) => Boolean(slot.equippedItemId) && slot.enabled && slot.trigger !== 'manual');
 
   const aiRecommendation = evaluateAiProfileFit({ encounterType: 'outskirts', aiProfile: selectedAiProfile, loadoutSignals: postureContext.loadoutSignals, path: postureContext.path });
   const derivedAccuracyPct = aiRecommendation.rating === 'good' ? 92 : aiRecommendation.rating === 'risky' ? 86 : 82;
@@ -482,8 +728,40 @@ export function buildOutskirtsMockupRuntimeSnapshotFromStores(cityId?: string): 
   const resolveItemName = (itemId: string | null): string => itemId ? content.maps.itemsById[itemId]?.name ?? itemId : OUTSKIRTS_PLACEHOLDER_POLICY.lineFallback;
 
   const hasSameSourceOutskirtsCombat = isSameOutskirtsCombatSource(resolvedCityId, outskirts?.id ?? null, combatContext);
+  const hasSameSourceOutskirtsActivity = isSameOutskirtsActivitySource(resolvedCityId, outskirts?.id ?? null, activity);
+  const isOutskirtsActive = hasSameSourceOutskirtsActivity || hasSameSourceOutskirtsCombat;
+  const isBossFight = Boolean((combatContext.type === 'outskirts' && combatContext.isBoss) || combatStore.isBoss || combatStore.currentEnemy?.isBoss);
+  const combatStage = (() => {
+    if (!isOutskirtsActive) return buildInactiveCombatStage('planning');
+    if (hasSameSourceOutskirtsCombat && combatStore.currentEnemy) {
+      return buildLiveCombatStageFromStores({
+        lifecycle: 'active',
+        playerHp: combatStore.playerHP,
+        playerMaxHp: combatStore.playerMaxHP,
+        enemyHp: combatStore.enemyHP,
+        enemyMaxHp: combatStore.enemyMaxHP,
+        enemy: combatStore.currentEnemy,
+        combatLog: combatStore.combatLog,
+        aiProfileLabel,
+        autoUseOn,
+        killsToBoss: outskirts?.killsToBoss ?? 10,
+        killsSinceBoss: progress.killsSinceBoss,
+        isBossFight,
+      });
+    }
+    return buildStartingCombatStage({
+      lifecycle: 'active',
+      playerHpCurrent: toSafeCombatNumber(gameStats.maxHp),
+      playerHpMax: toSafeCombatNumber(gameStats.maxHp),
+      aiProfileLabel,
+      autoUseOn,
+      killsToBoss: outskirts?.killsToBoss ?? 10,
+      killsSinceBoss: progress.killsSinceBoss,
+      isBossFight,
+    });
+  })();
   const combatHpLabel = hasSameSourceOutskirtsCombat
-    ? `${formatWhole(combatStore.playerHP)} / ${formatWhole(combatStore.playerMaxHP)}`
+    ? combatStage.player.hpLabel
     : `${formatWhole(gameStats.maxHp)} / ${formatWhole(gameStats.maxHp)}`;
 
   return {
@@ -495,12 +773,12 @@ export function buildOutskirtsMockupRuntimeSnapshotFromStores(cityId?: string): 
     killsSinceBoss: progress.killsSinceBoss,
     killsToBoss: outskirts?.killsToBoss ?? 10,
     totalKills: progress.totalKills,
-    isOutskirtsActive: activity?.type === 'outskirts' && activity.cityId === resolvedCityId,
+    isOutskirtsActive,
     hpLabel: combatHpLabel,
     dangerLabel: 'Low',
     loadoutLabel: selectedLoadoutName,
     aiProfile: selectedAiProfile,
-    aiProfileLabel: selectedAiProfile[0].toUpperCase() + selectedAiProfile.slice(1),
+    aiProfileLabel,
     attackFocusLabel,
     medicinePouchLabel: `${pouchQty} / 20`,
     bountyLabel: tracked ? `${tracked.title} ${tracked.progress}/${tracked.target}` : null,
@@ -548,6 +826,7 @@ export function buildOutskirtsMockupRuntimeSnapshotFromStores(cityId?: string): 
     boundaryLine: rewardModel.boundaryLine,
     pageSubtitle: OUTSKIRTS_REVIEW_COPY.subtitle,
     supportHints: [],
+    combatStage,
   };
 }
 

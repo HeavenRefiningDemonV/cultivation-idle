@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { buildOutskirtsMockupSurface } from '../../src/features/world/outskirts/buildOutskirtsMockupSurface.js';
-import { createOutskirtsMockupFixture } from '../../src/features/world/outskirts/fixtures/createOutskirtsMockupFixture.js';
+import { createActiveOutskirtsMockupFixture, createOutskirtsMockupFixture } from '../../src/features/world/outskirts/fixtures/createOutskirtsMockupFixture.js';
 import { OUTSKIRTS_APPROVED_SCENIC_MOCKUP_SRC } from '../../src/features/world/outskirts/outskirtsMockupPresentation.js';
 import { OUTSKIRTS_ASSETS } from '../../src/features/world/outskirts/outskirtsAssetRegistry.js';
 
@@ -22,6 +22,8 @@ void test('buildOutskirtsMockupSurface emits v2 shape with explicit shell contra
   assert.equal(surface.encounterIdentity.selectedEncounterId, 'snarling-wolf');
   assert.deepEqual(surface.encounterStrip.nodes.map((node) => node.levelLabel), ['Lv. 8', 'Lv. 9', 'Lv. 11', 'Lv. 13', 'Lv. 15', 'Lv. 17']);
   assert.equal(surface.primaryAction.label, 'Start Hunt');
+  assert.equal(surface.combatStage.active, false);
+  assert.equal(surface.combatStage.visualContract, 'outskirts-center-combat-theater-v1');
   assert.equal(surface.primaryAction.visible, true);
   assert.equal(surface.grindSummary.runsText, '128');
   assert.equal(surface.shell.singleDominantCta, true);
@@ -53,4 +55,19 @@ void test('buildOutskirtsMockupSurface preserves v2 structure for live-like valu
   assert.equal(surface.rewardsCard.estimatedEfficiency.title, 'Estimated Efficiency');
   assert.equal(surface.debug.missingDataFallbacks.includes('bountyLabel'), true);
   assert.equal(surface.primaryAction.visible, true);
+  assert.equal(surface.combatStage.active, false);
+});
+
+void test('buildOutskirtsMockupSurface supports active fixture combat-stage read-model without visible shell flips', () => {
+  const surface = buildOutskirtsMockupSurface(createActiveOutskirtsMockupFixture(), { activityMode: 'active' });
+
+  assert.equal(surface.meta.activityMode, 'active');
+  assert.equal(surface.combatStage.active, true);
+  assert.equal(surface.combatStage.player.hpLabel, '131 / 131');
+  assert.equal(surface.combatStage.enemy.hpLabel, '78 / 126');
+  assert.equal(surface.combatStage.chips.length, 5);
+  assert.equal(surface.combatStage.logLines.length, 3);
+  assert.equal(surface.shell.showCombatTheater, false);
+  assert.equal(surface.shell.showCombatHpBars, false);
+  assert.equal(surface.shell.showCombatLog, false);
 });

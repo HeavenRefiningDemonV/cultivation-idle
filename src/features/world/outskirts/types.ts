@@ -5,6 +5,10 @@ export type OutskirtsTacticalTone = 'neutral' | 'positive' | 'warning' | 'critic
 export type OutskirtsEncounterNodeState = 'completed' | 'current' | 'future';
 export type OutskirtsEncounterSafety = 'safe' | 'watch' | 'risk' | 'critical';
 export type OutskirtsSurfaceMode = 'planning' | 'starting' | 'active' | 'resolving' | 'defeat' | 'paused';
+export type OutskirtsCombatMotionState = 'idle' | 'attack' | 'hit' | 'dodge' | 'defeat';
+export type OutskirtsCombatChipTone = 'neutral' | 'ready' | 'cooldown' | 'warning';
+export type OutskirtsCombatLogTone = 'player' | 'enemy' | 'system' | 'loot' | 'defeat' | 'victory';
+export type OutskirtsFloatingHitKind = 'normal' | 'crit' | 'miss' | 'heal';
 
 export interface OutskirtsExactSurfaceMeta {
   surfaceId: 'outskirts-exact-mockup';
@@ -260,6 +264,74 @@ export interface OutskirtsMockupShellFlags {
   usePlanningState: boolean;
 }
 
+export interface OutskirtsCombatStagePlayer {
+  role: 'player';
+  side: 'left';
+  name: string;
+  hpCurrent: number;
+  hpMax: number;
+  hpLabel: string;
+  hpPct: number;
+  actorImageKey: string;
+  motionState: OutskirtsCombatMotionState;
+}
+
+export interface OutskirtsCombatStageEnemy {
+  role: 'enemy';
+  side: 'right';
+  id: string | null;
+  name: string;
+  levelLabel: string;
+  hpCurrent: number;
+  hpMax: number;
+  hpLabel: string;
+  hpPct: number;
+  actorImageKey: string;
+  motionState: OutskirtsCombatMotionState;
+  isBoss: boolean;
+}
+
+export interface OutskirtsCombatStageChip {
+  id: string;
+  label: string;
+  tone: OutskirtsCombatChipTone;
+  source: OutskirtsSurfaceValueSource;
+}
+
+export interface OutskirtsCombatStageLogLine {
+  id: string;
+  text: string;
+  tone: OutskirtsCombatLogTone;
+  timestamp: number | null;
+  source: OutskirtsSurfaceValueSource;
+}
+
+export interface OutskirtsFloatingHit {
+  id: string;
+  text: string;
+  x: number;
+  y: number;
+  kind: OutskirtsFloatingHitKind;
+  target: 'player' | 'enemy';
+  source: OutskirtsSurfaceValueSource;
+}
+
+export interface OutskirtsCombatStage {
+  active: boolean;
+  hasLiveCombat: boolean;
+  lifecycle: OutskirtsSurfaceMode;
+  visualContract: 'outskirts-center-combat-theater-v1';
+  player: OutskirtsCombatStagePlayer;
+  enemy: OutskirtsCombatStageEnemy;
+  versusSeal: {
+    iconKey: 'crossed-swords';
+    label: 'Duel';
+  };
+  chips: OutskirtsCombatStageChip[];
+  logLines: OutskirtsCombatStageLogLine[];
+  floatingHits: OutskirtsFloatingHit[];
+}
+
 export interface OutskirtsExactSurfaceDebug {
   missingDataFallbacks: string[];
   placeholderAssetKeysInUse: string[];
@@ -284,6 +356,7 @@ export interface OutskirtsExactSurfaceV2 {
   rewardsCard: OutskirtsRewardsCard;
   encounterStrip: OutskirtsEncounterStrip;
   primaryAction: OutskirtsPrimaryAction;
+  combatStage: OutskirtsCombatStage;
   grindSummary: OutskirtsGrindSummary;
   shell: OutskirtsMockupShellFlags;
   debug: OutskirtsExactSurfaceDebug;
@@ -336,5 +409,6 @@ export interface OutskirtsMockupRuntimeSnapshot {
   boundaryLine: string;
   pageSubtitle: string;
   supportHints: string[];
+  combatStage: OutskirtsCombatStage;
   innerPalacePreview?: OutskirtsInnerPalacePreview;
 }

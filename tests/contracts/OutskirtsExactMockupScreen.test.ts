@@ -6,7 +6,7 @@ import { readFile } from 'node:fs/promises';
 
 import { OutskirtsExactMockupScreen } from '../../src/features/world/outskirts/OutskirtsExactMockupScreen.js';
 import { buildOutskirtsMockupSurface } from '../../src/features/world/outskirts/buildOutskirtsMockupSurface.js';
-import { createOutskirtsMockupFixture } from '../../src/features/world/outskirts/fixtures/createOutskirtsMockupFixture.js';
+import { createActiveOutskirtsMockupFixture, createOutskirtsMockupFixture } from '../../src/features/world/outskirts/fixtures/createOutskirtsMockupFixture.js';
 import { OutskirtsTopRegion } from '../../src/features/world/outskirts/components/OutskirtsTopRegion.js';
 import { OutskirtsTacticalStrip } from '../../src/features/world/outskirts/components/OutskirtsTacticalStrip.js';
 import { OutskirtsEncounterProgressStrip } from '../../src/features/world/outskirts/components/OutskirtsEncounterProgressStrip.js';
@@ -167,6 +167,35 @@ void test('P6 no-scope-widening smoke: side cards, strip, CTA, and summary owner
     'outskirts-grind-summary',
   ];
   for (const token of unchangedOwners) assert.equal(html.includes(token), true);
+});
+
+void test('C1 no visual rendering change: active combatStage data does not mount combat theater visuals', () => {
+  const surface = buildOutskirtsMockupSurface(createActiveOutskirtsMockupFixture(), { activityMode: 'active' });
+  const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
+
+  for (const token of [
+    'outskirts-exact-page',
+    'outskirts-exact-left-rail',
+    'outskirts-exact-center-scenic-slot',
+    'outskirts-exact-right-rail',
+    'outskirts-exact-strip-slot',
+    'outskirts-exact-cta-slot',
+    'outskirts-exact-summary-dock',
+  ]) {
+    assert.equal(html.includes(token), true);
+  }
+
+  for (const forbidden of [
+    'outskirtsCombatTheater',
+    'outskirts-combat-health-bars',
+    'outskirts-combat-log-slip',
+    'floating-hit',
+    'ink-combat-shell',
+    'OutskirtsLegacyActiveSurface',
+    'outskirts-view-active-contained',
+  ]) {
+    assert.equal(html.includes(forbidden), false);
+  }
 });
 
 void test('P7 setup-card structure renders exact ordered sections and six equipment slots', () => {
