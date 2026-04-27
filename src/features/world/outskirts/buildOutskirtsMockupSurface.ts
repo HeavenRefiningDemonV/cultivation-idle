@@ -525,7 +525,7 @@ export function buildOutskirtsMockupSurface(
   } as const;
 
   const notes = [activityMode === 'active'
-    ? 'Active Outskirts uses the exact mockup page owner; center combat theater is deferred to later packets.'
+    ? 'Active Outskirts uses the exact mockup page owner; center combat theater shell is mounted while hp bars/log/floating hits remain deferred.'
     : 'Planning exact surface is a review fixture and does not change baseline live-screen ownership in P0.'];
 
   return {

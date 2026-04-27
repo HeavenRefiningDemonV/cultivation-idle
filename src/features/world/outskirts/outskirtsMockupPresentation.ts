@@ -102,7 +102,7 @@ export const OUTSKIRTS_ALLOWED_PLANNING_SHELL: OutskirtsMockupShellFlags = {
 export const OUTSKIRTS_ALLOWED_ACTIVE_CONTRACT_SHELL: OutskirtsMockupShellFlags = {
   showRunCompass: false,
   showCombatModuleTopLane: false,
-  showCombatTheater: false,
+  showCombatTheater: true,
   showCombatHpBars: false,
   showFloatingDamage: false,
   showSummaryRail: false,

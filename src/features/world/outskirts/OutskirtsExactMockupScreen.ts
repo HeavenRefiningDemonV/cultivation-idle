@@ -2,7 +2,7 @@ import React from 'react';
 import { OUTSKIRTS_MOCKUP_REGION_ORDER } from './outskirtsMockupPresentation.js';
 import type { OutskirtsExactSurfaceV2 } from './types.js';
 import { OutskirtsTopRegion } from './components/OutskirtsTopRegion.js';
-import { OutskirtsScenicStage } from './components/OutskirtsScenicStage.js';
+import { OutskirtsCenterStage } from './components/OutskirtsCenterStage.js';
 import { OutskirtsEncounterIdentityRow } from './components/OutskirtsEncounterIdentityRow.js';
 import { OutskirtsSetupCard } from './components/OutskirtsSetupCard.js';
 import { OutskirtsEncounterProgressStrip } from './components/OutskirtsEncounterProgressStrip.js';
@@ -68,7 +68,7 @@ export function OutskirtsExactMockupScreen({
       React.createElement(
         'main',
         { className: 'outskirtsExactPage__centerScenic', 'data-testid': 'outskirts-exact-center-scenic-slot', 'data-legacy-testid': 'outskirts-exact-center-slot' },
-        React.createElement(OutskirtsScenicStage, { scenic: surface.scenicStage, identity: surface.encounterIdentity }),
+        React.createElement(OutskirtsCenterStage, { scenic: surface.scenicStage, identity: surface.encounterIdentity, combatStage: surface.combatStage }),
       ),
       React.createElement(
         'section',

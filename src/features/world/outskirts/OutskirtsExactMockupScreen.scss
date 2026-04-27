@@ -399,6 +399,65 @@
 }
 
 
+
+.outskirtsCenterStage {
+  position: absolute;
+  inset: 0;
+  min-height: 100%;
+  isolation: isolate;
+}
+
+.outskirtsCombatTheater {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  isolation: isolate;
+  background: radial-gradient(140% 88% at 50% 66%, rgba(59, 52, 46, 0.3), rgba(25, 19, 15, 0.44));
+}
+
+.outskirtsCombatTheater__base {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-repeat: no-repeat;
+  transform: scale(1.01);
+  filter: saturate(0.86) contrast(1.03) brightness(0.9);
+}
+
+.outskirtsCombatTheater__wash {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(94% 57% at 50% 82%, rgba(235, 227, 208, 0.24), rgba(235, 227, 208, 0) 72%),
+    linear-gradient(180deg, rgba(36, 24, 18, 0.02), rgba(22, 16, 14, 0.32));
+  pointer-events: none;
+}
+
+.outskirtsCombatTheater__mist {
+  position: absolute;
+  inset-inline: 0;
+  top: 66%;
+  bottom: -1px;
+  background: linear-gradient(180deg, rgba(237, 231, 214, 0), rgba(237, 231, 214, 0.6) 72%, rgba(237, 231, 214, 0.82));
+  pointer-events: none;
+}
+
+.outskirtsCombatTheater__edgeFade {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(130% 84% at 50% 62%, rgba(255, 249, 236, 0) 56%, rgba(255, 249, 236, 0.54));
+  pointer-events: none;
+}
+
+.outskirtsCombatTheater__hpLayer,
+.outskirtsCombatTheater__actorLayer,
+.outskirtsCombatTheater__effectsLayer,
+.outskirtsCombatTheater__chipsLayer,
+.outskirtsCombatTheater__logLayer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
 .outskirtsExactPage__centerIdentity {
   grid-area: encounterIdentity;
   min-width: 0;
