@@ -69,12 +69,12 @@ void test('outskirts support context only emits adjacent route modules and keeps
   assert.equal(surface.routeHints[0]?.destination, 'ruins');
 });
 
-void test('outskirts planning owner is routed through dedicated exact planning owner component in P2', async () => {
+void test('outskirts screen owner is routed through dedicated exact owner component', async () => {
   const panelSource = await readFile(new URL('../../src/components/screens/world/buildings/OutskirtsBuildingPanel.tsx', import.meta.url), 'utf8');
-  const planningOwnerSource = await readFile(new URL('../../src/features/world/outskirts/OutskirtsPlanningOwner.tsx', import.meta.url), 'utf8');
-  assert.match(panelSource, /OutskirtsPlanningOwner/);
-  assert.match(panelSource, /OutskirtsLegacyActiveSurface/);
-  assert.match(planningOwnerSource, /buildOutskirtsMockupSurfaceFromStores/);
-  assert.match(planningOwnerSource, /OutskirtsExactMockupScreen/);
-  assert.match(planningOwnerSource, /data-testid="outskirts-view-planning"/);
+  const ownerSource = await readFile(new URL('../../src/features/world/outskirts/OutskirtsScreenOwner.tsx', import.meta.url), 'utf8');
+  assert.match(panelSource, /OutskirtsScreenOwner/);
+  assert.doesNotMatch(panelSource, /OutskirtsLegacyActiveSurface/);
+  assert.match(ownerSource, /buildOutskirtsMockupSurfaceFromStores/);
+  assert.match(ownerSource, /OutskirtsExactMockupScreen/);
+  assert.match(ownerSource, /data-testid="outskirts-view-screen"/);
 });

@@ -97,3 +97,20 @@ export const OUTSKIRTS_ALLOWED_PLANNING_SHELL: OutskirtsMockupShellFlags = {
   useScenicCenter: true,
   usePlanningState: true,
 };
+
+
+export const OUTSKIRTS_ALLOWED_ACTIVE_CONTRACT_SHELL: OutskirtsMockupShellFlags = {
+  showRunCompass: false,
+  showCombatModuleTopLane: false,
+  showCombatTheater: false,
+  showCombatHpBars: false,
+  showFloatingDamage: false,
+  showSummaryRail: false,
+  showUtilityTray: false,
+  showCombatLog: false,
+  showCombatOptions: false,
+  rightCardHasPrimaryAction: false,
+  singleDominantCta: true,
+  useScenicCenter: true,
+  usePlanningState: false,
+};

@@ -4,14 +4,14 @@ import fs from 'node:fs/promises';
 
 test('outskirts planning owner is pure and legacy readability surfaces are quarantined to active branch', async () => {
   const outskirtsRouter = await fs.readFile('src/components/screens/world/buildings/OutskirtsBuildingPanel.tsx', 'utf8');
-  const outskirtsPlanning = await fs.readFile('src/features/world/outskirts/OutskirtsPlanningOwner.tsx', 'utf8');
+  const outskirtsPlanning = await fs.readFile('src/features/world/outskirts/OutskirtsScreenOwner.tsx', 'utf8');
   const outskirtsActive = await fs.readFile('src/features/world/outskirts/OutskirtsLegacyActiveSurface.tsx', 'utf8');
   const ruinsPanel = await fs.readFile('src/components/screens/world/buildings/RuinsBuildingPanel.tsx', 'utf8');
   const ruinsProgress = await fs.readFile('src/features/ruins/ui/RuinsProgress.tsx', 'utf8');
   const ruinsCtaZone = await fs.readFile('src/features/ruins/ui/RuinsCtaZone.tsx', 'utf8');
 
-  assert.match(outskirtsRouter, /OutskirtsPlanningOwner/);
-  assert.match(outskirtsRouter, /OutskirtsLegacyActiveSurface/);
+  assert.match(outskirtsRouter, /OutskirtsScreenOwner/);
+  assert.doesNotMatch(outskirtsRouter, /OutskirtsLegacyActiveSurface/);
   assert.match(outskirtsRouter, /getOutskirtsModuleViewState/);
   assert.doesNotMatch(outskirtsRouter, /useRunCompassSurface/);
   assert.doesNotMatch(outskirtsRouter, /OutskirtsSummaryCard/);

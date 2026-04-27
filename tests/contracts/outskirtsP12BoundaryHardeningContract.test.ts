@@ -4,7 +4,7 @@ import test from 'node:test';
 
 import { getOutskirtsModuleViewState } from '../../src/features/world/outskirts/getOutskirtsModuleViewState.js';
 
-void test('P12 same-source active reopen resolves directly to activeContained without planning/unavailable fallback', async () => {
+void test('P12 same-source active reopen resolves directly to active without planning/unavailable fallback', async () => {
   const fromActivity = getOutskirtsModuleViewState({
     cityId: 'city_pinewind_hamlet',
     outskirtsId: null,
@@ -16,7 +16,7 @@ void test('P12 same-source active reopen resolves directly to activeContained wi
     },
     combatContext: { type: null },
   });
-  assert.equal(fromActivity, 'activeContained');
+  assert.equal(fromActivity, 'active');
 
   const fromCombat = getOutskirtsModuleViewState({
     cityId: 'city_pinewind_hamlet',
@@ -28,16 +28,15 @@ void test('P12 same-source active reopen resolves directly to activeContained wi
       sourceId: undefined,
     },
   });
-  assert.equal(fromCombat, 'activeContained');
+  assert.equal(fromCombat, 'active');
 
   const panelSource = await fs.readFile('src/components/screens/world/buildings/OutskirtsBuildingPanel.tsx', 'utf8');
-  assert.match(panelSource, /if \(viewState === 'planning'\) \{\s*return <OutskirtsPlanningOwner cityId=\{cityId\} \/>;\s*\}/);
   assert.match(panelSource, /if \(viewState === 'unavailable'\) \{/);
-  assert.match(panelSource, /outskirts-active-boundary-loading/);
-  assert.doesNotMatch(panelSource, /outskirts-view-planning[\s\S]*outskirts-active-boundary-loading/);
+  assert.match(panelSource, /return <OutskirtsScreenOwner cityId=\{cityId\} \/>/);
+  assert.doesNotMatch(panelSource, /outskirts-active-boundary-loading/);
 });
 
-void test('P12 no hybrid owner contract keeps planning and active-contained owners exclusive', () => {
+void test('P12 no hybrid owner contract keeps planning and active on same owner', () => {
   const cases = [
     getOutskirtsModuleViewState({
       cityId: 'city_pinewind_hamlet',
@@ -56,56 +55,31 @@ void test('P12 no hybrid owner contract keeps planning and active-contained owne
       },
       combatContext: { type: null },
     }),
-    getOutskirtsModuleViewState({
-      cityId: 'city_pinewind_hamlet',
-      outskirtsId: null,
-      activity: null,
-      combatContext: { type: null },
-    }),
   ];
 
-  for (const viewState of cases) {
-    const planningVisible = viewState === 'planning';
-    const activeVisible = viewState === 'activeContained';
-    assert.equal(planningVisible && activeVisible, false);
-  }
+  assert.deepEqual(cases, ['planning', 'active']);
 });
 
-void test('P12 planning-state purity contract rejects legacy active-shell visuals from planning owner', async () => {
-  const planningOwner = await fs.readFile('src/features/world/outskirts/OutskirtsPlanningOwner.tsx', 'utf8');
-  const planningScreen = await fs.readFile('src/features/world/outskirts/OutskirtsExactMockupScreen.ts', 'utf8');
+void test('P12 owner/screen purity rejects legacy active-shell visuals from live owner path', async () => {
+  const owner = await fs.readFile('src/features/world/outskirts/OutskirtsScreenOwner.tsx', 'utf8');
+  const screen = await fs.readFile('src/features/world/outskirts/OutskirtsExactMockupScreen.ts', 'utf8');
 
-  const forbidden = [
+  for (const token of [
     /InkHealthBar/,
     /InkCombatShell/,
     /CombatModuleTopLane/,
     /outskirts-view-active-contained/,
-    /combat log/i,
-    /RunCompass/,
     /OutskirtsLegacyActiveSurface/,
     /outskirtsActiveContainment/,
-  ];
-
-  for (const token of forbidden) {
-    assert.doesNotMatch(planningOwner, token);
-    assert.doesNotMatch(planningScreen, token);
+  ]) {
+    assert.doesNotMatch(owner, token);
+    assert.doesNotMatch(screen, token);
   }
 
-  assert.match(planningOwner, /data-testid="outskirts-view-planning"/);
+  assert.match(owner, /data-testid="outskirts-view-screen"/);
 });
 
-void test('P12 active-contained branch remains usable and wired to legacy active surface controls', async () => {
-  const activeOwner = await fs.readFile('src/features/world/outskirts/OutskirtsLegacyActiveSurface.tsx', 'utf8');
-
-  assert.match(activeOwner, /OutskirtsActiveContainment/);
-  assert.match(activeOwner, /InkCombatShell/);
-  assert.match(activeOwner, /InkHealthBar/);
-  assert.match(activeOwner, /CombatModuleTopLane/);
-  assert.match(activeOwner, /stopCombatAndClose/);
-  assert.match(activeOwner, /closeWorldBuildingModal/);
-});
-
-void test('P12 stop/end transition returns from activeContained back to planning without hybrid overlap', () => {
+void test('P12 stop/end transition returns from active back to planning without hybrid overlap', () => {
   const planningBefore = getOutskirtsModuleViewState({
     cityId: 'city_pinewind_hamlet',
     outskirtsId: 'outskirts_pinewind',
@@ -125,7 +99,7 @@ void test('P12 stop/end transition returns from activeContained back to planning
     },
     combatContext: { type: null },
   });
-  assert.equal(activeDuringRun, 'activeContained');
+  assert.equal(activeDuringRun, 'active');
 
   const planningAfterStop = getOutskirtsModuleViewState({
     cityId: 'city_pinewind_hamlet',
@@ -134,14 +108,4 @@ void test('P12 stop/end transition returns from activeContained back to planning
     combatContext: { type: null },
   });
   assert.equal(planningAfterStop, 'planning');
-});
-
-void test('P12 import/style boundary is hardened by lazy active loading and active-owned containment styles', async () => {
-  const panelSource = await fs.readFile('src/components/screens/world/buildings/OutskirtsBuildingPanel.tsx', 'utf8');
-  const exactScss = await fs.readFile('src/features/world/outskirts/OutskirtsExactMockupScreen.scss', 'utf8');
-  const activeScss = await fs.readFile('src/features/world/outskirts/components/OutskirtsActiveContainment.scss', 'utf8');
-
-  assert.match(panelSource, /const OutskirtsLegacyActiveSurface = lazy\(async \(\) =>/);
-  assert.doesNotMatch(exactScss, /\.outskirtsActiveContainment/);
-  assert.match(activeScss, /\.outskirtsActiveContainment/);
 });

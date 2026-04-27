@@ -1,7 +1,7 @@
 import type { ActiveActivity } from '../../../types/activity.js';
 import type { CombatContext } from '../../../types/index.js';
 
-export type OutskirtsModuleViewState = 'unavailable' | 'planning' | 'activeContained';
+export type OutskirtsModuleViewState = 'unavailable' | 'planning' | 'active';
 
 export interface ResolveOutskirtsModuleViewStateInput {
   cityId: string;
@@ -16,7 +16,13 @@ function getActivitySourceId(activity: ActiveActivity | null): string | null {
   return activity.sourceId ?? payloadSourceId ?? null;
 }
 
-function isSameOutskirtsCombatSource(cityId: string, outskirtsId: string | null, combatContext: CombatContext): boolean {
+export function isSameOutskirtsActivitySource(cityId: string, outskirtsId: string | null, activity: ActiveActivity | null): boolean {
+  const activitySourceId = getActivitySourceId(activity);
+  const activityCityMatches = activity?.type === 'outskirts' && (!activity.cityId || activity.cityId === cityId);
+  return Boolean(activityCityMatches && (outskirtsId ? activitySourceId === outskirtsId : true));
+}
+
+export function isSameOutskirtsCombatSource(cityId: string, outskirtsId: string | null, combatContext: CombatContext): boolean {
   if (combatContext.type !== 'outskirts') return false;
   if (outskirtsId && combatContext.sourceId && combatContext.sourceId === outskirtsId) return true;
   return !combatContext.sourceId && combatContext.cityId === cityId;
@@ -24,12 +30,10 @@ function isSameOutskirtsCombatSource(cityId: string, outskirtsId: string | null,
 
 export function getOutskirtsModuleViewState(input: ResolveOutskirtsModuleViewStateInput): OutskirtsModuleViewState {
   const { cityId, outskirtsId, activity, combatContext } = input;
-  const activitySourceId = getActivitySourceId(activity);
-  const activityCityMatches = activity?.type === 'outskirts' && (!activity.cityId || activity.cityId === cityId);
-  const activityMatches = Boolean(activityCityMatches && (outskirtsId ? activitySourceId === outskirtsId : true));
+  const activityMatches = isSameOutskirtsActivitySource(cityId, outskirtsId, activity);
   const combatMatches = isSameOutskirtsCombatSource(cityId, outskirtsId, combatContext);
 
-  if (activityMatches || combatMatches) return 'activeContained';
+  if (activityMatches || combatMatches) return 'active';
   if (!outskirtsId) return 'unavailable';
   return 'planning';
 }

@@ -4,6 +4,7 @@ export type OutskirtsSurfaceValueSource = 'live' | 'derived' | 'synthetic' | 'ma
 export type OutskirtsTacticalTone = 'neutral' | 'positive' | 'warning' | 'critical';
 export type OutskirtsEncounterNodeState = 'completed' | 'current' | 'future';
 export type OutskirtsEncounterSafety = 'safe' | 'watch' | 'risk' | 'critical';
+export type OutskirtsSurfaceMode = 'planning' | 'starting' | 'active' | 'resolving' | 'defeat' | 'paused';
 
 export interface OutskirtsExactSurfaceMeta {
   surfaceId: 'outskirts-exact-mockup';
@@ -13,6 +14,7 @@ export interface OutskirtsExactSurfaceMeta {
   outskirtsId: string | null;
   source: 'stores' | 'fixture';
   targetMockupId: 'outskirts-approved-apr-17-2026';
+  activityMode: OutskirtsSurfaceMode;
 }
 
 export interface OutskirtsExactSurfacePage {
@@ -218,7 +220,7 @@ export interface OutskirtsPrimaryAction {
   ariaLabel: string;
   visible: boolean;
   enabled: boolean;
-  intent: 'start-hunt';
+  intent: 'start-hunt' | 'stop-hunt' | 'recover' | 'disabled';
   singleDominantCta: true;
   isPrimary?: true;
   disabledReason?: string;

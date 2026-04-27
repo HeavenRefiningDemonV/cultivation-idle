@@ -758,16 +758,16 @@ void test('P5 top region element count remains stable across fixture/live and bo
   assert.equal((liveLikeHtml.match(/outskirts-page-title/g) ?? []).length, 0);
 });
 
-void test('P4/P5 route preservation: World modal route still mounts Outskirts planning owner', async () => {
+void test('P4/P5 route preservation: World modal route still mounts Outskirts screen owner', async () => {
   const modalSource = await readFile(new URL('../../src/components/modals/WorldBuildingModal.tsx', import.meta.url), 'utf8');
   const panelSource = await readFile(new URL('../../src/components/screens/world/buildings/OutskirtsBuildingPanel.tsx', import.meta.url), 'utf8');
 
   assert.match(modalSource, /case 'outskirts':\s*content = <OutskirtsBuildingPanel cityId=\{storeCityId\} \/>/);
-  assert.match(panelSource, /OutskirtsPlanningOwner/);
+  assert.match(panelSource, /OutskirtsScreenOwner/);
 });
 
-void test('P11 planning owner keeps grounded settings/start semantics and routes pouch via apothecary intent', async () => {
-  const ownerSource = await readFile(new URL('../../src/features/world/outskirts/OutskirtsPlanningOwner.tsx', import.meta.url), 'utf8');
+void test('P11 screen owner keeps grounded settings/start semantics and routes pouch via apothecary intent', async () => {
+  const ownerSource = await readFile(new URL('../../src/features/world/outskirts/OutskirtsScreenOwner.tsx', import.meta.url), 'utf8');
   assert.match(ownerSource, /startActivity\('outskirts', \{ cityId, sourceId: outskirtsDef.id \}\)/);
   assert.match(ownerSource, /setAutoAttack\(true\)/);
   assert.match(ownerSource, /startCombat\(nextEnemyId,/);

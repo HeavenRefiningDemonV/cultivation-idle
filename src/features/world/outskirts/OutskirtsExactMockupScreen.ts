@@ -12,6 +12,7 @@ import { OutskirtsRewardsCard } from './components/OutskirtsRewardsCard.js';
 
 export interface OutskirtsExactMockupScreenProps {
   surface: OutskirtsExactSurfaceV2;
+  onPrimaryAction?: () => void;
   onStartHunt?: () => void;
   onOpenSettings?: () => void;
   onPreviewPreviousEncounter?: () => void;
@@ -30,6 +31,7 @@ export interface OutskirtsExactMockupScreenProps {
 
 export function OutskirtsExactMockupScreen({
   surface,
+  onPrimaryAction,
   onStartHunt,
   onOpenSettings,
   onPreviewPreviousEncounter,
@@ -47,7 +49,12 @@ export function OutskirtsExactMockupScreen({
 }: OutskirtsExactMockupScreenProps) {
   return React.createElement(
     'article',
-    { className: 'outskirtsExactPage', 'data-testid': 'outskirts-exact-page', 'data-legacy-testid': 'outskirts-exact-mockup-screen' },
+    {
+      className: 'outskirtsExactPage',
+      'data-testid': 'outskirts-exact-page',
+      'data-legacy-testid': 'outskirts-exact-mockup-screen',
+      'data-activity-mode': surface.meta.activityMode,
+    },
     React.createElement('div', { className: 'outskirtsExactPage__underlay', 'aria-hidden': 'true' }),
     React.createElement(OutskirtsTopRegion, { surface, onOpenSettings, onOpenTacticalCell, onOpenAreaSelector }),
     React.createElement(
@@ -81,7 +88,7 @@ export function OutskirtsExactMockupScreen({
       React.createElement(
         'section',
         { className: 'outskirtsExactPage__centerCta', 'data-testid': 'outskirts-exact-cta-slot' },
-        React.createElement(OutskirtsStartHuntCta, { cta: surface.primaryAction, onStartHunt }),
+        React.createElement(OutskirtsStartHuntCta, { cta: surface.primaryAction, onPrimaryAction: onPrimaryAction ?? onStartHunt }),
       ),
       React.createElement(
         'aside',

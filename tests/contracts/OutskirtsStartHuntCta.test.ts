@@ -21,6 +21,7 @@ void test('P8 CTA component forwards click to existing handler when enabled', ()
   });
 
   assert.equal(element?.props['data-testid'], 'outskirts-start-hunt-cta');
+  assert.equal(element?.props['data-intent'], 'start-hunt');
   assert.equal(element?.props.className.includes('outskirtsStartHuntCta--ornate-gold'), true);
   const children = (element?.props as { children?: unknown[] } | undefined)?.children ?? [];
   const plateNode = children[1] as { props?: { children?: unknown } } | undefined;

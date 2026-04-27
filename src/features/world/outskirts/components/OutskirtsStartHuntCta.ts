@@ -3,11 +3,13 @@ import type { OutskirtsPrimaryAction } from '../types.js';
 
 export interface OutskirtsStartHuntCtaProps {
   cta: OutskirtsPrimaryAction;
+  onPrimaryAction?: () => void;
   onStartHunt?: () => void;
 }
 
-export function OutskirtsStartHuntCta({ cta, onStartHunt }: OutskirtsStartHuntCtaProps) {
+export function OutskirtsStartHuntCta({ cta, onPrimaryAction, onStartHunt }: OutskirtsStartHuntCtaProps) {
   if (!cta.visible) return null;
+  const handlePrimaryAction = onPrimaryAction ?? onStartHunt;
 
   return React.createElement(
     'button',
@@ -15,10 +17,11 @@ export function OutskirtsStartHuntCta({ cta, onStartHunt }: OutskirtsStartHuntCt
       type: 'button',
       className: `outskirtsStartHuntCta outskirtsStartHuntCta--${cta.plaqueVariant ?? 'ornate-gold'}`,
       'data-testid': 'outskirts-start-hunt-cta',
+      'data-intent': cta.intent,
       disabled: !cta.enabled,
       'aria-label': cta.ariaLabel,
       title: cta.enabled ? undefined : cta.disabledReason,
-      onClick: cta.enabled ? onStartHunt : undefined,
+      onClick: cta.enabled ? handlePrimaryAction : undefined,
     },
     React.createElement('span', { className: `outskirtsStartHuntCta__ornament outskirtsStartHuntCta__ornament--left outskirtsStartHuntCta__ornament--${cta.ornamentVariant ?? 'leaf-cap'}`, 'aria-hidden': 'true' }),
     React.createElement(

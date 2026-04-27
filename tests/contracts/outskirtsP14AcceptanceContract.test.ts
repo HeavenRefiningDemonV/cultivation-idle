@@ -37,11 +37,11 @@ void test('P14 planning purity excludes combat-shell chrome in planning owner/su
   }
 });
 
-void test('P14 active-contained branch remains separate from planning owner', async () => {
+void test('P14 active branch remains on OutskirtsScreenOwner and does not route to legacy owner', async () => {
   const panel = await readFile('src/components/screens/world/buildings/OutskirtsBuildingPanel.tsx', 'utf8');
-  assert.match(panel, /if \(viewState === 'planning'\) \{\s*return <OutskirtsPlanningOwner cityId=\{cityId\} \/>;\s*\}/);
-  assert.match(panel, /<OutskirtsLegacyActiveSurface cityId=\{cityId\} \/>/);
-  assert.match(panel, /outskirts-active-boundary-loading/);
+  assert.match(panel, /OutskirtsScreenOwner/);
+  assert.doesNotMatch(panel, /OutskirtsLegacyActiveSurface/);
+  assert.doesNotMatch(panel, /outskirts-active-boundary-loading/);
 });
 
 void test('P14 acceptance docs exist with required files', async () => {

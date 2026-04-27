@@ -9,12 +9,13 @@ import { createOutskirtsMockupFixture } from '../../src/features/world/outskirts
 import { OUTSKIRTS_ASSETS } from '../../src/features/world/outskirts/outskirtsAssetRegistry.js';
 import { OutskirtsExactMockupScreen } from '../../src/features/world/outskirts/OutskirtsExactMockupScreen.js';
 
-void test('Packet A owner baseline keeps planning route on OutskirtsPlanningOwner (no silent legacy fallback)', async () => {
+void test('Packet A owner baseline keeps OutskirtsScreenOwner mounted for planning/active without legacy fallback', async () => {
   const panelSource = await readFile(new URL('../../src/components/screens/world/buildings/OutskirtsBuildingPanel.tsx', import.meta.url), 'utf8');
   const modalSource = await readFile(new URL('../../src/components/modals/WorldBuildingModal.tsx', import.meta.url), 'utf8');
 
-  assert.match(panelSource, /if \(viewState === 'planning'\) \{\s*return <OutskirtsPlanningOwner cityId=\{cityId\} \/>;\s*\}/);
-  assert.match(panelSource, /return \(\s*<Suspense[\s\S]*<OutskirtsLegacyActiveSurface cityId=\{cityId\} \/>/);
+  assert.match(panelSource, /OutskirtsScreenOwner/);
+  assert.doesNotMatch(panelSource, /OutskirtsLegacyActiveSurface/);
+  assert.doesNotMatch(panelSource, /Suspense/);
   assert.match(modalSource, /case 'outskirts':\s*content = <OutskirtsBuildingPanel cityId=\{storeCityId\} \/>/);
 });
 
@@ -71,4 +72,3 @@ void test('Packet A planning-state purity smoke keeps single CTA and static plan
   assert.equal(surface.shell.showCombatTheater, false);
   assert.equal(surface.shell.rightCardHasPrimaryAction, false);
 });
-

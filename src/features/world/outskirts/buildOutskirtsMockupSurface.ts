@@ -4,6 +4,7 @@ import { evaluateAiProfileFit } from '../../../systems/builds/aiProfileFit.js';
 import { useActivityStore } from '../../../stores/activityStore.js';
 import { useBountyStore } from '../../../stores/bountyStore.js';
 import { useCityStore } from '../../../stores/cityStore.js';
+import { useCombatStore } from '../../../stores/combatStore.js';
 import { useContentStore } from '../../../stores/contentStore.js';
 import { useEquipmentStore } from '../../../stores/equipmentStore.js';
 import { useExpeditionStore } from '../../../stores/expeditionStore.js';
@@ -15,6 +16,7 @@ import { useTechniqueStore } from '../../../stores/techniqueStore.js';
 import { useUIStore } from '../../../stores/uiStore.js';
 import { resolveModuleRef } from '../../../components/screens/world/worldUtils.js';
 import {
+  OUTSKIRTS_ALLOWED_ACTIVE_CONTRACT_SHELL,
   OUTSKIRTS_ALLOWED_PLANNING_SHELL,
   OUTSKIRTS_ENCOUNTER_DEFAULT_ID,
   OUTSKIRTS_ENCOUNTER_STRIP_MANIFEST,
@@ -25,6 +27,7 @@ import {
   OUTSKIRTS_TACTICAL_CELL_ORDER,
   OUTSKIRTS_TARGET_MOCKUP_ID,
 } from './outskirtsMockupPresentation.js';
+import { isSameOutskirtsCombatSource } from './getOutskirtsModuleViewState.js';
 import { resolveOutskirtsEncounterStripArt } from './resolveOutskirtsEncounterStripArt.js';
 import { OUTSKIRTS_ASSETS } from './outskirtsAssetRegistry.js';
 import type {
@@ -34,6 +37,7 @@ import type {
   OutskirtsInnerPalacePreviewSlot,
   OutskirtsMockupRuntimeSnapshot,
   OutskirtsSurfaceValueSource,
+  OutskirtsSurfaceMode,
   OutskirtsTacticalTone,
 } from './types.js';
 
@@ -189,6 +193,7 @@ export interface BuildOutskirtsMockupSurfaceOptions {
   previewEncounterId?: string;
   allowEncounterPreviewSelection?: boolean;
   medicinePouchActionEnabled?: boolean;
+  activityMode?: OutskirtsSurfaceMode;
 }
 
 function resolveProgressionStateByEncounterId(snapshot: OutskirtsMockupRuntimeSnapshot): Record<string, OutskirtsEncounterNodeState> {
@@ -248,6 +253,7 @@ export function buildOutskirtsMockupSurface(
   snapshot: OutskirtsMockupRuntimeSnapshot,
   options: BuildOutskirtsMockupSurfaceOptions = {},
 ): OutskirtsExactSurfaceV2 {
+  const activityMode = options.activityMode ?? (snapshot.isOutskirtsActive ? 'active' : 'planning');
   const missingDataFallbacks: string[] = [];
   const unresolvedLiveSourceNotes: string[] = [];
   const placeholderAssetKeysInUse = [snapshot.scenicArtKey, snapshot.scenicBackgroundKey].filter((k) => k.startsWith('placeholder/'));
@@ -276,8 +282,8 @@ export function buildOutskirtsMockupSurface(
     expedition: { id: 'expedition', label: 'Expedition', primaryText: snapshot.expeditionLabel, tone: 'neutral' as OutskirtsTacticalTone, iconKey: 'expedition', iconKind: 'lucide' as const, showCaret: false, showNotificationDot: /idle/i.test(snapshot.expeditionLabel), showUnderlineBar: false, visible: true, reserveAdornmentSpace: true },
   } as const;
 
-  const notes = [snapshot.isOutskirtsActive
-    ? 'Active Outskirts combat still renders the legacy combat shell owner.'
+  const notes = [activityMode === 'active'
+    ? 'Active Outskirts uses the exact mockup page owner; center combat theater is deferred to later packets.'
     : 'Planning exact surface is a review fixture and does not change baseline live-screen ownership in P0.'];
 
   return {
@@ -289,6 +295,7 @@ export function buildOutskirtsMockupSurface(
       outskirtsId: snapshot.outskirtsId,
       source: snapshot.sourceMode === 'fixture' ? 'fixture' : 'stores',
       targetMockupId: OUTSKIRTS_TARGET_MOCKUP_ID,
+      activityMode,
     },
     page: { title: OUTSKIRTS_REVIEW_COPY.pageTitle },
     topRibbon: {
@@ -305,7 +312,7 @@ export function buildOutskirtsMockupSurface(
     },
     areaHeader: {
       plaqueLabel: OUTSKIRTS_REVIEW_COPY.pageTitle,
-      subtitle: snapshot.pageSubtitle,
+      subtitle: activityMode === 'active' ? 'Quiet Glade hunt in progress' : snapshot.pageSubtitle,
       showDropdownCaret: true,
       hasGroundedSelector: false,
     },
@@ -372,14 +379,13 @@ export function buildOutskirtsMockupSurface(
     },
     encounterStrip,
     primaryAction: {
-      label: OUTSKIRTS_REVIEW_COPY.ctaLabel,
-      ariaLabel: 'Start Outskirts hunt',
+      label: activityMode === 'active' ? 'Stop Hunt' : OUTSKIRTS_REVIEW_COPY.ctaLabel,
+      ariaLabel: activityMode === 'active' ? 'Stop Outskirts hunt' : 'Start Outskirts hunt',
       visible: true,
-      enabled: Boolean(snapshot.outskirtsId) && !snapshot.isOutskirtsActive,
-      intent: 'start-hunt',
+      enabled: activityMode === 'active' ? true : Boolean(snapshot.outskirtsId),
+      intent: activityMode === 'active' ? 'stop-hunt' : 'start-hunt',
       singleDominantCta: true,
       isPrimary: true,
-      disabledReason: snapshot.isOutskirtsActive ? 'Outskirts run already active.' : undefined,
       plaqueVariant: 'ornate-gold',
       ornamentVariant: 'leaf-cap',
     },
@@ -397,7 +403,7 @@ export function buildOutskirtsMockupSurface(
         { id: 'mainDrop', label: 'Main Drop', value: snapshot.sourceMode === 'fixture' ? 'Wolf Pelt' : (snapshot.rewardMaterialLabels[0] ?? 'Common Material'), iconKey: 'drop' },
       ],
     },
-    shell: OUTSKIRTS_ALLOWED_PLANNING_SHELL,
+    shell: activityMode === 'active' ? OUTSKIRTS_ALLOWED_ACTIVE_CONTRACT_SHELL : OUTSKIRTS_ALLOWED_PLANNING_SHELL,
     debug: {
       missingDataFallbacks,
       placeholderAssetKeysInUse,
@@ -448,6 +454,8 @@ export function buildOutskirtsMockupRuntimeSnapshotFromStores(cityId?: string): 
     : { roleTag: OUTSKIRTS_ROLE_TAG, bestUsedWhen: OUTSKIRTS_BEST_USED_WHEN, boundaryLine: OUTSKIRTS_BOUNDARY_LINE, keyExpectedOutputs: ['gold'] };
 
   const activity = useActivityStore.getState().active;
+  const combatStore = useCombatStore.getState();
+  const combatContext = combatStore.combatContext;
   const posture = evaluateCurrentCombatPostureFit('outskirts');
   const postureContext = buildCurrentCombatPostureContext('outskirts');
   const tracked = useBountyStore.getState().getTrackedBounty(resolvedCityId);
@@ -473,6 +481,11 @@ export function buildOutskirtsMockupRuntimeSnapshotFromStores(cityId?: string): 
   const equippedAccessoryId = useEquipmentStore.getState().equippedAccessoryId;
   const resolveItemName = (itemId: string | null): string => itemId ? content.maps.itemsById[itemId]?.name ?? itemId : OUTSKIRTS_PLACEHOLDER_POLICY.lineFallback;
 
+  const hasSameSourceOutskirtsCombat = isSameOutskirtsCombatSource(resolvedCityId, outskirts?.id ?? null, combatContext);
+  const combatHpLabel = hasSameSourceOutskirtsCombat
+    ? `${formatWhole(combatStore.playerHP)} / ${formatWhole(combatStore.playerMaxHP)}`
+    : `${formatWhole(gameStats.maxHp)} / ${formatWhole(gameStats.maxHp)}`;
+
   return {
     sourceMode: 'stores',
     cityId: resolvedCityId,
@@ -483,7 +496,7 @@ export function buildOutskirtsMockupRuntimeSnapshotFromStores(cityId?: string): 
     killsToBoss: outskirts?.killsToBoss ?? 10,
     totalKills: progress.totalKills,
     isOutskirtsActive: activity?.type === 'outskirts' && activity.cityId === resolvedCityId,
-    hpLabel: `${formatWhole(gameStats.maxHp)} / ${formatWhole(gameStats.maxHp)}`,
+    hpLabel: combatHpLabel,
     dangerLabel: 'Low',
     loadoutLabel: selectedLoadoutName,
     aiProfile: selectedAiProfile,

@@ -2,16 +2,19 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import test from 'node:test';
 
-void test('P2 planning owner is pure and does not depend on legacy combat-shell surfaces', async () => {
+void test('P2 router uses OutskirtsScreenOwner for all available states and keeps legacy active surface quarantined', async () => {
   const router = await fs.readFile('src/components/screens/world/buildings/OutskirtsBuildingPanel.tsx', 'utf8');
+  const screenOwner = await fs.readFile('src/features/world/outskirts/OutskirtsScreenOwner.tsx', 'utf8');
   const planningOwner = await fs.readFile('src/features/world/outskirts/OutskirtsPlanningOwner.tsx', 'utf8');
 
-  assert.match(router, /OutskirtsPlanningOwner/);
-  assert.match(router, /lazy\(async \(\) =>/);
-  assert.match(router, /OutskirtsLegacyActiveSurface cityId=\{cityId\}/);
-  assert.match(router, /getOutskirtsModuleViewState/);
+  assert.match(router, /OutskirtsScreenOwner/);
+  assert.doesNotMatch(router, /lazy\(/);
+  assert.doesNotMatch(router, /Suspense/);
+  assert.doesNotMatch(router, /OutskirtsLegacyActiveSurface/);
+  assert.match(router, /if \(viewState === 'unavailable'\)/);
+  assert.match(router, /return <OutskirtsScreenOwner cityId=\{cityId\} \/>/);
 
-  const forbiddenInRouter = [
+  const forbidden = [
     /InkCombatShell/,
     /InkHealthBar/,
     /CombatModuleTopLane/,
@@ -25,54 +28,26 @@ void test('P2 planning owner is pure and does not depend on legacy combat-shell 
     /CombatStyles\.scss/,
   ];
 
-  for (const token of forbiddenInRouter) {
+  for (const token of forbidden) {
     assert.doesNotMatch(router, token);
-    assert.doesNotMatch(planningOwner, token);
+    assert.doesNotMatch(screenOwner, token);
   }
 
-  assert.doesNotMatch(router, /buildOutskirtsMockupSurfaceFromStores/);
-  assert.doesNotMatch(router, /OutskirtsExactMockupScreen\.scss/);
-
-  assert.match(planningOwner, /OutskirtsExactMockupScreen/);
-  assert.match(planningOwner, /buildOutskirtsMockupSurfaceFromStores/);
-  assert.match(planningOwner, /OutskirtsExactMockupScreen\.scss/);
-  assert.match(planningOwner, /data-testid="outskirts-view-planning"/);
+  assert.match(screenOwner, /OutskirtsExactMockupScreen/);
+  assert.match(screenOwner, /buildOutskirtsMockupSurfaceFromStores/);
+  assert.match(screenOwner, /data-testid="outskirts-view-screen"/);
+  assert.match(planningOwner, /OutskirtsScreenOwner as OutskirtsPlanningOwner/);
 });
 
-void test('P2 active-contained branch quarantines legacy combat-shell dependencies', async () => {
+void test('P2 legacy active surface file remains present but has zero live imports from router', async () => {
+  const router = await fs.readFile('src/components/screens/world/buildings/OutskirtsBuildingPanel.tsx', 'utf8');
   const activeOwner = await fs.readFile('src/features/world/outskirts/OutskirtsLegacyActiveSurface.tsx', 'utf8');
-  const activeContainment = await fs.readFile('src/features/world/outskirts/components/OutskirtsActiveContainment.tsx', 'utf8');
-  const exactScss = await fs.readFile('src/features/world/outskirts/OutskirtsExactMockupScreen.scss', 'utf8');
-  const activeScss = await fs.readFile('src/features/world/outskirts/components/OutskirtsActiveContainment.scss', 'utf8');
 
+  assert.doesNotMatch(router, /OutskirtsLegacyActiveSurface/);
   assert.match(activeOwner, /OutskirtsActiveContainment/);
-  assert.match(activeContainment, /data-testid': 'outskirts-view-active-contained'/);
-  assert.match(activeOwner, /InkCombatShell/);
-  assert.match(activeOwner, /InkHealthBar/);
-  assert.match(activeOwner, /CombatModuleTopLane/);
-  assert.match(activeOwner, /OutskirtsSummaryCard/);
-  assert.match(activeOwner, /TrackedBountyProgressLine/);
-  assert.match(activeOwner, /useRunCompassSurface/);
-  assert.match(activeOwner, /buildOutskirtsActionStripState/);
-  assert.match(activeOwner, /buildOutskirtsInformationHierarchySurface/);
-  assert.match(activeOwner, /buildOutskirtsSupportContextSurface/);
-  assert.match(activeOwner, /buildOutskirtsFxProfile/);
-  assert.match(activeOwner, /CombatStyles\.scss/);
-  assert.match(activeContainment, /OutskirtsActiveContainment\.scss/);
-  assert.doesNotMatch(exactScss, /\.outskirtsActiveContainment/);
-  assert.match(activeScss, /\.outskirtsActiveContainment/);
 });
 
 void test('P2 route preservation remains World -> WorldBuildingModal -> OutskirtsBuildingPanel', async () => {
   const modalSource = await fs.readFile('src/components/modals/WorldBuildingModal.tsx', 'utf8');
   assert.match(modalSource, /case 'outskirts':\s*content = <OutskirtsBuildingPanel cityId=\{storeCityId\} \/>/);
-});
-
-void test('P12 router boundary has no planning fallback on active-contained branch and no hybrid owner path', async () => {
-  const router = await fs.readFile('src/components/screens/world/buildings/OutskirtsBuildingPanel.tsx', 'utf8');
-
-  assert.match(router, /if \(viewState === 'planning'\) \{\s*return <OutskirtsPlanningOwner cityId=\{cityId\} \/>;\s*\}/);
-  assert.match(router, /<Suspense[\s\S]*data-testid="outskirts-active-boundary-loading"/);
-  assert.doesNotMatch(router, /outskirts-view-planning/);
-  assert.match(router, /if \(viewState === 'unavailable'\)[\s\S]*if \(viewState === 'planning'\)[\s\S]*<OutskirtsLegacyActiveSurface cityId=\{cityId\} \/>/);
 });

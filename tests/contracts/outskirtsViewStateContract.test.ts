@@ -13,7 +13,7 @@ void test('P9 view-state helper returns unavailable when no outskirts definition
   assert.equal(state, 'unavailable');
 });
 
-void test('P12 view-state helper returns activeContained for same-city active truth even when outskirtsId is temporarily unresolved', () => {
+void test('P12 view-state helper returns active for same-city active truth even when outskirtsId is temporarily unresolved', () => {
   const fromActivity = getOutskirtsModuleViewState({
     cityId: 'city_pinewind_hamlet',
     outskirtsId: null,
@@ -25,7 +25,7 @@ void test('P12 view-state helper returns activeContained for same-city active tr
     },
     combatContext: { type: null },
   });
-  assert.equal(fromActivity, 'activeContained');
+  assert.equal(fromActivity, 'active');
 
   const fromCombat = getOutskirtsModuleViewState({
     cityId: 'city_pinewind_hamlet',
@@ -37,11 +37,11 @@ void test('P12 view-state helper returns activeContained for same-city active tr
       sourceId: undefined,
     },
   });
-  assert.equal(fromCombat, 'activeContained');
+  assert.equal(fromCombat, 'active');
 });
 
 
-void test('P12 view-state helper treats same-source activity-only and combat-only truth as activeContained when outskirtsId is resolved', () => {
+void test('P12 view-state helper treats same-source activity-only and combat-only truth as active when outskirtsId is resolved', () => {
   const fromActivityOnly = getOutskirtsModuleViewState({
     cityId: 'city_pinewind_hamlet',
     outskirtsId: 'outskirts_pinewind',
@@ -53,7 +53,7 @@ void test('P12 view-state helper treats same-source activity-only and combat-onl
     },
     combatContext: { type: null },
   });
-  assert.equal(fromActivityOnly, 'activeContained');
+  assert.equal(fromActivityOnly, 'active');
 
   const fromCombatOnly = getOutskirtsModuleViewState({
     cityId: 'city_pinewind_hamlet',
@@ -65,7 +65,7 @@ void test('P12 view-state helper treats same-source activity-only and combat-onl
       sourceId: 'outskirts_pinewind',
     },
   });
-  assert.equal(fromCombatOnly, 'activeContained');
+  assert.equal(fromCombatOnly, 'active');
 });
 
 void test('P12 view-state helper rejects mismatched city combat truth even when outskirtsId is unresolved', () => {
@@ -92,7 +92,7 @@ void test('P9 view-state helper returns planning when no same-source outskirts r
   assert.equal(state, 'planning');
 });
 
-void test('P9 view-state helper returns activeContained for same-source activity/combat', () => {
+void test('P9 view-state helper returns active for same-source activity/combat', () => {
   const activityState = getOutskirtsModuleViewState({
     cityId: 'city_pinewind_hamlet',
     outskirtsId: 'outskirts_pinewind',
@@ -104,7 +104,7 @@ void test('P9 view-state helper returns activeContained for same-source activity
     },
     combatContext: { type: null },
   });
-  assert.equal(activityState, 'activeContained');
+  assert.equal(activityState, 'active');
 
   const reopenWhileActiveState = getOutskirtsModuleViewState({
     cityId: 'city_pinewind_hamlet',
@@ -118,10 +118,10 @@ void test('P9 view-state helper returns activeContained for same-source activity
       isBoss: false,
     },
   });
-  assert.equal(reopenWhileActiveState, 'activeContained');
+  assert.equal(reopenWhileActiveState, 'active');
 });
 
-void test('P9 view-state helper does not misclassify different module or different outskirts source as activeContained', () => {
+void test('P9 view-state helper does not misclassify different module or different outskirts source as active', () => {
   const differentModule = getOutskirtsModuleViewState({
     cityId: 'city_pinewind_hamlet',
     outskirtsId: 'outskirts_pinewind',
@@ -153,7 +153,7 @@ void test('P9 view-state helper does not misclassify different module or differe
   assert.equal(differentOutskirtsSource, 'planning');
 });
 
-void test('P9 transition contract: planning -> activeContained -> planning when same-source truth changes', () => {
+void test('P9 transition contract: planning -> active -> planning when same-source truth changes', () => {
   const base = {
     cityId: 'city_pinewind_hamlet',
     outskirtsId: 'outskirts_pinewind',
@@ -176,7 +176,7 @@ void test('P9 transition contract: planning -> activeContained -> planning when 
     },
     combatContext: { type: null },
   });
-  assert.equal(active, 'activeContained');
+  assert.equal(active, 'active');
 
   const planningAfterStop = getOutskirtsModuleViewState({
     ...base,
