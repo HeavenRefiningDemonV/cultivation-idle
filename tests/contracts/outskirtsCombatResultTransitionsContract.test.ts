@@ -3,6 +3,7 @@ import fs from 'node:fs/promises';
 import test from 'node:test';
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
+import type { CombatEvent } from '../../src/types/index.js';
 
 import { buildOutskirtsMockupSurface } from '../../src/features/world/outskirts/buildOutskirtsMockupSurface.js';
 import { OutskirtsExactMockupScreen } from '../../src/features/world/outskirts/OutskirtsExactMockupScreen.js';
@@ -172,7 +173,7 @@ void test('C8 Test F: transition helper builds exact outcome variants', () => {
     autoRepeatEnabled: true,
     stopAtBoss: false,
     autoRetryOnDeath: false,
-    combatEvents: [{ id: 'victory', at: 1500, type: 'BOSS_DEFEATED', enemyId: 'snarling-wolf' }],
+    combatEvents: [{ id: 'victory', at: 1500, type: 'BOSS_DEFEATED', enemyId: 'snarling-wolf' } as CombatEvent],
     combatLog: [],
   };
 
@@ -194,7 +195,7 @@ void test('C8 Test F: transition helper builds exact outcome variants', () => {
   const defeatRetry = buildOutskirtsCombatResultTransition({
     ...baseInput,
     autoRetryOnDeath: true,
-    combatEvents: [{ id: 'defeat', at: 1500, type: 'PLAYER_DEFEATED', enemyId: 'snarling-wolf' }],
+    combatEvents: [{ id: 'defeat', at: 1500, type: 'PLAYER_DEFEATED', enemyId: 'snarling-wolf' } as CombatEvent],
   });
   assert.equal(defeatRetry.kind, 'defeat-retry');
   assert.equal(defeatRetry.title, 'Defeated');
@@ -202,7 +203,7 @@ void test('C8 Test F: transition helper builds exact outcome variants', () => {
 
   const defeatStop = buildOutskirtsCombatResultTransition({
     ...baseInput,
-    combatEvents: [{ id: 'defeat', at: 1500, type: 'PLAYER_DEFEATED', enemyId: 'snarling-wolf' }],
+    combatEvents: [{ id: 'defeat', at: 1500, type: 'PLAYER_DEFEATED', enemyId: 'snarling-wolf' } as CombatEvent],
   });
   assert.equal(defeatStop.kind, 'defeat-stop');
   assert.equal(defeatStop.countdownLabel, 'Hunt ending.');

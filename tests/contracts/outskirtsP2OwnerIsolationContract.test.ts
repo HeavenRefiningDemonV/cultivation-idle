@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import test from 'node:test';
 
-void test('P2 router uses OutskirtsScreenOwner for all available states and keeps legacy active surface quarantined', async () => {
+void test('P2 router uses OutskirtsScreenOwner for all available states', async () => {
   const router = await fs.readFile('src/components/screens/world/buildings/OutskirtsBuildingPanel.tsx', 'utf8');
   const screenOwner = await fs.readFile('src/features/world/outskirts/OutskirtsScreenOwner.tsx', 'utf8');
   const planningOwner = await fs.readFile('src/features/world/outskirts/OutskirtsPlanningOwner.tsx', 'utf8');
@@ -39,12 +39,23 @@ void test('P2 router uses OutskirtsScreenOwner for all available states and keep
   assert.match(planningOwner, /OutskirtsScreenOwner as OutskirtsPlanningOwner/);
 });
 
-void test('P2 legacy active surface file remains present but has zero live imports from router', async () => {
+void test('P2 legacy active surface and helper files are removed', async () => {
   const router = await fs.readFile('src/components/screens/world/buildings/OutskirtsBuildingPanel.tsx', 'utf8');
-  const activeOwner = await fs.readFile('src/features/world/outskirts/OutskirtsLegacyActiveSurface.tsx', 'utf8');
 
   assert.doesNotMatch(router, /OutskirtsLegacyActiveSurface/);
-  assert.match(activeOwner, /OutskirtsActiveContainment/);
+  const removed = [
+    'src/features/world/outskirts/OutskirtsLegacyActiveSurface.tsx',
+    'src/features/world/outskirts/components/OutskirtsActiveContainment.tsx',
+    'src/features/world/outskirts/components/OutskirtsActiveContainment.scss',
+    'src/ui/world/OutskirtsSummaryCard.tsx',
+    'src/ui/world/buildOutskirtsActionStripState.ts',
+    'src/ui/world/buildOutskirtsInformationHierarchySurface.ts',
+    'src/ui/world/buildOutskirtsSupportContextSurface.ts',
+    'src/ui/world/buildOutskirtsFxProfile.ts',
+  ];
+  for (const path of removed) {
+    await assert.rejects(fs.readFile(path, 'utf8'));
+  }
 });
 
 void test('P2 route preservation remains World -> WorldBuildingModal -> OutskirtsBuildingPanel', async () => {
