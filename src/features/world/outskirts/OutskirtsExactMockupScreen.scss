@@ -451,12 +451,179 @@
 
 .outskirtsCombatTheater__hpLayer {
   position: absolute;
-  z-index: 10;
+  z-index: 45;
   top: clamp(10px, 1.6vh, 18px);
   left: clamp(38px, 4.2vw, 72px);
   right: clamp(38px, 4.2vw, 72px);
   height: clamp(64px, 8.2vh, 90px);
   pointer-events: none;
+}
+
+.outskirtsCombatTheater__actorLayer {
+  position: absolute;
+  z-index: 20;
+  inset: clamp(70px, 11vh, 112px) clamp(22px, 4vw, 58px) clamp(34px, 5.8vh, 70px);
+  pointer-events: none;
+  min-width: 0;
+  min-height: 0;
+}
+
+.outskirtsCombatActors {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  min-width: 0;
+  min-height: 0;
+  isolation: isolate;
+}
+
+.outskirtsCombatActors__slot {
+  position: absolute;
+  display: grid;
+  place-items: end center;
+  transform-origin: 50% 92%;
+  will-change: transform, filter, opacity;
+  pointer-events: none;
+}
+
+.outskirtsCombatActors__slot--player {
+  left: clamp(36px, 7.2%, 92px);
+  bottom: clamp(0px, 0.6vh, 12px);
+  width: clamp(210px, 28%, 380px);
+  height: min(76%, 450px);
+  z-index: 2;
+}
+
+.outskirtsCombatActors__slot--enemy {
+  right: clamp(78px, 12%, 168px);
+  bottom: clamp(44px, 8vh, 104px);
+  width: clamp(170px, 24%, 330px);
+  height: min(54%, 320px);
+  z-index: 3;
+}
+
+.outskirtsCombatActors__slot--enemy[data-is-boss='true'] {
+  width: clamp(205px, 28%, 390px);
+  bottom: clamp(38px, 7vh, 92px);
+}
+
+.outskirtsCombatActors__image {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+  user-select: none;
+  -webkit-user-drag: none;
+  filter:
+    saturate(0.92)
+    contrast(1.04)
+    drop-shadow(0 8px 12px rgba(31, 24, 19, 0.26));
+}
+
+.outskirtsCombatActors__image--player {
+  width: 108%;
+  height: 108%;
+  object-position: center bottom;
+}
+
+.outskirtsCombatActors__image--enemy {
+  width: 100%;
+  height: 100%;
+  object-position: center bottom;
+}
+
+.outskirtsCombatActors__shadow {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  bottom: clamp(2px, 0.7vh, 9px);
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background:
+    radial-gradient(ellipse at center, rgba(32, 27, 22, 0.28), rgba(32, 27, 22, 0.08) 56%, transparent 72%);
+  filter: blur(2px);
+}
+
+.outskirtsCombatActors__shadow--player {
+  width: 58%;
+  height: clamp(18px, 3.2vh, 34px);
+}
+
+.outskirtsCombatActors__shadow--enemy {
+  width: 74%;
+  height: clamp(16px, 2.8vh, 28px);
+}
+
+.outskirtsCombatActors__missingEnemyMist {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(12px, 2vh, 24px);
+  width: 72%;
+  height: 36%;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background:
+    radial-gradient(ellipse at center, rgba(230, 222, 203, 0.32), rgba(124, 112, 92, 0.12) 58%, transparent 76%);
+  filter: blur(6px);
+  opacity: 0.72;
+}
+
+.outskirtsCombatActors__slot--player[data-motion='attack'] {
+  animation: outskirtsActorPlayerAttack 260ms cubic-bezier(0.2, 0.72, 0.22, 1) both;
+}
+
+.outskirtsCombatActors__slot--enemy[data-motion='attack'] {
+  animation: outskirtsActorEnemyAttack 260ms cubic-bezier(0.2, 0.72, 0.22, 1) both;
+}
+
+.outskirtsCombatActors__slot[data-motion='hit'] {
+  animation: outskirtsActorHit 220ms ease-out both;
+}
+
+.outskirtsCombatActors__slot--player[data-motion='dodge'] {
+  animation: outskirtsActorPlayerDodge 240ms ease-out both;
+}
+
+.outskirtsCombatActors__slot--enemy[data-motion='dodge'] {
+  animation: outskirtsActorEnemyDodge 240ms ease-out both;
+}
+
+.outskirtsCombatActors__slot[data-motion='defeat'] {
+  opacity: 0.48;
+  transform: translateY(12px) rotate(-1deg);
+  filter: grayscale(0.35) saturate(0.72);
+}
+
+@keyframes outskirtsActorPlayerAttack {
+  0% { transform: translateX(0) translateY(0) rotate(0deg); }
+  48% { transform: translateX(clamp(12px, 2.6vw, 34px)) translateY(-2px) rotate(0.8deg); }
+  100% { transform: translateX(0) translateY(0) rotate(0deg); }
+}
+
+@keyframes outskirtsActorEnemyAttack {
+  0% { transform: translateX(0) translateY(0) rotate(0deg); }
+  48% { transform: translateX(clamp(-28px, -2.2vw, -12px)) translateY(-1px) rotate(-0.7deg); }
+  100% { transform: translateX(0) translateY(0) rotate(0deg); }
+}
+
+@keyframes outskirtsActorHit {
+  0% { transform: translateX(0); filter: brightness(1) saturate(0.92); }
+  45% { transform: translateX(-6px); filter: brightness(1.12) saturate(0.82); }
+  100% { transform: translateX(0); filter: brightness(1) saturate(0.92); }
+}
+
+@keyframes outskirtsActorPlayerDodge {
+  0% { transform: translateX(0); }
+  45% { transform: translateX(clamp(-18px, -1.6vw, -8px)) translateY(-2px); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes outskirtsActorEnemyDodge {
+  0% { transform: translateX(0); }
+  45% { transform: translateX(clamp(10px, 1.6vw, 22px)) translateY(-2px); }
+  100% { transform: translateX(0); }
 }
 
 .outskirtsCombatHealthBars {
@@ -674,6 +841,16 @@
   .outskirtsCombatHealthBars__name {
     font-size: clamp(13px, 1.25vw, 18px);
   }
+
+  .outskirtsCombatActors__slot--player {
+    left: clamp(18px, 5.2%, 58px);
+    width: clamp(180px, 30%, 310px);
+  }
+
+  .outskirtsCombatActors__slot--enemy {
+    right: clamp(40px, 8%, 96px);
+    width: clamp(150px, 26%, 280px);
+  }
 }
 
 @media (max-width: 960px) {
@@ -703,21 +880,65 @@
   .outskirtsCombatHealthBars__unit--enemy {
     order: 3;
   }
+
+  .outskirtsCombatTheater__actorLayer {
+    inset: 118px 16px 46px;
+  }
+
+  .outskirtsCombatActors__slot--player {
+    left: 2%;
+    width: 36%;
+    height: 68%;
+  }
+
+  .outskirtsCombatActors__slot--enemy {
+    right: 4%;
+    width: 34%;
+    height: 44%;
+    bottom: 12%;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .outskirtsCombatHealthBars__fill {
     transition: none !important;
   }
+
+  .outskirtsCombatActors__slot {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .outskirtsCombatActors__slot[data-motion='attack'],
+  .outskirtsCombatActors__slot[data-motion='hit'],
+  .outskirtsCombatActors__slot[data-motion='dodge'] {
+    transform: none !important;
+  }
+
+  .outskirtsCombatActors__slot[data-motion='defeat'] {
+    opacity: 0.52;
+    transform: translateY(8px);
+  }
 }
 
-.outskirtsCombatTheater__actorLayer,
 .outskirtsCombatTheater__effectsLayer,
 .outskirtsCombatTheater__chipsLayer,
 .outskirtsCombatTheater__logLayer {
   position: absolute;
   inset: 0;
   pointer-events: none;
+}
+
+.outskirtsCombatTheater__effectsLayer {
+  z-index: 50;
+}
+
+.outskirtsCombatTheater__chipsLayer {
+  z-index: 60;
+}
+
+.outskirtsCombatTheater__logLayer {
+  z-index: 65;
 }
 .outskirtsExactPage__centerIdentity {
   grid-area: encounterIdentity;

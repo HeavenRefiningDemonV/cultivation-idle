@@ -22,6 +22,7 @@ void test('C0 active surface model contract keeps exact-shell ownership and stop
   assert.equal(surface.shell.showCombatModuleTopLane, false);
   assert.equal(surface.shell.showCombatTheater, true);
   assert.equal(surface.shell.showCombatHpBars, true);
+  assert.equal(surface.shell.showCombatActors, true);
   assert.equal(surface.shell.showCombatLog, false);
   assert.equal(surface.shell.showCombatOptions, false);
   assert.equal(surface.shell.singleDominantCta, true);

@@ -16,6 +16,17 @@ export const OUTSKIRTS_ASSETS = {
     spiritDeerEnemy: assetUrl('../../../assets/enemies/spiritdeer.png'),
     cityOutskirtsBackdrop: assetUrl('../../../assets/background/citystates/city_outskirts.png'),
   },
+
+  actors: {
+    cultivator: assetUrl('../../../assets/onscreen/cultivator_backshots.png'),
+    enemies: {
+      wolf: assetUrl('../../../assets/enemies/wolfpup.png'),
+      boar: assetUrl('../../../assets/enemies/widboar.png'),
+      slime: assetUrl('../../../assets/enemies/slime.png'),
+      rabbit: assetUrl('../../../assets/enemies/forestrabbit.png'),
+      deer: assetUrl('../../../assets/enemies/spiritdeer.png'),
+    },
+  },
   icons: {
     tactical: {
       hp: assetUrl('../../../assets/icons/foundationpill.png'),

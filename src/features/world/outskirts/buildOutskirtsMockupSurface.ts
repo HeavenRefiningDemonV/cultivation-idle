@@ -525,7 +525,7 @@ export function buildOutskirtsMockupSurface(
   } as const;
 
   const notes = [activityMode === 'active'
-    ? 'Active Outskirts center stage now renders in-scene combat health bars; actors, floating hits, chips, and log slip are deferred to later packets.'
+    ? 'Active Outskirts center stage now renders in-scene combat actors with restrained motion; floating hits, chips, log slip, and result overlays are deferred to later packets.'
     : 'Planning exact surface is a review fixture and does not change baseline live-screen ownership in P0.'];
 
   return {

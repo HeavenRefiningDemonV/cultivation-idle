@@ -253,6 +253,7 @@ export interface OutskirtsMockupShellFlags {
   showCombatModuleTopLane: boolean;
   showCombatTheater: boolean;
   showCombatHpBars: boolean;
+  showCombatActors: boolean;
   showFloatingDamage: boolean;
   showSummaryRail: boolean;
   showUtilityTray: boolean;

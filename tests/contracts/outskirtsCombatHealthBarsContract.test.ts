@@ -48,6 +48,7 @@ void test('C3 Test D: shell flags are correct in active and planning', () => {
   const activeSurface = buildOutskirtsMockupSurface(createActiveOutskirtsMockupFixture(), { activityMode: 'active' });
   assert.equal(activeSurface.shell.showCombatTheater, true);
   assert.equal(activeSurface.shell.showCombatHpBars, true);
+  assert.equal(activeSurface.shell.showCombatActors, true);
   assert.equal(activeSurface.shell.showFloatingDamage, false);
   assert.equal(activeSurface.shell.showCombatLog, false);
   assert.equal(activeSurface.shell.showCombatOptions, false);
@@ -58,6 +59,7 @@ void test('C3 Test D: shell flags are correct in active and planning', () => {
   const planningSurface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture({ isOutskirtsActive: false }), { activityMode: 'planning' });
   assert.equal(planningSurface.shell.showCombatTheater, false);
   assert.equal(planningSurface.shell.showCombatHpBars, false);
+  assert.equal(planningSurface.shell.showCombatActors, false);
 });
 
 void test('C3 Test E: source guard for forbidden imports/tokens', async () => {
@@ -104,7 +106,6 @@ void test('C3 Test G: active output does not include later packet visible conten
   for (const forbidden of [
     'data-testid="outskirts-combat-log-slip"',
     'data-testid="outskirts-combat-chips"',
-    'data-testid="outskirts-combat-actors"',
     'floating-hit',
     'enemy-hit-text',
   ]) {

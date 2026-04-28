@@ -37,6 +37,7 @@ void test('C3 active route mounts theater shell and hp bars while leaving later 
   assert.equal(html.includes('data-testid="outskirts-exact-scene-plane"'), false);
   assert.equal(html.includes('data-testid="outskirts-combat-theater-layer-hp"'), true);
   assert.equal(html.includes('data-testid="outskirts-combat-health-bars"'), true);
+  assert.equal(html.includes('data-testid="outskirts-combat-actors"'), true);
 
   for (const emptyLayerToken of [
     'data-testid="outskirts-combat-theater-layer-actors"',
@@ -50,7 +51,6 @@ void test('C3 active route mounts theater shell and hp bars while leaving later 
   for (const forbidden of [
     'data-testid="outskirts-combat-log-slip"',
     'data-testid="outskirts-combat-chips"',
-    'data-testid="outskirts-combat-actors"',
     'floating-hit',
     'enemy-hit-text',
   ]) {
@@ -61,6 +61,7 @@ void test('C3 active route mounts theater shell and hp bars while leaving later 
 void test('C3 shell contract enables hp bars only for active', () => {
   assert.equal(OUTSKIRTS_ALLOWED_ACTIVE_CONTRACT_SHELL.showCombatTheater, true);
   assert.equal(OUTSKIRTS_ALLOWED_ACTIVE_CONTRACT_SHELL.showCombatHpBars, true);
+  assert.equal(OUTSKIRTS_ALLOWED_ACTIVE_CONTRACT_SHELL.showCombatActors, true);
   assert.equal(OUTSKIRTS_ALLOWED_ACTIVE_CONTRACT_SHELL.showFloatingDamage, false);
   assert.equal(OUTSKIRTS_ALLOWED_ACTIVE_CONTRACT_SHELL.showCombatLog, false);
   assert.equal(OUTSKIRTS_ALLOWED_ACTIVE_CONTRACT_SHELL.showCombatOptions, false);
@@ -70,6 +71,7 @@ void test('C3 shell contract enables hp bars only for active', () => {
     showCombatModuleTopLane: false,
     showCombatTheater: false,
     showCombatHpBars: false,
+    showCombatActors: false,
     showFloatingDamage: false,
     showSummaryRail: false,
     showUtilityTray: false,

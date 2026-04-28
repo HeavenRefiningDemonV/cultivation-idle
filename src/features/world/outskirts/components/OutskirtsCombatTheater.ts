@@ -3,15 +3,17 @@ import React from 'react';
 import { resolveOutskirtsScenicAsset } from '../resolveOutskirtsScenicAsset.js';
 import type { OutskirtsCombatStage, OutskirtsEncounterIdentity, OutskirtsScenicStage } from '../types.js';
 import { OutskirtsCombatHealthBars } from './OutskirtsCombatHealthBars.js';
+import { OutskirtsCombatActors } from './OutskirtsCombatActors.js';
 
 export interface OutskirtsCombatTheaterProps {
   scenic: OutskirtsScenicStage;
   identity: OutskirtsEncounterIdentity;
   combatStage: OutskirtsCombatStage;
   showCombatHpBars?: boolean;
+  showCombatActors?: boolean;
 }
 
-export function OutskirtsCombatTheater({ scenic, identity, combatStage, showCombatHpBars = false }: OutskirtsCombatTheaterProps) {
+export function OutskirtsCombatTheater({ scenic, identity, combatStage, showCombatHpBars = false, showCombatActors = false }: OutskirtsCombatTheaterProps) {
   const bindings = resolveOutskirtsScenicAsset({
     scenic,
     selectedEncounterId: identity.selectedEncounterId,
@@ -65,11 +67,17 @@ export function OutskirtsCombatTheater({ scenic, identity, combatStage, showComb
         ? React.createElement(OutskirtsCombatHealthBars, { combatStage })
         : null,
     ),
-    React.createElement('div', {
-      className: 'outskirtsCombatTheater__actorLayer',
-      'data-testid': 'outskirts-combat-theater-layer-actors',
-      'aria-hidden': 'true',
-    }),
+    React.createElement(
+      'div',
+      {
+        className: 'outskirtsCombatTheater__actorLayer',
+        'data-testid': 'outskirts-combat-theater-layer-actors',
+        'aria-hidden': 'true',
+      },
+      showCombatActors
+        ? React.createElement(OutskirtsCombatActors, { combatStage })
+        : null,
+    ),
     React.createElement('div', {
       className: 'outskirtsCombatTheater__effectsLayer',
       'data-testid': 'outskirts-combat-theater-layer-effects',

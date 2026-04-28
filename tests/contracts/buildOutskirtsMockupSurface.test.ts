@@ -58,7 +58,7 @@ void test('buildOutskirtsMockupSurface preserves v2 structure for live-like valu
   assert.equal(surface.combatStage.active, false);
 });
 
-void test('buildOutskirtsMockupSurface supports active fixture combat-stage read-model without visible shell flips', () => {
+void test('buildOutskirtsMockupSurface supports active fixture combat-stage read-model with staged shell flags', () => {
   const surface = buildOutskirtsMockupSurface(createActiveOutskirtsMockupFixture(), { activityMode: 'active' });
 
   assert.equal(surface.meta.activityMode, 'active');
@@ -67,7 +67,8 @@ void test('buildOutskirtsMockupSurface supports active fixture combat-stage read
   assert.equal(surface.combatStage.enemy.hpLabel, '78 / 126');
   assert.equal(surface.combatStage.chips.length, 5);
   assert.equal(surface.combatStage.logLines.length, 3);
-  assert.equal(surface.shell.showCombatTheater, false);
-  assert.equal(surface.shell.showCombatHpBars, false);
+  assert.equal(surface.shell.showCombatTheater, true);
+  assert.equal(surface.shell.showCombatHpBars, true);
+  assert.equal(surface.shell.showCombatActors, true);
   assert.equal(surface.shell.showCombatLog, false);
 });
