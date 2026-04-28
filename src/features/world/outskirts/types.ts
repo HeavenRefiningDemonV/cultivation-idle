@@ -14,6 +14,9 @@ export type OutskirtsChainBadgeTone = 'neutral' | 'warning';
 export type OutskirtsSummaryDockMode = 'grind' | 'live';
 export type OutskirtsSummaryRowId = 'runs' | 'kills' | 'goldPerHour' | 'mainDrop';
 export type OutskirtsSummaryIconKey = 'runs' | 'kills' | 'gold' | 'drop';
+export type OutskirtsCombatResultTransitionKind = 'none' | 'victory-auto-repeat' | 'victory-stop' | 'boss-stop' | 'defeat-retry' | 'defeat-stop';
+export type OutskirtsCombatResultOutcome = 'none' | 'victory' | 'defeat';
+export type OutskirtsCombatResultTone = 'neutral' | 'jade' | 'gold' | 'crimson';
 
 export interface OutskirtsExactSurfaceMeta {
   surfaceId: 'outskirts-exact-mockup';
@@ -274,6 +277,7 @@ export interface OutskirtsMockupShellFlags {
   showCombatActors: boolean;
   showFloatingDamage: boolean;
   showCombatChips: boolean;
+  showCombatResultOverlay: boolean;
   showSummaryRail: boolean;
   showUtilityTray: boolean;
   showCombatLog: boolean;
@@ -336,6 +340,22 @@ export interface OutskirtsFloatingHit {
   source: OutskirtsSurfaceValueSource;
 }
 
+export interface OutskirtsCombatResultTransition {
+  visible: boolean;
+  kind: OutskirtsCombatResultTransitionKind;
+  outcome: OutskirtsCombatResultOutcome;
+  tone: OutskirtsCombatResultTone;
+  title: string;
+  subtitle: string;
+  detailLine: string;
+  countdownLabel: string;
+  progressPct: number;
+  durationMs: number;
+  resolvedAtMs: number | null;
+  autoRepeatState: 'none' | 'continuing' | 'retrying' | 'ending';
+  source: OutskirtsSurfaceValueSource;
+}
+
 export interface OutskirtsCombatStage {
   active: boolean;
   hasLiveCombat: boolean;
@@ -350,6 +370,7 @@ export interface OutskirtsCombatStage {
   chips: OutskirtsCombatStageChip[];
   logLines: OutskirtsCombatStageLogLine[];
   floatingHits: OutskirtsFloatingHit[];
+  resultTransition: OutskirtsCombatResultTransition;
 }
 
 export interface OutskirtsExactSurfaceDebug {

@@ -34,6 +34,10 @@ import { OUTSKIRTS_ASSETS } from './outskirtsAssetRegistry.js';
 import { buildOutskirtsFloatingHitsFromCombatFeedback } from './outskirtsCombatFeedback.js';
 import { buildOutskirtsCombatStageChips } from './outskirtsCombatChips.js';
 import {
+  EMPTY_OUTSKIRTS_COMBAT_RESULT_TRANSITION,
+  buildOutskirtsCombatResultTransition,
+} from './outskirtsCombatResultTransitions.js';
+import {
   buildOutskirtsActiveChainBadge,
   buildOutskirtsActiveEncounterStrip,
   formatOutskirtsElapsedClock,
@@ -137,6 +141,7 @@ function buildInactiveCombatStage(lifecycle: OutskirtsSurfaceMode = 'planning'):
     chips: [],
     logLines: [],
     floatingHits: [],
+    resultTransition: EMPTY_OUTSKIRTS_COMBAT_RESULT_TRANSITION,
   };
 }
 
@@ -282,6 +287,7 @@ function buildLiveCombatStageFromStores(input: {
       logLines,
       existingFixtureHits: [],
     }),
+    resultTransition: EMPTY_OUTSKIRTS_COMBAT_RESULT_TRANSITION,
   };
 }
 
@@ -294,6 +300,7 @@ function cloneCombatStage(stage: OutskirtsCombatStage): OutskirtsCombatStage {
     chips: stage.chips.map((chip) => ({ ...chip })),
     logLines: stage.logLines.map((line) => ({ ...line })),
     floatingHits: stage.floatingHits.map((hit) => ({ ...hit })),
+    resultTransition: { ...stage.resultTransition },
   };
 }
 
@@ -492,6 +499,7 @@ export function buildOutskirtsMockupSurface(
   options: BuildOutskirtsMockupSurfaceOptions = {},
 ): OutskirtsExactSurfaceV2 {
   const activityMode = options.activityMode ?? (snapshot.isOutskirtsActive ? 'active' : 'planning');
+  const isActiveLikeMode = activityMode === 'active' || activityMode === 'resolving' || activityMode === 'defeat';
   const combatStage = cloneCombatStage(snapshot.combatStage);
   const missingDataFallbacks: string[] = [];
   const unresolvedLiveSourceNotes: string[] = [];
@@ -505,7 +513,7 @@ export function buildOutskirtsMockupSurface(
   const hp = parseHpLabel(combatStage.hasLiveCombat ? combatStage.player.hpLabel : snapshot.hpLabel);
   const hpPrimary = hp.max > 0 ? `${formatWhole(hp.current)} / ${formatWhole(hp.max)}` : (combatStage.hasLiveCombat ? combatStage.player.hpLabel : snapshot.hpLabel);
   const bountyProgress = parseProgressLabel(snapshot.trackedBountyProgress);
-  const encounterStrip = activityMode === 'active'
+  const encounterStrip = isActiveLikeMode
     ? buildOutskirtsActiveEncounterStrip({ snapshot, combatStage })
     : buildEncounterStrip(snapshot, options);
   const topNodes = encounterStrip.nodes;
@@ -523,10 +531,10 @@ export function buildOutskirtsMockupSurface(
     expedition: { id: 'expedition', label: 'Expedition', primaryText: snapshot.expeditionLabel, tone: 'neutral' as OutskirtsTacticalTone, iconKey: 'expedition', iconKind: 'lucide' as const, showCaret: false, showNotificationDot: /idle/i.test(snapshot.expeditionLabel), showUnderlineBar: false, visible: true, reserveAdornmentSpace: true },
   } as const;
 
-  const notes = [activityMode === 'active'
-    ? 'Active Outskirts center stage now renders compact combat status chips; result overlays and expanded controls are deferred to later packets.'
+  const notes = [isActiveLikeMode
+    ? 'Active Outskirts center stage now renders quiet victory, defeat, and auto-repeat transition seals inside the combat painting; full result summaries remain deferred.'
     : 'Planning exact surface is a review fixture and does not change baseline live-screen ownership in P0.'];
-  const activeChainBadge = activityMode === 'active'
+  const activeChainBadge = isActiveLikeMode
     ? buildOutskirtsActiveChainBadge({
         snapshot,
         combatStage,
@@ -569,7 +577,7 @@ export function buildOutskirtsMockupSurface(
     },
     areaHeader: {
       plaqueLabel: OUTSKIRTS_REVIEW_COPY.pageTitle,
-      subtitle: activityMode === 'active' ? 'Quiet Glade hunt in progress' : snapshot.pageSubtitle,
+      subtitle: isActiveLikeMode ? 'Quiet Glade hunt in progress' : snapshot.pageSubtitle,
       showDropdownCaret: true,
       hasGroundedSelector: false,
     },
@@ -637,11 +645,11 @@ export function buildOutskirtsMockupSurface(
     },
     encounterStrip,
     primaryAction: {
-      label: activityMode === 'active' ? 'Stop Hunt' : OUTSKIRTS_REVIEW_COPY.ctaLabel,
-      ariaLabel: activityMode === 'active' ? 'Stop Outskirts hunt' : 'Start Outskirts hunt',
+      label: isActiveLikeMode ? 'Stop Hunt' : OUTSKIRTS_REVIEW_COPY.ctaLabel,
+      ariaLabel: isActiveLikeMode ? 'Stop Outskirts hunt' : 'Start Outskirts hunt',
       visible: true,
-      enabled: activityMode === 'active' ? true : Boolean(snapshot.outskirtsId),
-      intent: activityMode === 'active' ? 'stop-hunt' : 'start-hunt',
+      enabled: isActiveLikeMode ? true : Boolean(snapshot.outskirtsId),
+      intent: isActiveLikeMode ? 'stop-hunt' : 'start-hunt',
       singleDominantCta: true,
       isPrimary: true,
       plaqueVariant: 'ornate-gold',
@@ -650,20 +658,20 @@ export function buildOutskirtsMockupSurface(
     combatStage,
     grindSummary: {
       visible: true,
-      mode: activityMode === 'active' ? 'live' : 'grind',
-      title: activityMode === 'active' ? 'Live Summary' : OUTSKIRTS_REVIEW_COPY.grindSummaryTitle,
-      scopeChipLabel: activityMode === 'active' ? activeElapsedLabel : OUTSKIRTS_REVIEW_COPY.grindScope,
-      elapsedText: activityMode === 'active' ? activeElapsedLabel : undefined,
+      mode: isActiveLikeMode ? 'live' : 'grind',
+      title: isActiveLikeMode ? 'Live Summary' : OUTSKIRTS_REVIEW_COPY.grindSummaryTitle,
+      scopeChipLabel: isActiveLikeMode ? activeElapsedLabel : OUTSKIRTS_REVIEW_COPY.grindScope,
+      elapsedText: isActiveLikeMode ? activeElapsedLabel : undefined,
       runsText: snapshot.sourceMode === 'fixture' ? '128' : `${Math.max(1, Math.round(3600 / 18))}`,
-      killsText: activityMode === 'active' ? liveKillsText : undefined,
-      goldPerHourText: activityMode === 'active'
+      killsText: isActiveLikeMode ? liveKillsText : undefined,
+      goldPerHourText: isActiveLikeMode
         ? liveGoldPerHourText
         : (snapshot.sourceMode === 'fixture' ? '1,900' : '1,800'),
-      mainDropLabel: activityMode === 'active'
+      mainDropLabel: isActiveLikeMode
         ? liveMainDropLabel
         : (snapshot.sourceMode === 'fixture' ? 'Wolf Pelt' : (snapshot.rewardMaterialLabels[0] ?? 'Common Material')),
       mainDropIconKey: snapshot.scenicArtKey,
-      rows: activityMode === 'active'
+      rows: isActiveLikeMode
         ? [
             { id: 'kills', label: 'Kills', value: liveKillsText, iconKey: 'kills' },
             { id: 'goldPerHour', label: 'Gold / hr', value: liveGoldPerHourText, iconKey: 'gold' },
@@ -675,7 +683,7 @@ export function buildOutskirtsMockupSurface(
             { id: 'mainDrop', label: 'Main Drop', value: snapshot.sourceMode === 'fixture' ? 'Wolf Pelt' : (snapshot.rewardMaterialLabels[0] ?? 'Common Material'), iconKey: 'drop' },
           ],
     },
-    shell: activityMode === 'active' ? OUTSKIRTS_ALLOWED_ACTIVE_CONTRACT_SHELL : OUTSKIRTS_ALLOWED_PLANNING_SHELL,
+    shell: isActiveLikeMode ? OUTSKIRTS_ALLOWED_ACTIVE_CONTRACT_SHELL : OUTSKIRTS_ALLOWED_PLANNING_SHELL,
     debug: {
       missingDataFallbacks,
       placeholderAssetKeysInUse,
@@ -764,6 +772,12 @@ export function buildOutskirtsMockupRuntimeSnapshotFromStores(
   const resolveItemName = (itemId: string | null): string => itemId ? content.maps.itemsById[itemId]?.name ?? itemId : OUTSKIRTS_PLACEHOLDER_POLICY.lineFallback;
 
   const hasSameSourceOutskirtsCombat = isSameOutskirtsCombatSource(resolvedCityId, outskirts?.id ?? null, combatContext);
+  const hasStrictSameSourceOutskirtsCombat = Boolean(
+    combatStore.inCombat
+    && combatContext.type === 'outskirts'
+    && combatContext.cityId === resolvedCityId
+    && ((outskirts?.id && combatContext.sourceId) ? combatContext.sourceId === outskirts.id : true),
+  );
   const hasSameSourceOutskirtsActivity = isSameOutskirtsActivitySource(resolvedCityId, outskirts?.id ?? null, activity);
   const sameSourceActivityStartedAt = hasSameSourceOutskirtsActivity && activity?.startedAt ? activity.startedAt : null;
   const sameSourceCombatStartedAt = hasSameSourceOutskirtsCombat ? combatStore.combatStartTime : null;
@@ -808,8 +822,33 @@ export function buildOutskirtsMockupRuntimeSnapshotFromStores(
       activeTechniques,
     });
   })();
+  const resultTransition = buildOutskirtsCombatResultTransition({
+    active: isOutskirtsActive,
+    sameSourceCombat: hasStrictSameSourceOutskirtsCombat,
+    hasLiveCombat: hasStrictSameSourceOutskirtsCombat,
+    combatResolved: combatStore.combatResolved,
+    combatStartTimeMs: combatStore.combatStartTime || null,
+    nowMs: now,
+    enemyName: combatStore.currentEnemy?.name ?? 'Foe',
+    enemyIsBoss: Boolean(combatContext.type === 'outskirts'
+      ? combatContext.isBoss
+      : combatStore.isBoss),
+    autoRepeatEnabled: useOutskirtsStore.getState().autoContinue,
+    stopAtBoss: useOutskirtsStore.getState().stopAtBoss,
+    autoRetryOnDeath: useUIStore.getState().settings.autoRetryOnDeath,
+    combatEvents: combatStore.events,
+    combatLog: combatStore.combatLog,
+    source: 'live',
+  });
+  const combatStageWithResult: OutskirtsCombatStage = {
+    ...combatStage,
+    resultTransition,
+    lifecycle: resultTransition.visible
+      ? (resultTransition.outcome === 'defeat' ? 'defeat' : 'resolving')
+      : combatStage.lifecycle,
+  };
   const combatHpLabel = hasSameSourceOutskirtsCombat
-    ? combatStage.player.hpLabel
+    ? combatStageWithResult.player.hpLabel
     : `${formatWhole(gameStats.maxHp)} / ${formatWhole(gameStats.maxHp)}`;
 
   return {
@@ -878,7 +917,7 @@ export function buildOutskirtsMockupRuntimeSnapshotFromStores(
     pageSubtitle: OUTSKIRTS_REVIEW_COPY.subtitle,
     supportHints: [],
     activeStartedAtMs,
-    combatStage,
+    combatStage: combatStageWithResult,
   };
 }
 

@@ -7,6 +7,7 @@ import { OutskirtsCombatActors } from './OutskirtsCombatActors.js';
 import { OutskirtsCombatFloatingHits } from './OutskirtsCombatFloatingHits.js';
 import { OutskirtsCombatChips } from './OutskirtsCombatChips.js';
 import { OutskirtsCombatLogSlip } from './OutskirtsCombatLogSlip.js';
+import { OutskirtsCombatResultOverlay } from './OutskirtsCombatResultOverlay.js';
 
 export interface OutskirtsCombatTheaterProps {
   scenic: OutskirtsScenicStage;
@@ -17,9 +18,10 @@ export interface OutskirtsCombatTheaterProps {
   showFloatingDamage?: boolean;
   showCombatLog?: boolean;
   showCombatChips?: boolean;
+  showCombatResultOverlay?: boolean;
 }
 
-export function OutskirtsCombatTheater({ scenic, identity, combatStage, showCombatHpBars = false, showCombatActors = false, showFloatingDamage = false, showCombatLog = false, showCombatChips = false }: OutskirtsCombatTheaterProps) {
+export function OutskirtsCombatTheater({ scenic, identity, combatStage, showCombatHpBars = false, showCombatActors = false, showFloatingDamage = false, showCombatLog = false, showCombatChips = false, showCombatResultOverlay = false }: OutskirtsCombatTheaterProps) {
   const bindings = resolveOutskirtsScenicAsset({
     scenic,
     selectedEncounterId: identity.selectedEncounterId,
@@ -31,6 +33,7 @@ export function OutskirtsCombatTheater({ scenic, identity, combatStage, showComb
         backgroundPosition: bindings.sceneBasePosition,
       }
     : undefined;
+  const shouldRenderResultOverlay = Boolean(showCombatResultOverlay && combatStage.resultTransition.visible);
 
   return React.createElement(
     'section',
@@ -112,6 +115,17 @@ export function OutskirtsCombatTheater({ scenic, identity, combatStage, showComb
       },
       showCombatLog
         ? React.createElement(OutskirtsCombatLogSlip, { combatStage })
+        : null,
+    ),
+    React.createElement(
+      'div',
+      {
+        className: 'outskirtsCombatTheater__resultLayer',
+        'data-testid': 'outskirts-combat-theater-layer-result',
+        'aria-hidden': shouldRenderResultOverlay ? undefined : 'true',
+      },
+      shouldRenderResultOverlay
+        ? React.createElement(OutskirtsCombatResultOverlay, { transition: combatStage.resultTransition })
         : null,
     ),
   );

@@ -161,6 +161,7 @@ void test('C7 Test I: combat theater stack remains intact', () => {
 void test('C7 Test J: no premature result overlay', () => {
   const surface = buildOutskirtsMockupSurface(createActiveOutskirtsMockupFixture(), { activityMode: 'active' });
   const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
+  assert.equal(html.includes('data-testid="outskirts-combat-theater-layer-result"'), true);
   for (const forbidden of [
     'data-testid="outskirts-combat-result-overlay"',
     'data-testid="outskirts-combat-victory-seal"',

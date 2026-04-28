@@ -1,4 +1,5 @@
 import type { OutskirtsCombatStage, OutskirtsMockupRuntimeSnapshot } from '../types.js';
+import { EMPTY_OUTSKIRTS_COMBAT_RESULT_TRANSITION } from '../outskirtsCombatResultTransitions.js';
 
 function createPlanningCombatStage(): OutskirtsCombatStage {
   return {
@@ -38,6 +39,7 @@ function createPlanningCombatStage(): OutskirtsCombatStage {
     chips: [],
     logLines: [],
     floatingHits: [],
+    resultTransition: { ...EMPTY_OUTSKIRTS_COMBAT_RESULT_TRANSITION },
   };
 }
 
@@ -204,6 +206,84 @@ export function createActiveOutskirtsMockupFixture(
       floatingHits: [
         { id: 'fixture-hit-snarling-wolf-23', text: '-23', x: 72, y: 42, kind: 'normal', target: 'enemy', source: 'manifest' },
       ],
+      resultTransition: { ...EMPTY_OUTSKIRTS_COMBAT_RESULT_TRANSITION, source: 'manifest' },
+    },
+    ...overrides,
+  });
+}
+
+export function createOutskirtsVictoryTransitionMockupFixture(
+  overrides: Partial<OutskirtsMockupRuntimeSnapshot> = {},
+): OutskirtsMockupRuntimeSnapshot {
+  return createActiveOutskirtsMockupFixture({
+    sourceMode: 'fixture',
+    combatStage: {
+      ...createActiveOutskirtsMockupFixture().combatStage,
+      lifecycle: 'resolving',
+      player: {
+        ...createActiveOutskirtsMockupFixture().combatStage.player,
+        motionState: 'idle',
+      },
+      enemy: {
+        ...createActiveOutskirtsMockupFixture().combatStage.enemy,
+        name: 'Snarling Wolf',
+        hpCurrent: 0,
+        hpPct: 0,
+        motionState: 'defeat',
+      },
+      resultTransition: {
+        visible: true,
+        kind: 'victory-auto-repeat',
+        outcome: 'victory',
+        tone: 'jade',
+        title: 'Victory',
+        subtitle: 'Rewards secured.',
+        detailLine: 'Next foe approaching.',
+        countdownLabel: 'Auto-repeat in 0.7s',
+        progressPct: 0,
+        durationMs: 700,
+        resolvedAtMs: null,
+        autoRepeatState: 'continuing',
+        source: 'manifest',
+      },
+    },
+    ...overrides,
+  });
+}
+
+export function createOutskirtsDefeatTransitionMockupFixture(
+  overrides: Partial<OutskirtsMockupRuntimeSnapshot> = {},
+): OutskirtsMockupRuntimeSnapshot {
+  return createActiveOutskirtsMockupFixture({
+    sourceMode: 'fixture',
+    combatStage: {
+      ...createActiveOutskirtsMockupFixture().combatStage,
+      lifecycle: 'defeat',
+      player: {
+        ...createActiveOutskirtsMockupFixture().combatStage.player,
+        hpCurrent: 0,
+        hpPct: 0,
+        motionState: 'defeat',
+      },
+      enemy: {
+        ...createActiveOutskirtsMockupFixture().combatStage.enemy,
+        motionState: 'idle',
+      },
+      resultTransition: {
+        visible: true,
+        kind: 'defeat-stop',
+        outcome: 'defeat',
+        tone: 'crimson',
+        title: 'Defeated',
+        subtitle: 'Recovering at the roadside.',
+        detailLine: 'Hunt ending. Adjust setup before returning.',
+        countdownLabel: 'Hunt ending.',
+        progressPct: 0,
+        durationMs: 2000,
+        resolvedAtMs: null,
+        autoRepeatState: 'ending',
+        source: 'manifest',
+      },
     },
     ...overrides,
   });

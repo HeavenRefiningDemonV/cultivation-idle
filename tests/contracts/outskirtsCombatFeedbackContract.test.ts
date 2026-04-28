@@ -169,6 +169,7 @@ void test('C5 Test J: no premature C6/C8 content', () => {
   const surface = buildOutskirtsMockupSurface(createActiveOutskirtsMockupFixture(), { activityMode: 'active' });
   const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
 
+  assert.equal(html.includes('data-testid="outskirts-combat-theater-layer-result"'), true);
   for (const forbidden of [
     'data-testid="outskirts-combat-result-overlay"',
     'data-testid="outskirts-combat-victory-seal"',
