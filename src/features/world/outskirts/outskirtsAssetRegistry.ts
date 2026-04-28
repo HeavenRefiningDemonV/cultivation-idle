@@ -71,6 +71,7 @@ export const OUTSKIRTS_ASSETS = {
     },
     grindSummary: {
       runs: assetUrl('../../../assets/icons/task_complete.png'),
+      kills: assetUrl('../../../assets/icons/task_complete.png'),
       gold: assetUrl('../../../assets/icons/artifactbundle.png'),
       drop: assetUrl('../../../assets/icons/beastblood.png'),
     },

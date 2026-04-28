@@ -173,10 +173,6 @@ void test('C5 Test J: no premature C6/C8 content', () => {
     'data-testid="outskirts-combat-result-overlay"',
     'data-testid="outskirts-combat-victory-seal"',
     'data-testid="outskirts-combat-defeat-seal"',
-    'AI: Balanced',
-    'Auto-use On',
-    'Boss in 6',
-    'Wind Step 2.1s',
   ]) {
     assert.equal(html.includes(forbidden), false);
   }

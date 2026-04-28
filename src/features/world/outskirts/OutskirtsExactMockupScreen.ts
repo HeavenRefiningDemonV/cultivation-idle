@@ -4,6 +4,7 @@ import type { OutskirtsExactSurfaceV2 } from './types.js';
 import { OutskirtsTopRegion } from './components/OutskirtsTopRegion.js';
 import { OutskirtsCenterStage } from './components/OutskirtsCenterStage.js';
 import { OutskirtsEncounterIdentityRow } from './components/OutskirtsEncounterIdentityRow.js';
+import { OutskirtsActiveChainBadge } from './components/OutskirtsActiveChainBadge.js';
 import { OutskirtsSetupCard } from './components/OutskirtsSetupCard.js';
 import { OutskirtsEncounterProgressStrip } from './components/OutskirtsEncounterProgressStrip.js';
 import { OutskirtsStartHuntCta } from './components/OutskirtsStartHuntCta.js';
@@ -73,7 +74,9 @@ export function OutskirtsExactMockupScreen({
       React.createElement(
         'section',
         { className: 'outskirtsExactPage__centerIdentity', 'data-testid': 'outskirts-exact-identity-slot' },
-        React.createElement(OutskirtsEncounterIdentityRow, { identity: surface.encounterIdentity }),
+        surface.activeChainBadge.visible
+          ? React.createElement(OutskirtsActiveChainBadge, { badge: surface.activeChainBadge })
+          : React.createElement(OutskirtsEncounterIdentityRow, { identity: surface.encounterIdentity }),
       ),
       React.createElement(
         'section',

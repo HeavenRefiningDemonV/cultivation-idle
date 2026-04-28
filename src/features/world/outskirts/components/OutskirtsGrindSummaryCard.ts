@@ -2,7 +2,7 @@ import React from 'react';
 import type { OutskirtsGrindSummary } from '../types.js';
 import { OUTSKIRTS_ASSETS } from '../outskirtsAssetRegistry.js';
 
-const ICON_BY_KEY: Record<'runs' | 'gold' | 'drop', string> = OUTSKIRTS_ASSETS.icons.grindSummary;
+const ICON_BY_KEY: Record<'runs' | 'kills' | 'gold' | 'drop', string> = OUTSKIRTS_ASSETS.icons.grindSummary;
 
 export interface OutskirtsGrindSummaryCardProps {
   summary: OutskirtsGrindSummary;
@@ -18,7 +18,12 @@ export function OutskirtsGrindSummaryCard({ summary }: OutskirtsGrindSummaryCard
 
   return React.createElement(
     'section',
-    { className: 'outskirtsGrindSummaryCard', 'data-testid': 'outskirts-grind-summary' },
+    {
+      className: `outskirtsGrindSummaryCard outskirtsGrindSummaryCard--${summary.mode}`,
+      'data-testid': summary.mode === 'live' ? 'outskirts-live-summary' : 'outskirts-grind-summary',
+      'data-legacy-testid': 'outskirts-grind-summary',
+      'data-summary-mode': summary.mode,
+    },
     React.createElement(
       'header',
       { className: 'outskirtsGrindSummaryCard__header' },

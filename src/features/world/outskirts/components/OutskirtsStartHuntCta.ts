@@ -10,12 +10,15 @@ export interface OutskirtsStartHuntCtaProps {
 export function OutskirtsStartHuntCta({ cta, onPrimaryAction, onStartHunt }: OutskirtsStartHuntCtaProps) {
   if (!cta.visible) return null;
   const handlePrimaryAction = onPrimaryAction ?? onStartHunt;
+  const intentClass = cta.intent === 'stop-hunt'
+    ? 'outskirtsStartHuntCta--stopHunt'
+    : 'outskirtsStartHuntCta--startHunt';
 
   return React.createElement(
     'button',
     {
       type: 'button',
-      className: `outskirtsStartHuntCta outskirtsStartHuntCta--${cta.plaqueVariant ?? 'ornate-gold'}`,
+      className: `outskirtsStartHuntCta outskirtsStartHuntCta--${cta.plaqueVariant ?? 'ornate-gold'} ${intentClass}`,
       'data-testid': 'outskirts-start-hunt-cta',
       'data-intent': cta.intent,
       disabled: !cta.enabled,

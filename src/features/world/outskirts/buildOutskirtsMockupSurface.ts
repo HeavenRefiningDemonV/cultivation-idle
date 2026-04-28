@@ -33,6 +33,11 @@ import { resolveOutskirtsEncounterStripArt } from './resolveOutskirtsEncounterSt
 import { OUTSKIRTS_ASSETS } from './outskirtsAssetRegistry.js';
 import { buildOutskirtsFloatingHitsFromCombatFeedback } from './outskirtsCombatFeedback.js';
 import { buildOutskirtsCombatStageChips } from './outskirtsCombatChips.js';
+import {
+  buildOutskirtsActiveChainBadge,
+  buildOutskirtsActiveEncounterStrip,
+  formatOutskirtsElapsedClock,
+} from './outskirtsActivePresentation.js';
 import type {
   OutskirtsEncounterNodeState,
   OutskirtsCombatStage,
@@ -424,6 +429,7 @@ export interface BuildOutskirtsMockupSurfaceOptions {
   allowEncounterPreviewSelection?: boolean;
   medicinePouchActionEnabled?: boolean;
   activityMode?: OutskirtsSurfaceMode;
+  nowMs?: number;
 }
 
 function resolveProgressionStateByEncounterId(snapshot: OutskirtsMockupRuntimeSnapshot): Record<string, OutskirtsEncounterNodeState> {
@@ -449,6 +455,8 @@ function buildEncounterStrip(
   const interactive = options.allowEncounterPreviewSelection ?? snapshot.sourceMode === 'stores';
 
   return {
+    mode: 'preview',
+    ariaLabel: 'Encounter progression strip',
     selectedEncounterId,
     leftArrow: { visible: true, enabled: interactive && selectedIndex > 0, ariaLabel: 'Preview previous encounter', ornamentVariant: 'parchment' },
     rightArrow: { visible: true, enabled: interactive && selectedIndex < OUTSKIRTS_ENCOUNTER_STRIP_MANIFEST.length - 1, ariaLabel: 'Preview next encounter', ornamentVariant: 'parchment' },
@@ -497,7 +505,9 @@ export function buildOutskirtsMockupSurface(
   const hp = parseHpLabel(combatStage.hasLiveCombat ? combatStage.player.hpLabel : snapshot.hpLabel);
   const hpPrimary = hp.max > 0 ? `${formatWhole(hp.current)} / ${formatWhole(hp.max)}` : (combatStage.hasLiveCombat ? combatStage.player.hpLabel : snapshot.hpLabel);
   const bountyProgress = parseProgressLabel(snapshot.trackedBountyProgress);
-  const encounterStrip = buildEncounterStrip(snapshot, options);
+  const encounterStrip = activityMode === 'active'
+    ? buildOutskirtsActiveEncounterStrip({ snapshot, combatStage })
+    : buildEncounterStrip(snapshot, options);
   const topNodes = encounterStrip.nodes;
   const selectedEncounter = encounterStrip.nodes.find((entry) => entry.isSelected) ?? encounterStrip.nodes.find((entry) => entry.state === 'current');
   const selectedManifestNode = OUTSKIRTS_ENCOUNTER_STRIP_MANIFEST.find((entry) => entry.id === selectedEncounter?.id);
@@ -516,6 +526,22 @@ export function buildOutskirtsMockupSurface(
   const notes = [activityMode === 'active'
     ? 'Active Outskirts center stage now renders compact combat status chips; result overlays and expanded controls are deferred to later packets.'
     : 'Planning exact surface is a review fixture and does not change baseline live-screen ownership in P0.'];
+  const activeChainBadge = activityMode === 'active'
+    ? buildOutskirtsActiveChainBadge({
+        snapshot,
+        combatStage,
+        source: snapshot.sourceMode === 'fixture' ? 'manifest' : 'derived',
+      })
+    : { visible: false, title: '', bossLabel: '', bossTone: 'neutral' as const, source: 'derived' as const };
+
+  const activeElapsedLabel = snapshot.activeElapsedLabel
+    ?? (snapshot.activeStartedAtMs !== null && snapshot.activeStartedAtMs !== undefined
+      ? formatOutskirtsElapsedClock((options.nowMs ?? Date.now()) - snapshot.activeStartedAtMs)
+      : '00:00:00');
+  const liveKillsText = snapshot.liveKillsText ?? `${Math.max(0, snapshot.killsSinceBoss)}`;
+  const liveGoldPerHourText = snapshot.liveGoldPerHourText
+    ?? (snapshot.efficiencyHourlyLabel.replace(/\s*\/\s*hour/i, '').trim() || '0');
+  const liveMainDropLabel = snapshot.liveMainDropLabel ?? snapshot.rewardMaterialLabels[0] ?? OUTSKIRTS_PLACEHOLDER_POLICY.lineFallback;
 
   return {
     meta: {
@@ -562,6 +588,7 @@ export function buildOutskirtsMockupSurface(
       levelLabel: selectedEncounter?.levelLabel ?? snapshot.selectedEncounterLevelLabel,
       safetyChip: { state: snapshot.safetyChipState, label: snapshot.safetyChipLabel },
     },
+    activeChainBadge,
     setupCard: {
       title: OUTSKIRTS_REVIEW_COPY.setupCardTitle,
       loadoutRow: { id: 'loadoutSet', label: 'Loadout Set', value: snapshot.loadoutLabel, source: 'live' },
@@ -623,17 +650,30 @@ export function buildOutskirtsMockupSurface(
     combatStage,
     grindSummary: {
       visible: true,
-      title: OUTSKIRTS_REVIEW_COPY.grindSummaryTitle,
-      scopeChipLabel: OUTSKIRTS_REVIEW_COPY.grindScope,
+      mode: activityMode === 'active' ? 'live' : 'grind',
+      title: activityMode === 'active' ? 'Live Summary' : OUTSKIRTS_REVIEW_COPY.grindSummaryTitle,
+      scopeChipLabel: activityMode === 'active' ? activeElapsedLabel : OUTSKIRTS_REVIEW_COPY.grindScope,
+      elapsedText: activityMode === 'active' ? activeElapsedLabel : undefined,
       runsText: snapshot.sourceMode === 'fixture' ? '128' : `${Math.max(1, Math.round(3600 / 18))}`,
-      goldPerHourText: snapshot.sourceMode === 'fixture' ? '1,900' : '1,800',
-      mainDropLabel: snapshot.sourceMode === 'fixture' ? 'Wolf Pelt' : (snapshot.rewardMaterialLabels[0] ?? 'Common Material'),
+      killsText: activityMode === 'active' ? liveKillsText : undefined,
+      goldPerHourText: activityMode === 'active'
+        ? liveGoldPerHourText
+        : (snapshot.sourceMode === 'fixture' ? '1,900' : '1,800'),
+      mainDropLabel: activityMode === 'active'
+        ? liveMainDropLabel
+        : (snapshot.sourceMode === 'fixture' ? 'Wolf Pelt' : (snapshot.rewardMaterialLabels[0] ?? 'Common Material')),
       mainDropIconKey: snapshot.scenicArtKey,
-      rows: [
-        { id: 'runs', label: 'Runs', value: snapshot.sourceMode === 'fixture' ? '128' : `${Math.max(1, Math.round(3600 / 18))}`, iconKey: 'runs' },
-        { id: 'goldPerHour', label: 'Gold / hr', value: snapshot.sourceMode === 'fixture' ? '1,900' : '1,800', iconKey: 'gold' },
-        { id: 'mainDrop', label: 'Main Drop', value: snapshot.sourceMode === 'fixture' ? 'Wolf Pelt' : (snapshot.rewardMaterialLabels[0] ?? 'Common Material'), iconKey: 'drop' },
-      ],
+      rows: activityMode === 'active'
+        ? [
+            { id: 'kills', label: 'Kills', value: liveKillsText, iconKey: 'kills' },
+            { id: 'goldPerHour', label: 'Gold / hr', value: liveGoldPerHourText, iconKey: 'gold' },
+            { id: 'mainDrop', label: 'Main Drop', value: liveMainDropLabel, iconKey: 'drop' },
+          ]
+        : [
+            { id: 'runs', label: 'Runs', value: snapshot.sourceMode === 'fixture' ? '128' : `${Math.max(1, Math.round(3600 / 18))}`, iconKey: 'runs' },
+            { id: 'goldPerHour', label: 'Gold / hr', value: snapshot.sourceMode === 'fixture' ? '1,900' : '1,800', iconKey: 'gold' },
+            { id: 'mainDrop', label: 'Main Drop', value: snapshot.sourceMode === 'fixture' ? 'Wolf Pelt' : (snapshot.rewardMaterialLabels[0] ?? 'Common Material'), iconKey: 'drop' },
+          ],
     },
     shell: activityMode === 'active' ? OUTSKIRTS_ALLOWED_ACTIVE_CONTRACT_SHELL : OUTSKIRTS_ALLOWED_PLANNING_SHELL,
     debug: {
@@ -669,7 +709,10 @@ function buildEncounterNodesFromKills(killsSinceBoss: number): Array<{ id: strin
   }));
 }
 
-export function buildOutskirtsMockupRuntimeSnapshotFromStores(cityId?: string): OutskirtsMockupRuntimeSnapshot {
+export function buildOutskirtsMockupRuntimeSnapshotFromStores(
+  cityId?: string,
+  options: Pick<BuildOutskirtsMockupSurfaceOptions, 'nowMs'> = {},
+): OutskirtsMockupRuntimeSnapshot {
   const content = useContentStore.getState();
   const ui = useUIStore.getState();
   const cityStore = useCityStore.getState();
@@ -702,7 +745,7 @@ export function buildOutskirtsMockupRuntimeSnapshotFromStores(cityId?: string): 
   const attackFocusLabel = ui.settings.preferredTarget === 'boss' ? 'Boss' : ui.settings.preferredTarget === 'elite' ? 'Elite' : 'Balanced';
   const aiProfileLabel = selectedAiProfile[0].toUpperCase() + selectedAiProfile.slice(1);
   const autoUseOn = Object.values(pouchSlots).some((slot) => Boolean(slot.equippedItemId) && slot.enabled && slot.trigger !== 'manual');
-  const now = Date.now();
+  const now = options.nowMs ?? Date.now();
   const activeTechniqueIds = selectedLoadout?.slots.active
     .filter((value): value is string => typeof value === 'string' && value.trim().length > 0)
     .slice(0, 2) ?? [];
@@ -722,6 +765,9 @@ export function buildOutskirtsMockupRuntimeSnapshotFromStores(cityId?: string): 
 
   const hasSameSourceOutskirtsCombat = isSameOutskirtsCombatSource(resolvedCityId, outskirts?.id ?? null, combatContext);
   const hasSameSourceOutskirtsActivity = isSameOutskirtsActivitySource(resolvedCityId, outskirts?.id ?? null, activity);
+  const sameSourceActivityStartedAt = hasSameSourceOutskirtsActivity && activity?.startedAt ? activity.startedAt : null;
+  const sameSourceCombatStartedAt = hasSameSourceOutskirtsCombat ? combatStore.combatStartTime : null;
+  const activeStartedAtMs = sameSourceActivityStartedAt ?? sameSourceCombatStartedAt ?? null;
   const isOutskirtsActive = hasSameSourceOutskirtsActivity || hasSameSourceOutskirtsCombat;
   const isBossFight = Boolean((combatContext.type === 'outskirts' && combatContext.isBoss) || combatStore.isBoss || combatStore.currentEnemy?.isBoss);
   const activeTechniques = activeTechniqueIds.map((techId) => ({
@@ -810,6 +856,9 @@ export function buildOutskirtsMockupRuntimeSnapshotFromStores(cityId?: string): 
     trackedBountyProgress: tracked ? `${tracked.progress} / ${tracked.target}` : '0 / 0',
     efficiencyRunTimeLabel: '~45s / run',
     efficiencyHourlyLabel: '1,800 – 2,000 / hour',
+    liveKillsText: `${Math.max(0, progress.killsSinceBoss)}`,
+    liveGoldPerHourText: '1,860',
+    liveMainDropLabel: 'Wolf Pelt',
     autoRepeatLabel: autoContinue ? 'On' : 'Off',
     autoRepeatEnabled: autoContinue,
     selectedEncounterId: currentProgressEncounterId,
@@ -828,6 +877,7 @@ export function buildOutskirtsMockupRuntimeSnapshotFromStores(cityId?: string): 
     boundaryLine: rewardModel.boundaryLine,
     pageSubtitle: OUTSKIRTS_REVIEW_COPY.subtitle,
     supportHints: [],
+    activeStartedAtMs,
     combatStage,
   };
 }
@@ -836,5 +886,8 @@ export function buildOutskirtsMockupSurfaceFromStores(
   cityId?: string,
   options: BuildOutskirtsMockupSurfaceOptions = {},
 ): OutskirtsExactSurfaceV2 {
-  return buildOutskirtsMockupSurface(buildOutskirtsMockupRuntimeSnapshotFromStores(cityId), options);
+  return buildOutskirtsMockupSurface(
+    buildOutskirtsMockupRuntimeSnapshotFromStores(cityId, { nowMs: options.nowMs }),
+    options,
+  );
 }

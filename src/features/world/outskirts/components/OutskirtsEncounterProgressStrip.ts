@@ -13,10 +13,11 @@ export function OutskirtsEncounterProgressStrip({ strip, onPreviewPrevious, onPr
   return React.createElement(
     'section',
     {
-      className: 'outskirtsEncounterProgressStrip',
+      className: `outskirtsEncounterProgressStrip outskirtsEncounterProgressStrip--${strip.mode}`,
       'data-testid': 'outskirts-exact-encounter-strip',
       'data-legacy-testid': 'outskirts-encounter-progress-strip',
-      'aria-label': 'Encounter progression strip',
+      'data-strip-mode': strip.mode,
+      'aria-label': strip.ariaLabel,
     },
     strip.lane.showConnector
       ? React.createElement('span', { className: `outskirtsEncounterProgressStrip__lane outskirtsEncounterProgressStrip__lane--${strip.lane.connectorVariant ?? 'brush'}`, 'aria-hidden': 'true' })
@@ -36,7 +37,7 @@ export function OutskirtsEncounterProgressStrip({ strip, onPreviewPrevious, onPr
     ),
     React.createElement(
       'ol',
-      { className: 'outskirtsEncounterProgressStrip__nodes', 'aria-hidden': 'false' },
+      { className: 'outskirtsEncounterProgressStrip__nodes', 'aria-hidden': 'false', style: { '--outskirts-strip-node-count': strip.nodes.length } as React.CSSProperties },
       ...strip.nodes.map((node) => React.createElement(
         'li',
         {
@@ -57,10 +58,10 @@ export function OutskirtsEncounterProgressStrip({ strip, onPreviewPrevious, onPr
               : node.state === 'completed'
                 ? 'outskirts-exact-encounter-strip-node-completed'
                 : 'outskirts-exact-encounter-strip-node-future',
-            disabled: !node.isClickable,
+            disabled: strip.mode === 'active-chain' || !node.isClickable,
             'aria-label': node.ariaLabel,
             'aria-current': node.isSelected ? 'true' : undefined,
-            onClick: node.isClickable ? () => onSelectEncounter?.(node.id) : undefined,
+            onClick: strip.mode !== 'active-chain' && node.isClickable ? () => onSelectEncounter?.(node.id) : undefined,
             style: node.state === 'completed' && node.imageSrc ? { backgroundImage: `url('${node.imageSrc}')`, backgroundPosition: node.imagePosition ?? '50% 72%' } : undefined,
           },
           node.state === 'current'
@@ -75,7 +76,9 @@ export function OutskirtsEncounterProgressStrip({ strip, onPreviewPrevious, onPr
                   style: node.imageSrc ? { backgroundImage: `url('${node.imageSrc}')`, backgroundPosition: node.imagePosition ?? '75% 72%' } : undefined,
                   'aria-hidden': 'true',
                 }),
-                React.createElement('img', { src: node.silhouetteImageSrc ?? OUTSKIRTS_ASSETS.stripArt.slimeEnemy, alt: '', className: 'outskirtsEncounterProgressStrip__silhouette', loading: 'eager', 'aria-hidden': 'true' }),
+                node.silhouetteImageSrc
+                  ? React.createElement('img', { src: node.silhouetteImageSrc ?? OUTSKIRTS_ASSETS.stripArt.slimeEnemy, alt: '', className: 'outskirtsEncounterProgressStrip__silhouette', loading: 'eager', 'aria-hidden': 'true' })
+                  : React.createElement('span', { className: 'outskirtsEncounterProgressStrip__unknownMark', 'aria-hidden': 'true' }, '?'),
               )
             : null,
           node.completionMark

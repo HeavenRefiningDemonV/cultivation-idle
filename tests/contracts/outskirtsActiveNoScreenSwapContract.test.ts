@@ -18,6 +18,7 @@ void test('C0 active surface model contract keeps exact-shell ownership and stop
   assert.equal(surface.primaryAction.label, 'Stop Hunt');
   assert.equal(surface.primaryAction.intent, 'stop-hunt');
   assert.equal(surface.primaryAction.enabled, true);
+  assert.equal(surface.activeChainBadge.visible, true);
   assert.equal(surface.areaHeader.subtitle, 'Quiet Glade hunt in progress');
   assert.equal(surface.shell.showCombatModuleTopLane, false);
   assert.equal(surface.shell.showCombatTheater, true);
@@ -39,6 +40,8 @@ void test('C0 active exact page render contract keeps exact screen mounted and b
   assert.equal(html.includes('Stop Hunt'), true);
   assert.equal(html.includes('data-intent="stop-hunt"'), true);
   assert.equal(html.includes('Quiet Glade hunt in progress'), true);
+  assert.equal(html.includes('data-testid="outskirts-active-chain-badge"'), true);
+  assert.equal(html.includes('data-testid="outskirts-live-summary"'), true);
 
   for (const token of [
     'outskirts-exact-left-rail',

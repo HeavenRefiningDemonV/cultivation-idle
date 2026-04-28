@@ -9,6 +9,11 @@ export type OutskirtsCombatMotionState = 'idle' | 'attack' | 'hit' | 'dodge' | '
 export type OutskirtsCombatChipTone = 'neutral' | 'ready' | 'cooldown' | 'warning';
 export type OutskirtsCombatLogTone = 'player' | 'enemy' | 'system' | 'loot' | 'defeat' | 'victory';
 export type OutskirtsFloatingHitKind = 'normal' | 'crit' | 'miss' | 'heal';
+export type OutskirtsEncounterStripMode = 'preview' | 'active-chain';
+export type OutskirtsChainBadgeTone = 'neutral' | 'warning';
+export type OutskirtsSummaryDockMode = 'grind' | 'live';
+export type OutskirtsSummaryRowId = 'runs' | 'kills' | 'goldPerHour' | 'mainDrop';
+export type OutskirtsSummaryIconKey = 'runs' | 'kills' | 'gold' | 'drop';
 
 export interface OutskirtsExactSurfaceMeta {
   surfaceId: 'outskirts-exact-mockup';
@@ -202,13 +207,15 @@ export interface OutskirtsEncounterStripNode {
   silhouetteKey?: string;
   silhouetteImageSrc?: string | null;
   completionMark?: boolean;
-  medallionVariant?: 'wolf-jade' | 'quiet-field';
+  medallionVariant?: 'wolf-jade' | 'quiet-field' | 'unknown-parchment' | 'boss-gold';
   isSelected: boolean;
   isClickable: boolean;
   ariaLabel: string;
 }
 
 export interface OutskirtsEncounterStrip {
+  mode: OutskirtsEncounterStripMode;
+  ariaLabel: string;
   leftArrow: OutskirtsEncounterStripArrow;
   rightArrow: OutskirtsEncounterStripArrow;
   lane: {
@@ -234,18 +241,29 @@ export interface OutskirtsPrimaryAction {
 
 export interface OutskirtsGrindSummary {
   visible: boolean;
+  mode: OutskirtsSummaryDockMode;
   title: string;
   scopeChipLabel: string;
+  elapsedText?: string;
   runsText: string;
+  killsText?: string;
   goldPerHourText: string;
   mainDropLabel: string;
   mainDropIconKey: string;
   rows?: Array<{
-    id: 'runs' | 'goldPerHour' | 'mainDrop';
+    id: OutskirtsSummaryRowId;
     label: string;
     value: string;
-    iconKey: 'runs' | 'gold' | 'drop';
+    iconKey: OutskirtsSummaryIconKey;
   }>;
+}
+
+export interface OutskirtsActiveChainBadge {
+  visible: boolean;
+  title: string;
+  bossLabel: string;
+  bossTone: OutskirtsChainBadgeTone;
+  source: OutskirtsSurfaceValueSource;
 }
 
 export interface OutskirtsMockupShellFlags {
@@ -354,6 +372,7 @@ export interface OutskirtsExactSurfaceV2 {
   areaHeader: OutskirtsAreaHeader;
   scenicStage: OutskirtsScenicStage;
   encounterIdentity: OutskirtsEncounterIdentity;
+  activeChainBadge: OutskirtsActiveChainBadge;
   setupCard: OutskirtsSetupCard;
   rewardsCard: OutskirtsRewardsCard;
   encounterStrip: OutskirtsEncounterStrip;
@@ -412,5 +431,12 @@ export interface OutskirtsMockupRuntimeSnapshot {
   pageSubtitle: string;
   supportHints: string[];
   combatStage: OutskirtsCombatStage;
+  activeChainTitle?: string;
+  activeChainBossLabel?: string;
+  activeStartedAtMs?: number | null;
+  activeElapsedLabel?: string;
+  liveKillsText?: string;
+  liveGoldPerHourText?: string;
+  liveMainDropLabel?: string;
   innerPalacePreview?: OutskirtsInnerPalacePreview;
 }

@@ -113,6 +113,7 @@ export function createOutskirtsMockupFixture(
     boundaryLine: 'Legacy baseline is tracked separately in phase-6 evidence.',
     pageSubtitle: 'Gold and common materials',
     supportHints: [],
+    activeStartedAtMs: null,
     combatStage: createPlanningCombatStage(),
     innerPalacePreview: {
       visible: true,
@@ -148,6 +149,12 @@ export function createActiveOutskirtsMockupFixture(
     isOutskirtsActive: true,
     hpLabel: '131 / 131',
     pageSubtitle: 'Quiet Glade hunt in progress',
+    activeChainTitle: 'Quiet Glade Chain',
+    activeChainBossLabel: 'Boss in 6',
+    activeElapsedLabel: '00:01:24',
+    liveKillsText: '2',
+    liveGoldPerHourText: '1,860',
+    liveMainDropLabel: 'Wolf Pelt',
     combatStage: {
       active: true,
       hasLiveCombat: true,

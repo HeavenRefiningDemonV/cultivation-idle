@@ -9,6 +9,7 @@ import { buildOutskirtsMockupSurfaceFromStores } from './buildOutskirtsMockupSur
 import { OutskirtsExactMockupScreen } from './OutskirtsExactMockupScreen.js';
 import { useOutskirtsScreenActionController } from './useOutskirtsScreenActionController.js';
 import { isSameOutskirtsActivitySource, isSameOutskirtsCombatSource } from './getOutskirtsModuleViewState.js';
+import { useOutskirtsActiveClock } from './hooks/useOutskirtsActiveClock.js';
 import type { OutskirtsSurfaceMode } from './types.js';
 import './OutskirtsExactMockupScreen.scss';
 
@@ -39,6 +40,7 @@ export function OutskirtsScreenOwner({ cityId }: OutskirtsScreenOwnerProps) {
   const hasSameSourceActivity = isSameOutskirtsActivitySource(cityId, outskirtsDef?.id ?? null, activeActivity);
   const hasSameSourceCombat = isSameOutskirtsCombatSource(cityId, outskirtsDef?.id ?? null, combatContext);
   const activityMode: OutskirtsSurfaceMode = hasSameSourceActivity || hasSameSourceCombat ? 'active' : 'planning';
+  const liveNowMs = useOutskirtsActiveClock(activityMode === 'active');
 
   const handleStartOutskirts = useCallback(() => {
     if (!city || !outskirtsDef) return;
@@ -73,12 +75,13 @@ export function OutskirtsScreenOwner({ cityId }: OutskirtsScreenOwnerProps) {
 
   const screenSurface = useMemo(
     () => buildOutskirtsMockupSurfaceFromStores(cityId, {
-      previewEncounterId: previewEncounterId ?? undefined,
-      allowEncounterPreviewSelection: true,
+      previewEncounterId: activityMode === 'active' ? undefined : previewEncounterId ?? undefined,
+      allowEncounterPreviewSelection: activityMode !== 'active',
       medicinePouchActionEnabled: true,
       activityMode,
+      nowMs: liveNowMs,
     }),
-    [activityMode, cityId, previewEncounterId],
+    [activityMode, cityId, previewEncounterId, liveNowMs],
   );
 
   const encounterIds = useMemo(() => screenSurface.encounterStrip.nodes.map((node) => node.id), [screenSurface.encounterStrip.nodes]);
