@@ -49,8 +49,8 @@ void test('C3 Test D: shell flags are correct in active and planning', () => {
   assert.equal(activeSurface.shell.showCombatTheater, true);
   assert.equal(activeSurface.shell.showCombatHpBars, true);
   assert.equal(activeSurface.shell.showCombatActors, true);
-  assert.equal(activeSurface.shell.showFloatingDamage, false);
-  assert.equal(activeSurface.shell.showCombatLog, false);
+  assert.equal(activeSurface.shell.showFloatingDamage, true);
+  assert.equal(activeSurface.shell.showCombatLog, true);
   assert.equal(activeSurface.shell.showCombatOptions, false);
   assert.equal(activeSurface.shell.showCombatModuleTopLane, false);
   assert.equal(activeSurface.shell.showSummaryRail, false);
@@ -104,7 +104,6 @@ void test('C3 Test G: active output does not include later packet visible conten
   const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
 
   for (const forbidden of [
-    'data-testid="outskirts-combat-log-slip"',
     'data-testid="outskirts-combat-chips"',
     'floating-hit',
     'enemy-hit-text',

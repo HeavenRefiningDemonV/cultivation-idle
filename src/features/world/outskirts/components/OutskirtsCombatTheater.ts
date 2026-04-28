@@ -4,6 +4,8 @@ import { resolveOutskirtsScenicAsset } from '../resolveOutskirtsScenicAsset.js';
 import type { OutskirtsCombatStage, OutskirtsEncounterIdentity, OutskirtsScenicStage } from '../types.js';
 import { OutskirtsCombatHealthBars } from './OutskirtsCombatHealthBars.js';
 import { OutskirtsCombatActors } from './OutskirtsCombatActors.js';
+import { OutskirtsCombatFloatingHits } from './OutskirtsCombatFloatingHits.js';
+import { OutskirtsCombatLogSlip } from './OutskirtsCombatLogSlip.js';
 
 export interface OutskirtsCombatTheaterProps {
   scenic: OutskirtsScenicStage;
@@ -11,9 +13,11 @@ export interface OutskirtsCombatTheaterProps {
   combatStage: OutskirtsCombatStage;
   showCombatHpBars?: boolean;
   showCombatActors?: boolean;
+  showFloatingDamage?: boolean;
+  showCombatLog?: boolean;
 }
 
-export function OutskirtsCombatTheater({ scenic, identity, combatStage, showCombatHpBars = false, showCombatActors = false }: OutskirtsCombatTheaterProps) {
+export function OutskirtsCombatTheater({ scenic, identity, combatStage, showCombatHpBars = false, showCombatActors = false, showFloatingDamage = false, showCombatLog = false }: OutskirtsCombatTheaterProps) {
   const bindings = resolveOutskirtsScenicAsset({
     scenic,
     selectedEncounterId: identity.selectedEncounterId,
@@ -78,20 +82,32 @@ export function OutskirtsCombatTheater({ scenic, identity, combatStage, showComb
         ? React.createElement(OutskirtsCombatActors, { combatStage })
         : null,
     ),
-    React.createElement('div', {
-      className: 'outskirtsCombatTheater__effectsLayer',
-      'data-testid': 'outskirts-combat-theater-layer-effects',
-      'aria-hidden': 'true',
-    }),
+    React.createElement(
+      'div',
+      {
+        className: 'outskirtsCombatTheater__effectsLayer',
+        'data-testid': 'outskirts-combat-theater-layer-effects',
+        'aria-hidden': 'true',
+      },
+      showFloatingDamage
+        ? React.createElement(OutskirtsCombatFloatingHits, { combatStage })
+        : null,
+    ),
     React.createElement('div', {
       className: 'outskirtsCombatTheater__chipsLayer',
       'data-testid': 'outskirts-combat-theater-layer-chips',
       'aria-hidden': 'true',
     }),
-    React.createElement('div', {
-      className: 'outskirtsCombatTheater__logLayer',
-      'data-testid': 'outskirts-combat-theater-layer-log',
-      'aria-hidden': 'true',
-    }),
+    React.createElement(
+      'div',
+      {
+        className: 'outskirtsCombatTheater__logLayer',
+        'data-testid': 'outskirts-combat-theater-layer-log',
+        'aria-hidden': showCombatLog ? undefined : 'true',
+      },
+      showCombatLog
+        ? React.createElement(OutskirtsCombatLogSlip, { combatStage })
+        : null,
+    ),
   );
 }

@@ -49,7 +49,6 @@ void test('C3 active route mounts theater shell and hp bars while leaving later 
   }
 
   for (const forbidden of [
-    'data-testid="outskirts-combat-log-slip"',
     'data-testid="outskirts-combat-chips"',
     'floating-hit',
     'enemy-hit-text',
@@ -62,8 +61,8 @@ void test('C3 shell contract enables hp bars only for active', () => {
   assert.equal(OUTSKIRTS_ALLOWED_ACTIVE_CONTRACT_SHELL.showCombatTheater, true);
   assert.equal(OUTSKIRTS_ALLOWED_ACTIVE_CONTRACT_SHELL.showCombatHpBars, true);
   assert.equal(OUTSKIRTS_ALLOWED_ACTIVE_CONTRACT_SHELL.showCombatActors, true);
-  assert.equal(OUTSKIRTS_ALLOWED_ACTIVE_CONTRACT_SHELL.showFloatingDamage, false);
-  assert.equal(OUTSKIRTS_ALLOWED_ACTIVE_CONTRACT_SHELL.showCombatLog, false);
+  assert.equal(OUTSKIRTS_ALLOWED_ACTIVE_CONTRACT_SHELL.showFloatingDamage, true);
+  assert.equal(OUTSKIRTS_ALLOWED_ACTIVE_CONTRACT_SHELL.showCombatLog, true);
   assert.equal(OUTSKIRTS_ALLOWED_ACTIVE_CONTRACT_SHELL.showCombatOptions, false);
 
   assert.deepEqual(OUTSKIRTS_ALLOWED_PLANNING_SHELL, {

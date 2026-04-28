@@ -15,7 +15,7 @@ import { useOutskirtsStore } from '../../../stores/outskirtsStore.js';
 import { useTechniqueStore } from '../../../stores/techniqueStore.js';
 import { useUIStore } from '../../../stores/uiStore.js';
 import { resolveModuleRef } from '../../../components/screens/world/worldUtils.js';
-import type { CombatLogEntry } from '../../../types/index.js';
+import type { CombatEvent, CombatLogEntry } from '../../../types/index.js';
 import {
   OUTSKIRTS_ALLOWED_ACTIVE_CONTRACT_SHELL,
   OUTSKIRTS_ALLOWED_PLANNING_SHELL,
@@ -31,6 +31,7 @@ import {
 import { isSameOutskirtsActivitySource, isSameOutskirtsCombatSource } from './getOutskirtsModuleViewState.js';
 import { resolveOutskirtsEncounterStripArt } from './resolveOutskirtsEncounterStripArt.js';
 import { OUTSKIRTS_ASSETS } from './outskirtsAssetRegistry.js';
+import { buildOutskirtsFloatingHitsFromCombatFeedback } from './outskirtsCombatFeedback.js';
 import type {
   OutskirtsEncounterNodeState,
   OutskirtsCombatStage,
@@ -218,6 +219,7 @@ function buildLiveCombatStageFromStores(input: {
   enemyMaxHp: string | number;
   enemy: { id?: string | null; name?: string; level?: number; isBoss?: boolean } | null;
   combatLog: CombatLogEntry[];
+  combatEvents: CombatEvent[];
   aiProfileLabel: string;
   autoUseOn: boolean;
   killsToBoss: number;
@@ -287,7 +289,11 @@ function buildLiveCombatStageFromStores(input: {
       source: 'live',
     }),
     logLines,
-    floatingHits: [],
+    floatingHits: buildOutskirtsFloatingHitsFromCombatFeedback({
+      combatEvents: input.combatEvents,
+      logLines,
+      existingFixtureHits: [],
+    }),
   };
 }
 
@@ -525,7 +531,7 @@ export function buildOutskirtsMockupSurface(
   } as const;
 
   const notes = [activityMode === 'active'
-    ? 'Active Outskirts center stage now renders in-scene combat actors with restrained motion; floating hits, chips, log slip, and result overlays are deferred to later packets.'
+    ? 'Active Outskirts center stage now renders floating hit feedback and the parchment log slip; combat chips and result overlays are deferred to later packets.'
     : 'Planning exact surface is a review fixture and does not change baseline live-screen ownership in P0.'];
 
   return {
@@ -742,6 +748,7 @@ export function buildOutskirtsMockupRuntimeSnapshotFromStores(cityId?: string): 
         enemyMaxHp: combatStore.enemyMaxHP,
         enemy: combatStore.currentEnemy,
         combatLog: combatStore.combatLog,
+        combatEvents: combatStore.events,
         aiProfileLabel,
         autoUseOn,
         killsToBoss: outskirts?.killsToBoss ?? 10,

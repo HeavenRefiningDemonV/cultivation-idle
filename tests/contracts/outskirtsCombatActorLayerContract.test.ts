@@ -159,11 +159,6 @@ void test('C4 Test I: no premature later-packet visible content', () => {
     'data-testid="outskirts-combat-chips"',
     'floating-hit',
     'enemy-hit-text',
-    'Iron Palm Ready',
-    'Wind Step',
-    '-23',
-    'Dodge!',
-    'Miss',
   ]) {
     assert.equal(html.includes(forbidden), false);
   }

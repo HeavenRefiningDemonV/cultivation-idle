@@ -10,9 +10,11 @@ export interface OutskirtsCenterStageProps {
   combatStage: OutskirtsExactSurfaceV2['combatStage'];
   showCombatHpBars?: boolean;
   showCombatActors?: boolean;
+  showFloatingDamage?: boolean;
+  showCombatLog?: boolean;
 }
 
-export function OutskirtsCenterStage({ scenic, identity, combatStage, showCombatHpBars = false, showCombatActors = false }: OutskirtsCenterStageProps) {
+export function OutskirtsCenterStage({ scenic, identity, combatStage, showCombatHpBars = false, showCombatActors = false, showFloatingDamage = false, showCombatLog = false }: OutskirtsCenterStageProps) {
   const theaterActive = combatStage.active;
 
   return React.createElement(
@@ -30,6 +32,8 @@ export function OutskirtsCenterStage({ scenic, identity, combatStage, showCombat
           combatStage,
           showCombatHpBars,
           showCombatActors,
+          showFloatingDamage,
+          showCombatLog,
         })
       : React.createElement(OutskirtsScenicStage, {
           scenic,

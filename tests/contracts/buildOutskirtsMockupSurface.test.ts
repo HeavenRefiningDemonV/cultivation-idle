@@ -70,5 +70,5 @@ void test('buildOutskirtsMockupSurface supports active fixture combat-stage read
   assert.equal(surface.shell.showCombatTheater, true);
   assert.equal(surface.shell.showCombatHpBars, true);
   assert.equal(surface.shell.showCombatActors, true);
-  assert.equal(surface.shell.showCombatLog, false);
+  assert.equal(surface.shell.showCombatLog, true);
 });

@@ -195,7 +195,7 @@ export function createActiveOutskirtsMockupFixture(
         { id: 'fixture-log-2', text: 'Iron Palm is ready.', tone: 'system', timestamp: null, source: 'manifest' },
       ],
       floatingHits: [
-        { id: 'fixture-hit-0', text: '-23', x: 72, y: 42, kind: 'normal', target: 'enemy', source: 'manifest' },
+        { id: 'fixture-hit-snarling-wolf-23', text: '-23', x: 72, y: 42, kind: 'normal', target: 'enemy', source: 'manifest' },
       ],
     },
     ...overrides,
