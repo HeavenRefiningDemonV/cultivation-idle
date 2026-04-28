@@ -86,8 +86,9 @@ void test('C4 Test F: shell flags after C4', () => {
   assert.equal(activeSurface.shell.showCombatTheater, true);
   assert.equal(activeSurface.shell.showCombatHpBars, true);
   assert.equal(activeSurface.shell.showCombatActors, true);
-  assert.equal(activeSurface.shell.showFloatingDamage, false);
-  assert.equal(activeSurface.shell.showCombatLog, false);
+  assert.equal(activeSurface.shell.showFloatingDamage, true);
+  assert.equal(activeSurface.shell.showCombatLog, true);
+  assert.equal(activeSurface.shell.showCombatChips, true);
   assert.equal(activeSurface.shell.showCombatOptions, false);
   assert.equal(activeSurface.shell.showCombatModuleTopLane, false);
   assert.equal(activeSurface.shell.showSummaryRail, false);
@@ -155,9 +156,9 @@ void test('C4 Test I: no premature later-packet visible content', () => {
   const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
 
   for (const forbidden of [
-    'data-testid="outskirts-combat-log-slip"',
-    'data-testid="outskirts-combat-chips"',
-    'floating-hit',
+    'data-testid="outskirts-combat-result-overlay"',
+    'data-testid="outskirts-combat-victory-seal"',
+    'data-testid="outskirts-combat-defeat-seal"',
     'enemy-hit-text',
   ]) {
     assert.equal(html.includes(forbidden), false);

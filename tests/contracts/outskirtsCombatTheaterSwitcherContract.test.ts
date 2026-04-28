@@ -25,7 +25,7 @@ void test('C3 planning route keeps scenic stage and does not mount theater shell
   assert.equal(html.includes('data-testid="outskirts-combat-health-bars"'), false);
 });
 
-void test('C3 active route mounts theater shell and hp bars while leaving later layers empty', () => {
+void test('C3 active route mounts theater shell and retains stage layers', () => {
   const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture({ isOutskirtsActive: true }), {
     activityMode: 'active',
   });
@@ -48,13 +48,9 @@ void test('C3 active route mounts theater shell and hp bars while leaving later 
     assert.equal(html.includes(emptyLayerToken), true);
   }
 
-  for (const forbidden of [
-    'data-testid="outskirts-combat-chips"',
-    'floating-hit',
-    'enemy-hit-text',
-  ]) {
-    assert.equal(html.includes(forbidden), false);
-  }
+  assert.equal(html.includes('data-testid="outskirts-combat-chips"'), true);
+  assert.equal(html.includes('floating-hit'), true);
+  assert.equal(html.includes('enemy-hit-text'), false);
 });
 
 void test('C3 shell contract enables hp bars only for active', () => {
@@ -62,6 +58,7 @@ void test('C3 shell contract enables hp bars only for active', () => {
   assert.equal(OUTSKIRTS_ALLOWED_ACTIVE_CONTRACT_SHELL.showCombatHpBars, true);
   assert.equal(OUTSKIRTS_ALLOWED_ACTIVE_CONTRACT_SHELL.showCombatActors, true);
   assert.equal(OUTSKIRTS_ALLOWED_ACTIVE_CONTRACT_SHELL.showFloatingDamage, true);
+  assert.equal(OUTSKIRTS_ALLOWED_ACTIVE_CONTRACT_SHELL.showCombatChips, true);
   assert.equal(OUTSKIRTS_ALLOWED_ACTIVE_CONTRACT_SHELL.showCombatLog, true);
   assert.equal(OUTSKIRTS_ALLOWED_ACTIVE_CONTRACT_SHELL.showCombatOptions, false);
 
@@ -72,6 +69,7 @@ void test('C3 shell contract enables hp bars only for active', () => {
     showCombatHpBars: false,
     showCombatActors: false,
     showFloatingDamage: false,
+    showCombatChips: false,
     showSummaryRail: false,
     showUtilityTray: false,
     showCombatLog: false,

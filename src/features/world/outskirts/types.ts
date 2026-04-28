@@ -255,6 +255,7 @@ export interface OutskirtsMockupShellFlags {
   showCombatHpBars: boolean;
   showCombatActors: boolean;
   showFloatingDamage: boolean;
+  showCombatChips: boolean;
   showSummaryRail: boolean;
   showUtilityTray: boolean;
   showCombatLog: boolean;

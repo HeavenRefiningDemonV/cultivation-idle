@@ -5,6 +5,7 @@ import type { OutskirtsCombatStage, OutskirtsEncounterIdentity, OutskirtsScenicS
 import { OutskirtsCombatHealthBars } from './OutskirtsCombatHealthBars.js';
 import { OutskirtsCombatActors } from './OutskirtsCombatActors.js';
 import { OutskirtsCombatFloatingHits } from './OutskirtsCombatFloatingHits.js';
+import { OutskirtsCombatChips } from './OutskirtsCombatChips.js';
 import { OutskirtsCombatLogSlip } from './OutskirtsCombatLogSlip.js';
 
 export interface OutskirtsCombatTheaterProps {
@@ -15,9 +16,10 @@ export interface OutskirtsCombatTheaterProps {
   showCombatActors?: boolean;
   showFloatingDamage?: boolean;
   showCombatLog?: boolean;
+  showCombatChips?: boolean;
 }
 
-export function OutskirtsCombatTheater({ scenic, identity, combatStage, showCombatHpBars = false, showCombatActors = false, showFloatingDamage = false, showCombatLog = false }: OutskirtsCombatTheaterProps) {
+export function OutskirtsCombatTheater({ scenic, identity, combatStage, showCombatHpBars = false, showCombatActors = false, showFloatingDamage = false, showCombatLog = false, showCombatChips = false }: OutskirtsCombatTheaterProps) {
   const bindings = resolveOutskirtsScenicAsset({
     scenic,
     selectedEncounterId: identity.selectedEncounterId,
@@ -96,8 +98,11 @@ export function OutskirtsCombatTheater({ scenic, identity, combatStage, showComb
     React.createElement('div', {
       className: 'outskirtsCombatTheater__chipsLayer',
       'data-testid': 'outskirts-combat-theater-layer-chips',
-      'aria-hidden': 'true',
-    }),
+      'aria-hidden': showCombatChips ? undefined : 'true',
+    },
+    showCombatChips
+      ? React.createElement(OutskirtsCombatChips, { combatStage })
+      : null),
     React.createElement(
       'div',
       {

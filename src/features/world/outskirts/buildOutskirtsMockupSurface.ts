@@ -32,10 +32,10 @@ import { isSameOutskirtsActivitySource, isSameOutskirtsCombatSource } from './ge
 import { resolveOutskirtsEncounterStripArt } from './resolveOutskirtsEncounterStripArt.js';
 import { OUTSKIRTS_ASSETS } from './outskirtsAssetRegistry.js';
 import { buildOutskirtsFloatingHitsFromCombatFeedback } from './outskirtsCombatFeedback.js';
+import { buildOutskirtsCombatStageChips } from './outskirtsCombatChips.js';
 import type {
   OutskirtsEncounterNodeState,
   OutskirtsCombatStage,
-  OutskirtsCombatStageChip,
   OutskirtsCombatStageLogLine,
   OutskirtsCombatLogTone,
   OutskirtsExactSurfaceV2,
@@ -97,30 +97,6 @@ function mapCombatLogLineTone(type: CombatLogEntry['type']): OutskirtsCombatLogT
   return 'system';
 }
 
-function buildCombatStageChips(input: {
-  aiProfileLabel: string;
-  autoUseOn: boolean;
-  isBossFight: boolean;
-  killsToBoss: number;
-  killsSinceBoss: number;
-  source: OutskirtsSurfaceValueSource;
-  extraChips?: OutskirtsCombatStageChip[];
-}): OutskirtsCombatStageChip[] {
-  const remainingBossKills = Math.max(0, input.killsToBoss - input.killsSinceBoss);
-  const chips: OutskirtsCombatStageChip[] = [
-    { id: 'ai-profile', label: `AI: ${input.aiProfileLabel}`, tone: 'neutral', source: input.source },
-    { id: 'auto-use', label: input.autoUseOn ? 'Auto-use On' : 'Auto-use Off', tone: input.autoUseOn ? 'ready' : 'warning', source: input.source },
-    {
-      id: 'boss-countdown',
-      label: input.isBossFight ? 'Boss fight' : `Boss in ${remainingBossKills}`,
-      tone: input.isBossFight ? 'warning' : 'neutral',
-      source: 'derived',
-    },
-  ];
-  if (input.extraChips?.length) chips.push(...input.extraChips);
-  return chips.slice(0, 5);
-}
-
 function buildInactiveCombatStage(lifecycle: OutskirtsSurfaceMode = 'planning'): OutskirtsCombatStage {
   return {
     active: false,
@@ -168,6 +144,7 @@ function buildStartingCombatStage(input: {
   killsToBoss: number;
   killsSinceBoss: number;
   isBossFight: boolean;
+  activeTechniques: Array<{ id: string; name: string; readyAt: number | null }>;
 }): OutskirtsCombatStage {
   const hpMax = Math.max(0, input.playerHpMax);
   const hpCurrent = hpMax > 0 ? Math.min(Math.max(0, input.playerHpCurrent), hpMax) : 0;
@@ -200,12 +177,14 @@ function buildStartingCombatStage(input: {
       motionState: 'idle',
       isBoss: input.isBossFight,
     },
-    chips: buildCombatStageChips({
+    chips: buildOutskirtsCombatStageChips({
       aiProfileLabel: input.aiProfileLabel,
-      autoUseOn: input.autoUseOn,
+      autoUseEnabled: input.autoUseOn,
       isBossFight: input.isBossFight,
       killsToBoss: input.killsToBoss,
       killsSinceBoss: input.killsSinceBoss,
+      activeTechniques: input.activeTechniques,
+      now: Date.now(),
       source: 'live',
     }),
   };
@@ -225,6 +204,8 @@ function buildLiveCombatStageFromStores(input: {
   killsToBoss: number;
   killsSinceBoss: number;
   isBossFight: boolean;
+  activeTechniques: Array<{ id: string; name: string; readyAt: number | null }>;
+  now: number;
 }): OutskirtsCombatStage {
   const playerMax = toSafeCombatNumber(input.playerMaxHp);
   const playerCurrentRaw = toSafeCombatNumber(input.playerHp);
@@ -280,12 +261,14 @@ function buildLiveCombatStageFromStores(input: {
       isBoss: input.isBossFight || Boolean(input.enemy?.isBoss),
     },
     versusSeal: { iconKey: 'crossed-swords', label: 'Duel' },
-    chips: buildCombatStageChips({
+    chips: buildOutskirtsCombatStageChips({
       aiProfileLabel: input.aiProfileLabel,
-      autoUseOn: input.autoUseOn,
+      autoUseEnabled: input.autoUseOn,
       isBossFight: input.isBossFight,
       killsToBoss: input.killsToBoss,
       killsSinceBoss: input.killsSinceBoss,
+      activeTechniques: input.activeTechniques,
+      now: input.now,
       source: 'live',
     }),
     logLines,
@@ -531,7 +514,7 @@ export function buildOutskirtsMockupSurface(
   } as const;
 
   const notes = [activityMode === 'active'
-    ? 'Active Outskirts center stage now renders floating hit feedback and the parchment log slip; combat chips and result overlays are deferred to later packets.'
+    ? 'Active Outskirts center stage now renders compact combat status chips; result overlays and expanded controls are deferred to later packets.'
     : 'Planning exact surface is a review fixture and does not change baseline live-screen ownership in P0.'];
 
   return {
@@ -719,6 +702,10 @@ export function buildOutskirtsMockupRuntimeSnapshotFromStores(cityId?: string): 
   const attackFocusLabel = ui.settings.preferredTarget === 'boss' ? 'Boss' : ui.settings.preferredTarget === 'elite' ? 'Elite' : 'Balanced';
   const aiProfileLabel = selectedAiProfile[0].toUpperCase() + selectedAiProfile.slice(1);
   const autoUseOn = Object.values(pouchSlots).some((slot) => Boolean(slot.equippedItemId) && slot.enabled && slot.trigger !== 'manual');
+  const now = Date.now();
+  const activeTechniqueIds = selectedLoadout?.slots.active
+    .filter((value): value is string => typeof value === 'string' && value.trim().length > 0)
+    .slice(0, 2) ?? [];
 
   const aiRecommendation = evaluateAiProfileFit({ encounterType: 'outskirts', aiProfile: selectedAiProfile, loadoutSignals: postureContext.loadoutSignals, path: postureContext.path });
   const derivedAccuracyPct = aiRecommendation.rating === 'good' ? 92 : aiRecommendation.rating === 'risky' ? 86 : 82;
@@ -737,6 +724,11 @@ export function buildOutskirtsMockupRuntimeSnapshotFromStores(cityId?: string): 
   const hasSameSourceOutskirtsActivity = isSameOutskirtsActivitySource(resolvedCityId, outskirts?.id ?? null, activity);
   const isOutskirtsActive = hasSameSourceOutskirtsActivity || hasSameSourceOutskirtsCombat;
   const isBossFight = Boolean((combatContext.type === 'outskirts' && combatContext.isBoss) || combatStore.isBoss || combatStore.currentEnemy?.isBoss);
+  const activeTechniques = activeTechniqueIds.map((techId) => ({
+    id: techId,
+    name: content.maps.techniquesById[techId]?.name ?? techId,
+    readyAt: hasSameSourceOutskirtsCombat ? (combatStore.techniqueCooldowns[techId] ?? null) : null,
+  }));
   const combatStage = (() => {
     if (!isOutskirtsActive) return buildInactiveCombatStage('planning');
     if (hasSameSourceOutskirtsCombat && combatStore.currentEnemy) {
@@ -754,6 +746,8 @@ export function buildOutskirtsMockupRuntimeSnapshotFromStores(cityId?: string): 
         killsToBoss: outskirts?.killsToBoss ?? 10,
         killsSinceBoss: progress.killsSinceBoss,
         isBossFight,
+        activeTechniques,
+        now,
       });
     }
     return buildStartingCombatStage({
@@ -765,6 +759,7 @@ export function buildOutskirtsMockupRuntimeSnapshotFromStores(cityId?: string): 
       killsToBoss: outskirts?.killsToBoss ?? 10,
       killsSinceBoss: progress.killsSinceBoss,
       isBossFight,
+      activeTechniques,
     });
   })();
   const combatHpLabel = hasSameSourceOutskirtsCombat
