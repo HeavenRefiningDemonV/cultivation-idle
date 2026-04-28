@@ -12,7 +12,7 @@ import {
 } from '../../src/features/world/outskirts/outskirtsMockupPresentation.js';
 import { OutskirtsExactMockupScreen } from '../../src/features/world/outskirts/OutskirtsExactMockupScreen.js';
 
-void test('C2 planning route keeps scenic stage and does not mount theater shell', () => {
+void test('C3 planning route keeps scenic stage and does not mount theater shell', () => {
   const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture({ isOutskirtsActive: false }), {
     activityMode: 'planning',
   });
@@ -22,9 +22,10 @@ void test('C2 planning route keeps scenic stage and does not mount theater shell
   assert.equal(html.includes('data-center-mode="planning"'), true);
   assert.equal(html.includes('data-testid="outskirts-exact-scene-plane"'), true);
   assert.equal(html.includes('data-testid="outskirts-combat-theater"'), false);
+  assert.equal(html.includes('data-testid="outskirts-combat-health-bars"'), false);
 });
 
-void test('C2 active route mounts theater shell with empty layer anchors', () => {
+void test('C3 active route mounts theater shell and hp bars while leaving later layers empty', () => {
   const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture({ isOutskirtsActive: true }), {
     activityMode: 'active',
   });
@@ -34,31 +35,36 @@ void test('C2 active route mounts theater shell with empty layer anchors', () =>
   assert.equal(html.includes('data-center-mode="active"'), true);
   assert.equal(html.includes('data-testid="outskirts-combat-theater"'), true);
   assert.equal(html.includes('data-testid="outskirts-exact-scene-plane"'), false);
+  assert.equal(html.includes('data-testid="outskirts-combat-theater-layer-hp"'), true);
+  assert.equal(html.includes('data-testid="outskirts-combat-health-bars"'), true);
 
-  for (const token of [
-    'data-testid="outskirts-combat-theater-layer-hp"',
+  for (const emptyLayerToken of [
     'data-testid="outskirts-combat-theater-layer-actors"',
     'data-testid="outskirts-combat-theater-layer-effects"',
     'data-testid="outskirts-combat-theater-layer-chips"',
     'data-testid="outskirts-combat-theater-layer-log"',
   ]) {
-    assert.equal(html.includes(token), true);
+    assert.equal(html.includes(emptyLayerToken), true);
   }
 
-  for (const forbidden of ['TODO', 'placeholder text', 'combat ui pending']) {
-    assert.equal(html.toLowerCase().includes(forbidden), false);
+  for (const forbidden of [
+    'data-testid="outskirts-combat-log-slip"',
+    'data-testid="outskirts-combat-chips"',
+    'data-testid="outskirts-combat-actors"',
+    'floating-hit',
+    'enemy-hit-text',
+  ]) {
+    assert.equal(html.includes(forbidden), false);
   }
 });
 
-void test('C2 active shell contract only flips theater visibility', () => {
+void test('C3 shell contract enables hp bars only for active', () => {
   assert.equal(OUTSKIRTS_ALLOWED_ACTIVE_CONTRACT_SHELL.showCombatTheater, true);
-  assert.equal(OUTSKIRTS_ALLOWED_ACTIVE_CONTRACT_SHELL.showCombatHpBars, false);
+  assert.equal(OUTSKIRTS_ALLOWED_ACTIVE_CONTRACT_SHELL.showCombatHpBars, true);
   assert.equal(OUTSKIRTS_ALLOWED_ACTIVE_CONTRACT_SHELL.showFloatingDamage, false);
   assert.equal(OUTSKIRTS_ALLOWED_ACTIVE_CONTRACT_SHELL.showCombatLog, false);
   assert.equal(OUTSKIRTS_ALLOWED_ACTIVE_CONTRACT_SHELL.showCombatOptions, false);
-});
 
-void test('C2 planning shell contract remains unchanged', () => {
   assert.deepEqual(OUTSKIRTS_ALLOWED_PLANNING_SHELL, {
     showRunCompass: false,
     showCombatModuleTopLane: false,
@@ -76,16 +82,12 @@ void test('C2 planning shell contract remains unchanged', () => {
   });
 });
 
-void test('C2 source guard: exact mockup screen imports center switcher (not scenic stage directly)', async () => {
+void test('C3 source/style guards for center-stage ownership', async () => {
   const source = await fs.readFile('src/features/world/outskirts/OutskirtsExactMockupScreen.ts', 'utf8');
+  const css = await fs.readFile('src/features/world/outskirts/OutskirtsExactMockupScreen.scss', 'utf8');
 
   assert.match(source, /OutskirtsCenterStage/);
   assert.doesNotMatch(source, /OutskirtsScenicStage/);
-});
-
-void test('C2 style guard: center stage and theater remain absolute inset in scenic slot', async () => {
-  const css = await fs.readFile('src/features/world/outskirts/OutskirtsExactMockupScreen.scss', 'utf8');
-
   assert.match(css, /\.outskirtsCenterStage\s*\{[\s\S]*position:\s*absolute;[\s\S]*inset:\s*0;/);
   assert.match(css, /\.outskirtsCombatTheater\s*\{[\s\S]*position:\s*absolute;[\s\S]*inset:\s*0;/);
 });

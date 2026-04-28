@@ -449,7 +449,268 @@
   pointer-events: none;
 }
 
-.outskirtsCombatTheater__hpLayer,
+.outskirtsCombatTheater__hpLayer {
+  position: absolute;
+  z-index: 10;
+  top: clamp(10px, 1.6vh, 18px);
+  left: clamp(38px, 4.2vw, 72px);
+  right: clamp(38px, 4.2vw, 72px);
+  height: clamp(64px, 8.2vh, 90px);
+  pointer-events: none;
+}
+
+.outskirtsCombatHealthBars {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(58px, 5.2vw, 76px) minmax(0, 1fr);
+  align-items: start;
+  column-gap: clamp(16px, 2.2vw, 34px);
+  pointer-events: none;
+  min-width: 0;
+  min-height: 0;
+}
+
+.outskirtsCombatHealthBars__unit {
+  min-width: 0;
+  display: grid;
+  align-items: center;
+  height: clamp(52px, 6.8vh, 72px);
+}
+
+.outskirtsCombatHealthBars__unit--player {
+  grid-template-columns: clamp(50px, 4.8vw, 66px) minmax(0, 1fr);
+  justify-self: stretch;
+}
+
+.outskirtsCombatHealthBars__unit--enemy {
+  grid-template-columns: minmax(0, 1fr) clamp(50px, 4.8vw, 66px);
+  justify-self: stretch;
+}
+
+.outskirtsCombatHealthBars__seal {
+  position: relative;
+  z-index: 2;
+  width: clamp(50px, 4.8vw, 66px);
+  height: clamp(50px, 4.8vw, 66px);
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  box-sizing: border-box;
+  background:
+    radial-gradient(circle at 42% 32%, rgba(255, 248, 224, 0.9), rgba(167, 141, 96, 0.46) 48%, rgba(46, 34, 27, 0.76));
+  border: 1px solid rgba(75, 55, 38, 0.52);
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 246, 219, 0.44),
+    0 3px 9px rgba(42, 30, 24, 0.28);
+}
+
+.outskirtsCombatHealthBars__seal--player {
+  background:
+    radial-gradient(circle at 45% 34%, rgba(220, 244, 211, 0.95), rgba(93, 148, 104, 0.64) 52%, rgba(32, 61, 45, 0.86));
+  border-color: rgba(44, 91, 63, 0.62);
+}
+
+.outskirtsCombatHealthBars__seal--enemy {
+  background:
+    radial-gradient(circle at 45% 34%, rgba(245, 237, 215, 0.92), rgba(143, 125, 101, 0.54) 48%, rgba(41, 34, 30, 0.86));
+  border-color: rgba(95, 73, 54, 0.62);
+}
+
+.outskirtsCombatHealthBars__sealImage {
+  width: 72%;
+  height: 72%;
+  object-fit: contain;
+  filter: saturate(0.88) contrast(1.05) drop-shadow(0 1px 2px rgba(22, 16, 12, 0.36));
+  opacity: 0.92;
+}
+
+.outskirtsCombatHealthBars__seal--enemy .outskirtsCombatHealthBars__sealImage {
+  width: 86%;
+  height: 86%;
+}
+
+.outskirtsCombatHealthBars__plaque {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+  height: clamp(42px, 5.6vh, 58px);
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) clamp(14px, 1.8vh, 18px);
+  row-gap: 0.18rem;
+  align-content: center;
+  box-sizing: border-box;
+  padding: clamp(5px, 0.72vh, 8px) clamp(14px, 1.5vw, 22px) clamp(7px, 0.9vh, 10px);
+  border: 1px solid rgba(105, 79, 56, 0.38);
+  background:
+    linear-gradient(180deg, rgba(250, 244, 226, 0.94), rgba(221, 201, 165, 0.9)),
+    url('../../../assets/menus/bar_long.png') center / 100% 100% no-repeat;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 248, 229, 0.5),
+    0 3px 8px rgba(47, 34, 25, 0.2);
+}
+
+.outskirtsCombatHealthBars__plaque--player {
+  margin-left: clamp(-8px, -0.7vw, -4px);
+  padding-left: clamp(18px, 2vw, 28px);
+  border-radius: 0.62rem 0.38rem 0.38rem 0.62rem;
+}
+
+.outskirtsCombatHealthBars__plaque--enemy {
+  margin-right: clamp(-8px, -0.7vw, -4px);
+  padding-right: clamp(18px, 2vw, 28px);
+  border-radius: 0.38rem 0.62rem 0.62rem 0.38rem;
+}
+
+.outskirtsCombatHealthBars__name {
+  min-width: 0;
+  align-self: end;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(15px, 1.36vw, 22px);
+  font-weight: 700;
+  line-height: 1;
+  color: rgba(42, 30, 22, 0.96);
+  letter-spacing: 0.01em;
+  text-shadow: 0 1px 0 rgba(255, 248, 229, 0.72);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.outskirtsCombatHealthBars__plaque--enemy .outskirtsCombatHealthBars__name {
+  text-align: right;
+}
+
+.outskirtsCombatHealthBars__track {
+  position: relative;
+  min-width: 0;
+  height: clamp(13px, 1.55vh, 17px);
+  border-radius: 999px;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(38, 28, 24, 0.96), rgba(20, 16, 15, 0.96));
+  border: 1px solid rgba(43, 31, 24, 0.72);
+  box-shadow:
+    inset 0 1px 2px rgba(0, 0, 0, 0.42),
+    0 1px 0 rgba(255, 245, 222, 0.34);
+}
+
+.outskirtsCombatHealthBars__fill {
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  width: 0%;
+  border-radius: inherit;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.22);
+  transition: width 160ms ease-out;
+}
+
+.outskirtsCombatHealthBars__fill--player {
+  background:
+    linear-gradient(90deg, rgba(42, 116, 75, 0.96), rgba(78, 158, 101, 0.96) 62%, rgba(143, 196, 128, 0.95));
+}
+
+.outskirtsCombatHealthBars__fill--enemy {
+  background:
+    linear-gradient(90deg, rgba(143, 37, 32, 0.98), rgba(195, 54, 45, 0.96) 62%, rgba(224, 103, 82, 0.94));
+}
+
+.outskirtsCombatHealthBars__hpText {
+  position: relative;
+  z-index: 2;
+  display: block;
+  width: 100%;
+  text-align: center;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(10px, 0.95vw, 13px);
+  font-weight: 700;
+  line-height: clamp(13px, 1.55vh, 17px);
+  color: rgba(255, 245, 223, 0.96);
+  text-shadow:
+    0 1px 1px rgba(0, 0, 0, 0.58),
+    0 0 4px rgba(0, 0, 0, 0.34);
+  pointer-events: none;
+}
+
+.outskirtsCombatHealthBars__versus {
+  justify-self: center;
+  align-self: center;
+  width: clamp(56px, 5.2vw, 76px);
+  height: clamp(56px, 5.2vw, 76px);
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  color: rgba(238, 222, 188, 0.96);
+  background:
+    radial-gradient(circle at 50% 38%, rgba(84, 72, 58, 0.98), rgba(35, 29, 25, 0.98) 64%, rgba(18, 15, 13, 0.98)),
+    linear-gradient(180deg, rgba(101, 78, 49, 0.85), rgba(45, 32, 23, 0.96));
+  border: 1px solid rgba(196, 163, 103, 0.55);
+  box-shadow:
+    inset 0 0 0 2px rgba(245, 226, 177, 0.16),
+    0 4px 12px rgba(30, 22, 18, 0.34);
+}
+
+.outskirtsCombatHealthBars__versus svg {
+  width: clamp(26px, 2.5vw, 36px);
+  height: clamp(26px, 2.5vw, 36px);
+  stroke-width: 1.72;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.48));
+}
+
+@media (max-width: 1120px) {
+  .outskirtsCombatTheater__hpLayer {
+    left: clamp(22px, 3vw, 42px);
+    right: clamp(22px, 3vw, 42px);
+  }
+
+  .outskirtsCombatHealthBars {
+    column-gap: clamp(10px, 1.6vw, 20px);
+  }
+
+  .outskirtsCombatHealthBars__name {
+    font-size: clamp(13px, 1.25vw, 18px);
+  }
+}
+
+@media (max-width: 960px) {
+  .outskirtsCombatTheater__hpLayer {
+    top: 10px;
+    left: 14px;
+    right: 14px;
+    height: 120px;
+  }
+
+  .outskirtsCombatHealthBars {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto auto;
+    row-gap: 6px;
+  }
+
+  .outskirtsCombatHealthBars__versus {
+    width: 44px;
+    height: 44px;
+    order: 2;
+  }
+
+  .outskirtsCombatHealthBars__unit--player {
+    order: 1;
+  }
+
+  .outskirtsCombatHealthBars__unit--enemy {
+    order: 3;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .outskirtsCombatHealthBars__fill {
+    transition: none !important;
+  }
+}
+
 .outskirtsCombatTheater__actorLayer,
 .outskirtsCombatTheater__effectsLayer,
 .outskirtsCombatTheater__chipsLayer,

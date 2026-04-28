@@ -103,7 +103,7 @@ export const OUTSKIRTS_ALLOWED_ACTIVE_CONTRACT_SHELL: OutskirtsMockupShellFlags 
   showRunCompass: false,
   showCombatModuleTopLane: false,
   showCombatTheater: true,
-  showCombatHpBars: false,
+  showCombatHpBars: true,
   showFloatingDamage: false,
   showSummaryRail: false,
   showUtilityTray: false,
