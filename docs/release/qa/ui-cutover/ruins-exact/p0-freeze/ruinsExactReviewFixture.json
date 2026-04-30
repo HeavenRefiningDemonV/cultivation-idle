@@ -1,0 +1,96 @@
+{
+  "schemaVersion": "ruins-exact-review-fixture.v1",
+  "authority": {
+    "approvedMockupPrimaryPath": "/mnt/data/45e00e51-3cf7-4b34-a872-e30930c490b5.png",
+    "approvedRepoPath": "docs/release/qa/ui-cutover/ruins-exact/approved-mockup/ruins-hollow-log-den-approved-exact.png",
+    "scenePlateCropPath": "docs/release/qa/ui-cutover/ruins-exact/approved-mockup/ruins-hollow-log-den-scene-plate-crop.png",
+    "legacyConceptPath": "/mnt/data/Ruins.png",
+    "legacyConceptPolicy": "context-only-not-exact-authority",
+    "approvedBinaryStatus": "external-only-until-manual-commit"
+  },
+  "canvas": { "width": 2048, "height": 1152, "aspectRatio": "16:9" },
+  "visibleAnchors": {
+    "header": {
+      "pageTitle": "Ruins",
+      "areaPlaqueLabel": "Hollow Log Den ▾",
+      "subtitle": "Targeted local materials and guaranteed anchor rewards",
+      "chips": ["Targeted Mats", "Deterministic Support"]
+    },
+    "tacticalStrip": {
+      "hp": "131 / 131",
+      "depth": "Room 2 / 5 · Lv. 11",
+      "loadout": "Loadout 1",
+      "aiProfile": "Balanced",
+      "healing": "0 / 20",
+      "bounty": "No tracked bounty",
+      "expedition": "2 Idle"
+    },
+    "kitCard": {
+      "title": "Ruin Kit",
+      "stamp": "In Ruin",
+      "loadoutSet": "1",
+      "aiProfile": "Balanced",
+      "explorationFocus": "Materials",
+      "survival": { "HP": "131", "EVA": "10%", "RES": "3%" },
+      "medicinePouch": "0 / 20",
+      "equipmentSlotCount": 6
+    },
+    "scenicStage": {
+      "requiredMotifs": ["giant hollow root mouth", "mossy broken stone steps", "old shrine fragments", "carved stones", "teal spirit-leaf glows", "white-green robed cultivator holding a lantern", "faint final chest glint", "broken statue or carved pillar", "quiet right-foreground candles"],
+      "notAllowed": ["large enemy duel", "enemy HP bars", "Gate Trial sacred aura", "gold-focused farm framing", "broad open Outskirts field"]
+    },
+    "targetedMaterialsCard": {
+      "title": "Targeted Materials",
+      "leadMaterials": ["Spirit Leaf", "Beast Materials"],
+      "guaranteedAnchor": { "item": "Core Fragment x1", "source": "Final Chest" },
+      "rarePity": "1 / 6",
+      "rarePityDots": { "total": 6, "filled": 1 },
+      "autoRepeat": "Off",
+      "autoRepeatHelper": "Repeats after Final Chest",
+      "footer": "Best used for targeted local materials, not gold."
+    },
+    "roomRoute": {
+      "title": "Hollow Log Den Route",
+      "chip": "Anchor Chest in 3",
+      "nodes": [
+        { "id": "root-mouth", "label": "Root Mouth", "sublabel": "Room 1", "state": "completed" },
+        { "id": "spirit-nest", "label": "Spirit Nest", "sublabel": "Room 2", "state": "current" },
+        { "id": "sealed-cache", "label": "Sealed Cache", "sublabel": "Room 3", "state": "future" },
+        { "id": "den-guardian", "label": "Den Guardian", "sublabel": "Lv. 11", "state": "future" },
+        { "id": "final-chest", "label": "Final Chest", "sublabel": "Anchor", "state": "future" }
+      ]
+    },
+    "bottom": {
+      "primaryCta": "Continue Exploration",
+      "summaryTitle": "Exploration Summary",
+      "summaryRows": { "Rooms": "2 / 5", "Anchor": "Final Chest", "Pity": "1 / 6", "Main Target": "Spirit Leaf" }
+    }
+  },
+  "regionMap": {
+    "pageTitle": { "x": 45, "y": 20, "w": 155, "h": 40 },
+    "runCompass": { "x": 250, "y": 30, "w": 1720, "h": 25 },
+    "tacticalCells": { "x": 45, "y": 78, "w": 1950, "h": 62 },
+    "headerPlaqueCluster": { "x": 760, "y": 150, "w": 475, "h": 115 },
+    "leftCard": { "x": 36, "y": 240, "w": 302, "h": 696 },
+    "scenicField": { "x": 362, "y": 270, "w": 1315, "h": 595 },
+    "rightCard": { "x": 1702, "y": 240, "w": 310, "h": 660 },
+    "routeStrip": { "x": 430, "y": 865, "w": 1080, "h": 172 },
+    "cta": { "x": 750, "y": 1044, "w": 490, "h": 72 },
+    "summaryDock": { "x": 1640, "y": 918, "w": 370, "h": 187 }
+  },
+  "visualHarmonyContract": {
+    "pageLanguage": "full-screen parchment-and-ink xianxia destination",
+    "centerDominance": "cold enclosed Hollow Log Den scene is primary visual mass",
+    "sideRails": "left Ruin Kit and right Targeted Materials support rails are subordinate but clear",
+    "colorBalance": "warm parchment + dark plaque + blue-gray/moss/teal scene + muted bronze CTA accents",
+    "avoid": ["neon saturation", "sci-fi HUD", "heavy horror black contrast", "Outskirts duel-stage framing"]
+  },
+  "liveVsFixtureGuardrails": [
+    "Fixture mode locks approved mockup values for screenshot parity.",
+    "Live mode must remain truthful to stores and content.",
+    "Fixture may display Rare Pity 1 / 6 while live economy remains ruinsBossChestRare.pityCap = 12 in Packet 0.",
+    "Fixture may display Continue Exploration while live CTA remains Start Ruins Run / Stop Ruins Run in Packet 0.",
+    "Fixture route labels are presentation-only and must not modify ruinsStore room naming.",
+    "Fixture groups mat_beast_bone + mat_beast_blood as Beast Materials without altering drop tables."
+  ]
+}

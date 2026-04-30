@@ -66,7 +66,11 @@
     "release:phase6-combat-preflight:json": "npm run release:phase6-combat-preflight -- --json",
     "release:outskirts-exact-p0:capture": "NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node --experimental-strip-types scripts/release/runOutskirtsExactP0Capture.ts",
     "release:outskirts-exact-p0:audit": "npm run release:phase6-combat-evidence-audit -- --surface=outskirts",
-    "release:outskirts-exact-p0:report": "NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node --experimental-strip-types scripts/release/buildOutskirtsExactP0Baseline.ts --write"
+    "release:outskirts-exact-p0:report": "NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node --experimental-strip-types scripts/release/buildOutskirtsExactP0Baseline.ts --write",
+    "release:ruins-exact-p0:capture": "NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node --experimental-strip-types scripts/release/runRuinsExactP0Capture.ts",
+    "release:ruins-exact-p0:audit": "npm run release:phase6-combat-evidence-audit -- --surface=ruins",
+    "release:ruins-exact-p0:report": "NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node --experimental-strip-types scripts/release/buildRuinsExactP0Baseline.ts --write",
+    "release:ruins-exact-p0:report:json": "npm run release:ruins-exact-p0:report -- --json"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.9",
