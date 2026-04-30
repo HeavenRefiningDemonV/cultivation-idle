@@ -1,17 +1,13 @@
 import React from 'react';
 import type { RuinsExactSurfaceV1 } from './types.js';
 import { RUINS_EXACT_REGION_ORDER } from './ruinsExactPresentation.js';
+import { RuinsTopRegion } from './components/RuinsTopRegion.js';
 
-export function RuinsExactMockupScreen(props: { surface: RuinsExactSurfaceV1; onPrimaryAction?: () => void; onToggleAutoRepeat?: () => void }) {
-  const { surface, onPrimaryAction } = props;
+export function RuinsExactMockupScreen(props: { surface: RuinsExactSurfaceV1; onPrimaryAction?: () => void; onToggleAutoRepeat?: () => void; onOpenSettings?: () => void; onOpenTacticalCell?: (cellId: RuinsExactSurfaceV1['tacticalStrip']['cells'][number]['id']) => void; onOpenAreaSelector?: () => void }) {
+  const { surface, onPrimaryAction, onOpenSettings, onOpenTacticalCell, onOpenAreaSelector } = props;
   return React.createElement('article', { className: 'ruinsExactPage', 'data-testid': 'ruins-exact-page', 'data-activity-mode': surface.meta.activityMode },
-    React.createElement('section', { className: 'ruinsExactPage__topRegion', 'data-testid': 'ruins-exact-top-region' },
-      React.createElement('h1', null, surface.page.title),
-      React.createElement('div', null, `${surface.areaHeader.plaqueLabel} ▾`),
-      React.createElement('p', null, surface.areaHeader.subtitle),
-      React.createElement('div', null, surface.areaHeader.chips.map((c) => React.createElement('span', { key: c.id }, c.label))),
-      React.createElement('div', null, surface.tacticalStrip.cells.map((c) => React.createElement('span', { key: c.id }, c.primaryText))),
-    ),
+    React.createElement('div', { className: 'ruinsExactPage__underlay', 'aria-hidden': 'true' }),
+    React.createElement(RuinsTopRegion, { surface, onOpenSettings, onOpenTacticalCell, onOpenAreaSelector }),
     React.createElement('section', { className: 'ruinsExactPage__bodyCluster', 'data-testid': 'ruins-exact-body-grid' },
       React.createElement('aside', { 'data-testid': 'ruins-exact-left-rail' }, React.createElement('h2', null, surface.kitCard.title), React.createElement('div', null, surface.kitCard.stampLabel), React.createElement('div', null, surface.kitCard.setupRows.map((r) => React.createElement('p', { key: r.label }, `${r.label} ${r.value}`))), React.createElement('div', null, surface.kitCard.survivalRows.map((r) => React.createElement('p', { key: r.label }, `${r.label} ${r.value}`))), React.createElement('p', null, surface.kitCard.medicinePouch.value), React.createElement('div', null, surface.kitCard.equipmentSlots.map((s) => React.createElement('span', { key: s.id }, s.label)))),
       React.createElement('main', { 'data-testid': 'ruins-exact-center-scenic-slot' }, React.createElement('p', null, surface.scenicStage.environmentDescriptor)),

@@ -1,3 +1,51 @@
-.ruinsExactPage { --ruins-page-inline-padding: clamp(18px, 2.4vw, 34px); --ruins-left-rail-width: clamp(260px, 14.6vw, 310px); --ruins-right-rail-width: clamp(285px, 15.2vw, 330px); --ruins-rail-gap: clamp(20px, 1.8vw, 32px); width: 100%; height: 100%; overflow: hidden; isolation: isolate; padding: var(--ruins-page-inline-padding); background: linear-gradient(180deg,#f4ead5,#e9ddc7); color:#2d2418; }
-.ruinsExactPage__bodyCluster { display:grid; height:100%; grid-template-columns: var(--ruins-left-rail-width) 1fr var(--ruins-right-rail-width); grid-template-areas: 'left center right' '. route .' '. cta summary'; gap: var(--ruins-rail-gap); }
+.ruinsExactPage {
+  --ruins-page-inline-padding: clamp(18px, 2.4vw, 34px);
+  --ruins-left-rail-width: clamp(260px, 14.6vw, 310px);
+  --ruins-right-rail-width: clamp(285px, 15.2vw, 330px);
+  --ruins-rail-gap: clamp(20px, 1.8vw, 32px);
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  isolation: isolate;
+  padding: var(--ruins-page-inline-padding);
+  background: linear-gradient(180deg, #f4ead5, #e9ddc7);
+  color: #2d2418;
+}
+
+.ruinsExactPage__underlay { position: absolute; inset: 0; background: radial-gradient(140% 90% at 50% 0%, rgba(255,255,255,.26), rgba(255,255,255,0)); pointer-events: none; }
+
+.ruinsTopRegion { display:grid; grid-template-columns: var(--ruins-left-rail-width) var(--ruins-rail-gap) minmax(0,1fr) var(--ruins-rail-gap) var(--ruins-right-rail-width); row-gap: clamp(6px,0.8vh,11px); align-items:start; padding-top: clamp(2px,0.35vh,6px); position: relative; z-index: 1; }
+.ruinsTopRegion__topBand { grid-column:1/-1; display:grid; grid-template-columns:minmax(180px,220px) minmax(0,1fr) 32px; column-gap:clamp(14px,1.6vw,26px); align-items:center; min-height:clamp(36px,4.4vh,52px); }
+.ruinsTopRegion__titleAnchor h1 { margin:0; font: 700 clamp(32px,2.05vw,38px)/1.02 Georgia, 'Times New Roman', serif; color:#2b2118; }
+.ruinsTopRegion__titleAnchor { display:flex; align-items:center; gap:10px; }
+.ruinsTopRegion__titleSeal { width: 16px; height: 16px; border-radius: 3px; border:1px solid rgba(110,16,12,.55); background: linear-gradient(180deg,#b94836,#8f2c21); box-shadow: inset 0 0 0 1px rgba(255,255,255,.25); }
+.ruinsTopRegion__macroRibbon { position:relative; height: 24px; display:grid; align-items:center; }
+.ruinsTopRegion__macroTrack { height:2px; background: rgba(76,92,82,.34); border-radius: 999px; }
+.ruinsTopRegion__macroNodes { position:absolute; inset:0; display:grid; grid-template-columns:repeat(15,1fr); align-items:center; list-style:none; padding:0; margin:0; }
+.ruinsTopRegion__macroNode { width:7px; height:7px; border-radius:999px; justify-self:center; background:#95ad9a; }
+.ruinsTopRegion__macroNode--active { background:#ccb072; transform:scale(1.08); }
+.ruinsTopRegion__macroFlourish { position:absolute; top:50%; width:28px; height:10px; margin-top:-5px; opacity:.42; background-size:contain; background-repeat:no-repeat; }
+.ruinsTopRegion__macroFlourish--left { left:-6px; }
+.ruinsTopRegion__macroFlourish--right { right:-6px; transform:scaleX(-1); }
+.ruinsTopRegion__settingsButton { width:30px; height:30px; border-radius:999px; border:1px solid rgba(116,87,44,.4); background:#efe2c4; color:#5b4526; display:grid; place-items:center; }
+
+.ruinsTopRegion__tacticalStrip { grid-column:1/-1; display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:clamp(8px,0.75vw,12px); min-height:clamp(54px,5.9vh,66px); }
+.ruinsTopRegion__tacticalCell { position:relative; text-align:left; border:1px solid rgba(89,66,39,.34); border-radius:11px; background:linear-gradient(180deg,#f6edd8,#e8dcc2); min-height:100%; display:grid; grid-template-columns:28px minmax(0,1fr) 16px 10px; align-items:center; column-gap:8px; padding:7px 8px; }
+.ruinsTopRegion__tacticalCell::after { content:''; position:absolute; right:7px; top:8px; width:14px; height:14px; clip-path: polygon(0 0, 100% 50%, 0 100%); background: rgba(102,78,44,.11); }
+.ruinsTopRegion__tacticalLabel, .ruinsTopRegion__tacticalPrimary { display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.ruinsTopRegion__tacticalLabel { font-size:11px; opacity:.85; }
+.ruinsTopRegion__tacticalPrimary { font-size:13px; font-weight:600; }
+.ruinsTopRegion__tacticalIcon { width:17px; height:17px; object-fit:contain; }
+.ruinsTopRegion__tacticalUnderlineTrack { display:block; margin-top:4px; height:3px; border-radius:999px; background:rgba(145,53,39,.2); }
+.ruinsTopRegion__tacticalUnderlineFill { display:block; height:100%; border-radius:999px; background:linear-gradient(90deg,#a43d31,#cf7766); }
+
+.ruinsTopRegion__plaqueCluster { grid-column:3; justify-self:center; width:min(100%,clamp(460px,32vw,560px)); min-height:clamp(82px,8.8vh,112px); display:grid; justify-items:center; row-gap:clamp(5px,0.6vh,8px); }
+.ruinsTopRegion__areaPlaque { background:linear-gradient(180deg,#35271d,#211711); color:#f2e3c1; border:1px solid rgba(106,84,53,.65); border-radius:999px; min-width: clamp(430px,31vw,520px); min-height:42px; display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:0 20px; font:700 clamp(31px,1.8vw,36px)/1 Georgia,'Times New Roman',serif; }
+.ruinsTopRegion__plaqueCaret { display:inline-flex; align-items:center; }
+.ruinsTopRegion__subtitle { margin:0; font-size:14px; color:#5b4932; }
+.ruinsTopRegion__roleChips { display:flex; gap:10px; }
+.ruinsTopRegion__roleChip { background:#efe4ca; border:1px solid rgba(111,87,54,.35); border-radius:999px; padding:4px 10px; font-size:12px; display:inline-flex; align-items:center; gap:6px; }
+.ruinsTopRegion__roleChipDot { width:7px; height:7px; border-radius:999px; background:#98ab93; }
+
+.ruinsExactPage__bodyCluster { display:grid; height: calc(100% - clamp(170px, 23vh, 250px)); grid-template-columns: var(--ruins-left-rail-width) 1fr var(--ruins-right-rail-width); grid-template-areas: 'left center right' '. route .' '. cta summary'; gap: var(--ruins-rail-gap); }
 [data-testid='ruins-exact-left-rail']{grid-area:left;} [data-testid='ruins-exact-center-scenic-slot']{grid-area:center;} [data-testid='ruins-exact-right-rail']{grid-area:right;} [data-testid='ruins-exact-route-slot']{grid-area:route;} [data-testid='ruins-exact-cta-slot']{grid-area:cta;} [data-testid='ruins-exact-summary-dock']{grid-area:summary;}

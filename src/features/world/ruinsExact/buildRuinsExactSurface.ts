@@ -13,15 +13,15 @@ export function createRuinsExactMockupFixture(overrides: Partial<RuinsExactSurfa
   const surface: RuinsExactSurfaceV1 = {
     meta: { surfaceId: 'ruins-exact-mockup', version: RUINS_EXACT_SURFACE_VERSION, mode: 'fixture', source: 'fixture', cityId: 'city_pinewind_hamlet', ruinId: 'ruin_hollow_log_den', targetMockupId: RUINS_TARGET_MOCKUP_ID, activityMode: 'active' },
     page: { title: 'Ruins' },
-    topRibbon: { markers: [{ id: 'm1', active: false }, { id: 'm2', active: true }, { id: 'm3', active: false }] },
-    tacticalStrip: { cells: [
-      { id: 'hp', label: 'HP', primaryText: RUINS_FIXTURE_COPY.tactical[0], iconKey: 'hp', tone: 'positive', showCaret: false, showUnderlineBar: true, underlineBarPct: 1, visible: true, source: 'fixture' },
-      { id: 'depth', label: 'Depth', primaryText: RUINS_FIXTURE_COPY.tactical[1], iconKey: 'depth', tone: 'neutral', showCaret: false, showUnderlineBar: false, visible: true, source: 'fixture' },
-      { id: 'loadout', label: 'Loadout', primaryText: RUINS_FIXTURE_COPY.tactical[2], iconKey: 'loadout', tone: 'neutral', showCaret: true, showUnderlineBar: false, visible: true, source: 'fixture' },
-      { id: 'aiProfile', label: 'AI Profile', primaryText: RUINS_FIXTURE_COPY.tactical[3], iconKey: 'ai', tone: 'neutral', showCaret: true, showUnderlineBar: false, visible: true, source: 'fixture' },
-      { id: 'healing', label: 'Healing', primaryText: RUINS_FIXTURE_COPY.tactical[4], iconKey: 'heal', tone: 'warning', showCaret: false, showUnderlineBar: false, visible: true, source: 'fixture' },
-      { id: 'bounty', label: 'Bounty', primaryText: RUINS_FIXTURE_COPY.tactical[5], iconKey: 'bounty', tone: 'neutral', showCaret: false, showUnderlineBar: false, visible: true, source: 'fixture' },
-      { id: 'expedition', label: 'Expedition', primaryText: RUINS_FIXTURE_COPY.tactical[6], iconKey: 'expedition', tone: 'neutral', showCaret: false, showUnderlineBar: false, visible: true, source: 'fixture' },
+    topRibbon: { ariaLabel: 'Ruins Run Compass', decorative: true, activeNodeId: 'n9', nodes: Array.from({ length: 15 }, (_, i) => ({ id: `n${i + 1}`, label: `${i + 1}`, state: i < 8 ? 'completed' : i === 8 ? 'current' : 'future', variant: i === 8 ? 'active' : 'muted' })) },
+    tacticalStrip: { ariaLabel: 'Ruins tactical readout', cells: [
+      { id: 'hp', label: 'HP', primaryText: RUINS_FIXTURE_COPY.tactical[0], iconKey: 'hp', tone: 'positive', showCaret: false, showNotificationDot: false, showUnderlineBar: true, underlineBarPct: 100, visible: true, reserveAdornmentSpace: true, source: 'fixture' },
+      { id: 'depth', label: 'Depth', primaryText: RUINS_FIXTURE_COPY.tactical[1], iconKey: 'depth', tone: 'neutral', showCaret: false, showNotificationDot: false, showUnderlineBar: false, visible: true, reserveAdornmentSpace: true, source: 'fixture' },
+      { id: 'loadout', label: 'Loadout', primaryText: RUINS_FIXTURE_COPY.tactical[2], iconKey: 'loadout', tone: 'neutral', showCaret: true, showNotificationDot: false, showUnderlineBar: false, visible: true, reserveAdornmentSpace: true, source: 'fixture' },
+      { id: 'aiProfile', label: 'AI Profile', primaryText: RUINS_FIXTURE_COPY.tactical[3], iconKey: 'aiProfile', tone: 'neutral', showCaret: true, showNotificationDot: false, showUnderlineBar: false, visible: true, reserveAdornmentSpace: true, source: 'fixture' },
+      { id: 'healing', label: 'Healing', primaryText: RUINS_FIXTURE_COPY.tactical[4], iconKey: 'healing', tone: 'warning', showCaret: false, showNotificationDot: false, showUnderlineBar: false, visible: true, reserveAdornmentSpace: true, source: 'fixture' },
+      { id: 'bounty', label: 'Bounty', primaryText: RUINS_FIXTURE_COPY.tactical[5], iconKey: 'bounty', tone: 'neutral', showCaret: false, showNotificationDot: false, showUnderlineBar: false, visible: true, reserveAdornmentSpace: true, source: 'fixture' },
+      { id: 'expedition', label: 'Expedition', primaryText: RUINS_FIXTURE_COPY.tactical[6], iconKey: 'expedition', tone: 'neutral', showCaret: false, showNotificationDot: false, showUnderlineBar: false, visible: true, reserveAdornmentSpace: true, source: 'fixture' },
     ] },
     areaHeader: { plaqueLabel: RUINS_FIXTURE_COPY.plaque, showDropdownCaret: true, subtitle: RUINS_FIXTURE_COPY.subtitle, chips: [{ id: 'targeted-mats', label: 'Targeted Mats' }, { id: 'deterministic-support', label: 'Deterministic Support' }] },
     kitCard: { title: 'Ruin Kit', stampLabel: 'In Ruin', setupRows: [{ label: 'Loadout Set', value: '1' }, { label: 'AI Profile', value: 'Balanced' }, { label: 'Exploration Focus', value: 'Materials' }], survivalRows: [{ label: 'HP', value: '131' }, { label: 'EVA', value: '10%' }, { label: 'RES', value: '3%' }], medicinePouch: { value: '0 / 20', actionVisible: true }, equipmentSlots: ['weapon','manual','ring','boots','charm','talisman'].map((id) => ({ id, label: id[0].toUpperCase()+id.slice(1), iconKey: id, value: '—', source: 'fixture' as const })) },
@@ -50,14 +50,14 @@ export function buildRuinsExactSurfaceFromStores(cityId?: string, options: Build
   if (!ruinDef) missing.push('missing ruin definition');
   const activeRun = ruins.activeRun;
   const progress = ruinRefId ? ruins.progressByRuinId[ruinRefId] : undefined;
-  const pityCap = content.raw.economy?.tuning?.pityDefaults?.ruinsBossChestRare?.pityCap;
+  const pityCap = content.raw?.economy?.tuning?.pityDefaults?.ruinsBossChestRare?.pityCap;
   if (!pityCap) missing.push('missing economy pity cap');
   const roomCount = ruinDef?.roomCount ?? activeRun?.roomCount ?? 5;
   const roomIndex = activeRun ? Math.max(0, Math.min(activeRun.roomIndex, roomCount - 1)) : 1;
   const pityFailures = progress?.bossChestRareFailures ?? 0;
   const pityText = pityCap ? `${Math.min(pityFailures, pityCap)} / ${pityCap}` : '0 / 0';
   const activityMode = !ruinDef ? 'unavailable' : activeRun?.stopping ? 'transitioning' : activeRun ? 'active' : 'idle';
-  const leadDrops = ruinDef?.roomDrops ?? [];
+  const leadDrops = ruinDef?.roomDropTable ?? [];
   const hasSpiritLeaf = leadDrops.some((d) => d.itemId === 'mat_spirit_leaf');
   const beastIds = ['mat_beast_bone', 'mat_beast_blood'];
   const finalChestAnchor = ruinDef?.finalChestDrops?.guaranteed?.find((d) => d.itemId === 'mat_core_fragment');
@@ -70,14 +70,14 @@ export function buildRuinsExactSurfaceFromStores(cityId?: string, options: Build
   return {
     ...createRuinsExactMockupFixture(),
     meta: { surfaceId: 'ruins-exact-mockup', version: RUINS_EXACT_SURFACE_VERSION, mode: 'live', source: 'stores', cityId: resolvedCityId, ruinId: ruinDef?.id ?? null, targetMockupId: RUINS_TARGET_MOCKUP_ID, activityMode },
-    tacticalStrip: { cells: [
-      { id: 'hp', label: 'HP', primaryText: '131 / 131', iconKey: 'hp', tone: 'positive', showCaret: false, showUnderlineBar: true, underlineBarPct: 1, visible: true, source: 'synthetic' },
-      { id: 'depth', label: 'Depth', primaryText: `Room ${roomIndex + 1} / ${roomCount} · Lv. 11`, iconKey: 'depth', tone: 'neutral', showCaret: false, showUnderlineBar: false, visible: true, source: 'derived' },
-      { id: 'loadout', label: 'Loadout', primaryText: 'Loadout 1', iconKey: 'loadout', tone: 'neutral', showCaret: true, showUnderlineBar: false, visible: true, source: 'synthetic' },
-      { id: 'aiProfile', label: 'AI Profile', primaryText: 'Balanced', iconKey: 'ai', tone: 'neutral', showCaret: true, showUnderlineBar: false, visible: true, source: 'synthetic' },
-      { id: 'healing', label: 'Healing', primaryText: '0 / 20', iconKey: 'heal', tone: 'warning', showCaret: false, showUnderlineBar: false, visible: true, source: 'synthetic' },
-      { id: 'bounty', label: 'Bounty', primaryText: 'No tracked bounty', iconKey: 'bounty', tone: 'neutral', showCaret: false, showUnderlineBar: false, visible: true, source: 'synthetic' },
-      { id: 'expedition', label: 'Expedition', primaryText: '2 Idle', iconKey: 'expedition', tone: 'neutral', showCaret: false, showUnderlineBar: false, visible: true, source: 'synthetic' },
+    tacticalStrip: { ariaLabel: 'Ruins tactical readout', cells: [
+      { id: 'hp', label: 'HP', primaryText: '131 / 131', iconKey: 'hp', tone: 'positive', showCaret: false, showNotificationDot: false, showUnderlineBar: true, underlineBarPct: 100, visible: true, reserveAdornmentSpace: true, source: 'synthetic' },
+      { id: 'depth', label: 'Depth', primaryText: `Room ${roomIndex + 1} / ${roomCount} · Lv. 11`, iconKey: 'depth', tone: 'neutral', showCaret: false, showNotificationDot: false, showUnderlineBar: false, visible: true, reserveAdornmentSpace: true, source: 'derived' },
+      { id: 'loadout', label: 'Loadout', primaryText: 'Loadout 1', iconKey: 'loadout', tone: 'neutral', showCaret: true, showNotificationDot: false, showUnderlineBar: false, visible: true, reserveAdornmentSpace: true, source: 'synthetic' },
+      { id: 'aiProfile', label: 'AI Profile', primaryText: 'Balanced', iconKey: 'aiProfile', tone: 'neutral', showCaret: true, showNotificationDot: false, showUnderlineBar: false, visible: true, reserveAdornmentSpace: true, source: 'synthetic' },
+      { id: 'healing', label: 'Healing', primaryText: '0 / 20', iconKey: 'healing', tone: 'warning', showCaret: false, showNotificationDot: false, showUnderlineBar: false, visible: true, reserveAdornmentSpace: true, source: 'synthetic' },
+      { id: 'bounty', label: 'Bounty', primaryText: 'No tracked bounty', iconKey: 'bounty', tone: 'neutral', showCaret: false, showNotificationDot: false, showUnderlineBar: false, visible: true, reserveAdornmentSpace: true, source: 'synthetic' },
+      { id: 'expedition', label: 'Expedition', primaryText: '2 Idle', iconKey: 'expedition', tone: 'neutral', showCaret: false, showNotificationDot: false, showUnderlineBar: false, visible: true, reserveAdornmentSpace: true, source: 'synthetic' },
     ] },
     targetedMaterialsCard: {
       title: 'Targeted Materials',
