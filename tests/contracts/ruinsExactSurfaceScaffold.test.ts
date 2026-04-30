@@ -1,0 +1,37 @@
+import assert from 'node:assert/strict';
+import test from 'node:test';
+import { createRuinsExactMockupFixture } from '../../src/features/world/ruinsExact/buildRuinsExactSurface.js';
+
+void test('ruins exact fixture surface scaffold is locked', () => {
+  const surface = createRuinsExactMockupFixture();
+  assert.equal(surface.meta.surfaceId, 'ruins-exact-mockup');
+  assert.equal(surface.meta.version, 'p2.v1');
+  assert.equal(surface.meta.targetMockupId, 'ruins-hollow-log-den-approved-apr-30-2026');
+  assert.equal(surface.page.title, 'Ruins');
+  assert.equal(surface.tacticalStrip.cells.map((c) => c.id).join('|'), 'hp|depth|loadout|aiProfile|healing|bounty|expedition');
+  assert.equal(surface.tacticalStrip.cells[0].primaryText, '131 / 131');
+  assert.equal(surface.tacticalStrip.cells[1].primaryText, 'Room 2 / 5 · Lv. 11');
+  assert.equal(surface.tacticalStrip.cells[2].primaryText, 'Loadout 1');
+  assert.equal(surface.tacticalStrip.cells[3].primaryText, 'Balanced');
+  assert.equal(surface.tacticalStrip.cells[4].primaryText, '0 / 20');
+  assert.equal(surface.tacticalStrip.cells[5].primaryText, 'No tracked bounty');
+  assert.equal(surface.tacticalStrip.cells[6].primaryText, '2 Idle');
+  assert.equal(surface.areaHeader.plaqueLabel, 'Hollow Log Den');
+  assert.equal(surface.areaHeader.subtitle, 'Targeted local materials and guaranteed anchor rewards');
+  assert.equal(surface.areaHeader.chips.map((c) => c.label).join('|'), 'Targeted Mats|Deterministic Support');
+  assert.equal(surface.kitCard.title, 'Ruin Kit');
+  assert.equal(surface.kitCard.stampLabel, 'In Ruin');
+  assert.equal(surface.kitCard.equipmentSlots.length, 6);
+  assert.equal(surface.targetedMaterialsCard.leadMaterials.map((m) => m.label).join('|'), 'Spirit Leaf|Beast Materials');
+  assert.equal(surface.targetedMaterialsCard.guaranteedAnchor.label, 'Core Fragment x1');
+  assert.equal(surface.targetedMaterialsCard.guaranteedAnchor.sourceLabel, 'Final Chest');
+  assert.equal(surface.targetedMaterialsCard.rarePity, '1 / 6');
+  assert.equal(surface.targetedMaterialsCard.autoRepeat.value, 'Off');
+  assert.equal(surface.targetedMaterialsCard.autoRepeat.helperText, 'Repeats after Final Chest');
+  assert.equal(surface.targetedMaterialsCard.footer.includes('not gold'), true);
+  assert.equal(surface.roomRoute.nodes.map((n) => `${n.label}:${n.state}`).join('|'), 'Root Mouth:completed|Spirit Nest:current|Sealed Cache:future|Den Guardian:future|Final Chest:future');
+  assert.equal(surface.primaryAction.label, 'Continue Exploration');
+  assert.equal(surface.explorationSummary.rows.map((r) => `${r.label}:${r.value}`).join('|'), 'Rooms:2 / 5|Anchor:Final Chest|Pity:1 / 6|Main Target:Spirit Leaf');
+  assert.equal(surface.shell.showRuinsSummaryCard, false);
+  assert.equal(surface.shell.showCombatPathModule, false);
+});

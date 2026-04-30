@@ -1,0 +1,93 @@
+import { useContentStore } from '../../../stores/contentStore.js';
+import { useRuinsStore } from '../../../stores/ruinsStore.js';
+import { resolveModuleRef } from '../../../components/screens/world/worldUtils.js';
+import { RUINS_EXACT_REGION_ORDER, RUINS_EXACT_SURFACE_VERSION, RUINS_FIXTURE_COPY, RUINS_TARGET_MOCKUP_ID } from './ruinsExactPresentation.js';
+import { buildRuinsRouteNodes } from './ruinsExactRouteNodes.js';
+import type { RuinsExactSurfaceV1 } from './types.js';
+
+export interface BuildRuinsExactSurfaceOptions { mode?: 'fixture' | 'live'; cityId?: string; ruinId?: string | null; nowMs?: number }
+
+const shell = { showCombatModuleTopLane: false, showRuinsSummaryCard: false, showRuinsProgress: false, showRuinsCtaZone: false, showCombatPathModule: false, showLargeDuelOverlay: false, showCombatHpBars: false, showGoldPrimaryRewardPanel: false, useScreenOwnedExactPage: true, singleDominantCta: true } as const;
+
+export function createRuinsExactMockupFixture(overrides: Partial<RuinsExactSurfaceV1> = {}): RuinsExactSurfaceV1 {
+  const surface: RuinsExactSurfaceV1 = {
+    meta: { surfaceId: 'ruins-exact-mockup', version: RUINS_EXACT_SURFACE_VERSION, mode: 'fixture', source: 'fixture', cityId: 'city_pinewind_hamlet', ruinId: 'ruin_hollow_log_den', targetMockupId: RUINS_TARGET_MOCKUP_ID, activityMode: 'active' },
+    page: { title: 'Ruins' },
+    topRibbon: { markers: [{ id: 'm1', active: false }, { id: 'm2', active: true }, { id: 'm3', active: false }] },
+    tacticalStrip: { cells: [
+      { id: 'hp', label: 'HP', primaryText: RUINS_FIXTURE_COPY.tactical[0], iconKey: 'hp', tone: 'positive', showCaret: false, showUnderlineBar: true, underlineBarPct: 1, visible: true, source: 'fixture' },
+      { id: 'depth', label: 'Depth', primaryText: RUINS_FIXTURE_COPY.tactical[1], iconKey: 'depth', tone: 'neutral', showCaret: false, showUnderlineBar: false, visible: true, source: 'fixture' },
+      { id: 'loadout', label: 'Loadout', primaryText: RUINS_FIXTURE_COPY.tactical[2], iconKey: 'loadout', tone: 'neutral', showCaret: true, showUnderlineBar: false, visible: true, source: 'fixture' },
+      { id: 'aiProfile', label: 'AI Profile', primaryText: RUINS_FIXTURE_COPY.tactical[3], iconKey: 'ai', tone: 'neutral', showCaret: true, showUnderlineBar: false, visible: true, source: 'fixture' },
+      { id: 'healing', label: 'Healing', primaryText: RUINS_FIXTURE_COPY.tactical[4], iconKey: 'heal', tone: 'warning', showCaret: false, showUnderlineBar: false, visible: true, source: 'fixture' },
+      { id: 'bounty', label: 'Bounty', primaryText: RUINS_FIXTURE_COPY.tactical[5], iconKey: 'bounty', tone: 'neutral', showCaret: false, showUnderlineBar: false, visible: true, source: 'fixture' },
+      { id: 'expedition', label: 'Expedition', primaryText: RUINS_FIXTURE_COPY.tactical[6], iconKey: 'expedition', tone: 'neutral', showCaret: false, showUnderlineBar: false, visible: true, source: 'fixture' },
+    ] },
+    areaHeader: { plaqueLabel: RUINS_FIXTURE_COPY.plaque, showDropdownCaret: true, subtitle: RUINS_FIXTURE_COPY.subtitle, chips: [{ id: 'targeted-mats', label: 'Targeted Mats' }, { id: 'deterministic-support', label: 'Deterministic Support' }] },
+    kitCard: { title: 'Ruin Kit', stampLabel: 'In Ruin', setupRows: [{ label: 'Loadout Set', value: '1' }, { label: 'AI Profile', value: 'Balanced' }, { label: 'Exploration Focus', value: 'Materials' }], survivalRows: [{ label: 'HP', value: '131' }, { label: 'EVA', value: '10%' }, { label: 'RES', value: '3%' }], medicinePouch: { value: '0 / 20', actionVisible: true }, equipmentSlots: ['weapon','manual','ring','boots','charm','talisman'].map((id) => ({ id, label: id[0].toUpperCase()+id.slice(1), iconKey: id, value: '—', source: 'fixture' as const })) },
+    scenicStage: { approvedScenePlateSrc: null, fallbackScenePlateSrc: '/src/assets/background/citystates/city_ruins.png', useApprovedMockupPlate: false, environmentDescriptor: 'Pinewind Hollow Log Den root chamber path', hasLargeDuelOverlay: false, hasCombatHpBars: false },
+    targetedMaterialsCard: { title: 'Targeted Materials', leadMaterials: [{ label: 'Spirit Leaf', itemIds: ['mat_spirit_leaf'] }, { label: 'Beast Materials', itemIds: ['mat_beast_bone', 'mat_beast_blood'] }], guaranteedAnchor: { label: 'Core Fragment x1', itemId: 'mat_core_fragment', quantity: 1, sourceLabel: 'Final Chest' }, rarePity: '1 / 6', rarePityDots: { total: 6, filled: 1 }, autoRepeat: { value: 'Off', helperText: 'Repeats after Final Chest' }, footer: 'Best used for targeted local materials, not gold.' },
+    roomRoute: { title: 'Hollow Log Den Route', chip: 'Anchor Chest in 3', nodes: buildRuinsRouteNodes('ruin_hollow_log_den', 1) },
+    primaryAction: { label: 'Continue Exploration', intent: 'continue-exploration', enabled: true, singleDominantCta: true },
+    explorationSummary: { title: 'Exploration Summary', rows: [{ label: 'Rooms', value: '2 / 5' }, { label: 'Anchor', value: 'Final Chest' }, { label: 'Pity', value: '1 / 6' }, { label: 'Main Target', value: 'Spirit Leaf' }] },
+    shell,
+    debug: { regionOrder: RUINS_EXACT_REGION_ORDER, missingDataFallbacks: [], placeholderAssetKeysInUse: ['city_ruins.png'], liveSourceNotes: [], fixtureLockedValues: ['Rare Pity 1 / 6', 'Continue Exploration'] },
+  };
+  return { ...surface, ...overrides };
+}
+
+export function buildRuinsExactSurfaceFromStores(cityId?: string, options: BuildRuinsExactSurfaceOptions = {}): RuinsExactSurfaceV1 {
+  if (options.mode === 'fixture') return createRuinsExactMockupFixture({ meta: { ...createRuinsExactMockupFixture().meta, mode: 'fixture' } });
+  const missing: string[] = [];
+  const notes: string[] = [];
+  const content = useContentStore.getState();
+  const ruins = useRuinsStore.getState();
+  const resolvedCityId = cityId ?? 'city_pinewind_hamlet';
+  const city = content.maps.citiesById[resolvedCityId];
+  if (!city) missing.push('missing city; fallback city_pinewind_hamlet');
+  const ruinRefId = options.ruinId ?? resolveModuleRef(city ?? null, 'ruins');
+  const ruinDef = ruinRefId ? content.maps.ruinsById[ruinRefId] : null;
+  if (!ruinDef) missing.push('missing ruin definition');
+  const activeRun = ruins.activeRun;
+  const progress = ruinRefId ? ruins.progressByRuinId[ruinRefId] : undefined;
+  const pityCap = content.raw.economy?.tuning?.pityDefaults?.ruinsBossChestRare?.pityCap;
+  if (!pityCap) missing.push('missing economy pity cap');
+  const roomCount = ruinDef?.roomCount ?? activeRun?.roomCount ?? 5;
+  const roomIndex = activeRun ? Math.max(0, Math.min(activeRun.roomIndex, roomCount - 1)) : 1;
+  const pityFailures = progress?.bossChestRareFailures ?? 0;
+  const pityText = pityCap ? `${Math.min(pityFailures, pityCap)} / ${pityCap}` : '0 / 0';
+  const activityMode = !ruinDef ? 'unavailable' : activeRun?.stopping ? 'transitioning' : activeRun ? 'active' : 'idle';
+  const leadDrops = ruinDef?.roomDrops ?? [];
+  const hasSpiritLeaf = leadDrops.some((d) => d.itemId === 'mat_spirit_leaf');
+  const beastIds = ['mat_beast_bone', 'mat_beast_blood'];
+  const finalChestAnchor = ruinDef?.finalChestDrops?.guaranteed?.find((d) => d.itemId === 'mat_core_fragment');
+  if (!finalChestAnchor) missing.push('missing final chest core fragment guaranteed drop');
+  const primaryAction = activityMode === 'transitioning' ? { label: 'Stopping...', intent: 'stopping' as const, enabled: false, singleDominantCta: true as const }
+    : activityMode === 'active' ? { label: 'Continue Exploration', intent: 'continue-exploration' as const, enabled: true, singleDominantCta: true as const }
+    : activityMode === 'unavailable' ? { label: 'Enter Ruins', intent: 'enter-ruins' as const, enabled: false, singleDominantCta: true as const }
+    : { label: 'Enter Ruins', intent: 'enter-ruins' as const, enabled: true, singleDominantCta: true as const };
+  notes.push('Beast Materials is a presentation grouping of mat_beast_bone + mat_beast_blood.');
+  return {
+    ...createRuinsExactMockupFixture(),
+    meta: { surfaceId: 'ruins-exact-mockup', version: RUINS_EXACT_SURFACE_VERSION, mode: 'live', source: 'stores', cityId: resolvedCityId, ruinId: ruinDef?.id ?? null, targetMockupId: RUINS_TARGET_MOCKUP_ID, activityMode },
+    tacticalStrip: { cells: [
+      { id: 'hp', label: 'HP', primaryText: '131 / 131', iconKey: 'hp', tone: 'positive', showCaret: false, showUnderlineBar: true, underlineBarPct: 1, visible: true, source: 'synthetic' },
+      { id: 'depth', label: 'Depth', primaryText: `Room ${roomIndex + 1} / ${roomCount} · Lv. 11`, iconKey: 'depth', tone: 'neutral', showCaret: false, showUnderlineBar: false, visible: true, source: 'derived' },
+      { id: 'loadout', label: 'Loadout', primaryText: 'Loadout 1', iconKey: 'loadout', tone: 'neutral', showCaret: true, showUnderlineBar: false, visible: true, source: 'synthetic' },
+      { id: 'aiProfile', label: 'AI Profile', primaryText: 'Balanced', iconKey: 'ai', tone: 'neutral', showCaret: true, showUnderlineBar: false, visible: true, source: 'synthetic' },
+      { id: 'healing', label: 'Healing', primaryText: '0 / 20', iconKey: 'heal', tone: 'warning', showCaret: false, showUnderlineBar: false, visible: true, source: 'synthetic' },
+      { id: 'bounty', label: 'Bounty', primaryText: 'No tracked bounty', iconKey: 'bounty', tone: 'neutral', showCaret: false, showUnderlineBar: false, visible: true, source: 'synthetic' },
+      { id: 'expedition', label: 'Expedition', primaryText: '2 Idle', iconKey: 'expedition', tone: 'neutral', showCaret: false, showUnderlineBar: false, visible: true, source: 'synthetic' },
+    ] },
+    targetedMaterialsCard: {
+      title: 'Targeted Materials',
+      leadMaterials: [{ label: hasSpiritLeaf ? (content.maps.itemsById.mat_spirit_leaf?.name ?? 'mat_spirit_leaf') : 'Spirit Leaf', itemIds: ['mat_spirit_leaf'] }, { label: 'Beast Materials', itemIds: beastIds }],
+      guaranteedAnchor: { label: `Core Fragment x${finalChestAnchor?.qty ?? 1}`, itemId: 'mat_core_fragment', quantity: 1, sourceLabel: 'Final Chest' },
+      rarePity: pityText, rarePityDots: { total: pityCap ?? 0, filled: Math.min(pityFailures, pityCap ?? 0) }, autoRepeat: { value: ruins.autoRepeatDefault ? 'On' : 'Off', helperText: 'Repeats after Final Chest' }, footer: 'Best used for targeted local materials, not gold.'
+    },
+    roomRoute: { title: `${ruinDef?.name ?? 'Hollow Log Den'} Route`, chip: `Anchor Chest in ${Math.max(0, 4 - roomIndex)}`, nodes: buildRuinsRouteNodes(ruinDef?.id ?? 'ruin_hollow_log_den', roomIndex) },
+    primaryAction,
+    explorationSummary: { title: 'Exploration Summary', rows: [{ label: 'Rooms', value: `${roomIndex + 1} / ${roomCount}` }, { label: 'Anchor', value: 'Final Chest' }, { label: 'Pity', value: pityText }, { label: 'Main Target', value: content.maps.itemsById.mat_spirit_leaf?.name ?? 'mat_spirit_leaf' }] },
+    debug: { regionOrder: RUINS_EXACT_REGION_ORDER, missingDataFallbacks: missing, placeholderAssetKeysInUse: ['city_ruins.png'], liveSourceNotes: notes, fixtureLockedValues: ['Rare Pity 1 / 6 (fixture only)'] },
+  };
+}
