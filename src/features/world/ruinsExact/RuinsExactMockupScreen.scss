@@ -49,3 +49,21 @@
 
 .ruinsExactPage__bodyCluster { display:grid; height: calc(100% - clamp(170px, 23vh, 250px)); grid-template-columns: var(--ruins-left-rail-width) 1fr var(--ruins-right-rail-width); grid-template-areas: 'left center right' '. route .' '. cta summary'; gap: var(--ruins-rail-gap); }
 [data-testid='ruins-exact-left-rail']{grid-area:left;} [data-testid='ruins-exact-center-scenic-slot']{grid-area:center;} [data-testid='ruins-exact-right-rail']{grid-area:right;} [data-testid='ruins-exact-route-slot']{grid-area:route;} [data-testid='ruins-exact-cta-slot']{grid-area:cta;} [data-testid='ruins-exact-summary-dock']{grid-area:summary;}
+
+.ruinsKitCard { height: 100%; min-height: 0; overflow: hidden; display: grid; grid-template-rows: auto auto auto auto minmax(0, auto); gap: clamp(7px, 0.72vh, 10px); padding: clamp(14px, 1.55vh, 18px) clamp(12px, 0.95vw, 16px); border-radius: clamp(13px, 0.9vw, 18px); border: 1px solid rgba(96,70,45,.3); background: linear-gradient(180deg,#f5ead3,#ead9b8); box-shadow: inset 0 1px 0 rgba(255,255,255,.45); }
+.ruinsKitCard__header { position: relative; text-align: center; }
+.ruinsKitCard__title { margin: 0; font: 700 24px/1.1 Georgia, 'Times New Roman', serif; color: #2d2218; }
+.ruinsKitCard__stamp { position: absolute; right: 0; top: -4px; width: 56px; height: 56px; border-radius: 999px; border: 1px solid rgba(36,86,55,.45); background: radial-gradient(circle at 30% 30%, #b9d9c3, #5b8e6b); color: #123723; font-size: 11px; display: grid; place-items: center; transform: rotate(-8deg); }
+.ruinsKitCard__setupRows { display: grid; gap: 6px; }
+.ruinsKitCard__setupRow { background: rgba(255,250,238,.68); border: 1px solid rgba(96,70,45,.24); border-radius: 10px; display: grid; grid-template-columns: 22px minmax(0,1fr) auto auto; align-items: center; gap: 7px; padding: 6px 8px; text-align: left; }
+.ruinsKitCard__iconDock img { width: 14px; height: 14px; object-fit: contain; }
+.ruinsKitCard__rowLabel,.ruinsKitCard__rowValue { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 12px; color:#34281c; }
+.ruinsKitCard__rowValue { font-weight: 600; }
+.ruinsKitCard__rowAction,.ruinsKitCard__pouchAction { width: 18px; height: 18px; border-radius: 4px; display:grid; place-items:center; background:#5f8a67; color:#f2f3dd; }
+.ruinsKitCard__sectionTitle { margin: 0 0 4px; font-size: 12px; color: #4b3b2a; border-top: 1px solid rgba(96,70,45,.2); padding-top: 4px; }
+.ruinsKitCard__survivalRow,.ruinsKitCard__pouchRow { display:grid; grid-template-columns: 22px minmax(0,1fr) auto auto; align-items:center; gap:7px; }
+.ruinsKitCard__pouchValue { font-weight: 600; }
+.ruinsKitCard__equipmentGrid { display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 6px; }
+.ruinsKitCard__equipmentCell { aspect-ratio: 1/1; border: 1px solid rgba(96,70,45,.3); border-radius: 8px; background: rgba(255,250,239,.75); display:grid; place-items:center; }
+.ruinsKitCard__equipmentIcon { width: 22px; height: 22px; object-fit: contain; }
+.ruinsKitCard__sr { position: absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip: rect(0,0,0,0); border:0; }
