@@ -27,6 +27,14 @@
   padding: clamp(8px, 1.2vh, 16px) clamp(10px, 1.2vw, 20px);
 }
 
+.worldBuildingOverlay--ruins-scenic {
+  background: rgba(9, 13, 12, 0.32);
+  backdrop-filter: blur(1.25px);
+  align-items: stretch;
+  justify-content: stretch;
+  padding: clamp(8px, 1.2vh, 16px) clamp(10px, 1.2vw, 20px);
+}
+
 .worldBuildingModal {
   position: relative;
   background-image: url('../../assets/background/manualpavilion.png');
@@ -89,8 +97,27 @@
   color: #1f2937;
 }
 
+.worldBuildingModal--ruins-exact {
+  background-image:
+    radial-gradient(120% 68% at 50% 58%, rgba(92, 121, 104, 0.14), rgba(92, 121, 104, 0) 62%),
+    linear-gradient(180deg, rgba(248, 242, 225, 0.84), rgba(232, 224, 204, 0.62)),
+    url('../../assets/background/citystates/city_ruins.png');
+  background-size: cover, cover, cover;
+  background-position: center, center, center;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  color: #241c16;
+}
+
 .worldBuildingModal--outskirts-scenic::after {
   opacity: 0.12;
+  mix-blend-mode: soft-light;
+}
+
+.worldBuildingModal--ruins-scenic::after {
+  opacity: 0.14;
   mix-blend-mode: soft-light;
 }
 
@@ -180,6 +207,8 @@
 
 .worldBuildingBody--outskirts-exact,
 .worldBuildingBody--outskirts-scenic,
+.worldBuildingBody--ruins-exact,
+.worldBuildingBody--ruins-scenic,
 .worldBuildingBody--screen-owned {
   width: 100%;
   height: 100%;
