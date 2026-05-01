@@ -8,3 +8,5 @@ export * from './components/RuinsKitCard.js';
 export * from './components/RuinsScenicStage.js';
 export * from './components/RuinsTargetedMaterialsCard.js';
 export * from './components/RuinsRoomRouteStrip.js';
+export * from './components/RuinsPrimaryCta.js';
+export * from './components/RuinsExplorationSummaryCard.js';

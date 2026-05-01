@@ -46,6 +46,13 @@ export const RUINS_EXACT_ASSETS = {
       anchorChest: '/src/assets/icons/artifactbundle.png',
       genericMaterial: '/src/assets/icons/metalchunk.png',
     },
+
+    summary: {
+      rooms: '/src/assets/icons/task_complete.png',
+      anchorChest: '/src/assets/icons/artifactbundle.png',
+      pitySeal: '/src/assets/icons/artifactshard.png',
+      spiritLeaf: '/src/assets/icons/spiritgrass.png',
+    },
     kit: {
       loadoutSet: '/src/assets/icons/rustysword.png',
       aiProfile: '/src/assets/icons/book_martial.png',

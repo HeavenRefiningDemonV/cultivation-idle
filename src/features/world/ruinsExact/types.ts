@@ -32,7 +32,11 @@ export type RuinsRoomRouteMode = 'idle' | 'active' | 'complete';
 export type RuinsRoomRouteMedallionVariant = 'completed-check' | 'current-jade' | 'future-cache' | 'future-guardian' | 'future-anchor';
 export interface RuinsRoomRouteNodeSurface { id: string; label: string; sublabel: string; iconKey: string; state: RuinsRouteNodeState; medallionVariant: RuinsRoomRouteMedallionVariant; isAnchor: boolean; ariaLabel: string; }
 export interface RuinsRoomRouteSurface { title: string; chip: string; mode: RuinsRoomRouteMode; currentNodeId: string | null; nodes: ReadonlyArray<RuinsRoomRouteNodeSurface>; }
-export interface RuinsPrimaryActionSurface { label: string; intent: 'continue-exploration' | 'enter-ruins' | 'open-final-chest' | 'stopping'; enabled: boolean; singleDominantCta: true; }
-export interface RuinsExplorationSummarySurface { title: 'Exploration Summary'; rows: ReadonlyArray<{ label: string; value: string }>; }
+export type RuinsPrimaryActionIntent = 'continue-exploration' | 'enter-ruins' | 'disabled';
+export interface RuinsPrimaryActionSurface { visible: boolean; enabled: boolean; label: string; ariaLabel: string; intent: RuinsPrimaryActionIntent; singleDominantCta: true; isPrimary: true; disabledReason?: string; plaqueVariant: 'jade-gold'; ornamentVariant: 'root-jade-cap'; }
+export type RuinsExplorationSummaryRowId = 'rooms' | 'anchor' | 'pity' | 'mainTarget';
+export type RuinsExplorationSummaryIconKey = 'rooms' | 'anchorChest' | 'pitySeal' | 'spiritLeaf';
+export interface RuinsExplorationSummaryRowSurface { id: RuinsExplorationSummaryRowId; label: string; value: string; iconKey: RuinsExplorationSummaryIconKey; }
+export interface RuinsExplorationSummarySurface { visible: boolean; title: 'Exploration Summary'; rows: RuinsExplorationSummaryRowSurface[]; }
 export interface RuinsExactShellFlags { showCombatModuleTopLane: false; showRuinsSummaryCard: false; showRuinsProgress: false; showRuinsCtaZone: false; showCombatPathModule: false; showLargeDuelOverlay: false; showCombatHpBars: false; showGoldPrimaryRewardPanel: false; useScreenOwnedExactPage: true; singleDominantCta: true; }
 export interface RuinsExactDebugSurface { regionOrder: readonly string[]; missingDataFallbacks: string[]; placeholderAssetKeysInUse: string[]; liveSourceNotes: string[]; fixtureLockedValues: string[]; }
