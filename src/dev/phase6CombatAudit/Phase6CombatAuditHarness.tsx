@@ -176,7 +176,7 @@ function primeRuinsInteractionState() {
 
   useRuinsStore.setState((state) => ({
     ...state,
-    autoRepeatDefault: true,
+    autoRepeatDefault: false,
     activeRun: {
       runId: 'phase6-audit-run',
       ruinId: ruinsId,
@@ -185,7 +185,7 @@ function primeRuinsInteractionState() {
       roomCount,
       startedAt: Date.now() - 70_000,
       lastTransitionAt: Date.now() - 4_000,
-      autoRepeat: true,
+      autoRepeat: false,
       goldEarned: 142,
       stopping: false,
     },

@@ -60,6 +60,21 @@ function validateRouteShape(target: Phase6CombatEvidenceTarget, findings: Phase6
   });
 }
 
+function validateRuinsDomAudit(folderPath: string, slotFile: string, findings: Phase6CombatEvidenceFinding[]) {
+  const domPath = path.join(folderPath, slotFile.replace('.png', '.dom.json'));
+  if (!fs.existsSync(domPath)) return;
+  const audit = JSON.parse(fs.readFileSync(domPath, 'utf8')) as any;
+  const requiredMarkers = ['spiritLeaf', 'beastMaterials', 'guaranteedAnchor', 'coreFragment', 'rarePity', 'autoRepeatOff', 'route', 'cta', 'summary'];
+  for (const marker of requiredMarkers) {
+    if (!audit?.textMarkers?.[marker]) {
+      findings.push({ surfaceId: 'ruins', severity: 'error', code: 'ruins_truth_marker_missing', message: `Ruins dom audit missing text marker: ${marker} (${path.basename(domPath)})` });
+    }
+  }
+  if ((audit?.forbiddenOldShellMarkers?.length ?? 0) > 0) {
+    findings.push({ surfaceId: 'ruins', severity: 'error', code: 'ruins_old_shell_marker', message: `Ruins dom audit found forbidden old-shell markers: ${audit.forbiddenOldShellMarkers.join(', ')}` });
+  }
+}
+
 export function auditPhase6CombatEvidence(rootDir: string, surfaceIds: string[] | null = null): Phase6CombatEvidenceAuditReport {
   const findings: Phase6CombatEvidenceFinding[] = [];
   const targets = resolveAuditTargets(surfaceIds);
@@ -86,6 +101,12 @@ export function auditPhase6CombatEvidence(rootDir: string, surfaceIds: string[] 
         message: `README.md is missing for ${target.evidenceFolder}`,
       });
     }
+    if (target.id === 'ruins' && fs.existsSync(readmePath)) {
+      const text = fs.readFileSync(readmePath, 'utf8');
+      if (!text.includes('Ruins Exact')) {
+        findings.push({ surfaceId: target.id, severity: 'error', code: 'ruins_readme_not_exact', message: '02-ruins README must describe Ruins Exact evidence target.' });
+      }
+    }
 
     for (const slotFile of PHASE6_COMBAT_CAPTURE_SLOT_FILES) {
       const slotPath = path.join(folderPath, slotFile);
@@ -96,6 +117,9 @@ export function auditPhase6CombatEvidence(rootDir: string, surfaceIds: string[] 
           code: 'required_slot_missing',
           message: `Missing required evidence file ${path.posix.join(target.evidenceFolder, slotFile)}`,
         });
+      }
+      if (target.id === 'ruins') {
+        validateRuinsDomAudit(folderPath, slotFile, findings);
       }
     }
   }

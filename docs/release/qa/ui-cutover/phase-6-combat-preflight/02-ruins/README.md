@@ -1,47 +1,47 @@
-# 02-ruins preflight evidence
+# 02-ruins preflight evidence (Ruins Exact)
 
-- Screen: Ruins
-- Signoff state: `DEFERRED (baseline freeze)`
-- Evidence status: Required slots declared; capture pending unless PNGs are present.
-- Approved capture pipeline: `release:phase6-combat-capture` → `release:phase6-combat-evidence-audit` → `release:phase6-combat-preflight`
-- Fixture/save condition: `?uiAudit=phase-6-combat&surface=ruins&slot=<slot>&fx=<mode>&controls=0`
+- Screen: **Ruins Exact** (`surface=ruins`, screen-owned `ruins-exact` / `ruins-scenic`)
+- Signoff state: `DEFERRED_ART_ACCEPTED` while scenic `artStatus: deferred`
+- Evidence pipeline: `release:phase6-combat-capture` → `release:phase6-combat-evidence-audit` → `release:phase6-combat-preflight`
+- Fixture route pattern: `?uiAudit=phase-6-combat&surface=ruins&slot=<slot>&fx=<mode>&controls=0`
 
-## Required states to capture
-- `01-base.png` — idle / default open-from-world state
-- `02-interaction.png` — active/in-progress ruins run state
-- `03-truth-states.png` — room count / guaranteed anchor / lead materials / pity / auto-repeat truth capture
-- `04-high-fx.png` — default Ruins state in High FX
-- `05-low-fx.png` — default Ruins state in Low FX
-- `06-reduced-motion.png` — default Ruins state in Reduced Motion
+## Required slots (global six)
+- `01-base.png` — Ruins Exact fixture active state, no audit controls
+- `02-interaction.png` — Ruins Exact interaction state
+- `03-truth-states.png` — lead materials + anchor + pity + auto-repeat + route + CTA + summary truth capture
+- `04-high-fx.png` — High FX
+- `05-low-fx.png` — Low FX
+- `06-reduced-motion.png` — Reduced Motion
 
-## Slot exceptions if any
-- None.
+## Accepted target (must be visible)
+- Full-screen `ruinsExactPage` destination (not old boxed combat-path panel)
+- `Ruins` title, Run Compass, compact seven tactical cells, `Hollow Log Den ▾`
+- `Targeted local materials and guaranteed anchor rewards`
+- Chips: `Targeted Mats`, `Deterministic Support`
+- Left `Ruin Kit`, central scenic stage, right `Targeted Materials`
+- `Spirit Leaf`, `Beast Materials`, `Guaranteed Anchor`, `Core Fragment x1`, `Final Chest`
+- `Rare Pity 1 / 6`, `Auto-Repeat Off`, footer `Best used for targeted local materials, not gold.`
+- `Hollow Log Den Route` with node labels `Root Mouth`, `Spirit Nest`, `Sealed Cache`, `Den Guardian`, `Final Chest`
+- `Continue Exploration` CTA and `Exploration Summary` dock
 
-## Missing required files
-- Determined by `npm run release:phase6-combat-evidence-audit`.
+## Rejected target (fail evidence)
+- `RuinsSummaryCard`, `RuinsProgress`, `RuinsCtaZone`, `CombatModuleTopLane`, `InkCombatShell`
+- `combatPathModule`, `ruinsPanel`, `worldBuildingBody--combat-path`, `worldBuildingBody--inside-dungeon`
+- Giant tactical columns / giant natural-size icons / blank scenic center / raw route list / missing CTA / missing summary
 
-## Must preserve
-- Lead-material + deterministic-anchor + pity truth lines.
-- In-progress room/track visibility and auto-repeat state.
-- Gold-secondary boundary statement.
+## Manual visual checklist
+- Tactical strip stays compact (not giant columns)
+- Side-card icons are contained (no giant cropped art)
+- Body grid is visible (left/scenic/right + route/cta/summary)
+- Scenic stage exists and is dominant in center
+- Route is styled as five-node medallion strip, not raw list text
+- CTA visible without scrolling at desktop 16:9
+- Summary visible lower-right
+- No major region overlap/clipping
+- No old shell markers
 
-## Current owner files
-- `src/components/screens/world/buildings/RuinsBuildingPanel.tsx`
-- `src/ui/world/RuinsSummaryCard.tsx`
-- `src/features/ruins/ui/RuinsProgress.tsx`
-- `src/ui/world/TrackedBountyProgressLine.tsx`
-- `src/ui/status/RunCompassCompact.tsx`
-- `src/components/screens/world/buildings/CombatStyles.scss`
-
-## Visible truth surfaces
-- RunCompassCompact, RuinsSummaryCard, room/pity run progress, tracked bounty line.
-
-## Current parity status
-- World role and best-used lines align with panel summary; CTA naming differs (`Open Ruins` vs `Start`).
-
-## Detected issues / blockers
-- No blocker beyond missing screenshot files until capture executes.
-
-## Next packet dependency notes
-- P6.0B/P6.0C should keep deterministic anchor + pity evidence visible across shell adjustments.
-- 6.2 should consume this artifact as baseline guardrail.
+## Deferred art note
+Final Hollow Log Den art may remain deferred for Packet 11 evidence. Deferred state is acceptable only when:
+- central scenic slot exists and is visually dominant,
+- metadata records deferred art status,
+- no forbidden substitute is treated as final (`InsideDungeon.png`, `city_ruins.png`, generic cave/outskirts substitutes).

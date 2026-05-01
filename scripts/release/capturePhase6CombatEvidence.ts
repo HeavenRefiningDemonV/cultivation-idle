@@ -24,6 +24,7 @@ interface CaptureRecord {
   slotFile: string;
   outputPath: string;
   route: string;
+  domAuditPath?: string;
 }
 
 interface CaptureReport {
@@ -76,6 +77,13 @@ function toFxMode(file: Phase6CombatCaptureSlotFile): 'high' | 'low' | 'reduced'
   if (file === '05-low-fx.png') return 'low';
   if (file === '06-reduced-motion.png') return 'reduced';
   return 'high';
+}
+
+function appendCaptureParams(route: string, slot: string): string {
+  const url = new URL(route, 'http://localhost');
+  url.searchParams.set('slot', slot);
+  url.searchParams.set('controls', '0');
+  return `${url.pathname}${url.search}`;
 }
 
 function renderHumanReport(report: CaptureReport): string {
@@ -159,19 +167,67 @@ async function runCapture(args: CaptureArgs): Promise<CaptureReport> {
       for (const slotFile of PHASE6_COMBAT_CAPTURE_SLOT_FILES) {
         const slot = PHASE6_COMBAT_CAPTURE_SLOT_BY_FILE[slotFile];
         const fx = toFxMode(slotFile);
-        const route = `${args.baseUrl}/?uiAudit=phase-6-combat&surface=${target.id}&slot=${slot}&fx=${fx}&controls=0`;
+        const route = `${args.baseUrl}${appendCaptureParams(target.captureRoutes[fx], slot)}`;
 
         await page.goto(route, { waitUntil: 'networkidle' });
         await page.waitForSelector('[data-ui="phase6-combat-ready"][data-ready="1"]', { timeout: 15_000 });
         await page.waitForTimeout(args.waitAfterLoadMs);
 
         const outputPath = path.resolve(evidenceDir, slotFile);
-        await page.screenshot({ path: outputPath, fullPage: true });
+        await page.screenshot({ path: outputPath, fullPage: target.id === 'ruins' ? false : true });
+        const domAuditPath = path.resolve(evidenceDir, slotFile.replace('.png', '.dom.json'));
+        const domAudit = await page.evaluate(() => {
+          const getRect = (selector: string) => {
+            const node = document.querySelector(selector) as HTMLElement | null;
+            if (!node) return null;
+            const rect = node.getBoundingClientRect();
+            return { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
+          };
+          const text = document.body?.innerText ?? '';
+          return {
+            schemaVersion: 'ruins-exact-dom-audit.v1',
+            url: window.location.href,
+            viewport: { width: window.innerWidth, height: window.innerHeight },
+            bodyClasses: Array.from(document.body?.classList ?? []),
+            found: {
+              exactPage: !!document.querySelector('[data-testid="ruins-exact-page"]'),
+              leftRail: !!document.querySelector('[data-testid="ruins-exact-left-rail"]'),
+              scenicStage: !!document.querySelector('[data-testid="ruins-exact-scenic-stage"]'),
+              rightRail: !!document.querySelector('[data-testid="ruins-exact-right-rail"]'),
+              route: !!document.querySelector('[data-testid="ruins-exact-room-route-strip"]'),
+              cta: !!document.querySelector('[data-testid="ruins-primary-cta"]'),
+              summary: !!document.querySelector('[data-testid="ruins-exploration-summary"]'),
+            },
+            textMarkers: {
+              spiritLeaf: text.includes('Spirit Leaf'),
+              beastMaterials: text.includes('Beast Materials'),
+              guaranteedAnchor: text.includes('Guaranteed Anchor'),
+              coreFragment: text.includes('Core Fragment x1'),
+              rarePity: text.includes('Rare Pity'),
+              autoRepeatOff: text.includes('Auto-Repeat') && text.includes('Off'),
+              route: text.includes('Hollow Log Den Route'),
+              cta: text.includes('Continue Exploration'),
+              summary: text.includes('Exploration Summary'),
+            },
+            forbiddenOldShellMarkers: ['combatPathModule', 'ruinsPanel', 'RuinsSummaryCard', 'RuinsProgress', 'RuinsCtaZone', 'worldBuildingBody--combat-path', 'worldBuildingBody--inside-dungeon'].filter((token) => text.includes(token) || (document.body?.className.includes(token) ?? false)),
+            rects: {
+              tacticalStrip: getRect('[data-testid="ruins-tactical-strip"]'),
+              leftRail: getRect('[data-testid="ruins-exact-left-rail"]'),
+              scenic: getRect('[data-testid="ruins-exact-center-scenic-slot"]'),
+              rightRail: getRect('[data-testid="ruins-exact-right-rail"]'),
+              route: getRect('[data-testid="ruins-exact-route-slot"]'),
+              cta: getRect('[data-testid="ruins-exact-cta-slot"]'),
+              summary: getRect('[data-testid="ruins-exact-summary-dock"]'),
+            },
+          };
+        });
+        fs.writeFileSync(domAuditPath, `${JSON.stringify(domAudit, null, 2)}\n`, 'utf8');
         records.push({
           surfaceId: target.id,
           slotFile,
           outputPath: path.relative(args.rootDir, outputPath),
           route,
+          domAuditPath: path.relative(args.rootDir, domAuditPath),
         });
       }
     }

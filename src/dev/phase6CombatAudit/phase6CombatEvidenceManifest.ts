@@ -40,9 +40,9 @@ export const PHASE6_COMBAT_EVIDENCE_TARGETS: readonly Phase6CombatEvidenceTarget
     truthStatesRequired: true,
     captureRoutes: buildCaptureRoutes('ruins'),
     slotNotes: {
-      '01-base.png': 'idle / default open-from-world state',
-      '02-interaction.png': 'active/in-progress ruins run state',
-      '03-truth-states.png': 'room count / guaranteed anchor / lead materials / pity / auto-repeat truth capture',
+      '01-base.png': 'Ruins Exact fixture active state (screen-owned, compact top strip, no audit controls)',
+      '02-interaction.png': 'Ruins Exact active/in-progress interaction evidence (hover/focus/toggle safe states where supported)',
+      '03-truth-states.png': 'Ruins Exact truth evidence: Spirit Leaf, Beast Materials, Guaranteed Anchor Core Fragment x1 (Final Chest), Rare Pity 1 / 6, Auto-Repeat Off, route, CTA, summary',
     },
   },
   {
