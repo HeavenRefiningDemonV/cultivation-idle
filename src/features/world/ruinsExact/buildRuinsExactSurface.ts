@@ -57,12 +57,13 @@ export function buildRuinsExactSurfaceFromStores(cityId?: string, options: Build
   const pityFailures = progress?.bossChestRareFailures ?? 0;
   const pityText = pityCap ? `${Math.min(pityFailures, pityCap)} / ${pityCap}` : '0 / 0';
   const activityMode = !ruinDef ? 'unavailable' : activeRun?.stopping ? 'transitioning' : activeRun ? 'active' : 'idle';
-  const leadDrops = (ruinDef as { roomDrops?: Array<{ itemId: string }> } | null)?.roomDrops ?? [];
+  const leadDrops = (ruinDef as { dropsPerRoom?: { pool?: Array<{ itemId: string }> } } | null)?.dropsPerRoom?.pool ?? [];
   const hasSpiritLeaf = leadDrops.some((d) => d.itemId === 'mat_spirit_leaf');
   const beastIds = ['mat_beast_bone', 'mat_beast_blood'];
   const finalChestAnchor = ruinDef?.finalChestDrops?.guaranteed?.find((d) => d.itemId === 'mat_core_fragment');
   if (!finalChestAnchor) missing.push('missing final chest core fragment guaranteed drop');
   const primaryAction = activityMode === 'active' ? { visible: true, enabled: true, label: 'Continue Exploration', ariaLabel: 'Continue exploration through Hollow Log Den', intent: 'continue-exploration' as const, singleDominantCta: true as const, isPrimary: true as const, plaqueVariant: 'jade-gold' as const, ornamentVariant: 'root-jade-cap' as const }
+    : activityMode === 'transitioning' ? { visible: true, enabled: false, label: 'Stopping...', ariaLabel: 'Stopping ruins run', intent: 'disabled' as const, singleDominantCta: true as const, isPrimary: true as const, disabledReason: 'Run is stopping', plaqueVariant: 'jade-gold' as const, ornamentVariant: 'root-jade-cap' as const }
     : activityMode === 'unavailable' ? { visible: true, enabled: false, label: 'Enter Ruins', ariaLabel: 'Ruins unavailable', intent: 'disabled' as const, singleDominantCta: true as const, isPrimary: true as const, disabledReason: 'Ruins unavailable in this city', plaqueVariant: 'jade-gold' as const, ornamentVariant: 'root-jade-cap' as const }
     : { visible: true, enabled: true, label: 'Enter Ruins', ariaLabel: 'Enter Hollow Log Den', intent: 'enter-ruins' as const, singleDominantCta: true as const, isPrimary: true as const, plaqueVariant: 'jade-gold' as const, ornamentVariant: 'root-jade-cap' as const };
   notes.push('Beast Materials is a presentation grouping of mat_beast_bone + mat_beast_blood.');
