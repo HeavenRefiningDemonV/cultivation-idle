@@ -33,5 +33,5 @@ export function useRuinsExactActionController({ cityId, ruinId, surface }: { cit
     },
     onOpenSettings: undefined,
     onOpenAreaSelector: undefined,
-  }), [surface.primaryAction.enabled, surface.primaryAction.intent, ruinId, activeRun?.ruinId, startRun, setAutoRepeat, autoRepeatDefault, cityId, openModal, setActiveTab, closeModal]),
+  }), [surface.primaryAction.enabled, surface.primaryAction.intent, ruinId, activeRun?.ruinId, startRun, setAutoRepeat, autoRepeatDefault, cityId, openModal, setActiveTab, closeModal]);
 }
