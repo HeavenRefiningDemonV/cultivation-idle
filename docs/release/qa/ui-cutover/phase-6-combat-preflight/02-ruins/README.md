@@ -47,5 +47,16 @@ Final Hollow Log Den art may remain deferred for Packet 11 evidence. Deferred st
 - no forbidden substitute is treated as final (`InsideDungeon.png`, `city_ruins.png`, generic cave/outskirts substitutes).
 
 ## Cleanup authority status
-Packet 13 cutover remains blocked until the Ruins Exact page receives explicit exact-screen cleanup approval.
-Do not remove legacy Ruins combat-path code while this evidence folder is still operating in preflight mode.
+Status: **BLOCKED**
+
+Source of truth:
+- `docs/release/qa/ui-cutover/ruins-exact/cutover/ruinsExactCleanupApproval.json`
+
+Current blockers:
+- Missing required screenshot slots `01-base.png` through `06-reduced-motion.png` in this folder.
+- No slot-level capture artifacts available to validate required Ruins exact DOM markers.
+- `npm run release:phase6-combat-evidence-audit -- --surface=ruins --json` currently reports `required_slot_missing` for all six slots.
+
+Guardrail:
+- Do **not** remove legacy Ruins combat-path code while this status remains BLOCKED.
+- If later approved, cleanup/deletion is only allowed after import reachability proves the legacy files are unused by runtime exact routing.

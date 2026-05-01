@@ -1,6 +1,6 @@
 {
   "schemaVersion": "phase-6-combat-preflight.v1",
-  "generatedAt": "2026-04-14T18:38:57.583Z",
+  "generatedAt": "2026-05-01T22:35:21.490Z",
   "packetObjective": "Freeze pre-redesign combat-trio truth (Outskirts/Ruins/Gate Trial) with deterministic screenshots and parity/conflict audit artifacts.",
   "whyNow": "Phase 6 visual packets depend on a preserve-first baseline that prevents role/copy/routing drift from being masked by shell work.",
   "dependencies": [
@@ -18,7 +18,7 @@
   ],
   "preserveEnhanceDefer": {
     "preserve": [
-      "Current combat-path scenic owners and panel truth blocks",
+      "Current player-facing owners and panel truth blocks (Ruins now exact screen-owned)",
       "World shell routing into Outskirts, Ruins, and Gate Trial",
       "Current CTA/action semantics and readiness logic"
     ],
@@ -48,11 +48,16 @@
     ],
     "ruins": [
       "src/components/screens/world/buildings/RuinsBuildingPanel.tsx",
-      "src/ui/world/RuinsSummaryCard.tsx",
-      "src/features/ruins/ui/RuinsProgress.tsx",
-      "src/ui/world/TrackedBountyProgressLine.tsx",
-      "src/ui/status/RunCompassCompact.tsx",
-      "src/components/screens/world/buildings/CombatStyles.scss"
+      "src/features/world/ruinsExact/RuinsScreenOwner.tsx",
+      "src/features/world/ruinsExact/RuinsExactMockupScreen.ts",
+      "src/features/world/ruinsExact/buildRuinsExactSurface.ts",
+      "src/features/world/ruinsExact/components/RuinsTopRegion.ts",
+      "src/features/world/ruinsExact/components/RuinsKitCard.ts",
+      "src/features/world/ruinsExact/components/RuinsScenicStage.ts",
+      "src/features/world/ruinsExact/components/RuinsTargetedMaterialsCard.ts",
+      "src/features/world/ruinsExact/components/RuinsRoomRouteStrip.ts",
+      "src/features/world/ruinsExact/components/RuinsPrimaryCta.ts",
+      "src/features/world/ruinsExact/components/RuinsExplorationSummaryCard.ts"
     ],
     "gate-trial": [
       "src/components/screens/world/buildings/GateTrialBuildingPanel.tsx",
@@ -96,24 +101,24 @@
       "roleTag": "Targeted Mats",
       "bestUsedWhen": "Best used when you need targeted local materials and deterministic support rewards.",
       "boundaryLine": "Gold is secondary here; the run is for targeted local materials and support stability.",
-      "runCompassCompact": "Present in summary column above RuinsSummaryCard",
-      "scenicOwnerDescription": "Inside-dungeon WorldBuildingModal shell with RuinsSummaryCard + RuinsProgress split owner",
+      "runCompassCompact": "Top tactical strip stays compact above the exact page body (HP/Depth/Loadout/AI/Healing/Bounty/Expedition).",
+      "scenicOwnerDescription": "Screen-owned exact route via RuinsBuildingPanel -> RuinsScreenOwner -> RuinsExactMockupScreen with a center scenic stage slot.",
       "sidePanelTruthSurfaces": [
-        "RuinsSummaryCard",
-        "RuinsProgress room track",
-        "Ruins pity rail",
-        "TrackedBountyProgressLine"
+        "Ruin Kit left rail",
+        "Targeted Materials right rail",
+        "Hollow Log Den Route strip",
+        "Exploration Summary dock"
       ],
-      "primaryCta": "Start / Stop (RuinsProgress controls)",
+      "primaryCta": "Continue Exploration",
       "trackedBountyLine": "Present when tracked bounty kind is RUINS_ROOM_CLEAR or RUINS_RUN_CLEAR",
-      "aiPostureHint": "No dedicated AI hint line in current ruins panel",
-      "deterministicAnchorVisibility": "Explicit final chest anchor line in summary card",
-      "pityVisibility": "Explicit rare pity line and progress bar in RuinsProgress",
+      "aiPostureHint": "No dedicated AI hint row; tactical and kit truth remains explicit in exact slots",
+      "deterministicAnchorVisibility": "Guaranteed Anchor line with Core Fragment x1 / Final Chest in Targeted Materials card",
+      "pityVisibility": "Rare Pity line is visible in Targeted Materials card",
       "minimumChecklistVisibility": "Not applicable",
       "recommendedChecklistVisibility": "Not applicable",
       "failSafeVisibility": "Not applicable",
       "diagnosisVisibility": "Not applicable",
-      "adjacentRouteCues": "RunCompass action continuity + tracked bounty routing line"
+      "adjacentRouteCues": "Hollow Log Den Route strip plus route medallion labels in-page"
     },
     {
       "surfaceId": "gate-trial",
@@ -312,9 +317,9 @@
       "Tracked bounty and AI hint affordances"
     ],
     "ruins": [
-      "Ruins lead-material + anchor + pity truth set",
-      "Run state + auto-repeat truth and room track",
-      "Gold-secondary boundary framing"
+      "Targeted Materials card keeps lead-material + anchor + pity truth set",
+      "Top strip + route strip + summary dock preserve run-state and route context",
+      "Gold-secondary boundary framing remains explicit in right-card footer"
     ],
     "gate-trial": [
       "Readiness card + minimum/recommended checklists",
@@ -402,8 +407,9 @@
       "files": [
         "moduleCardRegistry.ts",
         "RuinsBuildingPanel.tsx",
-        "RuinsSummaryCard.tsx",
-        "RuinsProgress.tsx"
+        "RuinsScreenOwner.tsx",
+        "RuinsExactMockupScreen.ts",
+        "buildRuinsExactSurface.ts"
       ]
     },
     {

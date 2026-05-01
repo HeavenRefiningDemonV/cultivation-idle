@@ -1,6 +1,6 @@
 # Phase 6 Combat Preflight Report
 
-- Generated at: 2026-04-14T18:38:57.583Z
+- Generated at: 2026-05-01T22:35:21.490Z
 - Packet objective: Freeze pre-redesign combat-trio truth (Outskirts/Ruins/Gate Trial) with deterministic screenshots and parity/conflict audit artifacts.
 - Why now: Phase 6 visual packets depend on a preserve-first baseline that prevents role/copy/routing drift from being masked by shell work.
 
@@ -19,7 +19,7 @@
 
 ## Preserve / enhance / defer summary
 ### Preserve
-- Current combat-path scenic owners and panel truth blocks
+- Current player-facing owners and panel truth blocks (Ruins now exact screen-owned)
 - World shell routing into Outskirts, Ruins, and Gate Trial
 - Current CTA/action semantics and readiness logic
 ### Enhance
@@ -83,8 +83,9 @@
 ### ruins
 - moduleCardRegistry.ts
 - RuinsBuildingPanel.tsx
-- RuinsSummaryCard.tsx
-- RuinsProgress.tsx
+- RuinsScreenOwner.tsx
+- RuinsExactMockupScreen.ts
+- buildRuinsExactSurface.ts
 ### gate-trial
 - moduleCardRegistry.ts
 - GateTrialBuildingPanel.tsx

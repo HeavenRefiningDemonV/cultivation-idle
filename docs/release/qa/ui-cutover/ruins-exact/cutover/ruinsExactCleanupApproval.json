@@ -1,0 +1,50 @@
+{
+  "surface": "ruins",
+  "packet": 13,
+  "status": "BLOCKED",
+  "approvalSource": "phase6-combat-evidence-audit",
+  "requiredEvidence": [
+    "docs/release/qa/ui-cutover/phase-6-combat-preflight/02-ruins/01-base.png",
+    "docs/release/qa/ui-cutover/phase-6-combat-preflight/02-ruins/02-interaction.png",
+    "docs/release/qa/ui-cutover/phase-6-combat-preflight/02-ruins/03-truth-states.png",
+    "docs/release/qa/ui-cutover/phase-6-combat-preflight/02-ruins/04-high-fx.png",
+    "docs/release/qa/ui-cutover/phase-6-combat-preflight/02-ruins/05-low-fx.png",
+    "docs/release/qa/ui-cutover/phase-6-combat-preflight/02-ruins/06-reduced-motion.png"
+  ],
+  "requiredDomMarkers": [
+    "ruins-exact-page",
+    "ruins-exact-left-rail",
+    "ruins-exact-center-scenic-slot",
+    "ruins-exact-right-rail",
+    "ruins-exact-route-slot",
+    "ruins-exact-cta-slot",
+    "ruins-exact-summary-dock",
+    "Targeted Materials",
+    "Guaranteed Anchor",
+    "Core Fragment x1",
+    "Rare Pity",
+    "Auto-Repeat",
+    "Hollow Log Den Route",
+    "Continue Exploration",
+    "Exploration Summary"
+  ],
+  "forbiddenMarkers": [
+    "combatPathModule",
+    "ruinsPanel",
+    "RuinsSummaryCard",
+    "RuinsProgress",
+    "RuinsCtaZone",
+    "worldBuildingBody--combat-path",
+    "worldBuildingBody--inside-dungeon"
+  ],
+  "blockers": [
+    "Missing required screenshot slots 01-base.png .. 06-reduced-motion.png under docs/release/qa/ui-cutover/phase-6-combat-preflight/02-ruins/.",
+    "DOM marker validation cannot be completed because no slot-level capture artifacts exist for ruins surface.",
+    "npm run release:phase6-combat-evidence-audit -- --surface=ruins --json reports required_slot_missing for all six slots (2026-05-01)."
+  ],
+  "approvedAt": null,
+  "notes": [
+    "Ruins exact route is player-facing via RuinsBuildingPanel -> RuinsScreenOwner -> RuinsExactMockupScreen.",
+    "Packet 13 cleanup authority remains evidence-gated until required slots and DOM audit markers pass."
+  ]
+}
