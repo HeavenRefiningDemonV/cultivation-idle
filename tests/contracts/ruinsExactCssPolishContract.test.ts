@@ -8,12 +8,16 @@ import { createRuinsExactMockupFixture } from '../../src/features/world/ruinsExa
 
 void test('ruins exact css polish contract owns exact layout and excludes legacy tokens', () => {
   const scss = readFileSync(new URL('../../src/features/world/ruinsExact/RuinsExactMockupScreen.scss', import.meta.url), 'utf8');
-  for (const token of ['.ruinsExactPage', '.ruinsExactPage__bodyCluster', '.ruinsExactPage__centerScenic', '.ruinsTargetedMaterialsCard', '.ruinsRoomRouteStrip', '.ruinsPrimaryCta', '.ruinsExplorationSummaryCard', '.ruinsTopRegion__tacticalIconDock', '.ruinsTopRegion__tacticalIcon', '.ruinsTopRegion__tacticalText', '.ruinsTopRegion__tacticalAdornment', '.ruinsTopRegion__tacticalDotDock', '--ruins-page-inline-padding', '--ruins-page-block-padding', '--ruins-left-rail-width', '--ruins-right-rail-width', '--ruins-rail-gap', '--ruins-scenic-min-height', '--ruins-route-row-min-height', '--ruins-cta-row-min-height', '--ruins-summary-row-min-height', 'grid-template-areas', 'min-width: 0', 'overflow: hidden', 'text-overflow: ellipsis', '@media (max-width: 1600px)', '@media (max-width: 1400px)', 'aspect-ratio: 1 / 1']) {
+  for (const token of ['.ruinsExactPage', 'display: grid', 'grid-template-rows: auto minmax(0, 1fr)', '.ruinsExactPage__bodyCluster', 'grid-template-columns: var(--ruins-left-rail-width) minmax(0, 1fr) var(--ruins-right-rail-width)', "grid-template-areas: 'left scenic right' 'left route summary' '. cta summary'", '.ruinsExactPage__centerScenic', '.ruinsTargetedMaterialsCard', '.ruinsRoomRouteStrip', '.ruinsPrimaryCta', '.ruinsExplorationSummaryCard', '.ruinsTopRegion__tacticalIconDock', '.ruinsTopRegion__tacticalIcon', '.ruinsTopRegion__tacticalText', '.ruinsTopRegion__tacticalAdornment', '.ruinsTopRegion__tacticalDotDock', '--ruins-page-inline-padding', '--ruins-page-block-padding', '--ruins-left-rail-width', '--ruins-right-rail-width', '--ruins-rail-gap', '--ruins-scenic-min-height', '--ruins-route-row-min-height', '--ruins-cta-row-min-height', '--ruins-summary-row-min-height', 'grid-template-rows: minmax(0, 1fr) var(--ruins-route-row-min-height) var(--ruins-cta-row-min-height)', 'min-width: 0', 'overflow: hidden', 'text-overflow: ellipsis', '@media (max-width: 1600px)', '@media (max-width: 1400px)', 'aspect-ratio:1/1']) {
     assert.equal(scss.includes(token), true);
   }
   for (const tacticalGuard of ['.ruinsTopRegion__tacticalIcon {', 'width:20px', 'height:20px', 'max-width:20px', 'max-height:20px', 'object-fit:contain', '.ruinsTopRegion__tacticalIconDock {', 'width:28px', 'height:28px', '.ruinsTopRegion__tacticalStrip', 'max-height:clamp(54px,5.9vh,66px)']) {
     assert.equal(scss.includes(tacticalGuard), true);
   }
+  for (const imageGuard of ['.ruinsKitCard__equipmentIcon', '.ruinsTargetedMaterialsCard__tileIcon', '.ruinsTargetedMaterialsCard__anchorIcon', '.ruinsExplorationSummaryCard__iconDock img', 'object-fit:contain']) {
+    assert.equal(scss.includes(imageGuard), true);
+  }
+  assert.equal(scss.includes('.ruinsRoomRouteStrip__nodes { list-style:none;'), true);
   for (const forbidden of ['CombatStyles', 'combatPathModule', 'ruinsPanel__', '.ruinsSummaryCard', '.ruinsCtaZone', '.ruinsProgress', 'InsideDungeon', '$ruins', '#{']) {
     assert.equal(scss.includes(forbidden), false);
   }
