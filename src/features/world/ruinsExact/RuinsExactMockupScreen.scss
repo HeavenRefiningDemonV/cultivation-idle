@@ -67,8 +67,12 @@
 .ruinsTopRegion__macroNodes { position:absolute; inset:0; display:grid; grid-template-columns:repeat(15,1fr); align-items:center; list-style:none; padding:0; margin:0; }
 .ruinsTopRegion__macroNode { width:7px; height:7px; border-radius:999px; justify-self:center; background:#95ad9a; }
 .ruinsTopRegion__macroNode--active { background:#ccb072; transform:scale(1.08); }
-.ruinsTopRegion__tacticalStrip { grid-column:1/-1; display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:clamp(8px,0.75vw,12px); min-height:clamp(54px,5.9vh,66px); }
-.ruinsTopRegion__tacticalCell { border:1px solid var(--ruins-card-border); border-radius:11px; background:linear-gradient(180deg,#f6edd8,#e8dcc2); display:grid; grid-template-columns: 28px minmax(0,1fr) 16px 10px; align-items:center; column-gap:8px; padding:7px 8px; }
+.ruinsTopRegion__tacticalStrip { grid-column:1/-1; display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:clamp(8px,0.75vw,12px); height:clamp(54px,5.9vh,66px); min-height:clamp(54px,5.9vh,66px); max-height:clamp(54px,5.9vh,66px); min-width:0; overflow:visible; }
+.ruinsTopRegion__tacticalCell { border:1px solid var(--ruins-card-border); border-radius:11px; background:linear-gradient(180deg,#f6edd8,#e8dcc2); display:grid; grid-template-columns: 28px minmax(0,1fr) 16px 10px; align-items:center; column-gap:8px; padding:7px 8px; min-width:0; min-height:0; height:100%; max-height:100%; overflow:hidden; }
+.ruinsTopRegion__tacticalIconDock { width:28px; height:28px; min-width:28px; max-width:28px; min-height:28px; max-height:28px; display:grid; place-items:center; overflow:hidden; border-radius:999px; isolation:isolate; }
+.ruinsTopRegion__tacticalIcon { display:block; width:20px; height:20px; max-width:20px; max-height:20px; min-width:0; min-height:0; object-fit:contain; object-position:center; flex:0 0 auto; pointer-events:none; }
+.ruinsTopRegion__tacticalText { min-width:0; display:grid; align-content:center; row-gap:1px; overflow:hidden; }
+.ruinsTopRegion__tacticalAdornment, .ruinsTopRegion__tacticalDotDock { min-width:0; min-height:0; display:grid; place-items:center; overflow:hidden; }
 .ruinsTopRegion__tacticalLabel, .ruinsTopRegion__tacticalPrimary { display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .ruinsTopRegion__tacticalLabel { font-size:clamp(10px, 0.72vw, 12px); color: var(--ruins-ink-soft); }
 .ruinsTopRegion__tacticalPrimary { font-size:clamp(12px, 0.85vw, 14px); font-weight:600; }
