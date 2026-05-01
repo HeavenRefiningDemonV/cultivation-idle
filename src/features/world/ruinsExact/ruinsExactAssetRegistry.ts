@@ -38,6 +38,14 @@ export const RUINS_EXACT_ASSETS = {
       bounty: '/src/assets/menus/scroll.png',
       expedition: '/src/assets/icons/task_complete.png',
     },
+
+    targetedMaterials: {
+      spiritLeaf: '/src/assets/icons/spiritgrass.png',
+      beastMaterials: '/src/assets/icons/beastblood.png',
+      coreFragmentAnchor: '/src/assets/icons/artifactshard.png',
+      anchorChest: '/src/assets/icons/artifactbundle.png',
+      genericMaterial: '/src/assets/icons/metalchunk.png',
+    },
     kit: {
       loadoutSet: '/src/assets/icons/rustysword.png',
       aiProfile: '/src/assets/icons/book_martial.png',

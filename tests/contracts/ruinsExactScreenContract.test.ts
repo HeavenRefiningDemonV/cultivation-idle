@@ -42,3 +42,13 @@ void test('ruins exact scenic stage source guard has no forbidden scenic imports
     assert.equal(scenicSource.includes(forbidden), false);
   }
 });
+
+void test('ruins exact right rail renders targeted materials card contract', () => {
+  const html = renderToStaticMarkup(React.createElement(RuinsExactMockupScreen, { surface: createRuinsExactMockupFixture() }));
+  for (const token of ['ruins-exact-targeted-materials-card','ruins-exact-targeted-materials-title','ruins-exact-guaranteed-anchor','ruins-exact-rare-pity','ruins-exact-auto-repeat','ruins-exact-targeted-materials-footer']) assert.equal(html.includes(token), true);
+});
+
+void test('ruins exact right rail source does not import legacy summary path', () => {
+  const screenSourceRight = readFileSync(new URL('../../src/features/world/ruinsExact/RuinsExactMockupScreen.ts', import.meta.url), 'utf8');
+  for (const forbidden of ['RuinsSummaryCard', 'TrackedBountyProgressLine', 'RuinsProgress', 'RuinsCtaZone', 'CombatModuleTopLane']) assert.equal(screenSourceRight.includes(forbidden), false);
+});

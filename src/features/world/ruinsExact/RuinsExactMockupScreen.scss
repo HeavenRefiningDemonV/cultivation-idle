@@ -119,3 +119,28 @@
     linear-gradient(90deg, rgba(236, 225, 198, 0.18), rgba(236, 225, 198, 0) 5%, rgba(236, 225, 198, 0) 95%, rgba(236, 225, 198, 0.16)),
     linear-gradient(180deg, rgba(236, 225, 198, 0.12), rgba(236, 225, 198, 0) 8%, rgba(236, 225, 198, 0) 88%, rgba(236, 225, 198, 0.24));
 }
+
+.ruinsExactPage__rightRail { grid-area: right; min-width: 0; min-height: 0; align-self: stretch; }
+
+.ruinsTargetedMaterialsCard { height: 100%; min-height: clamp(560px, 61vh, 690px); display:grid; grid-template-rows:auto auto auto minmax(120px,auto) auto auto minmax(96px,auto) auto auto auto auto auto auto auto; gap: clamp(7px,0.72vh,10px); padding: clamp(18px,1.4vw,24px) clamp(18px,1.3vw,22px); border-radius: 15px; border:1px solid rgba(101,78,52,.3); background: linear-gradient(180deg, rgba(250,244,227,.97), rgba(238,226,200,.95)); box-shadow: inset 0 0 0 1px rgba(255,249,230,.42), 0 8px 18px rgba(68,52,36,.16); overflow:hidden; position: relative; }
+.ruinsTargetedMaterialsCard__title { margin:0; text-align:center; font:700 clamp(1.18rem,1.25vw,1.35rem)/1.2 Georgia, 'Times New Roman', serif; }
+.ruinsTargetedMaterialsCard__divider { height:1px; background: linear-gradient(90deg, transparent, rgba(101,78,52,.28), transparent); }
+.ruinsTargetedMaterialsCard__sectionTitle { margin:0; font-size:.88rem; color:#4a3b28; }
+.ruinsTargetedMaterialsCard__leadMaterials { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+.ruinsTargetedMaterialsCard__tile { border:1px solid rgba(101,78,52,.25); border-radius:10px; background: rgba(255,251,239,.72); min-height:108px; display:grid; align-content:center; justify-items:center; gap:8px; padding:10px; text-align:center; }
+.ruinsTargetedMaterialsCard__tileIcon { width:56px; height:56px; object-fit:contain; }
+.ruinsTargetedMaterialsCard__tileLabel { font-size:.78rem; }
+.ruinsTargetedMaterialsCard__anchor { border:1px solid rgba(99,83,52,.35); border-radius:11px; background: linear-gradient(180deg, rgba(231,223,194,.9), rgba(217,205,176,.85)); padding:10px; display:grid; grid-template-columns: 1fr 1.6fr; gap:10px; align-items:center; }
+.ruinsTargetedMaterialsCard__anchorIconWrap { display:grid; place-items:center; border-radius:8px; background: radial-gradient(circle, rgba(126,154,121,.35), rgba(126,154,121,0)); }
+.ruinsTargetedMaterialsCard__anchorIcon { width:54px; height:54px; object-fit:contain; }
+.ruinsTargetedMaterialsCard__anchorCopy { display:grid; gap:3px; }
+.ruinsTargetedMaterialsCard__anchorCopy strong { font-size:.95rem; }
+.ruinsTargetedMaterialsCard__anchorCopy small { font-size:.74rem; color:#5b4932; }
+.ruinsTargetedMaterialsCard__row { display:flex; justify-content:space-between; align-items:center; font-size:.84rem; }
+.ruinsTargetedMaterialsCard__pityDots { display:flex; gap:8px; }
+.ruinsTargetedMaterialsCard__pityDot { width:20px; height:20px; border-radius:999px; border:1px solid rgba(111,87,54,.4); background:#e9dcc0; }
+.ruinsTargetedMaterialsCard__pityDot.is-filled { background: linear-gradient(180deg,#89ad8c,#5f8a67); }
+.ruinsTargetedMaterialsCard__toggle { border:1px solid rgba(111,87,54,.35); border-radius:999px; background:#e9dec6; min-width:44px; height:24px; font-size:.73rem; }
+.ruinsTargetedMaterialsCard__helper { margin:0; font-size:.76rem; color:#5b4932; }
+.ruinsTargetedMaterialsCard__footer { margin:0; font-size:.78rem; line-height:1.3; color:#493a28; }
+.ruinsTargetedMaterialsCard__seal { position:absolute; right:16px; bottom:14px; width:18px; height:18px; border-radius:999px; background: radial-gradient(circle at 35% 35%, #b94836, #812719); border:1px solid rgba(91,17,12,.5); }

@@ -6,3 +6,4 @@ export * from './RuinsExactMockupScreen.js';
 export * from './RuinsScreenOwner.js';
 export * from './components/RuinsKitCard.js';
 export * from './components/RuinsScenicStage.js';
+export * from './components/RuinsTargetedMaterialsCard.js';
