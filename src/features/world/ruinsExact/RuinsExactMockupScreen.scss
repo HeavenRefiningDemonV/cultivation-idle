@@ -67,3 +67,55 @@
 .ruinsKitCard__equipmentCell { aspect-ratio: 1/1; border: 1px solid rgba(96,70,45,.3); border-radius: 8px; background: rgba(255,250,239,.75); display:grid; place-items:center; }
 .ruinsKitCard__equipmentIcon { width: 22px; height: 22px; object-fit: contain; }
 .ruinsKitCard__sr { position: absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip: rect(0,0,0,0); border:0; }
+
+.ruinsExactPage__centerScenic {
+  position: relative;
+  min-width: 0;
+  min-height: clamp(360px, 51.5vh, 610px);
+  isolation: isolate;
+}
+
+.ruinsScenicStage {
+  position: relative;
+  width: 100%;
+  min-height: 100%;
+  aspect-ratio: 1315 / 595;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: 3px;
+  border: 1px solid rgba(83, 70, 49, 0.38);
+  background:
+    linear-gradient(180deg, rgba(30, 42, 39, 0.96), rgba(24, 34, 32, 0.98)),
+    #202c2a;
+  box-shadow:
+    inset 0 0 0 1px rgba(250, 244, 226, 0.13),
+    inset 0 24px 44px rgba(255, 246, 214, 0.06),
+    inset 0 -38px 70px rgba(9, 16, 15, 0.28),
+    0 8px 18px rgba(48, 37, 27, 0.18);
+}
+
+.ruinsScenicStage__frame,
+.ruinsScenicStage__plate,
+.ruinsScenicStage__deferredUnderpaint,
+.ruinsScenicStage__mist,
+.ruinsScenicStage__edgeFade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.ruinsScenicStage__frame { overflow: hidden; }
+.ruinsScenicStage__plate { background-size: cover; background-position: 50% 50%; background-repeat: no-repeat; }
+.ruinsScenicStage__deferredUnderpaint {
+  background:
+    radial-gradient(ellipse at 28% 58%, rgba(113, 161, 135, 0.12), rgba(113, 161, 135, 0) 34%),
+    radial-gradient(ellipse at 72% 38%, rgba(92, 124, 121, 0.16), rgba(92, 124, 121, 0) 42%),
+    linear-gradient(180deg, rgba(33, 46, 43, 0.98), rgba(20, 29, 28, 0.98));
+}
+.ruinsScenicStage__mist--lower { top: auto; height: 38%; background: linear-gradient(0deg, rgba(218, 230, 207, 0.12), rgba(218, 230, 207, 0)); opacity: 0.55; }
+.ruinsScenicStage__mist--upper { bottom: auto; height: 42%; background: linear-gradient(180deg, rgba(223, 233, 218, 0.09), rgba(223, 233, 218, 0)); opacity: 0.45; }
+.ruinsScenicStage__edgeFade {
+  background:
+    linear-gradient(90deg, rgba(236, 225, 198, 0.18), rgba(236, 225, 198, 0) 5%, rgba(236, 225, 198, 0) 95%, rgba(236, 225, 198, 0.16)),
+    linear-gradient(180deg, rgba(236, 225, 198, 0.12), rgba(236, 225, 198, 0) 8%, rgba(236, 225, 198, 0) 88%, rgba(236, 225, 198, 0.24));
+}

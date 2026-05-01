@@ -3,6 +3,7 @@ import type { RuinsExactSurfaceV1 } from './types.js';
 import { RUINS_EXACT_REGION_ORDER } from './ruinsExactPresentation.js';
 import { RuinsTopRegion } from './components/RuinsTopRegion.js';
 import { RuinsKitCard } from './components/RuinsKitCard.js';
+import { RuinsScenicStage } from './components/RuinsScenicStage.js';
 
 export function RuinsExactMockupScreen(props: { surface: RuinsExactSurfaceV1; onPrimaryAction?: () => void; onToggleAutoRepeat?: () => void; onOpenSettings?: () => void; onOpenTacticalCell?: (cellId: RuinsExactSurfaceV1['tacticalStrip']['cells'][number]['id']) => void; onOpenAreaSelector?: () => void; onOpenMedicinePouch?: () => void; onOpenLoadout?: () => void; onOpenAiProfile?: () => void; onOpenEquipmentSlot?: (slotId: RuinsExactSurfaceV1['kitCard']['equipmentGrid'][number]['slotId']) => void }) {
   const { surface, onPrimaryAction, onOpenSettings, onOpenTacticalCell, onOpenAreaSelector, onOpenMedicinePouch, onOpenLoadout, onOpenAiProfile, onOpenEquipmentSlot } = props;
@@ -11,7 +12,7 @@ export function RuinsExactMockupScreen(props: { surface: RuinsExactSurfaceV1; on
     React.createElement(RuinsTopRegion, { surface, onOpenSettings, onOpenTacticalCell, onOpenAreaSelector }),
     React.createElement('section', { className: 'ruinsExactPage__bodyCluster', 'data-testid': 'ruins-exact-body-grid' },
       React.createElement('aside', { className: 'ruinsExactPage__leftRail', 'data-testid': 'ruins-exact-left-rail' }, React.createElement(RuinsKitCard, { kit: surface.kitCard, onOpenMedicinePouch, onOpenLoadout, onOpenAiProfile, onOpenEquipmentSlot })),
-      React.createElement('main', { 'data-testid': 'ruins-exact-center-scenic-slot' }, React.createElement('p', null, surface.scenicStage.environmentDescriptor)),
+      React.createElement('main', { className: 'ruinsExactPage__centerScenic', 'data-testid': 'ruins-exact-center-scenic-slot' }, React.createElement(RuinsScenicStage, { scenic: surface.scenicStage })),
       React.createElement('aside', { 'data-testid': 'ruins-exact-right-rail' }, React.createElement('h2', null, surface.targetedMaterialsCard.title), React.createElement('p', null, surface.targetedMaterialsCard.leadMaterials.map((m) => m.label).join(' · ')), React.createElement('p', null, surface.targetedMaterialsCard.guaranteedAnchor.label), React.createElement('p', null, surface.targetedMaterialsCard.guaranteedAnchor.sourceLabel), React.createElement('p', null, surface.targetedMaterialsCard.rarePity), React.createElement('p', null, surface.targetedMaterialsCard.autoRepeat.value), React.createElement('p', null, surface.targetedMaterialsCard.autoRepeat.helperText), React.createElement('p', null, surface.targetedMaterialsCard.footer)),
       React.createElement('section', { 'data-testid': 'ruins-exact-route-slot' }, React.createElement('h3', null, surface.roomRoute.title), React.createElement('p', null, surface.roomRoute.chip), surface.roomRoute.nodes.map((n) => React.createElement('p', { key: n.id }, `${n.label} ${n.sublabel} ${n.state}`))),
       React.createElement('section', { 'data-testid': 'ruins-exact-cta-slot' }, React.createElement('button', { type: 'button', disabled: !surface.primaryAction.enabled, onClick: onPrimaryAction }, surface.primaryAction.label)),

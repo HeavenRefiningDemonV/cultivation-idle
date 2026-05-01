@@ -1,3 +1,27 @@
+export const RUINS_EXACT_SCENIC_ART_CONTRACT = {
+  hollowLogDen: {
+    status: 'deferred',
+    reservedApprovedSourcePath: 'docs/release/qa/ui-cutover/ruins-exact/approved-mockup/ruins-hollow-log-den-approved-exact.png',
+    reservedApprovedPlatePath: 'src/assets/world/ruins/hollow-log-den-scene-approved-plate.png',
+    crop: {
+      sourceWidth: 2048,
+      sourceHeight: 1152,
+      x: 362,
+      y: 270,
+      width: 1315,
+      height: 595,
+    },
+    finalVisualAnchors: [
+      'cultivator lower-left with lantern',
+      'giant hollow root mouth',
+      'mossy broken stone steps',
+      'teal spirit-leaf glows',
+      'right-side carved stonework',
+      'distant final chest glint',
+    ],
+  },
+} as const;
+
 export const RUINS_EXACT_ASSETS = {
   chrome: {
     barShort: '/src/assets/ui/chrome/bar_short.png',

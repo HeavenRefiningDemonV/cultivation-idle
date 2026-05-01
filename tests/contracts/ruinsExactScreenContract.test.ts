@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { readFileSync } from 'node:fs';
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { RuinsExactMockupScreen } from '../../src/features/world/ruinsExact/RuinsExactMockupScreen.js';
@@ -21,4 +22,23 @@ void test('ruins exact top region contract renders fixture top lane and preserve
   assert.equal(html.includes('ruinsTopRegion__plaqueCaret'), true);
   for (const forbidden of ['combatPathModule__topLane', 'ruinsPanel__scenicBadge']) assert.equal(html.includes(forbidden), false);
   for (const slot of ['ruins-exact-body-grid','ruins-exact-left-rail','ruins-exact-center-scenic-slot','ruins-exact-right-rail','ruins-exact-route-slot','ruins-exact-cta-slot','ruins-exact-summary-dock']) assert.equal(html.includes(slot), true);
+});
+
+
+void test('ruins exact scenic stage source guard has no forbidden scenic imports', () => {
+  const screenSource = readFileSync(new URL('../../src/features/world/ruinsExact/RuinsExactMockupScreen.ts', import.meta.url), 'utf8');
+  const scenicSource = readFileSync(new URL('../../src/features/world/ruinsExact/components/RuinsScenicStage.ts', import.meta.url), 'utf8');
+  assert.equal(screenSource.includes('RuinsScenicStage'), true);
+  assert.equal(screenSource.includes('ruins-exact-center-scenic-slot'), true);
+  assert.equal(screenSource.includes('RuinsSummaryCard'), false);
+  assert.equal(screenSource.includes('RuinsProgress'), false);
+  assert.equal(screenSource.includes('RuinsCtaZone'), false);
+  assert.equal(screenSource.includes('CombatModuleTopLane'), false);
+  assert.equal(screenSource.includes('InkCombatShell'), false);
+  assert.equal(scenicSource.includes('ruins-exact-scenic-stage'), true);
+  assert.equal(scenicSource.includes('ruins-exact-scenic-frame'), true);
+  assert.equal(scenicSource.includes('ruins-exact-scenic-plate'), true);
+  for (const forbidden of ['city_ruins.png', 'InsideDungeon', 'combatPathModule', 'OutskirtsScenicStage', 'Art pending', 'Image missing']) {
+    assert.equal(scenicSource.includes(forbidden), false);
+  }
 });
