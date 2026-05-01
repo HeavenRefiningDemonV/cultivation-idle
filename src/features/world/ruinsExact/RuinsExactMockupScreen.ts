@@ -5,6 +5,7 @@ import { RuinsTopRegion } from './components/RuinsTopRegion.js';
 import { RuinsKitCard } from './components/RuinsKitCard.js';
 import { RuinsScenicStage } from './components/RuinsScenicStage.js';
 import { RuinsTargetedMaterialsCard } from './components/RuinsTargetedMaterialsCard.js';
+import { RuinsRoomRouteStrip } from './components/RuinsRoomRouteStrip.js';
 
 export function RuinsExactMockupScreen(props: { surface: RuinsExactSurfaceV1; onPrimaryAction?: () => void; onToggleAutoRepeat?: () => void; onOpenSettings?: () => void; onOpenTacticalCell?: (cellId: RuinsExactSurfaceV1['tacticalStrip']['cells'][number]['id']) => void; onOpenAreaSelector?: () => void; onOpenMedicinePouch?: () => void; onOpenLoadout?: () => void; onOpenAiProfile?: () => void; onOpenEquipmentSlot?: (slotId: RuinsExactSurfaceV1['kitCard']['equipmentGrid'][number]['slotId']) => void }) {
   const { surface, onPrimaryAction, onOpenSettings, onOpenTacticalCell, onOpenAreaSelector, onOpenMedicinePouch, onOpenLoadout, onOpenAiProfile, onOpenEquipmentSlot } = props;
@@ -15,7 +16,7 @@ export function RuinsExactMockupScreen(props: { surface: RuinsExactSurfaceV1; on
       React.createElement('aside', { className: 'ruinsExactPage__leftRail', 'data-testid': 'ruins-exact-left-rail' }, React.createElement(RuinsKitCard, { kit: surface.kitCard, onOpenMedicinePouch, onOpenLoadout, onOpenAiProfile, onOpenEquipmentSlot })),
       React.createElement('main', { className: 'ruinsExactPage__centerScenic', 'data-testid': 'ruins-exact-center-scenic-slot' }, React.createElement(RuinsScenicStage, { scenic: surface.scenicStage })),
       React.createElement('aside', { className: 'ruinsExactPage__rightRail', 'data-testid': 'ruins-exact-right-rail' }, React.createElement(RuinsTargetedMaterialsCard, { card: surface.targetedMaterialsCard, onToggleAutoRepeat: props.onToggleAutoRepeat })),
-      React.createElement('section', { 'data-testid': 'ruins-exact-route-slot' }, React.createElement('h3', null, surface.roomRoute.title), React.createElement('p', null, surface.roomRoute.chip), surface.roomRoute.nodes.map((n) => React.createElement('p', { key: n.id }, `${n.label} ${n.sublabel} ${n.state}`))),
+      React.createElement('section', { className: 'ruinsExactPage__routeSlot', 'data-testid': 'ruins-exact-route-slot' }, React.createElement(RuinsRoomRouteStrip, { route: surface.roomRoute })),
       React.createElement('section', { 'data-testid': 'ruins-exact-cta-slot' }, React.createElement('button', { type: 'button', disabled: !surface.primaryAction.enabled, onClick: onPrimaryAction }, surface.primaryAction.label)),
       React.createElement('aside', { 'data-testid': 'ruins-exact-summary-dock' }, React.createElement('h3', null, surface.explorationSummary.title), surface.explorationSummary.rows.map((r) => React.createElement('p', { key: r.label }, `${r.label} — ${r.value}`))),
     ),

@@ -144,3 +144,26 @@
 .ruinsTargetedMaterialsCard__helper { margin:0; font-size:.76rem; color:#5b4932; }
 .ruinsTargetedMaterialsCard__footer { margin:0; font-size:.78rem; line-height:1.3; color:#493a28; }
 .ruinsTargetedMaterialsCard__seal { position:absolute; right:16px; bottom:14px; width:18px; height:18px; border-radius:999px; background: radial-gradient(circle at 35% 35%, #b94836, #812719); border:1px solid rgba(91,17,12,.5); }
+
+.ruinsExactPage__routeSlot { grid-area: route; position: relative; justify-self: center; align-self: start; width: min(100%, clamp(820px, 62vw, 1080px)); min-height: clamp(132px, 15vh, 178px); z-index: 2; }
+.ruinsRoomRouteStrip { position: relative; width: 100%; min-height: clamp(132px, 15vh, 178px); display: grid; grid-template-rows: auto 1fr; align-items: start; justify-items: center; isolation: isolate; color: #2d2418; }
+.ruinsRoomRouteStrip__heading { display:flex; align-items:center; gap:12px; margin-bottom:8px; }
+.ruinsRoomRouteStrip__titlePlate { margin:0; border:1px solid rgba(101,78,52,.3); border-radius:999px; background:linear-gradient(180deg,#f2e5c7,#e5d4b2); padding:4px 16px; }
+.ruinsRoomRouteStrip__title { font:700 clamp(1.1rem,1.5vw,1.45rem)/1.1 Georgia, 'Times New Roman', serif; }
+.ruinsRoomRouteStrip__chip { border:1px solid rgba(101,78,52,.32); border-radius:999px; padding:3px 10px; font-size:.78rem; background:#efe1c3; }
+.ruinsRoomRouteStrip__lane { position:absolute; top:56px; left:7%; right:7%; }
+.ruinsRoomRouteStrip__laneRule { display:block; height:2px; background:linear-gradient(90deg, rgba(114,88,55,.2), rgba(114,88,55,.6), rgba(114,88,55,.2)); }
+.ruinsRoomRouteStrip__nodes { list-style:none; margin:0; padding:34px 0 0; width:100%; display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); }
+.ruinsRoomRouteStrip__node { position:relative; display:grid; justify-items:center; gap:6px; }
+.ruinsRoomRouteStrip__node--current { transform: translateY(-6px); }
+.ruinsRoomRouteStrip__medallion { width:44px; height:44px; border-radius:999px; border:1px solid rgba(101,78,52,.45); display:grid; place-items:center; background:#e7d8bc; }
+.ruinsRoomRouteStrip__medallion--completed-check { background: linear-gradient(180deg,#97b396,#6b8f6f); }
+.ruinsRoomRouteStrip__medallion--current-jade { width:52px; height:52px; background:linear-gradient(180deg,#9dc7a6,#679474); box-shadow:0 0 0 2px rgba(227,205,149,.55); }
+.ruinsRoomRouteStrip__medallion--future-anchor { background: linear-gradient(180deg,#cdbb87,#a89058); box-shadow:0 0 10px rgba(194,161,91,.32); }
+.ruinsRoomRouteStrip__currentPointer { position:absolute; top:-14px; color:#9b7b3f; font-size:12px; }
+.ruinsRoomRouteStrip__completeMark { color:#fff; font-weight:700; }
+.ruinsRoomRouteStrip__icon { color:#4f3f2b; }
+.ruinsRoomRouteStrip__laneDiamond { position:absolute; right:-8px; top:18px; width:8px; height:8px; background:#b39a69; transform:rotate(45deg); }
+.ruinsRoomRouteStrip__text { display:grid; justify-items:center; }
+.ruinsRoomRouteStrip__label { font-size:.8rem; }
+.ruinsRoomRouteStrip__sublabel { font-size:.72rem; color:#5c4a35; }

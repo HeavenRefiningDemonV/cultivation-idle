@@ -28,8 +28,10 @@ export interface RuinsGuaranteedAnchorSurface { label: string; itemId: string; i
 export interface RuinsRarePitySurface { label: 'Rare Pity'; valueText: string; dots: { total: number; filled: number }; source: RuinsExactValueSource; }
 export interface RuinsAutoRepeatSurface { label: 'Auto-Repeat'; valueText: 'On' | 'Off'; enabled: boolean; helperText: 'Repeats after Final Chest'; source: RuinsExactValueSource; }
 export interface RuinsTargetedMaterialsCardSurface { title: 'Targeted Materials'; leadMaterialsTitle: 'Lead Materials'; leadMaterials: readonly [RuinsTargetedMaterialTileSurface, RuinsTargetedMaterialTileSurface]; guaranteedAnchorTitle: 'Guaranteed Anchor'; guaranteedAnchor: RuinsGuaranteedAnchorSurface; rarePity: RuinsRarePitySurface; autoRepeat: RuinsAutoRepeatSurface; footer: 'Best used for targeted local materials, not gold.'; showGoldPrimaryRewardPanel: false; legacySummaryCardVisible: false; }
-export interface RuinsRoomRouteNodeSurface { id: string; label: string; sublabel: string; iconKey: string; state: RuinsRouteNodeState; }
-export interface RuinsRoomRouteSurface { title: string; chip: string; nodes: ReadonlyArray<RuinsRoomRouteNodeSurface>; }
+export type RuinsRoomRouteMode = 'idle' | 'active' | 'complete';
+export type RuinsRoomRouteMedallionVariant = 'completed-check' | 'current-jade' | 'future-cache' | 'future-guardian' | 'future-anchor';
+export interface RuinsRoomRouteNodeSurface { id: string; label: string; sublabel: string; iconKey: string; state: RuinsRouteNodeState; medallionVariant: RuinsRoomRouteMedallionVariant; isAnchor: boolean; ariaLabel: string; }
+export interface RuinsRoomRouteSurface { title: string; chip: string; mode: RuinsRoomRouteMode; currentNodeId: string | null; nodes: ReadonlyArray<RuinsRoomRouteNodeSurface>; }
 export interface RuinsPrimaryActionSurface { label: string; intent: 'continue-exploration' | 'enter-ruins' | 'open-final-chest' | 'stopping'; enabled: boolean; singleDominantCta: true; }
 export interface RuinsExplorationSummarySurface { title: 'Exploration Summary'; rows: ReadonlyArray<{ label: string; value: string }>; }
 export interface RuinsExactShellFlags { showCombatModuleTopLane: false; showRuinsSummaryCard: false; showRuinsProgress: false; showRuinsCtaZone: false; showCombatPathModule: false; showLargeDuelOverlay: false; showCombatHpBars: false; showGoldPrimaryRewardPanel: false; useScreenOwnedExactPage: true; singleDominantCta: true; }
