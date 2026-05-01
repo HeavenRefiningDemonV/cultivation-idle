@@ -60,8 +60,9 @@ export function buildRuinsExactSurfaceFromStores(cityId?: string, options: Build
   const leadDrops = (ruinDef as { dropsPerRoom?: { pool?: Array<{ itemId: string }> } } | null)?.dropsPerRoom?.pool ?? [];
   const hasSpiritLeaf = leadDrops.some((d) => d.itemId === 'mat_spirit_leaf');
   const beastIds = ['mat_beast_bone', 'mat_beast_blood'];
-  const finalChestAnchor = ruinDef?.finalChestDrops?.guaranteed?.find((d) => d.itemId === 'mat_core_fragment');
-  if (!finalChestAnchor) missing.push('missing final chest core fragment guaranteed drop');
+  const finalChestAnchor = ruinDef?.finalChestDrops?.guaranteed?.[0];
+  if (!finalChestAnchor) missing.push('missing final chest guaranteed drop');
+  const finalAnchorItem = finalChestAnchor?.itemId ? content.maps.itemsById[finalChestAnchor.itemId] : undefined;
   const primaryAction = activityMode === 'active' ? { visible: true, enabled: true, label: 'Continue Exploration', ariaLabel: 'Continue exploration through Hollow Log Den', intent: 'continue-exploration' as const, singleDominantCta: true as const, isPrimary: true as const, plaqueVariant: 'jade-gold' as const, ornamentVariant: 'root-jade-cap' as const }
     : activityMode === 'transitioning' ? { visible: true, enabled: false, label: 'Stopping...', ariaLabel: 'Stopping ruins run', intent: 'disabled' as const, singleDominantCta: true as const, isPrimary: true as const, disabledReason: 'Run is stopping', plaqueVariant: 'jade-gold' as const, ornamentVariant: 'root-jade-cap' as const }
     : activityMode === 'unavailable' ? { visible: true, enabled: false, label: 'Enter Ruins', ariaLabel: 'Ruins unavailable', intent: 'disabled' as const, singleDominantCta: true as const, isPrimary: true as const, disabledReason: 'Ruins unavailable in this city', plaqueVariant: 'jade-gold' as const, ornamentVariant: 'root-jade-cap' as const }
@@ -84,7 +85,7 @@ export function buildRuinsExactSurfaceFromStores(cityId?: string, options: Build
       leadMaterialsTitle: 'Lead Materials',
       leadMaterials: [{ id: 'spirit-leaf', label: hasSpiritLeaf ? (content.maps.itemsById.mat_spirit_leaf?.name ?? 'Spirit Leaf') : 'Spirit Leaf', itemIds: ['mat_spirit_leaf'], iconKey: 'spiritLeaf', tone: 'leaf', source: 'derived' }, { id: 'beast-materials', label: 'Beast Materials', itemIds: beastIds, iconKey: 'beastMaterials', tone: 'beast', source: 'derived' }],
       guaranteedAnchorTitle: 'Guaranteed Anchor',
-      guaranteedAnchor: { label: `${content.maps.itemsById.mat_core_fragment?.name ?? 'Core Fragment'} x${finalChestAnchor?.qty ?? 1}`, itemId: 'mat_core_fragment', itemName: content.maps.itemsById.mat_core_fragment?.name ?? 'Core Fragment', quantity: finalChestAnchor?.qty ?? 1, sourceLabel: 'Final Chest', iconKey: 'coreFragmentAnchor', source: 'derived' },
+      guaranteedAnchor: { label: `${finalAnchorItem?.name ?? 'Core Fragment'} x${finalChestAnchor?.qty ?? 1}`, itemId: finalChestAnchor?.itemId ?? 'mat_core_fragment', itemName: finalAnchorItem?.name ?? 'Core Fragment', quantity: finalChestAnchor?.qty ?? 1, sourceLabel: 'Final Chest', iconKey: (finalChestAnchor?.itemId === 'mat_core_fragment' ? 'coreFragmentAnchor' : 'genericMaterial'), source: 'derived' },
       rarePity: { label: 'Rare Pity', valueText: pityText, dots: { total: pityCap ?? 0, filled: Math.min(pityFailures, pityCap ?? 0) }, source: 'derived' },
       autoRepeat: { label: 'Auto-Repeat', valueText: ruins.autoRepeatDefault ? 'On' : 'Off', enabled: ruins.autoRepeatDefault, helperText: 'Repeats after Final Chest', source: 'live' },
       footer: 'Best used for targeted local materials, not gold.',
