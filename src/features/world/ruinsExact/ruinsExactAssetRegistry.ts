@@ -24,9 +24,9 @@ export const RUINS_EXACT_SCENIC_ART_CONTRACT = {
 
 export const RUINS_EXACT_ASSETS = {
   chrome: {
-    barShort: '/src/assets/ui/chrome/bar_short.png',
-    barLong: '/src/assets/ui/chrome/bar_long.png',
-    blockFancy: '/src/assets/ui/chrome/block_fancy.png',
+    barShort: '/src/assets/menus/bar_short.png',
+    barLong: '/src/assets/menus/bar_long.png',
+    blockFancy: '/src/assets/menus/block_fancy.png',
   },
   icons: {
     tactical: {
