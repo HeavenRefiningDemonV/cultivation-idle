@@ -9,15 +9,21 @@
 }
 
 .ruinsExactPage {
-  --ruins-page-inline-padding: clamp(18px, 2.4vw, 34px);
-  --ruins-page-block-padding: clamp(8px, 1.1vh, 16px);
-  --ruins-left-rail-width: clamp(260px, 14.6vw, 310px);
-  --ruins-right-rail-width: clamp(285px, 15.2vw, 330px);
-  --ruins-rail-gap: clamp(20px, 1.8vw, 32px);
-  --ruins-scenic-min-height: clamp(360px, 52vh, 595px);
-  --ruins-route-row-min-height: clamp(128px, 15vh, 178px);
-  --ruins-cta-row-min-height: clamp(72px, 8vh, 104px);
-  --ruins-summary-row-min-height: clamp(120px, 14vh, 190px);
+  --ruins-page-inline-padding: clamp(24px, 1.76vw, 36px);
+  --ruins-page-block-padding: clamp(8px, 0.9vh, 12px);
+  --ruins-left-rail-width: clamp(286px, 14.75vw, 302px);
+  --ruins-right-rail-width: clamp(294px, 15.15vw, 310px);
+  --ruins-rail-gap: clamp(18px, 1.2vw, 25px);
+  --ruins-body-scene-top-offset: clamp(20px, 2.6vh, 30px);
+  --ruins-scenic-height: clamp(520px, 51.65vh, 595px);
+  --ruins-route-row-height: clamp(150px, 14.95vh, 172px);
+  --ruins-cta-row-height: clamp(64px, 6.25vh, 72px);
+  --ruins-left-card-height: clamp(620px, 60.4vh, 696px);
+  --ruins-right-card-height: clamp(590px, 57.3vh, 660px);
+  --ruins-summary-width: clamp(320px, 18.1vw, 370px);
+  --ruins-summary-height: clamp(168px, 16.25vh, 187px);
+  --ruins-summary-drop-offset: clamp(36px, 4.6vh, 53px);
+  --ruins-route-max-width: clamp(900px, 52.75vw, 1080px);
   --ruins-card-radius: clamp(12px, 0.9vw, 18px);
   --ruins-card-border: rgba(92, 69, 43, 0.34);
   --ruins-card-bg-top: #f7ecd3;
@@ -60,20 +66,21 @@
   width: 100%;
   height: 100%;
   grid-template-columns: var(--ruins-left-rail-width) minmax(0, 1fr) var(--ruins-right-rail-width);
-  grid-template-rows: minmax(0, 1fr) var(--ruins-route-row-min-height) var(--ruins-cta-row-min-height);
-  grid-template-areas: 'left scenic right' 'left route summary' '. cta summary';
+  grid-template-rows: var(--ruins-body-scene-top-offset) var(--ruins-scenic-height) var(--ruins-route-row-height) var(--ruins-cta-row-height);
+  grid-template-areas: 'left . right' 'left scenic right' 'left route summary' '. cta summary';
   column-gap: var(--ruins-rail-gap);
-  row-gap: clamp(8px, 1.1vh, 16px);
+  row-gap: 0;
   align-items: stretch;
+  overflow: visible;
 }
 
 .ruinsExactPage__leftRail, .ruinsExactPage__centerScenic, .ruinsExactPage__rightRail, .ruinsExactPage__routeSlot, .ruinsExactPage__ctaSlot, .ruinsExactPage__summaryDock { min-width: 0; min-height: 0; }
-.ruinsExactPage__leftRail { grid-area: left; align-self: stretch; overflow: hidden; }
-.ruinsExactPage__centerScenic { grid-area: scenic; overflow: hidden; isolation: isolate; }
-.ruinsExactPage__rightRail { grid-area: right; align-self: stretch; overflow: hidden; }
-.ruinsExactPage__routeSlot { grid-area: route; justify-self: center; align-self: stretch; width: min(100%, clamp(820px, 62vw, 1080px)); overflow: visible; z-index: 2; }
+.ruinsExactPage__leftRail { grid-area: left; align-self: start; height: var(--ruins-left-card-height); overflow: hidden; }
+.ruinsExactPage__centerScenic { grid-area: scenic; align-self: stretch; width: 100%; height: 100%; overflow: hidden; isolation: isolate; }
+.ruinsExactPage__rightRail { grid-area: right; align-self: start; height: var(--ruins-right-card-height); overflow: hidden; }
+.ruinsExactPage__routeSlot { grid-area: route; justify-self: center; align-self: stretch; width: min(100%, var(--ruins-route-max-width)); overflow: visible; z-index: 2; }
 .ruinsExactPage__ctaSlot { grid-area: cta; display: flex; align-items: center; justify-content: center; overflow: visible; z-index: 3; }
-.ruinsExactPage__summaryDock { grid-area: summary; align-self: end; justify-self: end; width: clamp(280px, 18vw, 370px); min-height: var(--ruins-summary-row-min-height); overflow: visible; z-index: 4; }
+.ruinsExactPage__summaryDock { grid-area: summary; align-self: start; justify-self: end; width: min(100%, var(--ruins-summary-width)); height: var(--ruins-summary-height); margin-top: var(--ruins-summary-drop-offset); overflow: visible; z-index: 4; }
 
 .ruinsTopRegion { display:grid; grid-template-columns: var(--ruins-left-rail-width) var(--ruins-rail-gap) minmax(0,1fr) var(--ruins-rail-gap) var(--ruins-right-rail-width); row-gap: clamp(6px,0.8vh,11px); align-items:start; padding-top: clamp(2px,0.35vh,6px); position: relative; z-index: 1; }
 .ruinsTopRegion__topBand { grid-column:1/-1; display:grid; grid-template-columns:minmax(180px,220px) minmax(0,1fr) 32px; column-gap:clamp(14px,1.6vw,26px); align-items:center; min-height:clamp(36px,4.4vh,52px); }
@@ -159,9 +166,15 @@
 @media (max-width: 1600px) {
   .ruinsExactPage {
     --ruins-page-inline-padding: clamp(14px, 1.8vw, 24px);
-    --ruins-left-rail-width: clamp(236px, 14vw, 278px);
-    --ruins-right-rail-width: clamp(260px, 14.8vw, 300px);
-    --ruins-rail-gap: clamp(14px, 1.35vw, 24px);
+    --ruins-left-rail-width: clamp(250px, 15.2vw, 286px);
+    --ruins-right-rail-width: clamp(260px, 15.6vw, 294px);
+    --ruins-rail-gap: clamp(14px, 1.35vw, 20px);
+    --ruins-body-scene-top-offset: clamp(14px, 2vh, 22px);
+    --ruins-scenic-height: clamp(420px, 49vh, 520px);
+    --ruins-route-row-height: clamp(120px, 14vh, 150px);
+    --ruins-cta-row-height: clamp(56px, 6.2vh, 66px);
+    --ruins-left-card-height: clamp(540px, 60vh, 620px);
+    --ruins-right-card-height: clamp(510px, 56vh, 590px);
   }
 }
 
@@ -171,8 +184,13 @@
     --ruins-left-rail-width: 232px;
     --ruins-right-rail-width: 250px;
     --ruins-rail-gap: 12px;
-    --ruins-route-row-min-height: 118px;
-    --ruins-cta-row-min-height: 66px;
-    --ruins-summary-row-min-height: 142px;
+    --ruins-body-scene-top-offset: 12px;
+    --ruins-scenic-height: clamp(330px, 44vh, 420px);
+    --ruins-route-row-height: clamp(104px, 13.5vh, 120px);
+    --ruins-cta-row-height: clamp(50px, 6.6vh, 58px);
+    --ruins-summary-height: clamp(120px, 15vh, 148px);
+    --ruins-summary-drop-offset: clamp(18px, 3vh, 30px);
+    --ruins-left-card-height: clamp(470px, 61vh, 540px);
+    --ruins-right-card-height: clamp(430px, 56vh, 510px);
   }
 }
