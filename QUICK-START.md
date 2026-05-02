@@ -25,7 +25,7 @@ Then open your browser to: **http://localhost:5173/**
 
 1. **First time:**
    ```bash
-   cd /home/user/cultivation-idle
+   cd /workspace/cultivation-idle
    ./start-game.sh
    ```
 
