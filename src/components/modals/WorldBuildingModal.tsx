@@ -126,7 +126,7 @@ export function WorldBuildingModal({
         content = <GateTrialBuildingPanel cityId={storeCityId} />;
         break;
       case 'ruins':
-        content = <RuinsBuildingPanel cityId={storeCityId} />;
+        content = <RuinsBuildingPanel cityId={storeCityId} forceFixture={storeModalIntent?.ruinsExactMode === 'fixture'} />;
         break;
       default:
         content = isCombatModule(buildingKey)

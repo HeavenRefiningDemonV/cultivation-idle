@@ -17,6 +17,7 @@ interface CaptureArgs {
   startupTimeoutMs: number;
   waitAfterLoadMs: number;
   surfaceIds: string[] | null;
+  ruinsExactMode: 'fixture' | 'live' | null;
 }
 
 interface CaptureRecord {
@@ -45,6 +46,7 @@ function parseArgs(argv: string[]): CaptureArgs {
   const waitArg = argv.find((arg) => arg.startsWith('--wait-after-load-ms='));
   const surfaceArg = argv.find((arg) => arg.startsWith('--surface='));
   const surfacesArg = argv.find((arg) => arg.startsWith('--surfaces='));
+  const ruinsExactModeArg = argv.find((arg) => arg.startsWith('--ruins-exact-mode='));
   const surfaceCsv = surfacesArg ? surfacesArg.slice('--surfaces='.length) : surfaceArg ? surfaceArg.slice('--surface='.length) : '';
   const surfaceIds = surfaceCsv
     .split(',')
@@ -60,6 +62,11 @@ function parseArgs(argv: string[]): CaptureArgs {
     startupTimeoutMs: startupTimeoutArg ? Number(startupTimeoutArg.slice('--startup-timeout-ms='.length)) : 60_000,
     waitAfterLoadMs: waitArg ? Number(waitArg.slice('--wait-after-load-ms='.length)) : 700,
     surfaceIds: surfaceIds.length > 0 ? [...new Set(surfaceIds)] : null,
+    ruinsExactMode: ruinsExactModeArg?.slice('--ruins-exact-mode='.length) === 'fixture'
+      ? 'fixture'
+      : ruinsExactModeArg?.slice('--ruins-exact-mode='.length) === 'live'
+        ? 'live'
+        : null,
   };
 }
 
@@ -79,10 +86,13 @@ function toFxMode(file: Phase6CombatCaptureSlotFile): 'high' | 'low' | 'reduced'
   return 'high';
 }
 
-function appendCaptureParams(route: string, slot: string): string {
+function appendCaptureParams(route: string, slot: string, ruinsExactMode: 'fixture' | 'live' | null): string {
   const url = new URL(route, 'http://localhost');
   url.searchParams.set('slot', slot);
   url.searchParams.set('controls', '0');
+  if (url.searchParams.get('surface') === 'ruins' && ruinsExactMode) {
+    url.searchParams.set('ruinsExactMode', ruinsExactMode);
+  }
   return `${url.pathname}${url.search}`;
 }
 
@@ -167,7 +177,7 @@ async function runCapture(args: CaptureArgs): Promise<CaptureReport> {
       for (const slotFile of PHASE6_COMBAT_CAPTURE_SLOT_FILES) {
         const slot = PHASE6_COMBAT_CAPTURE_SLOT_BY_FILE[slotFile];
         const fx = toFxMode(slotFile);
-        const route = `${args.baseUrl}${appendCaptureParams(target.captureRoutes[fx], slot)}`;
+        const route = `${args.baseUrl}${appendCaptureParams(target.captureRoutes[fx], slot, args.ruinsExactMode)}`;
 
         await page.goto(route, { waitUntil: 'networkidle' });
         await page.waitForSelector('[data-ui="phase6-combat-ready"][data-ready="1"]', { timeout: 15_000 });

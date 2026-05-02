@@ -61,6 +61,7 @@ export type WorldBuildingKey =
 
 export type WorldBuildingModalIntent = null | {
   apothecarySurface?: 'buy' | 'brew' | 'pouch';
+  ruinsExactMode?: 'live' | 'fixture';
 };
 export type LifeSummaryModalMode = 'current' | 'last_completed';
 export type MigrationIssueModalPayload = {
@@ -71,6 +72,11 @@ export type MigrationIssueModalPayload = {
 
 const normalizeWorldBuildingKey = (buildingKey: WorldBuildingKey): WorldBuildingKey =>
   buildingKey === 'alchemy' ? 'apothecary' : buildingKey;
+
+const getWorldBuildingIntentKey = (intent: WorldBuildingModalIntent): string => JSON.stringify({
+  apothecarySurface: intent?.apothecarySurface ?? null,
+  ruinsExactMode: intent?.ruinsExactMode ?? null,
+});
 
 export interface UISettingsState {
   showOfflineModal: boolean;
@@ -834,11 +840,12 @@ export const useUIStore = create<UIState>()(
     openWorldBuildingModal: ({ cityId, buildingKey, intent }) => {
       const normalizedBuildingKey = normalizeWorldBuildingKey(buildingKey);
       const snapshot = get();
+      const incomingIntent = intent ?? null;
       if (
         snapshot.showWorldBuildingModal
         && snapshot.worldBuildingModalCityId === cityId
         && snapshot.worldBuildingModalKey === normalizedBuildingKey
-        && (snapshot.worldBuildingModalIntent?.apothecarySurface ?? null) === ((intent ?? null)?.apothecarySurface ?? null)
+        && getWorldBuildingIntentKey(snapshot.worldBuildingModalIntent) === getWorldBuildingIntentKey(incomingIntent)
       ) {
         return;
       }
@@ -846,7 +853,7 @@ export const useUIStore = create<UIState>()(
         state.showWorldBuildingModal = true;
         state.worldBuildingModalCityId = cityId;
         state.worldBuildingModalKey = normalizedBuildingKey;
-        state.worldBuildingModalIntent = intent ?? null;
+        state.worldBuildingModalIntent = incomingIntent;
       });
       if (normalizedBuildingKey === 'manualPavilion') {
         GameEvents.emit({ type: 'pavilion/opened', payload: { buildingKey: normalizedBuildingKey, cityId } });

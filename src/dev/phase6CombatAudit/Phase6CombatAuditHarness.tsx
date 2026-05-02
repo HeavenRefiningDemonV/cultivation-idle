@@ -21,6 +21,7 @@ import './Phase6CombatAuditHarness.scss';
 
 type AuditFxMode = 'high' | 'medium' | 'low' | 'reduced';
 type AuditSlot = (typeof PHASE6_COMBAT_CAPTURE_SLOT_BY_FILE)[Phase6CombatCaptureSlotFile];
+type RuinsExactMode = 'fixture' | 'live';
 
 const DEFAULT_CITY_ID = 'city_pinewind_hamlet';
 const DEFAULT_SURFACE: Phase6CombatSurfaceId = 'outskirts';
@@ -52,6 +53,11 @@ function parseSlotFromQuery(): AuditSlot {
     return slot;
   }
   return DEFAULT_SLOT;
+}
+
+function parseRuinsExactModeFromQuery(): RuinsExactMode {
+  const value = new URLSearchParams(window.location.search).get('ruinsExactMode');
+  return value === 'fixture' ? 'fixture' : 'live';
 }
 
 function setQuery(next: { surface?: Phase6CombatSurfaceId; fx?: AuditFxMode; slot?: AuditSlot; controls?: '0' | '1' }) {
@@ -91,7 +97,7 @@ function mapSurfaceToBuildingKey(surface: Phase6CombatSurfaceId): 'outskirts' | 
   return surface;
 }
 
-function primeWorldModal(surface: Phase6CombatSurfaceId) {
+function primeWorldModal(surface: Phase6CombatSurfaceId, ruinsExactMode: RuinsExactMode) {
   const cityId = resolveAuditCityId();
   if (!cityId) return;
   const buildingKey = mapSurfaceToBuildingKey(surface);
@@ -103,7 +109,7 @@ function primeWorldModal(surface: Phase6CombatSurfaceId) {
     showWorldBuildingModal: true,
     worldBuildingModalCityId: cityId,
     worldBuildingModalKey: buildingKey,
-    worldBuildingModalIntent: null,
+    worldBuildingModalIntent: surface === 'ruins' ? { ruinsExactMode } : null,
   }));
 }
 
@@ -300,9 +306,9 @@ function primeGateTrialFailureState() {
   }));
 }
 
-function applySurfaceState(surface: Phase6CombatSurfaceId, slot: AuditSlot) {
+function applySurfaceState(surface: Phase6CombatSurfaceId, slot: AuditSlot, ruinsExactMode: RuinsExactMode) {
   sanitizeUiOverlays();
-  primeWorldModal(surface);
+  primeWorldModal(surface, ruinsExactMode);
 
   useActivityStore.getState().stopActivity('phase6-combat-audit-reset');
   useCombatStore.getState().exitCombat();
@@ -312,7 +318,7 @@ function applySurfaceState(surface: Phase6CombatSurfaceId, slot: AuditSlot) {
     return;
   }
 
-  if (surface === 'ruins' && slot === 'interaction') {
+  if (surface === 'ruins' && slot === 'interaction' && ruinsExactMode === 'live') {
     primeRuinsInteractionState();
     return;
   }
@@ -345,17 +351,18 @@ export function Phase6CombatAuditHarness() {
   const [surface, setSurface] = useState<Phase6CombatSurfaceId>(() => parseSurfaceFromQuery());
   const [fxMode, setFxMode] = useState<AuditFxMode>(() => parseFxModeFromQuery());
   const [slot, setSlot] = useState<AuditSlot>(() => parseSlotFromQuery());
+  const [ruinsExactMode, setRuinsExactMode] = useState<RuinsExactMode>(() => parseRuinsExactModeFromQuery());
   const [showControls, setShowControls] = useState(() => new URLSearchParams(window.location.search).get('controls') !== '0');
   const { setRequestedQuality, setReducedMotionOverride } = useFxQuality();
 
   useEffect(() => {
     if (!enabled) return;
-    applySurfaceState(surface, slot);
+    applySurfaceState(surface, slot, ruinsExactMode);
     document.documentElement.dataset.phase6CombatAuditReady = '1';
     return () => {
       delete document.documentElement.dataset.phase6CombatAuditReady;
     };
-  }, [enabled, slot, surface]);
+  }, [enabled, ruinsExactMode, slot, surface]);
 
   useEffect(() => {
     if (!enabled) return;
@@ -374,6 +381,7 @@ export function Phase6CombatAuditHarness() {
       setSurface(parseSurfaceFromQuery());
       setFxMode(parseFxModeFromQuery());
       setSlot(parseSlotFromQuery());
+      setRuinsExactMode(parseRuinsExactModeFromQuery());
     };
     window.addEventListener('popstate', onPopState);
     return () => window.removeEventListener('popstate', onPopState);

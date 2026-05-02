@@ -3,9 +3,12 @@ import { useContentStore } from '../../../../stores/contentStore.js';
 import { resolveModuleRef } from '../worldUtils.js';
 import { RuinsScreenOwner } from '../../../../features/world/ruinsExact/index.js';
 
-interface RuinsBuildingPanelProps { cityId: string }
+interface RuinsBuildingPanelProps {
+  cityId: string;
+  forceFixture?: boolean;
+}
 
-export function RuinsBuildingPanel({ cityId }: RuinsBuildingPanelProps) {
+export function RuinsBuildingPanel({ cityId, forceFixture }: RuinsBuildingPanelProps) {
   const city = useContentStore((state) => state.maps.citiesById[cityId]);
   const ruinsById = useContentStore((state) => state.maps.ruinsById);
   const ruinRefId = useMemo(() => resolveModuleRef(city ?? null, 'ruins'), [city]);
@@ -25,5 +28,5 @@ export function RuinsBuildingPanel({ cityId }: RuinsBuildingPanelProps) {
     );
   }
 
-  return <RuinsScreenOwner cityId={cityId} ruinId={ruinDef.id} />;
+  return <RuinsScreenOwner cityId={cityId} ruinId={ruinDef.id} forceFixture={forceFixture} />;
 }

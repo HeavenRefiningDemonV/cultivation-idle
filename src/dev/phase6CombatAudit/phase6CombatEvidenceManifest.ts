@@ -40,9 +40,9 @@ export const PHASE6_COMBAT_EVIDENCE_TARGETS: readonly Phase6CombatEvidenceTarget
     truthStatesRequired: true,
     captureRoutes: buildCaptureRoutes('ruins'),
     slotNotes: {
-      '01-base.png': 'Ruins Exact fixture active state (screen-owned, compact top strip, no audit controls)',
-      '02-interaction.png': 'Ruins Exact active/in-progress interaction evidence (hover/focus/toggle safe states where supported)',
-      '03-truth-states.png': 'Ruins Exact truth evidence: Spirit Leaf, Beast Materials, Guaranteed Anchor Core Fragment x1 (Final Chest), Rare Pity 1 / 6, Auto-Repeat Off, route, CTA, summary',
+      '01-base.png': 'Ruins exact visual review fixture unless captured with ruinsExactMode=live; fixture locks Hollow Log Den active mockup values.',
+      '02-interaction.png': 'Live active run only when ruinsExactMode=live; exact review fixture remains active Room 2/5 state when ruinsExactMode=fixture.',
+      '03-truth-states.png': 'Fixture truth capture shows lead materials, guaranteed anchor, Rare Pity 1/6, Auto-Repeat Off, route chip Anchor Chest in 3.',
     },
   },
   {

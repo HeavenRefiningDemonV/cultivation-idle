@@ -15,8 +15,8 @@ interface CaptureAttemptRecord {
 }
 
 function runCapture(rootDir: string): CaptureAttemptRecord {
-  const command = 'npm run release:phase6-combat-capture -- --surface=ruins --json';
-  const result = spawnSync('npm', ['run', 'release:phase6-combat-capture', '--', '--surface=ruins', '--json'], {
+  const command = 'npm run release:phase6-combat-capture -- --surface=ruins --json --ruins-exact-mode=fixture';
+  const result = spawnSync('npm', ['run', 'release:phase6-combat-capture', '--', '--surface=ruins', '--json', '--ruins-exact-mode=fixture'], {
     cwd: rootDir,
     encoding: 'utf-8',
     env: { ...process.env, NODE_OPTIONS: '--loader=./scripts/relativeJsLoader.mjs' },
