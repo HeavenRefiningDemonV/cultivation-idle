@@ -18,7 +18,7 @@ void test('ruins exact class coverage contract includes critical child selectors
     assert.equal(scss.includes(selector), true, `missing selector ${selector}`);
   }
 
-  assert.equal(scss.includes('.ruinsExplorationSummaryCard__row { display:grid; grid-template-columns:clamp(20px,1.2vw,24px) minmax(0,1fr) minmax(62px,auto);'), true);
+  assert.equal(scss.includes('.ruinsExplorationSummaryCard__row { display:grid; grid-template-columns:22px minmax(0,1fr) auto;'), true);
   assert.equal(scss.includes('.ruinsRoomRouteStrip__text { display:grid;'), true);
   assert.equal(scss.includes('.ruinsTargetedMaterialsCard__tileLabel { margin-top:6px;'), true);
   assert.equal(scss.includes('.ruinsTargetedMaterialsCard__anchorCopy { min-width:0; display:grid;'), true);
