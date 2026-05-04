@@ -20,7 +20,7 @@ void test('ruins exact fixture surface scaffold is locked', () => {
   assert.equal(surface.areaHeader.subtitle, 'Targeted local materials and guaranteed anchor rewards');
   assert.equal(surface.areaHeader.chips.map((c) => c.label).join('|'), 'Targeted Mats|Deterministic Support');
   assert.equal(surface.kitCard.title, 'Ruin Kit');
-  assert.equal(surface.kitCard.stamp.label, 'In Ruin');
+  assert.equal(surface.kitCard.stamp?.label, 'In Ruin');
   assert.equal(surface.kitCard.equipmentGrid.length, 6);
   assert.equal(surface.targetedMaterialsCard.title, 'Targeted Materials');
   assert.equal(surface.targetedMaterialsCard.leadMaterialsTitle, 'Lead Materials');

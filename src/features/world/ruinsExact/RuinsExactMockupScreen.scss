@@ -66,8 +66,8 @@
   width: 100%;
   height: 100%;
   grid-template-columns: var(--ruins-left-rail-width) minmax(0, 1fr) var(--ruins-right-rail-width);
-  grid-template-rows: var(--ruins-body-scene-top-offset) var(--ruins-scenic-height) var(--ruins-route-row-height) var(--ruins-cta-row-height);
-  grid-template-areas: 'left . right' 'left scenic right' 'left route summary' '. cta summary';
+  grid-template-rows: var(--ruins-body-scene-top-offset) var(--ruins-scenic-height) var(--ruins-lower-stack-spacer-flex) var(--ruins-route-row-height) var(--ruins-cta-row-height);
+  grid-template-areas: 'left . right' 'left scenic right' 'left . summary' 'left route summary' '. cta summary';
   column-gap: var(--ruins-rail-gap);
   row-gap: 0;
   align-items: stretch;
@@ -78,7 +78,7 @@
 .ruinsExactPage__leftRail { grid-area: left; align-self: start; height: var(--ruins-left-card-height); overflow: hidden; }
 .ruinsExactPage__centerScenic { grid-area: scenic; align-self: stretch; width: 100%; height: 100%; overflow: hidden; isolation: isolate; }
 .ruinsExactPage__rightRail { grid-area: right; align-self: start; height: var(--ruins-right-card-height); overflow: hidden; }
-.ruinsExactPage__routeSlot { grid-area: route; justify-self: center; align-self: stretch; width: min(100%, var(--ruins-route-max-width)); overflow: visible; z-index: 2; }
+.ruinsExactPage__routeSlot { grid-area: route; justify-self: center; align-self: stretch; width: min(100%, var(--ruins-route-max-width)); padding-top: var(--ruins-route-title-clearance); overflow: visible; z-index: 2; }
 .ruinsExactPage__ctaSlot { grid-area: cta; display: flex; align-items: center; justify-content: center; overflow: visible; z-index: 3; }
 .ruinsExactPage__summaryDock { grid-area: summary; align-self: start; justify-self: end; width: min(100%, var(--ruins-summary-width)); height: var(--ruins-summary-height); margin-top: var(--ruins-summary-drop-offset); overflow: visible; z-index: 4; }
 
@@ -113,7 +113,7 @@
 .ruinsTopRegion__tacticalDot { width:7px; height:7px; border-radius:999px; background:#b84432; box-shadow:0 0 0 1px rgba(96,38,24,.22); }
 .ruinsTopRegion__tacticalUnderlineTrack { display:block; width:min(100%,150px); height:4px; margin-top:3px; border-radius:999px; overflow:hidden; background:rgba(76,42,35,.24); box-shadow:inset 0 0 0 1px rgba(74,45,30,.18); }
 .ruinsTopRegion__tacticalUnderlineFill { display:block; height:100%; border-radius:inherit; background:linear-gradient(90deg, #b8372e 0%, #cc4937 82%, #6e9d72 82%, #6e9d72 100%); }
-.ruinsTopRegion__plaqueCluster { grid-column:3; justify-self:center; width:min(100%,clamp(430px,30vw,500px)); display:grid; justify-items:center; row-gap:clamp(4px,.52vh,7px); }
+.ruinsTopRegion__plaqueCluster { grid-column:3; justify-self:center; width:min(100%,clamp(430px,30vw,500px)); display:grid; justify-items:center; row-gap:clamp(4px,.52vh,7px); margin-top: var(--ruins-plaque-clearance); }
 .ruinsTopRegion__areaPlaque { position:relative; min-width:clamp(390px,27vw,470px); min-height:clamp(38px,4.2vh,48px); display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:0 clamp(20px,1.4vw,28px); border:1px solid rgba(111,86,53,.72); border-radius:9px; color:#efe1bf; background:radial-gradient(ellipse at 50% 18%, rgba(255,248,221,.12), rgba(255,248,221,0) 48%), linear-gradient(180deg,#3a2b20,#211710 70%,#18100c); box-shadow:inset 0 0 0 1px rgba(255,239,199,.08), inset 0 -8px 16px rgba(0,0,0,.24), 0 3px 7px rgba(45,30,16,.22); appearance:none; cursor:pointer; }
 .ruinsTopRegion__areaPlaque::before, .ruinsTopRegion__areaPlaque::after { content:''; position:absolute; top:50%; width:clamp(26px,2vw,38px); height:78%; transform:translateY(-50%); border:1px solid rgba(112,88,55,.42); background:linear-gradient(180deg,#4a3729,#20150f); opacity:.82; }
 .ruinsTopRegion__areaPlaque::before { left:calc(clamp(22px,2vw,34px) * -0.5); border-radius:10px 4px 4px 10px; }
@@ -147,7 +147,7 @@
 .ruinsKitCard__section { position:relative; z-index:1; min-width:0; }
 .ruinsKitCard__sectionTitle { margin:0 0 clamp(5px,.55vh,8px); padding-top:clamp(6px,.62vh,9px); border-top:1px solid rgba(112,83,48,.22); font:700 clamp(13px,.82vw,16px)/1.12 Georgia,'Times New Roman',serif; color:#493721; }
 .ruinsKitCard__section--survival .ruinsKitCard__sectionTitle { border-top:0; padding-top:clamp(1px,.18vh,3px); }
-.ruinsKitCard__survivalRow { min-height:clamp(23px,2.35vh,28px); display:grid; grid-template-columns:clamp(24px,1.45vw,28px) minmax(0,1fr) auto; align-items:center; gap:clamp(6px,.52vw,9px); padding:0 clamp(2px,.3vw,5px); }
+.ruinsKitCard__statRow { min-height:clamp(23px,2.35vh,28px); display:grid; grid-template-columns:clamp(24px,1.45vw,28px) minmax(0,1fr) auto; align-items:center; gap:clamp(6px,.52vw,9px); padding:0 clamp(2px,.3vw,5px); }
 .ruinsKitCard__section--pouch { gap:6px; display:grid; }
 .ruinsKitCard__pouchRow { min-height:clamp(30px,3.15vh,36px); display:grid; grid-template-columns:clamp(24px,1.45vw,28px) minmax(0,1fr) auto; align-items:center; gap:clamp(7px,.55vw,10px); }
 .ruinsKitCard__pouchValue { min-width:0; justify-self:start; font:800 clamp(15px,.95vw,18px)/1 Georgia,'Times New Roman',serif; color:#2c2418; letter-spacing:.01em; white-space:nowrap; }
@@ -262,6 +262,9 @@
     --ruins-scenic-height: clamp(420px, 49vh, 520px);
     --ruins-route-row-height: clamp(120px, 14vh, 150px);
     --ruins-cta-row-height: clamp(56px, 6.2vh, 66px);
+    --ruins-lower-stack-spacer-min: clamp(14px, 1.8vh, 24px);
+    --ruins-route-title-clearance: clamp(8px, 1.1vh, 14px);
+    --ruins-plaque-clearance: clamp(8px, 1vh, 14px);
     --ruins-left-card-height: clamp(540px, 60vh, 620px);
     --ruins-right-card-height: clamp(510px, 56vh, 590px);
   }
@@ -277,9 +280,15 @@
     --ruins-scenic-height: clamp(330px, 44vh, 420px);
     --ruins-route-row-height: clamp(104px, 13.5vh, 120px);
     --ruins-cta-row-height: clamp(50px, 6.6vh, 58px);
+    --ruins-lower-stack-spacer-min: clamp(10px, 1.2vh, 16px);
+    --ruins-route-title-clearance: clamp(6px, .8vh, 10px);
+    --ruins-plaque-clearance: clamp(6px, .8vh, 10px);
     --ruins-summary-height: clamp(120px, 15vh, 148px);
     --ruins-summary-drop-offset: clamp(18px, 3vh, 30px);
     --ruins-left-card-height: clamp(470px, 61vh, 540px);
     --ruins-right-card-height: clamp(430px, 56vh, 510px);
   }
 }
+
+.ruinsKitCard__section--offense,.ruinsKitCard__section--defense { margin-top: clamp(8px, 0.85vh, 12px); }
+.ruinsKitCard__statRow { display:grid; grid-template-columns:clamp(20px,1.35vw,24px) minmax(0,1fr) auto; align-items:center; column-gap:clamp(6px,0.45vw,9px); min-height:clamp(22px,2.3vh,28px); }

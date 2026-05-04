@@ -6,7 +6,7 @@ void test('ruins exact class coverage contract includes critical child selectors
   const scss = readFileSync('src/features/world/ruinsExact/RuinsExactMockupScreen.scss', 'utf8');
   const requiredSelectors = [
     '.ruinsTopRegion__tacticalUnderlineTrack', '.ruinsTopRegion__tacticalUnderlineFill', '.ruinsTopRegion__roleChips', '.ruinsTopRegion__roleChipDot',
-    '.ruinsKitCard__pouchValue', '.ruinsKitCard__section', '.ruinsKitCard__section--survival', '.ruinsKitCard__section--pouch', '.ruinsKitCard__section--equipment',
+    '.ruinsKitCard__pouchValue', '.ruinsKitCard__section', '.ruinsKitCard__section--offense', '.ruinsKitCard__section--defense', '.ruinsKitCard__section--pouch', '.ruinsKitCard__section--equipment',
     '.ruinsScenicStage__frame', '.ruinsScenicStage__plate', '.ruinsScenicStage__deferredUnderpaint', '.ruinsScenicStage__mist', '.ruinsScenicStage__mist--lower', '.ruinsScenicStage__mist--upper', '.ruinsScenicStage__edgeFade',
     '.ruinsTargetedMaterialsCard__anchorCopy', '.ruinsTargetedMaterialsCard__anchorIconWrap', '.ruinsTargetedMaterialsCard__helper', '.ruinsTargetedMaterialsCard__footer', '.ruinsTargetedMaterialsCard__seal', '.ruinsTargetedMaterialsCard__tileLabel',
     '.ruinsRoomRouteStrip__text', '.ruinsRoomRouteStrip__currentPointer', '.ruinsRoomRouteStrip__completeMark', '.ruinsRoomRouteStrip__icon', '.ruinsRoomRouteStrip__laneDiamond',

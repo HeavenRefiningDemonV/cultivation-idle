@@ -17,7 +17,12 @@ void test('fixture locks approved ruins exact strings and hierarchy values', () 
   assert.equal(fx.areaHeader.subtitle, 'Targeted local materials and guaranteed anchor rewards');
   assert.deepEqual(fx.areaHeader.chips.map((c) => c.label), ['Targeted Mats', 'Deterministic Support']);
   assert.equal(fx.kitCard.title, 'Ruin Kit');
-  assert.equal(fx.kitCard.stamp.label, 'In Ruin');
+  assert.equal(fx.kitCard.stamp?.label, 'In Ruin');
+  assert.deepEqual(fx.kitCard.statSections.map((section) => section.title), ['Offense', 'Defense']);
+  assert.deepEqual(fx.kitCard.statSections[0].rows.map((row) => row.label), ['ATK', 'ACC', 'CRT']);
+  assert.deepEqual(fx.kitCard.statSections[0].rows.map((row) => row.value), ['23', '92%', '15%']);
+  assert.deepEqual(fx.kitCard.statSections[1].rows.map((row) => row.label), ['HP', 'EVA', 'RES']);
+  assert.deepEqual(fx.kitCard.statSections[1].rows.map((row) => row.value), ['131', '10%', '3%']);
   assert.equal(fx.kitCard.medicinePouch.value, '0 / 20');
   assert.equal(fx.kitCard.equipmentGrid.length, 6);
   assert.equal(fx.targetedMaterialsCard.title, 'Targeted Materials');
@@ -35,6 +40,12 @@ void test('live surface remains content-driven for anchor/pity/auto-repeat/route
   useRuinsStore.getState().hardResetRuins();
   const idle = buildRuinsExactSurfaceFromStores('city_pinewind_hamlet');
   assert.equal(['enter-ruins', 'disabled'].includes(idle.primaryAction.intent), true);
+  if (idle.meta.activityMode === 'idle') {
+    assert.equal(idle.primaryAction.label, 'Enter Ruins');
+    assert.equal(idle.kitCard.stamp, null);
+    assert.equal(idle.explorationSummary.rows.find((r) => r.id === 'rooms')?.value.startsWith('0 /'), true);
+    assert.deepEqual(idle.kitCard.statSections.map((section) => section.title), ['Offense', 'Defense']);
+  }
 
   useRuinsStore.setState((s) => ({ ...s, autoRepeatDefault: true, activeRun: { runId: 't', ruinId: 'ruin_hollow_log_den', cityId: 'city_pinewind_hamlet', roomIndex: 1, roomCount: 5, startedAt: Date.now(), lastTransitionAt: Date.now(), autoRepeat: true, goldEarned: 0, stopping: false }, progressByRuinId: { ...s.progressByRuinId, ruin_hollow_log_den: { totalRuns: 0, totalRoomsCleared: 0, bossKills: 0, bossChestRareFailures: 3 } } }));
   const live = buildRuinsExactSurfaceFromStores('city_pinewind_hamlet');
@@ -44,6 +55,7 @@ void test('live surface remains content-driven for anchor/pity/auto-repeat/route
     assert.equal(live.primaryAction.label, 'Continue Exploration');
     assert.equal(live.roomRoute.currentNodeId, 'spirit-nest');
     assert.equal(live.roomRoute.chip, 'Anchor Chest in 3');
+    assert.equal(live.kitCard.stamp?.label, 'In Ruin');
   }
   assert.equal(live.targetedMaterialsCard.autoRepeat.valueText, 'On');
   assert.equal(live.targetedMaterialsCard.guaranteedAnchor.itemId, 'mat_core_fragment');
