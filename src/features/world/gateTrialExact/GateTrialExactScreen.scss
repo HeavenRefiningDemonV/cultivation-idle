@@ -1,0 +1,43 @@
+.gateTrialScreenOwner { width: 100%; height: 100%; min-width: 0; min-height: 0; display: block; overflow: hidden; isolation: isolate; }
+.gateTrialExactPage {
+  --gate-page-pad-x: clamp(30px, 2.2vw, 46px); --gate-page-pad-top: clamp(18px, 1.9vh, 25px); --gate-left-rail-width: clamp(322px, 16.6vw, 342px); --gate-right-rail-width: clamp(372px, 18.9vw, 392px); --gate-gap: clamp(22px, 1.55vw, 34px); --gate-top-height: clamp(142px, 13.1vh, 154px); --gate-scenic-height: clamp(620px, 62vh, 730px); --gate-bottom-rail-height: clamp(112px, 11vh, 140px); --gate-cta-height: clamp(70px, 7.1vh, 90px); --gate-card-radius: clamp(12px, 0.9vw, 18px); --gate-ink: #2f2a22; --gate-muted-ink: #6f6658; --gate-parchment: #e3d9ca; --gate-card-parchment: #d9cdbd; --gate-cell-parchment: #d9cbb7; --gate-plaque-ink: #39352e; --gate-plaque-trim: #b99d63; --gate-jade: #2f6b4d; --gate-jade-deep: #1f513b; --gate-warning: #c79339; --gate-gold: #bba375; --gate-red-ink: #8a3830;
+  position: relative; display: grid; width: 100%; height: 100%; min-width: 0; min-height: 0; overflow: hidden; isolation: isolate; box-sizing: border-box; color: var(--gate-ink); padding: var(--gate-page-pad-top) var(--gate-page-pad-x) 22px;
+  grid-template-columns: var(--gate-left-rail-width) minmax(0, 1fr) var(--gate-right-rail-width);
+  grid-template-rows: var(--gate-top-height) minmax(0, var(--gate-scenic-height)) var(--gate-bottom-rail-height) var(--gate-cta-height);
+  grid-template-areas: 'top top top' 'left scenic right' 'left rail summary' '. cta summary'; column-gap: var(--gate-gap);
+  background: radial-gradient(120% 70% at 50% 8%, rgba(255,255,255,.32), rgba(255,255,255,0) 58%), linear-gradient(180deg, #eee2cf 0%, #dfd2bd 52%, #d8cab4 100%);
+  font-family: Georgia, 'Times New Roman', serif;
+}
+.gateTrialExactPage,.gateTrialExactPage *,.gateTrialExactPage *::before,.gateTrialExactPage *::after{box-sizing:border-box}
+.gateTrialExactPage__underlay{position:absolute;inset:0;pointer-events:none}
+.gateTrialTopRegion { grid-area: top; display:flex; flex-direction:column; gap:12px; }
+.gateTrialTopRegion__topBand{display:grid;grid-template-columns: minmax(220px,320px) 1fr auto;align-items:center;gap:18px}
+.gateTrialTopRegion__titleAnchor h1{margin:0;font-size:clamp(2rem,2.2vw,2.5rem)}
+.gateTrialTopRegion__titleSeal{display:inline-block;width:28px;height:28px;background:#8a3830;border-radius:50%;margin-left:8px}
+.gateTrialTopRegion__macroRibbon,.gateTrialTopRegion__topStatus,.gateTrialTopRegion__tacticalStrip,.gateTrialMinimumChecklist,.gateTrialRecommendedPanel,.gateTrialTrialSummary{background:var(--gate-card-parchment);border:1px solid rgba(90,72,45,.35);border-radius:var(--gate-card-radius);box-shadow:inset 0 0 0 1px rgba(255,255,255,.35)}
+.gateTrialTopRegion__macroTrack{padding:8px 12px}.gateTrialTopRegion__macroNodes{display:flex;gap:10px;list-style:none;margin:0;padding:0}.gateTrialTopRegion__macroNode{width:12px;height:12px;border-radius:999px;background:#9f9380}
+.gateTrialTopRegion__tacticalStrip{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;padding:8px}
+.gateTrialTacticalCell{position:relative;border:1px solid rgba(88,68,40,.35);background:var(--gate-cell-parchment);padding:8px 10px;border-radius:10px;text-align:left}
+.gateTrialTacticalCell__iconDock{width:18px;height:18px;display:inline-block;border-radius:50%;background:#86755c}.gateTrialTacticalCell__label{display:block;font-size:.72rem}.gateTrialTacticalCell__primary{font-size:.88rem}.gateTrialTacticalCell__underlineTrack{display:block;height:4px;background:#b49393;margin-top:6px}.gateTrialTacticalCell__underlineFill{display:block;height:100%;background:#3f8a57}
+.gateTrialExactPage__gateHeaderSlot { position: absolute; z-index: 5; top: clamp(132px, 13.7vh, 158px); left: calc(var(--gate-page-pad-x) + var(--gate-left-rail-width) + var(--gate-gap)); width: calc(100% - (var(--gate-page-pad-x) * 2) - var(--gate-left-rail-width) - var(--gate-right-rail-width) - (var(--gate-gap) * 2)); display:flex;justify-content:center;pointer-events:none; }
+.gateTrialGateHeader{pointer-events:auto;background:var(--gate-plaque-ink);border:1px solid var(--gate-plaque-trim);color:#efe2cc;padding:12px 18px;border-radius:12px}
+.gateTrialExactPage__leftRail { grid-area: left; }.gateTrialExactPage__scenicSlot { grid-area: scenic; }.gateTrialExactPage__rightRail { grid-area: right; }.gateTrialExactPage__readinessRailSlot { grid-area: rail; }.gateTrialExactPage__ctaSlot { grid-area: cta; }.gateTrialExactPage__summaryDock { grid-area: summary; }
+.gateTrialMinimumChecklist__row{display:grid;grid-template-columns:34px 1fr;gap:8px;padding:8px 0}
+.gateTrialStatusMedallion{width:28px;height:28px;border-radius:50%;display:inline-grid;place-items:center}.gateTrialStatusMedallion__mark{width:10px;height:10px}
+.gateTrialStatusMedallion--success{background:var(--gate-jade)} .gateTrialStatusMedallion--warning{background:var(--gate-warning)} .gateTrialStatusMedallion--locked{background:#4b463f} .gateTrialStatusMedallion--active{background:radial-gradient(circle,#d4bf86,#2f6b4d)}
+.gateTrialScenicStage{position:relative;height:100%;border:1px solid rgba(70,62,54,.38);border-radius:16px;background:#7e7c74;overflow:hidden}
+.gateTrialScenicStage__frame{position:absolute;inset:0}.gateTrialScenicStage__underpaint{position:absolute;inset:0;background:radial-gradient(circle at 50% 30%,rgba(239,239,235,.5),rgba(116,112,104,.9) 58%)}
+.gateTrialScenicStage__portal{position:absolute;left:43%;top:33%;width:14%;height:22%;background:radial-gradient(circle,rgba(255,255,245,.65),rgba(255,255,245,0));border-radius:50%}
+.gateTrialScenicStage__stairs{position:absolute;left:33%;right:33%;bottom:22%;height:28%;background:linear-gradient(180deg,rgba(79,75,69,.2),rgba(53,50,45,.7))}
+.gateTrialScenicStage__torch{position:absolute;bottom:36%;width:14px;height:14px;border-radius:50%;background:#d4a15f;box-shadow:0 0 16px #d4a15f}.gateTrialScenicStage__torch--left{left:24%}.gateTrialScenicStage__torch--right{right:24%}
+.gateTrialScenicStage__cultivatorShadow{position:absolute;left:22%;bottom:18%;width:42px;height:76px;border-radius:50%;background:rgba(30,28,25,.5)}
+.gateTrialScenicStage__mist,.gateTrialScenicStage__edgeFade{position:absolute;inset:0;pointer-events:none}.gateTrialScenicStage__edgeFade{box-shadow:inset 0 0 110px rgba(226,216,197,.55)}
+.gateTrialReadinessSeal{position:absolute;left:50%;bottom:20%;transform:translateX(-50%);background:rgba(229,218,195,.92);padding:10px 20px;border-radius:999px}
+.gateTrialGuardianPlaque{position:absolute;left:50%;bottom:6%;transform:translateX(-50%);background:rgba(48,43,36,.92);color:#ecdab9;padding:10px 14px;border-radius:10px}
+.gateTrialRecommendedPanel__prepRows,.gateTrialRecommendedPanel__failSafeRows,.gateTrialRecommendedPanel__topFixes{display:grid;gap:8px}.gateTrialRecommendedPanel__safetyNetButton{opacity:.65}
+.gateTrialTrialSummary__rows{display:grid;gap:6px}.gateTrialTrialSummary__row{display:flex;justify-content:space-between}
+.gateTrialReadinessRail{height:100%;display:grid;grid-template-rows:auto 1fr}.gateTrialReadinessRail__track{position:relative}.gateTrialReadinessRail__connector{position:absolute;top:21px;left:7%;right:7%;height:3px;background:#9a8f7e}
+.gateTrialReadinessRail__nodeList{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));list-style:none;margin:0;padding:0}.gateTrialReadinessRail__node{text-align:center}.gateTrialReadinessRail__medallion{background:none;border:none}
+.gateTrialPrimaryCta{width:min(568px,100%);height:100%;margin:0 auto;background:linear-gradient(180deg,#c9ae78,#a18252);border:1px solid #7b6036;border-radius:14px;display:grid;grid-template-columns:34px 1fr 34px;align-items:center}
+.gateTrialPrimaryCta__ornament--left,.gateTrialPrimaryCta__ornament--right{width:16px;height:16px;border-radius:50%;background:#2f6b4d;justify-self:center}
+.gateTrialPrimaryCta__label{font-size:1.2rem}
