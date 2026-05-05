@@ -48,11 +48,15 @@ void test('Gate Trial Exact screen source is pure and does not import legacy/liv
   assert.equal(source.includes('./GateTrialExactScreen.scss'), false);
 });
 
-void test('Gate Trial Exact owner is fixture-only and store-free in G1', () => {
+void test('Gate Trial Exact owner preserves fixture default and exposes live surface selection', () => {
   const owner = readFileSync('src/features/world/gateTrialExact/GateTrialScreenOwner.tsx', 'utf8');
-  assert.equal(owner.includes('createGateTrialExactMockupFixture'), true);
+  assert.equal(owner.includes('buildGateTrialExactSurfaceFromStores'), true);
+  assert.equal(owner.includes("props.forceFixture === false ? 'live' : 'fixture'"), true);
   assert.equal(owner.includes('GateTrialExactScreen'), true);
   assert.equal(owner.includes('./GateTrialExactScreen.scss'), true);
+  assert.equal(owner.includes('data-source={surface.meta.source}'), true);
+  assert.equal(owner.includes('data-lifecycle-state={surface.meta.lifecycleState}'), true);
+  for (const forbidden of ['onPrimaryAction','onSafetyNetAction','onTopFixAction','startCombat','startCombatFromPreview','openCombatPreview','RewardService','useCombatStore','useActivityStore','useUIStore']) assert.equal(owner.includes(forbidden), false);
 });
 
 void test('Gate Trial Exact fixture screen avoids Outskirts, Ruins-route, and old combat copy', () => {

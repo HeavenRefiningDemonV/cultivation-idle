@@ -180,6 +180,153 @@ function GateTrialTacticalCell(props: { cell: GateTrialTacticalCellSurface }) {
   );
 }
 
+function renderGateTrialReadinessRail(
+  surface: GateTrialExactSurfaceV1,
+  onReadinessNodeAction?: (nodeId: GateTrialReadinessNodeId) => void,
+): React.ReactElement {
+  return el('section', {
+    className: 'gateTrialExactPage__readinessRailSlot',
+    'data-testid': 'gate-trial-exact-readiness-rail',
+  },
+    el('section', {
+      className: 'gateTrialReadinessRail',
+      'data-testid': 'gate-trial-readiness-rail',
+      'aria-labelledby': 'gate-trial-readiness-rail-title',
+    },
+      el('h3', {
+        id: 'gate-trial-readiness-rail-title',
+        className: 'gateTrialReadinessRail__title',
+        'data-testid': 'gate-trial-readiness-rail-title',
+      }, surface.readinessRail.title),
+      el('div', {
+        className: 'gateTrialReadinessRail__track',
+        'data-testid': 'gate-trial-readiness-rail-track',
+      },
+        el('div', {
+          className: 'gateTrialReadinessRail__connector',
+          'data-testid': 'gate-trial-readiness-rail-connector',
+          'aria-hidden': 'true',
+        }),
+        el('ol', {
+          className: 'gateTrialReadinessRail__nodeList',
+          'data-testid': 'gate-trial-readiness-rail-node-list',
+        }, surface.readinessRail.nodes.map((node: GateTrialReadinessNodeSurface) => el('li', {
+          key: node.id,
+          className: [
+            'gateTrialReadinessRail__node',
+            `gateTrialReadinessRail__node--${node.status}`,
+            node.id === 'gate' ? 'gateTrialReadinessRail__node--gate' : '',
+          ].filter(Boolean).join(' '),
+          'data-testid': `gate-trial-readiness-node-${node.id}`,
+          'data-node-id': node.id,
+          'data-status': node.status,
+          'data-variant': node.medallionVariant,
+          'data-source': node.source,
+        },
+          el('button', {
+            type: 'button',
+            className: [
+              'gateTrialReadinessRail__nodeButton',
+              `gateTrialReadinessRail__nodeButton--${node.medallionVariant}`,
+            ].join(' '),
+            'data-testid': `gate-trial-readiness-node-medallion-${node.id}`,
+            'aria-label': node.ariaLabel,
+            onClick: () => onReadinessNodeAction?.(node.id),
+          },
+            el('span', {
+              className: [
+                'gateTrialReadinessRail__medallion',
+                `gateTrialReadinessRail__medallion--${node.medallionVariant}`,
+              ].join(' '),
+              'aria-hidden': 'true',
+            },
+              el('span', { className: 'gateTrialReadinessRail__medallionRing' }),
+              el('span', { className: 'gateTrialReadinessRail__medallionInner' },
+                node.medallionVariant === 'gate-glow'
+                  ? el('span', { className: 'gateTrialReadinessRail__mark gateTrialReadinessRail__mark--gate gateTrialReadinessRail__mark--gate-glow gateTrialReadinessRail__gateGlyph' })
+                  : el('span', {
+                    className: [
+                      'gateTrialReadinessRail__mark',
+                      `gateTrialReadinessRail__mark--${node.medallionVariant}`,
+                    ].join(' '),
+                  }),
+              ),
+            ),
+          ),
+          el('span', {
+            className: 'gateTrialReadinessRail__label',
+            'data-testid': `gate-trial-readiness-node-label-${node.id}`,
+          }, node.label),
+          el('span', {
+            className: 'gateTrialReadinessRail__diamond',
+            'aria-hidden': 'true',
+          }),
+        ))),
+      ),
+    ),
+  );
+}
+
+function renderGateTrialPrimaryCta(
+  surface: GateTrialExactSurfaceV1,
+  onPrimaryAction?: () => void,
+): React.ReactElement {
+  return el('section', {
+    className: 'gateTrialExactPage__ctaSlot',
+    'data-testid': 'gate-trial-exact-cta-slot',
+  },
+    el('button', {
+      type: 'button',
+      className: [
+        'gateTrialPrimaryCta',
+        surface.primaryAction.enabled ? 'gateTrialPrimaryCta--enabled' : 'gateTrialPrimaryCta--disabled',
+        `gateTrialPrimaryCta--${surface.primaryAction.tone}`,
+      ].join(' '),
+      'data-testid': 'gate-trial-primary-cta',
+      'data-intent': surface.primaryAction.intent,
+      'data-tone': surface.primaryAction.tone,
+      'data-enabled': surface.primaryAction.enabled ? 'true' : 'false',
+      disabled: !surface.primaryAction.enabled,
+      'aria-label': surface.primaryAction.ariaLabel,
+      onClick: () => {
+        if (!surface.primaryAction.enabled) return;
+        onPrimaryAction?.();
+      },
+    },
+      el('span', {
+        className: 'gateTrialPrimaryCta__glow',
+        'data-testid': 'gate-trial-primary-cta-glow',
+        'aria-hidden': 'true',
+      }),
+      el('span', {
+        className: 'gateTrialPrimaryCta__ring',
+        'data-testid': 'gate-trial-primary-cta-ring',
+        'aria-hidden': 'true',
+      }),
+      el('span', {
+        className: 'gateTrialPrimaryCta__ornament gateTrialPrimaryCta__ornament--left',
+        'data-testid': 'gate-trial-primary-cta-ornament-left',
+        'aria-hidden': 'true',
+      }, el('span', { className: 'gateTrialPrimaryCta__ornamentCore' })),
+      el('span', {
+        className: 'gateTrialPrimaryCta__plate',
+        'data-testid': 'gate-trial-primary-cta-plate',
+      },
+        el('span', { className: 'gateTrialPrimaryCta__plateEdge', 'aria-hidden': 'true' }),
+        el('span', {
+          className: 'gateTrialPrimaryCta__label',
+          'data-testid': 'gate-trial-primary-cta-label',
+        }, surface.primaryAction.label),
+      ),
+      el('span', {
+        className: 'gateTrialPrimaryCta__ornament gateTrialPrimaryCta__ornament--right',
+        'data-testid': 'gate-trial-primary-cta-ornament-right',
+        'aria-hidden': 'true',
+      }, el('span', { className: 'gateTrialPrimaryCta__ornamentCore' })),
+    ),
+  );
+}
+
 function GateTrialExactScreen(props: GateTrialExactScreenProps) {
   const { surface } = props;
   return el('article', { className: 'gateTrialExactPage', 'data-testid': surface.meta.rootTestId, 'data-surface-mode': surface.meta.mode, 'data-activity-mode': surface.meta.activityMode, 'data-lifecycle-state': surface.meta.lifecycleState, 'data-readiness-score': surface.meta.readinessScore },
@@ -429,8 +576,8 @@ function GateTrialExactScreen(props: GateTrialExactScreenProps) {
           ),
         ),
       )),
-    el('section', { className: 'gateTrialExactPage__readinessRailSlot', 'data-testid': 'gate-trial-exact-readiness-rail' }, el('section', { className: 'gateTrialReadinessRail' }, el('h3', { className: 'gateTrialReadinessRail__title', 'data-testid': 'gate-trial-readiness-rail-title' }, surface.readinessRail.title), el('div', { className: 'gateTrialReadinessRail__track' }, el('div', { className: 'gateTrialReadinessRail__connector' }), el('ol', { className: 'gateTrialReadinessRail__nodeList' }, surface.readinessRail.nodes.map((node: GateTrialReadinessNodeSurface) => el('li', { key: node.id, className: 'gateTrialReadinessRail__node', 'data-testid': `gate-trial-readiness-node-${node.id}` }, el('button', { type: 'button', className: 'gateTrialReadinessRail__medallion', 'data-status': node.status, onClick: () => props.onReadinessNodeAction?.(node.id) }, el(GateTrialStatusMedallion, { status: node.status })), el('span', { className: 'gateTrialReadinessRail__label' }, node.label))))))),
-    el('section', { className: 'gateTrialExactPage__ctaSlot', 'data-testid': 'gate-trial-exact-cta-slot' }, el('button', { type: 'button', className: 'gateTrialPrimaryCta', 'data-testid': 'gate-trial-primary-cta', disabled: !surface.primaryAction.enabled, onClick: () => props.onPrimaryAction?.() }, el('span', { className: 'gateTrialPrimaryCta__ornament gateTrialPrimaryCta__ornament--left', 'data-testid': 'gate-trial-primary-cta-ornament-left' }), el('span', { className: 'gateTrialPrimaryCta__plate' }, el('span', { className: 'gateTrialPrimaryCta__label', 'data-testid': 'gate-trial-primary-cta-label' }, surface.primaryAction.label)), el('span', { className: 'gateTrialPrimaryCta__ornament gateTrialPrimaryCta__ornament--right', 'data-testid': 'gate-trial-primary-cta-ornament-right' }))),
+    renderGateTrialReadinessRail(surface, props.onReadinessNodeAction),
+    renderGateTrialPrimaryCta(surface, props.onPrimaryAction),
     el('aside', {
       className: 'gateTrialExactPage__summaryDock',
       'data-testid': 'gate-trial-exact-summary-dock',

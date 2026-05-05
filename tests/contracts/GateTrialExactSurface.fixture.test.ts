@@ -3,7 +3,10 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import test from 'node:test';
 
-import { createGateTrialExactMockupFixture } from '../../src/features/world/gateTrialExact/buildGateTrialExactSurface.js';
+import {
+  buildGateTrialExactSurfaceFromStores,
+  createGateTrialExactMockupFixture,
+} from '../../src/features/world/gateTrialExact/buildGateTrialExactSurface.js';
 
 test('fixture meta and shell ownership are locked', () => {
   const surface = createGateTrialExactMockupFixture();
@@ -99,19 +102,13 @@ test('scenic stage, readiness seal, reward, summary, rail, and CTA are locked', 
   assert.equal(surface.primaryAction.ornamentVariant, 'jade-gold');
 });
 
-test('builder remains fixture-only and does not import live systems or legacy UI', () => {
+test('builder preserves fixture mode and does not import forbidden gameplay or legacy UI', () => {
   const source = readFileSync(resolve(process.cwd(), 'src/features/world/gateTrialExact/buildGateTrialExactSurface.ts'), 'utf8');
   for (const forbidden of [
-    'useContentStore',
-    'useGameStore',
-    'useTrialStore',
     'useCombatStore',
+    'useActivityStore',
     'useUIStore',
-    'useInventoryStore',
     'RewardService',
-    'getTrialLifecycleSnapshot',
-    'getTrialGateRewardBundle',
-    'buildGateTrialReadinessSurface',
     'GateTrialBuildingPanel',
     'GateTrialWorldLayout',
     'CombatModuleTopLane',
@@ -124,7 +121,14 @@ test('builder remains fixture-only and does not import live systems or legacy UI
     assert.equal(source.includes(forbidden), false, `fixture builder must not reference ${forbidden}`);
   }
   assert.match(source, /createGateTrialExactMockupFixture/);
-  assert.doesNotMatch(source, /buildGateTrialExactSurfaceFromStores/);
+  assert.match(source, /buildGateTrialExactSurfaceFromStores/);
+
+  const viaBuilder = buildGateTrialExactSurfaceFromStores('city_pinewind_hamlet', {
+    mode: 'fixture',
+    trialId: 'trial_novices_clearing',
+  });
+  assert.equal(viaBuilder.meta.mode, 'fixture');
+  assert.equal(viaBuilder.meta.source, 'fixture');
 });
 
 test('fixture is deterministic, JSON-serializable, and shallow-overridable', () => {

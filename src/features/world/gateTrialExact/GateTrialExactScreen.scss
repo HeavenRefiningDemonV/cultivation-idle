@@ -1,6 +1,6 @@
 .gateTrialScreenOwner { width: 100%; height: 100%; min-width: 0; min-height: 0; display: block; overflow: hidden; isolation: isolate; }
 .gateTrialExactPage {
-  --gate-page-pad-x: clamp(30px, 2.2vw, 46px); --gate-page-pad-top: clamp(18px, 1.9vh, 25px); --gate-left-rail-width: clamp(322px, 16.6vw, 342px); --gate-right-rail-width: clamp(372px, 18.9vw, 392px); --gate-gap: clamp(22px, 1.55vw, 34px); --gate-top-height: clamp(142px, 13.1vh, 154px); --gate-scenic-height: clamp(620px, 62vh, 730px); --gate-bottom-rail-height: clamp(112px, 11vh, 140px); --gate-cta-height: clamp(70px, 7.1vh, 90px); --gate-card-radius: clamp(12px, 0.9vw, 18px); --gate-ink: #2f2a22; --gate-muted-ink: #6f6658; --gate-parchment: #e3d9ca; --gate-card-parchment: #d9cdbd; --gate-cell-parchment: #d9cbb7; --gate-plaque-ink: #39352e; --gate-plaque-trim: #b99d63; --gate-jade: #2f6b4d; --gate-jade-deep: #1f513b; --gate-warning: #c79339; --gate-gold: #bba375; --gate-red-ink: #8a3830;
+  --gate-page-pad-x: clamp(30px, 2.2vw, 46px); --gate-page-pad-top: clamp(18px, 1.9vh, 25px); --gate-left-rail-width: clamp(322px, 16.6vw, 342px); --gate-right-rail-width: clamp(372px, 18.9vw, 392px); --gate-gap: clamp(22px, 1.55vw, 34px); --gate-top-height: clamp(142px, 13.1vh, 154px); --gate-scenic-height: clamp(620px, 62vh, 730px); --gate-bottom-rail-height: clamp(104px, 10.2vh, 124px); --gate-cta-height: clamp(72px, 7.4vh, 92px); --gate-card-radius: clamp(12px, 0.9vw, 18px); --gate-ink: #2f2a22; --gate-muted-ink: #6f6658; --gate-parchment: #e3d9ca; --gate-card-parchment: #d9cdbd; --gate-cell-parchment: #d9cbb7; --gate-plaque-ink: #39352e; --gate-plaque-trim: #b99d63; --gate-jade: #2f6b4d; --gate-jade-deep: #1f513b; --gate-warning: #c79339; --gate-gold: #bba375; --gate-red-ink: #8a3830;
   position: relative; display: grid; width: 100%; height: 100%; min-width: 0; min-height: 0; overflow: hidden; isolation: isolate; box-sizing: border-box; color: var(--gate-ink); padding: var(--gate-page-pad-top) var(--gate-page-pad-x) 22px;
   grid-template-columns: var(--gate-left-rail-width) minmax(0, 1fr) var(--gate-right-rail-width);
   grid-template-rows: var(--gate-top-height) minmax(0, var(--gate-scenic-height)) var(--gate-bottom-rail-height) var(--gate-cta-height);
@@ -569,11 +569,603 @@
 .gateTrialGuardianPlaque{position:absolute;left:50%;bottom:6%;transform:translateX(-50%);background:rgba(48,43,36,.92);color:#ecdab9;padding:10px 14px;border-radius:10px}
 .gateTrialRecommendedPanel__prepRows,.gateTrialRecommendedPanel__failSafeRows,.gateTrialRecommendedPanel__topFixes{display:grid;gap:8px}.gateTrialRecommendedPanel__safetyNetButton{opacity:.65}
 .gateTrialTrialSummary__rows{display:grid;gap:6px}.gateTrialTrialSummary__row{display:flex;justify-content:space-between}
-.gateTrialReadinessRail{height:100%;display:grid;grid-template-rows:auto 1fr}.gateTrialReadinessRail__track{position:relative}.gateTrialReadinessRail__connector{position:absolute;top:21px;left:7%;right:7%;height:3px;background:#9a8f7e}
-.gateTrialReadinessRail__nodeList{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));list-style:none;margin:0;padding:0}.gateTrialReadinessRail__node{text-align:center}.gateTrialReadinessRail__medallion{background:none;border:none}
-.gateTrialPrimaryCta{width:min(568px,100%);height:100%;margin:0 auto;background:linear-gradient(180deg,#c9ae78,#a18252);border:1px solid #7b6036;border-radius:14px;display:grid;grid-template-columns:34px 1fr 34px;align-items:center}
-.gateTrialPrimaryCta__ornament--left,.gateTrialPrimaryCta__ornament--right{width:16px;height:16px;border-radius:50%;background:#2f6b4d;justify-self:center}
-.gateTrialPrimaryCta__label{font-size:1.2rem}
+.gateTrialExactPage__readinessRailSlot {
+  grid-area: rail;
+  position: relative;
+  z-index: 12;
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  align-items: end;
+  justify-items: center;
+  padding: clamp(0px, 0.28vh, 4px) clamp(8px, 0.7vw, 14px) 0;
+  overflow: visible;
+}
+
+.gateTrialReadinessRail {
+  --gate-rail-medallion-size: clamp(52px, 4vw, 72px);
+  --gate-rail-final-medallion-size: clamp(70px, 5.25vw, 94px);
+  --gate-rail-line-y: clamp(44px, 4.25vh, 56px);
+
+  position: relative;
+  width: min(100%, clamp(910px, 63.5vw, 1215px));
+  height: 100%;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  align-items: end;
+  justify-items: stretch;
+  overflow: visible;
+}
+
+.gateTrialReadinessRail__title {
+  margin: 0;
+  text-align: center;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(16px, 1.05vw, 21px);
+  line-height: 1;
+  font-weight: 700;
+  color: var(--gate-ink);
+  text-shadow: 0 1px 0 rgba(255, 250, 232, 0.5);
+}
+
+.gateTrialReadinessRail__track {
+  position: relative;
+  min-width: 0;
+  min-height: clamp(82px, 8.4vh, 102px);
+  display: grid;
+  align-items: end;
+  overflow: visible;
+}
+
+.gateTrialReadinessRail__connector {
+  position: absolute;
+  z-index: 0;
+  left: calc(var(--gate-rail-medallion-size) * 0.48);
+  right: calc(var(--gate-rail-final-medallion-size) * 0.48);
+  top: var(--gate-rail-line-y);
+  height: 3px;
+  transform: translateY(-50%);
+  border-radius: 999px;
+  background:
+    linear-gradient(90deg, rgba(88, 74, 45, 0.28), rgba(166, 132, 64, 0.76), rgba(88, 74, 45, 0.32));
+  box-shadow:
+    0 1px 0 rgba(255, 248, 220, 0.45),
+    0 -1px 0 rgba(72, 54, 30, 0.28);
+}
+
+.gateTrialReadinessRail__nodeList {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  align-items: end;
+  justify-items: center;
+  gap: 0;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+.gateTrialReadinessRail__node {
+  position: relative;
+  display: grid;
+  grid-template-rows: var(--gate-rail-final-medallion-size) auto;
+  justify-items: center;
+  align-items: end;
+  min-width: 0;
+  width: 100%;
+}
+
+.gateTrialReadinessRail__node:not(.gateTrialReadinessRail__node--gate) {
+  grid-template-rows: var(--gate-rail-medallion-size) auto;
+}
+
+.gateTrialReadinessRail__node--success {
+  --gate-rail-node-tone: var(--gate-jade);
+}
+
+.gateTrialReadinessRail__node--warning {
+  --gate-rail-node-tone: var(--gate-warning);
+}
+
+.gateTrialReadinessRail__node--locked {
+  --gate-rail-node-tone: rgba(82, 78, 68, 0.78);
+}
+
+.gateTrialReadinessRail__node--active {
+  --gate-rail-node-tone: var(--gate-jade-deep);
+}
+
+.gateTrialReadinessRail__node--gate {
+  --gate-rail-node-tone: var(--gate-gold);
+}
+
+.gateTrialReadinessRail__diamond {
+  position: absolute;
+  top: var(--gate-rail-line-y);
+  right: calc(-1 * clamp(7px, 0.55vw, 11px));
+  width: clamp(10px, 0.75vw, 14px);
+  height: clamp(10px, 0.75vw, 14px);
+  transform: translate(50%, -50%) rotate(45deg);
+  border: 1px solid rgba(118, 92, 48, 0.58);
+  background:
+    radial-gradient(circle at 35% 28%, rgba(255, 244, 190, 0.48), rgba(178, 137, 65, 0.82));
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 246, 202, 0.22),
+    0 1px 1px rgba(64, 45, 22, 0.22);
+}
+
+.gateTrialReadinessRail__node--gate .gateTrialReadinessRail__diamond {
+  display: none;
+}
+
+.gateTrialReadinessRail__nodeButton {
+  position: relative;
+  width: var(--gate-rail-medallion-size);
+  height: var(--gate-rail-medallion-size);
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  cursor: default;
+  overflow: visible;
+  appearance: none;
+}
+
+.gateTrialReadinessRail__node--gate .gateTrialReadinessRail__nodeButton {
+  width: var(--gate-rail-final-medallion-size);
+  height: var(--gate-rail-final-medallion-size);
+}
+
+.gateTrialReadinessRail__nodeButton:hover,
+.gateTrialReadinessRail__nodeButton:focus-visible {
+  outline: none;
+}
+
+.gateTrialReadinessRail__nodeButton:focus-visible .gateTrialReadinessRail__medallion {
+  box-shadow:
+    0 0 0 3px rgba(248, 230, 160, 0.28),
+    0 0 18px rgba(55, 107, 77, 0.24),
+    inset 0 0 0 1px rgba(255, 248, 216, 0.36);
+}
+
+.gateTrialReadinessRail__medallion {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  isolation: isolate;
+}
+
+.gateTrialReadinessRail__medallionRing {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 2px solid rgba(128, 98, 49, 0.78);
+  background:
+    radial-gradient(circle at 36% 28%, rgba(255, 246, 203, 0.54), rgba(255, 246, 203, 0) 42%),
+    linear-gradient(180deg, rgba(190, 151, 76, 0.92), rgba(91, 72, 39, 0.9));
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 239, 186, 0.22),
+    0 2px 5px rgba(68, 50, 27, 0.18);
+}
+
+.gateTrialReadinessRail__medallionInner {
+  position: relative;
+  z-index: 2;
+  width: 76%;
+  height: 76%;
+  display: grid;
+  place-items: center;
+  border-radius: inherit;
+  border: 1px solid rgba(255, 248, 210, 0.2);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+}
+
+.gateTrialReadinessRail__mark {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.gateTrialReadinessRail__medallion--check .gateTrialReadinessRail__medallionInner {
+  background:
+    radial-gradient(circle at 35% 30%, rgba(214, 236, 197, 0.8), rgba(61, 112, 75, 0.92) 58%, rgba(27, 70, 51, 0.98) 100%);
+}
+
+.gateTrialReadinessRail__mark--check::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 52%;
+  height: 28%;
+  border-left: clamp(2px, 0.18vw, 3px) solid rgba(241, 239, 202, 0.95);
+  border-bottom: clamp(2px, 0.18vw, 3px) solid rgba(241, 239, 202, 0.95);
+  transform: translate(-46%, -58%) rotate(-45deg);
+  filter: drop-shadow(0 1px 0 rgba(24, 42, 31, 0.35));
+}
+
+.gateTrialReadinessRail__medallion--warning .gateTrialReadinessRail__medallionRing {
+  border-color: rgba(164, 117, 42, 0.82);
+  background:
+    radial-gradient(circle at 36% 28%, rgba(255, 238, 187, 0.65), rgba(255, 238, 187, 0) 42%),
+    linear-gradient(180deg, rgba(214, 157, 70, 0.95), rgba(105, 76, 33, 0.92));
+}
+
+.gateTrialReadinessRail__medallion--warning .gateTrialReadinessRail__medallionInner {
+  background:
+    radial-gradient(circle at 35% 30%, rgba(255, 229, 168, 0.86), rgba(205, 145, 50, 0.92) 58%, rgba(126, 82, 28, 0.98) 100%);
+}
+
+.gateTrialReadinessRail__mark--warning::before {
+  content: '!';
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(28px, 2.1vw, 42px);
+  line-height: 1;
+  font-weight: 900;
+  color: rgba(55, 39, 20, 0.92);
+  text-shadow: 0 1px 0 rgba(255, 235, 178, 0.4);
+}
+
+.gateTrialReadinessRail__medallion--locked .gateTrialReadinessRail__medallionRing {
+  border-color: rgba(82, 78, 68, 0.78);
+  background:
+    radial-gradient(circle at 36% 28%, rgba(223, 219, 199, 0.5), rgba(223, 219, 199, 0) 42%),
+    linear-gradient(180deg, rgba(125, 119, 102, 0.96), rgba(57, 54, 47, 0.94));
+}
+
+.gateTrialReadinessRail__medallion--locked .gateTrialReadinessRail__medallionInner {
+  background:
+    radial-gradient(circle at 35% 30%, rgba(192, 190, 174, 0.78), rgba(92, 87, 75, 0.96) 62%, rgba(43, 41, 36, 0.98) 100%);
+}
+
+.gateTrialReadinessRail__mark--locked::before {
+  content: '';
+  position: absolute;
+  left: 28%;
+  right: 28%;
+  top: 24%;
+  height: 34%;
+  border: clamp(2px, 0.16vw, 3px) solid rgba(236, 226, 195, 0.86);
+  border-bottom: 0;
+  border-radius: 999px 999px 0 0;
+}
+
+.gateTrialReadinessRail__mark--locked::after {
+  content: '';
+  position: absolute;
+  left: 25%;
+  right: 25%;
+  bottom: 24%;
+  height: 34%;
+  border-radius: 4px;
+  background: rgba(236, 226, 195, 0.86);
+  box-shadow: inset 0 -3px 0 rgba(72, 65, 52, 0.28);
+}
+
+.gateTrialReadinessRail__mark--gate {
+  width: 58%;
+  height: 58%;
+}
+
+.gateTrialReadinessRail__mark--gate-glow {
+  filter: drop-shadow(0 0 8px rgba(239, 221, 150, 0.28));
+}
+
+.gateTrialReadinessRail__medallion--gate-glow {
+  filter: drop-shadow(0 0 16px rgba(235, 206, 117, 0.42));
+}
+
+.gateTrialReadinessRail__medallion--gate-glow .gateTrialReadinessRail__medallionRing {
+  border-width: 3px;
+  border-color: rgba(220, 182, 92, 0.9);
+  background:
+    radial-gradient(circle at 50% 48%, rgba(228, 255, 220, 0.5), rgba(76, 134, 87, 0.52) 42%, rgba(39, 82, 58, 0.88) 74%),
+    linear-gradient(180deg, rgba(229, 197, 111, 0.96), rgba(116, 89, 39, 0.94));
+  box-shadow:
+    0 0 0 5px rgba(245, 220, 134, 0.22),
+    0 0 34px rgba(235, 206, 117, 0.34),
+    inset 0 0 0 1px rgba(255, 247, 208, 0.3);
+}
+
+.gateTrialReadinessRail__medallion--gate-glow .gateTrialReadinessRail__medallionInner {
+  width: 78%;
+  height: 78%;
+  background:
+    radial-gradient(circle at 50% 44%, rgba(209, 250, 211, 0.76), rgba(55, 123, 78, 0.84) 58%, rgba(24, 72, 53, 0.96) 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(244, 226, 150, 0.22),
+    inset 0 0 18px rgba(231, 255, 220, 0.14);
+}
+
+.gateTrialReadinessRail__gateGlyph {
+  position: relative;
+  display: block;
+  width: 58%;
+  height: 58%;
+}
+
+.gateTrialReadinessRail__gateGlyph::before {
+  content: '';
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  top: 16%;
+  height: 18%;
+  border-radius: 4px 4px 2px 2px;
+  background: rgba(237, 222, 153, 0.88);
+  box-shadow:
+    0 -5px 0 -2px rgba(237, 222, 153, 0.72),
+    0 1px 0 rgba(35, 63, 46, 0.32);
+}
+
+.gateTrialReadinessRail__gateGlyph::after {
+  content: '';
+  position: absolute;
+  left: 24%;
+  right: 24%;
+  bottom: 12%;
+  height: 48%;
+  border-left: clamp(3px, 0.24vw, 5px) solid rgba(237, 222, 153, 0.88);
+  border-right: clamp(3px, 0.24vw, 5px) solid rgba(237, 222, 153, 0.88);
+  border-top: clamp(3px, 0.24vw, 5px) solid rgba(237, 222, 153, 0.88);
+  border-radius: 3px 3px 0 0;
+}
+
+.gateTrialReadinessRail__label {
+  margin-top: clamp(5px, 0.45vh, 8px);
+  max-width: min(100%, clamp(72px, 5vw, 96px));
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(12px, 0.78vw, 15px);
+  line-height: 1.1;
+  font-weight: 700;
+  color: rgba(47, 42, 34, 0.96);
+  text-align: center;
+  text-shadow: 0 1px 0 rgba(255, 250, 232, 0.42);
+}
+
+.gateTrialReadinessRail__node--warning .gateTrialReadinessRail__label {
+  color: rgba(94, 64, 21, 0.96);
+}
+
+.gateTrialReadinessRail__node--locked .gateTrialReadinessRail__label {
+  color: rgba(67, 64, 56, 0.92);
+}
+
+.gateTrialReadinessRail__node--gate .gateTrialReadinessRail__label {
+  font-size: clamp(13px, 0.9vw, 17px);
+  color: var(--gate-jade-deep);
+}
+
+.gateTrialExactPage__ctaSlot {
+  grid-area: cta;
+  position: relative;
+  z-index: 14;
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  align-items: center;
+  justify-items: center;
+  overflow: visible;
+  padding-top: clamp(0px, 0.2vh, 3px);
+}
+
+.gateTrialPrimaryCta {
+  position: relative;
+  width: clamp(500px, 29.5vw, 610px);
+  min-width: 0;
+  height: clamp(64px, 6.6vh, 84px);
+  display: grid;
+  grid-template-columns: clamp(74px, 4.8vw, 98px) minmax(0, 1fr) clamp(74px, 4.8vw, 98px);
+  align-items: center;
+  justify-items: stretch;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--gate-ink);
+  font-family: Georgia, 'Times New Roman', serif;
+  cursor: pointer;
+  appearance: none;
+  overflow: visible;
+}
+
+.gateTrialPrimaryCta--enabled {
+  --gate-primary-cta-opacity: 1;
+}
+
+.gateTrialPrimaryCta--ceremonial {
+  --gate-primary-cta-trim: rgba(122, 86, 35, 0.76);
+}
+
+.gateTrialPrimaryCta__glow {
+  position: absolute;
+  z-index: 0;
+  left: 50%;
+  bottom: calc(-1 * clamp(18px, 1.6vh, 28px));
+  width: clamp(620px, 41vw, 840px);
+  height: clamp(58px, 6vh, 84px);
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background:
+    radial-gradient(ellipse at 50% 50%, rgba(250, 220, 128, 0.34), rgba(250, 220, 128, 0.12) 44%, rgba(250, 220, 128, 0) 74%);
+  pointer-events: none;
+}
+
+.gateTrialPrimaryCta__ring {
+  position: absolute;
+  z-index: 0;
+  left: 50%;
+  bottom: calc(-1 * clamp(10px, 1vh, 16px));
+  width: clamp(520px, 34vw, 700px);
+  height: clamp(34px, 3.8vh, 54px);
+  transform: translateX(-50%);
+  border-radius: 50%;
+  border: 1px solid rgba(227, 197, 105, 0.34);
+  box-shadow:
+    0 0 18px rgba(233, 203, 112, 0.22),
+    inset 0 0 12px rgba(233, 203, 112, 0.12);
+  pointer-events: none;
+}
+
+.gateTrialPrimaryCta__plate {
+  position: relative;
+  z-index: 2;
+  grid-column: 1 / -1;
+  grid-row: 1;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  border-radius: clamp(12px, 0.9vw, 18px);
+  border: 2px solid rgba(122, 86, 35, 0.76);
+  background:
+    radial-gradient(110% 80% at 50% 0%, rgba(255, 240, 178, 0.56), rgba(255, 240, 178, 0) 54%),
+    linear-gradient(180deg, #d8b35d 0%, #bd8d3f 52%, #9a692c 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 248, 202, 0.42),
+    inset 0 -10px 18px rgba(94, 56, 18, 0.22),
+    0 3px 8px rgba(64, 43, 19, 0.24);
+  overflow: hidden;
+}
+
+.gateTrialPrimaryCta__plate::before,
+.gateTrialPrimaryCta__plate::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: clamp(42px, 3vw, 64px);
+  height: clamp(42px, 3vw, 64px);
+  border: 1px solid rgba(78, 95, 57, 0.34);
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 36% 28%, rgba(231, 251, 206, 0.46), rgba(47, 106, 76, 0.82) 60%, rgba(22, 69, 50, 0.95));
+  transform: translateY(-50%);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 236, 164, 0.18),
+    0 1px 3px rgba(48, 38, 20, 0.18);
+}
+
+.gateTrialPrimaryCta__plate::before {
+  left: clamp(18px, 1.4vw, 28px);
+}
+
+.gateTrialPrimaryCta__plate::after {
+  right: clamp(18px, 1.4vw, 28px);
+}
+
+.gateTrialPrimaryCta__plateEdge {
+  position: absolute;
+  inset: clamp(5px, 0.45vw, 8px);
+  border-radius: clamp(8px, 0.65vw, 13px);
+  border: 1px solid rgba(255, 236, 164, 0.28);
+  pointer-events: none;
+}
+
+.gateTrialPrimaryCta__ornament {
+  position: relative;
+  z-index: 3;
+  grid-row: 1;
+  width: clamp(82px, 5.2vw, 108px);
+  height: clamp(58px, 5.7vh, 74px);
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+.gateTrialPrimaryCta__ornament--left {
+  grid-column: 1;
+  justify-self: start;
+  transform: translateX(calc(-1 * clamp(16px, 1.1vw, 24px)));
+}
+
+.gateTrialPrimaryCta__ornament--right {
+  grid-column: 3;
+  justify-self: end;
+  transform: translateX(clamp(16px, 1.1vw, 24px)) scaleX(-1);
+}
+
+.gateTrialPrimaryCta__ornamentCore {
+  position: relative;
+  width: clamp(70px, 4.5vw, 94px);
+  height: clamp(52px, 4.6vh, 68px);
+  border-radius: 46% 54% 50% 50%;
+  background:
+    radial-gradient(circle at 36% 30%, rgba(207, 238, 190, 0.7), rgba(63, 126, 82, 0.86) 52%, rgba(28, 78, 55, 0.96) 100%);
+  border: 2px solid rgba(165, 130, 62, 0.62);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 235, 163, 0.24),
+    0 2px 5px rgba(49, 43, 23, 0.22);
+}
+
+.gateTrialPrimaryCta__ornamentCore::before,
+.gateTrialPrimaryCta__ornamentCore::after {
+  content: '';
+  position: absolute;
+  border: 1px solid rgba(231, 206, 123, 0.58);
+  border-radius: 999px;
+}
+
+.gateTrialPrimaryCta__ornamentCore::before {
+  inset: 18% 20% 22% 22%;
+}
+
+.gateTrialPrimaryCta__ornamentCore::after {
+  left: 34%;
+  top: 10%;
+  width: 28%;
+  height: 80%;
+  transform: rotate(25deg);
+  border-width: 0 2px 0 0;
+}
+
+.gateTrialPrimaryCta__label {
+  position: relative;
+  z-index: 4;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(34px, 2.35vw, 46px);
+  line-height: 1;
+  font-weight: 700;
+  letter-spacing: 0;
+  color: rgba(50, 38, 20, 0.96);
+  text-shadow:
+    0 1px 0 rgba(255, 238, 172, 0.58),
+    0 0 8px rgba(255, 231, 150, 0.18);
+  white-space: nowrap;
+}
+
+.gateTrialPrimaryCta--enabled:hover .gateTrialPrimaryCta__plate,
+.gateTrialPrimaryCta--enabled:focus-visible .gateTrialPrimaryCta__plate {
+  filter: brightness(1.03);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 248, 202, 0.5),
+    inset 0 -10px 18px rgba(94, 56, 18, 0.22),
+    0 0 0 3px rgba(70, 119, 80, 0.12),
+    0 3px 8px rgba(64, 43, 19, 0.24);
+}
+
+.gateTrialPrimaryCta:focus-visible {
+  outline: none;
+}
+
+.gateTrialPrimaryCta--disabled {
+  cursor: not-allowed;
+  filter: saturate(0.66) opacity(0.74);
+}
 
 .gateTrialExactPage__leftRail,
 .gateTrialExactPage__rightRail,
