@@ -62,6 +62,7 @@ export type WorldBuildingKey =
 export type WorldBuildingModalIntent = null | {
   apothecarySurface?: 'buy' | 'brew' | 'pouch';
   ruinsExactMode?: 'live' | 'fixture';
+  gateTrialExactMode?: 'live' | 'fixture';
 };
 export type LifeSummaryModalMode = 'current' | 'last_completed';
 export type MigrationIssueModalPayload = {
@@ -76,6 +77,7 @@ const normalizeWorldBuildingKey = (buildingKey: WorldBuildingKey): WorldBuilding
 const getWorldBuildingIntentKey = (intent: WorldBuildingModalIntent): string => JSON.stringify({
   apothecarySurface: intent?.apothecarySurface ?? null,
   ruinsExactMode: intent?.ruinsExactMode ?? null,
+  gateTrialExactMode: intent?.gateTrialExactMode ?? null,
 });
 
 export interface UISettingsState {

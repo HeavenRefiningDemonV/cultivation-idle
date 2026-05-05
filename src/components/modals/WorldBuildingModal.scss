@@ -35,6 +35,16 @@
   padding: clamp(8px, 1.2vh, 16px) clamp(10px, 1.2vw, 20px);
 }
 
+.worldBuildingOverlay--gate-trial-scenic {
+  background:
+    radial-gradient(120% 80% at 50% 10%, rgba(255, 250, 232, 0.18), rgba(255, 250, 232, 0) 58%),
+    linear-gradient(180deg, #e9dfcf 0%, #d9cbb8 100%);
+  backdrop-filter: none;
+  align-items: stretch;
+  justify-content: stretch;
+  padding: 0;
+}
+
 .worldBuildingModal {
   position: relative;
   background-image: url('../../assets/background/manualpavilion.png');
@@ -111,6 +121,19 @@
   color: #241c16;
 }
 
+.worldBuildingModal--gate-trial-exact {
+  background:
+    radial-gradient(130% 80% at 50% 0%, rgba(255, 252, 238, 0.26), rgba(255, 252, 238, 0) 58%),
+    linear-gradient(180deg, #e9dfcf 0%, #d9cbb8 100%);
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  color: #2f2a22;
+  border-radius: 0;
+  box-shadow: none;
+}
+
 .worldBuildingModal--outskirts-scenic::after {
   opacity: 0.12;
   mix-blend-mode: soft-light;
@@ -121,8 +144,18 @@
   mix-blend-mode: soft-light;
 }
 
+.worldBuildingModal--gate-trial-scenic::after {
+  opacity: 0;
+  mix-blend-mode: normal;
+}
+
 .worldBuildingModal--screen-owned {
   border-radius: 18px;
+}
+
+.worldBuildingModal--gate-trial-exact.worldBuildingModal--screen-owned {
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .worldBuildingModal--forge {
@@ -209,6 +242,8 @@
 .worldBuildingBody--outskirts-scenic,
 .worldBuildingBody--ruins-exact,
 .worldBuildingBody--ruins-scenic,
+.worldBuildingBody--gate-trial-exact,
+.worldBuildingBody--gate-trial-scenic,
 .worldBuildingBody--screen-owned {
   width: 100%;
   height: 100%;

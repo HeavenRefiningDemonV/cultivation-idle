@@ -41,6 +41,28 @@ export const GATE_TRIAL_EXACT_MOCKUP_REGIONS = {
   primaryCta: { x: 720, y: 1047, width: 568, height: 73 },
 } as const;
 
+export const GATE_TRIAL_EXACT_TOP_REGION_CONTRACT = {
+  targetHeightPx: 154,
+  pageTitle: { x: 55, y: 25, width: 235, height: 45 },
+  topMacroRibbon: { x: 555, y: 34, width: 935, height: 38 },
+  topStatus: { x: 1648, y: 23, width: 352, height: 42 },
+  tacticalStrip: { x: 45, y: 82, width: 1935, height: 66 },
+  tacticalCellCount: 7,
+  tacticalCellOrder: ['hp', 'gate', 'loadout', 'aiProfile', 'healing', 'bounty', 'expedition'],
+  fixtureStatusJoiner: ' · ',
+} as const;
+
+export const GATE_TRIAL_EXACT_TOP_REGION_VISUAL_NOTES = [
+  'The title is page-level and sits outside tactical cells.',
+  'The red title seal is an empty visual seal, not visible text.',
+  'The macro ribbon is decorative and not a tab row.',
+  'The top-right status is compact and does not become a full toolbar.',
+  'The seven tactical cells fit in one row at desktop target.',
+  'The HP tactical cell includes the only top-strip underline bar.',
+  'No long negative copy appears inside compact tactical cells.',
+  'No CombatModuleTopLane, RuinsTopRegion, or OutskirtsTopRegion is reused.',
+] as const;
+
 export const GATE_TRIAL_EXACT_VISUAL_TOKENS = {
   canvasParchment: '#e3d9ca',
   cardParchment: '#d9cdbd',

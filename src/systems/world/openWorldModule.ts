@@ -77,5 +77,14 @@ export function openWorldModule({ cityId, moduleKey, open = true, intent }: Open
     return;
   }
 
-  uiStore.openWorldBuildingModal({ cityId, buildingKey: normalizedModuleKey as WorldBuildingKey, intent });
+  const resolvedIntent: WorldBuildingModalIntent =
+    normalizedModuleKey === 'gateTrial' && intent === undefined
+      ? { gateTrialExactMode: 'fixture' }
+      : intent ?? null;
+
+  uiStore.openWorldBuildingModal({
+    cityId,
+    buildingKey: normalizedModuleKey as WorldBuildingKey,
+    intent: resolvedIntent,
+  });
 }

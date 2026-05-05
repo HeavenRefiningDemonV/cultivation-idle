@@ -18,6 +18,7 @@ import { Modal } from '../../ui/primitives/Modal.js';
 import { formatWorldModuleLabel } from '../../ui/text/playerFacingFormatters.js';
 import { inspectWorldFacingModuleTarget } from '../../systems/world/liveWorldLeakAudit.js';
 import { resolveWorldModalEntrySurface } from '../../systems/ui/world/worldBuildingModalEntrySurface.js';
+import { GateTrialScreenOwner } from '../../features/world/gateTrialExact/index.js';
 
 export interface WorldBuildingModalProps {
   open?: boolean;
@@ -124,9 +125,15 @@ export function WorldBuildingModal({
         break;
       case 'gateTrial':
         content = <GateTrialBuildingPanel cityId={storeCityId} />;
+        if (storeModalIntent?.gateTrialExactMode === 'fixture') {
+          content = <GateTrialScreenOwner cityId={storeCityId} trialId={moduleRefId ?? null} forceFixture />;
+        }
         break;
       case 'ruins':
-        content = <RuinsBuildingPanel cityId={storeCityId} forceFixture={storeModalIntent?.ruinsExactMode === 'fixture'} />;
+        content = <RuinsBuildingPanel cityId={storeCityId} />;
+        if (storeModalIntent?.ruinsExactMode === 'fixture') {
+          content = <RuinsBuildingPanel cityId={storeCityId} forceFixture />;
+        }
         break;
       default:
         content = isCombatModule(buildingKey)
