@@ -104,11 +104,19 @@ test('scenic stage, readiness seal, reward, summary, rail, and CTA are locked', 
 
 test('builder preserves fixture mode and does not import forbidden gameplay or legacy UI', () => {
   const source = readFileSync(resolve(process.cwd(), 'src/features/world/gateTrialExact/buildGateTrialExactSurface.ts'), 'utf8');
-  for (const forbidden of [
+  for (const required of [
     'useCombatStore',
     'useActivityStore',
+  ]) {
+    assert.equal(source.includes(required), true, `G9 fixture builder may read ${required} for live active theater mapping`);
+  }
+  for (const forbidden of [
     'useUIStore',
     'RewardService',
+    'startCombat(',
+    'recordFailure(',
+    'markCleared(',
+    'markBypassed(',
     'GateTrialBuildingPanel',
     'GateTrialWorldLayout',
     'CombatModuleTopLane',

@@ -264,6 +264,7 @@
 .gateTrialTacticalCell {
   position: relative;
   min-width: 0;
+  width: 100%;
   height: 100%;
   display: grid;
   grid-template-columns: clamp(34px, 2.2vw, 44px) minmax(0, 1fr) clamp(18px, 1.25vw, 26px);
@@ -280,6 +281,17 @@
     0 2px 4px rgba(78, 56, 34, 0.15);
   color: var(--gate-ink);
   overflow: hidden;
+}
+
+button.gateTrialTacticalCell {
+  appearance: none;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+button.gateTrialTacticalCell:disabled {
+  cursor: default;
 }
 
 .gateTrialTacticalCell::after {
@@ -1165,6 +1177,409 @@
 .gateTrialPrimaryCta--disabled {
   cursor: not-allowed;
   filter: saturate(0.66) opacity(0.74);
+}
+
+.gateTrialScenicStage--active .gateTrialScenicStage__portalBloom {
+  filter: brightness(1.08) saturate(1.08);
+  box-shadow:
+    0 0 36px rgba(232, 239, 216, 0.54),
+    0 0 80px rgba(212, 230, 204, 0.32);
+}
+
+.gateTrialScenicStage--active .gateTrialScenicStage__mist {
+  opacity: 0.86;
+}
+
+.gateTrialScenicStage--active .gateTrialReadinessSeal {
+  filter: saturate(1.08);
+}
+
+.gateTrialActiveTheater {
+  position: absolute;
+  inset: 0;
+  z-index: 12;
+  pointer-events: none;
+  overflow: visible;
+  isolation: isolate;
+}
+
+.gateTrialActiveTheater__topChips {
+  position: absolute;
+  left: clamp(28px, 2.2vw, 44px);
+  top: clamp(76px, 7.5vh, 104px);
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: clamp(6px, 0.5vw, 10px);
+  max-width: 44%;
+}
+
+.gateTrialActiveTheater__chip {
+  display: inline-grid;
+  grid-template-columns: auto auto;
+  align-items: center;
+  column-gap: 5px;
+  min-height: clamp(22px, 2.1vh, 28px);
+  padding: 0 clamp(8px, 0.7vw, 12px);
+  border-radius: 999px;
+  border: 1px solid rgba(132, 103, 58, 0.34);
+  background:
+    linear-gradient(180deg, rgba(236, 222, 191, 0.82), rgba(205, 184, 146, 0.76));
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 248, 220, 0.22),
+    0 1px 2px rgba(64, 48, 27, 0.12);
+  color: rgba(48, 42, 34, 0.92);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(11px, 0.72vw, 13px);
+  white-space: nowrap;
+}
+
+.gateTrialActiveTheater__attemptLabel {
+  display: inline-grid;
+  place-items: center;
+  min-height: clamp(22px, 2.1vh, 28px);
+  padding: 0 clamp(9px, 0.72vw, 13px);
+  border-radius: 999px;
+  border: 1px solid rgba(73, 98, 77, 0.34);
+  background:
+    linear-gradient(180deg, rgba(219, 233, 207, 0.82), rgba(162, 184, 149, 0.68));
+  color: rgba(31, 63, 45, 0.94);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(11px, 0.72vw, 13px);
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.gateTrialActiveTheater__chipLabel {
+  font-weight: 600;
+  opacity: 0.72;
+}
+
+.gateTrialActiveTheater__chipValue {
+  font-weight: 800;
+}
+
+.gateTrialActiveTheater__statusCluster {
+  position: absolute;
+  right: clamp(32px, 2.35vw, 48px);
+  top: clamp(76px, 7.5vh, 104px);
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: clamp(6px, 0.5vw, 10px);
+}
+
+.gateTrialActiveTheater__elapsed,
+.gateTrialActiveTheater__autoState {
+  min-height: clamp(22px, 2.1vh, 28px);
+  display: inline-grid;
+  place-items: center;
+  padding: 0 clamp(9px, 0.72vw, 13px);
+  border-radius: 999px;
+  border: 1px solid rgba(71, 105, 78, 0.32);
+  background:
+    linear-gradient(180deg, rgba(217, 232, 202, 0.76), rgba(157, 181, 145, 0.62));
+  color: rgba(34, 65, 47, 0.94);
+  font-size: clamp(11px, 0.72vw, 13px);
+  font-weight: 700;
+}
+
+.gateTrialActiveTheater__bossHp {
+  position: absolute;
+  z-index: 5;
+  left: 50%;
+  top: clamp(112px, 11vh, 150px);
+  width: clamp(340px, 27vw, 520px);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.gateTrialActiveTheater__playerHp {
+  position: absolute;
+  z-index: 5;
+  left: clamp(54px, 4.6vw, 86px);
+  bottom: clamp(132px, 13vh, 174px);
+  width: clamp(260px, 19vw, 380px);
+  pointer-events: none;
+}
+
+.gateTrialActiveTheater__bossHp,
+.gateTrialActiveTheater__playerHp {
+  padding: clamp(8px, 0.78vh, 12px) clamp(10px, 0.85vw, 14px);
+  border: 1px solid rgba(97, 77, 45, 0.38);
+  border-radius: clamp(8px, 0.65vw, 12px);
+  background:
+    radial-gradient(90% 80% at 50% 0%, rgba(255, 249, 224, 0.22), rgba(255, 249, 224, 0) 64%),
+    linear-gradient(180deg, rgba(46, 41, 33, 0.72), rgba(25, 23, 20, 0.62));
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 237, 180, 0.12),
+    0 2px 8px rgba(25, 20, 13, 0.22);
+  backdrop-filter: blur(2px);
+}
+
+.gateTrialActiveTheater__hpHeader {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: clamp(8px, 0.7vw, 12px);
+  margin-bottom: clamp(5px, 0.5vh, 8px);
+}
+
+.gateTrialActiveTheater__hpName,
+.gateTrialActiveTheater__hpValue {
+  font-family: Georgia, 'Times New Roman', serif;
+  color: rgba(244, 235, 205, 0.94);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.55);
+}
+
+.gateTrialActiveTheater__hpName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: clamp(13px, 0.9vw, 16px);
+  font-weight: 700;
+}
+
+.gateTrialActiveTheater__hpValue {
+  font-size: clamp(12px, 0.8vw, 14px);
+  font-weight: 700;
+}
+
+.gateTrialActiveTheater__hpTrack {
+  position: relative;
+  width: 100%;
+  height: clamp(8px, 0.9vh, 12px);
+  border-radius: 999px;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(15, 12, 10, 0.84), rgba(46, 37, 28, 0.74));
+  box-shadow:
+    inset 0 1px 2px rgba(0, 0, 0, 0.48),
+    0 1px 0 rgba(255, 247, 221, 0.12);
+}
+
+.gateTrialActiveTheater__hpFill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: var(--gate-active-hp-pct, 100%);
+  border-radius: inherit;
+  transition: width 120ms linear;
+}
+
+.gateTrialActiveTheater__hpFill--boss {
+  background:
+    linear-gradient(90deg, #8f302a 0%, #c04836 62%, #e09b56 100%);
+  box-shadow: inset 0 0 0 1px rgba(255, 211, 176, 0.18);
+}
+
+.gateTrialActiveTheater__hpFill--player {
+  background:
+    linear-gradient(90deg, #2f6b4d 0%, #4e9b65 68%, #9abf75 100%);
+  box-shadow: inset 0 0 0 1px rgba(221, 255, 202, 0.18);
+}
+
+.gateTrialActiveTheater__actorLayer {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.gateTrialActiveTheater__actor {
+  position: absolute;
+  display: block;
+  pointer-events: none;
+}
+
+.gateTrialActiveTheater__actor--player {
+  left: clamp(22%, 24%, 26%);
+  bottom: clamp(20%, 23%, 27%);
+  width: clamp(36px, 2.9vw, 58px);
+  height: clamp(76px, 7.4vh, 112px);
+  background:
+    radial-gradient(ellipse at 50% 17%, rgba(22, 24, 21, 0.86) 0 18%, transparent 19%),
+    linear-gradient(180deg, transparent 0 22%, rgba(22, 24, 21, 0.8) 23% 100%);
+  clip-path: polygon(42% 0, 58% 0, 63% 25%, 78% 41%, 64% 49%, 68% 100%, 34% 100%, 38% 49%, 22% 41%, 37% 25%);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.38));
+}
+
+.gateTrialActiveTheater__actor--boss {
+  right: clamp(28%, 30%, 33%);
+  top: clamp(36%, 39%, 43%);
+  width: clamp(94px, 7vw, 140px);
+  height: clamp(116px, 10vh, 178px);
+  border-radius: 45% 45% 50% 50%;
+  background:
+    radial-gradient(circle at 50% 26%, rgba(244, 255, 235, 0.5), rgba(87, 137, 92, 0.5) 36%, rgba(34, 72, 52, 0.82) 70%),
+    linear-gradient(180deg, rgba(44, 73, 55, 0.78), rgba(22, 35, 28, 0.88));
+  opacity: 0.72;
+  clip-path: polygon(50% 0, 64% 16%, 86% 18%, 74% 38%, 96% 54%, 72% 64%, 64% 100%, 36% 100%, 28% 64%, 4% 54%, 26% 38%, 14% 18%, 36% 16%);
+  filter:
+    drop-shadow(0 0 12px rgba(126, 182, 117, 0.3))
+    drop-shadow(0 3px 6px rgba(0, 0, 0, 0.28));
+}
+
+.gateTrialActiveTheater__actorAura {
+  position: absolute;
+  inset: -28%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(229, 244, 209, 0.2), rgba(229, 244, 209, 0) 70%);
+  opacity: 0.72;
+}
+
+.gateTrialActiveTheater__portalPulse {
+  position: absolute;
+  left: 50%;
+  top: 39%;
+  width: clamp(140px, 10vw, 220px);
+  height: clamp(170px, 14vh, 270px);
+  transform: translate(-50%, -50%);
+  border-radius: 48%;
+  background:
+    radial-gradient(circle at 50% 45%, rgba(249, 255, 235, 0.48), rgba(182, 225, 185, 0.18) 48%, rgba(182, 225, 185, 0) 76%);
+  box-shadow:
+    0 0 28px rgba(232, 255, 218, 0.22),
+    0 0 70px rgba(140, 206, 136, 0.16);
+}
+
+.gateTrialActiveTheater__logSlip {
+  position: absolute;
+  z-index: 6;
+  right: clamp(28px, 2.15vw, 44px);
+  bottom: clamp(106px, 10.4vh, 142px);
+  width: clamp(245px, 16.8vw, 330px);
+  max-height: clamp(156px, 16vh, 220px);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  padding: clamp(10px, 0.92vh, 14px) clamp(12px, 0.95vw, 16px);
+  border: 1px solid rgba(111, 87, 50, 0.34);
+  border-radius: clamp(8px, 0.65vw, 12px);
+  background:
+    radial-gradient(90% 80% at 50% 0%, rgba(255, 250, 226, 0.32), rgba(255, 250, 226, 0) 60%),
+    linear-gradient(180deg, rgba(231, 219, 195, 0.82), rgba(197, 177, 140, 0.74));
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 247, 220, 0.24),
+    0 2px 8px rgba(54, 38, 21, 0.16);
+  backdrop-filter: blur(1.5px);
+  pointer-events: none;
+}
+
+.gateTrialActiveTheater__logHeader {
+  margin: 0 0 clamp(6px, 0.6vh, 9px);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(13px, 0.86vw, 16px);
+  font-weight: 700;
+  color: var(--gate-ink);
+  text-align: center;
+}
+
+.gateTrialActiveTheater__logLines,
+.gateTrialActiveTheater__techniqueLines {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: clamp(3px, 0.35vh, 5px);
+  min-height: 0;
+}
+
+.gateTrialActiveTheater__logLine,
+.gateTrialActiveTheater__techniqueLine {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: clamp(11px, 0.72vw, 13px);
+  line-height: 1.2;
+  color: rgba(48, 42, 34, 0.86);
+}
+
+.gateTrialActiveTheater__logLine[data-tone="player-hit"],
+.gateTrialActiveTheater__logLine[data-tone="critical"] {
+  color: rgba(128, 47, 38, 0.9);
+}
+
+.gateTrialActiveTheater__logLine[data-tone="enemy-hit"],
+.gateTrialActiveTheater__techniqueLine[data-tone="technique"] {
+  color: rgba(38, 93, 63, 0.92);
+}
+
+.gateTrialActiveTheater__logLine[data-tone="heal"] {
+  color: rgba(47, 112, 70, 0.92);
+}
+
+.gateTrialActiveTheater__floatingEvents {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  pointer-events: none;
+}
+
+.gateTrialActiveTheater__floatingEvent {
+  position: absolute;
+  display: inline-grid;
+  place-items: center;
+  min-width: clamp(34px, 2.4vw, 52px);
+  min-height: clamp(18px, 1.7vh, 24px);
+  padding: 0 clamp(7px, 0.55vw, 10px);
+  border-radius: 999px;
+  border: 1px solid rgba(80, 61, 34, 0.26);
+  background:
+    linear-gradient(180deg, rgba(245, 235, 205, 0.86), rgba(209, 188, 151, 0.76));
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 247, 220, 0.18),
+    0 2px 4px rgba(49, 36, 20, 0.14);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(11px, 0.72vw, 13px);
+  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.gateTrialActiveTheater__floatingEvent--enemy {
+  right: clamp(31%, 33%, 36%);
+  top: clamp(43%, 46%, 49%);
+}
+
+.gateTrialActiveTheater__floatingEvent--player {
+  left: clamp(22%, 25%, 28%);
+  bottom: clamp(33%, 36%, 39%);
+}
+
+.gateTrialActiveTheater__floatingEvent--center {
+  left: 50%;
+  top: 47%;
+  transform: translateX(-50%);
+}
+
+.gateTrialActiveTheater__floatingEvent--enemy-hit,
+.gateTrialActiveTheater__floatingEvent--player-hit {
+  color: rgba(130, 45, 36, 0.92);
+}
+
+.gateTrialActiveTheater__floatingEvent--heal {
+  color: rgba(37, 101, 61, 0.94);
+}
+
+.gateTrialActiveTheater__floatingEvent--technique,
+.gateTrialActiveTheater__floatingEvent--shield {
+  color: rgba(42, 82, 96, 0.92);
+}
+
+.gateTrialActiveTheater__floatingEvent--warning {
+  color: rgba(132, 85, 24, 0.94);
+}
+
+.gateTrialPrimaryCta--warning .gateTrialPrimaryCta__plate {
+  background:
+    radial-gradient(110% 80% at 50% 0%, rgba(255, 232, 178, 0.52), rgba(255, 232, 178, 0) 54%),
+    linear-gradient(180deg, #c99a4b 0%, #9b6034 58%, #6f3f27 100%);
+}
+
+.gateTrialPrimaryCta--warning .gateTrialPrimaryCta__label {
+  color: rgba(58, 35, 22, 0.96);
 }
 
 .gateTrialExactPage__leftRail,

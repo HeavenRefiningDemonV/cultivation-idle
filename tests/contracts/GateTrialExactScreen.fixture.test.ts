@@ -56,7 +56,10 @@ void test('Gate Trial Exact owner preserves fixture default and exposes live sur
   assert.equal(owner.includes('./GateTrialExactScreen.scss'), true);
   assert.equal(owner.includes('data-source={surface.meta.source}'), true);
   assert.equal(owner.includes('data-lifecycle-state={surface.meta.lifecycleState}'), true);
-  for (const forbidden of ['onPrimaryAction','onSafetyNetAction','onTopFixAction','startCombat','startCombatFromPreview','openCombatPreview','RewardService','useCombatStore','useActivityStore','useUIStore']) assert.equal(owner.includes(forbidden), false);
+  assert.equal(owner.includes('useCombatStore'), true);
+  assert.equal(owner.includes('useActivityStore'), true);
+  assert.equal(owner.includes('data-active-theater='), true);
+  for (const forbidden of ['onPrimaryAction','onSafetyNetAction','onTopFixAction','startCombat','startCombatFromPreview','openCombatPreview','RewardService','useUIStore']) assert.equal(owner.includes(forbidden), false);
 });
 
 void test('Gate Trial Exact fixture screen avoids Outskirts, Ruins-route, and old combat copy', () => {

@@ -158,6 +158,8 @@ void test('Gate Trial Exact G7 live builder uses authoritative lifecycle, reward
     'useEquipmentStore',
     'useBountyStore',
     'useExpeditionStore',
+    'useCombatStore',
+    'useActivityStore',
     'resolveModuleRef',
     'getTrialLifecycleSnapshot',
     'getTrialGateItemId',
@@ -170,8 +172,6 @@ void test('Gate Trial Exact G7 live builder uses authoritative lifecycle, reward
 
   for (const forbidden of [
     'RewardService',
-    'useCombatStore',
-    'useActivityStore',
     'useUIStore',
     'GateTrialBuildingPanel',
     'GateTrialWorldLayout',
@@ -191,6 +191,9 @@ void test('Gate Trial Exact G7 owner selects fixture or live mode and does not w
   assert.equal(source.includes('data-source={surface.meta.source}'), true);
   assert.equal(source.includes('data-lifecycle-state={surface.meta.lifecycleState}'), true);
   assert.equal(source.includes('data-readiness-score={surface.meta.readinessScore}'), true);
+  assert.equal(source.includes('useCombatStore'), true);
+  assert.equal(source.includes('useActivityStore'), true);
+  assert.equal(source.includes('data-active-theater='), true);
 
   for (const forbidden of [
     'onPrimaryAction',
@@ -200,8 +203,6 @@ void test('Gate Trial Exact G7 owner selects fixture or live mode and does not w
     'startCombatFromPreview',
     'openCombatPreview',
     'RewardService',
-    'useCombatStore',
-    'useActivityStore',
     'useUIStore',
   ]) {
     assert.equal(source.includes(forbidden), false, `G7 owner must not wire ${forbidden}`);

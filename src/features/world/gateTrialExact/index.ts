@@ -4,3 +4,4 @@ export * from './gateTrialExactAssetRegistry.js';
 export * from './buildGateTrialExactSurface.js';
 export * from './GateTrialExactScreen.js';
 export * from './GateTrialScreenOwner.js';
+export * from './useGateTrialExactActionController.js';

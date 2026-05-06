@@ -1,4 +1,8 @@
 import type {
+  GateTrialActiveTheaterEventTone,
+  GateTrialActiveTheaterFloatingEventSurface,
+  GateTrialActiveTheaterLogLineSurface,
+  GateTrialActiveTheaterSurface,
   GateTrialButtonSurface,
   GateTrialChecklistRowSurface,
   GateTrialExactStatus,
@@ -14,7 +18,9 @@ import type {
 
 import { REALMS } from '../../../constants/index.js';
 import type { TrialDef, TrialFailSafeCost } from '../../../content/types.js';
+import { useActivityStore, type ActiveActivity } from '../../../stores/activityStore.js';
 import { useBountyStore } from '../../../stores/bountyStore.js';
+import { useCombatStore } from '../../../stores/combatStore.js';
 import { useContentStore } from '../../../stores/contentStore.js';
 import { useEquipmentStore } from '../../../stores/equipmentStore.js';
 import { useExpeditionStore } from '../../../stores/expeditionStore.js';
@@ -51,6 +57,12 @@ import {
 } from './gateTrialExactPresentation.js';
 
 import { GATE_TRIAL_EXACT_ASSETS } from './gateTrialExactAssetRegistry.js';
+import type {
+  CombatContext,
+  CombatEvent,
+  CombatLogEntry,
+  CombatTechniqueLogEntry,
+} from '../../../types/index.js';
 
 const FIXTURE_SOURCE = 'fixture' as const;
 const LIVE_SOURCE = 'live' as const;
@@ -145,6 +157,168 @@ function formatCompactNumber(value: string | number | null | undefined): string 
     return `${compact.toFixed(compact % 1 === 0 ? 0 : 1)}K`;
   }
   return `${Math.floor(numeric)}`;
+}
+
+function clampPercent(value: number): number {
+  if (!Number.isFinite(value)) return 0;
+  return Math.max(0, Math.min(100, value));
+}
+
+function toFiniteNumber(value: string | number | null | undefined, fallback = 0): number {
+  const numeric = Number(value ?? fallback);
+  return Number.isFinite(numeric) ? numeric : fallback;
+}
+
+function percent(current: string | number | null | undefined, max: string | number | null | undefined): number {
+  const currentValue = toFiniteNumber(current);
+  const maxValue = toFiniteNumber(max);
+  if (maxValue <= 0) return 0;
+  return clampPercent((currentValue / maxValue) * 100);
+}
+
+function formatHpLabel(current: string | number | null | undefined, max: string | number | null | undefined): string {
+  return `${formatCompactNumber(current)} / ${formatCompactNumber(max)}`;
+}
+
+function formatElapsedLabel(startMs: number | null | undefined, nowMs: number): string {
+  if (!startMs || startMs <= 0) return '0:00';
+  const elapsedSec = Math.max(0, Math.floor((nowMs - startMs) / 1000));
+  const minutes = Math.floor(elapsedSec / 60);
+  const seconds = elapsedSec % 60;
+  return `${minutes}:${String(seconds).padStart(2, '0')}`;
+}
+
+function isMatchingGateTrialCombat(
+  combatContext: CombatContext,
+  resolvedTrialId: string | null,
+  cityId: string,
+): boolean {
+  return Boolean(
+    resolvedTrialId &&
+    combatContext.type === 'trial' &&
+    combatContext.trialId === resolvedTrialId &&
+    combatContext.cityId === cityId,
+  );
+}
+
+function isMatchingGateTrialActivity(
+  active: ActiveActivity | null,
+  resolvedTrialId: string | null,
+  cityId: string,
+): boolean {
+  const activeSourceId = active?.payload?.sourceId ?? active?.sourceId ?? null;
+  const activeCityId = active?.payload?.cityId ?? active?.cityId ?? null;
+
+  return Boolean(
+    resolvedTrialId &&
+    active?.type === 'trial' &&
+    activeSourceId === resolvedTrialId &&
+    activeCityId === cityId,
+  );
+}
+
+function combatLogTone(entry: CombatLogEntry): GateTrialActiveTheaterEventTone | GateTrialExactTone {
+  switch (entry.type) {
+    case 'player':
+    case 'damage':
+      return 'enemy-hit';
+    case 'enemy':
+      return 'player-hit';
+    case 'heal':
+      return 'heal';
+    case 'defeat':
+      return 'warning';
+    case 'victory':
+    case 'loot':
+    case 'system':
+      return 'system';
+  }
+}
+
+function techniqueLogTone(entry: CombatTechniqueLogEntry): GateTrialActiveTheaterEventTone {
+  return entry.kind === 'warn' ? 'warning' : 'technique';
+}
+
+function mapCombatLogLines(combatLog: CombatLogEntry[]): GateTrialActiveTheaterLogLineSurface[] {
+  return combatLog.slice(-4).map((entry, index) => ({
+    id: `combat-log-${entry.timestamp}-${index}`,
+    text: entry.text,
+    tone: combatLogTone(entry),
+    source: LIVE_SOURCE,
+  }));
+}
+
+function mapTechniqueLines(techniqueLog: CombatTechniqueLogEntry[]): GateTrialActiveTheaterLogLineSurface[] {
+  return techniqueLog.slice(-3).map((entry, index) => ({
+    id: `technique-log-${entry.at}-${index}`,
+    text: entry.message,
+    tone: techniqueLogTone(entry),
+    source: LIVE_SOURCE,
+  }));
+}
+
+function floatingEventTone(event: CombatEvent): GateTrialActiveTheaterEventTone {
+  switch (event.type) {
+    case 'HIT':
+      return event.target === 'enemy' ? 'enemy-hit' : 'player-hit';
+    case 'HEAL':
+      return 'heal';
+    case 'SKILL_CAST':
+    case 'STATUS_APPLIED':
+    case 'STATUS_TICK':
+      return 'technique';
+    case 'SHIELD_GAINED':
+      return 'shield';
+    case 'ENEMY_SPECIAL_TELEGRAPH':
+    case 'PLAYER_DEFEATED':
+      return 'warning';
+    case 'LOOT_DROP':
+    case 'BOSS_SPAWN':
+    case 'BOSS_DEFEATED':
+      return 'system';
+  }
+}
+
+function floatingEventLane(event: CombatEvent): GateTrialActiveTheaterFloatingEventSurface['lane'] {
+  if (event.type === 'HIT') return event.target === 'enemy' ? 'enemy' : 'player';
+  if (event.type === 'HEAL') return 'player';
+  if (event.type === 'ENEMY_SPECIAL_TELEGRAPH') return 'enemy';
+  return 'center';
+}
+
+function floatingEventLabel(event: CombatEvent): string {
+  switch (event.type) {
+    case 'HIT':
+    case 'HEAL':
+    case 'STATUS_TICK':
+    case 'SHIELD_GAINED':
+      return formatCompactNumber(event.amount);
+    case 'SKILL_CAST':
+      return 'Technique';
+    case 'STATUS_APPLIED':
+      return 'Status';
+    case 'ENEMY_SPECIAL_TELEGRAPH':
+      return 'Warning';
+    case 'LOOT_DROP':
+      return `Loot ${formatCompactNumber(event.qty)}`;
+    case 'BOSS_SPAWN':
+      return 'Guardian';
+    case 'BOSS_DEFEATED':
+    case 'PLAYER_DEFEATED':
+      return 'Pressure';
+  }
+}
+
+function mapFloatingEvents(events: CombatEvent[], nowMs: number): GateTrialActiveTheaterFloatingEventSurface[] {
+  const recent = events.filter((event) => nowMs - event.at <= 1800);
+  const source = recent.length > 0 ? recent : events.slice(-5);
+  return source.slice(-5).map((event) => ({
+    id: event.id,
+    label: floatingEventLabel(event),
+    tone: floatingEventTone(event),
+    lane: floatingEventLane(event),
+    ageMs: Math.max(0, nowMs - event.at),
+  }));
 }
 
 function numericGte(value: string | number | null | undefined, target: string | number | null | undefined): boolean {
@@ -1135,6 +1309,51 @@ function buildLivePrimaryAction(context: LiveResolvedContext): GateTrialButtonSu
   };
 }
 
+function buildGateTrialActiveTheaterSurface(args: {
+  resolvedTrialId: string | null;
+  cityId: string;
+  trialDef: TrialDef | null;
+  bossName: string;
+  bossLevel: number | null;
+  nowMs: number;
+}): GateTrialActiveTheaterSurface | undefined {
+  const combat = useCombatStore.getState();
+  const activity = useActivityStore.getState();
+  const matchingCombat = combat.inCombat && isMatchingGateTrialCombat(combat.combatContext, args.resolvedTrialId, args.cityId);
+  const matchingActivity = isMatchingGateTrialActivity(activity.active, args.resolvedTrialId, args.cityId);
+
+  if (!matchingCombat && !matchingActivity) return undefined;
+  if (!matchingCombat) return undefined;
+
+  const selectedAiProfile = titleCaseWords(useTechniqueStore.getState().getSelectedAiProfile());
+  const logLines = mapCombatLogLines(combat.combatLog);
+
+  return {
+    visible: true,
+    state: 'active',
+    playerName: 'Disciple',
+    playerHpLabel: formatHpLabel(combat.playerHP, combat.playerMaxHP),
+    playerHpPct: percent(combat.playerHP, combat.playerMaxHP),
+    enemyName: combat.currentEnemy?.name ?? args.bossName,
+    enemyHpLabel: formatHpLabel(combat.enemyHP, combat.enemyMaxHP),
+    enemyHpPct: percent(combat.enemyHP, combat.enemyMaxHP),
+    bossName: combat.currentEnemy?.name ?? args.bossName,
+    bossLevelLabel: args.bossLevel ? `Lv. ${args.bossLevel}` : '',
+    attemptLabel: 'Gate Trial Attempt',
+    elapsedLabel: formatElapsedLabel(combat.combatStartTime, args.nowMs),
+    autoStateLabel: combat.autoCombatAI ? `AI ${selectedAiProfile}` : combat.autoAttack ? 'Auto Attack' : 'Manual',
+    chips: [
+      { id: 'attempt', label: 'Attempt', value: 'Active', tone: 'ceremonial' },
+      { id: 'fail-safe', label: 'Fail-Safe', value: 'Tracked', tone: 'warning' },
+    ],
+    logLines: logLines.length > 0
+      ? logLines
+      : [{ id: 'combat-log-pending', text: 'Gate pressure gathers...', tone: 'system', source: LIVE_SOURCE }],
+    techniqueLines: mapTechniqueLines(combat.techniqueLog),
+    floatingEvents: mapFloatingEvents(combat.events, args.nowMs),
+  };
+}
+
 export function buildGateTrialExactSurfaceFromStores(
   cityId: string | undefined,
   options: BuildGateTrialExactSurfaceFromStoresOptions = {},
@@ -1188,6 +1407,47 @@ export function buildGateTrialExactSurfaceFromStores(
   const recommendedPanel = buildLiveRecommendedPanel(context);
   const trialSummary = buildLiveTrialSummary(context, recommendedPanel.topFixes);
   const primaryAction = buildLivePrimaryAction(context);
+  const activeTheater = buildGateTrialActiveTheaterSurface({
+    resolvedTrialId,
+    cityId: resolvedCityId,
+    trialDef,
+    bossName: context.bossName,
+    bossLevel: context.metrics.bossLevel,
+    nowMs: options.nowMs ?? Date.now(),
+  });
+  const activeTrialSummary: GateTrialExactSurfaceV1['trialSummary'] = activeTheater
+    ? {
+        ...trialSummary,
+        rows: [
+          trialSummary.rows[0],
+          trialSummary.rows[1],
+          trialSummary.rows[2],
+          trialSummary.rows[3],
+          makeSummaryRow('nextFix', 'Next Fix', 'Survive attempt', 'warning'),
+        ],
+      }
+    : trialSummary;
+  const activePrimaryAction: GateTrialButtonSurface = activeTheater
+    ? {
+        ...primaryAction,
+        label: 'Stop Attempt',
+        ariaLabel: 'Stop the active Gate Trial attempt',
+        intent: 'stop-attempt',
+        tone: 'warning',
+        enabled: true,
+        visible: true,
+        singleDominantCta: true,
+        ornamentVariant: 'jade-gold',
+      }
+    : primaryAction;
+  const activeReadinessSeal: GateTrialExactSurfaceV1['scenicStage']['readinessSeal'] | null = activeTheater
+    ? {
+        ...fixture.scenicStage.readinessSeal,
+        state: 'active',
+        verdict: 'ACTIVE',
+        scoreLabel: 'Gate trial in progress',
+      }
+    : null;
 
   return {
     ...fixture,
@@ -1197,7 +1457,9 @@ export function buildGateTrialExactSurfaceFromStores(
       source: 'stores',
       cityId: resolvedCityId,
       trialId: resolvedTrialId,
-      activityMode: context.lifecycle.state === 'cleared'
+      activityMode: activeTheater
+        ? 'active'
+        : context.lifecycle.state === 'cleared'
         ? 'cleared'
         : context.lifecycle.state === 'bypassed'
           ? 'bypassed'
@@ -1232,23 +1494,25 @@ export function buildGateTrialExactSurfaceFromStores(
       ...fixture.scenicStage,
       readinessSeal: {
         ...fixture.scenicStage.readinessSeal,
-        verdict: context.lifecycle.state === 'cleared'
-          ? 'CLEARED'
-          : context.lifecycle.state === 'bypassed'
-            ? 'BYPASSED'
+        ...(activeReadinessSeal ?? {
+          verdict: context.lifecycle.state === 'cleared'
+            ? 'CLEARED'
+            : context.lifecycle.state === 'bypassed'
+              ? 'BYPASSED'
+              : context.lifecycle.canStart && context.metrics.readinessScore >= 60
+                ? 'VIABLE'
+                : context.lifecycle.canStart
+                  ? 'RISKY'
+                  : 'LOCKED',
+          scoreLabel: `Readiness ${context.metrics.readinessScore} / 100`,
+          state: context.lifecycle.state === 'cleared' || context.lifecycle.state === 'bypassed'
+            ? 'cleared'
             : context.lifecycle.canStart && context.metrics.readinessScore >= 60
-              ? 'VIABLE'
+              ? 'viable'
               : context.lifecycle.canStart
-                ? 'RISKY'
-                : 'LOCKED',
-        scoreLabel: `Readiness ${context.metrics.readinessScore} / 100`,
-        state: context.lifecycle.state === 'cleared' || context.lifecycle.state === 'bypassed'
-          ? 'cleared'
-          : context.lifecycle.canStart && context.metrics.readinessScore >= 60
-            ? 'viable'
-            : context.lifecycle.canStart
-              ? 'warning'
-              : 'locked',
+                ? 'warning'
+                : 'locked',
+        }),
       },
       guardianPlaque: {
         ...fixture.scenicStage.guardianPlaque,
@@ -1262,11 +1526,12 @@ export function buildGateTrialExactSurfaceFromStores(
         ],
         gateItemId: context.gateItemId,
       },
+      activeTheater,
     },
     recommendedPanel,
-    trialSummary,
+    trialSummary: activeTrialSummary,
     readinessRail: buildLiveReadinessRail(context),
-    primaryAction,
+    primaryAction: activePrimaryAction,
     debug: {
       ...fixture.debug,
       regionOrder: GATE_TRIAL_EXACT_REGION_ORDER,

@@ -163,13 +163,55 @@ export interface GateTrialGuardianPlaqueSurface {
   gateItemId: string | null;
 }
 
+export type GateTrialActiveTheaterEventTone =
+  | 'player-hit'
+  | 'enemy-hit'
+  | 'heal'
+  | 'technique'
+  | 'shield'
+  | 'system'
+  | 'warning';
+
+export interface GateTrialActiveTheaterLogLineSurface {
+  id: string;
+  text: string;
+  tone: GateTrialExactTone | GateTrialActiveTheaterEventTone;
+  source: GateTrialExactValueSource;
+}
+
+export interface GateTrialActiveTheaterFloatingEventSurface {
+  id: string;
+  label: string;
+  tone: GateTrialActiveTheaterEventTone;
+  lane: 'player' | 'enemy' | 'center';
+  ageMs?: number;
+}
+
+export interface GateTrialActiveTheaterChipSurface {
+  id: string;
+  label: string;
+  value: string;
+  tone: GateTrialExactTone;
+}
+
 export interface GateTrialActiveTheaterSurface {
   visible: boolean;
+  state: 'active';
+  playerName: string;
   playerHpLabel: string;
+  playerHpPct: number;
+  enemyName: string;
   enemyHpLabel: string;
+  enemyHpPct: number;
   bossName: string;
+  bossLevelLabel: string;
   attemptLabel: string;
-  logLines: readonly string[];
+  elapsedLabel: string;
+  autoStateLabel: string;
+  chips: readonly GateTrialActiveTheaterChipSurface[];
+  logLines: readonly GateTrialActiveTheaterLogLineSurface[];
+  techniqueLines: readonly GateTrialActiveTheaterLogLineSurface[];
+  floatingEvents: readonly GateTrialActiveTheaterFloatingEventSurface[];
 }
 
 export interface GateTrialScenicStageSurface {

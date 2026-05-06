@@ -1,5 +1,6 @@
 import React from 'react';
 import type {
+  GateTrialActiveTheaterSurface,
   GateTrialExactStatus,
   GateTrialExactSurfaceV1,
   GateTrialFactRowSurface,
@@ -149,12 +150,23 @@ function GateTrialSummaryRowView(props: { row: GateTrialSummaryRowSurface }) {
   );
 }
 
-function GateTrialTacticalCell(props: { cell: GateTrialTacticalCellSurface }) {
+function GateTrialTacticalCell(props: {
+  cell: GateTrialTacticalCellSurface;
+  onTacticalCellAction?: (cellId: GateTrialTacticalCellId) => void;
+}) {
   const { cell } = props;
+  const shouldRoute = cell.id !== 'hp' && cell.id !== 'gate';
+  const canRouteTacticalCell = Boolean(props.onTacticalCellAction && shouldRoute);
+  const tacticalElement = canRouteTacticalCell ? 'button' : 'div';
   const underlineStyle = cell.underlineBarPct === undefined
     ? undefined
     : ({ '--gate-tactical-underline-pct': `${cell.underlineBarPct}%` } as React.CSSProperties);
-  return el('div', {
+  return el(tacticalElement, {
+    ...(canRouteTacticalCell ? {
+      type: 'button',
+      disabled: !cell.visible,
+      onClick: () => props.onTacticalCellAction?.(cell.id),
+    } : {}),
     className: `gateTrialTacticalCell gateTrialTacticalCell--${cell.id} gateTrialTacticalCell--${cell.tone}`,
     'data-testid': `gate-trial-tactical-cell-${cell.id}`,
     'data-cell-id': cell.id,
@@ -327,6 +339,158 @@ function renderGateTrialPrimaryCta(
   );
 }
 
+function renderGateTrialActiveTheater(activeTheater: GateTrialActiveTheaterSurface | undefined): React.ReactElement | null {
+  if (!activeTheater?.visible) return null;
+
+  const bossHpStyle = { '--gate-active-hp-pct': `${activeTheater.enemyHpPct}%` } as React.CSSProperties;
+  const playerHpStyle = { '--gate-active-hp-pct': `${activeTheater.playerHpPct}%` } as React.CSSProperties;
+  const bossNameLabel = `${activeTheater.enemyName} ${activeTheater.bossLevelLabel}`.trim();
+
+  return el('section', {
+    className: 'gateTrialActiveTheater',
+    'data-testid': 'gate-trial-active-theater',
+    'data-state': activeTheater.state,
+    'aria-label': 'Active Gate Trial combat',
+  },
+    el('div', {
+      className: 'gateTrialActiveTheater__topChips',
+      'data-testid': 'gate-trial-active-theater-top-chips',
+    },
+      el('span', { className: 'gateTrialActiveTheater__attemptLabel' }, activeTheater.attemptLabel),
+      activeTheater.chips.map((chip) => el('span', {
+        key: chip.id,
+        className: `gateTrialActiveTheater__chip ${gateTrialToneClass(chip.tone)}`,
+        'data-testid': `gate-trial-active-theater-chip-${chip.id}`,
+        'data-chip-id': chip.id,
+        'data-tone': chip.tone,
+      },
+        el('span', { className: 'gateTrialActiveTheater__chipLabel' }, chip.label),
+        el('span', { className: 'gateTrialActiveTheater__chipValue' }, chip.value),
+      )),
+    ),
+    el('div', {
+      className: 'gateTrialActiveTheater__statusCluster',
+    },
+      el('span', {
+        className: 'gateTrialActiveTheater__elapsed',
+        'data-testid': 'gate-trial-active-theater-elapsed',
+      }, activeTheater.elapsedLabel),
+      el('span', {
+        className: 'gateTrialActiveTheater__autoState',
+        'data-testid': 'gate-trial-active-theater-auto-state',
+      }, activeTheater.autoStateLabel),
+    ),
+    el('section', {
+      className: 'gateTrialActiveTheater__bossHp',
+      'data-testid': 'gate-trial-active-theater-boss-hp',
+    },
+      el('div', { className: 'gateTrialActiveTheater__hpHeader' },
+        el('span', {
+          className: 'gateTrialActiveTheater__hpName',
+          'data-testid': 'gate-trial-active-theater-boss-name',
+        }, bossNameLabel),
+        el('span', { className: 'gateTrialActiveTheater__hpValue' }, activeTheater.enemyHpLabel),
+      ),
+      el('div', {
+        className: 'gateTrialActiveTheater__hpTrack',
+        'data-testid': 'gate-trial-active-theater-boss-hp-bar',
+      },
+        el('span', {
+          className: 'gateTrialActiveTheater__hpFill gateTrialActiveTheater__hpFill--boss',
+          'data-testid': 'gate-trial-active-theater-boss-hp-fill',
+          style: bossHpStyle,
+        }),
+      ),
+    ),
+    el('section', {
+      className: 'gateTrialActiveTheater__playerHp',
+      'data-testid': 'gate-trial-active-theater-player-hp',
+    },
+      el('div', { className: 'gateTrialActiveTheater__hpHeader' },
+        el('span', {
+          className: 'gateTrialActiveTheater__hpName',
+          'data-testid': 'gate-trial-active-theater-player-name',
+        }, activeTheater.playerName),
+        el('span', { className: 'gateTrialActiveTheater__hpValue' }, activeTheater.playerHpLabel),
+      ),
+      el('div', {
+        className: 'gateTrialActiveTheater__hpTrack',
+        'data-testid': 'gate-trial-active-theater-player-hp-bar',
+      },
+        el('span', {
+          className: 'gateTrialActiveTheater__hpFill gateTrialActiveTheater__hpFill--player',
+          'data-testid': 'gate-trial-active-theater-player-hp-fill',
+          style: playerHpStyle,
+        }),
+      ),
+    ),
+    el('div', {
+      className: 'gateTrialActiveTheater__actorLayer',
+      'data-testid': 'gate-trial-active-theater-actor-layer',
+      'aria-hidden': 'true',
+    },
+      el('span', {
+        className: 'gateTrialActiveTheater__portalPulse',
+        'data-testid': 'gate-trial-active-theater-portal-pulse',
+      }),
+      el('span', {
+        className: 'gateTrialActiveTheater__actor gateTrialActiveTheater__actor--player',
+        'data-testid': 'gate-trial-active-theater-player-actor',
+      },
+        el('span', { className: 'gateTrialActiveTheater__actorAura' }),
+      ),
+      el('span', {
+        className: 'gateTrialActiveTheater__actor gateTrialActiveTheater__actor--boss',
+        'data-testid': 'gate-trial-active-theater-boss-actor',
+      },
+        el('span', { className: 'gateTrialActiveTheater__actorAura' }),
+      ),
+    ),
+    el('aside', {
+      className: 'gateTrialActiveTheater__logSlip',
+      'data-testid': 'gate-trial-active-theater-log-slip',
+      'aria-label': 'Gate Trial combat log',
+    },
+      el('div', { className: 'gateTrialActiveTheater__logHeader' }, 'Combat Flow'),
+      el('ol', {
+        className: 'gateTrialActiveTheater__logLines',
+        'data-testid': 'gate-trial-active-theater-log-lines',
+      }, activeTheater.logLines.map((line) => el('li', {
+        key: line.id,
+        className: 'gateTrialActiveTheater__logLine',
+        'data-line-id': line.id,
+        'data-tone': line.tone,
+        'data-source': line.source,
+      }, line.text))),
+      el('ol', {
+        className: 'gateTrialActiveTheater__techniqueLines',
+        'data-testid': 'gate-trial-active-theater-technique-lines',
+      }, activeTheater.techniqueLines.map((line) => el('li', {
+        key: line.id,
+        className: 'gateTrialActiveTheater__techniqueLine',
+        'data-line-id': line.id,
+        'data-tone': line.tone,
+        'data-source': line.source,
+      }, line.text))),
+    ),
+    el('div', {
+      className: 'gateTrialActiveTheater__floatingEvents',
+      'data-testid': 'gate-trial-active-theater-floating-events',
+      'aria-hidden': 'true',
+    }, activeTheater.floatingEvents.map((event) => el('span', {
+      key: event.id,
+      className: [
+        'gateTrialActiveTheater__floatingEvent',
+        `gateTrialActiveTheater__floatingEvent--${event.tone}`,
+        `gateTrialActiveTheater__floatingEvent--${event.lane}`,
+      ].join(' '),
+      'data-event-id': event.id,
+      'data-tone': event.tone,
+      'data-lane': event.lane,
+    }, event.label))),
+  );
+}
+
 function GateTrialExactScreen(props: GateTrialExactScreenProps) {
   const { surface } = props;
   return el('article', { className: 'gateTrialExactPage', 'data-testid': surface.meta.rootTestId, 'data-surface-mode': surface.meta.mode, 'data-activity-mode': surface.meta.activityMode, 'data-lifecycle-state': surface.meta.lifecycleState, 'data-readiness-score': surface.meta.readinessScore },
@@ -358,7 +522,7 @@ function GateTrialExactScreen(props: GateTrialExactScreenProps) {
           el('span', { className: 'gateTrialTopRegion__settingsOrnament', 'aria-hidden': 'true' }),
         ),
       ),
-      el('div', { className: 'gateTrialTopRegion__tacticalStrip', 'data-testid': 'gate-trial-tactical-strip', 'aria-label': surface.tacticalStrip.ariaLabel, 'data-cell-count': GATE_TRIAL_EXACT_TOP_REGION_CONTRACT.tacticalCellCount }, surface.tacticalStrip.cells.map((cell) => el(GateTrialTacticalCell, { key: cell.id, cell }))),
+      el('div', { className: 'gateTrialTopRegion__tacticalStrip', 'data-testid': 'gate-trial-tactical-strip', 'aria-label': surface.tacticalStrip.ariaLabel, 'data-cell-count': GATE_TRIAL_EXACT_TOP_REGION_CONTRACT.tacticalCellCount }, surface.tacticalStrip.cells.map((cell) => el(GateTrialTacticalCell, { key: cell.id, cell, onTacticalCellAction: props.onTacticalCellAction }))),
     ),
     el('section', {
       className: 'gateTrialExactPage__gateHeaderSlot',
@@ -438,6 +602,7 @@ function GateTrialExactScreen(props: GateTrialExactScreenProps) {
           surface.scenicStage.artStatus === 'approved-bound'
             ? 'gateTrialScenicStage--approvedBound'
             : 'gateTrialScenicStage--deferredArt',
+          surface.scenicStage.activeTheater?.visible ? 'gateTrialScenicStage--active' : '',
         ].join(' '),
         'data-testid': 'gate-trial-scenic-stage',
         'data-scene-asset-id': surface.scenicStage.sceneAssetId,
@@ -463,6 +628,7 @@ function GateTrialExactScreen(props: GateTrialExactScreenProps) {
           el('span', { className: 'gateTrialScenicStage__mist', 'data-testid': 'gate-trial-scenic-mist', 'aria-hidden': 'true' }),
           el('span', { className: 'gateTrialScenicStage__edgeFade', 'data-testid': 'gate-trial-scenic-edge-fade', 'aria-hidden': 'true' }),
         ),
+        renderGateTrialActiveTheater(surface.scenicStage.activeTheater),
         el('section', {
           className: `gateTrialReadinessSeal gateTrialReadinessSeal--${surface.scenicStage.readinessSeal.state}`,
           'data-testid': 'gate-trial-readiness-seal',

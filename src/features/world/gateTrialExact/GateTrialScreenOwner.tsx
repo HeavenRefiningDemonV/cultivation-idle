@@ -1,5 +1,7 @@
 import { useMemo } from 'react';
+import { useActivityStore } from '../../../stores/activityStore.js';
 import { useBountyStore } from '../../../stores/bountyStore.js';
+import { useCombatStore } from '../../../stores/combatStore.js';
 import { useContentStore } from '../../../stores/contentStore.js';
 import { useEquipmentStore } from '../../../stores/equipmentStore.js';
 import { useExpeditionStore } from '../../../stores/expeditionStore.js';
@@ -10,6 +12,7 @@ import { useTechniqueStore } from '../../../stores/techniqueStore.js';
 import { useTrialStore } from '../../../stores/trialStore.js';
 import { buildGateTrialExactSurfaceFromStores } from './buildGateTrialExactSurface.js';
 import { GateTrialExactScreen } from './GateTrialExactScreen.js';
+import { useGateTrialExactActionController } from './useGateTrialExactActionController.js';
 import './GateTrialExactScreen.scss';
 
 export interface GateTrialScreenOwnerProps {
@@ -48,6 +51,35 @@ export function GateTrialScreenOwner(props: GateTrialScreenOwnerProps) {
     ]) ?? [],
   }));
   const expeditionSignature = useExpeditionStore((state) => `${state.slots}:${state.active.length}:${state.active.map((run) => `${run.slotIndex}:${run.status}:${run.endsAt}`).join('|')}`);
+  const activeActivitySignature = useActivityStore((state) => {
+    const active = state.active;
+    if (!active) return 'none';
+    return `${active.type}:${active.payload?.cityId ?? active.cityId ?? ''}:${active.payload?.sourceId ?? active.sourceId ?? ''}:${active.startedAt ?? ''}`;
+  });
+  const combatSignature = useCombatStore((state) => {
+    const context = state.combatContext;
+    const contextKey =
+      context.type === 'trial'
+        ? `${context.type}:${context.cityId}:${context.trialId}`
+        : `${context.type ?? 'none'}`;
+
+    return [
+      state.inCombat ? 'combat' : 'idle',
+      contextKey,
+      state.currentEnemy?.id ?? '',
+      state.currentEnemy?.name ?? '',
+      state.playerHP,
+      state.playerMaxHP,
+      state.enemyHP,
+      state.enemyMaxHP,
+      state.combatStartTime,
+      state.autoAttack ? 'auto' : 'manual',
+      state.autoCombatAI ? 'ai' : 'noai',
+      state.combatLog.length,
+      state.techniqueLog.length,
+      state.events.length,
+    ].join('|');
+  });
   const surface = useMemo(
     () => buildGateTrialExactSurfaceFromStores(props.cityId, {
       mode,
@@ -72,8 +104,16 @@ export function GateTrialScreenOwner(props: GateTrialScreenOwnerProps) {
       equipmentSignature,
       bountySignature,
       expeditionSignature,
+      activeActivitySignature,
+      combatSignature,
     ],
   );
+  const actions = useGateTrialExactActionController({
+    cityId: props.cityId,
+    trialId: surface.meta.trialId ?? props.trialId ?? null,
+    surface,
+  });
+  const screenActions = surface.meta.mode === 'live' ? actions : {};
 
   return (
     <div
@@ -87,8 +127,10 @@ export function GateTrialScreenOwner(props: GateTrialScreenOwnerProps) {
       data-activity-mode={surface.meta.activityMode}
       data-lifecycle-state={surface.meta.lifecycleState}
       data-readiness-score={surface.meta.readinessScore}
+      data-actions-enabled={surface.meta.mode === 'live' ? 'true' : 'false'}
+      data-active-theater={surface.scenicStage.activeTheater?.visible ? 'true' : 'false'}
     >
-      <GateTrialExactScreen surface={surface} />
+      <GateTrialExactScreen surface={surface} {...screenActions} />
     </div>
   );
 }
