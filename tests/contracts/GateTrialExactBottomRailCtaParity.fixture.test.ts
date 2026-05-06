@@ -23,12 +23,26 @@ void test('Gate Trial Exact G6 renders bottom readiness rail and primary CTA reg
     'data-testid="gate-trial-primary-cta"',
     'data-testid="gate-trial-primary-cta-glow"',
     'data-testid="gate-trial-primary-cta-ring"',
-    'data-testid="gate-trial-primary-cta-ornament-left"',
-    'data-testid="gate-trial-primary-cta-ornament-right"',
     'data-testid="gate-trial-primary-cta-plate"',
     'data-testid="gate-trial-primary-cta-label"',
+    'data-testid="gate-trial-icon-readiness-qiCap"',
+    'data-testid="gate-trial-icon-readiness-loadout"',
+    'data-testid="gate-trial-icon-readiness-weapon"',
+    'data-testid="gate-trial-icon-readiness-medicine"',
+    'data-testid="gate-trial-icon-readiness-techniques"',
+    'data-testid="gate-trial-icon-readiness-safetyNet"',
+    'data-testid="gate-trial-icon-readiness-gate"',
   ]) {
     assert.equal(html.includes(token), true, `missing ${token}`);
+  }
+
+  for (const forbidden of [
+    'data-testid="gate-trial-primary-cta-ornament-left"',
+    'data-testid="gate-trial-primary-cta-ornament-right"',
+    'gateTrialPrimaryCta__ornament',
+    'gateTrialPrimaryCta__ornamentCore',
+  ]) {
+    assert.equal(html.includes(forbidden), false, `CTA must not render removed green ornament ${forbidden}`);
   }
 });
 
@@ -102,7 +116,7 @@ void test('Gate Trial Exact G6 renders readiness medallion and label ids for all
     'gateTrialReadinessRail__medallion--warning',
     'gateTrialReadinessRail__medallion--locked',
     'gateTrialReadinessRail__medallion--gate-glow',
-    'gateTrialReadinessRail__gateGlyph',
+    'gateTrialReadinessRail__icon',
     'gateTrialReadinessRail__diamond',
   ]) {
     assert.equal(html.includes(className), true, `missing readiness medallion class ${className}`);
@@ -185,10 +199,10 @@ void test('Gate Trial Exact G6 SCSS contains bottom rail and CTA parity selector
     '.gateTrialReadinessRail__medallion--warning',
     '.gateTrialReadinessRail__medallion--locked',
     '.gateTrialReadinessRail__medallion--gate-glow',
-    '.gateTrialReadinessRail__mark--check',
-    '.gateTrialReadinessRail__mark--warning',
-    '.gateTrialReadinessRail__mark--locked',
-    '.gateTrialReadinessRail__gateGlyph',
+    '.gateTrialReadinessRail__mark',
+    '.gateTrialReadinessRail__icon',
+    '.gateTrialExactIcon--rail',
+    '.gateTrialExactIcon--railGate',
     '.gateTrialReadinessRail__label',
     '.gateTrialReadinessRail__diamond',
     '.gateTrialExactPage__ctaSlot',
@@ -198,15 +212,29 @@ void test('Gate Trial Exact G6 SCSS contains bottom rail and CTA parity selector
     '.gateTrialPrimaryCta--ceremonial',
     '.gateTrialPrimaryCta__glow',
     '.gateTrialPrimaryCta__ring',
-    '.gateTrialPrimaryCta__ornament',
-    '.gateTrialPrimaryCta__ornament--left',
-    '.gateTrialPrimaryCta__ornament--right',
-    '.gateTrialPrimaryCta__ornamentCore',
     '.gateTrialPrimaryCta__plate',
     '.gateTrialPrimaryCta__plateEdge',
     '.gateTrialPrimaryCta__label',
   ]) {
     assert.equal(scss.includes(required), true, `missing G6 SCSS selector ${required}`);
+  }
+
+  for (const forbidden of [
+    '.gateTrialReadinessRail__mark--check::before',
+    '.gateTrialReadinessRail__mark--warning::before',
+    '.gateTrialReadinessRail__mark--locked::before',
+    '.gateTrialReadinessRail__mark--locked::after',
+    '.gateTrialReadinessRail__gateGlyph',
+    '.gateTrialPrimaryCta__ornament',
+    '.gateTrialPrimaryCta__ornament--left',
+    '.gateTrialPrimaryCta__ornament--right',
+    '.gateTrialPrimaryCta__ornamentCore',
+    '.gateTrialPrimaryCta__plate::before',
+    '.gateTrialPrimaryCta__plate::after',
+    'gate-trial-primary-cta-ornament-left',
+    'gate-trial-primary-cta-ornament-right',
+  ]) {
+    assert.equal(scss.includes(forbidden), false, `CTA de-green must remove ${forbidden}`);
   }
 });
 

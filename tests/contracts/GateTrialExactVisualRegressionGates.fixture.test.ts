@@ -92,6 +92,117 @@ void test('Gate Trial Exact G11 geometry checks exist', () => {
   }
 });
 
+void test('Gate Trial Exact T1 visual regression gates include layout refit thresholds', () => {
+  const validate = readFileSync('scripts/release/validatePhase6CombatEvidence.ts', 'utf8');
+
+  for (const token of [
+    'gate_trial_layout_scenic_not_dominant',
+    'gate_trial_layout_header_misaligned',
+    'gate_trial_layout_right_panel_misaligned',
+    'gate_trial_layout_summary_misaligned',
+    'gate_trial_layout_rail_misaligned',
+    'gate_trial_layout_cta_misaligned',
+    'scenic.height >= 680',
+    'cta.top >= 1010',
+    'rail.top >= 900',
+  ]) {
+    assert.equal(validate.includes(token), true, `missing T1 runtime geometry gate ${token}`);
+  }
+});
+
+void test('Gate Trial Exact T2 visual regression gates forbid green CTA ornament blobs', () => {
+  const screen = readFileSync('src/features/world/gateTrialExact/GateTrialExactScreen.ts', 'utf8');
+  const scss = readFileSync('src/features/world/gateTrialExact/GateTrialExactScreen.scss', 'utf8');
+
+  for (const forbidden of [
+    'gate-trial-primary-cta-ornament-left',
+    'gate-trial-primary-cta-ornament-right',
+    'gateTrialPrimaryCta__ornament',
+    'gateTrialPrimaryCta__ornamentCore',
+  ]) {
+    assert.equal(screen.includes(forbidden), false, `CTA screen markup must not contain ${forbidden}`);
+  }
+
+  const ctaStart = scss.indexOf('.gateTrialPrimaryCta {');
+  assert.notEqual(ctaStart, -1, 'CTA SCSS block missing');
+
+  const ctaEnd = scss.indexOf('.gateTrialScenicStage--active', ctaStart);
+  const ctaSlice = scss.slice(ctaStart, ctaEnd > ctaStart ? ctaEnd : undefined);
+
+  for (const forbidden of [
+    '.gateTrialPrimaryCta__ornament',
+    '.gateTrialPrimaryCta__ornamentCore',
+    '.gateTrialPrimaryCta__plate::before',
+    '.gateTrialPrimaryCta__plate::after',
+    'rgba(47, 106, 76',
+    'rgba(22, 69, 50',
+  ]) {
+    assert.equal(ctaSlice.includes(forbidden), false, `CTA SCSS slice must not contain ${forbidden}`);
+  }
+});
+
+void test('Gate Trial Exact T3 visual regression gates require unified iconography', () => {
+  const screen = readFileSync('src/features/world/gateTrialExact/GateTrialExactScreen.ts', 'utf8');
+  const scss = readFileSync('src/features/world/gateTrialExact/GateTrialExactScreen.scss', 'utf8');
+
+  assert.equal(screen.includes('GateTrialExactIcon'), true);
+  assert.equal(scss.includes('.gateTrialExactIcon'), true);
+
+  for (const forbidden of [
+    '.gateTrialTacticalCell__icon--hp::before',
+    '.gateTrialTacticalCell__icon--gate::before',
+    '.gateTrialTacticalCell__icon--loadout::before',
+    '.gateTrialTacticalCell__icon--aiProfile::before',
+    '.gateTrialTacticalCell__icon--healing::before',
+    '.gateTrialTacticalCell__icon--bounty::before',
+    '.gateTrialTacticalCell__icon--expedition::before',
+    'lucide-react',
+    'GameIcon',
+  ]) {
+    assert.equal(`${screen}\n${scss}`.includes(forbidden), false, `T3 must not contain ${forbidden}`);
+  }
+});
+
+void test('Gate Trial Exact T4 visual regression gates preserve final scenic art truth', () => {
+  const registry = readFileSync('src/features/world/gateTrialExact/gateTrialExactAssetRegistry.ts', 'utf8');
+  const builder = readFileSync('src/features/world/gateTrialExact/buildGateTrialExactSurface.ts', 'utf8');
+  const scss = readFileSync('src/features/world/gateTrialExact/GateTrialExactScreen.scss', 'utf8');
+
+  for (const required of [
+    'GATE_TRIAL_EXACT_FOUNDATION_SCENIC_BINDING',
+    'requiresFinalArtBinding',
+    'canClaimStrictVisualParity',
+    'approved-bound',
+    'approvedFoundationGatePlate',
+    'foundation-gate-scene-approved-plate.png',
+    'forbiddenFinalSubstitutes',
+  ]) {
+    assert.equal(`${registry}\n${builder}`.includes(required), true, `missing T4 art truth token ${required}`);
+  }
+
+  const approvedBlockStart = scss.indexOf('.gateTrialScenicStage--approvedBound .gateTrialScenicStage__approvedPlate');
+  const approvedBlockEnd = approvedBlockStart >= 0 ? scss.indexOf('}', approvedBlockStart) : -1;
+  const approvedBlock = approvedBlockStart >= 0 && approvedBlockEnd > approvedBlockStart
+    ? scss.slice(approvedBlockStart, approvedBlockEnd)
+    : '';
+
+  assert.equal(
+    approvedBlock.includes("url('../../../assets/world/gateTrial/foundation-gate-scene-approved-plate.png')"),
+    true,
+    'approved scene must bind the canonical Foundation Gate scenic plate',
+  );
+
+  for (const forbidden of [
+    'city_gate.png',
+    'InsideDungeon.png',
+    'entrygate.png',
+    'gate.png',
+    'cultivator_backshots.png',
+  ]) {
+    assert.equal(approvedBlock.includes(forbidden), false, `approved scene must not use support substitute ${forbidden}`);
+  }
+});
+
 void test('Gate Trial Exact G11 report checklist preserves mockup region map', () => {
   const regionMap = readFileSync('docs/release/qa/ui-cutover/gate-trial-exact/p0-freeze/gateTrialExactRegionMap.json', 'utf8');
   const checklist = readFileSync('docs/release/qa/ui-cutover/gate-trial-exact/p0-freeze/gateTrialExactVisualAuditChecklist.md', 'utf8');

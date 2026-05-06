@@ -76,6 +76,19 @@ function validateRuinsDomAudit(folderPath: string, slotFile: string, findings: P
   }
 }
 
+function addGateTrialLayoutRefitFinding(
+  findings: Phase6CombatEvidenceFinding[],
+  code: string,
+  message: string,
+) {
+  findings.push({
+    surfaceId: 'gate-trial',
+    severity: 'error',
+    code,
+    message,
+  });
+}
+
 function validateGateTrialDomAudit(folderPath: string, slotFile: string, findings: Phase6CombatEvidenceFinding[]) {
   const domPath = path.join(folderPath, slotFile.replace('.png', '.dom.json'));
   if (!fs.existsSync(domPath)) {
@@ -224,6 +237,67 @@ function validateGateTrialDomAudit(folderPath: string, slotFile: string, finding
           code: 'gate_trial_geometry_invalid',
           message: `Gate Trial base geometry rule failed: ${rule}`,
         });
+      }
+    }
+
+    const viewportHeight = audit?.viewport?.height ?? 0;
+    const viewportWidth = audit?.viewport?.width ?? 0;
+    const rects = audit?.rects ?? {};
+
+    if (viewportWidth === 2048 && viewportHeight === 1152) {
+      const scenic = rects.scenic;
+      const right = rects.recommendedPanel;
+      const summary = rects.summary;
+      const rail = rects.readinessRail;
+      const cta = rects.cta;
+      const gateHeader = rects.gateHeader;
+
+      if (!(scenic && scenic.top >= 165 && scenic.top <= 215 && scenic.height >= 680 && scenic.bottom >= 850)) {
+        addGateTrialLayoutRefitFinding(
+          findings,
+          'gate_trial_layout_scenic_not_dominant',
+          `Gate Trial scenic stage is not using the target central vertical band: ${JSON.stringify(scenic)}`,
+        );
+      }
+
+      if (!(gateHeader && gateHeader.top >= 130 && gateHeader.top <= 185)) {
+        addGateTrialLayoutRefitFinding(
+          findings,
+          'gate_trial_layout_header_misaligned',
+          `Gate Trial Foundation Gate plaque is not near the target vertical band: ${JSON.stringify(gateHeader)}`,
+        );
+      }
+
+      if (!(right && right.top >= 175 && right.top <= 230 && right.height >= 570)) {
+        addGateTrialLayoutRefitFinding(
+          findings,
+          'gate_trial_layout_right_panel_misaligned',
+          `Gate Trial recommended panel is not near the target vertical band: ${JSON.stringify(right)}`,
+        );
+      }
+
+      if (!(summary && summary.top >= 800 && summary.top <= 875 && summary.height >= 190 && summary.bottom <= 1095)) {
+        addGateTrialLayoutRefitFinding(
+          findings,
+          'gate_trial_layout_summary_misaligned',
+          `Gate Trial summary dock is not near the target lower-right band: ${JSON.stringify(summary)}`,
+        );
+      }
+
+      if (!(rail && rail.top >= 900 && rail.top <= 980 && rail.bottom <= 1065)) {
+        addGateTrialLayoutRefitFinding(
+          findings,
+          'gate_trial_layout_rail_misaligned',
+          `Gate Trial readiness rail is not near the target lower band: ${JSON.stringify(rail)}`,
+        );
+      }
+
+      if (!(cta && cta.top >= 1010 && cta.top <= 1080 && cta.bottom <= 1138)) {
+        addGateTrialLayoutRefitFinding(
+          findings,
+          'gate_trial_layout_cta_misaligned',
+          `Gate Trial CTA is not near the target bottom band: ${JSON.stringify(cta)}`,
+        );
       }
     }
   }

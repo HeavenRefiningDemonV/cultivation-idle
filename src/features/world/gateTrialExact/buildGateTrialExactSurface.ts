@@ -57,7 +57,10 @@ import {
   GATE_TRIAL_TARGET_MOCKUP_ID,
 } from './gateTrialExactPresentation.js';
 
-import { GATE_TRIAL_EXACT_ASSETS } from './gateTrialExactAssetRegistry.js';
+import {
+  GATE_TRIAL_EXACT_ASSETS,
+  GATE_TRIAL_EXACT_FOUNDATION_SCENIC_BINDING,
+} from './gateTrialExactAssetRegistry.js';
 import type {
   CombatContext,
   CombatEvent,
@@ -565,10 +568,10 @@ export function createGateTrialExactMockupFixture(
       rows: GATE_TRIAL_FIXTURE_MINIMUM_ROWS.map(toChecklistRow),
     },
     scenicStage: {
-      sceneAssetId: GATE_TRIAL_EXACT_ASSETS.scenic.approvedFoundationGatePlate.key,
-      artStatus: 'deferred',
-      requiresFinalArtBinding: true,
-      environmentDescriptor: 'Deferred Foundation Gate threshold scene: ink-wash mountain valley, monumental temple stairs, centered shrine gate, pale portal bloom, warm torch basins, lower-left cultivator silhouette, mist, and ornate readiness seal placement matching the provided 2048x1152 mockup.',
+      sceneAssetId: GATE_TRIAL_EXACT_FOUNDATION_SCENIC_BINDING.key,
+      artStatus: GATE_TRIAL_EXACT_FOUNDATION_SCENIC_BINDING.artStatus,
+      requiresFinalArtBinding: GATE_TRIAL_EXACT_FOUNDATION_SCENIC_BINDING.requiresFinalArtBinding,
+      environmentDescriptor: 'Foundation Gate threshold scene: ink-wash mountain valley, monumental temple stairs, centered shrine gate, pale portal bloom, warm torch basins, lower-left cultivator silhouette, mist, and ornate readiness seal placement matching the provided 2048x1152 mockup.',
       readinessSeal: {
         verdict: 'VIABLE',
         scoreLabel: 'Readiness 74 / 100',
@@ -640,7 +643,7 @@ export function createGateTrialExactMockupFixture(
       placeholderAssetKeysInUse: [],
       liveSourceNotes: [
         'Fixture surface is store-free and mockup-locked for Gate Trial Exact planning-state visual parity.',
-        'Central scenic art is intentionally deferred; final approved Foundation Gate plate must be bound before visual parity can be declared.',
+        'Approved Foundation Gate scenic plate bound from src/assets/world/gateTrial/foundation-gate-scene-approved-plate.png.',
       ],
       fixtureLockedValues: [
         'Gate Trial title',
@@ -1763,6 +1766,10 @@ export function buildGateTrialExactSurfaceFromStores(
     minimumChecklist: buildLiveMinimumChecklist(context),
     scenicStage: {
       ...fixture.scenicStage,
+      sceneAssetId: GATE_TRIAL_EXACT_FOUNDATION_SCENIC_BINDING.key,
+      artStatus: GATE_TRIAL_EXACT_FOUNDATION_SCENIC_BINDING.artStatus,
+      requiresFinalArtBinding: GATE_TRIAL_EXACT_FOUNDATION_SCENIC_BINDING.requiresFinalArtBinding,
+      environmentDescriptor: 'Foundation Gate threshold scene: ink-wash mountain valley, monumental temple stairs, centered shrine gate, pale portal bloom, warm torch basins, lower-left cultivator silhouette, mist, and active trial overlays.',
       readinessSeal: liveReadinessSeal,
       guardianPlaque: {
         ...fixture.scenicStage.guardianPlaque,
@@ -1797,6 +1804,7 @@ export function buildGateTrialExactSurfaceFromStores(
         'Gate reward sourced from getTrialGateItemId.',
         'Readiness score adapted from buildGateTrialReadinessSurface.',
         'Top fixes use deterministic readiness-gap fallback until action-controller packets.',
+        'Approved Foundation Gate scenic plate bound from src/assets/world/gateTrial/foundation-gate-scene-approved-plate.png.',
         `Post-failure suggestion count observed: ${context.postFailureSuggestionCount}.`,
       ],
       placeholderAssetKeysInUse: fixture.debug.placeholderAssetKeysInUse,

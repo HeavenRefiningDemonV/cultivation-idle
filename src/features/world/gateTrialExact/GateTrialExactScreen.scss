@@ -1,14 +1,192 @@
 .gateTrialScreenOwner { width: 100%; height: 100%; min-width: 0; min-height: 0; display: block; overflow: hidden; isolation: isolate; }
 .gateTrialExactPage {
-  --gate-page-pad-x: clamp(30px, 2.2vw, 46px); --gate-page-pad-top: clamp(18px, 1.9vh, 25px); --gate-left-rail-width: clamp(322px, 16.6vw, 342px); --gate-right-rail-width: clamp(372px, 18.9vw, 392px); --gate-gap: clamp(22px, 1.55vw, 34px); --gate-top-height: clamp(142px, 13.1vh, 154px); --gate-scenic-height: clamp(620px, 62vh, 730px); --gate-bottom-rail-height: clamp(104px, 10.2vh, 124px); --gate-cta-height: clamp(72px, 7.4vh, 92px); --gate-card-radius: clamp(12px, 0.9vw, 18px); --gate-ink: #2f2a22; --gate-muted-ink: #6f6658; --gate-parchment: #e3d9ca; --gate-card-parchment: #d9cdbd; --gate-cell-parchment: #d9cbb7; --gate-plaque-ink: #39352e; --gate-plaque-trim: #b99d63; --gate-jade: #2f6b4d; --gate-jade-deep: #1f513b; --gate-warning: #c79339; --gate-gold: #bba375; --gate-red-ink: #8a3830;
-  position: relative; display: grid; width: 100%; height: 100%; min-width: 0; min-height: 0; overflow: hidden; isolation: isolate; box-sizing: border-box; color: var(--gate-ink); padding: var(--gate-page-pad-top) var(--gate-page-pad-x) 22px;
-  grid-template-columns: var(--gate-left-rail-width) minmax(0, 1fr) var(--gate-right-rail-width);
-  grid-template-rows: var(--gate-top-height) minmax(0, var(--gate-scenic-height)) var(--gate-bottom-rail-height) var(--gate-cta-height);
-  grid-template-areas: 'top top top' 'left scenic right' 'left rail summary' '. cta summary'; column-gap: var(--gate-gap);
-  background: radial-gradient(120% 70% at 50% 8%, rgba(255,255,255,.32), rgba(255,255,255,0) 58%), linear-gradient(180deg, #eee2cf 0%, #dfd2bd 52%, #d8cab4 100%);
+  --gate-page-pad-x: clamp(30px, 2vw, 42px);
+  --gate-page-pad-top: clamp(18px, 1.9vh, 22px);
+  --gate-page-pad-bottom: clamp(18px, 1.8vh, 22px);
+
+  --gate-left-rail-width: clamp(330px, 16.6vw, 348px);
+  --gate-right-rail-width: clamp(382px, 18.95vw, 400px);
+  --gate-gap: clamp(22px, 1.55vw, 34px);
+
+  --gate-top-height: clamp(146px, 13.6vh, 162px);
+  --gate-scenic-min-height: clamp(460px, 60vh, 740px);
+  --gate-bottom-rail-height: clamp(98px, 9.4vh, 116px);
+  --gate-cta-height: clamp(76px, 7.1vh, 92px);
+
+  --gate-left-rail-top-offset: clamp(54px, 5.2vh, 68px);
+  --gate-right-rail-top-offset: clamp(12px, 1.4vh, 22px);
+  --gate-summary-lift: clamp(88px, 8.8vh, 112px);
+
+  --gate-card-radius: clamp(12px, 0.9vw, 18px);
+  --gate-ink: #2f2a22;
+  --gate-muted-ink: #6f6658;
+  --gate-parchment: #e3d9ca;
+  --gate-card-parchment: #d9cdbd;
+  --gate-cell-parchment: #d9cbb7;
+  --gate-plaque-ink: #39352e;
+  --gate-plaque-trim: #b99d63;
+  --gate-jade: #2f6b4d;
+  --gate-jade-deep: #1f513b;
+  --gate-warning: #c79339;
+  --gate-gold: #bba375;
+  --gate-red-ink: #8a3830;
+
+  position: relative;
+  display: grid;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  isolation: isolate;
+  box-sizing: border-box;
+  color: var(--gate-ink);
+  padding: var(--gate-page-pad-top) var(--gate-page-pad-x) var(--gate-page-pad-bottom);
+
+  grid-template-columns:
+    var(--gate-left-rail-width)
+    minmax(0, 1fr)
+    var(--gate-right-rail-width);
+
+  grid-template-rows:
+    var(--gate-top-height)
+    minmax(var(--gate-scenic-min-height), 1fr)
+    var(--gate-bottom-rail-height)
+    var(--gate-cta-height);
+
+  grid-template-areas:
+    'top top top'
+    'left scenic right'
+    'left rail summary'
+    '. cta summary';
+
+  column-gap: var(--gate-gap);
+  row-gap: 0;
+
+  background:
+    radial-gradient(120% 70% at 50% 8%, rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0) 58%),
+    linear-gradient(180deg, #eee2cf 0%, #dfd2bd 52%, #d8cab4 100%);
   font-family: Georgia, 'Times New Roman', serif;
 }
 .gateTrialExactPage,.gateTrialExactPage *,.gateTrialExactPage *::before,.gateTrialExactPage *::after{box-sizing:border-box}
+
+.gateTrialExactIcon {
+  --gate-icon-stroke: rgba(50, 43, 33, 0.92);
+  --gate-icon-fill: rgba(223, 205, 161, 0.18);
+  --gate-icon-accent: rgba(172, 131, 57, 0.78);
+  --gate-icon-soft-fill: rgba(255, 245, 203, 0.22);
+
+  display: inline-grid;
+  place-items: center;
+  width: 1em;
+  height: 1em;
+  color: var(--gate-icon-stroke);
+  flex: 0 0 auto;
+}
+
+.gateTrialExactIcon__svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+
+.gateTrialExactIcon__stroke {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.gateTrialExactIcon__fill {
+  fill: var(--gate-icon-fill);
+  stroke: currentColor;
+  stroke-width: 1.35;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.gateTrialExactIcon__accent {
+  fill: none;
+  stroke: var(--gate-icon-accent);
+  stroke-width: 1.55;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.gateTrialExactIcon__softFill {
+  fill: var(--gate-icon-soft-fill);
+  stroke: none;
+}
+
+.gateTrialExactIcon--micro {
+  font-size: clamp(14px, 0.95vw, 18px);
+}
+
+.gateTrialExactIcon--tactical {
+  font-size: clamp(22px, 1.55vw, 30px);
+}
+
+.gateTrialExactIcon--chip {
+  font-size: clamp(12px, 0.78vw, 15px);
+}
+
+.gateTrialExactIcon--status {
+  font-size: clamp(16px, 1.05vw, 22px);
+}
+
+.gateTrialExactIcon--panel {
+  font-size: clamp(16px, 1.05vw, 22px);
+}
+
+.gateTrialExactIcon--reward {
+  font-size: clamp(28px, 2vw, 40px);
+}
+
+.gateTrialExactIcon--rail {
+  font-size: clamp(26px, 1.85vw, 36px);
+}
+
+.gateTrialExactIcon--railGate {
+  font-size: clamp(38px, 2.85vw, 56px);
+}
+
+.gateTrialExactIcon--tone-positive {
+  --gate-icon-stroke: rgba(230, 238, 198, 0.96);
+  --gate-icon-fill: rgba(55, 112, 73, 0.22);
+  --gate-icon-accent: rgba(185, 214, 145, 0.84);
+  --gate-icon-soft-fill: rgba(211, 238, 190, 0.2);
+}
+
+.gateTrialExactIcon--tone-warning {
+  --gate-icon-stroke: rgba(78, 49, 19, 0.96);
+  --gate-icon-fill: rgba(218, 156, 53, 0.2);
+  --gate-icon-accent: rgba(235, 190, 104, 0.88);
+  --gate-icon-soft-fill: rgba(255, 222, 150, 0.22);
+}
+
+.gateTrialExactIcon--tone-locked {
+  --gate-icon-stroke: rgba(232, 223, 194, 0.92);
+  --gate-icon-fill: rgba(78, 74, 66, 0.24);
+  --gate-icon-accent: rgba(155, 148, 126, 0.82);
+  --gate-icon-soft-fill: rgba(207, 201, 181, 0.18);
+}
+
+.gateTrialExactIcon--tone-ceremonial {
+  --gate-icon-stroke: rgba(76, 58, 27, 0.94);
+  --gate-icon-fill: rgba(199, 151, 58, 0.18);
+  --gate-icon-accent: rgba(231, 204, 126, 0.88);
+  --gate-icon-soft-fill: rgba(255, 240, 168, 0.2);
+}
+
+.gateTrialExactIcon--tone-critical {
+  --gate-icon-stroke: rgba(121, 42, 34, 0.94);
+  --gate-icon-fill: rgba(162, 63, 49, 0.18);
+  --gate-icon-accent: rgba(219, 140, 91, 0.82);
+  --gate-icon-soft-fill: rgba(255, 210, 176, 0.16);
+}
+
 .gateTrialExactPage__underlay{position:absolute;inset:0;pointer-events:none}
 .gateTrialTopRegion {
   grid-area: top;
@@ -223,6 +401,8 @@
 .gateTrialTopRegion__statusMedallion,
 .gateTrialTopRegion__settingsOrnament {
   position: relative;
+  display: grid;
+  place-items: center;
   width: clamp(22px, 1.55vw, 30px);
   height: clamp(22px, 1.55vw, 30px);
   border-radius: 999px;
@@ -233,6 +413,10 @@
   box-shadow:
     inset 0 0 0 1px rgba(255, 246, 215, 0.32),
     0 1px 1px rgba(67, 51, 34, 0.22);
+}
+
+.gateTrialTopRegion__statusIcon {
+  filter: drop-shadow(0 1px 0 rgba(255, 244, 208, 0.24));
 }
 
 .gateTrialTopRegion__settingsOrnament {
@@ -325,130 +509,38 @@ button.gateTrialTacticalCell:disabled {
 .gateTrialTacticalCell__iconDock {
   position: relative;
   z-index: 1;
-  width: clamp(28px, 1.9vw, 38px);
-  height: clamp(28px, 1.9vw, 38px);
+  width: clamp(34px, 2.35vw, 46px);
+  height: clamp(34px, 2.35vw, 46px);
   display: grid;
   place-items: center;
-  border-radius: 9px;
-  border: 1px solid rgba(103, 77, 42, 0.34);
+  border-radius: 10px;
+  border: 1px solid rgba(117, 92, 50, 0.34);
   background:
-    radial-gradient(circle at 34% 26%, rgba(255, 251, 222, 0.58), rgba(255, 251, 222, 0) 48%),
-    linear-gradient(180deg, rgba(219, 202, 159, 0.92), rgba(162, 134, 78, 0.82));
+    radial-gradient(circle at 38% 28%, rgba(255, 245, 206, 0.58), rgba(255, 245, 206, 0) 48%),
+    linear-gradient(180deg, rgba(214, 191, 139, 0.78), rgba(154, 120, 63, 0.62));
   box-shadow:
-    inset 0 0 0 1px rgba(255, 244, 205, 0.32),
-    0 1px 1px rgba(69, 49, 30, 0.18);
+    inset 0 0 0 1px rgba(255, 248, 220, 0.22),
+    0 1px 2px rgba(57, 41, 21, 0.12);
+  color: rgba(60, 46, 25, 0.92);
   overflow: hidden;
 }
 
 .gateTrialTacticalCell__icon {
-  position: relative;
-  display: block;
-  width: clamp(17px, 1.16vw, 23px);
-  height: clamp(17px, 1.16vw, 23px);
+  filter: drop-shadow(0 1px 0 rgba(255, 244, 208, 0.32));
 }
 
-.gateTrialTacticalCell__icon--hp::before {
-  content: '';
-  position: absolute;
-  inset: 4px 3px 5px;
-  border-radius: 40% 40% 48% 48%;
-  background: linear-gradient(180deg, #9aa591, #5e7766);
-  transform: rotate(-8deg);
+.gateTrialTacticalCell--positive .gateTrialTacticalCell__iconDock {
+  border-color: rgba(58, 114, 76, 0.34);
+  background:
+    radial-gradient(circle at 38% 28%, rgba(224, 241, 205, 0.56), rgba(224, 241, 205, 0) 48%),
+    linear-gradient(180deg, rgba(151, 181, 119, 0.72), rgba(67, 124, 80, 0.62));
 }
 
-.gateTrialTacticalCell__icon--gate::before {
-  content: '';
-  position: absolute;
-  left: 3px;
-  right: 3px;
-  top: 5px;
-  height: 5px;
-  border-radius: 2px;
-  background: #5b4325;
-}
-
-.gateTrialTacticalCell__icon--gate::after {
-  content: '';
-  position: absolute;
-  left: 6px;
-  right: 6px;
-  bottom: 4px;
-  height: 11px;
-  border-left: 3px solid #5b4325;
-  border-right: 3px solid #5b4325;
-}
-
-.gateTrialTacticalCell__icon--loadout::before {
-  content: '';
-  position: absolute;
-  left: 9px;
-  top: 2px;
-  width: 4px;
-  height: 18px;
-  border-radius: 2px;
-  background: #4b4a42;
-  transform: rotate(34deg);
-}
-
-.gateTrialTacticalCell__icon--aiProfile::before {
-  content: '';
-  position: absolute;
-  inset: 3px 5px;
-  border-radius: 4px 4px 3px 3px;
-  transform: rotate(-8deg);
-  background: linear-gradient(180deg, #49386d, #2f2351);
-  box-shadow: inset 3px 0 0 rgba(255, 236, 189, 0.24);
-}
-
-.gateTrialTacticalCell__icon--healing::before,
-.gateTrialTacticalCell__icon--healing::after {
-  content: '';
-  position: absolute;
-  background: #4f4938;
-  border-radius: 2px;
-}
-
-.gateTrialTacticalCell__icon--healing::before {
-  left: 5px;
-  right: 5px;
-  top: 9px;
-  height: 5px;
-}
-
-.gateTrialTacticalCell__icon--healing::after {
-  top: 5px;
-  bottom: 5px;
-  left: 9px;
-  width: 5px;
-}
-
-.gateTrialTacticalCell__icon--bounty::before {
-  content: '';
-  position: absolute;
-  inset: 3px 5px;
-  border-radius: 3px;
-  border: 2px solid #5b4325;
-  background: rgba(240, 221, 175, 0.46);
-}
-
-.gateTrialTacticalCell__icon--expedition::before {
-  content: '';
-  position: absolute;
-  inset: 4px;
-  border-radius: 999px;
-  border: 3px solid #4f4938;
-}
-
-.gateTrialTacticalCell__icon--expedition::after {
-  content: '';
-  position: absolute;
-  left: 9px;
-  top: 2px;
-  width: 3px;
-  height: 18px;
-  border-radius: 2px;
-  background: #4f4938;
-  transform: rotate(42deg);
+.gateTrialTacticalCell--ceremonial .gateTrialTacticalCell__iconDock {
+  border-color: rgba(152, 112, 46, 0.42);
+  background:
+    radial-gradient(circle at 38% 28%, rgba(255, 239, 180, 0.58), rgba(255, 239, 180, 0) 48%),
+    linear-gradient(180deg, rgba(212, 166, 76, 0.76), rgba(118, 85, 39, 0.64));
 }
 
 .gateTrialTacticalCell__text {
@@ -564,23 +656,6 @@ button.gateTrialTacticalCell:disabled {
   white-space: nowrap;
   border: 0;
 }
-.gateTrialExactPage__gateHeaderSlot { position: absolute; z-index: 5; top: clamp(132px, 13.7vh, 158px); left: calc(var(--gate-page-pad-x) + var(--gate-left-rail-width) + var(--gate-gap)); width: calc(100% - (var(--gate-page-pad-x) * 2) - var(--gate-left-rail-width) - var(--gate-right-rail-width) - (var(--gate-gap) * 2)); display:flex;justify-content:center;pointer-events:none; }
-.gateTrialGateHeader{pointer-events:auto;background:var(--gate-plaque-ink);border:1px solid var(--gate-plaque-trim);color:#efe2cc;padding:12px 18px;border-radius:12px}
-.gateTrialExactPage__leftRail { grid-area: left; }.gateTrialExactPage__scenicSlot { grid-area: scenic; }.gateTrialExactPage__rightRail { grid-area: right; }.gateTrialExactPage__readinessRailSlot { grid-area: rail; }.gateTrialExactPage__ctaSlot { grid-area: cta; }.gateTrialExactPage__summaryDock { grid-area: summary; }
-.gateTrialMinimumChecklist__row{display:grid;grid-template-columns:34px 1fr;gap:8px;padding:8px 0}
-.gateTrialStatusMedallion{width:28px;height:28px;border-radius:50%;display:inline-grid;place-items:center}.gateTrialStatusMedallion__mark{width:10px;height:10px}
-.gateTrialStatusMedallion--success{background:var(--gate-jade)} .gateTrialStatusMedallion--warning{background:var(--gate-warning)} .gateTrialStatusMedallion--locked{background:#4b463f} .gateTrialStatusMedallion--active{background:radial-gradient(circle,#d4bf86,#2f6b4d)}
-.gateTrialScenicStage{position:relative;height:100%;border:1px solid rgba(70,62,54,.38);border-radius:16px;background:#7e7c74;overflow:hidden}
-.gateTrialScenicStage__frame{position:absolute;inset:0}.gateTrialScenicStage__underpaint{position:absolute;inset:0;background:radial-gradient(circle at 50% 30%,rgba(239,239,235,.5),rgba(116,112,104,.9) 58%)}
-.gateTrialScenicStage__portal{position:absolute;left:43%;top:33%;width:14%;height:22%;background:radial-gradient(circle,rgba(255,255,245,.65),rgba(255,255,245,0));border-radius:50%}
-.gateTrialScenicStage__stairs{position:absolute;left:33%;right:33%;bottom:22%;height:28%;background:linear-gradient(180deg,rgba(79,75,69,.2),rgba(53,50,45,.7))}
-.gateTrialScenicStage__torch{position:absolute;bottom:36%;width:14px;height:14px;border-radius:50%;background:#d4a15f;box-shadow:0 0 16px #d4a15f}.gateTrialScenicStage__torch--left{left:24%}.gateTrialScenicStage__torch--right{right:24%}
-.gateTrialScenicStage__cultivatorShadow{position:absolute;left:22%;bottom:18%;width:42px;height:76px;border-radius:50%;background:rgba(30,28,25,.5)}
-.gateTrialScenicStage__mist,.gateTrialScenicStage__edgeFade{position:absolute;inset:0;pointer-events:none}.gateTrialScenicStage__edgeFade{box-shadow:inset 0 0 110px rgba(226,216,197,.55)}
-.gateTrialReadinessSeal{position:absolute;left:50%;bottom:20%;transform:translateX(-50%);background:rgba(229,218,195,.92);padding:10px 20px;border-radius:999px}
-.gateTrialGuardianPlaque{position:absolute;left:50%;bottom:6%;transform:translateX(-50%);background:rgba(48,43,36,.92);color:#ecdab9;padding:10px 14px;border-radius:10px}
-.gateTrialRecommendedPanel__prepRows,.gateTrialRecommendedPanel__failSafeRows,.gateTrialRecommendedPanel__topFixes{display:grid;gap:8px}.gateTrialRecommendedPanel__safetyNetButton{opacity:.65}
-.gateTrialTrialSummary__rows{display:grid;gap:6px}.gateTrialTrialSummary__row{display:flex;justify-content:space-between}
 .gateTrialExactPage__readinessRailSlot {
   grid-area: rail;
   position: relative;
@@ -590,7 +665,7 @@ button.gateTrialTacticalCell:disabled {
   display: grid;
   align-items: end;
   justify-items: center;
-  padding: clamp(0px, 0.28vh, 4px) clamp(8px, 0.7vw, 14px) 0;
+  padding: 0 clamp(8px, 0.7vw, 14px);
   overflow: visible;
 }
 
@@ -783,7 +858,8 @@ button.gateTrialTacticalCell:disabled {
 
 .gateTrialReadinessRail__mark {
   position: relative;
-  display: block;
+  display: grid;
+  place-items: center;
   width: 100%;
   height: 100%;
 }
@@ -791,19 +867,6 @@ button.gateTrialTacticalCell:disabled {
 .gateTrialReadinessRail__medallion--check .gateTrialReadinessRail__medallionInner {
   background:
     radial-gradient(circle at 35% 30%, rgba(214, 236, 197, 0.8), rgba(61, 112, 75, 0.92) 58%, rgba(27, 70, 51, 0.98) 100%);
-}
-
-.gateTrialReadinessRail__mark--check::before {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 52%;
-  height: 28%;
-  border-left: clamp(2px, 0.18vw, 3px) solid rgba(241, 239, 202, 0.95);
-  border-bottom: clamp(2px, 0.18vw, 3px) solid rgba(241, 239, 202, 0.95);
-  transform: translate(-46%, -58%) rotate(-45deg);
-  filter: drop-shadow(0 1px 0 rgba(24, 42, 31, 0.35));
 }
 
 .gateTrialReadinessRail__medallion--warning .gateTrialReadinessRail__medallionRing {
@@ -818,20 +881,6 @@ button.gateTrialTacticalCell:disabled {
     radial-gradient(circle at 35% 30%, rgba(255, 229, 168, 0.86), rgba(205, 145, 50, 0.92) 58%, rgba(126, 82, 28, 0.98) 100%);
 }
 
-.gateTrialReadinessRail__mark--warning::before {
-  content: '!';
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: clamp(28px, 2.1vw, 42px);
-  line-height: 1;
-  font-weight: 900;
-  color: rgba(55, 39, 20, 0.92);
-  text-shadow: 0 1px 0 rgba(255, 235, 178, 0.4);
-}
-
 .gateTrialReadinessRail__medallion--locked .gateTrialReadinessRail__medallionRing {
   border-color: rgba(82, 78, 68, 0.78);
   background:
@@ -844,37 +893,23 @@ button.gateTrialTacticalCell:disabled {
     radial-gradient(circle at 35% 30%, rgba(192, 190, 174, 0.78), rgba(92, 87, 75, 0.96) 62%, rgba(43, 41, 36, 0.98) 100%);
 }
 
-.gateTrialReadinessRail__mark--locked::before {
-  content: '';
-  position: absolute;
-  left: 28%;
-  right: 28%;
-  top: 24%;
-  height: 34%;
-  border: clamp(2px, 0.16vw, 3px) solid rgba(236, 226, 195, 0.86);
-  border-bottom: 0;
-  border-radius: 999px 999px 0 0;
-}
-
-.gateTrialReadinessRail__mark--locked::after {
-  content: '';
-  position: absolute;
-  left: 25%;
-  right: 25%;
-  bottom: 24%;
-  height: 34%;
-  border-radius: 4px;
-  background: rgba(236, 226, 195, 0.86);
-  box-shadow: inset 0 -3px 0 rgba(72, 65, 52, 0.28);
-}
-
 .gateTrialReadinessRail__mark--gate {
-  width: 58%;
-  height: 58%;
+  width: 100%;
+  height: 100%;
 }
 
 .gateTrialReadinessRail__mark--gate-glow {
   filter: drop-shadow(0 0 8px rgba(239, 221, 150, 0.28));
+}
+
+.gateTrialReadinessRail__icon {
+  width: 64%;
+  height: 64%;
+}
+
+.gateTrialReadinessRail__node--gate .gateTrialReadinessRail__icon {
+  width: 68%;
+  height: 68%;
 }
 
 .gateTrialReadinessRail__medallion--gate-glow {
@@ -901,40 +936,6 @@ button.gateTrialTacticalCell:disabled {
   box-shadow:
     inset 0 0 0 1px rgba(244, 226, 150, 0.22),
     inset 0 0 18px rgba(231, 255, 220, 0.14);
-}
-
-.gateTrialReadinessRail__gateGlyph {
-  position: relative;
-  display: block;
-  width: 58%;
-  height: 58%;
-}
-
-.gateTrialReadinessRail__gateGlyph::before {
-  content: '';
-  position: absolute;
-  left: 8%;
-  right: 8%;
-  top: 16%;
-  height: 18%;
-  border-radius: 4px 4px 2px 2px;
-  background: rgba(237, 222, 153, 0.88);
-  box-shadow:
-    0 -5px 0 -2px rgba(237, 222, 153, 0.72),
-    0 1px 0 rgba(35, 63, 46, 0.32);
-}
-
-.gateTrialReadinessRail__gateGlyph::after {
-  content: '';
-  position: absolute;
-  left: 24%;
-  right: 24%;
-  bottom: 12%;
-  height: 48%;
-  border-left: clamp(3px, 0.24vw, 5px) solid rgba(237, 222, 153, 0.88);
-  border-right: clamp(3px, 0.24vw, 5px) solid rgba(237, 222, 153, 0.88);
-  border-top: clamp(3px, 0.24vw, 5px) solid rgba(237, 222, 153, 0.88);
-  border-radius: 3px 3px 0 0;
 }
 
 .gateTrialReadinessRail__label {
@@ -975,16 +976,16 @@ button.gateTrialTacticalCell:disabled {
   align-items: center;
   justify-items: center;
   overflow: visible;
-  padding-top: clamp(0px, 0.2vh, 3px);
+  padding-top: 0;
 }
 
 .gateTrialPrimaryCta {
   position: relative;
-  width: clamp(500px, 29.5vw, 610px);
+  width: clamp(540px, 29.5vw, 620px);
   min-width: 0;
-  height: clamp(64px, 6.6vh, 84px);
+  height: clamp(68px, 6.8vh, 86px);
   display: grid;
-  grid-template-columns: clamp(74px, 4.8vw, 98px) minmax(0, 1fr) clamp(74px, 4.8vw, 98px);
+  grid-template-columns: minmax(0, 1fr);
   align-items: center;
   justify-items: stretch;
   padding: 0;
@@ -1009,13 +1010,13 @@ button.gateTrialTacticalCell:disabled {
   position: absolute;
   z-index: 0;
   left: 50%;
-  bottom: calc(-1 * clamp(18px, 1.6vh, 28px));
-  width: clamp(620px, 41vw, 840px);
-  height: clamp(58px, 6vh, 84px);
+  bottom: calc(-1 * clamp(16px, 1.45vh, 24px));
+  width: clamp(600px, 39vw, 780px);
+  height: clamp(54px, 5.5vh, 76px);
   transform: translateX(-50%);
   border-radius: 50%;
   background:
-    radial-gradient(ellipse at 50% 50%, rgba(250, 220, 128, 0.34), rgba(250, 220, 128, 0.12) 44%, rgba(250, 220, 128, 0) 74%);
+    radial-gradient(ellipse at 50% 50%, rgba(250, 220, 128, 0.28), rgba(250, 220, 128, 0.1) 44%, rgba(250, 220, 128, 0) 74%);
   pointer-events: none;
 }
 
@@ -1023,126 +1024,46 @@ button.gateTrialTacticalCell:disabled {
   position: absolute;
   z-index: 0;
   left: 50%;
-  bottom: calc(-1 * clamp(10px, 1vh, 16px));
-  width: clamp(520px, 34vw, 700px);
-  height: clamp(34px, 3.8vh, 54px);
+  bottom: calc(-1 * clamp(8px, 0.9vh, 14px));
+  width: clamp(500px, 32vw, 660px);
+  height: clamp(32px, 3.4vh, 48px);
   transform: translateX(-50%);
   border-radius: 50%;
-  border: 1px solid rgba(227, 197, 105, 0.34);
+  border: 1px solid rgba(227, 197, 105, 0.3);
   box-shadow:
-    0 0 18px rgba(233, 203, 112, 0.22),
-    inset 0 0 12px rgba(233, 203, 112, 0.12);
+    0 0 16px rgba(233, 203, 112, 0.18),
+    inset 0 0 10px rgba(233, 203, 112, 0.1);
   pointer-events: none;
 }
 
 .gateTrialPrimaryCta__plate {
   position: relative;
   z-index: 2;
-  grid-column: 1 / -1;
+  grid-column: 1;
   grid-row: 1;
   height: 100%;
   display: grid;
   place-items: center;
-  border-radius: clamp(12px, 0.9vw, 18px);
-  border: 2px solid rgba(122, 86, 35, 0.76);
+  border-radius: clamp(10px, 0.78vw, 16px);
+  border: 2px solid rgba(122, 86, 35, 0.78);
   background:
-    radial-gradient(110% 80% at 50% 0%, rgba(255, 240, 178, 0.56), rgba(255, 240, 178, 0) 54%),
-    linear-gradient(180deg, #d8b35d 0%, #bd8d3f 52%, #9a692c 100%);
+    radial-gradient(115% 82% at 50% 0%, rgba(255, 242, 184, 0.58), rgba(255, 242, 184, 0) 56%),
+    linear-gradient(90deg, rgba(128, 82, 28, 0.28) 0%, rgba(128, 82, 28, 0.08) 8%, rgba(128, 82, 28, 0) 16%, rgba(128, 82, 28, 0) 84%, rgba(128, 82, 28, 0.08) 92%, rgba(128, 82, 28, 0.28) 100%),
+    linear-gradient(180deg, #d8b35d 0%, #bd8d3f 54%, #99682b 100%);
   box-shadow:
-    inset 0 0 0 1px rgba(255, 248, 202, 0.42),
+    inset 0 0 0 1px rgba(255, 248, 202, 0.44),
     inset 0 -10px 18px rgba(94, 56, 18, 0.22),
+    inset 0 9px 16px rgba(255, 232, 151, 0.16),
     0 3px 8px rgba(64, 43, 19, 0.24);
   overflow: hidden;
-}
-
-.gateTrialPrimaryCta__plate::before,
-.gateTrialPrimaryCta__plate::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  width: clamp(42px, 3vw, 64px);
-  height: clamp(42px, 3vw, 64px);
-  border: 1px solid rgba(78, 95, 57, 0.34);
-  border-radius: 999px;
-  background:
-    radial-gradient(circle at 36% 28%, rgba(231, 251, 206, 0.46), rgba(47, 106, 76, 0.82) 60%, rgba(22, 69, 50, 0.95));
-  transform: translateY(-50%);
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 236, 164, 0.18),
-    0 1px 3px rgba(48, 38, 20, 0.18);
-}
-
-.gateTrialPrimaryCta__plate::before {
-  left: clamp(18px, 1.4vw, 28px);
-}
-
-.gateTrialPrimaryCta__plate::after {
-  right: clamp(18px, 1.4vw, 28px);
 }
 
 .gateTrialPrimaryCta__plateEdge {
   position: absolute;
   inset: clamp(5px, 0.45vw, 8px);
-  border-radius: clamp(8px, 0.65vw, 13px);
-  border: 1px solid rgba(255, 236, 164, 0.28);
+  border-radius: clamp(7px, 0.6vw, 12px);
+  border: 1px solid rgba(255, 236, 164, 0.3);
   pointer-events: none;
-}
-
-.gateTrialPrimaryCta__ornament {
-  position: relative;
-  z-index: 3;
-  grid-row: 1;
-  width: clamp(82px, 5.2vw, 108px);
-  height: clamp(58px, 5.7vh, 74px);
-  display: grid;
-  place-items: center;
-  pointer-events: none;
-}
-
-.gateTrialPrimaryCta__ornament--left {
-  grid-column: 1;
-  justify-self: start;
-  transform: translateX(calc(-1 * clamp(16px, 1.1vw, 24px)));
-}
-
-.gateTrialPrimaryCta__ornament--right {
-  grid-column: 3;
-  justify-self: end;
-  transform: translateX(clamp(16px, 1.1vw, 24px)) scaleX(-1);
-}
-
-.gateTrialPrimaryCta__ornamentCore {
-  position: relative;
-  width: clamp(70px, 4.5vw, 94px);
-  height: clamp(52px, 4.6vh, 68px);
-  border-radius: 46% 54% 50% 50%;
-  background:
-    radial-gradient(circle at 36% 30%, rgba(207, 238, 190, 0.7), rgba(63, 126, 82, 0.86) 52%, rgba(28, 78, 55, 0.96) 100%);
-  border: 2px solid rgba(165, 130, 62, 0.62);
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 235, 163, 0.24),
-    0 2px 5px rgba(49, 43, 23, 0.22);
-}
-
-.gateTrialPrimaryCta__ornamentCore::before,
-.gateTrialPrimaryCta__ornamentCore::after {
-  content: '';
-  position: absolute;
-  border: 1px solid rgba(231, 206, 123, 0.58);
-  border-radius: 999px;
-}
-
-.gateTrialPrimaryCta__ornamentCore::before {
-  inset: 18% 20% 22% 22%;
-}
-
-.gateTrialPrimaryCta__ornamentCore::after {
-  left: 34%;
-  top: 10%;
-  width: 28%;
-  height: 80%;
-  transform: rotate(25deg);
-  border-width: 0 2px 0 0;
 }
 
 .gateTrialPrimaryCta__label {
@@ -1152,11 +1073,11 @@ button.gateTrialTacticalCell:disabled {
   font-size: clamp(34px, 2.35vw, 46px);
   line-height: 1;
   font-weight: 700;
-  letter-spacing: 0;
+  letter-spacing: 0.01em;
   color: rgba(50, 38, 20, 0.96);
   text-shadow:
     0 1px 0 rgba(255, 238, 172, 0.58),
-    0 0 8px rgba(255, 231, 150, 0.18);
+    0 0 8px rgba(255, 231, 150, 0.16);
   white-space: nowrap;
 }
 
@@ -1166,7 +1087,8 @@ button.gateTrialTacticalCell:disabled {
   box-shadow:
     inset 0 0 0 1px rgba(255, 248, 202, 0.5),
     inset 0 -10px 18px rgba(94, 56, 18, 0.22),
-    0 0 0 3px rgba(70, 119, 80, 0.12),
+    inset 0 9px 16px rgba(255, 232, 151, 0.18),
+    0 0 0 3px rgba(166, 116, 42, 0.14),
     0 3px 8px rgba(64, 43, 19, 0.24);
 }
 
@@ -1792,9 +1714,11 @@ button.gateTrialTacticalCell:disabled {
 }
 
 .gateTrialPrimaryCta--warning .gateTrialPrimaryCta__plate {
+  border-color: rgba(119, 68, 37, 0.78);
   background:
-    radial-gradient(110% 80% at 50% 0%, rgba(255, 232, 178, 0.52), rgba(255, 232, 178, 0) 54%),
-    linear-gradient(180deg, #c99a4b 0%, #9b6034 58%, #6f3f27 100%);
+    radial-gradient(115% 82% at 50% 0%, rgba(255, 229, 171, 0.52), rgba(255, 229, 171, 0) 56%),
+    linear-gradient(90deg, rgba(94, 50, 25, 0.28) 0%, rgba(94, 50, 25, 0.08) 8%, rgba(94, 50, 25, 0) 16%, rgba(94, 50, 25, 0) 84%, rgba(94, 50, 25, 0.08) 92%, rgba(94, 50, 25, 0.28) 100%),
+    linear-gradient(180deg, #c99a4b 0%, #a96d35 56%, #704126 100%);
 }
 
 .gateTrialPrimaryCta--warning .gateTrialPrimaryCta__label {
@@ -1813,23 +1737,29 @@ button.gateTrialTacticalCell:disabled {
 .gateTrialExactPage__leftRail {
   grid-area: left;
   display: flex;
-  align-items: stretch;
+  align-items: flex-start;
   min-height: 0;
+  padding-top: var(--gate-left-rail-top-offset);
+  overflow: visible;
 }
 
 .gateTrialExactPage__rightRail {
   grid-area: right;
   display: flex;
-  align-items: stretch;
+  align-items: flex-start;
   min-height: 0;
+  padding-top: var(--gate-right-rail-top-offset);
+  overflow: visible;
 }
 
 .gateTrialExactPage__summaryDock {
   grid-area: summary;
   display: flex;
-  align-items: stretch;
+  align-items: flex-start;
   min-height: 0;
-  padding-top: clamp(8px, 0.8vh, 12px);
+  padding-top: 0;
+  transform: translateY(calc(-1 * var(--gate-summary-lift)));
+  overflow: visible;
 }
 
 .gateTrialExactCard {
@@ -1874,57 +1804,35 @@ button.gateTrialTacticalCell:disabled {
   display: inline-grid;
   place-items: center;
   flex: 0 0 auto;
-  width: clamp(28px, 1.95vw, 38px);
-  height: clamp(28px, 1.95vw, 38px);
+  width: clamp(28px, 1.8vw, 38px);
+  height: clamp(28px, 1.8vw, 38px);
   border-radius: 999px;
-  border: 1px solid rgba(58, 84, 61, 0.5);
-  background:
-    radial-gradient(circle at 34% 28%, rgba(255, 255, 230, 0.68), rgba(255, 255, 230, 0) 44%),
-    linear-gradient(180deg, rgba(96, 142, 101, 0.96), rgba(42, 98, 70, 0.94));
+  border: 1px solid rgba(117, 92, 50, 0.38);
   box-shadow:
-    inset 0 0 0 2px rgba(231, 238, 206, 0.28),
-    0 1px 2px rgba(59, 42, 25, 0.22);
+    inset 0 0 0 1px rgba(255, 248, 220, 0.22),
+    0 1px 2px rgba(57, 41, 21, 0.16);
 }
 
-.gateTrialStatusMedallion__mark {
-  position: relative;
-  display: block;
-  width: 72%;
-  height: 72%;
-  border-radius: 999px;
+.gateTrialStatusMedallion__icon {
+  width: 62%;
+  height: 62%;
 }
 
-.gateTrialStatusMedallion--success {
-  border-color: rgba(44, 103, 74, 0.62);
+.gateTrialStatusMedallion--success,
+.gateTrialStatusMedallion--cleared {
   background:
-    radial-gradient(circle at 34% 28%, rgba(245, 250, 216, 0.72), rgba(245, 250, 216, 0) 45%),
-    linear-gradient(180deg, rgba(97, 151, 102, 0.98), rgba(34, 97, 70, 0.98));
+    radial-gradient(circle at 38% 28%, rgba(223, 241, 204, 0.72), rgba(70, 132, 82, 0.94) 62%, rgba(28, 78, 55, 0.98) 100%);
 }
 
-.gateTrialStatusMedallion--warning {
-  border-color: rgba(137, 98, 42, 0.64);
+.gateTrialStatusMedallion--warning,
+.gateTrialStatusMedallion--active {
   background:
-    radial-gradient(circle at 34% 28%, rgba(255, 246, 202, 0.82), rgba(255, 246, 202, 0) 45%),
-    linear-gradient(180deg, rgba(224, 179, 82, 0.98), rgba(190, 128, 38, 0.98));
+    radial-gradient(circle at 38% 28%, rgba(255, 230, 164, 0.8), rgba(207, 145, 45, 0.94) 62%, rgba(122, 77, 26, 0.98) 100%);
 }
 
 .gateTrialStatusMedallion--locked {
-  border-color: rgba(79, 74, 63, 0.58);
   background:
-    radial-gradient(circle at 34% 28%, rgba(244, 236, 210, 0.42), rgba(244, 236, 210, 0) 45%),
-    linear-gradient(180deg, rgba(126, 120, 101, 0.94), rgba(76, 71, 60, 0.96));
-}
-
-.gateTrialStatusMedallion--active,
-.gateTrialStatusMedallion--cleared {
-  border-color: rgba(157, 128, 65, 0.72);
-  background:
-    radial-gradient(circle at 50% 46%, rgba(212, 242, 213, 0.84), rgba(71, 126, 92, 0.62) 44%, rgba(38, 83, 61, 0.9) 68%),
-    linear-gradient(180deg, rgba(218, 190, 112, 0.92), rgba(126, 95, 45, 0.92));
-  box-shadow:
-    0 0 0 2px rgba(191, 162, 94, 0.22),
-    0 0 13px rgba(196, 166, 83, 0.2),
-    inset 0 0 0 1px rgba(255, 245, 205, 0.32);
+    radial-gradient(circle at 38% 28%, rgba(209, 205, 186, 0.72), rgba(90, 85, 73, 0.94) 62%, rgba(43, 41, 36, 0.98) 100%);
 }
 
 .gateTrialStatusMedallion[data-size="small"] {
@@ -1942,262 +1850,9 @@ button.gateTrialTacticalCell:disabled {
   height: clamp(34px, 2.25vw, 46px);
 }
 
-.gateTrialStatusMedallion--success .gateTrialStatusMedallion__mark::before,
-.gateTrialStatusMedallion--active .gateTrialStatusMedallion__mark::before,
-.gateTrialStatusMedallion--cleared .gateTrialStatusMedallion__mark::before {
-  content: '';
-  position: absolute;
-  width: 54%;
-  height: 28%;
-  border-left: 2px solid rgba(242, 238, 205, 0.92);
-  border-bottom: 2px solid rgba(242, 238, 205, 0.92);
-  transform: translate(-50%, -58%) rotate(-45deg);
-  left: 52%;
-  top: 52%;
-}
-
-.gateTrialStatusMedallion--warning .gateTrialStatusMedallion__mark::before {
-  content: '!';
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  font-weight: 800;
-  font-size: 0.92em;
-  color: rgba(58, 42, 24, 0.9);
-  font-family: Georgia, 'Times New Roman', serif;
-}
-
-.gateTrialStatusMedallion--locked .gateTrialStatusMedallion__mark::before {
-  content: '';
-  position: absolute;
-  left: 28%;
-  right: 28%;
-  top: 24%;
-  height: 38%;
-  border: 2px solid rgba(236, 224, 195, 0.76);
-  border-bottom: 0;
-  border-radius: 999px 999px 0 0;
-}
-
-.gateTrialStatusMedallion--locked .gateTrialStatusMedallion__mark::after {
-  content: '';
-  position: absolute;
-  left: 25%;
-  right: 25%;
-  bottom: 23%;
-  height: 32%;
-  border-radius: 3px;
-  background: rgba(236, 224, 195, 0.76);
-}
-
-.gateTrialIconSlot {
-  position: relative;
-  display: grid;
-  place-items: center;
-  width: clamp(22px, 1.35vw, 28px);
-  height: clamp(22px, 1.35vw, 28px);
-  border-radius: 999px;
-  border: 1px solid rgba(109, 84, 45, 0.28);
-  background:
-    radial-gradient(circle at 35% 28%, rgba(255, 250, 218, 0.6), rgba(255, 250, 218, 0) 48%),
-    linear-gradient(180deg, rgba(214, 194, 142, 0.86), rgba(142, 111, 58, 0.78));
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 246, 208, 0.26),
-    0 1px 1px rgba(65, 46, 25, 0.14);
-}
-
-.gateTrialIconSlot__glyph {
-  position: relative;
-  width: 58%;
-  height: 58%;
-  display: block;
-  color: rgba(55, 42, 26, 0.82);
-}
-
-.gateTrialIconSlot__glyph--statusCheck::before {
-  content: '';
-  position: absolute;
-  left: 18%;
-  top: 45%;
-  width: 58%;
-  height: 30%;
-  border-left: 2px solid currentColor;
-  border-bottom: 2px solid currentColor;
-  transform: rotate(-45deg);
-}
-
-.gateTrialIconSlot__glyph--statusWarning::before {
-  content: '';
-  position: absolute;
-  left: 14%;
-  right: 14%;
-  bottom: 10%;
-  height: 72%;
-  clip-path: polygon(50% 0, 100% 100%, 0 100%);
-  background: currentColor;
-  opacity: 0.72;
-}
-
-.gateTrialIconSlot__glyph--statusWarning::after {
-  content: '!';
-  position: absolute;
-  inset: 12% 0 0;
-  display: grid;
-  place-items: center;
-  font-size: 0.72em;
-  font-weight: 800;
-  color: rgba(245, 229, 182, 0.95);
-}
-
-.gateTrialIconSlot__glyph--statusLock::before,
-.gateTrialIconSlot__glyph--statusLock::after {
-  content: '';
-  position: absolute;
-  left: 24%;
-  right: 24%;
-}
-
-.gateTrialIconSlot__glyph--statusLock::before {
-  top: 14%;
-  height: 44%;
-  border: 2px solid currentColor;
-  border-bottom: 0;
-  border-radius: 999px 999px 0 0;
-}
-
-.gateTrialIconSlot__glyph--statusLock::after {
-  bottom: 14%;
-  height: 36%;
-  border-radius: 2px;
-  background: currentColor;
-}
-
-.gateTrialIconSlot__glyph--failureSeal::before {
-  content: '';
-  position: absolute;
-  inset: 10%;
-  border: 2px solid currentColor;
-  border-radius: 999px;
-  box-shadow: inset 0 0 0 2px rgba(245, 229, 182, 0.22);
-}
-
-.gateTrialIconSlot__glyph--failureSeal::after {
-  content: '';
-  position: absolute;
-  left: 48%;
-  top: 22%;
-  width: 2px;
-  height: 56%;
-  background: currentColor;
-  transform: rotate(20deg);
-}
-
-.gateTrialIconSlot__glyph--currencySeal::before,
-.gateTrialIconSlot__glyph--currencySeal::after {
-  content: '';
-  position: absolute;
-  left: 20%;
-  right: 20%;
-  height: 34%;
-  border: 2px solid currentColor;
-  border-radius: 999px;
-}
-
-.gateTrialIconSlot__glyph--currencySeal::before { top: 18%; }
-.gateTrialIconSlot__glyph--currencySeal::after { bottom: 18%; }
-
-.gateTrialIconSlot__glyph--reserveSeal::before {
-  content: '';
-  position: absolute;
-  left: 20%;
-  right: 20%;
-  bottom: 14%;
-  height: 58%;
-  border: 2px solid currentColor;
-  border-radius: 32% 32% 42% 42%;
-}
-
-.gateTrialIconSlot__glyph--reserveSeal::after {
-  content: '';
-  position: absolute;
-  left: 36%;
-  right: 36%;
-  top: 10%;
-  height: 28%;
-  border-radius: 2px;
-  background: currentColor;
-}
-
-.gateTrialIconSlot__glyph--weapon::before {
-  content: '';
-  position: absolute;
-  left: 48%;
-  top: 4%;
-  width: 12%;
-  height: 78%;
-  border-radius: 999px;
-  background: currentColor;
-  transform: rotate(42deg);
-}
-
-.gateTrialIconSlot__glyph--weapon::after {
-  content: '';
-  position: absolute;
-  left: 30%;
-  top: 62%;
-  width: 42%;
-  height: 12%;
-  border-radius: 999px;
-  background: currentColor;
-  transform: rotate(42deg);
-}
-
-.gateTrialIconSlot__glyph--healing::before,
-.gateTrialIconSlot__glyph--healing::after {
-  content: '';
-  position: absolute;
-  border-radius: 2px;
-  background: currentColor;
-}
-
-.gateTrialIconSlot__glyph--healing::before {
-  left: 14%;
-  right: 14%;
-  top: 42%;
-  height: 18%;
-}
-
-.gateTrialIconSlot__glyph--healing::after {
-  top: 14%;
-  bottom: 14%;
-  left: 42%;
-  width: 18%;
-}
-
-.gateTrialIconSlot__glyph--technique::before {
-  content: '';
-  position: absolute;
-  inset: 11% 20%;
-  border: 2px solid currentColor;
-  border-radius: 2px 7px 7px 2px;
-  transform: skewY(-8deg);
-}
-
-.gateTrialIconSlot__glyph--technique::after {
-  content: '';
-  position: absolute;
-  top: 26%;
-  bottom: 26%;
-  left: 50%;
-  width: 2px;
-  background: currentColor;
-  opacity: 0.72;
-}
-
 .gateTrialMinimumChecklist {
   width: 100%;
-  height: 100%;
+  height: clamp(640px, 58vh, 680px);
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
   padding: clamp(22px, 2vh, 30px) clamp(20px, 1.45vw, 28px);
@@ -2232,6 +1887,7 @@ button.gateTrialTacticalCell:disabled {
   font-weight: 700;
   color: var(--gate-ink);
   text-align: center;
+  white-space: nowrap;
 }
 
 .gateTrialMinimumChecklist__stamp {
@@ -2348,7 +2004,7 @@ button.gateTrialTacticalCell:disabled {
 
 .gateTrialRecommendedPanel {
   width: 100%;
-  height: 100%;
+  height: clamp(600px, 55vh, 645px);
   display: grid;
   grid-template-rows: auto auto auto auto;
   padding: clamp(18px, 1.75vh, 26px) clamp(18px, 1.32vw, 26px);
@@ -2400,9 +2056,9 @@ button.gateTrialTacticalCell:disabled {
 
 .gateTrialRecommendedPanel__prepRow {
   display: grid;
-  grid-template-columns: clamp(22px, 1.45vw, 30px) minmax(0, 1fr) clamp(18px, 1.1vw, 24px);
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  column-gap: clamp(8px, 0.7vw, 12px);
+  column-gap: clamp(8px, 0.6vw, 11px);
   min-height: clamp(24px, 2.4vh, 32px);
 }
 
@@ -2411,10 +2067,11 @@ button.gateTrialTacticalCell:disabled {
 }
 
 .gateTrialRecommendedPanel__prepTitle {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: clamp(13px, 0.84vw, 16px);
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+  font-size: clamp(12px, 0.78vw, 15px);
+  line-height: 1.12;
   font-weight: 600;
   color: var(--gate-ink);
 }
@@ -2434,12 +2091,24 @@ button.gateTrialTacticalCell:disabled {
   gap: clamp(6px, 0.6vh, 9px);
 }
 
+.gateTrialRecommendedPanel__factRow,
 .gateTrialFailSafeFactRow {
   display: grid;
-  grid-template-columns: clamp(22px, 1.4vw, 28px) minmax(0, 1fr) auto;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  column-gap: clamp(8px, 0.7vw, 12px);
+  column-gap: clamp(8px, 0.6vw, 11px);
   min-height: clamp(25px, 2.55vh, 34px);
+}
+
+.gateTrialRecommendedPanel__factIcon,
+.gateTrialFailSafeFactRow__icon {
+  width: clamp(22px, 1.45vw, 30px);
+  height: clamp(22px, 1.45vw, 30px);
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  border: 1px solid rgba(112, 88, 49, 0.32);
+  background: rgba(214, 194, 153, 0.42);
 }
 
 .gateTrialFailSafeFactRow__label,
@@ -2467,10 +2136,10 @@ button.gateTrialTacticalCell:disabled {
   width: 100%;
   min-height: clamp(34px, 3.4vh, 44px);
   display: grid;
-  grid-template-columns: clamp(26px, 1.7vw, 34px) minmax(0, 1fr);
+  grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
-  justify-items: center;
-  column-gap: clamp(6px, 0.55vw, 10px);
+  justify-content: center;
+  column-gap: clamp(8px, 0.6vw, 12px);
   padding: 0 clamp(12px, 1vw, 18px);
   margin-top: clamp(9px, 0.86vh, 13px);
   border: 1px solid rgba(82, 76, 63, 0.46);
@@ -2507,41 +2176,12 @@ button.gateTrialTacticalCell:disabled {
 }
 
 .gateTrialRecommendedPanel__safetyNetIcon {
-  position: relative;
-  display: grid;
-  place-items: center;
-  width: clamp(20px, 1.3vw, 26px);
-  height: clamp(20px, 1.3vw, 26px);
+  justify-self: end;
 }
 
-.gateTrialRecommendedPanel__safetyNetIconMark {
-  position: relative;
-  display: block;
-  width: 76%;
-  height: 76%;
-}
-
-.gateTrialRecommendedPanel__safetyNetIconMark::before {
-  content: '';
-  position: absolute;
-  left: 27%;
-  right: 27%;
-  top: 13%;
-  height: 42%;
-  border: 2px solid rgba(70, 64, 52, 0.68);
-  border-bottom: 0;
-  border-radius: 999px 999px 0 0;
-}
-
-.gateTrialRecommendedPanel__safetyNetIconMark::after {
-  content: '';
-  position: absolute;
-  left: 21%;
-  right: 21%;
-  bottom: 12%;
-  height: 43%;
-  border-radius: 3px;
-  background: rgba(70, 64, 52, 0.68);
+.gateTrialRecommendedPanel__safetyNetLabel {
+  justify-self: start;
+  min-width: 0;
 }
 
 .gateTrialRecommendedPanel__topFixes {
@@ -2553,9 +2193,9 @@ button.gateTrialTacticalCell:disabled {
   width: 100%;
   min-height: clamp(36px, 3.8vh, 48px);
   display: grid;
-  grid-template-columns: clamp(28px, 1.8vw, 36px) minmax(0, 1fr) clamp(18px, 1.1vw, 24px);
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  column-gap: clamp(8px, 0.75vw, 12px);
+  column-gap: clamp(8px, 0.6vw, 12px);
   padding: 0 clamp(10px, 0.88vw, 14px);
   border: 1px solid rgba(117, 91, 51, 0.34);
   border-radius: clamp(6px, 0.48vw, 9px);
@@ -2591,10 +2231,12 @@ button.gateTrialTacticalCell:disabled {
     0 2px 5px rgba(76, 55, 32, 0.14);
 }
 
+.gateTrialRecommendedPanel__topFixIcon,
 .gateTrialTopFixButton__icon {
-  justify-self: start;
+  justify-self: center;
 }
 
+.gateTrialRecommendedPanel__topFixLabel,
 .gateTrialTopFixButton__label {
   min-width: 0;
   overflow: hidden;
@@ -2620,7 +2262,7 @@ button.gateTrialTacticalCell:disabled {
 
 .gateTrialTrialSummary {
   width: 100%;
-  height: 100%;
+  height: clamp(210px, 20.5vh, 242px);
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
   padding: clamp(16px, 1.5vh, 22px) clamp(18px, 1.3vw, 24px);
@@ -2687,7 +2329,7 @@ button.gateTrialTacticalCell:disabled {
 .gateTrialExactPage__gateHeaderSlot {
   position: absolute;
   z-index: 8;
-  top: clamp(132px, 13.7vh, 160px);
+  top: clamp(144px, 13.8vh, 162px);
   left: 50%;
   width: clamp(470px, 25.9vw, 540px);
   transform: translateX(-50%);
@@ -2828,9 +2470,9 @@ button.gateTrialTacticalCell:disabled {
 
 .gateTrialGateHeader__chip {
   display: inline-grid;
-  grid-template-columns: clamp(13px, 0.85vw, 17px) auto;
+  grid-template-columns: auto auto;
   align-items: center;
-  column-gap: 5px;
+  column-gap: 4px;
   min-height: clamp(20px, 1.9vh, 26px);
   padding: 0 clamp(8px, 0.7vw, 12px);
   border: 1px solid rgba(119, 96, 59, 0.32);
@@ -2844,13 +2486,7 @@ button.gateTrialTacticalCell:disabled {
 }
 
 .gateTrialGateHeader__chipIcon {
-  width: clamp(10px, 0.68vw, 14px);
-  height: clamp(10px, 0.68vw, 14px);
-  border-radius: 999px;
-  border: 1px solid rgba(51, 107, 76, 0.46);
-  background:
-    radial-gradient(circle at 35% 28%, rgba(255, 255, 235, 0.68), rgba(255, 255, 235, 0) 48%),
-    linear-gradient(180deg, #7da178 0%, #315f49 100%);
+  opacity: 0.9;
 }
 
 .gateTrialGateHeader__chipLabel {
@@ -2865,15 +2501,16 @@ button.gateTrialTacticalCell:disabled {
   z-index: 2;
   display: grid;
   align-items: stretch;
-  padding-top: clamp(44px, 4.2vh, 64px);
-  padding-bottom: clamp(14px, 1.4vh, 20px);
+  padding-top: 0;
+  padding-bottom: 0;
+  overflow: visible;
 }
 
 .gateTrialScenicStage {
   position: relative;
   width: 100%;
   height: 100%;
-  min-height: clamp(500px, 55vh, 690px);
+  min-height: 0;
   overflow: visible;
   isolation: isolate;
   border: 0;
@@ -2882,11 +2519,13 @@ button.gateTrialTacticalCell:disabled {
 }
 
 .gateTrialScenicStage--approvedBound .gateTrialScenicStage__approvedPlate {
+  background-image: url('../../../assets/world/gateTrial/foundation-gate-scene-approved-plate.png');
   opacity: 1;
 }
 
 .gateTrialScenicStage--deferredArt .gateTrialScenicStage__approvedPlate {
   opacity: 0;
+  background-image: none;
 }
 
 .gateTrialScenicStage__frame {
@@ -2925,8 +2564,31 @@ button.gateTrialTacticalCell:disabled {
 }
 
 .gateTrialScenicStage--approvedBound .gateTrialScenicStage__underpaint {
-  opacity: 0.18;
+  opacity: 0.12;
   mix-blend-mode: multiply;
+}
+
+.gateTrialScenicStage--deferredArt .gateTrialScenicStage__underpaint {
+  opacity: 1;
+}
+
+.gateTrialScenicStage--approvedBound .gateTrialScenicStage__mountain,
+.gateTrialScenicStage--approvedBound .gateTrialScenicStage__gateSilhouette,
+.gateTrialScenicStage--approvedBound .gateTrialScenicStage__stairs,
+.gateTrialScenicStage--approvedBound .gateTrialScenicStage__platform,
+.gateTrialScenicStage--approvedBound .gateTrialScenicStage__torch,
+.gateTrialScenicStage--approvedBound .gateTrialScenicStage__cultivatorShadow {
+  opacity: 0;
+}
+
+.gateTrialScenicStage--approvedBound .gateTrialScenicStage__mist {
+  opacity: 0.26;
+  mix-blend-mode: screen;
+}
+
+.gateTrialScenicStage--approvedBound .gateTrialScenicStage__portalBloom {
+  opacity: 0.34;
+  mix-blend-mode: screen;
 }
 
 .gateTrialScenicStage__mountain {
@@ -3232,7 +2894,7 @@ button.gateTrialTacticalCell:disabled {
   position: absolute;
   z-index: 11;
   left: 50%;
-  bottom: clamp(8%, 9.5%, 11%);
+  bottom: clamp(5%, 6%, 7%);
   width: clamp(360px, 20vw, 420px);
   min-height: clamp(94px, 9.7vh, 120px);
   transform: translateX(-50%);
@@ -3294,35 +2956,17 @@ button.gateTrialTacticalCell:disabled {
 }
 
 .gateTrialGuardianPlaque__rewardIcon {
-  position: relative;
-  width: 60%;
-  height: 68%;
-  display: block;
-}
-
-.gateTrialGuardianPlaque__rewardIcon--foundationPill::before {
-  content: '';
-  position: absolute;
-  left: 26%;
-  right: 26%;
-  top: 8%;
-  height: 18%;
+  width: clamp(36px, 2.4vw, 48px);
+  height: clamp(36px, 2.4vw, 48px);
+  display: grid;
+  place-items: center;
   border-radius: 999px;
-  background: rgba(235, 222, 156, 0.86);
-}
-
-.gateTrialGuardianPlaque__rewardIcon--foundationPill::after {
-  content: '';
-  position: absolute;
-  left: 18%;
-  right: 18%;
-  top: 24%;
-  bottom: 8%;
-  border-radius: 45% 45% 50% 50%;
+  border: 1px solid rgba(124, 98, 49, 0.42);
   background:
-    radial-gradient(circle at 40% 28%, rgba(245, 246, 206, 0.74), rgba(245, 246, 206, 0) 45%),
-    linear-gradient(180deg, rgba(56, 130, 86, 0.88), rgba(25, 75, 55, 0.96));
-  transform: rotate(-12deg);
+    radial-gradient(circle at 38% 30%, rgba(224, 242, 204, 0.58), rgba(58, 121, 78, 0.78) 62%, rgba(28, 78, 55, 0.95) 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 244, 194, 0.18),
+    0 1px 3px rgba(52, 39, 22, 0.18);
 }
 
 .gateTrialGuardianPlaque__rewardCopy {

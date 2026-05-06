@@ -19,12 +19,26 @@ export interface GateTrialExactAssetDescriptor {
   note: string;
 }
 
+export const GATE_TRIAL_EXACT_FOUNDATION_SCENIC_BINDING = {
+  key: 'approvedFoundationGatePlate',
+  targetMockupId: 'gate-trial-foundation-gate-readiness-2048x1152',
+  approvedRuntimePath: 'src/assets/world/gateTrial/foundation-gate-scene-approved-plate.png',
+  approvedSourcePath: 'src/assets/Gate trail screen.png',
+  artStatus: 'approved-bound',
+  requiresFinalArtBinding: false,
+  canClaimStrictVisualParity: true,
+  cssClassName: 'gateTrialScenicStage--approvedBound',
+  dataApprovedPlateBound: 'true',
+  auditStatusLabel: 'approved-bound',
+  note: 'Approved Foundation Gate scenic plate is bound from src/assets/world/gateTrial/foundation-gate-scene-approved-plate.png.',
+} as const;
+
 export const GATE_TRIAL_EXACT_SCENIC_ART_CONTRACT = {
   foundationGate: {
-    status: 'deferred',
-    targetMockupId: 'gate-trial-foundation-gate-readiness-2048x1152',
-    reservedApprovedSourcePath: 'docs/release/qa/ui-cutover/gate-trial-exact/approved-mockup/gate-trial-foundation-gate-approved-exact.png',
-    reservedApprovedPlatePath: 'src/assets/world/gateTrial/foundation-gate-scene-approved-plate.png',
+    status: GATE_TRIAL_EXACT_FOUNDATION_SCENIC_BINDING.artStatus,
+    targetMockupId: GATE_TRIAL_EXACT_FOUNDATION_SCENIC_BINDING.targetMockupId,
+    reservedApprovedSourcePath: GATE_TRIAL_EXACT_FOUNDATION_SCENIC_BINDING.approvedSourcePath,
+    reservedApprovedPlatePath: GATE_TRIAL_EXACT_FOUNDATION_SCENIC_BINDING.approvedRuntimePath,
     mockupReferenceLabel: 'Provided 2048x1152 Foundation Gate mockup',
     finalVisualAnchors: [
       'ink-wash mountain valley backdrop',
@@ -52,10 +66,10 @@ export const GATE_TRIAL_EXACT_ASSETS = {
     approvedFoundationGatePlate: {
       key: 'approvedFoundationGatePlate',
       role: 'final-scenic-plate',
-      path: 'src/assets/world/gateTrial/foundation-gate-scene-approved-plate.png',
-      availability: 'deferred',
+      path: GATE_TRIAL_EXACT_FOUNDATION_SCENIC_BINDING.approvedRuntimePath,
+      availability: 'available-existing',
       allowedAsFinalScene: true,
-      note: 'Reserved final scenic plate. Must be bound before visual parity can be declared.',
+      note: GATE_TRIAL_EXACT_FOUNDATION_SCENIC_BINDING.note,
     },
     cityGateSupport: {
       key: 'cityGateSupport',

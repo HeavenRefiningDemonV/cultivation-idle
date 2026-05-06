@@ -78,6 +78,8 @@ void test('Gate Trial Exact G5 does not leak deferred art or placeholder copy vi
   );
 
   for (const forbidden of [
+    '.gateTrialGuardianPlaque__rewardIcon--foundationPill::before',
+    '.gateTrialGuardianPlaque__rewardIcon--foundationPill::after',
     '>Deferred Foundation Gate threshold scene',
     '>Deferred',
     '>Art pending',
@@ -100,20 +102,21 @@ void test('Gate Trial Exact G5 does not leak deferred art or placeholder copy vi
 });
 
 void test('Gate Trial Exact G5 reports honest scenic art binding status', () => {
-  const approvedPlateExists = existsSync('src/assets/world/gateTrial/foundation-gate-scene-approved-plate.png');
+  assert.equal(
+    existsSync('src/assets/world/gateTrial/foundation-gate-scene-approved-plate.png'),
+    true,
+    'approved Foundation Gate scenic plate must exist at the canonical runtime path',
+  );
+
   const html = renderToStaticMarkup(
     React.createElement(GateTrialExactScreen, { surface: createGateTrialExactMockupFixture() }),
   );
 
-  if (approvedPlateExists) {
-    assert.equal(html.includes('data-art-status="approved-bound"'), true);
-    assert.equal(html.includes('data-final-art-required="false"'), true);
-    assert.equal(html.includes('data-approved-plate-bound="true"'), true);
-  } else {
-    assert.equal(html.includes('data-art-status="deferred"'), true);
-    assert.equal(html.includes('data-final-art-required="true"'), true);
-    assert.equal(html.includes('data-approved-plate-bound="false"'), true);
-  }
+  assert.equal(html.includes('data-art-status="approved-bound"'), true);
+  assert.equal(html.includes('data-final-art-required="false"'), true);
+  assert.equal(html.includes('data-approved-plate-bound="true"'), true);
+  assert.equal(html.includes('data-strict-visual-parity-blocked="false"'), true);
+  assert.equal(html.includes('data-bound="true"'), true);
 });
 
 void test('Gate Trial Exact G5 source does not use support-only or legacy scene substitutes', () => {
@@ -184,7 +187,8 @@ void test('Gate Trial Exact G5 SCSS contains central scene, seal, and guardian p
     '.gateTrialGuardianPlaque__subtitle',
     '.gateTrialGuardianPlaque__reward',
     '.gateTrialGuardianPlaque__rewardIconDock',
-    '.gateTrialGuardianPlaque__rewardIcon--foundationPill',
+    '.gateTrialGuardianPlaque__rewardIcon',
+    '.gateTrialExactIcon--reward',
     '.gateTrialGuardianPlaque__rewardLine',
   ]) {
     assert.equal(scss.includes(required), true, `missing G5 SCSS selector ${required}`);

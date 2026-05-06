@@ -237,6 +237,7 @@ function buildDomAuditInPage(surfaceId: string) {
         dataArtStatus: scenicNode?.getAttribute('data-art-status') ?? null,
         dataFinalArtRequired: scenicNode?.getAttribute('data-final-art-required') ?? null,
         dataApprovedPlateBound: scenicNode?.getAttribute('data-approved-plate-bound') ?? null,
+        strictVisualParityBlocked: scenicNode?.getAttribute('data-strict-visual-parity-blocked') ?? null,
       },
       rects: {
         page: pageRect,

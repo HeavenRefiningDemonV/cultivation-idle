@@ -16,6 +16,7 @@ import {
   GATE_TRIAL_EXACT_REGION_ORDER,
   GATE_TRIAL_EXACT_TOP_REGION_CONTRACT,
 } from './gateTrialExactPresentation.js';
+import { GateTrialExactIcon } from './GateTrialExactIcon.js';
 
 type GateTrialRailRowSurface =
   | GateTrialExactSurfaceV1['minimumChecklist']['rows'][number]
@@ -32,36 +33,49 @@ export interface GateTrialExactScreenProps {
 
 function gateTrialToneClass(tone: string): string { return `gateTrialTone--${tone}`; }
 function gateTrialStatusClass(status: GateTrialExactStatus): string { return `gateTrialStatusMedallion--${status === 'open' ? 'active' : status}`; }
-function normalizeGateTrialIconKey(iconKey: string): string { return iconKey.replace(/[^a-zA-Z0-9_-]/g, ''); }
 
 const el = React.createElement;
 
-function GateTrialStatusMedallion(props: { status: GateTrialExactStatus; size?: 'small' | 'medium' | 'large'; tone?: string }) {
+function gateTrialStatusIconKey(status: GateTrialExactStatus, explicitIconKey?: string): string {
+  if (explicitIconKey) return explicitIconKey;
+  if (status === 'success' || status === 'cleared') return 'statusCheck';
+  if (status === 'warning' || status === 'open' || status === 'active') return 'statusWarning';
+  if (status === 'locked') return 'statusLock';
+  return 'unknown';
+}
+
+function GateTrialStatusMedallion(props: {
+  status: GateTrialExactStatus;
+  iconKey?: string;
+  testId?: string;
+  size?: 'small' | 'medium' | 'large';
+  tone?: string;
+}) {
   const { status, size = 'medium', tone } = props;
+  const iconKey = gateTrialStatusIconKey(status, props.iconKey);
   return el('span', {
     className: [
       'gateTrialStatusMedallion',
       gateTrialStatusClass(status),
       tone ? gateTrialToneClass(tone) : '',
     ].filter(Boolean).join(' '),
+    'data-testid': props.testId,
     'data-status': status,
     'data-size': size,
-    'aria-hidden': 'true',
-  }, el('span', { className: 'gateTrialStatusMedallion__mark' }));
-}
-
-function GateTrialIconSlot(props: { iconKey: string; tone?: string; className?: string }) {
-  const { iconKey, tone, className } = props;
-  const normalizedIconKey = normalizeGateTrialIconKey(iconKey);
-  return el('span', {
-    className: [
-      'gateTrialIconSlot',
-      className ?? '',
-      tone ? gateTrialToneClass(tone) : '',
-    ].filter(Boolean).join(' '),
     'data-icon-key': iconKey,
     'aria-hidden': 'true',
-  }, el('span', { className: `gateTrialIconSlot__glyph gateTrialIconSlot__glyph--${normalizedIconKey}` }));
+  },
+    el(GateTrialExactIcon, {
+      iconKey,
+      size: 'status',
+      tone: status === 'success' || status === 'cleared'
+        ? 'positive'
+        : status === 'locked'
+          ? 'locked'
+          : 'warning',
+      className: 'gateTrialStatusMedallion__icon',
+    }),
+  );
 }
 
 function GateTrialRailRowView(props: { row: GateTrialRailRowSurface; variant: 'minimum' | 'prep' }) {
@@ -72,10 +86,16 @@ function GateTrialRailRowView(props: { row: GateTrialRailRowSurface; variant: 'm
       'data-testid': `gate-trial-minimum-row-${row.id}`,
       'data-row-id': row.id,
       'data-status': row.status,
+      'data-icon-key': row.iconKey,
       'data-route-target': row.routeTarget ?? undefined,
     },
       el('span', { className: 'gateTrialMinimumChecklist__rowMedallion' },
-        el(GateTrialStatusMedallion, { status: row.status, size: 'large' }),
+        el(GateTrialStatusMedallion, {
+          status: row.status,
+          iconKey: row.iconKey,
+          testId: `gate-trial-minimum-row-icon-${row.id}`,
+          size: 'large',
+        }),
       ),
       el('div', { className: 'gateTrialMinimumChecklist__rowCopy' },
         el('div', { className: 'gateTrialMinimumChecklist__rowTitle' }, row.title),
@@ -89,28 +109,41 @@ function GateTrialRailRowView(props: { row: GateTrialRailRowSurface; variant: 'm
     'data-testid': `gate-trial-prep-row-${row.id}`,
     'data-row-id': row.id,
     'data-status': row.status,
+    'data-icon-key': row.iconKey,
     'data-route-target': row.routeTarget ?? undefined,
   },
-    el(GateTrialIconSlot, { iconKey: row.iconKey, tone: row.status }),
+    el(GateTrialStatusMedallion, {
+      status: row.status,
+      iconKey: row.iconKey,
+      testId: `gate-trial-prep-row-icon-${row.id}`,
+      size: 'small',
+    }),
     el('div', { className: 'gateTrialRecommendedPanel__prepCopy' },
       el('div', { className: 'gateTrialRecommendedPanel__prepTitle' }, row.title),
       row.detail ? el('div', { className: 'gateTrialRecommendedPanel__prepDetail' }, row.detail) : null,
     ),
-    el(GateTrialStatusMedallion, { status: row.status, size: 'small' }),
   );
 }
 
 function GateTrialFactRowView(props: { row: GateTrialFactRowSurface }) {
   const { row } = props;
   return el('div', {
-    className: 'gateTrialFailSafeFactRow',
+    className: `gateTrialFailSafeFactRow gateTrialRecommendedPanel__factRow ${gateTrialToneClass(row.tone)}`,
     'data-testid': `gate-trial-failsafe-row-${row.id}`,
     'data-fact-id': row.id,
     'data-tone': row.tone,
+    'data-icon-key': row.iconKey,
   },
-    el(GateTrialIconSlot, { iconKey: row.iconKey, tone: row.tone, className: 'gateTrialFailSafeFactRow__icon' }),
-    el('span', { className: 'gateTrialFailSafeFactRow__label' }, row.label),
-    el('span', { className: 'gateTrialFailSafeFactRow__value' }, row.value),
+    el('span', { className: 'gateTrialRecommendedPanel__factIcon gateTrialFailSafeFactRow__icon', 'aria-hidden': 'true' },
+      el(GateTrialExactIcon, {
+        iconKey: row.iconKey,
+        size: 'panel',
+        tone: row.tone,
+        testId: `gate-trial-icon-failsafe-${row.id}`,
+      }),
+    ),
+    el('span', { className: 'gateTrialRecommendedPanel__factLabel gateTrialFailSafeFactRow__label' }, row.label),
+    el('span', { className: 'gateTrialRecommendedPanel__factValue gateTrialFailSafeFactRow__value' }, row.value),
   );
 }
 
@@ -141,8 +174,14 @@ function GateTrialTopFixButtonView(props: {
       }
     },
   },
-    el(GateTrialIconSlot, { iconKey: fix.iconKey, className: 'gateTrialTopFixButton__icon' }),
-    el('span', { className: 'gateTrialTopFixButton__label' }, fix.label),
+    el(GateTrialExactIcon, {
+      iconKey: fix.iconKey,
+      size: 'panel',
+      tone: 'neutral',
+      className: 'gateTrialTopFixButton__icon gateTrialRecommendedPanel__topFixIcon',
+      testId: `gate-trial-icon-top-fix-${fix.id}`,
+    }),
+    el('span', { className: 'gateTrialRecommendedPanel__topFixLabel gateTrialTopFixButton__label' }, fix.label),
     el('span', { className: 'gateTrialTopFixButton__chevron', 'aria-hidden': 'true' }),
   );
 }
@@ -189,7 +228,13 @@ function GateTrialTacticalCell(props: {
     style: underlineStyle,
   },
     el('span', { className: 'gateTrialTacticalCell__iconDock', 'data-icon-key': cell.iconKey, 'aria-hidden': 'true' },
-      el('span', { className: `gateTrialTacticalCell__icon gateTrialTacticalCell__icon--${cell.id}` }),
+      el(GateTrialExactIcon, {
+        iconKey: cell.iconKey,
+        size: 'tactical',
+        tone: cell.tone,
+        className: 'gateTrialTacticalCell__icon',
+        testId: `gate-trial-icon-${cell.id}`,
+      }),
     ),
     el('span', { className: 'gateTrialTacticalCell__text' },
       el('span', { className: 'gateTrialTacticalCell__label' }, cell.label),
@@ -244,6 +289,7 @@ function renderGateTrialReadinessRail(
           'data-status': node.status,
           'data-variant': node.medallionVariant,
           'data-source': node.source,
+          'data-icon-key': node.iconKey,
         },
           el('button', {
             type: 'button',
@@ -264,14 +310,28 @@ function renderGateTrialReadinessRail(
             },
               el('span', { className: 'gateTrialReadinessRail__medallionRing' }),
               el('span', { className: 'gateTrialReadinessRail__medallionInner' },
-                node.medallionVariant === 'gate-glow'
-                  ? el('span', { className: 'gateTrialReadinessRail__mark gateTrialReadinessRail__mark--gate gateTrialReadinessRail__mark--gate-glow gateTrialReadinessRail__gateGlyph' })
-                  : el('span', {
-                    className: [
-                      'gateTrialReadinessRail__mark',
-                      `gateTrialReadinessRail__mark--${node.medallionVariant}`,
-                    ].join(' '),
+                el('span', {
+                  className: [
+                    'gateTrialReadinessRail__mark',
+                    node.medallionVariant === 'gate-glow'
+                      ? 'gateTrialReadinessRail__mark--gate gateTrialReadinessRail__mark--gate-glow'
+                      : `gateTrialReadinessRail__mark--${node.medallionVariant}`,
+                  ].join(' '),
+                },
+                  el(GateTrialExactIcon, {
+                    iconKey: node.iconKey,
+                    size: node.id === 'gate' ? 'railGate' : 'rail',
+                    tone: node.status === 'success' || node.status === 'cleared'
+                      ? 'positive'
+                      : node.status === 'locked'
+                        ? 'locked'
+                        : node.id === 'gate'
+                          ? 'ceremonial'
+                          : 'warning',
+                    className: 'gateTrialReadinessRail__icon',
+                    testId: `gate-trial-icon-readiness-${node.id}`,
                   }),
+                ),
               ),
             ),
           ),
@@ -326,11 +386,6 @@ function renderGateTrialPrimaryCta(
         'aria-hidden': 'true',
       }),
       el('span', {
-        className: 'gateTrialPrimaryCta__ornament gateTrialPrimaryCta__ornament--left',
-        'data-testid': 'gate-trial-primary-cta-ornament-left',
-        'aria-hidden': 'true',
-      }, el('span', { className: 'gateTrialPrimaryCta__ornamentCore' })),
-      el('span', {
         className: 'gateTrialPrimaryCta__plate',
         'data-testid': 'gate-trial-primary-cta-plate',
       },
@@ -340,11 +395,6 @@ function renderGateTrialPrimaryCta(
           'data-testid': 'gate-trial-primary-cta-label',
         }, surface.primaryAction.label),
       ),
-      el('span', {
-        className: 'gateTrialPrimaryCta__ornament gateTrialPrimaryCta__ornament--right',
-        'data-testid': 'gate-trial-primary-cta-ornament-right',
-        'aria-hidden': 'true',
-      }, el('span', { className: 'gateTrialPrimaryCta__ornamentCore' })),
     ),
   );
 }
@@ -597,7 +647,15 @@ function GateTrialExactScreen(props: GateTrialExactScreenProps) {
           }, el('span', { className: 'gateTrialSrOnly' }, node.label)))),
         ),
         el('div', { className: 'gateTrialTopRegion__statusCluster', 'data-testid': 'gate-trial-top-status' },
-          el('span', { className: 'gateTrialTopRegion__statusMedallion', 'aria-hidden': 'true' }),
+          el('span', { className: 'gateTrialTopRegion__statusMedallion', 'aria-hidden': 'true' },
+            el(GateTrialExactIcon, {
+              iconKey: 'expedition',
+              size: 'micro',
+              tone: 'positive',
+              className: 'gateTrialTopRegion__statusIcon',
+              testId: 'gate-trial-icon-top-status',
+            }),
+          ),
           el('span', { className: 'gateTrialTopRegion__statusText' }, surface.page.topRightStatus.join(GATE_TRIAL_EXACT_TOP_REGION_CONTRACT.fixtureStatusJoiner)),
           el('span', { className: 'gateTrialTopRegion__settingsOrnament', 'aria-hidden': 'true' }),
         ),
@@ -642,8 +700,15 @@ function GateTrialExactScreen(props: GateTrialExactScreenProps) {
           'data-testid': 'gate-trial-gate-header-chip',
           'data-chip-id': chip.id,
           'data-tone': chip.tone,
+          'data-icon-key': chip.iconKey ?? '',
         },
-          el('span', { className: 'gateTrialGateHeader__chipIcon', 'data-icon-key': chip.iconKey, 'aria-hidden': 'true' }),
+          chip.iconKey ? el(GateTrialExactIcon, {
+            iconKey: chip.iconKey,
+            size: 'chip',
+            tone: chip.tone,
+            className: 'gateTrialGateHeader__chipIcon',
+            testId: `gate-trial-icon-header-chip-${chip.id}`,
+          }) : null,
           el('span', { className: 'gateTrialGateHeader__chipLabel' }, chip.label),
         ))),
       )),
@@ -693,12 +758,19 @@ function GateTrialExactScreen(props: GateTrialExactScreenProps) {
         'data-art-status': surface.scenicStage.artStatus,
         'data-final-art-required': surface.scenicStage.requiresFinalArtBinding ? 'true' : 'false',
         'data-approved-plate-bound': surface.scenicStage.artStatus === 'approved-bound' ? 'true' : 'false',
+        'data-strict-visual-parity-blocked': surface.scenicStage.requiresFinalArtBinding ? 'true' : 'false',
         role: 'img',
         'aria-label': 'Foundation Gate threshold scene',
         'aria-description': surface.scenicStage.environmentDescriptor,
       },
         el('div', { className: 'gateTrialScenicStage__frame', 'data-testid': 'gate-trial-scenic-frame' },
-          el('div', { className: 'gateTrialScenicStage__approvedPlate', 'data-testid': 'gate-trial-scenic-approved-plate', 'aria-hidden': 'true' }),
+          el('div', {
+            className: 'gateTrialScenicStage__approvedPlate',
+            'data-testid': 'gate-trial-scenic-approved-plate',
+            'data-scene-asset-id': surface.scenicStage.sceneAssetId,
+            'data-bound': surface.scenicStage.artStatus === 'approved-bound' ? 'true' : 'false',
+            'aria-hidden': 'true',
+          }),
           el('div', { className: 'gateTrialScenicStage__underpaint', 'data-testid': 'gate-trial-scenic-underpaint', 'aria-hidden': 'true' }),
           el('span', { className: 'gateTrialScenicStage__mountain gateTrialScenicStage__mountain--left', 'data-testid': 'gate-trial-scenic-mountain-left', 'aria-hidden': 'true' }),
           el('span', { className: 'gateTrialScenicStage__mountain gateTrialScenicStage__mountain--right', 'data-testid': 'gate-trial-scenic-mountain-right', 'aria-hidden': 'true' }),
@@ -743,8 +815,18 @@ function GateTrialExactScreen(props: GateTrialExactScreenProps) {
             el('p', { className: 'gateTrialGuardianPlaque__subtitle', 'data-testid': 'gate-trial-guardian-subtitle' }, surface.scenicStage.guardianPlaque.subtitle),
           ),
           el('div', { className: 'gateTrialGuardianPlaque__reward' },
-            el('span', { className: 'gateTrialGuardianPlaque__rewardIconDock', 'data-testid': 'gate-trial-guardian-reward-icon', 'aria-hidden': 'true' },
-              el('span', { className: `gateTrialGuardianPlaque__rewardIcon gateTrialGuardianPlaque__rewardIcon--${normalizeGateTrialIconKey(surface.scenicStage.guardianPlaque.rewardIconKey)}` }),
+            el('span', {
+              className: 'gateTrialGuardianPlaque__rewardIconDock gateTrialGuardianPlaque__rewardIcon',
+              'data-testid': 'gate-trial-guardian-reward-icon',
+              'data-icon-key': surface.scenicStage.guardianPlaque.rewardIconKey,
+              'aria-hidden': 'true',
+            },
+              el(GateTrialExactIcon, {
+                iconKey: surface.scenicStage.guardianPlaque.rewardIconKey,
+                size: 'reward',
+                tone: 'positive',
+                testId: 'gate-trial-icon-foundationPill',
+              }),
             ),
             el('div', { className: 'gateTrialGuardianPlaque__rewardCopy' },
               surface.scenicStage.guardianPlaque.rewardLines.map((line) => el('div', { key: line, className: 'gateTrialGuardianPlaque__rewardLine', 'data-testid': 'gate-trial-reward-line' }, line)),
@@ -816,10 +898,14 @@ function GateTrialExactScreen(props: GateTrialExactScreenProps) {
               }
             },
           },
-            el('span', { className: 'gateTrialRecommendedPanel__safetyNetIcon', 'aria-hidden': 'true' },
-              el('span', { className: 'gateTrialRecommendedPanel__safetyNetIconMark' }),
-            ),
-            el('span', null, surface.recommendedPanel.safetyNetButton.label),
+            el(GateTrialExactIcon, {
+              iconKey: 'safetyNet',
+              size: 'panel',
+              tone: surface.recommendedPanel.safetyNetButton.tone,
+              className: 'gateTrialRecommendedPanel__safetyNetIcon',
+              testId: 'gate-trial-icon-safetyNet',
+            }),
+            el('span', { className: 'gateTrialRecommendedPanel__safetyNetLabel' }, surface.recommendedPanel.safetyNetButton.label),
           ) : null,
         ),
         el('section', {

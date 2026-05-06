@@ -50,6 +50,8 @@ void test('Gate Trial Exact G11 Phase 6 capture supports exact mode and DOM audi
     'data-art-status',
     'data-final-art-required',
     'data-approved-plate-bound',
+    'data-strict-visual-parity-blocked',
+    'strictVisualParityBlocked',
     'ctaWithinViewport',
     'noVerticalPageScroll',
     'centerDominatesWidth',
