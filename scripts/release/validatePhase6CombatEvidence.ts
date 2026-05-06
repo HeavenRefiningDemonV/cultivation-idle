@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { PHASE6_COMBAT_EVIDENCE_TARGETS, type Phase6CombatEvidenceTarget } from '../../src/dev/phase6CombatAudit/phase6CombatEvidenceManifest.js';
 import { PHASE6_COMBAT_CAPTURE_SLOT_FILES } from '../../src/dev/phase6CombatAudit/phase6CombatSurfaceIds.js';
 
@@ -75,6 +76,197 @@ function validateRuinsDomAudit(folderPath: string, slotFile: string, findings: P
   }
 }
 
+function validateGateTrialDomAudit(folderPath: string, slotFile: string, findings: Phase6CombatEvidenceFinding[]) {
+  const domPath = path.join(folderPath, slotFile.replace('.png', '.dom.json'));
+  if (!fs.existsSync(domPath)) {
+    findings.push({
+      surfaceId: 'gate-trial',
+      severity: 'error',
+      code: 'gate_trial_dom_audit_missing',
+      message: `Gate Trial DOM audit is missing: ${path.basename(domPath)}`,
+    });
+    return;
+  }
+
+  let audit: any;
+  try {
+    audit = JSON.parse(fs.readFileSync(domPath, 'utf8'));
+  } catch (error) {
+    findings.push({
+      surfaceId: 'gate-trial',
+      severity: 'error',
+      code: 'gate_trial_dom_audit_invalid',
+      message: `Gate Trial DOM audit could not be parsed: ${path.basename(domPath)} (${error instanceof Error ? error.message : String(error)})`,
+    });
+    return;
+  }
+
+  if (audit?.schemaVersion !== 'gate-trial-exact-dom-audit.v1') {
+    findings.push({
+      surfaceId: 'gate-trial',
+      severity: 'error',
+      code: 'gate_trial_dom_audit_invalid',
+      message: `Gate Trial DOM audit schema is invalid: ${path.basename(domPath)}`,
+    });
+  }
+
+  const forbiddenOldShellMarkers = audit?.forbiddenOldShellMarkers ?? [];
+  if (forbiddenOldShellMarkers.length > 0) {
+    findings.push({
+      surfaceId: 'gate-trial',
+      severity: 'error',
+      code: 'gate_trial_old_shell_marker',
+      message: `Gate Trial DOM audit found old-shell markers in ${path.basename(domPath)}: ${forbiddenOldShellMarkers.join(', ')}`,
+    });
+  }
+
+  const forbiddenCrossSurfaceMarkers = audit?.forbiddenCrossSurfaceMarkers ?? [];
+  if (forbiddenCrossSurfaceMarkers.length > 0) {
+    findings.push({
+      surfaceId: 'gate-trial',
+      severity: 'error',
+      code: 'gate_trial_cross_surface_marker',
+      message: `Gate Trial DOM audit found cross-surface markers in ${path.basename(domPath)}: ${forbiddenCrossSurfaceMarkers.join(', ')}`,
+    });
+  }
+
+  if (audit?.artStatus?.dataFinalArtRequired === 'true') {
+    findings.push({
+      surfaceId: 'gate-trial',
+      severity: 'warning',
+      code: 'gate_trial_final_art_deferred',
+      message: `Gate Trial final scenic art is still deferred in ${path.basename(domPath)}; do not claim full visual parity.`,
+    });
+  }
+
+  if (slotFile === '01-base.png') {
+    if (audit?.viewport?.width !== 2048 || audit?.viewport?.height !== 1152) {
+      findings.push({
+        surfaceId: 'gate-trial',
+        severity: 'error',
+        code: 'gate_trial_viewport_invalid',
+        message: `Gate Trial base viewport must be 2048x1152, got ${audit?.viewport?.width ?? 'unknown'}x${audit?.viewport?.height ?? 'unknown'}.`,
+      });
+    }
+
+    const requiredRegions = [
+      'exactPage',
+      'topRegion',
+      'tacticalStrip',
+      'leftRail',
+      'minimumChecklist',
+      'gateHeader',
+      'scenicStage',
+      'readinessSeal',
+      'guardianPlaque',
+      'rightRail',
+      'recommendedPanel',
+      'trialSummary',
+      'readinessRail',
+      'primaryCta',
+    ];
+    for (const region of requiredRegions) {
+      if (!audit?.found?.[region]) {
+        findings.push({
+          surfaceId: 'gate-trial',
+          severity: 'error',
+          code: 'gate_trial_region_missing',
+          message: `Gate Trial base DOM audit missing required region: ${region}`,
+        });
+      }
+    }
+
+    const requiredTextMarkers = [
+      'gateTrialTitle',
+      'foundationGate',
+      'minimumChecklist',
+      'recommended',
+      'trialSummary',
+      'foundationGateReadiness',
+      'attemptGate',
+      'viable',
+      'gateGuardian',
+      'gateFoundationPill',
+    ];
+    for (const marker of requiredTextMarkers) {
+      if (!audit?.textMarkers?.[marker]) {
+        findings.push({
+          surfaceId: 'gate-trial',
+          severity: 'error',
+          code: 'gate_trial_text_marker_missing',
+          message: `Gate Trial base DOM audit missing required text marker: ${marker}`,
+        });
+      }
+    }
+
+    if (!audit?.geometry?.noVerticalPageScroll) {
+      findings.push({
+        surfaceId: 'gate-trial',
+        severity: 'error',
+        code: 'gate_trial_scroll_detected',
+        message: 'Gate Trial base capture has vertical page scroll at 2048x1152.',
+      });
+    }
+    if (!audit?.geometry?.ctaWithinViewport) {
+      findings.push({
+        surfaceId: 'gate-trial',
+        severity: 'error',
+        code: 'gate_trial_cta_clipped',
+        message: 'Gate Trial base CTA is clipped or outside the 2048x1152 viewport.',
+      });
+    }
+
+    for (const rule of ['railAboveCta', 'summaryRightOfScenic', 'leftRailLeftOfScenic', 'rightRailRightOfScenic', 'centerDominatesWidth']) {
+      if (!audit?.geometry?.[rule]) {
+        findings.push({
+          surfaceId: 'gate-trial',
+          severity: 'error',
+          code: 'gate_trial_geometry_invalid',
+          message: `Gate Trial base geometry rule failed: ${rule}`,
+        });
+      }
+    }
+  }
+
+  if (slotFile === '02-interaction.png') {
+    for (const region of ['activeTheater', 'exactPage', 'leftRail', 'rightRail', 'trialSummary', 'readinessRail', 'primaryCta']) {
+      if (!audit?.found?.[region]) {
+        findings.push({
+          surfaceId: 'gate-trial',
+          severity: 'error',
+          code: 'gate_trial_region_missing',
+          message: `Gate Trial interaction DOM audit missing required region: ${region}`,
+        });
+      }
+    }
+    if (!audit?.textMarkers?.stopAttempt) {
+      findings.push({
+        surfaceId: 'gate-trial',
+        severity: 'error',
+        code: 'gate_trial_text_marker_missing',
+        message: 'Gate Trial interaction DOM audit missing Stop Attempt marker.',
+      });
+    }
+  }
+
+  if (slotFile === '03-truth-states.png') {
+    const hasTruthState =
+      audit?.found?.resultTransition === true
+      || audit?.textMarkers?.gateRejected === true
+      || audit?.textMarkers?.safetyNetReady === true
+      || audit?.textMarkers?.safetyNetSecured === true
+      || audit?.textMarkers?.gateOpened === true;
+    if (!hasTruthState) {
+      findings.push({
+        surfaceId: 'gate-trial',
+        severity: 'error',
+        code: 'gate_trial_text_marker_missing',
+        message: 'Gate Trial truth-state DOM audit must show a result transition or result-state marker.',
+      });
+    }
+  }
+}
+
 export function auditPhase6CombatEvidence(rootDir: string, surfaceIds: string[] | null = null): Phase6CombatEvidenceAuditReport {
   const findings: Phase6CombatEvidenceFinding[] = [];
   const targets = resolveAuditTargets(surfaceIds);
@@ -121,13 +313,16 @@ export function auditPhase6CombatEvidence(rootDir: string, surfaceIds: string[] 
       if (target.id === 'ruins') {
         validateRuinsDomAudit(folderPath, slotFile, findings);
       }
+      if (target.id === 'gate-trial') {
+        validateGateTrialDomAudit(folderPath, slotFile, findings);
+      }
     }
   }
 
   return {
     schemaVersion: 'phase-6-combat-evidence-audit.v1',
     generatedAt: new Date().toISOString(),
-    overallPass: findings.length === 0,
+    overallPass: !findings.some((finding) => finding.severity === 'error'),
     targetCount: targets.length,
     findings,
   };
@@ -155,7 +350,11 @@ function renderHumanReport(report: Phase6CombatEvidenceAuditReport): string {
   return lines.join('\n');
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+function isMainModule(): boolean {
+  return path.resolve(fileURLToPath(import.meta.url)) === path.resolve(process.argv[1] ?? '');
+}
+
+if (isMainModule()) {
   const { json, rootDir, surfaceIds } = parseArgs(process.argv.slice(2));
   const report = auditPhase6CombatEvidence(rootDir, surfaceIds);
 

@@ -1,0 +1,180 @@
+{
+  "schemaVersion": "gate-trial-exact-p0-baseline.v1",
+  "generatedAt": "2026-05-06T11:45:41.684Z",
+  "packetId": "G11",
+  "packetObjective": "add screenshot capture, DOM audit, evidence validation, and baseline reporting for Gate Trial Exact visual regression gates",
+  "dependencies": [
+    "G0-B fixture surface",
+    "G2-R screen-owned fixture route activation",
+    "G3 top parity",
+    "G4 side rails",
+    "G5 central scene",
+    "G6 bottom rail/CTA",
+    "G7 live surface",
+    "G8 action controller",
+    "G9 active theater",
+    "G10 result transitions"
+  ],
+  "exactFileTouchpoints": [
+    "src/features/world/gateTrialExact/GateTrialExactScreen.ts",
+    "src/features/world/gateTrialExact/GateTrialExactScreen.scss",
+    "src/features/world/gateTrialExact/buildGateTrialExactSurface.ts",
+    "src/features/world/gateTrialExact/GateTrialScreenOwner.tsx",
+    "src/features/world/gateTrialExact/useGateTrialExactActionController.ts",
+    "src/systems/ui/world/worldBuildingModalEntrySurface.ts",
+    "src/components/modals/WorldBuildingModal.tsx",
+    "src/components/modals/WorldBuildingModal.scss"
+  ],
+  "currentPrimaryOwnerFiles": [
+    "src/features/world/gateTrialExact/GateTrialScreenOwner.tsx",
+    "src/features/world/gateTrialExact/GateTrialExactScreen.ts",
+    "src/features/world/gateTrialExact/buildGateTrialExactSurface.ts"
+  ],
+  "currentSupportingTouchpoints": [
+    "src/features/world/gateTrialExact/gateTrialExactTypes.ts",
+    "src/features/world/gateTrialExact/gateTrialExactPresentation.ts",
+    "src/features/world/gateTrialExact/gateTrialExactAssetRegistry.ts",
+    "src/features/world/gateTrialExact/useGateTrialExactActionController.ts",
+    "src/dev/phase6CombatAudit/Phase6CombatAuditHarness.tsx",
+    "scripts/release/capturePhase6CombatEvidence.ts",
+    "scripts/release/validatePhase6CombatEvidence.ts"
+  ],
+  "mockupRegionContract": {
+    "viewport": "2048x1152",
+    "requiredRegions": [
+      "top title/tactical strip",
+      "left Minimum Checklist",
+      "central Foundation Gate scene",
+      "Foundation Gate plaque",
+      "VIABLE readiness seal",
+      "guardian reward plaque",
+      "right Recommended panel",
+      "Trial Summary dock",
+      "Foundation Gate Readiness rail",
+      "Attempt Gate CTA"
+    ],
+    "requiredTextMarkers": [
+      "Gate Trial",
+      "Foundation Gate",
+      "Minimum Checklist",
+      "Recommended",
+      "Trial Summary",
+      "Foundation Gate Readiness",
+      "Attempt Gate",
+      "VIABLE",
+      "Readiness 74 / 100",
+      "Gate Guardian",
+      "Gate Foundation Pill",
+      "Safety Net",
+      "Top Fixes"
+    ],
+    "forbiddenLegacyMarkers": [
+      "Run Compass unavailable.",
+      "Best used when you are ready",
+      "Minimum Floor",
+      "Recommended Floor",
+      "Gate Progress",
+      "GateTrialWorldLayout",
+      "GateTrialAttemptCluster",
+      "worldBuildingBody--combat-path",
+      "worldBuildingBody--inside-dungeon"
+    ],
+    "geometryRules": [
+      "leftRailLeftOfScenic",
+      "rightRailRightOfScenic",
+      "summaryRightOfScenic",
+      "railAboveCta",
+      "ctaWithinViewport",
+      "centerDominatesWidth",
+      "noVerticalPageScroll"
+    ]
+  },
+  "evidenceCoverageStatus": {
+    "canonicalRawFolder": "docs/release/qa/ui-cutover/phase-6-combat-preflight/03-gate-trial",
+    "requiredSlots": [
+      "01-base.png",
+      "02-interaction.png",
+      "03-truth-states.png",
+      "04-high-fx.png",
+      "05-low-fx.png",
+      "06-reduced-motion.png"
+    ],
+    "presentSlots": [],
+    "missingSlots": [
+      "01-base.png",
+      "02-interaction.png",
+      "03-truth-states.png",
+      "04-high-fx.png",
+      "05-low-fx.png",
+      "06-reduced-motion.png"
+    ],
+    "requiredDomAudits": [
+      "01-base.dom.json",
+      "02-interaction.dom.json",
+      "03-truth-states.dom.json",
+      "04-high-fx.dom.json",
+      "05-low-fx.dom.json",
+      "06-reduced-motion.dom.json"
+    ],
+    "presentDomAudits": [],
+    "missingDomAudits": [
+      "01-base.dom.json",
+      "02-interaction.dom.json",
+      "03-truth-states.dom.json",
+      "04-high-fx.dom.json",
+      "05-low-fx.dom.json",
+      "06-reduced-motion.dom.json"
+    ],
+    "auditPass": false,
+    "auditFindings": [
+      "[error] required_slot_missing: Missing required evidence file docs/release/qa/ui-cutover/phase-6-combat-preflight/03-gate-trial/01-base.png",
+      "[error] gate_trial_dom_audit_missing: Gate Trial DOM audit is missing: 01-base.dom.json",
+      "[error] required_slot_missing: Missing required evidence file docs/release/qa/ui-cutover/phase-6-combat-preflight/03-gate-trial/02-interaction.png",
+      "[error] gate_trial_dom_audit_missing: Gate Trial DOM audit is missing: 02-interaction.dom.json",
+      "[error] required_slot_missing: Missing required evidence file docs/release/qa/ui-cutover/phase-6-combat-preflight/03-gate-trial/03-truth-states.png",
+      "[error] gate_trial_dom_audit_missing: Gate Trial DOM audit is missing: 03-truth-states.dom.json",
+      "[error] required_slot_missing: Missing required evidence file docs/release/qa/ui-cutover/phase-6-combat-preflight/03-gate-trial/04-high-fx.png",
+      "[error] gate_trial_dom_audit_missing: Gate Trial DOM audit is missing: 04-high-fx.dom.json",
+      "[error] required_slot_missing: Missing required evidence file docs/release/qa/ui-cutover/phase-6-combat-preflight/03-gate-trial/05-low-fx.png",
+      "[error] gate_trial_dom_audit_missing: Gate Trial DOM audit is missing: 05-low-fx.dom.json",
+      "[error] required_slot_missing: Missing required evidence file docs/release/qa/ui-cutover/phase-6-combat-preflight/03-gate-trial/06-reduced-motion.png",
+      "[error] gate_trial_dom_audit_missing: Gate Trial DOM audit is missing: 06-reduced-motion.dom.json"
+    ],
+    "screenshotsCapturedInThisRun": false,
+    "screenshotCaptureStatus": "pending",
+    "finalScenicArtStatus": "unknown",
+    "strictVisualParityBlockedByDeferredArt": true,
+    "captureAttempt": {
+      "attempted": true,
+      "generatedAt": "2026-05-06T11:43:30.902Z",
+      "command": "npm run release:phase6-combat-capture -- --surface=gate-trial --gate-trial-exact-mode=fixture --width=2048 --height=1152 --json",
+      "ok": false,
+      "failureReason": "'NODE_OPTIONS' is not recognized as an internal or external command,"
+    }
+  },
+  "regenerationCommands": {
+    "capture": "npm run release:gate-trial-exact-p0:capture",
+    "audit": "npm run release:gate-trial-exact-p0:audit",
+    "report": "npm run release:gate-trial-exact-p0:report",
+    "typecheck": "npm run typecheck",
+    "iconCheck": "npm run check:icons"
+  },
+  "manualQaCases": [
+    "01-base.png fixture planning state at 2048x1152",
+    "02-interaction.png live active attempt with central active theater",
+    "03-truth-states.png defeat/fail-safe/result truth state",
+    "04-high-fx.png fixture high FX",
+    "05-low-fx.png fixture low FX",
+    "06-reduced-motion.png fixture reduced motion"
+  ],
+  "noGoRules": [
+    "No legacy GateTrialWorldLayout visible.",
+    "No combat-path shell for Gate Trial Exact fixture.",
+    "No external CombatTheaterModal in exact flow.",
+    "No Outskirts hunt copy.",
+    "No Ruins chamber-route copy except intentional \"Complete one Ruin support run\".",
+    "No CTA clipping.",
+    "No page scroll in 2048x1152 fixture capture.",
+    "No final visual parity claim while scenic art is deferred."
+  ]
+}

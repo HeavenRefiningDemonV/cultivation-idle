@@ -12,6 +12,7 @@ import type {
   GateTrialFixSurface,
   GateTrialReadinessNodeId,
   GateTrialReadinessNodeSurface,
+  GateTrialResultTransitionSurface,
   GateTrialTacticalCellSurface,
   GateTrialSummaryRowSurface,
 } from './gateTrialExactTypes.js';
@@ -28,7 +29,7 @@ import { useGameStore } from '../../../stores/gameStore.js';
 import { useInventoryStore, type InventoryState } from '../../../stores/inventoryStore.js';
 import { useMedicinePouchStore } from '../../../stores/medicinePouchStore.js';
 import { useTechniqueStore } from '../../../stores/techniqueStore.js';
-import { useTrialStore } from '../../../stores/trialStore.js';
+import { useTrialStore, type TrialProgress } from '../../../stores/trialStore.js';
 import { resolveModuleRef } from '../../../components/screens/world/worldUtils.js';
 import { getTrialGateItemId, getTrialGateRewardBundle } from '../../../systems/progression/runtime/gateResolver.js';
 import {
@@ -91,6 +92,7 @@ interface LiveResolvedContext {
   cityId: string;
   trialId: string;
   trialDef: TrialDef;
+  trialProgress: TrialProgress;
   lifecycle: TrialLifecycleSnapshot;
   readinessSurface: GateTrialReadinessSurface | null;
   metrics: LiveMetrics;
@@ -933,6 +935,7 @@ function resolveLiveContext(cityId: string, trialId: string | null): LiveResolve
     cityId,
     trialId: resolvedTrialId,
     trialDef,
+    trialProgress,
     lifecycle,
     readinessSurface,
     metrics: {
@@ -1309,6 +1312,224 @@ function buildLivePrimaryAction(context: LiveResolvedContext): GateTrialButtonSu
   };
 }
 
+function formatResultDuration(durationSec: number): string {
+  const totalSeconds = Math.max(0, Math.round(durationSec));
+  if (totalSeconds < 60) return `${totalSeconds}s`;
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return seconds > 0 ? `${minutes}m ${seconds}s` : `${minutes}m`;
+}
+
+function buildGateTrialResultTransitionSurface(
+  context: LiveResolvedContext,
+  recommendedPanel: GateTrialExactSurfaceV1['recommendedPanel'],
+): GateTrialResultTransitionSurface | undefined {
+  const failSafe = context.lifecycle.failSafe;
+
+  if (context.lifecycle.state === 'cleared') {
+    return {
+      visible: true,
+      kind: 'victory',
+      title: 'GATE OPENED',
+      subtitle: 'Gate catalyst acquired',
+      stampLabel: 'CLEARED',
+      tone: 'positive',
+      detailLines: [
+        { id: 'reward', label: 'Reward', value: context.gateItemDisplayName, tone: 'positive', source: 'content' },
+        { id: 'resolution', label: 'Resolution', value: 'Cleared by combat', tone: 'positive', source: LIVE_SOURCE },
+        { id: 'handoff', label: 'Next', value: 'Break through in Cultivation', tone: 'ceremonial', source: 'derived' },
+      ],
+      rewardLines: [
+        `Acquired: ${context.gateItemDisplayName} \u00d71`,
+        `Used for ${context.targetRealmName} Breakthrough`,
+      ],
+      ctaHint: 'Breakthrough path is ready.',
+      emphasizedFixId: null,
+      source: LIVE_SOURCE,
+    };
+  }
+
+  if (context.lifecycle.state === 'bypassed') {
+    return {
+      visible: true,
+      kind: 'bypassed',
+      title: 'SAFETY NET SECURED',
+      subtitle: 'Gate catalyst acquired through fail-safe',
+      stampLabel: 'BYPASSED',
+      tone: 'ceremonial',
+      detailLines: [
+        { id: 'reward', label: 'Reward', value: context.gateItemDisplayName, tone: 'positive', source: 'content' },
+        { id: 'resolution', label: 'Resolution', value: 'Resolved by Safety Net', tone: 'ceremonial', source: LIVE_SOURCE },
+        { id: 'handoff', label: 'Next', value: 'Break through in Cultivation', tone: 'ceremonial', source: 'derived' },
+      ],
+      rewardLines: [
+        `Secured: ${context.gateItemDisplayName} \u00d71`,
+        `Used for ${context.targetRealmName} Breakthrough`,
+      ],
+      ctaHint: 'Breakthrough path is ready.',
+      emphasizedFixId: null,
+      source: LIVE_SOURCE,
+    };
+  }
+
+  const summary = context.trialProgress.lastAttemptSummary;
+  if (!context.lifecycle.isResolved && summary) {
+    const firstFix = recommendedPanel.topFixes[0] ?? null;
+    const failureLabel = `${failSafe.eligibleFailures} / ${failSafe.threshold}`;
+    const maxHitLabel = `${formatCompactNumber(summary.maxHit)} ${summary.maxHitLabel}`.trim();
+
+    return {
+      visible: true,
+      kind: 'defeat',
+      title: 'GATE REJECTED',
+      subtitle: 'Failure recorded',
+      stampLabel: 'DEFEAT',
+      tone: 'critical',
+      failureLabel,
+      emphasizedFixId: firstFix?.id ?? null,
+      detailLines: [
+        {
+          id: 'failures',
+          label: 'Eligible Failures',
+          value: failureLabel,
+          tone: failSafe.canPurchase ? 'warning' : 'critical',
+          source: LIVE_SOURCE,
+        },
+        {
+          id: 'bossHp',
+          label: 'Guardian Remaining',
+          value: `${Math.round(clampPercent(summary.bossHpPct))}%`,
+          tone: 'warning',
+          source: LIVE_SOURCE,
+        },
+        {
+          id: 'maxHit',
+          label: 'Largest Hit',
+          value: maxHitLabel,
+          tone: 'critical',
+          source: LIVE_SOURCE,
+        },
+        {
+          id: 'duration',
+          label: 'Attempt Time',
+          value: formatResultDuration(summary.durationSec),
+          tone: 'neutral',
+          source: LIVE_SOURCE,
+        },
+      ],
+      rewardLines: summary.suggestions.slice(0, 2),
+      ctaHint: failSafe.canPurchase
+        ? 'Safety Net is available if reserves allow.'
+        : 'Review top fixes before the next attempt.',
+      source: LIVE_SOURCE,
+    };
+  }
+
+  if (!context.lifecycle.isResolved && failSafe.canPurchase) {
+    const inventory = useInventoryStore.getState();
+    const cost = failSafe.cost;
+    const canAfford = cost ? inventory.canAffordCurrency(cost) : false;
+
+    return {
+      visible: true,
+      kind: 'fail-safe-available',
+      title: 'SAFETY NET READY',
+      subtitle: 'Eligible failures reached',
+      stampLabel: 'READY',
+      tone: 'warning',
+      detailLines: [
+        {
+          id: 'failures',
+          label: 'Eligible Failures',
+          value: `${failSafe.eligibleFailures} / ${failSafe.threshold}`,
+          tone: 'warning',
+          source: LIVE_SOURCE,
+        },
+        {
+          id: 'cost',
+          label: 'Cost',
+          value: formatCurrencyCost(cost),
+          tone: 'neutral',
+          source: LIVE_SOURCE,
+        },
+        {
+          id: 'reserve',
+          label: 'Reserve',
+          value: formatCurrencyReserve(cost, inventory),
+          tone: canAfford ? 'positive' : 'warning',
+          source: LIVE_SOURCE,
+        },
+      ],
+      rewardLines: [
+        `Secures: ${context.gateItemDisplayName} \u00d71`,
+        `Used for ${context.targetRealmName} Breakthrough`,
+      ],
+      ctaHint: canAfford
+        ? 'Safety Net can secure the catalyst now.'
+        : 'Gather reserves to use Safety Net.',
+      emphasizedFixId: 'safetyNet',
+      source: LIVE_SOURCE,
+    };
+  }
+
+  return undefined;
+}
+
+function applyResultTransitionToTrialSummary(
+  context: LiveResolvedContext,
+  trialSummary: GateTrialExactSurfaceV1['trialSummary'],
+  recommendedPanel: GateTrialExactSurfaceV1['recommendedPanel'],
+  resultTransition: GateTrialResultTransitionSurface | undefined,
+): GateTrialExactSurfaceV1['trialSummary'] {
+  if (!resultTransition) return trialSummary;
+
+  const failSafe = context.lifecycle.failSafe;
+  const failureLabel = `${failSafe.eligibleFailures} / ${failSafe.threshold}`;
+
+  if (resultTransition.kind === 'victory' || resultTransition.kind === 'cleared' || resultTransition.kind === 'bypassed') {
+    return {
+      ...trialSummary,
+      rows: [
+        trialSummary.rows[0],
+        makeSummaryRow('readiness', 'Readiness', `${context.metrics.readinessScore} / 100`, 'positive'),
+        makeSummaryRow('failures', 'Failures', failureLabel, trialSummary.rows[2].tone),
+        makeSummaryRow('reward', 'Reward', context.gateItemDisplayName, 'positive'),
+        makeSummaryRow('nextFix', 'Next Fix', 'Break through', 'ceremonial'),
+      ],
+    };
+  }
+
+  if (resultTransition.kind === 'defeat') {
+    const firstFixLabel = recommendedPanel.topFixes[0]?.label ?? '';
+    const nextFix = failSafe.canPurchase ? 'Safety Net' : compactNextFixLabel(firstFixLabel, context.lifecycle);
+    return {
+      ...trialSummary,
+      rows: [
+        trialSummary.rows[0],
+        trialSummary.rows[1],
+        makeSummaryRow('failures', 'Failures', failureLabel, failSafe.canPurchase ? 'warning' : 'critical'),
+        trialSummary.rows[3],
+        makeSummaryRow('nextFix', 'Next Fix', nextFix || 'Attempt gate', failSafe.canPurchase ? 'warning' : 'critical'),
+      ],
+    };
+  }
+
+  if (resultTransition.kind === 'fail-safe-available') {
+    return {
+      ...trialSummary,
+      rows: [
+        trialSummary.rows[0],
+        trialSummary.rows[1],
+        makeSummaryRow('failures', 'Failures', failureLabel, 'warning'),
+        trialSummary.rows[3],
+        makeSummaryRow('nextFix', 'Next Fix', 'Safety Net', 'warning'),
+      ],
+    };
+  }
+
+  return trialSummary;
+}
+
 function buildGateTrialActiveTheaterSurface(args: {
   resolvedTrialId: string | null;
   cityId: string;
@@ -1415,18 +1636,22 @@ export function buildGateTrialExactSurfaceFromStores(
     bossLevel: context.metrics.bossLevel,
     nowMs: options.nowMs ?? Date.now(),
   });
+  const resultTransition = activeTheater
+    ? undefined
+    : buildGateTrialResultTransitionSurface(context, recommendedPanel);
+  const resultTrialSummary = applyResultTransitionToTrialSummary(context, trialSummary, recommendedPanel, resultTransition);
   const activeTrialSummary: GateTrialExactSurfaceV1['trialSummary'] = activeTheater
     ? {
-        ...trialSummary,
+        ...resultTrialSummary,
         rows: [
-          trialSummary.rows[0],
-          trialSummary.rows[1],
-          trialSummary.rows[2],
-          trialSummary.rows[3],
+          resultTrialSummary.rows[0],
+          resultTrialSummary.rows[1],
+          resultTrialSummary.rows[2],
+          resultTrialSummary.rows[3],
           makeSummaryRow('nextFix', 'Next Fix', 'Survive attempt', 'warning'),
         ],
       }
-    : trialSummary;
+    : resultTrialSummary;
   const activePrimaryAction: GateTrialButtonSurface = activeTheater
     ? {
         ...primaryAction,
@@ -1448,6 +1673,50 @@ export function buildGateTrialExactSurfaceFromStores(
         scoreLabel: 'Gate trial in progress',
       }
     : null;
+  const liveReadinessSeal: GateTrialExactSurfaceV1['scenicStage']['readinessSeal'] = activeReadinessSeal ?? (
+    context.lifecycle.state === 'cleared'
+      ? {
+          ...fixture.scenicStage.readinessSeal,
+          state: 'cleared',
+          verdict: 'CLEARED',
+          scoreLabel: 'Reward acquired',
+        }
+      : context.lifecycle.state === 'bypassed'
+        ? {
+            ...fixture.scenicStage.readinessSeal,
+            state: 'cleared',
+            verdict: 'BYPASSED',
+            scoreLabel: 'Safety Net secured',
+          }
+        : resultTransition?.kind === 'defeat'
+          ? {
+              ...fixture.scenicStage.readinessSeal,
+              state: 'warning',
+              verdict: 'REJECTED',
+              scoreLabel: `Failure ${context.lifecycle.failSafe.eligibleFailures} / ${context.lifecycle.failSafe.threshold}`,
+            }
+          : resultTransition?.kind === 'fail-safe-available'
+            ? {
+                ...fixture.scenicStage.readinessSeal,
+                state: 'warning',
+                verdict: 'READY',
+                scoreLabel: 'Safety Net available',
+              }
+            : {
+                ...fixture.scenicStage.readinessSeal,
+                verdict: context.lifecycle.canStart && context.metrics.readinessScore >= 60
+                  ? 'VIABLE'
+                  : context.lifecycle.canStart
+                    ? 'RISKY'
+                    : 'LOCKED',
+                scoreLabel: `Readiness ${context.metrics.readinessScore} / 100`,
+                state: context.lifecycle.canStart && context.metrics.readinessScore >= 60
+                  ? 'viable'
+                  : context.lifecycle.canStart
+                    ? 'warning'
+                    : 'locked',
+              }
+  );
 
   return {
     ...fixture,
@@ -1463,9 +1732,11 @@ export function buildGateTrialExactSurfaceFromStores(
         ? 'cleared'
         : context.lifecycle.state === 'bypassed'
           ? 'bypassed'
-          : context.lifecycle.canStart
-            ? 'available'
-            : 'locked',
+          : resultTransition?.kind === 'defeat'
+            ? 'transitioning'
+            : context.lifecycle.canStart
+              ? 'available'
+              : 'locked',
       lifecycleState: context.lifecycle.state,
       resolution: context.lifecycle.resolution === 'cleared' || context.lifecycle.resolution === 'bypassed'
         ? context.lifecycle.resolution
@@ -1492,28 +1763,7 @@ export function buildGateTrialExactSurfaceFromStores(
     minimumChecklist: buildLiveMinimumChecklist(context),
     scenicStage: {
       ...fixture.scenicStage,
-      readinessSeal: {
-        ...fixture.scenicStage.readinessSeal,
-        ...(activeReadinessSeal ?? {
-          verdict: context.lifecycle.state === 'cleared'
-            ? 'CLEARED'
-            : context.lifecycle.state === 'bypassed'
-              ? 'BYPASSED'
-              : context.lifecycle.canStart && context.metrics.readinessScore >= 60
-                ? 'VIABLE'
-                : context.lifecycle.canStart
-                  ? 'RISKY'
-                  : 'LOCKED',
-          scoreLabel: `Readiness ${context.metrics.readinessScore} / 100`,
-          state: context.lifecycle.state === 'cleared' || context.lifecycle.state === 'bypassed'
-            ? 'cleared'
-            : context.lifecycle.canStart && context.metrics.readinessScore >= 60
-              ? 'viable'
-              : context.lifecycle.canStart
-                ? 'warning'
-                : 'locked',
-        }),
-      },
+      readinessSeal: liveReadinessSeal,
       guardianPlaque: {
         ...fixture.scenicStage.guardianPlaque,
         title: `${context.bossName} · Lv. ${context.metrics.bossLevel}`,
@@ -1527,6 +1777,7 @@ export function buildGateTrialExactSurfaceFromStores(
         gateItemId: context.gateItemId,
       },
       activeTheater,
+      resultTransition,
     },
     recommendedPanel,
     trialSummary: activeTrialSummary,

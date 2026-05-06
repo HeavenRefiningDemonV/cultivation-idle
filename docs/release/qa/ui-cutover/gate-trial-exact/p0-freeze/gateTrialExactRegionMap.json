@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "gate-trial-exact-region-map.v1",
+  "targetViewport": { "width": 2048, "height": 1152 },
+  "mockupRegions": {
+    "pageTitle": { "xApprox": 55, "yApprox": 25 },
+    "topMacroRoute": { "xApprox": 555, "yApprox": 45, "widthApprox": 935 },
+    "tacticalStrip": { "yApprox": 82, "heightApprox": 66 },
+    "gateTitlePlaque": { "xApprox": 760, "yApprox": 158, "widthApprox": 530, "heightApprox": 67 },
+    "minimumChecklist": { "xApprox": 34, "yApprox": 245, "widthApprox": 340, "heightApprox": 667 },
+    "scenicStage": { "xApprox": 390, "yApprox": 180, "widthApprox": 1190, "heightApprox": 720 },
+    "readinessSeal": { "xApprox": 848, "yApprox": 598, "widthApprox": 378, "heightApprox": 188 },
+    "recommendedPanel": { "xApprox": 1608, "yApprox": 195, "widthApprox": 388, "heightApprox": 634 },
+    "trialSummary": { "xApprox": 1608, "yApprox": 838, "widthApprox": 388, "heightApprox": 236 },
+    "readinessRail": { "xApprox": 340, "yApprox": 946, "widthApprox": 1215, "heightApprox": 99 },
+    "attemptGateCta": { "xApprox": 720, "yApprox": 1047, "widthApprox": 568, "heightApprox": 73 }
+  },
+  "geometryRules": [
+    "leftRailLeftOfScenic",
+    "rightRailRightOfScenic",
+    "summaryRightOfScenic",
+    "railAboveCta",
+    "ctaWithinViewport",
+    "centerDominatesWidth",
+    "noVerticalPageScroll"
+  ]
+}

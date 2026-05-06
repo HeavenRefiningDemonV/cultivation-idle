@@ -214,6 +214,36 @@ export interface GateTrialActiveTheaterSurface {
   floatingEvents: readonly GateTrialActiveTheaterFloatingEventSurface[];
 }
 
+export type GateTrialResultTransitionKind =
+  | 'victory'
+  | 'defeat'
+  | 'fail-safe-available'
+  | 'bypassed'
+  | 'cleared';
+
+export interface GateTrialResultDetailLineSurface {
+  id: string;
+  label: string;
+  value: string;
+  tone: GateTrialExactTone;
+  source: GateTrialExactValueSource;
+}
+
+export interface GateTrialResultTransitionSurface {
+  visible: boolean;
+  kind: GateTrialResultTransitionKind;
+  title: string;
+  subtitle: string;
+  stampLabel: string;
+  tone: GateTrialExactTone;
+  detailLines: readonly GateTrialResultDetailLineSurface[];
+  rewardLines: readonly string[];
+  ctaHint: string;
+  emphasizedFixId?: GateTrialFixId | null;
+  failureLabel?: string;
+  source: GateTrialExactValueSource;
+}
+
 export interface GateTrialScenicStageSurface {
   sceneAssetId: string;
   artStatus: 'deferred' | 'approved-bound' | 'missing';
@@ -222,6 +252,7 @@ export interface GateTrialScenicStageSurface {
   readinessSeal: GateTrialReadinessSealSurface;
   guardianPlaque: GateTrialGuardianPlaqueSurface;
   activeTheater?: GateTrialActiveTheaterSurface;
+  resultTransition?: GateTrialResultTransitionSurface;
   visualFlags: {
     usesOldCombatPathScene: false;
     usesOutskirtsScene: false;

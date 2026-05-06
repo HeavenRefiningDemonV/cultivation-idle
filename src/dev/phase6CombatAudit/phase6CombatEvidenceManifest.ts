@@ -53,9 +53,9 @@ export const PHASE6_COMBAT_EVIDENCE_TARGETS: readonly Phase6CombatEvidenceTarget
     truthStatesRequired: true,
     captureRoutes: buildCaptureRoutes('gate-trial'),
     slotNotes: {
-      '01-base.png': 'default available/idle gate state',
-      '02-interaction.png': 'post-failure state with diagnosis/top fixes/fail-safe progress visible',
-      '03-truth-states.png': 'readiness/checklists/fail-safe/CTA truth capture',
+      '01-base.png': 'Gate Trial Exact fixture planning state at 2048x1152: top strip, side rails, central Foundation Gate scene, readiness seal, bottom rail, and Attempt Gate CTA.',
+      '02-interaction.png': 'Gate Trial Exact live active attempt: central scene owns HP/theater/log/Stop Attempt while side rails remain visible.',
+      '03-truth-states.png': 'Gate Trial Exact live defeat/fail-safe/result truth: failure count, top fixes, fail-safe state, summary, and result transition checks.',
     },
   },
 ] as const;

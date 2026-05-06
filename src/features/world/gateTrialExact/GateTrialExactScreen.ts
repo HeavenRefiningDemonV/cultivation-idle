@@ -7,6 +7,7 @@ import type {
   GateTrialFixSurface,
   GateTrialReadinessNodeId,
   GateTrialReadinessNodeSurface,
+  GateTrialResultTransitionSurface,
   GateTrialSummaryRowSurface,
   GateTrialTacticalCellId,
   GateTrialTacticalCellSurface,
@@ -113,16 +114,25 @@ function GateTrialFactRowView(props: { row: GateTrialFactRowSurface }) {
   );
 }
 
-function GateTrialTopFixButtonView(props: { fix: GateTrialFixSurface; onTopFixAction?: (fix: GateTrialFixSurface) => void }) {
+function GateTrialTopFixButtonView(props: {
+  fix: GateTrialFixSurface;
+  emphasized?: boolean;
+  onTopFixAction?: (fix: GateTrialFixSurface) => void;
+}) {
   const { fix } = props;
+  const isEmphasized = props.emphasized === true;
   return el('button', {
     key: fix.id,
     type: 'button',
-    className: 'gateTrialTopFixButton',
+    className: [
+      'gateTrialTopFixButton',
+      isEmphasized ? 'gateTrialTopFixButton--emphasized' : '',
+    ].filter(Boolean).join(' '),
     'data-testid': `gate-trial-top-fix-${fix.id}`,
     'data-fix-id': fix.id,
     'data-route-target': fix.routeTarget,
     'data-intent': fix.button.intent,
+    'data-emphasized': isEmphasized ? 'true' : 'false',
     disabled: !fix.button.enabled,
     'aria-label': fix.button.ariaLabel,
     onClick: () => {
@@ -491,6 +501,76 @@ function renderGateTrialActiveTheater(activeTheater: GateTrialActiveTheaterSurfa
   );
 }
 
+function renderGateTrialResultTransition(
+  resultTransition: GateTrialResultTransitionSurface | undefined,
+): React.ReactElement | null {
+  if (!resultTransition?.visible) return null;
+
+  return el('section', {
+    className: [
+      'gateTrialResultTransition',
+      `gateTrialResultTransition--${resultTransition.kind}`,
+      `gateTrialResultTransition--${resultTransition.tone}`,
+    ].join(' '),
+    'data-testid': 'gate-trial-result-transition',
+    'data-result-kind': resultTransition.kind,
+    'data-tone': resultTransition.tone,
+    'aria-labelledby': 'gate-trial-result-transition-title',
+  },
+    el('span', { className: 'gateTrialResultTransition__halo', 'aria-hidden': 'true' }),
+    el('div', { className: 'gateTrialResultTransition__frame' },
+      el('span', {
+        className: 'gateTrialResultTransition__corner gateTrialResultTransition__corner--topLeft',
+        'aria-hidden': 'true',
+      }),
+      el('span', {
+        className: 'gateTrialResultTransition__corner gateTrialResultTransition__corner--topRight',
+        'aria-hidden': 'true',
+      }),
+      el('div', {
+        className: 'gateTrialResultTransition__stamp',
+        'data-testid': 'gate-trial-result-transition-stamp',
+      }, resultTransition.stampLabel),
+      el('h3', {
+        className: 'gateTrialResultTransition__title',
+        id: 'gate-trial-result-transition-title',
+        'data-testid': 'gate-trial-result-transition-title',
+      }, resultTransition.title),
+      el('p', {
+        className: 'gateTrialResultTransition__subtitle',
+        'data-testid': 'gate-trial-result-transition-subtitle',
+      }, resultTransition.subtitle),
+      el('dl', {
+        className: 'gateTrialResultTransition__details',
+        'data-testid': 'gate-trial-result-transition-details',
+      }, resultTransition.detailLines.map((line) => el('div', {
+        key: line.id,
+        className: `gateTrialResultTransition__detailRow ${gateTrialToneClass(line.tone)}`,
+        'data-testid': `gate-trial-result-transition-detail-${line.id}`,
+        'data-detail-id': line.id,
+        'data-tone': line.tone,
+        'data-source': line.source,
+      },
+        el('dt', { className: 'gateTrialResultTransition__detailLabel' }, line.label),
+        el('dd', { className: 'gateTrialResultTransition__detailValue' }, line.value),
+      ))),
+      resultTransition.rewardLines.length > 0
+        ? el('ul', {
+            className: 'gateTrialResultTransition__rewardLines',
+            'data-testid': 'gate-trial-result-transition-reward-lines',
+          }, resultTransition.rewardLines.map((line, index) => el('li', {
+            key: `${line}-${index}`,
+            className: 'gateTrialResultTransition__rewardLine',
+          }, line)))
+        : null,
+      el('p', {
+        className: 'gateTrialResultTransition__ctaHint',
+        'data-testid': 'gate-trial-result-transition-cta-hint',
+      }, resultTransition.ctaHint),
+    ),
+  );
+}
+
 function GateTrialExactScreen(props: GateTrialExactScreenProps) {
   const { surface } = props;
   return el('article', { className: 'gateTrialExactPage', 'data-testid': surface.meta.rootTestId, 'data-surface-mode': surface.meta.mode, 'data-activity-mode': surface.meta.activityMode, 'data-lifecycle-state': surface.meta.lifecycleState, 'data-readiness-score': surface.meta.readinessScore },
@@ -603,6 +683,10 @@ function GateTrialExactScreen(props: GateTrialExactScreenProps) {
             ? 'gateTrialScenicStage--approvedBound'
             : 'gateTrialScenicStage--deferredArt',
           surface.scenicStage.activeTheater?.visible ? 'gateTrialScenicStage--active' : '',
+          surface.scenicStage.resultTransition?.visible ? 'gateTrialScenicStage--hasResult' : '',
+          surface.scenicStage.resultTransition?.kind
+            ? `gateTrialScenicStage--result-${surface.scenicStage.resultTransition.kind}`
+            : '',
         ].join(' '),
         'data-testid': 'gate-trial-scenic-stage',
         'data-scene-asset-id': surface.scenicStage.sceneAssetId,
@@ -629,6 +713,7 @@ function GateTrialExactScreen(props: GateTrialExactScreenProps) {
           el('span', { className: 'gateTrialScenicStage__edgeFade', 'data-testid': 'gate-trial-scenic-edge-fade', 'aria-hidden': 'true' }),
         ),
         renderGateTrialActiveTheater(surface.scenicStage.activeTheater),
+        renderGateTrialResultTransition(surface.scenicStage.resultTransition),
         el('section', {
           className: `gateTrialReadinessSeal gateTrialReadinessSeal--${surface.scenicStage.readinessSeal.state}`,
           'data-testid': 'gate-trial-readiness-seal',
@@ -710,11 +795,19 @@ function GateTrialExactScreen(props: GateTrialExactScreenProps) {
             className: [
               'gateTrialRecommendedPanel__safetyNetButton',
               surface.recommendedPanel.safetyNetButton.tone === 'locked' ? 'gateTrialRecommendedPanel__safetyNetButton--locked' : '',
+              surface.scenicStage.resultTransition?.kind === 'fail-safe-available'
+              || (surface.scenicStage.resultTransition?.kind === 'defeat' && surface.recommendedPanel.safetyNetButton.enabled)
+                ? 'gateTrialRecommendedPanel__safetyNetButton--resultEmphasis'
+                : '',
             ].filter(Boolean).join(' '),
             'data-testid': 'gate-trial-safety-net-button',
             'data-intent': surface.recommendedPanel.safetyNetButton.intent,
             'data-tone': surface.recommendedPanel.safetyNetButton.tone,
             'data-enabled': surface.recommendedPanel.safetyNetButton.enabled ? 'true' : 'false',
+            'data-result-emphasis': surface.scenicStage.resultTransition?.kind === 'fail-safe-available'
+            || (surface.scenicStage.resultTransition?.kind === 'defeat' && surface.recommendedPanel.safetyNetButton.enabled)
+              ? 'true'
+              : 'false',
             disabled: !surface.recommendedPanel.safetyNetButton.enabled,
             'aria-label': surface.recommendedPanel.safetyNetButton.ariaLabel,
             onClick: () => {
@@ -738,7 +831,12 @@ function GateTrialExactScreen(props: GateTrialExactScreenProps) {
             'data-testid': 'gate-trial-top-fixes-title',
           }, surface.recommendedPanel.topFixesTitle),
           el('div', { className: 'gateTrialRecommendedPanel__topFixes' },
-            surface.recommendedPanel.topFixes.map((fix: GateTrialFixSurface) => el(GateTrialTopFixButtonView, { key: fix.id, fix, onTopFixAction: props.onTopFixAction })),
+            surface.recommendedPanel.topFixes.map((fix: GateTrialFixSurface) => el(GateTrialTopFixButtonView, {
+              key: fix.id,
+              fix,
+              emphasized: surface.scenicStage.resultTransition?.emphasizedFixId === fix.id,
+              onTopFixAction: props.onTopFixAction,
+            })),
           ),
         ),
       )),

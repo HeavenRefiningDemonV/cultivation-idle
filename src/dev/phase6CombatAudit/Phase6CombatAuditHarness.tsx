@@ -10,6 +10,7 @@ import { useUIStore } from '../../stores/uiStore.js';
 import { useFxQuality } from '../../ui/fx/FxQualityProvider.js';
 import type { FxRequestedQuality } from '../../ui/fx/types.js';
 import { pickEnemyFromPool, resolveModuleRef } from '../../components/screens/world/worldUtils.js';
+import { GateTrialScreenOwner } from '../../features/world/gateTrialExact/index.js';
 import {
   PHASE6_COMBAT_CAPTURE_SLOT_BY_FILE,
   PHASE6_COMBAT_CAPTURE_SLOT_FILES,
@@ -22,6 +23,7 @@ import './Phase6CombatAuditHarness.scss';
 type AuditFxMode = 'high' | 'medium' | 'low' | 'reduced';
 type AuditSlot = (typeof PHASE6_COMBAT_CAPTURE_SLOT_BY_FILE)[Phase6CombatCaptureSlotFile];
 type RuinsExactMode = 'fixture' | 'live';
+type GateTrialExactMode = 'fixture' | 'live';
 
 const DEFAULT_CITY_ID = 'city_pinewind_hamlet';
 const DEFAULT_SURFACE: Phase6CombatSurfaceId = 'outskirts';
@@ -60,13 +62,34 @@ function parseRuinsExactModeFromQuery(): RuinsExactMode {
   return value === 'fixture' ? 'fixture' : 'live';
 }
 
-function setQuery(next: { surface?: Phase6CombatSurfaceId; fx?: AuditFxMode; slot?: AuditSlot; controls?: '0' | '1' }) {
+function parseGateTrialExactModeFromQuery(): GateTrialExactMode {
+  const value = new URLSearchParams(window.location.search).get('gateTrialExactMode');
+  return value === 'live' ? 'live' : 'fixture';
+}
+
+function gateTrialModeForSlot(surface: Phase6CombatSurfaceId, slot: AuditSlot, requestedMode: GateTrialExactMode): GateTrialExactMode {
+  if (surface !== 'gate-trial') return requestedMode;
+  if (slot === 'interaction' || slot === 'truth-states') return 'live';
+  return 'fixture';
+}
+
+function setQuery(next: {
+  surface?: Phase6CombatSurfaceId;
+  fx?: AuditFxMode;
+  slot?: AuditSlot;
+  controls?: '0' | '1';
+  gateTrialExactMode?: GateTrialExactMode;
+}) {
   const params = new URLSearchParams(window.location.search);
   params.set('uiAudit', 'phase-6-combat');
   if (next.surface) params.set('surface', next.surface);
   if (next.fx) params.set('fx', next.fx);
   if (next.slot) params.set('slot', next.slot);
   if (next.controls) params.set('controls', next.controls);
+  const surface = next.surface ?? (params.get('surface') as Phase6CombatSurfaceId | null);
+  if (surface === 'gate-trial') {
+    params.set('gateTrialExactMode', next.gateTrialExactMode ?? parseGateTrialExactModeFromQuery());
+  }
   window.history.replaceState(null, '', `${window.location.pathname}?${params.toString()}${window.location.hash}`);
 }
 
@@ -97,10 +120,20 @@ function mapSurfaceToBuildingKey(surface: Phase6CombatSurfaceId): 'outskirts' | 
   return surface;
 }
 
-function primeWorldModal(surface: Phase6CombatSurfaceId, ruinsExactMode: RuinsExactMode) {
+function primeWorldModal(
+  surface: Phase6CombatSurfaceId,
+  ruinsExactMode: RuinsExactMode,
+  gateTrialExactMode: GateTrialExactMode,
+) {
   const cityId = resolveAuditCityId();
   if (!cityId) return;
   const buildingKey = mapSurfaceToBuildingKey(surface);
+  const intent =
+    surface === 'ruins'
+      ? { ruinsExactMode }
+      : surface === 'gate-trial'
+        ? { gateTrialExactMode: gateTrialExactMode }
+        : null;
   useCityStore.getState().setCurrentCity(cityId);
   useCityStore.getState().setSelectedModule(cityId, buildingKey);
   useUIStore.setState((state) => ({
@@ -109,7 +142,7 @@ function primeWorldModal(surface: Phase6CombatSurfaceId, ruinsExactMode: RuinsEx
     showWorldBuildingModal: true,
     worldBuildingModalCityId: cityId,
     worldBuildingModalKey: buildingKey,
-    worldBuildingModalIntent: surface === 'ruins' ? { ruinsExactMode } : null,
+    worldBuildingModalIntent: intent,
   }));
 }
 
@@ -255,7 +288,7 @@ function buildTrialAttemptSummary(trialId: string): TrialAttemptSummary {
     durationSec: 38,
     bossHpPct: 52,
     maxHit: 89,
-    maxHitLabel: '89',
+    maxHitLabel: 'Boss hit',
     suggestions: ['Raise effective HP floor', 'Enable consumables', 'Shift AI profile to survivor'],
     rollingPlayerDps: 42,
     rollingEnemyDps: 58,
@@ -266,13 +299,93 @@ function buildTrialAttemptSummary(trialId: string): TrialAttemptSummary {
   };
 }
 
-function primeGateTrialFailureState() {
+function resolveGateTrialAuditRefs(): { cityId: string; trialId: string; bossId: string | null } | null {
   const cityId = resolveAuditCityId();
-  if (!cityId) return;
+  if (!cityId) return null;
   const content = useContentStore.getState();
   const city = content.maps.citiesById[cityId] ?? null;
   const trialId = resolveModuleRef(city, 'gateTrial');
-  if (!trialId) return;
+  if (!trialId) return null;
+  const trial = content.maps.trialsById[trialId] ?? null;
+  return { cityId, trialId, bossId: trial?.bossId ?? null };
+}
+
+function primeGateTrialAvailableState() {
+  const refs = resolveGateTrialAuditRefs();
+  if (!refs) return;
+  useActivityStore.setState((state) => ({ ...state, active: null }));
+  useCombatStore.getState().exitCombat();
+  useTrialStore.setState((state) => ({
+    ...state,
+    progressByTrialId: {
+      ...state.progressByTrialId,
+      [refs.trialId]: {
+        attempts: 0,
+        sessionAttempts: 0,
+        eligibleFailures: 0,
+        resolution: 'none',
+        cleared: false,
+        lastAttemptAt: null,
+        lastClearAt: null,
+        bypassedAt: null,
+        attemptStartAt: null,
+        lastAttemptSummary: null,
+      },
+    },
+  }));
+}
+
+function primeGateTrialActiveState() {
+  const refs = resolveGateTrialAuditRefs();
+  if (!refs) return;
+  const content = useContentStore.getState();
+  const enemy = refs.bossId ? content.maps.enemiesById[refs.bossId] : null;
+  if (!enemy) return;
+  const startedAt = Date.now() - 42_000;
+
+  useActivityStore.setState((state) => ({
+    ...state,
+    active: {
+      type: 'trial',
+      cityId: refs.cityId,
+      sourceId: refs.trialId,
+      startedAt,
+      payload: { cityId: refs.cityId, sourceId: refs.trialId },
+    },
+  }));
+
+  useCombatStore.setState((state) => ({
+    ...state,
+    inCombat: true,
+    combatResolved: false,
+    autoAttack: true,
+    autoCombatAI: true,
+    combatStartTime: startedAt,
+    combatContext: {
+      type: 'trial',
+      cityId: refs.cityId,
+      trialId: refs.trialId,
+      countsTowardFailSafe: true,
+    },
+    currentEnemy: enemy,
+    playerHP: '102',
+    playerMaxHP: '131',
+    enemyHP: '620',
+    enemyMaxHP: '950',
+    combatLog: [
+      { timestamp: Date.now() - 7000, type: 'player', text: 'You attacked Gate Guardian for 64 damage.' },
+      { timestamp: Date.now() - 5200, type: 'enemy', text: 'Gate Guardian attacked you for 27 damage.' },
+      { timestamp: Date.now() - 3600, type: 'system', text: 'The Foundation Gate pressure gathers.' },
+    ],
+    techniqueLog: [
+      { at: Date.now() - 4200, techId: 'phase6-gate-technique', message: 'Iron Palm cycled through the guard.', kind: 'cast' },
+    ],
+  }));
+}
+
+function primeGateTrialFailureState() {
+  const refs = resolveGateTrialAuditRefs();
+  if (!refs) return;
 
   useActivityStore.setState((state) => ({ ...state, active: null }));
   useCombatStore.getState().exitCombat();
@@ -281,17 +394,17 @@ function primeGateTrialFailureState() {
     ...state,
     progressByTrialId: {
       ...state.progressByTrialId,
-      [trialId]: {
+      [refs.trialId]: {
         attempts: 3,
         sessionAttempts: 2,
-        eligibleFailures: 2,
+        eligibleFailures: 3,
         resolution: 'none',
         cleared: false,
         lastAttemptAt: Date.now() - 20_000,
         lastClearAt: null,
         bypassedAt: null,
         attemptStartAt: null,
-        lastAttemptSummary: buildTrialAttemptSummary(trialId),
+        lastAttemptSummary: buildTrialAttemptSummary(refs.trialId),
       },
     },
   }));
@@ -306,12 +419,88 @@ function primeGateTrialFailureState() {
   }));
 }
 
-function applySurfaceState(surface: Phase6CombatSurfaceId, slot: AuditSlot, ruinsExactMode: RuinsExactMode) {
+function primeGateTrialClearedState() {
+  const refs = resolveGateTrialAuditRefs();
+  if (!refs) return;
+  useActivityStore.setState((state) => ({ ...state, active: null }));
+  useCombatStore.getState().exitCombat();
+  useTrialStore.setState((state) => ({
+    ...state,
+    progressByTrialId: {
+      ...state.progressByTrialId,
+      [refs.trialId]: {
+        attempts: 4,
+        sessionAttempts: 0,
+        eligibleFailures: 3,
+        resolution: 'cleared',
+        cleared: true,
+        lastAttemptAt: Date.now() - 30_000,
+        lastClearAt: Date.now() - 20_000,
+        bypassedAt: null,
+        attemptStartAt: null,
+        lastAttemptSummary: null,
+      },
+    },
+  }));
+}
+
+function primeGateTrialBypassedState() {
+  const refs = resolveGateTrialAuditRefs();
+  if (!refs) return;
+  useActivityStore.setState((state) => ({ ...state, active: null }));
+  useCombatStore.getState().exitCombat();
+  useTrialStore.setState((state) => ({
+    ...state,
+    progressByTrialId: {
+      ...state.progressByTrialId,
+      [refs.trialId]: {
+        attempts: 3,
+        sessionAttempts: 0,
+        eligibleFailures: 3,
+        resolution: 'bypassed',
+        cleared: false,
+        lastAttemptAt: Date.now() - 35_000,
+        lastClearAt: null,
+        bypassedAt: Date.now() - 18_000,
+        attemptStartAt: null,
+        lastAttemptSummary: null,
+      },
+    },
+  }));
+}
+
+function applySurfaceState(
+  surface: Phase6CombatSurfaceId,
+  slot: AuditSlot,
+  ruinsExactMode: RuinsExactMode,
+  gateTrialExactMode: GateTrialExactMode,
+) {
   sanitizeUiOverlays();
-  primeWorldModal(surface, ruinsExactMode);
+  const effectiveGateTrialExactMode = gateTrialModeForSlot(surface, slot, gateTrialExactMode);
+  primeWorldModal(surface, ruinsExactMode, effectiveGateTrialExactMode);
 
   useActivityStore.getState().stopActivity('phase6-combat-audit-reset');
   useCombatStore.getState().exitCombat();
+
+  if (surface === 'gate-trial') {
+    if (slot === 'base' || slot === 'high-fx' || slot === 'low-fx' || slot === 'reduced-motion') {
+      primeWorldModal(surface, ruinsExactMode, 'fixture');
+      primeGateTrialAvailableState();
+      return;
+    }
+
+    if (slot === 'interaction') {
+      primeWorldModal(surface, ruinsExactMode, 'live');
+      primeGateTrialActiveState();
+      return;
+    }
+
+    if (slot === 'truth-states') {
+      primeWorldModal(surface, ruinsExactMode, 'live');
+      primeGateTrialFailureState();
+      return;
+    }
+  }
 
   if (surface === 'outskirts' && slot === 'interaction') {
     primeOutskirtsInteractionState();
@@ -323,14 +512,6 @@ function applySurfaceState(surface: Phase6CombatSurfaceId, slot: AuditSlot, ruin
     return;
   }
 
-  if (surface === 'gate-trial' && slot === 'interaction') {
-    primeGateTrialFailureState();
-    return;
-  }
-
-  if (surface === 'gate-trial' && slot === 'truth-states') {
-    primeGateTrialFailureState();
-  }
 }
 
 function mapFxModeToRequestedQuality(fxMode: AuditFxMode): FxRequestedQuality {
@@ -352,17 +533,18 @@ export function Phase6CombatAuditHarness() {
   const [fxMode, setFxMode] = useState<AuditFxMode>(() => parseFxModeFromQuery());
   const [slot, setSlot] = useState<AuditSlot>(() => parseSlotFromQuery());
   const [ruinsExactMode, setRuinsExactMode] = useState<RuinsExactMode>(() => parseRuinsExactModeFromQuery());
+  const [gateTrialExactMode, setGateTrialExactMode] = useState<GateTrialExactMode>(() => parseGateTrialExactModeFromQuery());
   const [showControls, setShowControls] = useState(() => new URLSearchParams(window.location.search).get('controls') !== '0');
   const { setRequestedQuality, setReducedMotionOverride } = useFxQuality();
 
   useEffect(() => {
     if (!enabled) return;
-    applySurfaceState(surface, slot, ruinsExactMode);
+    applySurfaceState(surface, slot, ruinsExactMode, gateTrialExactMode);
     document.documentElement.dataset.phase6CombatAuditReady = '1';
     return () => {
       delete document.documentElement.dataset.phase6CombatAuditReady;
     };
-  }, [enabled, ruinsExactMode, slot, surface]);
+  }, [enabled, gateTrialExactMode, ruinsExactMode, slot, surface]);
 
   useEffect(() => {
     if (!enabled) return;
@@ -382,6 +564,7 @@ export function Phase6CombatAuditHarness() {
       setFxMode(parseFxModeFromQuery());
       setSlot(parseSlotFromQuery());
       setRuinsExactMode(parseRuinsExactModeFromQuery());
+      setGateTrialExactMode(parseGateTrialExactModeFromQuery());
     };
     window.addEventListener('popstate', onPopState);
     return () => window.removeEventListener('popstate', onPopState);
@@ -391,7 +574,7 @@ export function Phase6CombatAuditHarness() {
 
   const updateSurface = (next: Phase6CombatSurfaceId) => {
     setSurface(next);
-    setQuery({ surface: next });
+    setQuery({ surface: next, gateTrialExactMode });
   };
 
   const updateFxMode = (next: AuditFxMode) => {
@@ -401,7 +584,7 @@ export function Phase6CombatAuditHarness() {
 
   const updateSlot = (next: AuditSlot) => {
     setSlot(next);
-    setQuery({ slot: next });
+    setQuery({ slot: next, gateTrialExactMode: gateTrialModeForSlot(surface, next, gateTrialExactMode) });
   };
 
   const toggleControls = () => {
@@ -409,9 +592,32 @@ export function Phase6CombatAuditHarness() {
     setShowControls(next);
     setQuery({ controls: next ? '1' : '0' });
   };
+  const effectiveGateTrialExactMode = gateTrialModeForSlot(surface, slot, gateTrialExactMode);
+  const gateTrialRefs = surface === 'gate-trial' ? resolveGateTrialAuditRefs() : null;
 
   return (
     <>
+      {surface === 'gate-trial' && gateTrialRefs ? (
+        <div
+          data-ui="gate-trial-exact-audit-host"
+          data-gate-trial-exact-mode={effectiveGateTrialExactMode}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 2147483000,
+            width: '100vw',
+            height: '100vh',
+            background: '#e8dcc8',
+          }}
+        >
+          <GateTrialScreenOwner
+            cityId={gateTrialRefs.cityId}
+            trialId={gateTrialRefs.trialId}
+            forceFixture={effectiveGateTrialExactMode === 'live' ? false : true}
+          />
+        </div>
+      ) : null}
+
       <div
         data-ui="phase6-combat-ready"
         data-ready="1"
@@ -419,6 +625,7 @@ export function Phase6CombatAuditHarness() {
         data-slot={slot}
         data-slot-file={toSlotFile(slot)}
         data-fx={fxMode}
+        data-gate-trial-exact-mode={surface === 'gate-trial' ? effectiveGateTrialExactMode : undefined}
         className="phase6CombatAuditReadyBeacon"
       />
 

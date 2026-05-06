@@ -70,7 +70,11 @@
     "release:ruins-exact-p0:capture": "NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node --experimental-strip-types scripts/release/runRuinsExactP0Capture.ts",
     "release:ruins-exact-p0:audit": "npm run release:phase6-combat-evidence-audit -- --surface=ruins",
     "release:ruins-exact-p0:report": "NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node --experimental-strip-types scripts/release/buildRuinsExactP0Baseline.ts --write",
-    "release:ruins-exact-p0:report:json": "npm run release:ruins-exact-p0:report -- --json"
+    "release:ruins-exact-p0:report:json": "npm run release:ruins-exact-p0:report -- --json",
+    "release:gate-trial-exact-p0:capture": "node --loader=./scripts/relativeJsLoader.mjs --experimental-strip-types scripts/release/runGateTrialExactP0Capture.ts",
+    "release:gate-trial-exact-p0:audit": "node --loader=./scripts/relativeJsLoader.mjs --experimental-strip-types scripts/release/validatePhase6CombatEvidence.ts --surface=gate-trial",
+    "release:gate-trial-exact-p0:report": "node --loader=./scripts/relativeJsLoader.mjs --experimental-strip-types scripts/release/buildGateTrialExactP0Baseline.ts --write",
+    "release:gate-trial-exact-p0:report:json": "npm run release:gate-trial-exact-p0:report -- --json"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.9",
