@@ -1,0 +1,172 @@
+import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/components/combat/presentation/CombatDock.tsx");import __vite__cjsImport0_react_jsxDevRuntime from "/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=c0e4e3e4"; const jsxDEV = __vite__cjsImport0_react_jsxDevRuntime["jsxDEV"];
+var _s = $RefreshSig$();
+import __vite__cjsImport1_react from "/node_modules/.vite/deps/react.js?v=c0e4e3e4"; const useMemo = __vite__cjsImport1_react["useMemo"];
+import { useShallow } from "/node_modules/.vite/deps/zustand_shallow.js?v=c0e4e3e4";
+import { useUIStore } from "/src/stores/uiStore.ts";
+import { useCombatStore } from "/src/stores/combatStore.ts";
+import { useContentStore } from "/src/stores/contentStore.ts";
+import { useActivityStore } from "/src/stores/activityStore.ts";
+import { hpPercent } from "/src/systems/combat/minibarModel.ts";
+import "/src/components/combat/presentation/CombatPresentation.scss";
+export function CombatDock({ context }) {
+  _s();
+  const restore = useUIStore((state) => state.restoreCombatFromDock);
+  const stop = useUIStore((state) => state.stopCombatAndClose);
+  const { currentEnemy, playerHP, playerMaxHP, enemyHP, enemyMaxHP, inCombat } = useCombatStore(
+    useShallow((state) => ({
+      currentEnemy: state.currentEnemy,
+      playerHP: state.playerHP,
+      playerMaxHP: state.playerMaxHP,
+      enemyHP: state.enemyHP,
+      enemyMaxHP: state.enemyMaxHP,
+      inCombat: state.inCombat
+    }))
+  );
+  const activity = useActivityStore((state) => state.active);
+  const { outskirtsById, trialsById, ruinsById } = useContentStore(
+    useShallow((state) => ({
+      outskirtsById: state.maps.outskirtsById,
+      trialsById: state.maps.trialsById,
+      ruinsById: state.maps.ruinsById
+    }))
+  );
+  const areaTitle = useMemo(() => {
+    if (context.type === "outskirts") return outskirtsById[context.sourceId ?? ""]?.name ?? "Outskirts";
+    if (context.type === "trial") return trialsById[context.sourceId ?? ""]?.name ?? "Gate Trial";
+    return ruinsById[context.sourceId ?? ""]?.name ?? "Ruins Run";
+  }, [context.sourceId, context.type, outskirtsById, ruinsById, trialsById]);
+  const playerHpPct = hpPercent(playerHP, playerMaxHP);
+  const enemyHpPct = hpPercent(enemyHP, enemyMaxHP);
+  const statusLabel = inCombat ? "Active combat" : "Awaiting combat loop";
+  const activityLabel = activity?.type ? activity.type.charAt(0).toUpperCase() + activity.type.slice(1) : "Idle";
+  return /* @__PURE__ */ jsxDEV("div", { className: "combat-dock", children: [
+    /* @__PURE__ */ jsxDEV("div", { className: "combat-dock__header", children: [
+      /* @__PURE__ */ jsxDEV("div", { children: [
+        /* @__PURE__ */ jsxDEV("div", { className: "combat-dock__title", children: areaTitle }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/combat/presentation/CombatDock.tsx",
+          lineNumber: 52,
+          columnNumber: 11
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { className: "combat-dock__subtitle", children: [
+          activityLabel,
+          " • ",
+          statusLabel
+        ] }, void 0, true, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/combat/presentation/CombatDock.tsx",
+          lineNumber: 53,
+          columnNumber: 11
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/combat/presentation/CombatDock.tsx",
+        lineNumber: 51,
+        columnNumber: 9
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { className: "combat-dock__actions", children: [
+        /* @__PURE__ */ jsxDEV("button", { className: "button-standard", onClick: restore, children: "Open" }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/combat/presentation/CombatDock.tsx",
+          lineNumber: 56,
+          columnNumber: 11
+        }, this),
+        /* @__PURE__ */ jsxDEV("button", { className: "button-standard button-standard--danger", onClick: stop, children: "Stop" }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/combat/presentation/CombatDock.tsx",
+          lineNumber: 59,
+          columnNumber: 11
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/combat/presentation/CombatDock.tsx",
+        lineNumber: 55,
+        columnNumber: 9
+      }, this)
+    ] }, void 0, true, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/combat/presentation/CombatDock.tsx",
+      lineNumber: 50,
+      columnNumber: 7
+    }, this),
+    /* @__PURE__ */ jsxDEV("div", { className: "combat-dock__bars", children: [
+      /* @__PURE__ */ jsxDEV("div", { className: "combat-dock__bar", children: [
+        /* @__PURE__ */ jsxDEV("div", { className: "combat-dock__bar-label", children: "HP" }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/combat/presentation/CombatDock.tsx",
+          lineNumber: 67,
+          columnNumber: 11
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { className: "combat-dock__bar-track", children: /* @__PURE__ */ jsxDEV("div", { className: "combat-dock__bar-fill", style: { width: `${playerHpPct}%` } }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/combat/presentation/CombatDock.tsx",
+          lineNumber: 69,
+          columnNumber: 13
+        }, this) }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/combat/presentation/CombatDock.tsx",
+          lineNumber: 68,
+          columnNumber: 11
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/combat/presentation/CombatDock.tsx",
+        lineNumber: 66,
+        columnNumber: 9
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { className: "combat-dock__bar", children: [
+        /* @__PURE__ */ jsxDEV("div", { className: "combat-dock__bar-label", children: "Enemy" }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/combat/presentation/CombatDock.tsx",
+          lineNumber: 73,
+          columnNumber: 11
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { className: "combat-dock__bar-track", children: /* @__PURE__ */ jsxDEV("div", { className: "combat-dock__bar-fill combat-dock__bar-fill--enemy", style: { width: `${enemyHpPct}%` } }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/combat/presentation/CombatDock.tsx",
+          lineNumber: 75,
+          columnNumber: 13
+        }, this) }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/combat/presentation/CombatDock.tsx",
+          lineNumber: 74,
+          columnNumber: 11
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { className: "combat-dock__enemy", children: currentEnemy?.name ?? "—" }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/combat/presentation/CombatDock.tsx",
+          lineNumber: 77,
+          columnNumber: 11
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/combat/presentation/CombatDock.tsx",
+        lineNumber: 72,
+        columnNumber: 9
+      }, this)
+    ] }, void 0, true, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/combat/presentation/CombatDock.tsx",
+      lineNumber: 65,
+      columnNumber: 7
+    }, this)
+  ] }, void 0, true, {
+    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/combat/presentation/CombatDock.tsx",
+    lineNumber: 49,
+    columnNumber: 5
+  }, this);
+}
+_s(CombatDock, "wjoXSFelwoDv8wjQoZ+q8RH+uWU=", false, function() {
+  return [useUIStore, useUIStore, useCombatStore, useShallow, useActivityStore, useContentStore, useShallow];
+});
+_c = CombatDock;
+var _c;
+$RefreshReg$(_c, "CombatDock");
+import * as RefreshRuntime from "/@react-refresh";
+const inWebWorker = typeof WorkerGlobalScope !== "undefined" && self instanceof WorkerGlobalScope;
+if (import.meta.hot && !inWebWorker) {
+  if (!window.$RefreshReg$) {
+    throw new Error(
+      "@vitejs/plugin-react can't detect preamble. Something is wrong."
+    );
+  }
+  RefreshRuntime.__hmr_import(import.meta.url).then((currentExports) => {
+    RefreshRuntime.registerExportsForReactRefresh("C:/Users/abdul/Desktop/cultivation-idle/src/components/combat/presentation/CombatDock.tsx", currentExports);
+    import.meta.hot.accept((nextExports) => {
+      if (!nextExports) return;
+      const invalidateMessage = RefreshRuntime.validateRefreshBoundaryAndEnqueueUpdate("C:/Users/abdul/Desktop/cultivation-idle/src/components/combat/presentation/CombatDock.tsx", currentExports, nextExports);
+      if (invalidateMessage) import.meta.hot.invalidate(invalidateMessage);
+    });
+  });
+}
+function $RefreshReg$(type, id) {
+  return RefreshRuntime.register(type, "C:/Users/abdul/Desktop/cultivation-idle/src/components/combat/presentation/CombatDock.tsx " + id);
+}
+function $RefreshSig$() {
+  return RefreshRuntime.createSignatureFunctionForTransform();
+}
+
+//# sourceMappingURL=data:application/json;base64,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bWVzIjpbInVzZU1lbW8iLCJ1c2VTaGFsbG93IiwidXNlVUlTdG9yZSIsInVzZUNvbWJhdFN0b3JlIiwidXNlQ29udGVudFN0b3JlIiwidXNlQWN0aXZpdHlTdG9yZSIsImhwUGVyY2VudCIsIkNvbWJhdERvY2siLCJjb250ZXh0IiwiX3MiLCJyZXN0b3JlIiwic3RhdGUiLCJyZXN0b3JlQ29tYmF0RnJvbURvY2siLCJzdG9wIiwic3RvcENvbWJhdEFuZENsb3NlIiwiY3VycmVudEVuZW15IiwicGxheWVySFAiLCJwbGF5ZXJNYXhIUCIsImVuZW15SFAiLCJlbmVteU1heEhQIiwiaW5Db21iYXQiLCJhY3Rpdml0eSIsImFjdGl2ZSIsIm91dHNraXJ0c0J5SWQiLCJ0cmlhbHNCeUlkIiwicnVpbnNCeUlkIiwibWFwcyIsImFyZWFUaXRsZSIsInR5cGUiLCJzb3VyY2VJZCIsIm5hbWUiLCJwbGF5ZXJIcFBjdCIsImVuZW15SHBQY3QiLCJzdGF0dXNMYWJlbCIsImFjdGl2aXR5TGFiZWwiLCJjaGFyQXQiLCJ0b1VwcGVyQ2FzZSIsInNsaWNlIiwid2lkdGgiLCJfYyIsIiRSZWZyZXNoUmVnJCJdLCJpZ25vcmVMaXN0IjpbXSwic291cmNlcyI6WyJDb21iYXREb2NrLnRzeCJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgeyB1c2VNZW1vIH0gZnJvbSAncmVhY3QnO1xyXG5pbXBvcnQgeyB1c2VTaGFsbG93IH0gZnJvbSAnenVzdGFuZC9zaGFsbG93JztcclxuaW1wb3J0IHR5cGUgeyBDb21iYXRQcmVzZW50YXRpb25Db250ZXh0IH0gZnJvbSAnLi4vLi4vLi4vc3RvcmVzL3VpU3RvcmUuanMnO1xyXG5pbXBvcnQgeyB1c2VVSVN0b3JlIH0gZnJvbSAnLi4vLi4vLi4vc3RvcmVzL3VpU3RvcmUuanMnO1xyXG5pbXBvcnQgeyB1c2VDb21iYXRTdG9yZSB9IGZyb20gJy4uLy4uLy4uL3N0b3Jlcy9jb21iYXRTdG9yZS5qcyc7XHJcbmltcG9ydCB7IHVzZUNvbnRlbnRTdG9yZSB9IGZyb20gJy4uLy4uLy4uL3N0b3Jlcy9jb250ZW50U3RvcmUuanMnO1xyXG5pbXBvcnQgeyB1c2VBY3Rpdml0eVN0b3JlIH0gZnJvbSAnLi4vLi4vLi4vc3RvcmVzL2FjdGl2aXR5U3RvcmUuanMnO1xyXG5pbXBvcnQgeyBocFBlcmNlbnQgfSBmcm9tICcuLi8uLi8uLi9zeXN0ZW1zL2NvbWJhdC9taW5pYmFyTW9kZWwuanMnO1xyXG5pbXBvcnQgJy4vQ29tYmF0UHJlc2VudGF0aW9uLnNjc3MnO1xyXG5cclxuZXhwb3J0IGZ1bmN0aW9uIENvbWJhdERvY2soeyBjb250ZXh0IH06IHsgY29udGV4dDogQ29tYmF0UHJlc2VudGF0aW9uQ29udGV4dCB9KSB7XHJcbiAgY29uc3QgcmVzdG9yZSA9IHVzZVVJU3RvcmUoKHN0YXRlKSA9PiBzdGF0ZS5yZXN0b3JlQ29tYmF0RnJvbURvY2spO1xyXG4gIGNvbnN0IHN0b3AgPSB1c2VVSVN0b3JlKChzdGF0ZSkgPT4gc3RhdGUuc3RvcENvbWJhdEFuZENsb3NlKTtcclxuXHJcbiAgY29uc3QgeyBjdXJyZW50RW5lbXksIHBsYXllckhQLCBwbGF5ZXJNYXhIUCwgZW5lbXlIUCwgZW5lbXlNYXhIUCwgaW5Db21iYXQgfSA9IHVzZUNvbWJhdFN0b3JlKFxyXG4gICAgdXNlU2hhbGxvdygoc3RhdGUpID0+ICh7XHJcbiAgICAgIGN1cnJlbnRFbmVteTogc3RhdGUuY3VycmVudEVuZW15LFxyXG4gICAgICBwbGF5ZXJIUDogc3RhdGUucGxheWVySFAsXHJcbiAgICAgIHBsYXllck1heEhQOiBzdGF0ZS5wbGF5ZXJNYXhIUCxcclxuICAgICAgZW5lbXlIUDogc3RhdGUuZW5lbXlIUCxcclxuICAgICAgZW5lbXlNYXhIUDogc3RhdGUuZW5lbXlNYXhIUCxcclxuICAgICAgaW5Db21iYXQ6IHN0YXRlLmluQ29tYmF0LFxyXG4gICAgfSkpLFxyXG4gICk7XHJcblxyXG4gIGNvbnN0IGFjdGl2aXR5ID0gdXNlQWN0aXZpdHlTdG9yZSgoc3RhdGUpID0+IHN0YXRlLmFjdGl2ZSk7XHJcblxyXG4gIGNvbnN0IHsgb3V0c2tpcnRzQnlJZCwgdHJpYWxzQnlJZCwgcnVpbnNCeUlkIH0gPSB1c2VDb250ZW50U3RvcmUoXHJcbiAgICB1c2VTaGFsbG93KChzdGF0ZSkgPT4gKHtcclxuICAgICAgb3V0c2tpcnRzQnlJZDogc3RhdGUubWFwcy5vdXRza2lydHNCeUlkLFxyXG4gICAgICB0cmlhbHNCeUlkOiBzdGF0ZS5tYXBzLnRyaWFsc0J5SWQsXHJcbiAgICAgIHJ1aW5zQnlJZDogc3RhdGUubWFwcy5ydWluc0J5SWQsXHJcbiAgICB9KSksXHJcbiAgKTtcclxuXHJcbiAgY29uc3QgYXJlYVRpdGxlID0gdXNlTWVtbygoKSA9PiB7XHJcbiAgICBpZiAoY29udGV4dC50eXBlID09PSAnb3V0c2tpcnRzJykgcmV0dXJuIG91dHNraXJ0c0J5SWRbY29udGV4dC5zb3VyY2VJZCA/PyAnJ10/Lm5hbWUgPz8gJ091dHNraXJ0cyc7XHJcbiAgICBpZiAoY29udGV4dC50eXBlID09PSAndHJpYWwnKSByZXR1cm4gdHJpYWxzQnlJZFtjb250ZXh0LnNvdXJjZUlkID8/ICcnXT8ubmFtZSA/PyAnR2F0ZSBUcmlhbCc7XHJcbiAgICByZXR1cm4gcnVpbnNCeUlkW2NvbnRleHQuc291cmNlSWQgPz8gJyddPy5uYW1lID8/ICdSdWlucyBSdW4nO1xyXG4gIH0sIFtjb250ZXh0LnNvdXJjZUlkLCBjb250ZXh0LnR5cGUsIG91dHNraXJ0c0J5SWQsIHJ1aW5zQnlJZCwgdHJpYWxzQnlJZF0pO1xyXG5cclxuICBjb25zdCBwbGF5ZXJIcFBjdCA9IGhwUGVyY2VudChwbGF5ZXJIUCwgcGxheWVyTWF4SFApO1xyXG4gIGNvbnN0IGVuZW15SHBQY3QgPSBocFBlcmNlbnQoZW5lbXlIUCwgZW5lbXlNYXhIUCk7XHJcbiAgY29uc3Qgc3RhdHVzTGFiZWwgPSBpbkNvbWJhdCA/ICdBY3RpdmUgY29tYmF0JyA6ICdBd2FpdGluZyBjb21iYXQgbG9vcCc7XHJcblxyXG4gIGNvbnN0IGFjdGl2aXR5TGFiZWwgPSBhY3Rpdml0eT8udHlwZSA/IGFjdGl2aXR5LnR5cGUuY2hhckF0KDApLnRvVXBwZXJDYXNlKCkgKyBhY3Rpdml0eS50eXBlLnNsaWNlKDEpIDogJ0lkbGUnO1xyXG5cclxuICByZXR1cm4gKFxyXG4gICAgPGRpdiBjbGFzc05hbWU9XCJjb21iYXQtZG9ja1wiPlxyXG4gICAgICA8ZGl2IGNsYXNzTmFtZT1cImNvbWJhdC1kb2NrX19oZWFkZXJcIj5cclxuICAgICAgICA8ZGl2PlxyXG4gICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJjb21iYXQtZG9ja19fdGl0bGVcIj57YXJlYVRpdGxlfTwvZGl2PlxyXG4gICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJjb21iYXQtZG9ja19fc3VidGl0bGVcIj57YWN0aXZpdHlMYWJlbH0g4oCiIHtzdGF0dXNMYWJlbH08L2Rpdj5cclxuICAgICAgICA8L2Rpdj5cclxuICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImNvbWJhdC1kb2NrX19hY3Rpb25zXCI+XHJcbiAgICAgICAgICA8YnV0dG9uIGNsYXNzTmFtZT1cImJ1dHRvbi1zdGFuZGFyZFwiIG9uQ2xpY2s9e3Jlc3RvcmV9PlxyXG4gICAgICAgICAgICBPcGVuXHJcbiAgICAgICAgICA8L2J1dHRvbj5cclxuICAgICAgICAgIDxidXR0b24gY2xhc3NOYW1lPVwiYnV0dG9uLXN0YW5kYXJkIGJ1dHRvbi1zdGFuZGFyZC0tZGFuZ2VyXCIgb25DbGljaz17c3RvcH0+XHJcbiAgICAgICAgICAgIFN0b3BcclxuICAgICAgICAgIDwvYnV0dG9uPlxyXG4gICAgICAgIDwvZGl2PlxyXG4gICAgICA8L2Rpdj5cclxuXHJcbiAgICAgIDxkaXYgY2xhc3NOYW1lPVwiY29tYmF0LWRvY2tfX2JhcnNcIj5cclxuICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImNvbWJhdC1kb2NrX19iYXJcIj5cclxuICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiY29tYmF0LWRvY2tfX2Jhci1sYWJlbFwiPkhQPC9kaXY+XHJcbiAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImNvbWJhdC1kb2NrX19iYXItdHJhY2tcIj5cclxuICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJjb21iYXQtZG9ja19fYmFyLWZpbGxcIiBzdHlsZT17eyB3aWR0aDogYCR7cGxheWVySHBQY3R9JWAgfX0gLz5cclxuICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgIDwvZGl2PlxyXG4gICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiY29tYmF0LWRvY2tfX2JhclwiPlxyXG4gICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJjb21iYXQtZG9ja19fYmFyLWxhYmVsXCI+RW5lbXk8L2Rpdj5cclxuICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiY29tYmF0LWRvY2tfX2Jhci10cmFja1wiPlxyXG4gICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImNvbWJhdC1kb2NrX19iYXItZmlsbCBjb21iYXQtZG9ja19fYmFyLWZpbGwtLWVuZW15XCIgc3R5bGU9e3sgd2lkdGg6IGAke2VuZW15SHBQY3R9JWAgfX0gLz5cclxuICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJjb21iYXQtZG9ja19fZW5lbXlcIj57Y3VycmVudEVuZW15Py5uYW1lID8/ICfigJQnfTwvZGl2PlxyXG4gICAgICAgIDwvZGl2PlxyXG4gICAgICA8L2Rpdj5cclxuICAgIDwvZGl2PlxyXG4gICk7XHJcbn1cclxuIl0sImZpbGUiOiJDOi9Vc2Vycy9hYmR1bC9EZXNrdG9wL2N1bHRpdmF0aW9uLWlkbGUvc3JjL2NvbXBvbmVudHMvY29tYmF0L3ByZXNlbnRhdGlvbi9Db21iYXREb2NrLnRzeCJ9

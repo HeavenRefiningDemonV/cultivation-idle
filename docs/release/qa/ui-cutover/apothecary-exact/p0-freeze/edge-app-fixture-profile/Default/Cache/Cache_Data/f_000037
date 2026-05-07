@@ -1,0 +1,307 @@
+import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/components/modals/PerkSelectionModal.tsx");import __vite__cjsImport0_react_jsxDevRuntime from "/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=c0e4e3e4"; const jsxDEV = __vite__cjsImport0_react_jsxDevRuntime["jsxDEV"];
+var _s = $RefreshSig$();
+import __vite__cjsImport1_react from "/node_modules/.vite/deps/react.js?v=c0e4e3e4"; const useState = __vite__cjsImport1_react["useState"];
+import { useGameStore } from "/src/stores/gameStore.ts";
+import { getAvailablePerks } from "/src/data/pathPerks.ts";
+import { GameIcon } from "/src/ui/icons/index.ts";
+import "/src/components/modals/PerkSelectionModal.scss";
+export function PerkSelectionModal({ onClose, realmIndex }) {
+  _s();
+  const { selectedPath, selectPerk, pathPerks: currentPerks } = useGameStore();
+  const [hoveredPerk, setHoveredPerk] = useState(null);
+  if (!selectedPath) {
+    onClose();
+    return null;
+  }
+  const availablePerks = getAvailablePerks(selectedPath, realmIndex).filter(
+    (perk) => !currentPerks.includes(perk.id)
+  );
+  const handleSelectPerk = (perk) => {
+    selectPerk(perk.id);
+    onClose();
+  };
+  const getPathColor = () => {
+    switch (selectedPath) {
+      case "heaven":
+        return {
+          highlight: "perkSelectionModalPathHeaven",
+          text: "perkSelectionModalPathTextHeaven"
+        };
+      case "earth":
+        return {
+          highlight: "perkSelectionModalPathEarth",
+          text: "perkSelectionModalPathTextEarth"
+        };
+      case "martial":
+        return {
+          highlight: "perkSelectionModalPathMartial",
+          text: "perkSelectionModalPathTextMartial"
+        };
+      default:
+        return {
+          highlight: "perkSelectionModalPathNeutral",
+          text: "perkSelectionModalPathTextNeutral"
+        };
+    }
+  };
+  const pathColors = getPathColor();
+  const formatStatName = (stat) => {
+    switch (stat) {
+      case "qiMultiplier":
+        return "Qi Generation";
+      case "hpMultiplier":
+        return "Maximum HP";
+      case "atkMultiplier":
+        return "Attack Damage";
+      case "defMultiplier":
+        return "Defense";
+      case "regenMultiplier":
+        return "HP Regeneration";
+      case "crit":
+        return "Critical Hit Chance";
+      case "critDmg":
+        return "Critical Damage";
+      case "dodge":
+        return "Dodge Chance";
+      default:
+        return stat;
+    }
+  };
+  const formatStatValue = (stat, value) => {
+    switch (stat) {
+      case "qiMultiplier":
+      case "hpMultiplier":
+      case "atkMultiplier":
+      case "defMultiplier":
+      case "regenMultiplier":
+        return `+${(value * 100).toFixed(0)}%`;
+      case "crit":
+      case "dodge":
+        return `+${value.toFixed(0)}%`;
+      case "critDmg":
+        return `+${value.toFixed(0)}%`;
+      default:
+        return `+${value}`;
+    }
+  };
+  if (availablePerks.length === 0) {
+    return /* @__PURE__ */ jsxDEV("div", { className: "perkSelectionModalOverlay", children: /* @__PURE__ */ jsxDEV("div", { className: "perkSelectionModalEmptyModal", children: /* @__PURE__ */ jsxDEV("div", { className: "perkSelectionModalHeader", children: [
+      /* @__PURE__ */ jsxDEV("h1", { className: "perkSelectionModalEmptyTitle", children: "No Perks Available" }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/PerkSelectionModal.tsx",
+        lineNumber: 109,
+        columnNumber: 13
+      }, this),
+      /* @__PURE__ */ jsxDEV("p", { className: "perkSelectionModalEmptyText", children: "You have already selected all available perks for this realm." }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/PerkSelectionModal.tsx",
+        lineNumber: 110,
+        columnNumber: 13
+      }, this),
+      /* @__PURE__ */ jsxDEV("button", { onClick: onClose, className: "button-standard perkSelectionModalButtonPrimary", children: "Continue" }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/PerkSelectionModal.tsx",
+        lineNumber: 113,
+        columnNumber: 13
+      }, this)
+    ] }, void 0, true, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/PerkSelectionModal.tsx",
+      lineNumber: 108,
+      columnNumber: 11
+    }, this) }, void 0, false, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/PerkSelectionModal.tsx",
+      lineNumber: 107,
+      columnNumber: 9
+    }, this) }, void 0, false, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/PerkSelectionModal.tsx",
+      lineNumber: 106,
+      columnNumber: 7
+    }, this);
+  }
+  return /* @__PURE__ */ jsxDEV("div", { className: "perkSelectionModalOverlay", children: /* @__PURE__ */ jsxDEV("div", { className: "perkSelectionModalModal", children: [
+    /* @__PURE__ */ jsxDEV("div", { className: "perkSelectionModalHeader", children: [
+      /* @__PURE__ */ jsxDEV("h1", { className: "perkSelectionModalTitle", children: "Choose Your Path Perk" }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/PerkSelectionModal.tsx",
+        lineNumber: 126,
+        columnNumber: 11
+      }, this),
+      /* @__PURE__ */ jsxDEV("p", { className: "perkSelectionModalSubtitle", children: [
+        selectedPath,
+        " Path • Realm ",
+        realmIndex
+      ] }, void 0, true, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/PerkSelectionModal.tsx",
+        lineNumber: 127,
+        columnNumber: 11
+      }, this),
+      /* @__PURE__ */ jsxDEV("p", { className: "perkSelectionModalHelperText", children: "Select one perk to enhance your cultivation journey" }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/PerkSelectionModal.tsx",
+        lineNumber: 130,
+        columnNumber: 11
+      }, this)
+    ] }, void 0, true, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/PerkSelectionModal.tsx",
+      lineNumber: 125,
+      columnNumber: 9
+    }, this),
+    /* @__PURE__ */ jsxDEV("div", { className: "perkSelectionModalGrid", children: availablePerks.map(
+      (perk) => /* @__PURE__ */ jsxDEV(
+        "div",
+        {
+          onMouseEnter: () => setHoveredPerk(perk.id),
+          onMouseLeave: () => setHoveredPerk(null),
+          className: `${"perkSelectionModalPerkCard"} ${hoveredPerk === perk.id ? `${"perkSelectionModalPerkCardActive"} ${pathColors.highlight}` : ""}`,
+          onClick: () => handleSelectPerk(perk),
+          children: [
+            /* @__PURE__ */ jsxDEV("div", { className: "perkSelectionModalIconRow", children: /* @__PURE__ */ jsxDEV("div", { className: hoveredPerk === perk.id ? "perkSelectionModalPathTextNeutral" : "", children: [
+              selectedPath === "heaven" && /* @__PURE__ */ jsxDEV(GameIcon, { icon: "bookHeaven", size: 24, decorative: true }, void 0, false, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/PerkSelectionModal.tsx",
+                lineNumber: 148,
+                columnNumber: 49
+              }, this),
+              selectedPath === "earth" && /* @__PURE__ */ jsxDEV(GameIcon, { icon: "bookEarth", size: 24, decorative: true }, void 0, false, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/PerkSelectionModal.tsx",
+                lineNumber: 149,
+                columnNumber: 48
+              }, this),
+              selectedPath === "martial" && /* @__PURE__ */ jsxDEV(GameIcon, { icon: "bookMartial", size: 24, decorative: true }, void 0, false, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/PerkSelectionModal.tsx",
+                lineNumber: 150,
+                columnNumber: 50
+              }, this)
+            ] }, void 0, true, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/PerkSelectionModal.tsx",
+              lineNumber: 147,
+              columnNumber: 17
+            }, this) }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/PerkSelectionModal.tsx",
+              lineNumber: 146,
+              columnNumber: 15
+            }, this),
+            /* @__PURE__ */ jsxDEV("div", { className: `${"perkSelectionModalPerkName"} ${pathColors.highlight}`, children: /* @__PURE__ */ jsxDEV("h2", { className: "perkSelectionModalPerkTitle", children: perk.name }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/PerkSelectionModal.tsx",
+              lineNumber: 155,
+              columnNumber: 17
+            }, this) }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/PerkSelectionModal.tsx",
+              lineNumber: 154,
+              columnNumber: 15
+            }, this),
+            /* @__PURE__ */ jsxDEV("p", { className: "perkSelectionModalPerkDescription", children: perk.description }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/PerkSelectionModal.tsx",
+              lineNumber: 158,
+              columnNumber: 15
+            }, this),
+            /* @__PURE__ */ jsxDEV("div", { className: "perkSelectionModalEffectBox", children: [
+              /* @__PURE__ */ jsxDEV("h3", { className: "perkSelectionModalEffectTitle", children: "Effect:" }, void 0, false, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/PerkSelectionModal.tsx",
+                lineNumber: 161,
+                columnNumber: 17
+              }, this),
+              /* @__PURE__ */ jsxDEV("div", { className: "perkSelectionModalEffectContent", children: [
+                /* @__PURE__ */ jsxDEV("span", { children: formatStatName(perk.effect.stat) }, void 0, false, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/PerkSelectionModal.tsx",
+                  lineNumber: 163,
+                  columnNumber: 19
+                }, this),
+                /* @__PURE__ */ jsxDEV("span", { className: `${"perkSelectionModalEffectValue"} ${pathColors.text}`, children: formatStatValue(perk.effect.stat, perk.effect.value) }, void 0, false, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/PerkSelectionModal.tsx",
+                  lineNumber: 164,
+                  columnNumber: 19
+                }, this)
+              ] }, void 0, true, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/PerkSelectionModal.tsx",
+                lineNumber: 162,
+                columnNumber: 17
+              }, this)
+            ] }, void 0, true, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/PerkSelectionModal.tsx",
+              lineNumber: 160,
+              columnNumber: 15
+            }, this),
+            /* @__PURE__ */ jsxDEV("button", { className: `${"button-standard"} ${"perkSelectionModalSelectButton"} ${pathColors.highlight}`, children: "Choose This Perk" }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/PerkSelectionModal.tsx",
+              lineNumber: 170,
+              columnNumber: 15
+            }, this)
+          ]
+        },
+        perk.id,
+        true,
+        {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/PerkSelectionModal.tsx",
+          lineNumber: 137,
+          columnNumber: 11
+        },
+        this
+      )
+    ) }, void 0, false, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/PerkSelectionModal.tsx",
+      lineNumber: 135,
+      columnNumber: 9
+    }, this),
+    /* @__PURE__ */ jsxDEV("div", { className: "perkSelectionModalFooter", children: [
+      /* @__PURE__ */ jsxDEV("p", { className: "perkSelectionModalFooterTip", children: [
+        /* @__PURE__ */ jsxDEV(GameIcon, { icon: "inkSparkles", size: 14, decorative: true }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/PerkSelectionModal.tsx",
+          lineNumber: 179,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV("span", { children: "Tip: Choose perks that complement your playstyle!" }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/PerkSelectionModal.tsx",
+          lineNumber: 180,
+          columnNumber: 13
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/PerkSelectionModal.tsx",
+        lineNumber: 178,
+        columnNumber: 11
+      }, this),
+      /* @__PURE__ */ jsxDEV("p", { className: "perkSelectionModalFooterSmall", children: "Perks are permanent for this run and stack with your path bonuses" }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/PerkSelectionModal.tsx",
+        lineNumber: 182,
+        columnNumber: 11
+      }, this)
+    ] }, void 0, true, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/PerkSelectionModal.tsx",
+      lineNumber: 177,
+      columnNumber: 9
+    }, this)
+  ] }, void 0, true, {
+    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/PerkSelectionModal.tsx",
+    lineNumber: 124,
+    columnNumber: 7
+  }, this) }, void 0, false, {
+    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/PerkSelectionModal.tsx",
+    lineNumber: 123,
+    columnNumber: 5
+  }, this);
+}
+_s(PerkSelectionModal, "tzGRTL4PJU7viO+SCz24W11HcuQ=", false, function() {
+  return [useGameStore];
+});
+_c = PerkSelectionModal;
+var _c;
+$RefreshReg$(_c, "PerkSelectionModal");
+import * as RefreshRuntime from "/@react-refresh";
+const inWebWorker = typeof WorkerGlobalScope !== "undefined" && self instanceof WorkerGlobalScope;
+if (import.meta.hot && !inWebWorker) {
+  if (!window.$RefreshReg$) {
+    throw new Error(
+      "@vitejs/plugin-react can't detect preamble. Something is wrong."
+    );
+  }
+  RefreshRuntime.__hmr_import(import.meta.url).then((currentExports) => {
+    RefreshRuntime.registerExportsForReactRefresh("C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/PerkSelectionModal.tsx", currentExports);
+    import.meta.hot.accept((nextExports) => {
+      if (!nextExports) return;
+      const invalidateMessage = RefreshRuntime.validateRefreshBoundaryAndEnqueueUpdate("C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/PerkSelectionModal.tsx", currentExports, nextExports);
+      if (invalidateMessage) import.meta.hot.invalidate(invalidateMessage);
+    });
+  });
+}
+function $RefreshReg$(type, id) {
+  return RefreshRuntime.register(type, "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/PerkSelectionModal.tsx " + id);
+}
+function $RefreshSig$() {
+  return RefreshRuntime.createSignatureFunctionForTransform();
+}
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJtYXBwaW5ncyI6IkFBNEdZOztBQTVHWixTQUFTQSxnQkFBZ0I7QUFDekIsU0FBU0Msb0JBQW9CO0FBQzdCLFNBQVNDLHlCQUF5QjtBQUVsQyxTQUFTQyxnQkFBZ0I7QUFDekIsT0FBTztBQU9BLGdCQUFTQyxtQkFBbUIsRUFBRUMsU0FBU0MsV0FBb0MsR0FBRztBQUFBQyxLQUFBO0FBQ25GLFFBQU0sRUFBRUMsY0FBY0MsWUFBWUMsV0FBV0MsYUFBYSxJQUFJVixhQUFhO0FBQzNFLFFBQU0sQ0FBQ1csYUFBYUMsY0FBYyxJQUFJYixTQUF3QixJQUFJO0FBRWxFLE1BQUksQ0FBQ1EsY0FBYztBQUNqQkgsWUFBUTtBQUNSLFdBQU87QUFBQSxFQUNUO0FBR0EsUUFBTVMsaUJBQWlCWixrQkFBa0JNLGNBQWNGLFVBQVUsRUFBRVM7QUFBQUEsSUFDakUsQ0FBQ0MsU0FBUyxDQUFDTCxhQUFhTSxTQUFTRCxLQUFLRSxFQUFFO0FBQUEsRUFDMUM7QUFHQSxRQUFNQyxtQkFBbUJBLENBQUNILFNBQW1CO0FBQzNDUCxlQUFXTyxLQUFLRSxFQUFFO0FBQ2xCYixZQUFRO0FBQUEsRUFDVjtBQUdBLFFBQU1lLGVBQWVBLE1BQU07QUFDekIsWUFBUVosY0FBWTtBQUFBLE1BQ2xCLEtBQUs7QUFDSCxlQUFPO0FBQUEsVUFDTGEsV0FBVztBQUFBLFVBQ1hDLE1BQU07QUFBQSxRQUNSO0FBQUEsTUFDRixLQUFLO0FBQ0gsZUFBTztBQUFBLFVBQ0xELFdBQVc7QUFBQSxVQUNYQyxNQUFNO0FBQUEsUUFDUjtBQUFBLE1BQ0YsS0FBSztBQUNILGVBQU87QUFBQSxVQUNMRCxXQUFXO0FBQUEsVUFDWEMsTUFBTTtBQUFBLFFBQ1I7QUFBQSxNQUNGO0FBQ0UsZUFBTztBQUFBLFVBQ0xELFdBQVc7QUFBQSxVQUNYQyxNQUFNO0FBQUEsUUFDUjtBQUFBLElBQ0o7QUFBQSxFQUNGO0FBRUEsUUFBTUMsYUFBYUgsYUFBYTtBQUdoQyxRQUFNSSxpQkFBaUJBLENBQUNDLFNBQXlCO0FBQy9DLFlBQVFBLE1BQUk7QUFBQSxNQUNWLEtBQUs7QUFDSCxlQUFPO0FBQUEsTUFDVCxLQUFLO0FBQ0gsZUFBTztBQUFBLE1BQ1QsS0FBSztBQUNILGVBQU87QUFBQSxNQUNULEtBQUs7QUFDSCxlQUFPO0FBQUEsTUFDVCxLQUFLO0FBQ0gsZUFBTztBQUFBLE1BQ1QsS0FBSztBQUNILGVBQU87QUFBQSxNQUNULEtBQUs7QUFDSCxlQUFPO0FBQUEsTUFDVCxLQUFLO0FBQ0gsZUFBTztBQUFBLE1BQ1Q7QUFDRSxlQUFPQTtBQUFBQSxJQUNYO0FBQUEsRUFDRjtBQUdBLFFBQU1DLGtCQUFrQkEsQ0FBQ0QsTUFBY0UsVUFBMEI7QUFDL0QsWUFBUUYsTUFBSTtBQUFBLE1BQ1YsS0FBSztBQUFBLE1BQ0wsS0FBSztBQUFBLE1BQ0wsS0FBSztBQUFBLE1BQ0wsS0FBSztBQUFBLE1BQ0wsS0FBSztBQUNILGVBQU8sS0FBS0UsUUFBUSxLQUFLQyxRQUFRLENBQUMsQ0FBQztBQUFBLE1BQ3JDLEtBQUs7QUFBQSxNQUNMLEtBQUs7QUFDSCxlQUFPLElBQUlELE1BQU1DLFFBQVEsQ0FBQyxDQUFDO0FBQUEsTUFDN0IsS0FBSztBQUNILGVBQU8sSUFBSUQsTUFBTUMsUUFBUSxDQUFDLENBQUM7QUFBQSxNQUM3QjtBQUNFLGVBQU8sSUFBSUQsS0FBSztBQUFBLElBQ3BCO0FBQUEsRUFDRjtBQUVBLE1BQUliLGVBQWVlLFdBQVcsR0FBRztBQUMvQixXQUNFLHVCQUFDLFNBQUksV0FBVyw2QkFDZCxpQ0FBQyxTQUFJLFdBQVcsZ0NBQ2QsaUNBQUMsU0FBSSxXQUFXLDRCQUNkO0FBQUEsNkJBQUMsUUFBRyxXQUFXLGdDQUFnQyxrQ0FBL0M7QUFBQTtBQUFBO0FBQUE7QUFBQSxhQUFpRTtBQUFBLE1BQ2pFLHVCQUFDLE9BQUUsV0FBVywrQkFBK0IsNkVBQTdDO0FBQUE7QUFBQTtBQUFBO0FBQUEsYUFFQTtBQUFBLE1BQ0EsdUJBQUMsWUFBTyxTQUFTeEIsU0FBUyxXQUFXLG1EQUFtRCx3QkFBeEY7QUFBQTtBQUFBO0FBQUE7QUFBQSxhQUVBO0FBQUEsU0FQRjtBQUFBO0FBQUE7QUFBQTtBQUFBLFdBUUEsS0FURjtBQUFBO0FBQUE7QUFBQTtBQUFBLFdBVUEsS0FYRjtBQUFBO0FBQUE7QUFBQTtBQUFBLFdBWUE7QUFBQSxFQUVKO0FBRUEsU0FDRSx1QkFBQyxTQUFJLFdBQVcsNkJBQ2QsaUNBQUMsU0FBSSxXQUFXLDJCQUNkO0FBQUEsMkJBQUMsU0FBSSxXQUFXLDRCQUNkO0FBQUEsNkJBQUMsUUFBRyxXQUFXLDJCQUEyQixxQ0FBMUM7QUFBQTtBQUFBO0FBQUE7QUFBQSxhQUErRDtBQUFBLE1BQy9ELHVCQUFDLE9BQUUsV0FBVyw4QkFDWEc7QUFBQUE7QUFBQUEsUUFBYTtBQUFBLFFBQWVGO0FBQUFBLFdBRC9CO0FBQUE7QUFBQTtBQUFBO0FBQUEsYUFFQTtBQUFBLE1BQ0EsdUJBQUMsT0FBRSxXQUFXLGdDQUFnQyxtRUFBOUM7QUFBQTtBQUFBO0FBQUE7QUFBQSxhQUVBO0FBQUEsU0FQRjtBQUFBO0FBQUE7QUFBQTtBQUFBLFdBUUE7QUFBQSxJQUVBLHVCQUFDLFNBQUksV0FBVywwQkFDYlEseUJBQWVnQjtBQUFBQSxNQUFJLENBQUNkLFNBQ25CO0FBQUEsUUFBQztBQUFBO0FBQUEsVUFFQyxjQUFjLE1BQU1ILGVBQWVHLEtBQUtFLEVBQUU7QUFBQSxVQUMxQyxjQUFjLE1BQU1MLGVBQWUsSUFBSTtBQUFBLFVBQ3ZDLFdBQVcsR0FBRyw0QkFBNEIsSUFDeENELGdCQUFnQkksS0FBS0UsS0FBSyxHQUFHLGtDQUFrQyxJQUFJSyxXQUFXRixTQUFTLEtBQUssRUFBRTtBQUFBLFVBRWhHLFNBQVMsTUFBTUYsaUJBQWlCSCxJQUFJO0FBQUEsVUFFcEM7QUFBQSxtQ0FBQyxTQUFJLFdBQVcsNkJBQ2QsaUNBQUMsU0FBSSxXQUFXSixnQkFBZ0JJLEtBQUtFLEtBQUssc0NBQXNDLElBQzdFVjtBQUFBQSwrQkFBaUIsWUFBWSx1QkFBQyxZQUFTLE1BQUssY0FBYSxNQUFNLElBQUksWUFBVSxRQUFoRDtBQUFBO0FBQUE7QUFBQTtBQUFBLHFCQUFnRDtBQUFBLGNBQzdFQSxpQkFBaUIsV0FBVyx1QkFBQyxZQUFTLE1BQUssYUFBWSxNQUFNLElBQUksWUFBVSxRQUEvQztBQUFBO0FBQUE7QUFBQTtBQUFBLHFCQUErQztBQUFBLGNBQzNFQSxpQkFBaUIsYUFBYSx1QkFBQyxZQUFTLE1BQUssZUFBYyxNQUFNLElBQUksWUFBVSxRQUFqRDtBQUFBO0FBQUE7QUFBQTtBQUFBLHFCQUFpRDtBQUFBLGlCQUhsRjtBQUFBO0FBQUE7QUFBQTtBQUFBLG1CQUlBLEtBTEY7QUFBQTtBQUFBO0FBQUE7QUFBQSxtQkFNQTtBQUFBLFlBRUEsdUJBQUMsU0FBSSxXQUFXLEdBQUcsNEJBQTRCLElBQUllLFdBQVdGLFNBQVMsSUFDckUsaUNBQUMsUUFBRyxXQUFXLCtCQUFnQ0wsZUFBS2UsUUFBcEQ7QUFBQTtBQUFBO0FBQUE7QUFBQSxtQkFBeUQsS0FEM0Q7QUFBQTtBQUFBO0FBQUE7QUFBQSxtQkFFQTtBQUFBLFlBRUEsdUJBQUMsT0FBRSxXQUFXLHFDQUFzQ2YsZUFBS2dCLGVBQXpEO0FBQUE7QUFBQTtBQUFBO0FBQUEsbUJBQXFFO0FBQUEsWUFFckUsdUJBQUMsU0FBSSxXQUFXLCtCQUNkO0FBQUEscUNBQUMsUUFBRyxXQUFXLGlDQUFpQyx1QkFBaEQ7QUFBQTtBQUFBO0FBQUE7QUFBQSxxQkFBdUQ7QUFBQSxjQUN2RCx1QkFBQyxTQUFJLFdBQVcsbUNBQ2Q7QUFBQSx1Q0FBQyxVQUFNUix5QkFBZVIsS0FBS2lCLE9BQU9SLElBQUksS0FBdEM7QUFBQTtBQUFBO0FBQUE7QUFBQSx1QkFBd0M7QUFBQSxnQkFDeEMsdUJBQUMsVUFBSyxXQUFXLEdBQUcsK0JBQStCLElBQUlGLFdBQVdELElBQUksSUFDbkVJLDBCQUFnQlYsS0FBS2lCLE9BQU9SLE1BQU1ULEtBQUtpQixPQUFPTixLQUFLLEtBRHREO0FBQUE7QUFBQTtBQUFBO0FBQUEsdUJBRUE7QUFBQSxtQkFKRjtBQUFBO0FBQUE7QUFBQTtBQUFBLHFCQUtBO0FBQUEsaUJBUEY7QUFBQTtBQUFBO0FBQUE7QUFBQSxtQkFRQTtBQUFBLFlBRUEsdUJBQUMsWUFBTyxXQUFXLEdBQUcsaUJBQWlCLElBQUksZ0NBQWdDLElBQUlKLFdBQVdGLFNBQVMsSUFBSSxnQ0FBdkc7QUFBQTtBQUFBO0FBQUE7QUFBQSxtQkFFQTtBQUFBO0FBQUE7QUFBQSxRQWxDS0wsS0FBS0U7QUFBQUEsUUFEWjtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBLE1Bb0NBO0FBQUEsSUFDRCxLQXZDSDtBQUFBO0FBQUE7QUFBQTtBQUFBLFdBd0NBO0FBQUEsSUFFQSx1QkFBQyxTQUFJLFdBQVcsNEJBQ2Q7QUFBQSw2QkFBQyxPQUFFLFdBQVUsK0JBQ1g7QUFBQSwrQkFBQyxZQUFTLE1BQUssZUFBYyxNQUFNLElBQUksWUFBVSxRQUFqRDtBQUFBO0FBQUE7QUFBQTtBQUFBLGVBQWlEO0FBQUEsUUFDakQsdUJBQUMsVUFBSyxpRUFBTjtBQUFBO0FBQUE7QUFBQTtBQUFBLGVBQXVEO0FBQUEsV0FGekQ7QUFBQTtBQUFBO0FBQUE7QUFBQSxhQUdBO0FBQUEsTUFDQSx1QkFBQyxPQUFFLFdBQVcsaUNBQWlDLGlGQUEvQztBQUFBO0FBQUE7QUFBQTtBQUFBLGFBRUE7QUFBQSxTQVBGO0FBQUE7QUFBQTtBQUFBO0FBQUEsV0FRQTtBQUFBLE9BN0RGO0FBQUE7QUFBQTtBQUFBO0FBQUEsU0E4REEsS0EvREY7QUFBQTtBQUFBO0FBQUE7QUFBQSxTQWdFQTtBQUVKO0FBQUNYLEdBaExlSCxvQkFBa0I7QUFBQSxVQUM4QkgsWUFBWTtBQUFBO0FBQUFpQyxLQUQ1RDlCO0FBQWtCLElBQUE4QjtBQUFBQyxhQUFBRCxJQUFBIiwibmFtZXMiOlsidXNlU3RhdGUiLCJ1c2VHYW1lU3RvcmUiLCJnZXRBdmFpbGFibGVQZXJrcyIsIkdhbWVJY29uIiwiUGVya1NlbGVjdGlvbk1vZGFsIiwib25DbG9zZSIsInJlYWxtSW5kZXgiLCJfcyIsInNlbGVjdGVkUGF0aCIsInNlbGVjdFBlcmsiLCJwYXRoUGVya3MiLCJjdXJyZW50UGVya3MiLCJob3ZlcmVkUGVyayIsInNldEhvdmVyZWRQZXJrIiwiYXZhaWxhYmxlUGVya3MiLCJmaWx0ZXIiLCJwZXJrIiwiaW5jbHVkZXMiLCJpZCIsImhhbmRsZVNlbGVjdFBlcmsiLCJnZXRQYXRoQ29sb3IiLCJoaWdobGlnaHQiLCJ0ZXh0IiwicGF0aENvbG9ycyIsImZvcm1hdFN0YXROYW1lIiwic3RhdCIsImZvcm1hdFN0YXRWYWx1ZSIsInZhbHVlIiwidG9GaXhlZCIsImxlbmd0aCIsIm1hcCIsIm5hbWUiLCJkZXNjcmlwdGlvbiIsImVmZmVjdCIsIl9jIiwiJFJlZnJlc2hSZWckIl0sImlnbm9yZUxpc3QiOltdLCJzb3VyY2VzIjpbIlBlcmtTZWxlY3Rpb25Nb2RhbC50c3giXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgdXNlU3RhdGUgfSBmcm9tICdyZWFjdCc7XHJcbmltcG9ydCB7IHVzZUdhbWVTdG9yZSB9IGZyb20gJy4uLy4uL3N0b3Jlcy9nYW1lU3RvcmUuanMnO1xyXG5pbXBvcnQgeyBnZXRBdmFpbGFibGVQZXJrcyB9IGZyb20gJy4uLy4uL2RhdGEvcGF0aFBlcmtzLmpzJztcclxuaW1wb3J0IHR5cGUgeyBQYXRoUGVyayB9IGZyb20gJy4uLy4uL2RhdGEvcGF0aFBlcmtzLmpzJztcclxuaW1wb3J0IHsgR2FtZUljb24gfSBmcm9tICcuLi8uLi91aS9pY29ucy9pbmRleC5qcyc7XHJcbmltcG9ydCAnLi9QZXJrU2VsZWN0aW9uTW9kYWwuc2Nzcyc7XHJcblxyXG5pbnRlcmZhY2UgUGVya1NlbGVjdGlvbk1vZGFsUHJvcHMge1xyXG4gIG9uQ2xvc2U6ICgpID0+IHZvaWQ7XHJcbiAgcmVhbG1JbmRleDogbnVtYmVyO1xyXG59XHJcblxyXG5leHBvcnQgZnVuY3Rpb24gUGVya1NlbGVjdGlvbk1vZGFsKHsgb25DbG9zZSwgcmVhbG1JbmRleCB9OiBQZXJrU2VsZWN0aW9uTW9kYWxQcm9wcykge1xyXG4gIGNvbnN0IHsgc2VsZWN0ZWRQYXRoLCBzZWxlY3RQZXJrLCBwYXRoUGVya3M6IGN1cnJlbnRQZXJrcyB9ID0gdXNlR2FtZVN0b3JlKCk7XHJcbiAgY29uc3QgW2hvdmVyZWRQZXJrLCBzZXRIb3ZlcmVkUGVya10gPSB1c2VTdGF0ZTxzdHJpbmcgfCBudWxsPihudWxsKTtcclxuXHJcbiAgaWYgKCFzZWxlY3RlZFBhdGgpIHtcclxuICAgIG9uQ2xvc2UoKTtcclxuICAgIHJldHVybiBudWxsO1xyXG4gIH1cclxuXHJcbiAgLy8gR2V0IGF2YWlsYWJsZSBwZXJrcyBmb3IgdGhpcyBwYXRoIGFuZCByZWFsbVxyXG4gIGNvbnN0IGF2YWlsYWJsZVBlcmtzID0gZ2V0QXZhaWxhYmxlUGVya3Moc2VsZWN0ZWRQYXRoLCByZWFsbUluZGV4KS5maWx0ZXIoXHJcbiAgICAocGVyaykgPT4gIWN1cnJlbnRQZXJrcy5pbmNsdWRlcyhwZXJrLmlkKVxyXG4gICk7XHJcblxyXG4gIC8vIEhhbmRsZSBwZXJrIHNlbGVjdGlvblxyXG4gIGNvbnN0IGhhbmRsZVNlbGVjdFBlcmsgPSAocGVyazogUGF0aFBlcmspID0+IHtcclxuICAgIHNlbGVjdFBlcmsocGVyay5pZCk7XHJcbiAgICBvbkNsb3NlKCk7XHJcbiAgfTtcclxuXHJcbiAgLy8gUGF0aC1zcGVjaWZpYyBjb2xvcnNcclxuICBjb25zdCBnZXRQYXRoQ29sb3IgPSAoKSA9PiB7XHJcbiAgICBzd2l0Y2ggKHNlbGVjdGVkUGF0aCkge1xyXG4gICAgICBjYXNlICdoZWF2ZW4nOlxyXG4gICAgICAgIHJldHVybiB7XHJcbiAgICAgICAgICBoaWdobGlnaHQ6ICdwZXJrU2VsZWN0aW9uTW9kYWxQYXRoSGVhdmVuJyxcclxuICAgICAgICAgIHRleHQ6ICdwZXJrU2VsZWN0aW9uTW9kYWxQYXRoVGV4dEhlYXZlbicsXHJcbiAgICAgICAgfTtcclxuICAgICAgY2FzZSAnZWFydGgnOlxyXG4gICAgICAgIHJldHVybiB7XHJcbiAgICAgICAgICBoaWdobGlnaHQ6ICdwZXJrU2VsZWN0aW9uTW9kYWxQYXRoRWFydGgnLFxyXG4gICAgICAgICAgdGV4dDogJ3BlcmtTZWxlY3Rpb25Nb2RhbFBhdGhUZXh0RWFydGgnLFxyXG4gICAgICAgIH07XHJcbiAgICAgIGNhc2UgJ21hcnRpYWwnOlxyXG4gICAgICAgIHJldHVybiB7XHJcbiAgICAgICAgICBoaWdobGlnaHQ6ICdwZXJrU2VsZWN0aW9uTW9kYWxQYXRoTWFydGlhbCcsXHJcbiAgICAgICAgICB0ZXh0OiAncGVya1NlbGVjdGlvbk1vZGFsUGF0aFRleHRNYXJ0aWFsJyxcclxuICAgICAgICB9O1xyXG4gICAgICBkZWZhdWx0OlxyXG4gICAgICAgIHJldHVybiB7XHJcbiAgICAgICAgICBoaWdobGlnaHQ6ICdwZXJrU2VsZWN0aW9uTW9kYWxQYXRoTmV1dHJhbCcsXHJcbiAgICAgICAgICB0ZXh0OiAncGVya1NlbGVjdGlvbk1vZGFsUGF0aFRleHROZXV0cmFsJyxcclxuICAgICAgICB9O1xyXG4gICAgfVxyXG4gIH07XHJcblxyXG4gIGNvbnN0IHBhdGhDb2xvcnMgPSBnZXRQYXRoQ29sb3IoKTtcclxuXHJcbiAgLy8gRm9ybWF0IHN0YXQgbmFtZSBmb3IgZGlzcGxheVxyXG4gIGNvbnN0IGZvcm1hdFN0YXROYW1lID0gKHN0YXQ6IHN0cmluZyk6IHN0cmluZyA9PiB7XHJcbiAgICBzd2l0Y2ggKHN0YXQpIHtcclxuICAgICAgY2FzZSAncWlNdWx0aXBsaWVyJzpcclxuICAgICAgICByZXR1cm4gJ1FpIEdlbmVyYXRpb24nO1xyXG4gICAgICBjYXNlICdocE11bHRpcGxpZXInOlxyXG4gICAgICAgIHJldHVybiAnTWF4aW11bSBIUCc7XHJcbiAgICAgIGNhc2UgJ2F0a011bHRpcGxpZXInOlxyXG4gICAgICAgIHJldHVybiAnQXR0YWNrIERhbWFnZSc7XHJcbiAgICAgIGNhc2UgJ2RlZk11bHRpcGxpZXInOlxyXG4gICAgICAgIHJldHVybiAnRGVmZW5zZSc7XHJcbiAgICAgIGNhc2UgJ3JlZ2VuTXVsdGlwbGllcic6XHJcbiAgICAgICAgcmV0dXJuICdIUCBSZWdlbmVyYXRpb24nO1xyXG4gICAgICBjYXNlICdjcml0JzpcclxuICAgICAgICByZXR1cm4gJ0NyaXRpY2FsIEhpdCBDaGFuY2UnO1xyXG4gICAgICBjYXNlICdjcml0RG1nJzpcclxuICAgICAgICByZXR1cm4gJ0NyaXRpY2FsIERhbWFnZSc7XHJcbiAgICAgIGNhc2UgJ2RvZGdlJzpcclxuICAgICAgICByZXR1cm4gJ0RvZGdlIENoYW5jZSc7XHJcbiAgICAgIGRlZmF1bHQ6XHJcbiAgICAgICAgcmV0dXJuIHN0YXQ7XHJcbiAgICB9XHJcbiAgfTtcclxuXHJcbiAgLy8gRm9ybWF0IHN0YXQgdmFsdWUgZm9yIGRpc3BsYXlcclxuICBjb25zdCBmb3JtYXRTdGF0VmFsdWUgPSAoc3RhdDogc3RyaW5nLCB2YWx1ZTogbnVtYmVyKTogc3RyaW5nID0+IHtcclxuICAgIHN3aXRjaCAoc3RhdCkge1xyXG4gICAgICBjYXNlICdxaU11bHRpcGxpZXInOlxyXG4gICAgICBjYXNlICdocE11bHRpcGxpZXInOlxyXG4gICAgICBjYXNlICdhdGtNdWx0aXBsaWVyJzpcclxuICAgICAgY2FzZSAnZGVmTXVsdGlwbGllcic6XHJcbiAgICAgIGNhc2UgJ3JlZ2VuTXVsdGlwbGllcic6XHJcbiAgICAgICAgcmV0dXJuIGArJHsodmFsdWUgKiAxMDApLnRvRml4ZWQoMCl9JWA7XHJcbiAgICAgIGNhc2UgJ2NyaXQnOlxyXG4gICAgICBjYXNlICdkb2RnZSc6XHJcbiAgICAgICAgcmV0dXJuIGArJHt2YWx1ZS50b0ZpeGVkKDApfSVgO1xyXG4gICAgICBjYXNlICdjcml0RG1nJzpcclxuICAgICAgICByZXR1cm4gYCske3ZhbHVlLnRvRml4ZWQoMCl9JWA7XHJcbiAgICAgIGRlZmF1bHQ6XHJcbiAgICAgICAgcmV0dXJuIGArJHt2YWx1ZX1gO1xyXG4gICAgfVxyXG4gIH07XHJcblxyXG4gIGlmIChhdmFpbGFibGVQZXJrcy5sZW5ndGggPT09IDApIHtcclxuICAgIHJldHVybiAoXHJcbiAgICAgIDxkaXYgY2xhc3NOYW1lPXsncGVya1NlbGVjdGlvbk1vZGFsT3ZlcmxheSd9PlxyXG4gICAgICAgIDxkaXYgY2xhc3NOYW1lPXsncGVya1NlbGVjdGlvbk1vZGFsRW1wdHlNb2RhbCd9PlxyXG4gICAgICAgICAgPGRpdiBjbGFzc05hbWU9eydwZXJrU2VsZWN0aW9uTW9kYWxIZWFkZXInfT5cclxuICAgICAgICAgICAgPGgxIGNsYXNzTmFtZT17J3BlcmtTZWxlY3Rpb25Nb2RhbEVtcHR5VGl0bGUnfT5ObyBQZXJrcyBBdmFpbGFibGU8L2gxPlxyXG4gICAgICAgICAgICA8cCBjbGFzc05hbWU9eydwZXJrU2VsZWN0aW9uTW9kYWxFbXB0eVRleHQnfT5cclxuICAgICAgICAgICAgICBZb3UgaGF2ZSBhbHJlYWR5IHNlbGVjdGVkIGFsbCBhdmFpbGFibGUgcGVya3MgZm9yIHRoaXMgcmVhbG0uXHJcbiAgICAgICAgICAgIDwvcD5cclxuICAgICAgICAgICAgPGJ1dHRvbiBvbkNsaWNrPXtvbkNsb3NlfSBjbGFzc05hbWU9eydidXR0b24tc3RhbmRhcmQgcGVya1NlbGVjdGlvbk1vZGFsQnV0dG9uUHJpbWFyeSd9PlxyXG4gICAgICAgICAgICAgIENvbnRpbnVlXHJcbiAgICAgICAgICAgIDwvYnV0dG9uPlxyXG4gICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgPC9kaXY+XHJcbiAgICAgIDwvZGl2PlxyXG4gICAgKTtcclxuICB9XHJcblxyXG4gIHJldHVybiAoXHJcbiAgICA8ZGl2IGNsYXNzTmFtZT17J3BlcmtTZWxlY3Rpb25Nb2RhbE92ZXJsYXknfT5cclxuICAgICAgPGRpdiBjbGFzc05hbWU9eydwZXJrU2VsZWN0aW9uTW9kYWxNb2RhbCd9PlxyXG4gICAgICAgIDxkaXYgY2xhc3NOYW1lPXsncGVya1NlbGVjdGlvbk1vZGFsSGVhZGVyJ30+XHJcbiAgICAgICAgICA8aDEgY2xhc3NOYW1lPXsncGVya1NlbGVjdGlvbk1vZGFsVGl0bGUnfT5DaG9vc2UgWW91ciBQYXRoIFBlcms8L2gxPlxyXG4gICAgICAgICAgPHAgY2xhc3NOYW1lPXsncGVya1NlbGVjdGlvbk1vZGFsU3VidGl0bGUnfT5cclxuICAgICAgICAgICAge3NlbGVjdGVkUGF0aH0gUGF0aCDigKIgUmVhbG0ge3JlYWxtSW5kZXh9XHJcbiAgICAgICAgICA8L3A+XHJcbiAgICAgICAgICA8cCBjbGFzc05hbWU9eydwZXJrU2VsZWN0aW9uTW9kYWxIZWxwZXJUZXh0J30+XHJcbiAgICAgICAgICAgIFNlbGVjdCBvbmUgcGVyayB0byBlbmhhbmNlIHlvdXIgY3VsdGl2YXRpb24gam91cm5leVxyXG4gICAgICAgICAgPC9wPlxyXG4gICAgICAgIDwvZGl2PlxyXG5cclxuICAgICAgICA8ZGl2IGNsYXNzTmFtZT17J3BlcmtTZWxlY3Rpb25Nb2RhbEdyaWQnfT5cclxuICAgICAgICAgIHthdmFpbGFibGVQZXJrcy5tYXAoKHBlcmspID0+IChcclxuICAgICAgICAgICAgPGRpdlxyXG4gICAgICAgICAgICAgIGtleT17cGVyay5pZH1cclxuICAgICAgICAgICAgICBvbk1vdXNlRW50ZXI9eygpID0+IHNldEhvdmVyZWRQZXJrKHBlcmsuaWQpfVxyXG4gICAgICAgICAgICAgIG9uTW91c2VMZWF2ZT17KCkgPT4gc2V0SG92ZXJlZFBlcmsobnVsbCl9XHJcbiAgICAgICAgICAgICAgY2xhc3NOYW1lPXtgJHsncGVya1NlbGVjdGlvbk1vZGFsUGVya0NhcmQnfSAke1xyXG4gICAgICAgICAgICAgICAgaG92ZXJlZFBlcmsgPT09IHBlcmsuaWQgPyBgJHsncGVya1NlbGVjdGlvbk1vZGFsUGVya0NhcmRBY3RpdmUnfSAke3BhdGhDb2xvcnMuaGlnaGxpZ2h0fWAgOiAnJ1xyXG4gICAgICAgICAgICAgIH1gfVxyXG4gICAgICAgICAgICAgIG9uQ2xpY2s9eygpID0+IGhhbmRsZVNlbGVjdFBlcmsocGVyayl9XHJcbiAgICAgICAgICAgID5cclxuICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT17J3BlcmtTZWxlY3Rpb25Nb2RhbEljb25Sb3cnfT5cclxuICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXtob3ZlcmVkUGVyayA9PT0gcGVyay5pZCA/ICdwZXJrU2VsZWN0aW9uTW9kYWxQYXRoVGV4dE5ldXRyYWwnIDogJyd9PlxyXG4gICAgICAgICAgICAgICAgICB7c2VsZWN0ZWRQYXRoID09PSAnaGVhdmVuJyAmJiA8R2FtZUljb24gaWNvbj1cImJvb2tIZWF2ZW5cIiBzaXplPXsyNH0gZGVjb3JhdGl2ZSAvPn1cclxuICAgICAgICAgICAgICAgICAge3NlbGVjdGVkUGF0aCA9PT0gJ2VhcnRoJyAmJiA8R2FtZUljb24gaWNvbj1cImJvb2tFYXJ0aFwiIHNpemU9ezI0fSBkZWNvcmF0aXZlIC8+fVxyXG4gICAgICAgICAgICAgICAgICB7c2VsZWN0ZWRQYXRoID09PSAnbWFydGlhbCcgJiYgPEdhbWVJY29uIGljb249XCJib29rTWFydGlhbFwiIHNpemU9ezI0fSBkZWNvcmF0aXZlIC8+fVxyXG4gICAgICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICAgICAgPC9kaXY+XHJcblxyXG4gICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXtgJHsncGVya1NlbGVjdGlvbk1vZGFsUGVya05hbWUnfSAke3BhdGhDb2xvcnMuaGlnaGxpZ2h0fWB9PlxyXG4gICAgICAgICAgICAgICAgPGgyIGNsYXNzTmFtZT17J3BlcmtTZWxlY3Rpb25Nb2RhbFBlcmtUaXRsZSd9PntwZXJrLm5hbWV9PC9oMj5cclxuICAgICAgICAgICAgICA8L2Rpdj5cclxuXHJcbiAgICAgICAgICAgICAgPHAgY2xhc3NOYW1lPXsncGVya1NlbGVjdGlvbk1vZGFsUGVya0Rlc2NyaXB0aW9uJ30+e3BlcmsuZGVzY3JpcHRpb259PC9wPlxyXG5cclxuICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT17J3BlcmtTZWxlY3Rpb25Nb2RhbEVmZmVjdEJveCd9PlxyXG4gICAgICAgICAgICAgICAgPGgzIGNsYXNzTmFtZT17J3BlcmtTZWxlY3Rpb25Nb2RhbEVmZmVjdFRpdGxlJ30+RWZmZWN0OjwvaDM+XHJcbiAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT17J3BlcmtTZWxlY3Rpb25Nb2RhbEVmZmVjdENvbnRlbnQnfT5cclxuICAgICAgICAgICAgICAgICAgPHNwYW4+e2Zvcm1hdFN0YXROYW1lKHBlcmsuZWZmZWN0LnN0YXQpfTwvc3Bhbj5cclxuICAgICAgICAgICAgICAgICAgPHNwYW4gY2xhc3NOYW1lPXtgJHsncGVya1NlbGVjdGlvbk1vZGFsRWZmZWN0VmFsdWUnfSAke3BhdGhDb2xvcnMudGV4dH1gfT5cclxuICAgICAgICAgICAgICAgICAgICB7Zm9ybWF0U3RhdFZhbHVlKHBlcmsuZWZmZWN0LnN0YXQsIHBlcmsuZWZmZWN0LnZhbHVlKX1cclxuICAgICAgICAgICAgICAgICAgPC9zcGFuPlxyXG4gICAgICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICAgICAgPC9kaXY+XHJcblxyXG4gICAgICAgICAgICAgIDxidXR0b24gY2xhc3NOYW1lPXtgJHsnYnV0dG9uLXN0YW5kYXJkJ30gJHsncGVya1NlbGVjdGlvbk1vZGFsU2VsZWN0QnV0dG9uJ30gJHtwYXRoQ29sb3JzLmhpZ2hsaWdodH1gfT5cclxuICAgICAgICAgICAgICAgIENob29zZSBUaGlzIFBlcmtcclxuICAgICAgICAgICAgICA8L2J1dHRvbj5cclxuICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICApKX1cclxuICAgICAgICA8L2Rpdj5cclxuXHJcbiAgICAgICAgPGRpdiBjbGFzc05hbWU9eydwZXJrU2VsZWN0aW9uTW9kYWxGb290ZXInfT5cclxuICAgICAgICAgIDxwIGNsYXNzTmFtZT1cInBlcmtTZWxlY3Rpb25Nb2RhbEZvb3RlclRpcFwiPlxyXG4gICAgICAgICAgICA8R2FtZUljb24gaWNvbj1cImlua1NwYXJrbGVzXCIgc2l6ZT17MTR9IGRlY29yYXRpdmUgLz5cclxuICAgICAgICAgICAgPHNwYW4+VGlwOiBDaG9vc2UgcGVya3MgdGhhdCBjb21wbGVtZW50IHlvdXIgcGxheXN0eWxlITwvc3Bhbj5cclxuICAgICAgICAgIDwvcD5cclxuICAgICAgICAgIDxwIGNsYXNzTmFtZT17J3BlcmtTZWxlY3Rpb25Nb2RhbEZvb3RlclNtYWxsJ30+XHJcbiAgICAgICAgICAgIFBlcmtzIGFyZSBwZXJtYW5lbnQgZm9yIHRoaXMgcnVuIGFuZCBzdGFjayB3aXRoIHlvdXIgcGF0aCBib251c2VzXHJcbiAgICAgICAgICA8L3A+XHJcbiAgICAgICAgPC9kaXY+XHJcbiAgICAgIDwvZGl2PlxyXG4gICAgPC9kaXY+XHJcbiAgKTtcclxufVxyXG4iXSwiZmlsZSI6IkM6L1VzZXJzL2FiZHVsL0Rlc2t0b3AvY3VsdGl2YXRpb24taWRsZS9zcmMvY29tcG9uZW50cy9tb2RhbHMvUGVya1NlbGVjdGlvbk1vZGFsLnRzeCJ9

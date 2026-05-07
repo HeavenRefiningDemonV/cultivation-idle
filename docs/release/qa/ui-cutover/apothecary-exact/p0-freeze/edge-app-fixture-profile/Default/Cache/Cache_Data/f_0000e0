@@ -1,0 +1,186 @@
+import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/ui/status/PostFailureDiagnosisPanel.tsx");import __vite__cjsImport0_react_jsxDevRuntime from "/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=c0e4e3e4"; const jsxDEV = __vite__cjsImport0_react_jsxDevRuntime["jsxDEV"];
+import "/src/ui/status/PostFailureDiagnosisPanel.scss";
+export function PostFailureDiagnosisPanel({
+  surface,
+  className = "",
+  tone = "paper",
+  onAction
+}) {
+  const resolved = surface ?? {
+    state: "idle",
+    title: "Post-Failure Diagnosis",
+    primaryLabel: null,
+    secondaryBadgeLabel: null,
+    headline: "No recent defeat summary yet.",
+    explanation: "Attempt this gate once to surface focused diagnosis and fixes.",
+    reasons: [],
+    fixes: [],
+    attemptRecap: null
+  };
+  return /* @__PURE__ */ jsxDEV("section", { className: `postFailureDiagnosisPanel postFailureDiagnosisPanel--${tone} ${className}`.trim(), children: [
+    /* @__PURE__ */ jsxDEV("div", { className: "postFailureDiagnosisPanel__header", children: /* @__PURE__ */ jsxDEV("div", { className: "postFailureDiagnosisPanel__titleWrap", children: [
+      /* @__PURE__ */ jsxDEV("h3", { className: "postFailureDiagnosisPanel__title", children: resolved.title }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/PostFailureDiagnosisPanel.tsx",
+        lineNumber: 35,
+        columnNumber: 11
+      }, this),
+      resolved.primaryLabel ? /* @__PURE__ */ jsxDEV("span", { className: "postFailureDiagnosisPanel__badge", children: resolved.primaryLabel }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/PostFailureDiagnosisPanel.tsx",
+        lineNumber: 36,
+        columnNumber: 36
+      }, this) : null,
+      resolved.secondaryBadgeLabel ? /* @__PURE__ */ jsxDEV("span", { className: "postFailureDiagnosisPanel__badge postFailureDiagnosisPanel__badge--secondary", children: resolved.secondaryBadgeLabel }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/PostFailureDiagnosisPanel.tsx",
+        lineNumber: 38,
+        columnNumber: 11
+      }, this) : null
+    ] }, void 0, true, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/PostFailureDiagnosisPanel.tsx",
+      lineNumber: 34,
+      columnNumber: 9
+    }, this) }, void 0, false, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/PostFailureDiagnosisPanel.tsx",
+      lineNumber: 33,
+      columnNumber: 7
+    }, this),
+    /* @__PURE__ */ jsxDEV("div", { className: "postFailureDiagnosisPanel__headline", children: resolved.headline }, void 0, false, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/PostFailureDiagnosisPanel.tsx",
+      lineNumber: 43,
+      columnNumber: 7
+    }, this),
+    /* @__PURE__ */ jsxDEV("div", { className: "postFailureDiagnosisPanel__explanation", children: resolved.explanation }, void 0, false, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/PostFailureDiagnosisPanel.tsx",
+      lineNumber: 44,
+      columnNumber: 7
+    }, this),
+    /* @__PURE__ */ jsxDEV("ul", { className: "postFailureDiagnosisPanel__reasons", children: resolved.reasons.length > 0 ? resolved.reasons.map(
+      (reason) => /* @__PURE__ */ jsxDEV("li", { className: "postFailureDiagnosisPanel__reason", children: reason }, reason, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/PostFailureDiagnosisPanel.tsx",
+        lineNumber: 49,
+        columnNumber: 9
+      }, this)
+    ) : /* @__PURE__ */ jsxDEV("li", { className: "postFailureDiagnosisPanel__reason postFailureDiagnosisPanel__reason--quiet", children: resolved.state === "resolved" ? "Gate already resolved." : "No diagnosis reasons available yet." }, void 0, false, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/PostFailureDiagnosisPanel.tsx",
+      lineNumber: 52,
+      columnNumber: 9
+    }, this) }, void 0, false, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/PostFailureDiagnosisPanel.tsx",
+      lineNumber: 46,
+      columnNumber: 7
+    }, this),
+    /* @__PURE__ */ jsxDEV("div", { className: "postFailureDiagnosisPanel__fixes", children: resolved.fixes.length > 0 ? resolved.fixes.map(
+      (fix) => /* @__PURE__ */ jsxDEV("div", { className: "postFailureDiagnosisPanel__fix", children: [
+        /* @__PURE__ */ jsxDEV("div", { className: "postFailureDiagnosisPanel__fixMain", children: [
+          /* @__PURE__ */ jsxDEV("div", { className: "postFailureDiagnosisPanel__fixLabel", children: fix.label }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/PostFailureDiagnosisPanel.tsx",
+            lineNumber: 63,
+            columnNumber: 17
+          }, this),
+          /* @__PURE__ */ jsxDEV("div", { className: "postFailureDiagnosisPanel__fixDestination", children: fix.destinationLabel }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/PostFailureDiagnosisPanel.tsx",
+            lineNumber: 64,
+            columnNumber: 17
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/PostFailureDiagnosisPanel.tsx",
+          lineNumber: 62,
+          columnNumber: 15
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { className: "postFailureDiagnosisPanel__fixReason", children: fix.reason }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/PostFailureDiagnosisPanel.tsx",
+          lineNumber: 66,
+          columnNumber: 15
+        }, this),
+        fix.actionLabel ? /* @__PURE__ */ jsxDEV(
+          "button",
+          {
+            type: "button",
+            className: "button-standard button-standard--ghost",
+            onClick: () => onAction?.(fix),
+            disabled: !onAction || fix.blocked,
+            title: fix.blockedReason ?? void 0,
+            children: fix.actionLabel
+          },
+          void 0,
+          false,
+          {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/PostFailureDiagnosisPanel.tsx",
+            lineNumber: 68,
+            columnNumber: 11
+          },
+          this
+        ) : null,
+        fix.blockedReason ? /* @__PURE__ */ jsxDEV("div", { className: "postFailureDiagnosisPanel__blockedReason", children: fix.blockedReason }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/PostFailureDiagnosisPanel.tsx",
+          lineNumber: 78,
+          columnNumber: 36
+        }, this) : null
+      ] }, fix.key, true, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/PostFailureDiagnosisPanel.tsx",
+        lineNumber: 61,
+        columnNumber: 9
+      }, this)
+    ) : /* @__PURE__ */ jsxDEV("div", { className: "postFailureDiagnosisPanel__fix postFailureDiagnosisPanel__fix--quiet", children: "No active top fixes." }, void 0, false, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/PostFailureDiagnosisPanel.tsx",
+      lineNumber: 82,
+      columnNumber: 9
+    }, this) }, void 0, false, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/PostFailureDiagnosisPanel.tsx",
+      lineNumber: 58,
+      columnNumber: 7
+    }, this),
+    resolved.attemptRecap ? /* @__PURE__ */ jsxDEV("div", { className: "postFailureDiagnosisPanel__recap", children: [
+      resolved.attemptRecap.bossHpRemainingLine ? /* @__PURE__ */ jsxDEV("div", { children: resolved.attemptRecap.bossHpRemainingLine }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/PostFailureDiagnosisPanel.tsx",
+        lineNumber: 88,
+        columnNumber: 56
+      }, this) : null,
+      resolved.attemptRecap.timeSurvivedLine ? /* @__PURE__ */ jsxDEV("div", { children: resolved.attemptRecap.timeSurvivedLine }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/PostFailureDiagnosisPanel.tsx",
+        lineNumber: 89,
+        columnNumber: 53
+      }, this) : null,
+      resolved.attemptRecap.biggestHitLine ? /* @__PURE__ */ jsxDEV("div", { children: resolved.attemptRecap.biggestHitLine }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/PostFailureDiagnosisPanel.tsx",
+        lineNumber: 90,
+        columnNumber: 51
+      }, this) : null
+    ] }, void 0, true, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/PostFailureDiagnosisPanel.tsx",
+      lineNumber: 87,
+      columnNumber: 7
+    }, this) : null
+  ] }, void 0, true, {
+    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/PostFailureDiagnosisPanel.tsx",
+    lineNumber: 32,
+    columnNumber: 5
+  }, this);
+}
+_c = PostFailureDiagnosisPanel;
+var _c;
+$RefreshReg$(_c, "PostFailureDiagnosisPanel");
+import * as RefreshRuntime from "/@react-refresh";
+const inWebWorker = typeof WorkerGlobalScope !== "undefined" && self instanceof WorkerGlobalScope;
+if (import.meta.hot && !inWebWorker) {
+  if (!window.$RefreshReg$) {
+    throw new Error(
+      "@vitejs/plugin-react can't detect preamble. Something is wrong."
+    );
+  }
+  RefreshRuntime.__hmr_import(import.meta.url).then((currentExports) => {
+    RefreshRuntime.registerExportsForReactRefresh("C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/PostFailureDiagnosisPanel.tsx", currentExports);
+    import.meta.hot.accept((nextExports) => {
+      if (!nextExports) return;
+      const invalidateMessage = RefreshRuntime.validateRefreshBoundaryAndEnqueueUpdate("C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/PostFailureDiagnosisPanel.tsx", currentExports, nextExports);
+      if (invalidateMessage) import.meta.hot.invalidate(invalidateMessage);
+    });
+  });
+}
+function $RefreshReg$(type, id) {
+  return RefreshRuntime.register(type, "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/PostFailureDiagnosisPanel.tsx " + id);
+}
+function $RefreshSig$() {
+  return RefreshRuntime.createSignatureFunctionForTransform();
+}
+
+//# sourceMappingURL=data:application/json;base64,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QTtBQUFBO0FBQUEsUUFRQSxJQUNFO0FBQUEsUUFDSEgsSUFBSUssZ0JBQWdCLHVCQUFDLFNBQUksV0FBVSw0Q0FBNENMLGNBQUlLLGlCQUEvRDtBQUFBO0FBQUE7QUFBQTtBQUFBLGVBQTZFLElBQVM7QUFBQSxXQWpCbkdMLElBQUlPLEtBQWQ7QUFBQTtBQUFBO0FBQUE7QUFBQSxhQWtCQTtBQUFBLElBQ0QsSUFFRCx1QkFBQyxTQUFJLFdBQVUsd0VBQXVFLG9DQUF0RjtBQUFBO0FBQUE7QUFBQTtBQUFBLFdBQTBHLEtBeEI5RztBQUFBO0FBQUE7QUFBQTtBQUFBLFdBMEJBO0FBQUEsSUFFQ3JCLFNBQVNTLGVBQ1IsdUJBQUMsU0FBSSxXQUFVLG9DQUNaVDtBQUFBQSxlQUFTUyxhQUFhYSxzQkFBc0IsdUJBQUMsU0FBS3RCLG1CQUFTUyxhQUFhYSx1QkFBNUI7QUFBQTtBQUFBO0FBQUE7QUFBQSxhQUFnRCxJQUFTO0FBQUEsTUFDckd0QixTQUFTUyxhQUFhYyxtQkFBbUIsdUJBQUMsU0FBS3ZCLG1CQUFTUyxhQUFhYyxvQkFBNUI7QUFBQTtBQUFBO0FBQUE7QUFBQSxhQUE2QyxJQUFTO0FBQUEsTUFDL0Z2QixTQUFTUyxhQUFhZSxpQkFBaUIsdUJBQUMsU0FBS3hCLG1CQUFTUyxhQUFhZSxrQkFBNUI7QUFBQTtBQUFBO0FBQUE7QUFBQSxhQUEyQyxJQUFTO0FBQUEsU0FIOUY7QUFBQTtBQUFBO0FBQUE7QUFBQSxXQUlBLElBQ0U7QUFBQSxPQTVETjtBQUFBO0FBQUE7QUFBQTtBQUFBLFNBNkRBO0FBRUo7QUFBQ0MsS0FwRmU5QjtBQUF5QixJQUFBOEI7QUFBQUMsYUFBQUQsSUFBQSIsIm5hbWVzIjpbIlBvc3RGYWlsdXJlRGlhZ25vc2lzUGFuZWwiLCJzdXJmYWNlIiwiY2xhc3NOYW1lIiwidG9uZSIsIm9uQWN0aW9uIiwicmVzb2x2ZWQiLCJzdGF0ZSIsInRpdGxlIiwicHJpbWFyeUxhYmVsIiwic2Vjb25kYXJ5QmFkZ2VMYWJlbCIsImhlYWRsaW5lIiwiZXhwbGFuYXRpb24iLCJyZWFzb25zIiwiZml4ZXMiLCJhdHRlbXB0UmVjYXAiLCJ0cmltIiwibGVuZ3RoIiwibWFwIiwicmVhc29uIiwiZml4IiwibGFiZWwiLCJkZXN0aW5hdGlvbkxhYmVsIiwiYWN0aW9uTGFiZWwiLCJibG9ja2VkIiwiYmxvY2tlZFJlYXNvbiIsInVuZGVmaW5lZCIsImtleSIsImJvc3NIcFJlbWFpbmluZ0xpbmUiLCJ0aW1lU3Vydml2ZWRMaW5lIiwiYmlnZ2VzdEhpdExpbmUiLCJfYyIsIiRSZWZyZXNoUmVnJCJdLCJpZ25vcmVMaXN0IjpbXSwic291cmNlcyI6WyJQb3N0RmFpbHVyZURpYWdub3Npc1BhbmVsLnRzeCJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgdHlwZSB7IFBvc3RGYWlsdXJlRGlhZ25vc2lzU3VyZmFjZSwgUG9zdEZhaWx1cmVGaXhTdXJmYWNlIH0gZnJvbSAnLi4vLi4vc3lzdGVtcy91aS9wb3N0RmFpbHVyZS9pbmRleC5qcyc7XHJcbmltcG9ydCAnLi9Qb3N0RmFpbHVyZURpYWdub3Npc1BhbmVsLnNjc3MnO1xyXG5cclxuZXhwb3J0IGludGVyZmFjZSBQb3N0RmFpbHVyZURpYWdub3Npc1BhbmVsUHJvcHMge1xyXG4gIHN1cmZhY2U6IFBvc3RGYWlsdXJlRGlhZ25vc2lzU3VyZmFjZSB8IG51bGw7XHJcbiAgY2xhc3NOYW1lPzogc3RyaW5nO1xyXG4gIHRvbmU/OiAncGFwZXInIHwgJ2luayc7XHJcbiAgb25BY3Rpb24/OiAoYWN0aW9uOiBQb3N0RmFpbHVyZUZpeFN1cmZhY2UpID0+IHZvaWQ7XHJcbn1cclxuXHJcbmV4cG9ydCBmdW5jdGlvbiBQb3N0RmFpbHVyZURpYWdub3Npc1BhbmVsKHtcclxuICBzdXJmYWNlLFxyXG4gIGNsYXNzTmFtZSA9ICcnLFxyXG4gIHRvbmUgPSAncGFwZXInLFxyXG4gIG9uQWN0aW9uLFxyXG59OiBQb3N0RmFpbHVyZURpYWdub3Npc1BhbmVsUHJvcHMpIHtcclxuICBjb25zdCByZXNvbHZlZCA9XHJcbiAgICBzdXJmYWNlID8/XHJcbiAgICB7XHJcbiAgICAgIHN0YXRlOiAnaWRsZScsXHJcbiAgICAgIHRpdGxlOiAnUG9zdC1GYWlsdXJlIERpYWdub3NpcycsXHJcbiAgICAgIHByaW1hcnlMYWJlbDogbnVsbCxcclxuICAgICAgc2Vjb25kYXJ5QmFkZ2VMYWJlbDogbnVsbCxcclxuICAgICAgaGVhZGxpbmU6ICdObyByZWNlbnQgZGVmZWF0IHN1bW1hcnkgeWV0LicsXHJcbiAgICAgIGV4cGxhbmF0aW9uOiAnQXR0ZW1wdCB0aGlzIGdhdGUgb25jZSB0byBzdXJmYWNlIGZvY3VzZWQgZGlhZ25vc2lzIGFuZCBmaXhlcy4nLFxyXG4gICAgICByZWFzb25zOiBbXSxcclxuICAgICAgZml4ZXM6IFtdLFxyXG4gICAgICBhdHRlbXB0UmVjYXA6IG51bGwsXHJcbiAgICB9O1xyXG5cclxuICByZXR1cm4gKFxyXG4gICAgPHNlY3Rpb24gY2xhc3NOYW1lPXtgcG9zdEZhaWx1cmVEaWFnbm9zaXNQYW5lbCBwb3N0RmFpbHVyZURpYWdub3Npc1BhbmVsLS0ke3RvbmV9ICR7Y2xhc3NOYW1lfWAudHJpbSgpfT5cclxuICAgICAgPGRpdiBjbGFzc05hbWU9XCJwb3N0RmFpbHVyZURpYWdub3Npc1BhbmVsX19oZWFkZXJcIj5cclxuICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInBvc3RGYWlsdXJlRGlhZ25vc2lzUGFuZWxfX3RpdGxlV3JhcFwiPlxyXG4gICAgICAgICAgPGgzIGNsYXNzTmFtZT1cInBvc3RGYWlsdXJlRGlhZ25vc2lzUGFuZWxfX3RpdGxlXCI+e3Jlc29sdmVkLnRpdGxlfTwvaDM+XHJcbiAgICAgICAgICB7cmVzb2x2ZWQucHJpbWFyeUxhYmVsID8gPHNwYW4gY2xhc3NOYW1lPVwicG9zdEZhaWx1cmVEaWFnbm9zaXNQYW5lbF9fYmFkZ2VcIj57cmVzb2x2ZWQucHJpbWFyeUxhYmVsfTwvc3Bhbj4gOiBudWxsfVxyXG4gICAgICAgICAge3Jlc29sdmVkLnNlY29uZGFyeUJhZGdlTGFiZWwgPyAoXHJcbiAgICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT1cInBvc3RGYWlsdXJlRGlhZ25vc2lzUGFuZWxfX2JhZGdlIHBvc3RGYWlsdXJlRGlhZ25vc2lzUGFuZWxfX2JhZGdlLS1zZWNvbmRhcnlcIj57cmVzb2x2ZWQuc2Vjb25kYXJ5QmFkZ2VMYWJlbH08L3NwYW4+XHJcbiAgICAgICAgICApIDogbnVsbH1cclxuICAgICAgICA8L2Rpdj5cclxuICAgICAgPC9kaXY+XHJcblxyXG4gICAgICA8ZGl2IGNsYXNzTmFtZT1cInBvc3RGYWlsdXJlRGlhZ25vc2lzUGFuZWxfX2hlYWRsaW5lXCI+e3Jlc29sdmVkLmhlYWRsaW5lfTwvZGl2PlxyXG4gICAgICA8ZGl2IGNsYXNzTmFtZT1cInBvc3RGYWlsdXJlRGlhZ25vc2lzUGFuZWxfX2V4cGxhbmF0aW9uXCI+e3Jlc29sdmVkLmV4cGxhbmF0aW9ufTwvZGl2PlxyXG5cclxuICAgICAgPHVsIGNsYXNzTmFtZT1cInBvc3RGYWlsdXJlRGlhZ25vc2lzUGFuZWxfX3JlYXNvbnNcIj5cclxuICAgICAgICB7cmVzb2x2ZWQucmVhc29ucy5sZW5ndGggPiAwID8gKFxyXG4gICAgICAgICAgcmVzb2x2ZWQucmVhc29ucy5tYXAoKHJlYXNvbikgPT4gKFxyXG4gICAgICAgICAgICA8bGkga2V5PXtyZWFzb259IGNsYXNzTmFtZT1cInBvc3RGYWlsdXJlRGlhZ25vc2lzUGFuZWxfX3JlYXNvblwiPntyZWFzb259PC9saT5cclxuICAgICAgICAgICkpXHJcbiAgICAgICAgKSA6IChcclxuICAgICAgICAgIDxsaSBjbGFzc05hbWU9XCJwb3N0RmFpbHVyZURpYWdub3Npc1BhbmVsX19yZWFzb24gcG9zdEZhaWx1cmVEaWFnbm9zaXNQYW5lbF9fcmVhc29uLS1xdWlldFwiPlxyXG4gICAgICAgICAgICB7cmVzb2x2ZWQuc3RhdGUgPT09ICdyZXNvbHZlZCcgPyAnR2F0ZSBhbHJlYWR5IHJlc29sdmVkLicgOiAnTm8gZGlhZ25vc2lzIHJlYXNvbnMgYXZhaWxhYmxlIHlldC4nfVxyXG4gICAgICAgICAgPC9saT5cclxuICAgICAgICApfVxyXG4gICAgICA8L3VsPlxyXG5cclxuICAgICAgPGRpdiBjbGFzc05hbWU9XCJwb3N0RmFpbHVyZURpYWdub3Npc1BhbmVsX19maXhlc1wiPlxyXG4gICAgICAgIHtyZXNvbHZlZC5maXhlcy5sZW5ndGggPiAwID8gKFxyXG4gICAgICAgICAgcmVzb2x2ZWQuZml4ZXMubWFwKChmaXgpID0+IChcclxuICAgICAgICAgICAgPGRpdiBrZXk9e2ZpeC5rZXl9IGNsYXNzTmFtZT1cInBvc3RGYWlsdXJlRGlhZ25vc2lzUGFuZWxfX2ZpeFwiPlxyXG4gICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwicG9zdEZhaWx1cmVEaWFnbm9zaXNQYW5lbF9fZml4TWFpblwiPlxyXG4gICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJwb3N0RmFpbHVyZURpYWdub3Npc1BhbmVsX19maXhMYWJlbFwiPntmaXgubGFiZWx9PC9kaXY+XHJcbiAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInBvc3RGYWlsdXJlRGlhZ25vc2lzUGFuZWxfX2ZpeERlc3RpbmF0aW9uXCI+e2ZpeC5kZXN0aW5hdGlvbkxhYmVsfTwvZGl2PlxyXG4gICAgICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwicG9zdEZhaWx1cmVEaWFnbm9zaXNQYW5lbF9fZml4UmVhc29uXCI+e2ZpeC5yZWFzb259PC9kaXY+XHJcbiAgICAgICAgICAgICAge2ZpeC5hY3Rpb25MYWJlbCA/IChcclxuICAgICAgICAgICAgICAgIDxidXR0b25cclxuICAgICAgICAgICAgICAgICAgdHlwZT1cImJ1dHRvblwiXHJcbiAgICAgICAgICAgICAgICAgIGNsYXNzTmFtZT1cImJ1dHRvbi1zdGFuZGFyZCBidXR0b24tc3RhbmRhcmQtLWdob3N0XCJcclxuICAgICAgICAgICAgICAgICAgb25DbGljaz17KCkgPT4gb25BY3Rpb24/LihmaXgpfVxyXG4gICAgICAgICAgICAgICAgICBkaXNhYmxlZD17IW9uQWN0aW9uIHx8IGZpeC5ibG9ja2VkfVxyXG4gICAgICAgICAgICAgICAgICB0aXRsZT17Zml4LmJsb2NrZWRSZWFzb24gPz8gdW5kZWZpbmVkfVxyXG4gICAgICAgICAgICAgICAgPlxyXG4gICAgICAgICAgICAgICAgICB7Zml4LmFjdGlvbkxhYmVsfVxyXG4gICAgICAgICAgICAgICAgPC9idXR0b24+XHJcbiAgICAgICAgICAgICAgKSA6IG51bGx9XHJcbiAgICAgICAgICAgICAge2ZpeC5ibG9ja2VkUmVhc29uID8gPGRpdiBjbGFzc05hbWU9XCJwb3N0RmFpbHVyZURpYWdub3Npc1BhbmVsX19ibG9ja2VkUmVhc29uXCI+e2ZpeC5ibG9ja2VkUmVhc29ufTwvZGl2PiA6IG51bGx9XHJcbiAgICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgKSlcclxuICAgICAgICApIDogKFxyXG4gICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJwb3N0RmFpbHVyZURpYWdub3Npc1BhbmVsX19maXggcG9zdEZhaWx1cmVEaWFnbm9zaXNQYW5lbF9fZml4LS1xdWlldFwiPk5vIGFjdGl2ZSB0b3AgZml4ZXMuPC9kaXY+XHJcbiAgICAgICAgKX1cclxuICAgICAgPC9kaXY+XHJcblxyXG4gICAgICB7cmVzb2x2ZWQuYXR0ZW1wdFJlY2FwID8gKFxyXG4gICAgICAgIDxkaXYgY2xhc3NOYW1lPVwicG9zdEZhaWx1cmVEaWFnbm9zaXNQYW5lbF9fcmVjYXBcIj5cclxuICAgICAgICAgIHtyZXNvbHZlZC5hdHRlbXB0UmVjYXAuYm9zc0hwUmVtYWluaW5nTGluZSA/IDxkaXY+e3Jlc29sdmVkLmF0dGVtcHRSZWNhcC5ib3NzSHBSZW1haW5pbmdMaW5lfTwvZGl2PiA6IG51bGx9XHJcbiAgICAgICAgICB7cmVzb2x2ZWQuYXR0ZW1wdFJlY2FwLnRpbWVTdXJ2aXZlZExpbmUgPyA8ZGl2PntyZXNvbHZlZC5hdHRlbXB0UmVjYXAudGltZVN1cnZpdmVkTGluZX08L2Rpdj4gOiBudWxsfVxyXG4gICAgICAgICAge3Jlc29sdmVkLmF0dGVtcHRSZWNhcC5iaWdnZXN0SGl0TGluZSA/IDxkaXY+e3Jlc29sdmVkLmF0dGVtcHRSZWNhcC5iaWdnZXN0SGl0TGluZX08L2Rpdj4gOiBudWxsfVxyXG4gICAgICAgIDwvZGl2PlxyXG4gICAgICApIDogbnVsbH1cclxuICAgIDwvc2VjdGlvbj5cclxuICApO1xyXG59XHJcbiJdLCJmaWxlIjoiQzovVXNlcnMvYWJkdWwvRGVza3RvcC9jdWx0aXZhdGlvbi1pZGxlL3NyYy91aS9zdGF0dXMvUG9zdEZhaWx1cmVEaWFnbm9zaXNQYW5lbC50c3gifQ==

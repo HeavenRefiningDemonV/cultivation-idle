@@ -1,0 +1,469 @@
+import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/components/inventory/EquipmentDrawer.tsx");import __vite__cjsImport0_react_jsxDevRuntime from "/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=c0e4e3e4"; const Fragment = __vite__cjsImport0_react_jsxDevRuntime["Fragment"]; const jsxDEV = __vite__cjsImport0_react_jsxDevRuntime["jsxDEV"];
+var _s = $RefreshSig$();
+import __vite__cjsImport1_react from "/node_modules/.vite/deps/react.js?v=c0e4e3e4"; const useEffect = __vite__cjsImport1_react["useEffect"]; const useMemo = __vite__cjsImport1_react["useMemo"]; const useState = __vite__cjsImport1_react["useState"];
+import { useEquipmentStore } from "/src/stores/equipmentStore.ts";
+import { useInventoryStore } from "/src/stores/inventoryStore.ts";
+import { useUIStore } from "/src/stores/uiStore.ts";
+import { getItemDef } from "/src/stores/contentStore.ts";
+import { GameIcon } from "/src/ui/icons/index.ts";
+import "/src/components/inventory/EquipmentDrawer.scss";
+const SLOT_CONFIG = {
+  weapon: { label: "Weapon", iconId: "jadeSword" },
+  accessory: { label: "Accessory", iconId: "placeholderRingSmall" }
+};
+const getRarityClass = (rarity) => {
+  switch ((rarity ?? "common").toLowerCase()) {
+    case "uncommon":
+      return "inventorySlotRarityUncommon";
+    case "rare":
+      return "inventorySlotRarityRare";
+    case "epic":
+      return "inventorySlotRarityEpic";
+    case "legendary":
+      return "inventorySlotRarityLegendary";
+    case "mythic":
+      return "inventorySlotRarityMythic";
+    case "common":
+    default:
+      return "inventorySlotRarityCommon";
+  }
+};
+const formatStatValue = (key, value) => {
+  const numeric = typeof value === "number" ? value.toString() : value;
+  if (["crit", "critDmg", "dodge", "qiGain"].includes(key)) {
+    return `${numeric}%`;
+  }
+  return numeric;
+};
+const buildStatEntries = (def) => {
+  if (!def?.stats) return [];
+  const stats = def.stats;
+  const entries = [];
+  if (stats.atk !== void 0) entries.push({ label: "Attack", value: formatStatValue("atk", stats.atk) });
+  if (stats.def !== void 0) entries.push({ label: "Defense", value: formatStatValue("def", stats.def) });
+  if (stats.hp !== void 0) entries.push({ label: "Health", value: formatStatValue("hp", stats.hp) });
+  if (stats.crit !== void 0) entries.push({ label: "Crit", value: formatStatValue("crit", stats.crit) });
+  if (stats.critDmg !== void 0) entries.push({ label: "Crit Dmg", value: formatStatValue("critDmg", stats.critDmg) });
+  if (stats.dodge !== void 0) entries.push({ label: "Dodge", value: formatStatValue("dodge", stats.dodge) });
+  if (stats.qiGain !== void 0) entries.push({ label: "Qi Gain", value: formatStatValue("qiGain", stats.qiGain) });
+  return entries;
+};
+export default function EquipmentDrawer({
+  open,
+  onClose,
+  selectedItemId,
+  selectedItemType,
+  selectedItemName,
+  onRequestClearSelection
+}) {
+  _s();
+  const equippedWeaponId = useEquipmentStore((state) => state.equippedWeaponId);
+  const equippedAccessoryId = useEquipmentStore((state) => state.equippedAccessoryId);
+  const equipWeapon = useEquipmentStore((state) => state.equipWeapon);
+  const equipAccessory = useEquipmentStore((state) => state.equipAccessory);
+  const addItem = useInventoryStore((state) => state.addItem);
+  const removeItem = useInventoryStore((state) => state.removeItem);
+  const addNotification = useUIStore((state) => state.addNotification);
+  const [selectedSlot, setSelectedSlot] = useState(null);
+  const [pendingReplaceSlot, setPendingReplaceSlot] = useState(null);
+  const [pulseSlot, setPulseSlot] = useState(null);
+  const equippedWeapon = useMemo(
+    () => equippedWeaponId ? getItemDef(equippedWeaponId) ?? null : null,
+    [equippedWeaponId]
+  );
+  const equippedAccessory = useMemo(
+    () => equippedAccessoryId ? getItemDef(equippedAccessoryId) ?? null : null,
+    [equippedAccessoryId]
+  );
+  const selectedSlotDef = selectedSlot === "weapon" ? equippedWeapon : selectedSlot === "accessory" ? equippedAccessory : null;
+  useEffect(() => {
+    if (!open) return;
+    const handleKey = (event) => {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [onClose, open]);
+  useEffect(() => {
+    if (!pendingReplaceSlot) return;
+    if (!selectedItemId || selectedItemType !== pendingReplaceSlot) {
+      setPendingReplaceSlot(null);
+    }
+  }, [pendingReplaceSlot, selectedItemId, selectedItemType]);
+  const triggerPulse = (slot) => {
+    setPulseSlot(slot);
+    window.setTimeout(() => setPulseSlot((prev) => prev === slot ? null : prev), 700);
+  };
+  const slotIsCompatible = (slot) => selectedItemType === slot && Boolean(selectedItemId);
+  const handleEquip = (slot, isReplace) => {
+    if (!selectedItemId || selectedItemType !== slot) {
+      addNotification("warning", "Could not equip.", 2500);
+      return;
+    }
+    const equippedId = slot === "weapon" ? equippedWeaponId : equippedAccessoryId;
+    if (equippedId && equippedId === selectedItemId) {
+      addNotification("info", "That item is already equipped.", 2e3);
+      return;
+    }
+    const removed = removeItem(selectedItemId, 1);
+    if (!removed) {
+      addNotification("warning", "Could not equip.", 2500);
+      return;
+    }
+    if (equippedId) {
+      addItem(equippedId, 1);
+    }
+    if (slot === "weapon") {
+      equipWeapon(selectedItemId);
+    } else {
+      equipAccessory(selectedItemId);
+    }
+    if (isReplace) {
+      addNotification("info", "Replaced equipment.", 2e3);
+    } else {
+      addNotification("success", `Equipped ${selectedItemName ?? "item"}.`, 2e3);
+    }
+    triggerPulse(slot);
+    setPendingReplaceSlot(null);
+    setSelectedSlot(slot);
+    onRequestClearSelection?.();
+  };
+  const handleUnequip = (slot) => {
+    const equippedId = slot === "weapon" ? equippedWeaponId : equippedAccessoryId;
+    if (!equippedId) return;
+    addItem(equippedId, 1);
+    if (slot === "weapon") {
+      equipWeapon(null);
+    } else {
+      equipAccessory(null);
+    }
+    addNotification("success", "Unequipped.", 2e3);
+    triggerPulse(slot);
+  };
+  const handleSlotClick = (slot) => {
+    setSelectedSlot(slot);
+    const isCompatible = slotIsCompatible(slot);
+    const equippedId = slot === "weapon" ? equippedWeaponId : equippedAccessoryId;
+    if (!isCompatible) {
+      setPendingReplaceSlot(null);
+      return;
+    }
+    if (!equippedId) {
+      handleEquip(slot, false);
+      return;
+    }
+    setPendingReplaceSlot(slot);
+  };
+  const equippedDetails = useMemo(() => buildStatEntries(selectedSlotDef), [selectedSlotDef]);
+  const renderSlot = (slot, equipped, equippedId) => {
+    const compatible = slotIsCompatible(slot);
+    const isSelected = selectedSlot === slot;
+    const rarityClass = getRarityClass(equipped?.rarity);
+    const isPulse = pulseSlot === slot;
+    return /* @__PURE__ */ jsxDEV(
+      "button",
+      {
+        type: "button",
+        className: `inventoryEquipSlot ${rarityClass}${equipped ? " inventoryEquipSlotFilled" : ""}${isSelected ? " inventoryEquipSlotSelected" : ""}${compatible ? " inventoryEquipSlotCompatible" : ""}${isPulse ? " inventoryEquipSlotPulse" : ""}`,
+        onClick: () => handleSlotClick(slot),
+        "aria-label": `${SLOT_CONFIG[slot].label} slot`,
+        children: [
+          /* @__PURE__ */ jsxDEV("div", { className: "inventoryEquipSlotIcon", "aria-hidden": "true", children: /* @__PURE__ */ jsxDEV(GameIcon, { icon: SLOT_CONFIG[slot].iconId, size: 24, decorative: true }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/inventory/EquipmentDrawer.tsx",
+            lineNumber: 211,
+            columnNumber: 11
+          }, this) }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/inventory/EquipmentDrawer.tsx",
+            lineNumber: 210,
+            columnNumber: 9
+          }, this),
+          /* @__PURE__ */ jsxDEV("div", { className: "inventoryEquipSlotLabel", children: SLOT_CONFIG[slot].label }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/inventory/EquipmentDrawer.tsx",
+            lineNumber: 213,
+            columnNumber: 9
+          }, this),
+          equipped ? /* @__PURE__ */ jsxDEV(Fragment, { children: [
+            /* @__PURE__ */ jsxDEV("div", { className: "inventoryEquipSlotItem", children: equipped?.name ?? equippedId ?? "Equipped" }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/inventory/EquipmentDrawer.tsx",
+              lineNumber: 216,
+              columnNumber: 13
+            }, this),
+            /* @__PURE__ */ jsxDEV("div", { className: "inventoryEquipSlotChip", children: "Equipped" }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/inventory/EquipmentDrawer.tsx",
+              lineNumber: 217,
+              columnNumber: 13
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/inventory/EquipmentDrawer.tsx",
+            lineNumber: 215,
+            columnNumber: 9
+          }, this) : /* @__PURE__ */ jsxDEV("div", { className: "inventoryEquipSlotEmpty", children: "Empty" }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/inventory/EquipmentDrawer.tsx",
+            lineNumber: 220,
+            columnNumber: 9
+          }, this),
+          compatible ? /* @__PURE__ */ jsxDEV("div", { className: "inventoryEquipSlotHint", children: "Click to Equip" }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/inventory/EquipmentDrawer.tsx",
+            lineNumber: 222,
+            columnNumber: 23
+          }, this) : null
+        ]
+      },
+      slot,
+      true,
+      {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/inventory/EquipmentDrawer.tsx",
+        lineNumber: 201,
+        columnNumber: 7
+      },
+      this
+    );
+  };
+  return /* @__PURE__ */ jsxDEV(
+    "div",
+    {
+      className: `inventoryEquipDrawerOverlay${open ? " inventoryEquipDrawerOverlayOpen" : ""}`,
+      onClick: () => {
+        if (open) onClose();
+      },
+      "aria-hidden": !open,
+      children: /* @__PURE__ */ jsxDEV(
+        "div",
+        {
+          className: `inventoryEquipDrawerPanel${open ? " inventoryEquipDrawerPanelOpen" : ""}`,
+          role: "dialog",
+          "aria-modal": "true",
+          onClick: (event) => event.stopPropagation(),
+          children: [
+            /* @__PURE__ */ jsxDEV("div", { className: "inventoryEquipHeader", children: [
+              /* @__PURE__ */ jsxDEV("div", { children: [
+                /* @__PURE__ */ jsxDEV("div", { className: "inventoryEquipTitle", children: "Equipment" }, void 0, false, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/inventory/EquipmentDrawer.tsx",
+                  lineNumber: 243,
+                  columnNumber: 13
+                }, this),
+                /* @__PURE__ */ jsxDEV("div", { className: "inventoryEquipSubtitle", children: "Select an item in your satchel, then click a slot to equip." }, void 0, false, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/inventory/EquipmentDrawer.tsx",
+                  lineNumber: 244,
+                  columnNumber: 13
+                }, this)
+              ] }, void 0, true, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/inventory/EquipmentDrawer.tsx",
+                lineNumber: 242,
+                columnNumber: 11
+              }, this),
+              /* @__PURE__ */ jsxDEV("button", { type: "button", className: "inventoryEquipClose", onClick: onClose, "aria-label": "Close equipment drawer", children: /* @__PURE__ */ jsxDEV(GameIcon, { icon: "inkX", size: 14, decorative: true }, void 0, false, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/inventory/EquipmentDrawer.tsx",
+                lineNumber: 247,
+                columnNumber: 13
+              }, this) }, void 0, false, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/inventory/EquipmentDrawer.tsx",
+                lineNumber: 246,
+                columnNumber: 11
+              }, this)
+            ] }, void 0, true, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/inventory/EquipmentDrawer.tsx",
+              lineNumber: 241,
+              columnNumber: 9
+            }, this),
+            /* @__PURE__ */ jsxDEV("div", { className: "inventoryEquipStage", children: [
+              /* @__PURE__ */ jsxDEV("div", { className: "inventoryEquipRune", "aria-hidden": "true" }, void 0, false, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/inventory/EquipmentDrawer.tsx",
+                lineNumber: 252,
+                columnNumber: 11
+              }, this),
+              /* @__PURE__ */ jsxDEV("div", { className: "inventoryEquipSilhouette", "aria-hidden": "true" }, void 0, false, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/inventory/EquipmentDrawer.tsx",
+                lineNumber: 253,
+                columnNumber: 11
+              }, this),
+              /* @__PURE__ */ jsxDEV("div", { className: "inventoryEquipSlotWeapon", children: renderSlot("weapon", equippedWeapon, equippedWeaponId) }, void 0, false, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/inventory/EquipmentDrawer.tsx",
+                lineNumber: 254,
+                columnNumber: 11
+              }, this),
+              /* @__PURE__ */ jsxDEV("div", { className: "inventoryEquipSlotAccessory", children: renderSlot("accessory", equippedAccessory, equippedAccessoryId) }, void 0, false, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/inventory/EquipmentDrawer.tsx",
+                lineNumber: 257,
+                columnNumber: 11
+              }, this)
+            ] }, void 0, true, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/inventory/EquipmentDrawer.tsx",
+              lineNumber: 251,
+              columnNumber: 9
+            }, this),
+            /* @__PURE__ */ jsxDEV("div", { className: "inventoryEquipDetails", children: !selectedSlot ? /* @__PURE__ */ jsxDEV("div", { className: "inventoryEquipEmpty", children: [
+              /* @__PURE__ */ jsxDEV("div", { className: "inventoryEquipEmptyTitle", children: "Choose a slot to inspect" }, void 0, false, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/inventory/EquipmentDrawer.tsx",
+                lineNumber: 265,
+                columnNumber: 15
+              }, this),
+              /* @__PURE__ */ jsxDEV("div", { className: "inventoryEquipEmptyText", children: "Equipment grants lasting bonuses to your cultivator." }, void 0, false, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/inventory/EquipmentDrawer.tsx",
+                lineNumber: 266,
+                columnNumber: 15
+              }, this)
+            ] }, void 0, true, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/inventory/EquipmentDrawer.tsx",
+              lineNumber: 264,
+              columnNumber: 11
+            }, this) : /* @__PURE__ */ jsxDEV("div", { className: "inventoryEquipDetailContent", children: [
+              /* @__PURE__ */ jsxDEV("div", { className: "inventoryEquipDetailHeader", children: [
+                /* @__PURE__ */ jsxDEV("div", { className: "inventoryEquipDetailSlot", children: SLOT_CONFIG[selectedSlot].label }, void 0, false, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/inventory/EquipmentDrawer.tsx",
+                  lineNumber: 271,
+                  columnNumber: 17
+                }, this),
+                selectedSlotDef ? /* @__PURE__ */ jsxDEV("div", { className: "inventoryEquipDetailChip", children: "Equipped" }, void 0, false, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/inventory/EquipmentDrawer.tsx",
+                  lineNumber: 272,
+                  columnNumber: 36
+                }, this) : null
+              ] }, void 0, true, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/inventory/EquipmentDrawer.tsx",
+                lineNumber: 270,
+                columnNumber: 15
+              }, this),
+              selectedSlotDef ? /* @__PURE__ */ jsxDEV(Fragment, { children: [
+                /* @__PURE__ */ jsxDEV("div", { className: "inventoryEquipDetailName", children: selectedSlotDef.name }, void 0, false, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/inventory/EquipmentDrawer.tsx",
+                  lineNumber: 276,
+                  columnNumber: 19
+                }, this),
+                selectedSlotDef.description ? /* @__PURE__ */ jsxDEV("p", { className: "inventoryEquipDetailDescription", children: selectedSlotDef.description }, void 0, false, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/inventory/EquipmentDrawer.tsx",
+                  lineNumber: 278,
+                  columnNumber: 15
+                }, this) : null,
+                equippedDetails.length > 0 ? /* @__PURE__ */ jsxDEV("div", { className: "inventoryEquipStatList", children: equippedDetails.map(
+                  (stat) => /* @__PURE__ */ jsxDEV("div", { className: "inventoryEquipStatRow", children: [
+                    /* @__PURE__ */ jsxDEV("span", { className: "inventoryEquipStatLabel", children: stat.label }, void 0, false, {
+                      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/inventory/EquipmentDrawer.tsx",
+                      lineNumber: 284,
+                      columnNumber: 27
+                    }, this),
+                    /* @__PURE__ */ jsxDEV("span", { className: "inventoryEquipStatValue", children: stat.value }, void 0, false, {
+                      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/inventory/EquipmentDrawer.tsx",
+                      lineNumber: 285,
+                      columnNumber: 27
+                    }, this)
+                  ] }, stat.label, true, {
+                    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/inventory/EquipmentDrawer.tsx",
+                    lineNumber: 283,
+                    columnNumber: 17
+                  }, this)
+                ) }, void 0, false, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/inventory/EquipmentDrawer.tsx",
+                  lineNumber: 281,
+                  columnNumber: 15
+                }, this) : /* @__PURE__ */ jsxDEV("div", { className: "inventoryEquipDetailDescription", children: "No stat bonuses listed." }, void 0, false, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/inventory/EquipmentDrawer.tsx",
+                  lineNumber: 290,
+                  columnNumber: 15
+                }, this)
+              ] }, void 0, true, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/inventory/EquipmentDrawer.tsx",
+                lineNumber: 275,
+                columnNumber: 13
+              }, this) : /* @__PURE__ */ jsxDEV("div", { className: "inventoryEquipDetailDescription", children: "Empty slot. Equip an item to channel its power into your cultivator." }, void 0, false, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/inventory/EquipmentDrawer.tsx",
+                lineNumber: 294,
+                columnNumber: 13
+              }, this),
+              /* @__PURE__ */ jsxDEV("div", { className: "inventoryEquipActions", children: [
+                selectedSlotDef ? /* @__PURE__ */ jsxDEV("button", { type: "button", className: "inventoryEquipActionButton", onClick: () => handleUnequip(selectedSlot), children: "Unequip" }, void 0, false, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/inventory/EquipmentDrawer.tsx",
+                  lineNumber: 300,
+                  columnNumber: 15
+                }, this) : null,
+                pendingReplaceSlot === selectedSlot && selectedItemId && selectedItemName && slotIsCompatible(selectedSlot) ? /* @__PURE__ */ jsxDEV(
+                  "button",
+                  {
+                    type: "button",
+                    className: "inventoryEquipActionButton inventoryEquipActionButton--primary",
+                    onClick: () => handleEquip(selectedSlot, true),
+                    children: [
+                      "Replace ",
+                      selectedSlotDef?.name ?? "Empty",
+                      " → ",
+                      selectedItemName
+                    ]
+                  },
+                  void 0,
+                  true,
+                  {
+                    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/inventory/EquipmentDrawer.tsx",
+                    lineNumber: 305,
+                    columnNumber: 15
+                  },
+                  this
+                ) : null
+              ] }, void 0, true, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/inventory/EquipmentDrawer.tsx",
+                lineNumber: 298,
+                columnNumber: 15
+              }, this)
+            ] }, void 0, true, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/inventory/EquipmentDrawer.tsx",
+              lineNumber: 269,
+              columnNumber: 11
+            }, this) }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/inventory/EquipmentDrawer.tsx",
+              lineNumber: 262,
+              columnNumber: 9
+            }, this)
+          ]
+        },
+        void 0,
+        true,
+        {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/inventory/EquipmentDrawer.tsx",
+          lineNumber: 235,
+          columnNumber: 7
+        },
+        this
+      )
+    },
+    void 0,
+    false,
+    {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/inventory/EquipmentDrawer.tsx",
+      lineNumber: 228,
+      columnNumber: 5
+    },
+    this
+  );
+}
+_s(EquipmentDrawer, "sDT8eGpYvu6quVX/dVucqGkvfAQ=", false, function() {
+  return [useEquipmentStore, useEquipmentStore, useEquipmentStore, useEquipmentStore, useInventoryStore, useInventoryStore, useUIStore];
+});
+_c = EquipmentDrawer;
+var _c;
+$RefreshReg$(_c, "EquipmentDrawer");
+import * as RefreshRuntime from "/@react-refresh";
+const inWebWorker = typeof WorkerGlobalScope !== "undefined" && self instanceof WorkerGlobalScope;
+if (import.meta.hot && !inWebWorker) {
+  if (!window.$RefreshReg$) {
+    throw new Error(
+      "@vitejs/plugin-react can't detect preamble. Something is wrong."
+    );
+  }
+  RefreshRuntime.__hmr_import(import.meta.url).then((currentExports) => {
+    RefreshRuntime.registerExportsForReactRefresh("C:/Users/abdul/Desktop/cultivation-idle/src/components/inventory/EquipmentDrawer.tsx", currentExports);
+    import.meta.hot.accept((nextExports) => {
+      if (!nextExports) return;
+      const invalidateMessage = RefreshRuntime.validateRefreshBoundaryAndEnqueueUpdate("C:/Users/abdul/Desktop/cultivation-idle/src/components/inventory/EquipmentDrawer.tsx", currentExports, nextExports);
+      if (invalidateMessage) import.meta.hot.invalidate(invalidateMessage);
+    });
+  });
+}
+function $RefreshReg$(type, id) {
+  return RefreshRuntime.register(type, "C:/Users/abdul/Desktop/cultivation-idle/src/components/inventory/EquipmentDrawer.tsx " + id);
+}
+function $RefreshSig$() {
+  return RefreshRuntime.createSignatureFunctionForTransform();
+}
+
+//# sourceMappingURL=data:application/json;base64,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STdDO0FBQUFBO0FBQUFBO0FBQUFBLGtCQUxoRDtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUEsZ0JBTUEsSUFDRTtBQUFBLG1CQWROO0FBQUE7QUFBQTtBQUFBO0FBQUEscUJBZUE7QUFBQSxpQkE1Q0Y7QUFBQTtBQUFBO0FBQUE7QUFBQSxtQkE2Q0EsS0FwREo7QUFBQTtBQUFBO0FBQUE7QUFBQSxtQkFzREE7QUFBQTtBQUFBO0FBQUEsUUFqRkY7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBLE1Ba0ZBO0FBQUE7QUFBQSxJQXpGRjtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUEsRUEwRkE7QUFFSjtBQUFDRSxHQTFQdUJQLGlCQUFlO0FBQUEsVUFRWi9CLG1CQUNHQSxtQkFDUkEsbUJBQ0dBLG1CQUNQQyxtQkFDR0EsbUJBQ0tDLFVBQVU7QUFBQTtBQUFBcUYsS0FkWnhEO0FBQWUsSUFBQXdEO0FBQUFDLGFBQUFELElBQUEiLCJuYW1lcyI6WyJ1c2VFZmZlY3QiLCJ1c2VNZW1vIiwidXNlU3RhdGUiLCJ1c2VFcXVpcG1lbnRTdG9yZSIsInVzZUludmVudG9yeVN0b3JlIiwidXNlVUlTdG9yZSIsImdldEl0ZW1EZWYiLCJHYW1lSWNvbiIsIlNMT1RfQ09ORklHIiwid2VhcG9uIiwibGFiZWwiLCJpY29uSWQiLCJhY2Nlc3NvcnkiLCJnZXRSYXJpdHlDbGFzcyIsInJhcml0eSIsInRvTG93ZXJDYXNlIiwiZm9ybWF0U3RhdFZhbHVlIiwia2V5IiwidmFsdWUiLCJudW1lcmljIiwidG9TdHJpbmciLCJpbmNsdWRlcyIsImJ1aWxkU3RhdEVudHJpZXMiLCJkZWYiLCJzdGF0cyIsImVudHJpZXMiLCJhdGsiLCJ1bmRlZmluZWQiLCJwdXNoIiwiaHAiLCJjcml0IiwiY3JpdERtZyIsImRvZGdlIiwicWlHYWluIiwiRXF1aXBtZW50RHJhd2VyIiwib3BlbiIsIm9uQ2xvc2UiLCJzZWxlY3RlZEl0ZW1JZCIsInNlbGVjdGVkSXRlbVR5cGUiLCJzZWxlY3RlZEl0ZW1OYW1lIiwib25SZXF1ZXN0Q2xlYXJTZWxlY3Rpb24iLCJfcyIsImVxdWlwcGVkV2VhcG9uSWQiLCJzdGF0ZSIsImVxdWlwcGVkQWNjZXNzb3J5SWQiLCJlcXVpcFdlYXBvbiIsImVxdWlwQWNjZXNzb3J5IiwiYWRkSXRlbSIsInJlbW92ZUl0ZW0iLCJhZGROb3RpZmljYXRpb24iLCJzZWxlY3RlZFNsb3QiLCJzZXRTZWxlY3RlZFNsb3QiLCJwZW5kaW5nUmVwbGFjZVNsb3QiLCJzZXRQZW5kaW5nUmVwbGFjZVNsb3QiLCJwdWxzZVNsb3QiLCJzZXRQdWxzZVNsb3QiLCJlcXVpcHBlZFdlYXBvbiIsImVxdWlwcGVkQWNjZXNzb3J5Iiwic2VsZWN0ZWRTbG90RGVmIiwiaGFuZGxlS2V5IiwiZXZlbnQiLCJ3aW5kb3ciLCJhZGRFdmVudExpc3RlbmVyIiwicmVtb3ZlRXZlbnRMaXN0ZW5lciIsInRyaWdnZXJQdWxzZSIsInNsb3QiLCJzZXRUaW1lb3V0IiwicHJldiIsInNsb3RJc0NvbXBhdGlibGUiLCJCb29sZWFuIiwiaGFuZGxlRXF1aXAiLCJpc1JlcGxhY2UiLCJlcXVpcHBlZElkIiwicmVtb3ZlZCIsImhhbmRsZVVuZXF1aXAiLCJoYW5kbGVTbG90Q2xpY2siLCJpc0NvbXBhdGlibGUiLCJlcXVpcHBlZERldGFpbHMiLCJyZW5kZXJTbG90IiwiZXF1aXBwZWQiLCJjb21wYXRpYmxlIiwiaXNTZWxlY3RlZCIsInJhcml0eUNsYXNzIiwiaXNQdWxzZSIsIm5hbWUiLCJzdG9wUHJvcGFnYXRpb24iLCJkZXNjcmlwdGlvbiIsImxlbmd0aCIsIm1hcCIsInN0YXQiLCJfYyIsIiRSZWZyZXNoUmVnJCJdLCJpZ25vcmVMaXN0IjpbXSwic291cmNlcyI6WyJFcXVpcG1lbnREcmF3ZXIudHN4Il0sInNvdXJjZXNDb250ZW50IjpbIi8vIEludmVudG9yeSB2MiBlcXVpcG1lbnQgZHJhd2VyIHRvIHJlZHVjZSBjbHV0dGVyOyBvcGVuZWQgdmlhIGJ1dHRvbi5cclxuaW1wb3J0IHsgdXNlRWZmZWN0LCB1c2VNZW1vLCB1c2VTdGF0ZSB9IGZyb20gJ3JlYWN0JztcclxuaW1wb3J0IHsgdXNlRXF1aXBtZW50U3RvcmUgfSBmcm9tICcuLi8uLi9zdG9yZXMvZXF1aXBtZW50U3RvcmUuanMnO1xyXG5pbXBvcnQgeyB1c2VJbnZlbnRvcnlTdG9yZSB9IGZyb20gJy4uLy4uL3N0b3Jlcy9pbnZlbnRvcnlTdG9yZS5qcyc7XHJcbmltcG9ydCB7IHVzZVVJU3RvcmUgfSBmcm9tICcuLi8uLi9zdG9yZXMvdWlTdG9yZS5qcyc7XHJcbmltcG9ydCB7IGdldEl0ZW1EZWYgfSBmcm9tICcuLi8uLi9zdG9yZXMvY29udGVudFN0b3JlLmpzJztcclxuaW1wb3J0IHR5cGUgeyBJdGVtRGVmaW5pdGlvbiB9IGZyb20gJy4uLy4uL3R5cGVzL2luZGV4LmpzJztcclxuaW1wb3J0IHR5cGUgeyBJY29uSWQgfSBmcm9tICcuLi8uLi91aS9pY29ucy9pbmRleC5qcyc7XHJcbmltcG9ydCB7IEdhbWVJY29uIH0gZnJvbSAnLi4vLi4vdWkvaWNvbnMvaW5kZXguanMnO1xyXG5pbXBvcnQgJy4vRXF1aXBtZW50RHJhd2VyLnNjc3MnO1xyXG5cclxudHlwZSBFcXVpcG1lbnREcmF3ZXJQcm9wcyA9IHtcclxuICBvcGVuOiBib29sZWFuO1xyXG4gIG9uQ2xvc2U6ICgpID0+IHZvaWQ7XHJcbiAgc2VsZWN0ZWRJdGVtSWQ6IHN0cmluZyB8IG51bGw7XHJcbiAgc2VsZWN0ZWRJdGVtVHlwZTogc3RyaW5nIHwgbnVsbDtcclxuICBzZWxlY3RlZEl0ZW1OYW1lOiBzdHJpbmcgfCBudWxsO1xyXG4gIG9uUmVxdWVzdENsZWFyU2VsZWN0aW9uPzogKCkgPT4gdm9pZDtcclxufTtcclxuXHJcbnR5cGUgRXF1aXBtZW50U2xvdFR5cGUgPSAnd2VhcG9uJyB8ICdhY2Nlc3NvcnknO1xyXG5cclxudHlwZSBTdGF0RW50cnkgPSB7IGxhYmVsOiBzdHJpbmc7IHZhbHVlOiBzdHJpbmcgfTtcclxuXHJcbmNvbnN0IFNMT1RfQ09ORklHOiBSZWNvcmQ8RXF1aXBtZW50U2xvdFR5cGUsIHsgbGFiZWw6IHN0cmluZzsgaWNvbklkOiBJY29uSWQgfT4gPSB7XHJcbiAgd2VhcG9uOiB7IGxhYmVsOiAnV2VhcG9uJywgaWNvbklkOiAnamFkZVN3b3JkJyB9LFxyXG4gIGFjY2Vzc29yeTogeyBsYWJlbDogJ0FjY2Vzc29yeScsIGljb25JZDogJ3BsYWNlaG9sZGVyUmluZ1NtYWxsJyB9LFxyXG59O1xyXG5cclxuY29uc3QgZ2V0UmFyaXR5Q2xhc3MgPSAocmFyaXR5Pzogc3RyaW5nKTogc3RyaW5nID0+IHtcclxuICBzd2l0Y2ggKChyYXJpdHkgPz8gJ2NvbW1vbicpLnRvTG93ZXJDYXNlKCkpIHtcclxuICAgIGNhc2UgJ3VuY29tbW9uJzpcclxuICAgICAgcmV0dXJuICdpbnZlbnRvcnlTbG90UmFyaXR5VW5jb21tb24nO1xyXG4gICAgY2FzZSAncmFyZSc6XHJcbiAgICAgIHJldHVybiAnaW52ZW50b3J5U2xvdFJhcml0eVJhcmUnO1xyXG4gICAgY2FzZSAnZXBpYyc6XHJcbiAgICAgIHJldHVybiAnaW52ZW50b3J5U2xvdFJhcml0eUVwaWMnO1xyXG4gICAgY2FzZSAnbGVnZW5kYXJ5JzpcclxuICAgICAgcmV0dXJuICdpbnZlbnRvcnlTbG90UmFyaXR5TGVnZW5kYXJ5JztcclxuICAgIGNhc2UgJ215dGhpYyc6XHJcbiAgICAgIHJldHVybiAnaW52ZW50b3J5U2xvdFJhcml0eU15dGhpYyc7XHJcbiAgICBjYXNlICdjb21tb24nOlxyXG4gICAgZGVmYXVsdDpcclxuICAgICAgcmV0dXJuICdpbnZlbnRvcnlTbG90UmFyaXR5Q29tbW9uJztcclxuICB9XHJcbn07XHJcblxyXG5jb25zdCBmb3JtYXRTdGF0VmFsdWUgPSAoa2V5OiBzdHJpbmcsIHZhbHVlOiBzdHJpbmcgfCBudW1iZXIpID0+IHtcclxuICBjb25zdCBudW1lcmljID0gdHlwZW9mIHZhbHVlID09PSAnbnVtYmVyJyA/IHZhbHVlLnRvU3RyaW5nKCkgOiB2YWx1ZTtcclxuICBpZiAoWydjcml0JywgJ2NyaXREbWcnLCAnZG9kZ2UnLCAncWlHYWluJ10uaW5jbHVkZXMoa2V5KSkge1xyXG4gICAgcmV0dXJuIGAke251bWVyaWN9JWA7XHJcbiAgfVxyXG4gIHJldHVybiBudW1lcmljO1xyXG59O1xyXG5cclxuY29uc3QgYnVpbGRTdGF0RW50cmllcyA9IChkZWY6IEl0ZW1EZWZpbml0aW9uIHwgbnVsbCk6IFN0YXRFbnRyeVtdID0+IHtcclxuICBpZiAoIWRlZj8uc3RhdHMpIHJldHVybiBbXTtcclxuICBjb25zdCBzdGF0cyA9IGRlZi5zdGF0cztcclxuICBjb25zdCBlbnRyaWVzOiBTdGF0RW50cnlbXSA9IFtdO1xyXG4gIGlmIChzdGF0cy5hdGsgIT09IHVuZGVmaW5lZCkgZW50cmllcy5wdXNoKHsgbGFiZWw6ICdBdHRhY2snLCB2YWx1ZTogZm9ybWF0U3RhdFZhbHVlKCdhdGsnLCBzdGF0cy5hdGspIH0pO1xyXG4gIGlmIChzdGF0cy5kZWYgIT09IHVuZGVmaW5lZCkgZW50cmllcy5wdXNoKHsgbGFiZWw6ICdEZWZlbnNlJywgdmFsdWU6IGZvcm1hdFN0YXRWYWx1ZSgnZGVmJywgc3RhdHMuZGVmKSB9KTtcclxuICBpZiAoc3RhdHMuaHAgIT09IHVuZGVmaW5lZCkgZW50cmllcy5wdXNoKHsgbGFiZWw6ICdIZWFsdGgnLCB2YWx1ZTogZm9ybWF0U3RhdFZhbHVlKCdocCcsIHN0YXRzLmhwKSB9KTtcclxuICBpZiAoc3RhdHMuY3JpdCAhPT0gdW5kZWZpbmVkKSBlbnRyaWVzLnB1c2goeyBsYWJlbDogJ0NyaXQnLCB2YWx1ZTogZm9ybWF0U3RhdFZhbHVlKCdjcml0Jywgc3RhdHMuY3JpdCkgfSk7XHJcbiAgaWYgKHN0YXRzLmNyaXREbWcgIT09IHVuZGVmaW5lZCkgZW50cmllcy5wdXNoKHsgbGFiZWw6ICdDcml0IERtZycsIHZhbHVlOiBmb3JtYXRTdGF0VmFsdWUoJ2NyaXREbWcnLCBzdGF0cy5jcml0RG1nKSB9KTtcclxuICBpZiAoc3RhdHMuZG9kZ2UgIT09IHVuZGVmaW5lZCkgZW50cmllcy5wdXNoKHsgbGFiZWw6ICdEb2RnZScsIHZhbHVlOiBmb3JtYXRTdGF0VmFsdWUoJ2RvZGdlJywgc3RhdHMuZG9kZ2UpIH0pO1xyXG4gIGlmIChzdGF0cy5xaUdhaW4gIT09IHVuZGVmaW5lZCkgZW50cmllcy5wdXNoKHsgbGFiZWw6ICdRaSBHYWluJywgdmFsdWU6IGZvcm1hdFN0YXRWYWx1ZSgncWlHYWluJywgc3RhdHMucWlHYWluKSB9KTtcclxuICByZXR1cm4gZW50cmllcztcclxufTtcclxuXHJcbmV4cG9ydCBkZWZhdWx0IGZ1bmN0aW9uIEVxdWlwbWVudERyYXdlcih7XHJcbiAgb3BlbixcclxuICBvbkNsb3NlLFxyXG4gIHNlbGVjdGVkSXRlbUlkLFxyXG4gIHNlbGVjdGVkSXRlbVR5cGUsXHJcbiAgc2VsZWN0ZWRJdGVtTmFtZSxcclxuICBvblJlcXVlc3RDbGVhclNlbGVjdGlvbixcclxufTogRXF1aXBtZW50RHJhd2VyUHJvcHMpIHtcclxuICBjb25zdCBlcXVpcHBlZFdlYXBvbklkID0gdXNlRXF1aXBtZW50U3RvcmUoKHN0YXRlKSA9PiBzdGF0ZS5lcXVpcHBlZFdlYXBvbklkKTtcclxuICBjb25zdCBlcXVpcHBlZEFjY2Vzc29yeUlkID0gdXNlRXF1aXBtZW50U3RvcmUoKHN0YXRlKSA9PiBzdGF0ZS5lcXVpcHBlZEFjY2Vzc29yeUlkKTtcclxuICBjb25zdCBlcXVpcFdlYXBvbiA9IHVzZUVxdWlwbWVudFN0b3JlKChzdGF0ZSkgPT4gc3RhdGUuZXF1aXBXZWFwb24pO1xyXG4gIGNvbnN0IGVxdWlwQWNjZXNzb3J5ID0gdXNlRXF1aXBtZW50U3RvcmUoKHN0YXRlKSA9PiBzdGF0ZS5lcXVpcEFjY2Vzc29yeSk7XHJcbiAgY29uc3QgYWRkSXRlbSA9IHVzZUludmVudG9yeVN0b3JlKChzdGF0ZSkgPT4gc3RhdGUuYWRkSXRlbSk7XHJcbiAgY29uc3QgcmVtb3ZlSXRlbSA9IHVzZUludmVudG9yeVN0b3JlKChzdGF0ZSkgPT4gc3RhdGUucmVtb3ZlSXRlbSk7XHJcbiAgY29uc3QgYWRkTm90aWZpY2F0aW9uID0gdXNlVUlTdG9yZSgoc3RhdGUpID0+IHN0YXRlLmFkZE5vdGlmaWNhdGlvbik7XHJcbiAgY29uc3QgW3NlbGVjdGVkU2xvdCwgc2V0U2VsZWN0ZWRTbG90XSA9IHVzZVN0YXRlPEVxdWlwbWVudFNsb3RUeXBlIHwgbnVsbD4obnVsbCk7XHJcbiAgY29uc3QgW3BlbmRpbmdSZXBsYWNlU2xvdCwgc2V0UGVuZGluZ1JlcGxhY2VTbG90XSA9IHVzZVN0YXRlPEVxdWlwbWVudFNsb3RUeXBlIHwgbnVsbD4obnVsbCk7XHJcbiAgY29uc3QgW3B1bHNlU2xvdCwgc2V0UHVsc2VTbG90XSA9IHVzZVN0YXRlPEVxdWlwbWVudFNsb3RUeXBlIHwgbnVsbD4obnVsbCk7XHJcblxyXG4gIGNvbnN0IGVxdWlwcGVkV2VhcG9uID0gdXNlTWVtbyhcclxuICAgICgpID0+IChlcXVpcHBlZFdlYXBvbklkID8gZ2V0SXRlbURlZihlcXVpcHBlZFdlYXBvbklkKSA/PyBudWxsIDogbnVsbCksXHJcbiAgICBbZXF1aXBwZWRXZWFwb25JZF0sXHJcbiAgKTtcclxuICBjb25zdCBlcXVpcHBlZEFjY2Vzc29yeSA9IHVzZU1lbW8oXHJcbiAgICAoKSA9PiAoZXF1aXBwZWRBY2Nlc3NvcnlJZCA/IGdldEl0ZW1EZWYoZXF1aXBwZWRBY2Nlc3NvcnlJZCkgPz8gbnVsbCA6IG51bGwpLFxyXG4gICAgW2VxdWlwcGVkQWNjZXNzb3J5SWRdLFxyXG4gICk7XHJcblxyXG4gIGNvbnN0IHNlbGVjdGVkU2xvdERlZiA9IHNlbGVjdGVkU2xvdCA9PT0gJ3dlYXBvbicgPyBlcXVpcHBlZFdlYXBvbiA6IHNlbGVjdGVkU2xvdCA9PT0gJ2FjY2Vzc29yeScgPyBlcXVpcHBlZEFjY2Vzc29yeSA6IG51bGw7XHJcblxyXG4gIHVzZUVmZmVjdCgoKSA9PiB7XHJcbiAgICBpZiAoIW9wZW4pIHJldHVybjtcclxuICAgIGNvbnN0IGhhbmRsZUtleSA9IChldmVudDogS2V5Ym9hcmRFdmVudCkgPT4ge1xyXG4gICAgICBpZiAoZXZlbnQua2V5ID09PSAnRXNjYXBlJykge1xyXG4gICAgICAgIG9uQ2xvc2UoKTtcclxuICAgICAgfVxyXG4gICAgfTtcclxuICAgIHdpbmRvdy5hZGRFdmVudExpc3RlbmVyKCdrZXlkb3duJywgaGFuZGxlS2V5KTtcclxuICAgIHJldHVybiAoKSA9PiB3aW5kb3cucmVtb3ZlRXZlbnRMaXN0ZW5lcigna2V5ZG93bicsIGhhbmRsZUtleSk7XHJcbiAgfSwgW29uQ2xvc2UsIG9wZW5dKTtcclxuXHJcbiAgdXNlRWZmZWN0KCgpID0+IHtcclxuICAgIGlmICghcGVuZGluZ1JlcGxhY2VTbG90KSByZXR1cm47XHJcbiAgICBpZiAoIXNlbGVjdGVkSXRlbUlkIHx8IHNlbGVjdGVkSXRlbVR5cGUgIT09IHBlbmRpbmdSZXBsYWNlU2xvdCkge1xyXG4gICAgICBzZXRQZW5kaW5nUmVwbGFjZVNsb3QobnVsbCk7XHJcbiAgICB9XHJcbiAgfSwgW3BlbmRpbmdSZXBsYWNlU2xvdCwgc2VsZWN0ZWRJdGVtSWQsIHNlbGVjdGVkSXRlbVR5cGVdKTtcclxuXHJcbiAgY29uc3QgdHJpZ2dlclB1bHNlID0gKHNsb3Q6IEVxdWlwbWVudFNsb3RUeXBlKSA9PiB7XHJcbiAgICBzZXRQdWxzZVNsb3Qoc2xvdCk7XHJcbiAgICB3aW5kb3cuc2V0VGltZW91dCgoKSA9PiBzZXRQdWxzZVNsb3QoKHByZXYpID0+IChwcmV2ID09PSBzbG90ID8gbnVsbCA6IHByZXYpKSwgNzAwKTtcclxuICB9O1xyXG5cclxuICBjb25zdCBzbG90SXNDb21wYXRpYmxlID0gKHNsb3Q6IEVxdWlwbWVudFNsb3RUeXBlKSA9PiBzZWxlY3RlZEl0ZW1UeXBlID09PSBzbG90ICYmIEJvb2xlYW4oc2VsZWN0ZWRJdGVtSWQpO1xyXG5cclxuICBjb25zdCBoYW5kbGVFcXVpcCA9IChzbG90OiBFcXVpcG1lbnRTbG90VHlwZSwgaXNSZXBsYWNlOiBib29sZWFuKSA9PiB7XHJcbiAgICBpZiAoIXNlbGVjdGVkSXRlbUlkIHx8IHNlbGVjdGVkSXRlbVR5cGUgIT09IHNsb3QpIHtcclxuICAgICAgYWRkTm90aWZpY2F0aW9uKCd3YXJuaW5nJywgJ0NvdWxkIG5vdCBlcXVpcC4nLCAyNTAwKTtcclxuICAgICAgcmV0dXJuO1xyXG4gICAgfVxyXG5cclxuICAgIGNvbnN0IGVxdWlwcGVkSWQgPSBzbG90ID09PSAnd2VhcG9uJyA/IGVxdWlwcGVkV2VhcG9uSWQgOiBlcXVpcHBlZEFjY2Vzc29yeUlkO1xyXG4gICAgaWYgKGVxdWlwcGVkSWQgJiYgZXF1aXBwZWRJZCA9PT0gc2VsZWN0ZWRJdGVtSWQpIHtcclxuICAgICAgYWRkTm90aWZpY2F0aW9uKCdpbmZvJywgJ1RoYXQgaXRlbSBpcyBhbHJlYWR5IGVxdWlwcGVkLicsIDIwMDApO1xyXG4gICAgICByZXR1cm47XHJcbiAgICB9XHJcblxyXG4gICAgY29uc3QgcmVtb3ZlZCA9IHJlbW92ZUl0ZW0oc2VsZWN0ZWRJdGVtSWQsIDEpO1xyXG4gICAgaWYgKCFyZW1vdmVkKSB7XHJcbiAgICAgIGFkZE5vdGlmaWNhdGlvbignd2FybmluZycsICdDb3VsZCBub3QgZXF1aXAuJywgMjUwMCk7XHJcbiAgICAgIHJldHVybjtcclxuICAgIH1cclxuXHJcbiAgICBpZiAoZXF1aXBwZWRJZCkge1xyXG4gICAgICBhZGRJdGVtKGVxdWlwcGVkSWQsIDEpO1xyXG4gICAgfVxyXG5cclxuICAgIGlmIChzbG90ID09PSAnd2VhcG9uJykge1xyXG4gICAgICBlcXVpcFdlYXBvbihzZWxlY3RlZEl0ZW1JZCk7XHJcbiAgICB9IGVsc2Uge1xyXG4gICAgICBlcXVpcEFjY2Vzc29yeShzZWxlY3RlZEl0ZW1JZCk7XHJcbiAgICB9XHJcblxyXG4gICAgaWYgKGlzUmVwbGFjZSkge1xyXG4gICAgICBhZGROb3RpZmljYXRpb24oJ2luZm8nLCAnUmVwbGFjZWQgZXF1aXBtZW50LicsIDIwMDApO1xyXG4gICAgfSBlbHNlIHtcclxuICAgICAgYWRkTm90aWZpY2F0aW9uKCdzdWNjZXNzJywgYEVxdWlwcGVkICR7c2VsZWN0ZWRJdGVtTmFtZSA/PyAnaXRlbSd9LmAsIDIwMDApO1xyXG4gICAgfVxyXG5cclxuICAgIHRyaWdnZXJQdWxzZShzbG90KTtcclxuICAgIHNldFBlbmRpbmdSZXBsYWNlU2xvdChudWxsKTtcclxuICAgIHNldFNlbGVjdGVkU2xvdChzbG90KTtcclxuICAgIG9uUmVxdWVzdENsZWFyU2VsZWN0aW9uPy4oKTtcclxuICB9O1xyXG5cclxuICBjb25zdCBoYW5kbGVVbmVxdWlwID0gKHNsb3Q6IEVxdWlwbWVudFNsb3RUeXBlKSA9PiB7XHJcbiAgICBjb25zdCBlcXVpcHBlZElkID0gc2xvdCA9PT0gJ3dlYXBvbicgPyBlcXVpcHBlZFdlYXBvbklkIDogZXF1aXBwZWRBY2Nlc3NvcnlJZDtcclxuICAgIGlmICghZXF1aXBwZWRJZCkgcmV0dXJuO1xyXG4gICAgYWRkSXRlbShlcXVpcHBlZElkLCAxKTtcclxuICAgIGlmIChzbG90ID09PSAnd2VhcG9uJykge1xyXG4gICAgICBlcXVpcFdlYXBvbihudWxsKTtcclxuICAgIH0gZWxzZSB7XHJcbiAgICAgIGVxdWlwQWNjZXNzb3J5KG51bGwpO1xyXG4gICAgfVxyXG4gICAgYWRkTm90aWZpY2F0aW9uKCdzdWNjZXNzJywgJ1VuZXF1aXBwZWQuJywgMjAwMCk7XHJcbiAgICB0cmlnZ2VyUHVsc2Uoc2xvdCk7XHJcbiAgfTtcclxuXHJcbiAgY29uc3QgaGFuZGxlU2xvdENsaWNrID0gKHNsb3Q6IEVxdWlwbWVudFNsb3RUeXBlKSA9PiB7XHJcbiAgICBzZXRTZWxlY3RlZFNsb3Qoc2xvdCk7XHJcbiAgICBjb25zdCBpc0NvbXBhdGlibGUgPSBzbG90SXNDb21wYXRpYmxlKHNsb3QpO1xyXG4gICAgY29uc3QgZXF1aXBwZWRJZCA9IHNsb3QgPT09ICd3ZWFwb24nID8gZXF1aXBwZWRXZWFwb25JZCA6IGVxdWlwcGVkQWNjZXNzb3J5SWQ7XHJcbiAgICBpZiAoIWlzQ29tcGF0aWJsZSkge1xyXG4gICAgICBzZXRQZW5kaW5nUmVwbGFjZVNsb3QobnVsbCk7XHJcbiAgICAgIHJldHVybjtcclxuICAgIH1cclxuICAgIGlmICghZXF1aXBwZWRJZCkge1xyXG4gICAgICBoYW5kbGVFcXVpcChzbG90LCBmYWxzZSk7XHJcbiAgICAgIHJldHVybjtcclxuICAgIH1cclxuICAgIHNldFBlbmRpbmdSZXBsYWNlU2xvdChzbG90KTtcclxuICB9O1xyXG5cclxuICBjb25zdCBlcXVpcHBlZERldGFpbHMgPSB1c2VNZW1vKCgpID0+IGJ1aWxkU3RhdEVudHJpZXMoc2VsZWN0ZWRTbG90RGVmKSwgW3NlbGVjdGVkU2xvdERlZl0pO1xyXG5cclxuICBjb25zdCByZW5kZXJTbG90ID0gKHNsb3Q6IEVxdWlwbWVudFNsb3RUeXBlLCBlcXVpcHBlZDogSXRlbURlZmluaXRpb24gfCBudWxsLCBlcXVpcHBlZElkOiBzdHJpbmcgfCBudWxsKSA9PiB7XHJcbiAgICBjb25zdCBjb21wYXRpYmxlID0gc2xvdElzQ29tcGF0aWJsZShzbG90KTtcclxuICAgIGNvbnN0IGlzU2VsZWN0ZWQgPSBzZWxlY3RlZFNsb3QgPT09IHNsb3Q7XHJcbiAgICBjb25zdCByYXJpdHlDbGFzcyA9IGdldFJhcml0eUNsYXNzKGVxdWlwcGVkPy5yYXJpdHkpO1xyXG4gICAgY29uc3QgaXNQdWxzZSA9IHB1bHNlU2xvdCA9PT0gc2xvdDtcclxuICAgIHJldHVybiAoXHJcbiAgICAgIDxidXR0b25cclxuICAgICAgICB0eXBlPVwiYnV0dG9uXCJcclxuICAgICAgICBrZXk9e3Nsb3R9XHJcbiAgICAgICAgY2xhc3NOYW1lPXtgaW52ZW50b3J5RXF1aXBTbG90ICR7cmFyaXR5Q2xhc3N9JHtlcXVpcHBlZCA/ICcgaW52ZW50b3J5RXF1aXBTbG90RmlsbGVkJyA6ICcnfSR7XHJcbiAgICAgICAgICBpc1NlbGVjdGVkID8gJyBpbnZlbnRvcnlFcXVpcFNsb3RTZWxlY3RlZCcgOiAnJ1xyXG4gICAgICAgIH0ke2NvbXBhdGlibGUgPyAnIGludmVudG9yeUVxdWlwU2xvdENvbXBhdGlibGUnIDogJyd9JHtpc1B1bHNlID8gJyBpbnZlbnRvcnlFcXVpcFNsb3RQdWxzZScgOiAnJ31gfVxyXG4gICAgICAgIG9uQ2xpY2s9eygpID0+IGhhbmRsZVNsb3RDbGljayhzbG90KX1cclxuICAgICAgICBhcmlhLWxhYmVsPXtgJHtTTE9UX0NPTkZJR1tzbG90XS5sYWJlbH0gc2xvdGB9XHJcbiAgICAgID5cclxuICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImludmVudG9yeUVxdWlwU2xvdEljb25cIiBhcmlhLWhpZGRlbj1cInRydWVcIj5cclxuICAgICAgICAgIDxHYW1lSWNvbiBpY29uPXtTTE9UX0NPTkZJR1tzbG90XS5pY29uSWR9IHNpemU9ezI0fSBkZWNvcmF0aXZlIC8+XHJcbiAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJpbnZlbnRvcnlFcXVpcFNsb3RMYWJlbFwiPntTTE9UX0NPTkZJR1tzbG90XS5sYWJlbH08L2Rpdj5cclxuICAgICAgICB7ZXF1aXBwZWQgPyAoXHJcbiAgICAgICAgICA8PlxyXG4gICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImludmVudG9yeUVxdWlwU2xvdEl0ZW1cIj57ZXF1aXBwZWQ/Lm5hbWUgPz8gZXF1aXBwZWRJZCA/PyAnRXF1aXBwZWQnfTwvZGl2PlxyXG4gICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImludmVudG9yeUVxdWlwU2xvdENoaXBcIj5FcXVpcHBlZDwvZGl2PlxyXG4gICAgICAgICAgPC8+XHJcbiAgICAgICAgKSA6IChcclxuICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiaW52ZW50b3J5RXF1aXBTbG90RW1wdHlcIj5FbXB0eTwvZGl2PlxyXG4gICAgICAgICl9XHJcbiAgICAgICAge2NvbXBhdGlibGUgPyA8ZGl2IGNsYXNzTmFtZT1cImludmVudG9yeUVxdWlwU2xvdEhpbnRcIj5DbGljayB0byBFcXVpcDwvZGl2PiA6IG51bGx9XHJcbiAgICAgIDwvYnV0dG9uPlxyXG4gICAgKTtcclxuICB9O1xyXG5cclxuICByZXR1cm4gKFxyXG4gICAgPGRpdlxyXG4gICAgICBjbGFzc05hbWU9e2BpbnZlbnRvcnlFcXVpcERyYXdlck92ZXJsYXkke29wZW4gPyAnIGludmVudG9yeUVxdWlwRHJhd2VyT3ZlcmxheU9wZW4nIDogJyd9YH1cclxuICAgICAgb25DbGljaz17KCkgPT4ge1xyXG4gICAgICAgIGlmIChvcGVuKSBvbkNsb3NlKCk7XHJcbiAgICAgIH19XHJcbiAgICAgIGFyaWEtaGlkZGVuPXshb3Blbn1cclxuICAgID5cclxuICAgICAgPGRpdlxyXG4gICAgICAgIGNsYXNzTmFtZT17YGludmVudG9yeUVxdWlwRHJhd2VyUGFuZWwke29wZW4gPyAnIGludmVudG9yeUVxdWlwRHJhd2VyUGFuZWxPcGVuJyA6ICcnfWB9XHJcbiAgICAgICAgcm9sZT1cImRpYWxvZ1wiXHJcbiAgICAgICAgYXJpYS1tb2RhbD1cInRydWVcIlxyXG4gICAgICAgIG9uQ2xpY2s9eyhldmVudCkgPT4gZXZlbnQuc3RvcFByb3BhZ2F0aW9uKCl9XHJcbiAgICAgID5cclxuICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImludmVudG9yeUVxdWlwSGVhZGVyXCI+XHJcbiAgICAgICAgICA8ZGl2PlxyXG4gICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImludmVudG9yeUVxdWlwVGl0bGVcIj5FcXVpcG1lbnQ8L2Rpdj5cclxuICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJpbnZlbnRvcnlFcXVpcFN1YnRpdGxlXCI+U2VsZWN0IGFuIGl0ZW0gaW4geW91ciBzYXRjaGVsLCB0aGVuIGNsaWNrIGEgc2xvdCB0byBlcXVpcC48L2Rpdj5cclxuICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgPGJ1dHRvbiB0eXBlPVwiYnV0dG9uXCIgY2xhc3NOYW1lPVwiaW52ZW50b3J5RXF1aXBDbG9zZVwiIG9uQ2xpY2s9e29uQ2xvc2V9IGFyaWEtbGFiZWw9XCJDbG9zZSBlcXVpcG1lbnQgZHJhd2VyXCI+XHJcbiAgICAgICAgICAgIDxHYW1lSWNvbiBpY29uPVwiaW5rWFwiIHNpemU9ezE0fSBkZWNvcmF0aXZlIC8+XHJcbiAgICAgICAgICA8L2J1dHRvbj5cclxuICAgICAgICA8L2Rpdj5cclxuXHJcbiAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJpbnZlbnRvcnlFcXVpcFN0YWdlXCI+XHJcbiAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImludmVudG9yeUVxdWlwUnVuZVwiIGFyaWEtaGlkZGVuPVwidHJ1ZVwiIC8+XHJcbiAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImludmVudG9yeUVxdWlwU2lsaG91ZXR0ZVwiIGFyaWEtaGlkZGVuPVwidHJ1ZVwiIC8+XHJcbiAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImludmVudG9yeUVxdWlwU2xvdFdlYXBvblwiPlxyXG4gICAgICAgICAgICB7cmVuZGVyU2xvdCgnd2VhcG9uJywgZXF1aXBwZWRXZWFwb24sIGVxdWlwcGVkV2VhcG9uSWQpfVxyXG4gICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImludmVudG9yeUVxdWlwU2xvdEFjY2Vzc29yeVwiPlxyXG4gICAgICAgICAgICB7cmVuZGVyU2xvdCgnYWNjZXNzb3J5JywgZXF1aXBwZWRBY2Nlc3NvcnksIGVxdWlwcGVkQWNjZXNzb3J5SWQpfVxyXG4gICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgPC9kaXY+XHJcblxyXG4gICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiaW52ZW50b3J5RXF1aXBEZXRhaWxzXCI+XHJcbiAgICAgICAgICB7IXNlbGVjdGVkU2xvdCA/IChcclxuICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJpbnZlbnRvcnlFcXVpcEVtcHR5XCI+XHJcbiAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJpbnZlbnRvcnlFcXVpcEVtcHR5VGl0bGVcIj5DaG9vc2UgYSBzbG90IHRvIGluc3BlY3Q8L2Rpdj5cclxuICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImludmVudG9yeUVxdWlwRW1wdHlUZXh0XCI+RXF1aXBtZW50IGdyYW50cyBsYXN0aW5nIGJvbnVzZXMgdG8geW91ciBjdWx0aXZhdG9yLjwvZGl2PlxyXG4gICAgICAgICAgICA8L2Rpdj5cclxuICAgICAgICAgICkgOiAoXHJcbiAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiaW52ZW50b3J5RXF1aXBEZXRhaWxDb250ZW50XCI+XHJcbiAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJpbnZlbnRvcnlFcXVpcERldGFpbEhlYWRlclwiPlxyXG4gICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJpbnZlbnRvcnlFcXVpcERldGFpbFNsb3RcIj57U0xPVF9DT05GSUdbc2VsZWN0ZWRTbG90XS5sYWJlbH08L2Rpdj5cclxuICAgICAgICAgICAgICAgIHtzZWxlY3RlZFNsb3REZWYgPyA8ZGl2IGNsYXNzTmFtZT1cImludmVudG9yeUVxdWlwRGV0YWlsQ2hpcFwiPkVxdWlwcGVkPC9kaXY+IDogbnVsbH1cclxuICAgICAgICAgICAgICA8L2Rpdj5cclxuICAgICAgICAgICAgICB7c2VsZWN0ZWRTbG90RGVmID8gKFxyXG4gICAgICAgICAgICAgICAgPD5cclxuICAgICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJpbnZlbnRvcnlFcXVpcERldGFpbE5hbWVcIj57c2VsZWN0ZWRTbG90RGVmLm5hbWV9PC9kaXY+XHJcbiAgICAgICAgICAgICAgICAgIHtzZWxlY3RlZFNsb3REZWYuZGVzY3JpcHRpb24gPyAoXHJcbiAgICAgICAgICAgICAgICAgICAgPHAgY2xhc3NOYW1lPVwiaW52ZW50b3J5RXF1aXBEZXRhaWxEZXNjcmlwdGlvblwiPntzZWxlY3RlZFNsb3REZWYuZGVzY3JpcHRpb259PC9wPlxyXG4gICAgICAgICAgICAgICAgICApIDogbnVsbH1cclxuICAgICAgICAgICAgICAgICAge2VxdWlwcGVkRGV0YWlscy5sZW5ndGggPiAwID8gKFxyXG4gICAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiaW52ZW50b3J5RXF1aXBTdGF0TGlzdFwiPlxyXG4gICAgICAgICAgICAgICAgICAgICAge2VxdWlwcGVkRGV0YWlscy5tYXAoKHN0YXQpID0+IChcclxuICAgICAgICAgICAgICAgICAgICAgICAgPGRpdiBrZXk9e3N0YXQubGFiZWx9IGNsYXNzTmFtZT1cImludmVudG9yeUVxdWlwU3RhdFJvd1wiPlxyXG4gICAgICAgICAgICAgICAgICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT1cImludmVudG9yeUVxdWlwU3RhdExhYmVsXCI+e3N0YXQubGFiZWx9PC9zcGFuPlxyXG4gICAgICAgICAgICAgICAgICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT1cImludmVudG9yeUVxdWlwU3RhdFZhbHVlXCI+e3N0YXQudmFsdWV9PC9zcGFuPlxyXG4gICAgICAgICAgICAgICAgICAgICAgICA8L2Rpdj5cclxuICAgICAgICAgICAgICAgICAgICAgICkpfVxyXG4gICAgICAgICAgICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgICAgICAgICApIDogKFxyXG4gICAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiaW52ZW50b3J5RXF1aXBEZXRhaWxEZXNjcmlwdGlvblwiPk5vIHN0YXQgYm9udXNlcyBsaXN0ZWQuPC9kaXY+XHJcbiAgICAgICAgICAgICAgICAgICl9XHJcbiAgICAgICAgICAgICAgICA8Lz5cclxuICAgICAgICAgICAgICApIDogKFxyXG4gICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJpbnZlbnRvcnlFcXVpcERldGFpbERlc2NyaXB0aW9uXCI+XHJcbiAgICAgICAgICAgICAgICAgIEVtcHR5IHNsb3QuIEVxdWlwIGFuIGl0ZW0gdG8gY2hhbm5lbCBpdHMgcG93ZXIgaW50byB5b3VyIGN1bHRpdmF0b3IuXHJcbiAgICAgICAgICAgICAgICA8L2Rpdj5cclxuICAgICAgICAgICAgICApfVxyXG4gICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiaW52ZW50b3J5RXF1aXBBY3Rpb25zXCI+XHJcbiAgICAgICAgICAgICAgICB7c2VsZWN0ZWRTbG90RGVmID8gKFxyXG4gICAgICAgICAgICAgICAgICA8YnV0dG9uIHR5cGU9XCJidXR0b25cIiBjbGFzc05hbWU9XCJpbnZlbnRvcnlFcXVpcEFjdGlvbkJ1dHRvblwiIG9uQ2xpY2s9eygpID0+IGhhbmRsZVVuZXF1aXAoc2VsZWN0ZWRTbG90KX0+XHJcbiAgICAgICAgICAgICAgICAgICAgVW5lcXVpcFxyXG4gICAgICAgICAgICAgICAgICA8L2J1dHRvbj5cclxuICAgICAgICAgICAgICAgICkgOiBudWxsfVxyXG4gICAgICAgICAgICAgICAge3BlbmRpbmdSZXBsYWNlU2xvdCA9PT0gc2VsZWN0ZWRTbG90ICYmIHNlbGVjdGVkSXRlbUlkICYmIHNlbGVjdGVkSXRlbU5hbWUgJiYgc2xvdElzQ29tcGF0aWJsZShzZWxlY3RlZFNsb3QpID8gKFxyXG4gICAgICAgICAgICAgICAgICA8YnV0dG9uXHJcbiAgICAgICAgICAgICAgICAgICAgdHlwZT1cImJ1dHRvblwiXHJcbiAgICAgICAgICAgICAgICAgICAgY2xhc3NOYW1lPVwiaW52ZW50b3J5RXF1aXBBY3Rpb25CdXR0b24gaW52ZW50b3J5RXF1aXBBY3Rpb25CdXR0b24tLXByaW1hcnlcIlxyXG4gICAgICAgICAgICAgICAgICAgIG9uQ2xpY2s9eygpID0+IGhhbmRsZUVxdWlwKHNlbGVjdGVkU2xvdCwgdHJ1ZSl9XHJcbiAgICAgICAgICAgICAgICAgID5cclxuICAgICAgICAgICAgICAgICAgICBSZXBsYWNlIHtzZWxlY3RlZFNsb3REZWY/Lm5hbWUgPz8gJ0VtcHR5J30g4oaSIHtzZWxlY3RlZEl0ZW1OYW1lfVxyXG4gICAgICAgICAgICAgICAgICA8L2J1dHRvbj5cclxuICAgICAgICAgICAgICAgICkgOiBudWxsfVxyXG4gICAgICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgICA8L2Rpdj5cclxuICAgICAgICAgICl9XHJcbiAgICAgICAgPC9kaXY+XHJcbiAgICAgIDwvZGl2PlxyXG4gICAgPC9kaXY+XHJcbiAgKTtcclxufVxyXG4iXSwiZmlsZSI6IkM6L1VzZXJzL2FiZHVsL0Rlc2t0b3AvY3VsdGl2YXRpb24taWRsZS9zcmMvY29tcG9uZW50cy9pbnZlbnRvcnkvRXF1aXBtZW50RHJhd2VyLnRzeCJ9

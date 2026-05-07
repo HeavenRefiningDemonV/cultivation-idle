@@ -1,0 +1,274 @@
+import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/ui/cultivation/StudyModeWidget.tsx");import __vite__cjsImport0_react_jsxDevRuntime from "/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=c0e4e3e4"; const Fragment = __vite__cjsImport0_react_jsxDevRuntime["Fragment"]; const jsxDEV = __vite__cjsImport0_react_jsxDevRuntime["jsxDEV"];
+var _s = $RefreshSig$();
+import __vite__cjsImport1_react from "/node_modules/.vite/deps/react.js?v=c0e4e3e4"; const useMemo = __vite__cjsImport1_react["useMemo"];
+import { STUDY_MASTERY_PER_MINUTE_BASE } from "/src/content/tuning/cultivationTuning.ts";
+import { useContentStore } from "/src/stores/contentStore.ts";
+import { useCultivationStore } from "/src/stores/cultivationStore.ts";
+import { useTechCollectionStore } from "/src/stores/techCollectionStore.ts";
+import "/src/ui/cultivation/StudyModeWidget.scss";
+function toTitleCase(value) {
+  if (!value) return "Unknown";
+  return value.replace(/[_-]/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
+}
+export function StudyModeWidget() {
+  _s();
+  const studyEnabled = useCultivationStore((state) => state.studyEnabled);
+  const studyTechniqueId = useCultivationStore((state) => state.studyTechniqueId);
+  const setStudyEnabled = useCultivationStore((state) => state.setStudyEnabled);
+  const setStudyTechniqueId = useCultivationStore((state) => state.setStudyTechniqueId);
+  const unlockedTechs = useTechCollectionStore((state) => state.unlockedTechs);
+  const techniquesById = useContentStore((state) => state.maps.techniquesById);
+  const options = useMemo(() => {
+    return Object.entries(unlockedTechs).filter(([, meta]) => meta.unlocked).map(([id, meta]) => {
+      const def = techniquesById[id];
+      return {
+        id,
+        name: def?.name ?? id,
+        rarity: meta.rarity ?? def?.rarity,
+        grade: meta.manualGrade ?? def?.tier
+      };
+    }).sort((a, b) => a.name.localeCompare(b.name));
+  }, [techniquesById, unlockedTechs]);
+  const selectedOption = useMemo(
+    () => options.find((option) => option.id === studyTechniqueId) ?? null,
+    [options, studyTechniqueId]
+  );
+  const techniqueHelpId = "study-technique-help";
+  const techniqueSelectId = "study-technique-select";
+  const hasOptions = options.length > 0;
+  const hasSelectedTechnique = Boolean(studyTechniqueId && selectedOption);
+  const masteryRateLine = `Mastery rate: +${STUDY_MASTERY_PER_MINUTE_BASE.toFixed(1)} / min while cultivating.`;
+  const stateLabel = !studyEnabled ? "Dormant" : hasSelectedTechnique ? "Active Study" : "Awaiting Technique";
+  const helperText = !studyEnabled ? "Study is disabled. Enable Study Mode to resume mastery while cultivating." : !hasOptions ? "No unlocked techniques are available yet. Learn a technique to begin studying." : hasSelectedTechnique ? "Selected technique gains steady mastery only while cultivating." : "Pick one unlocked technique to begin steady mastery gains while cultivating.";
+  return /* @__PURE__ */ jsxDEV("div", { className: "daoHeartStudySurface cultivationPanel studyWidget", "data-ui": "dao-heart-study", children: [
+    /* @__PURE__ */ jsxDEV("header", { className: "daoHeartStudySurface__overview", "aria-label": "Study mode overview", children: [
+      /* @__PURE__ */ jsxDEV("div", { className: "daoHeartStudyHeading", children: [
+        /* @__PURE__ */ jsxDEV("p", { className: "daoHeartStudyEyebrow", children: "Disciplined Reading" }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/cultivation/StudyModeWidget.tsx",
+          lineNumber: 68,
+          columnNumber: 11
+        }, this),
+        /* @__PURE__ */ jsxDEV("h3", { className: "daoHeartStudyTitle", children: "Study Mode" }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/cultivation/StudyModeWidget.tsx",
+          lineNumber: 69,
+          columnNumber: 11
+        }, this),
+        /* @__PURE__ */ jsxDEV("p", { className: "daoHeartStudyPurpose", children: "Sustain one technique reading while cultivating to build steady practical mastery." }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/cultivation/StudyModeWidget.tsx",
+          lineNumber: 70,
+          columnNumber: 11
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/cultivation/StudyModeWidget.tsx",
+        lineNumber: 67,
+        columnNumber: 9
+      }, this),
+      /* @__PURE__ */ jsxDEV("label", { className: "studyToggle", htmlFor: "study-mode-toggle", children: [
+        /* @__PURE__ */ jsxDEV(
+          "input",
+          {
+            id: "study-mode-toggle",
+            type: "checkbox",
+            checked: studyEnabled,
+            onChange: (e) => setStudyEnabled(e.target.checked)
+          },
+          void 0,
+          false,
+          {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/cultivation/StudyModeWidget.tsx",
+            lineNumber: 73,
+            columnNumber: 11
+          },
+          this
+        ),
+        /* @__PURE__ */ jsxDEV("span", { children: studyEnabled ? "On" : "Off" }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/cultivation/StudyModeWidget.tsx",
+          lineNumber: 79,
+          columnNumber: 11
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/cultivation/StudyModeWidget.tsx",
+        lineNumber: 72,
+        columnNumber: 9
+      }, this)
+    ] }, void 0, true, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/cultivation/StudyModeWidget.tsx",
+      lineNumber: 66,
+      columnNumber: 7
+    }, this),
+    /* @__PURE__ */ jsxDEV("section", { className: "daoHeartStudySurface__state", "aria-live": "polite", children: [
+      /* @__PURE__ */ jsxDEV("div", { className: `daoHeartStudyStateBadge daoHeartStudyStateBadge--${studyEnabled ? "enabled" : "disabled"}`, children: stateLabel }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/cultivation/StudyModeWidget.tsx",
+        lineNumber: 84,
+        columnNumber: 9
+      }, this),
+      /* @__PURE__ */ jsxDEV("p", { className: "daoHeartStudyStateLine", children: masteryRateLine }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/cultivation/StudyModeWidget.tsx",
+        lineNumber: 87,
+        columnNumber: 9
+      }, this),
+      /* @__PURE__ */ jsxDEV("p", { className: "daoHeartStudyStateLine", children: "Mastery accrues only during cultivation activity." }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/cultivation/StudyModeWidget.tsx",
+        lineNumber: 88,
+        columnNumber: 9
+      }, this)
+    ] }, void 0, true, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/cultivation/StudyModeWidget.tsx",
+      lineNumber: 83,
+      columnNumber: 7
+    }, this),
+    /* @__PURE__ */ jsxDEV("section", { className: "daoHeartStudyTechniqueSummary", "aria-label": "Selected study technique summary", "aria-live": "polite", children: [
+      /* @__PURE__ */ jsxDEV("p", { className: "daoHeartStudySummaryLabel", children: "Selected Technique" }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/cultivation/StudyModeWidget.tsx",
+        lineNumber: 92,
+        columnNumber: 9
+      }, this),
+      hasSelectedTechnique && selectedOption ? /* @__PURE__ */ jsxDEV(Fragment, { children: [
+        /* @__PURE__ */ jsxDEV("h4", { className: "daoHeartStudyTechniqueName", children: selectedOption.name }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/cultivation/StudyModeWidget.tsx",
+          lineNumber: 95,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV("p", { className: "daoHeartStudyTechniqueMeta", children: [
+          "Grade: ",
+          toTitleCase(selectedOption.grade),
+          " • Rarity: ",
+          toTitleCase(selectedOption.rarity)
+        ] }, void 0, true, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/cultivation/StudyModeWidget.tsx",
+          lineNumber: 96,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV("p", { className: "daoHeartStudyTechniqueNote", children: "Steady mastery is applied to this technique while cultivation is active." }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/cultivation/StudyModeWidget.tsx",
+          lineNumber: 99,
+          columnNumber: 13
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/cultivation/StudyModeWidget.tsx",
+        lineNumber: 94,
+        columnNumber: 9
+      }, this) : /* @__PURE__ */ jsxDEV(Fragment, { children: [
+        /* @__PURE__ */ jsxDEV("h4", { className: "daoHeartStudyTechniqueName daoHeartStudyTechniqueName--empty", children: "No technique selected" }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/cultivation/StudyModeWidget.tsx",
+          lineNumber: 103,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV("p", { className: "daoHeartStudyTechniqueMeta", children: hasOptions ? "Choose one unlocked technique to anchor your reading discipline." : "Unlock a technique first, then return to begin guided study." }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/cultivation/StudyModeWidget.tsx",
+          lineNumber: 104,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV("p", { className: "daoHeartStudyTechniqueNote", children: masteryRateLine }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/cultivation/StudyModeWidget.tsx",
+          lineNumber: 109,
+          columnNumber: 13
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/cultivation/StudyModeWidget.tsx",
+        lineNumber: 102,
+        columnNumber: 9
+      }, this)
+    ] }, void 0, true, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/cultivation/StudyModeWidget.tsx",
+      lineNumber: 91,
+      columnNumber: 7
+    }, this),
+    /* @__PURE__ */ jsxDEV("section", { className: "daoHeartStudySurface__controls", "aria-label": "Study mode controls", children: /* @__PURE__ */ jsxDEV("div", { className: "studyControlRow", children: [
+      /* @__PURE__ */ jsxDEV("label", { className: "studyControlLabel", htmlFor: techniqueSelectId, children: "Technique" }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/cultivation/StudyModeWidget.tsx",
+        lineNumber: 116,
+        columnNumber: 11
+      }, this),
+      /* @__PURE__ */ jsxDEV(
+        "select",
+        {
+          id: techniqueSelectId,
+          className: "studySelect",
+          value: studyTechniqueId ?? "",
+          onChange: (e) => setStudyTechniqueId(e.target.value || null),
+          disabled: !studyEnabled || !hasOptions,
+          "aria-describedby": techniqueHelpId,
+          children: [
+            /* @__PURE__ */ jsxDEV("option", { value: "", children: "None" }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/cultivation/StudyModeWidget.tsx",
+              lineNumber: 125,
+              columnNumber: 13
+            }, this),
+            options.map(
+              (option) => /* @__PURE__ */ jsxDEV("option", { value: option.id, children: [
+                option.name,
+                option.grade ? ` • ${toTitleCase(option.grade)}` : "",
+                option.rarity ? ` • ${toTitleCase(option.rarity)}` : ""
+              ] }, option.id, true, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/cultivation/StudyModeWidget.tsx",
+                lineNumber: 127,
+                columnNumber: 13
+              }, this)
+            )
+          ]
+        },
+        void 0,
+        true,
+        {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/cultivation/StudyModeWidget.tsx",
+          lineNumber: 117,
+          columnNumber: 11
+        },
+        this
+      )
+    ] }, void 0, true, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/cultivation/StudyModeWidget.tsx",
+      lineNumber: 115,
+      columnNumber: 9
+    }, this) }, void 0, false, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/cultivation/StudyModeWidget.tsx",
+      lineNumber: 114,
+      columnNumber: 7
+    }, this),
+    /* @__PURE__ */ jsxDEV("section", { className: "daoHeartStudySurface__notes", "aria-live": "polite", children: /* @__PURE__ */ jsxDEV("p", { id: techniqueHelpId, className: "studyHelperText", children: helperText }, void 0, false, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/cultivation/StudyModeWidget.tsx",
+      lineNumber: 138,
+      columnNumber: 9
+    }, this) }, void 0, false, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/cultivation/StudyModeWidget.tsx",
+      lineNumber: 137,
+      columnNumber: 7
+    }, this)
+  ] }, void 0, true, {
+    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/cultivation/StudyModeWidget.tsx",
+    lineNumber: 65,
+    columnNumber: 5
+  }, this);
+}
+_s(StudyModeWidget, "8SghML/bhEzM07ON9gyj/bfoBk0=", false, function() {
+  return [useCultivationStore, useCultivationStore, useCultivationStore, useCultivationStore, useTechCollectionStore, useContentStore];
+});
+_c = StudyModeWidget;
+var _c;
+$RefreshReg$(_c, "StudyModeWidget");
+import * as RefreshRuntime from "/@react-refresh";
+const inWebWorker = typeof WorkerGlobalScope !== "undefined" && self instanceof WorkerGlobalScope;
+if (import.meta.hot && !inWebWorker) {
+  if (!window.$RefreshReg$) {
+    throw new Error(
+      "@vitejs/plugin-react can't detect preamble. Something is wrong."
+    );
+  }
+  RefreshRuntime.__hmr_import(import.meta.url).then((currentExports) => {
+    RefreshRuntime.registerExportsForReactRefresh("C:/Users/abdul/Desktop/cultivation-idle/src/ui/cultivation/StudyModeWidget.tsx", currentExports);
+    import.meta.hot.accept((nextExports) => {
+      if (!nextExports) return;
+      const invalidateMessage = RefreshRuntime.validateRefreshBoundaryAndEnqueueUpdate("C:/Users/abdul/Desktop/cultivation-idle/src/ui/cultivation/StudyModeWidget.tsx", currentExports, nextExports);
+      if (invalidateMessage) import.meta.hot.invalidate(invalidateMessage);
+    });
+  });
+}
+function $RefreshReg$(type, id) {
+  return RefreshRuntime.register(type, "C:/Users/abdul/Desktop/cultivation-idle/src/ui/cultivation/StudyModeWidget.tsx " + id);
+}
+function $RefreshSig$() {
+  return RefreshRuntime.createSignatureFunctionForTransform();
+}
+
+//# sourceMappingURL=data:application/json;base64,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QUFqQjtBQUFBO0FBQUE7QUFBQTtBQUFBLG1CQUFxQjtBQUFBLFlBQ3BCckIsUUFBUU07QUFBQUEsY0FBSSxDQUFDYyxXQUNaLHVCQUFDLFlBQXVCLE9BQU9BLE9BQU9iLElBQ25DYTtBQUFBQSx1QkFBT1g7QUFBQUEsZ0JBQ1BXLE9BQU9ULFFBQVEsTUFBTTFCLFlBQVltQyxPQUFPVCxLQUFLLENBQUMsS0FBSztBQUFBLGdCQUNuRFMsT0FBT1YsU0FBUyxNQUFNekIsWUFBWW1DLE9BQU9WLE1BQU0sQ0FBQyxLQUFLO0FBQUEsbUJBSDNDVSxPQUFPYixJQUFwQjtBQUFBO0FBQUE7QUFBQTtBQUFBLHFCQUlBO0FBQUEsWUFDRDtBQUFBO0FBQUE7QUFBQSxRQWZIO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQSxNQWdCQTtBQUFBLFNBbEJGO0FBQUE7QUFBQTtBQUFBO0FBQUEsV0FtQkEsS0FwQkY7QUFBQTtBQUFBO0FBQUE7QUFBQSxXQXFCQTtBQUFBLElBRUEsdUJBQUMsYUFBUSxXQUFVLCtCQUE4QixhQUFVLFVBQ3pELGlDQUFDLE9BQUUsSUFBSWMsaUJBQWlCLFdBQVUsbUJBQW1CUyx3QkFBckQ7QUFBQTtBQUFBO0FBQUE7QUFBQSxXQUFnRSxLQURsRTtBQUFBO0FBQUE7QUFBQTtBQUFBLFdBRUE7QUFBQSxPQTFFRjtBQUFBO0FBQUE7QUFBQTtBQUFBLFNBMkVBO0FBRUo7QUFBQ3ZDLEdBMUhlRCxpQkFBZTtBQUFBLFVBQ1JQLHFCQUNJQSxxQkFDREEscUJBQ0lBLHFCQUVOQyx3QkFDQ0YsZUFBZTtBQUFBO0FBQUFvRCxLQVB4QjVDO0FBQWUsSUFBQTRDO0FBQUFDLGFBQUFELElBQUEiLCJuYW1lcyI6WyJ1c2VNZW1vIiwiU1RVRFlfTUFTVEVSWV9QRVJfTUlOVVRFX0JBU0UiLCJ1c2VDb250ZW50U3RvcmUiLCJ1c2VDdWx0aXZhdGlvblN0b3JlIiwidXNlVGVjaENvbGxlY3Rpb25TdG9yZSIsInRvVGl0bGVDYXNlIiwidmFsdWUiLCJyZXBsYWNlIiwiY2hhciIsInRvVXBwZXJDYXNlIiwiU3R1ZHlNb2RlV2lkZ2V0IiwiX3MiLCJzdHVkeUVuYWJsZWQiLCJzdGF0ZSIsInN0dWR5VGVjaG5pcXVlSWQiLCJzZXRTdHVkeUVuYWJsZWQiLCJzZXRTdHVkeVRlY2huaXF1ZUlkIiwidW5sb2NrZWRUZWNocyIsInRlY2huaXF1ZXNCeUlkIiwibWFwcyIsIm9wdGlvbnMiLCJPYmplY3QiLCJlbnRyaWVzIiwiZmlsdGVyIiwibWV0YSIsInVubG9ja2VkIiwibWFwIiwiaWQiLCJkZWYiLCJuYW1lIiwicmFyaXR5IiwiZ3JhZGUiLCJtYW51YWxHcmFkZSIsInRpZXIiLCJzb3J0IiwiYSIsImIiLCJsb2NhbGVDb21wYXJlIiwic2VsZWN0ZWRPcHRpb24iLCJmaW5kIiwib3B0aW9uIiwidGVjaG5pcXVlSGVscElkIiwidGVjaG5pcXVlU2VsZWN0SWQiLCJoYXNPcHRpb25zIiwibGVuZ3RoIiwiaGFzU2VsZWN0ZWRUZWNobmlxdWUiLCJCb29sZWFuIiwibWFzdGVyeVJhdGVMaW5lIiwidG9GaXhlZCIsInN0YXRlTGFiZWwiLCJoZWxwZXJUZXh0IiwiZSIsInRhcmdldCIsImNoZWNrZWQiLCJfYyIsIiRSZWZyZXNoUmVnJCJdLCJpZ25vcmVMaXN0IjpbXSwic291cmNlcyI6WyJTdHVkeU1vZGVXaWRnZXQudHN4Il0sInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7IHVzZU1lbW8gfSBmcm9tICdyZWFjdCc7XHJcbmltcG9ydCB7IFNUVURZX01BU1RFUllfUEVSX01JTlVURV9CQVNFIH0gZnJvbSAnLi4vLi4vY29udGVudC90dW5pbmcvY3VsdGl2YXRpb25UdW5pbmcuanMnO1xyXG5pbXBvcnQgeyB1c2VDb250ZW50U3RvcmUgfSBmcm9tICcuLi8uLi9zdG9yZXMvY29udGVudFN0b3JlLmpzJztcclxuaW1wb3J0IHsgdXNlQ3VsdGl2YXRpb25TdG9yZSB9IGZyb20gJy4uLy4uL3N0b3Jlcy9jdWx0aXZhdGlvblN0b3JlLmpzJztcclxuaW1wb3J0IHsgdXNlVGVjaENvbGxlY3Rpb25TdG9yZSB9IGZyb20gJy4uLy4uL3N0b3Jlcy90ZWNoQ29sbGVjdGlvblN0b3JlLmpzJztcclxuaW1wb3J0ICcuL1N0dWR5TW9kZVdpZGdldC5zY3NzJztcclxuXHJcbmludGVyZmFjZSBTdHVkeU9wdGlvbiB7XHJcbiAgaWQ6IHN0cmluZztcclxuICBuYW1lOiBzdHJpbmc7XHJcbiAgcmFyaXR5Pzogc3RyaW5nO1xyXG4gIGdyYWRlPzogc3RyaW5nO1xyXG59XHJcblxyXG5mdW5jdGlvbiB0b1RpdGxlQ2FzZSh2YWx1ZTogc3RyaW5nIHwgdW5kZWZpbmVkKTogc3RyaW5nIHtcclxuICBpZiAoIXZhbHVlKSByZXR1cm4gJ1Vua25vd24nO1xyXG4gIHJldHVybiB2YWx1ZS5yZXBsYWNlKC9bXy1dL2csICcgJykucmVwbGFjZSgvXFxiXFx3L2csIChjaGFyKSA9PiBjaGFyLnRvVXBwZXJDYXNlKCkpO1xyXG59XHJcblxyXG5leHBvcnQgZnVuY3Rpb24gU3R1ZHlNb2RlV2lkZ2V0KCkge1xyXG4gIGNvbnN0IHN0dWR5RW5hYmxlZCA9IHVzZUN1bHRpdmF0aW9uU3RvcmUoKHN0YXRlKSA9PiBzdGF0ZS5zdHVkeUVuYWJsZWQpO1xyXG4gIGNvbnN0IHN0dWR5VGVjaG5pcXVlSWQgPSB1c2VDdWx0aXZhdGlvblN0b3JlKChzdGF0ZSkgPT4gc3RhdGUuc3R1ZHlUZWNobmlxdWVJZCk7XHJcbiAgY29uc3Qgc2V0U3R1ZHlFbmFibGVkID0gdXNlQ3VsdGl2YXRpb25TdG9yZSgoc3RhdGUpID0+IHN0YXRlLnNldFN0dWR5RW5hYmxlZCk7XHJcbiAgY29uc3Qgc2V0U3R1ZHlUZWNobmlxdWVJZCA9IHVzZUN1bHRpdmF0aW9uU3RvcmUoKHN0YXRlKSA9PiBzdGF0ZS5zZXRTdHVkeVRlY2huaXF1ZUlkKTtcclxuXHJcbiAgY29uc3QgdW5sb2NrZWRUZWNocyA9IHVzZVRlY2hDb2xsZWN0aW9uU3RvcmUoKHN0YXRlKSA9PiBzdGF0ZS51bmxvY2tlZFRlY2hzKTtcclxuICBjb25zdCB0ZWNobmlxdWVzQnlJZCA9IHVzZUNvbnRlbnRTdG9yZSgoc3RhdGUpID0+IHN0YXRlLm1hcHMudGVjaG5pcXVlc0J5SWQpO1xyXG5cclxuICBjb25zdCBvcHRpb25zOiBTdHVkeU9wdGlvbltdID0gdXNlTWVtbygoKSA9PiB7XHJcbiAgICByZXR1cm4gT2JqZWN0LmVudHJpZXModW5sb2NrZWRUZWNocylcclxuICAgICAgLmZpbHRlcigoWywgbWV0YV0pID0+IG1ldGEudW5sb2NrZWQpXHJcbiAgICAgIC5tYXAoKFtpZCwgbWV0YV0pID0+IHtcclxuICAgICAgICBjb25zdCBkZWYgPSB0ZWNobmlxdWVzQnlJZFtpZF07XHJcbiAgICAgICAgcmV0dXJuIHtcclxuICAgICAgICAgIGlkLFxyXG4gICAgICAgICAgbmFtZTogZGVmPy5uYW1lID8/IGlkLFxyXG4gICAgICAgICAgcmFyaXR5OiBtZXRhLnJhcml0eSA/PyBkZWY/LnJhcml0eSxcclxuICAgICAgICAgIGdyYWRlOiBtZXRhLm1hbnVhbEdyYWRlID8/IGRlZj8udGllcixcclxuICAgICAgICB9O1xyXG4gICAgICB9KVxyXG4gICAgICAuc29ydCgoYSwgYikgPT4gYS5uYW1lLmxvY2FsZUNvbXBhcmUoYi5uYW1lKSk7XHJcbiAgfSwgW3RlY2huaXF1ZXNCeUlkLCB1bmxvY2tlZFRlY2hzXSk7XHJcblxyXG4gIGNvbnN0IHNlbGVjdGVkT3B0aW9uID0gdXNlTWVtbyhcclxuICAgICgpID0+IG9wdGlvbnMuZmluZCgob3B0aW9uKSA9PiBvcHRpb24uaWQgPT09IHN0dWR5VGVjaG5pcXVlSWQpID8/IG51bGwsXHJcbiAgICBbb3B0aW9ucywgc3R1ZHlUZWNobmlxdWVJZF0sXHJcbiAgKTtcclxuXHJcbiAgY29uc3QgdGVjaG5pcXVlSGVscElkID0gJ3N0dWR5LXRlY2huaXF1ZS1oZWxwJztcclxuICBjb25zdCB0ZWNobmlxdWVTZWxlY3RJZCA9ICdzdHVkeS10ZWNobmlxdWUtc2VsZWN0JztcclxuICBjb25zdCBoYXNPcHRpb25zID0gb3B0aW9ucy5sZW5ndGggPiAwO1xyXG4gIGNvbnN0IGhhc1NlbGVjdGVkVGVjaG5pcXVlID0gQm9vbGVhbihzdHVkeVRlY2huaXF1ZUlkICYmIHNlbGVjdGVkT3B0aW9uKTtcclxuICBjb25zdCBtYXN0ZXJ5UmF0ZUxpbmUgPSBgTWFzdGVyeSByYXRlOiArJHtTVFVEWV9NQVNURVJZX1BFUl9NSU5VVEVfQkFTRS50b0ZpeGVkKDEpfSAvIG1pbiB3aGlsZSBjdWx0aXZhdGluZy5gO1xyXG4gIGNvbnN0IHN0YXRlTGFiZWwgPSAhc3R1ZHlFbmFibGVkID8gJ0Rvcm1hbnQnIDogaGFzU2VsZWN0ZWRUZWNobmlxdWUgPyAnQWN0aXZlIFN0dWR5JyA6ICdBd2FpdGluZyBUZWNobmlxdWUnO1xyXG5cclxuICBjb25zdCBoZWxwZXJUZXh0ID0gIXN0dWR5RW5hYmxlZFxyXG4gICAgPyAnU3R1ZHkgaXMgZGlzYWJsZWQuIEVuYWJsZSBTdHVkeSBNb2RlIHRvIHJlc3VtZSBtYXN0ZXJ5IHdoaWxlIGN1bHRpdmF0aW5nLidcclxuICAgIDogIWhhc09wdGlvbnNcclxuICAgICAgPyAnTm8gdW5sb2NrZWQgdGVjaG5pcXVlcyBhcmUgYXZhaWxhYmxlIHlldC4gTGVhcm4gYSB0ZWNobmlxdWUgdG8gYmVnaW4gc3R1ZHlpbmcuJ1xyXG4gICAgICA6IGhhc1NlbGVjdGVkVGVjaG5pcXVlXHJcbiAgICAgICAgPyAnU2VsZWN0ZWQgdGVjaG5pcXVlIGdhaW5zIHN0ZWFkeSBtYXN0ZXJ5IG9ubHkgd2hpbGUgY3VsdGl2YXRpbmcuJ1xyXG4gICAgICAgIDogJ1BpY2sgb25lIHVubG9ja2VkIHRlY2huaXF1ZSB0byBiZWdpbiBzdGVhZHkgbWFzdGVyeSBnYWlucyB3aGlsZSBjdWx0aXZhdGluZy4nO1xyXG5cclxuICByZXR1cm4gKFxyXG4gICAgPGRpdiBjbGFzc05hbWU9XCJkYW9IZWFydFN0dWR5U3VyZmFjZSBjdWx0aXZhdGlvblBhbmVsIHN0dWR5V2lkZ2V0XCIgZGF0YS11aT1cImRhby1oZWFydC1zdHVkeVwiPlxyXG4gICAgICA8aGVhZGVyIGNsYXNzTmFtZT1cImRhb0hlYXJ0U3R1ZHlTdXJmYWNlX19vdmVydmlld1wiIGFyaWEtbGFiZWw9XCJTdHVkeSBtb2RlIG92ZXJ2aWV3XCI+XHJcbiAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJkYW9IZWFydFN0dWR5SGVhZGluZ1wiPlxyXG4gICAgICAgICAgPHAgY2xhc3NOYW1lPVwiZGFvSGVhcnRTdHVkeUV5ZWJyb3dcIj5EaXNjaXBsaW5lZCBSZWFkaW5nPC9wPlxyXG4gICAgICAgICAgPGgzIGNsYXNzTmFtZT1cImRhb0hlYXJ0U3R1ZHlUaXRsZVwiPlN0dWR5IE1vZGU8L2gzPlxyXG4gICAgICAgICAgPHAgY2xhc3NOYW1lPVwiZGFvSGVhcnRTdHVkeVB1cnBvc2VcIj5TdXN0YWluIG9uZSB0ZWNobmlxdWUgcmVhZGluZyB3aGlsZSBjdWx0aXZhdGluZyB0byBidWlsZCBzdGVhZHkgcHJhY3RpY2FsIG1hc3RlcnkuPC9wPlxyXG4gICAgICAgIDwvZGl2PlxyXG4gICAgICAgIDxsYWJlbCBjbGFzc05hbWU9XCJzdHVkeVRvZ2dsZVwiIGh0bWxGb3I9XCJzdHVkeS1tb2RlLXRvZ2dsZVwiPlxyXG4gICAgICAgICAgPGlucHV0XHJcbiAgICAgICAgICAgIGlkPVwic3R1ZHktbW9kZS10b2dnbGVcIlxyXG4gICAgICAgICAgICB0eXBlPVwiY2hlY2tib3hcIlxyXG4gICAgICAgICAgICBjaGVja2VkPXtzdHVkeUVuYWJsZWR9XHJcbiAgICAgICAgICAgIG9uQ2hhbmdlPXsoZSkgPT4gc2V0U3R1ZHlFbmFibGVkKGUudGFyZ2V0LmNoZWNrZWQpfVxyXG4gICAgICAgICAgLz5cclxuICAgICAgICAgIDxzcGFuPntzdHVkeUVuYWJsZWQgPyAnT24nIDogJ09mZid9PC9zcGFuPlxyXG4gICAgICAgIDwvbGFiZWw+XHJcbiAgICAgIDwvaGVhZGVyPlxyXG5cclxuICAgICAgPHNlY3Rpb24gY2xhc3NOYW1lPVwiZGFvSGVhcnRTdHVkeVN1cmZhY2VfX3N0YXRlXCIgYXJpYS1saXZlPVwicG9saXRlXCI+XHJcbiAgICAgICAgPGRpdiBjbGFzc05hbWU9e2BkYW9IZWFydFN0dWR5U3RhdGVCYWRnZSBkYW9IZWFydFN0dWR5U3RhdGVCYWRnZS0tJHtzdHVkeUVuYWJsZWQgPyAnZW5hYmxlZCcgOiAnZGlzYWJsZWQnfWB9PlxyXG4gICAgICAgICAge3N0YXRlTGFiZWx9XHJcbiAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgPHAgY2xhc3NOYW1lPVwiZGFvSGVhcnRTdHVkeVN0YXRlTGluZVwiPnttYXN0ZXJ5UmF0ZUxpbmV9PC9wPlxyXG4gICAgICAgIDxwIGNsYXNzTmFtZT1cImRhb0hlYXJ0U3R1ZHlTdGF0ZUxpbmVcIj5NYXN0ZXJ5IGFjY3J1ZXMgb25seSBkdXJpbmcgY3VsdGl2YXRpb24gYWN0aXZpdHkuPC9wPlxyXG4gICAgICA8L3NlY3Rpb24+XHJcblxyXG4gICAgICA8c2VjdGlvbiBjbGFzc05hbWU9XCJkYW9IZWFydFN0dWR5VGVjaG5pcXVlU3VtbWFyeVwiIGFyaWEtbGFiZWw9XCJTZWxlY3RlZCBzdHVkeSB0ZWNobmlxdWUgc3VtbWFyeVwiIGFyaWEtbGl2ZT1cInBvbGl0ZVwiPlxyXG4gICAgICAgIDxwIGNsYXNzTmFtZT1cImRhb0hlYXJ0U3R1ZHlTdW1tYXJ5TGFiZWxcIj5TZWxlY3RlZCBUZWNobmlxdWU8L3A+XHJcbiAgICAgICAge2hhc1NlbGVjdGVkVGVjaG5pcXVlICYmIHNlbGVjdGVkT3B0aW9uID8gKFxyXG4gICAgICAgICAgPD5cclxuICAgICAgICAgICAgPGg0IGNsYXNzTmFtZT1cImRhb0hlYXJ0U3R1ZHlUZWNobmlxdWVOYW1lXCI+e3NlbGVjdGVkT3B0aW9uLm5hbWV9PC9oND5cclxuICAgICAgICAgICAgPHAgY2xhc3NOYW1lPVwiZGFvSGVhcnRTdHVkeVRlY2huaXF1ZU1ldGFcIj5cclxuICAgICAgICAgICAgICBHcmFkZToge3RvVGl0bGVDYXNlKHNlbGVjdGVkT3B0aW9uLmdyYWRlKX0g4oCiIFJhcml0eToge3RvVGl0bGVDYXNlKHNlbGVjdGVkT3B0aW9uLnJhcml0eSl9XHJcbiAgICAgICAgICAgIDwvcD5cclxuICAgICAgICAgICAgPHAgY2xhc3NOYW1lPVwiZGFvSGVhcnRTdHVkeVRlY2huaXF1ZU5vdGVcIj5TdGVhZHkgbWFzdGVyeSBpcyBhcHBsaWVkIHRvIHRoaXMgdGVjaG5pcXVlIHdoaWxlIGN1bHRpdmF0aW9uIGlzIGFjdGl2ZS48L3A+XHJcbiAgICAgICAgICA8Lz5cclxuICAgICAgICApIDogKFxyXG4gICAgICAgICAgPD5cclxuICAgICAgICAgICAgPGg0IGNsYXNzTmFtZT1cImRhb0hlYXJ0U3R1ZHlUZWNobmlxdWVOYW1lIGRhb0hlYXJ0U3R1ZHlUZWNobmlxdWVOYW1lLS1lbXB0eVwiPk5vIHRlY2huaXF1ZSBzZWxlY3RlZDwvaDQ+XHJcbiAgICAgICAgICAgIDxwIGNsYXNzTmFtZT1cImRhb0hlYXJ0U3R1ZHlUZWNobmlxdWVNZXRhXCI+XHJcbiAgICAgICAgICAgICAge2hhc09wdGlvbnNcclxuICAgICAgICAgICAgICAgID8gJ0Nob29zZSBvbmUgdW5sb2NrZWQgdGVjaG5pcXVlIHRvIGFuY2hvciB5b3VyIHJlYWRpbmcgZGlzY2lwbGluZS4nXHJcbiAgICAgICAgICAgICAgICA6ICdVbmxvY2sgYSB0ZWNobmlxdWUgZmlyc3QsIHRoZW4gcmV0dXJuIHRvIGJlZ2luIGd1aWRlZCBzdHVkeS4nfVxyXG4gICAgICAgICAgICA8L3A+XHJcbiAgICAgICAgICAgIDxwIGNsYXNzTmFtZT1cImRhb0hlYXJ0U3R1ZHlUZWNobmlxdWVOb3RlXCI+e21hc3RlcnlSYXRlTGluZX08L3A+XHJcbiAgICAgICAgICA8Lz5cclxuICAgICAgICApfVxyXG4gICAgICA8L3NlY3Rpb24+XHJcblxyXG4gICAgICA8c2VjdGlvbiBjbGFzc05hbWU9XCJkYW9IZWFydFN0dWR5U3VyZmFjZV9fY29udHJvbHNcIiBhcmlhLWxhYmVsPVwiU3R1ZHkgbW9kZSBjb250cm9sc1wiPlxyXG4gICAgICAgIDxkaXYgY2xhc3NOYW1lPVwic3R1ZHlDb250cm9sUm93XCI+XHJcbiAgICAgICAgICA8bGFiZWwgY2xhc3NOYW1lPVwic3R1ZHlDb250cm9sTGFiZWxcIiBodG1sRm9yPXt0ZWNobmlxdWVTZWxlY3RJZH0+VGVjaG5pcXVlPC9sYWJlbD5cclxuICAgICAgICAgIDxzZWxlY3RcclxuICAgICAgICAgICAgaWQ9e3RlY2huaXF1ZVNlbGVjdElkfVxyXG4gICAgICAgICAgICBjbGFzc05hbWU9XCJzdHVkeVNlbGVjdFwiXHJcbiAgICAgICAgICAgIHZhbHVlPXtzdHVkeVRlY2huaXF1ZUlkID8/ICcnfVxyXG4gICAgICAgICAgICBvbkNoYW5nZT17KGUpID0+IHNldFN0dWR5VGVjaG5pcXVlSWQoZS50YXJnZXQudmFsdWUgfHwgbnVsbCl9XHJcbiAgICAgICAgICAgIGRpc2FibGVkPXshc3R1ZHlFbmFibGVkIHx8ICFoYXNPcHRpb25zfVxyXG4gICAgICAgICAgICBhcmlhLWRlc2NyaWJlZGJ5PXt0ZWNobmlxdWVIZWxwSWR9XHJcbiAgICAgICAgICA+XHJcbiAgICAgICAgICAgIDxvcHRpb24gdmFsdWU9XCJcIj5Ob25lPC9vcHRpb24+XHJcbiAgICAgICAgICAgIHtvcHRpb25zLm1hcCgob3B0aW9uKSA9PiAoXHJcbiAgICAgICAgICAgICAgPG9wdGlvbiBrZXk9e29wdGlvbi5pZH0gdmFsdWU9e29wdGlvbi5pZH0+XHJcbiAgICAgICAgICAgICAgICB7b3B0aW9uLm5hbWV9XHJcbiAgICAgICAgICAgICAgICB7b3B0aW9uLmdyYWRlID8gYCDigKIgJHt0b1RpdGxlQ2FzZShvcHRpb24uZ3JhZGUpfWAgOiAnJ31cclxuICAgICAgICAgICAgICAgIHtvcHRpb24ucmFyaXR5ID8gYCDigKIgJHt0b1RpdGxlQ2FzZShvcHRpb24ucmFyaXR5KX1gIDogJyd9XHJcbiAgICAgICAgICAgICAgPC9vcHRpb24+XHJcbiAgICAgICAgICAgICkpfVxyXG4gICAgICAgICAgPC9zZWxlY3Q+XHJcbiAgICAgICAgPC9kaXY+XHJcbiAgICAgIDwvc2VjdGlvbj5cclxuXHJcbiAgICAgIDxzZWN0aW9uIGNsYXNzTmFtZT1cImRhb0hlYXJ0U3R1ZHlTdXJmYWNlX19ub3Rlc1wiIGFyaWEtbGl2ZT1cInBvbGl0ZVwiPlxyXG4gICAgICAgIDxwIGlkPXt0ZWNobmlxdWVIZWxwSWR9IGNsYXNzTmFtZT1cInN0dWR5SGVscGVyVGV4dFwiPntoZWxwZXJUZXh0fTwvcD5cclxuICAgICAgPC9zZWN0aW9uPlxyXG4gICAgPC9kaXY+XHJcbiAgKTtcclxufVxyXG4iXSwiZmlsZSI6IkM6L1VzZXJzL2FiZHVsL0Rlc2t0b3AvY3VsdGl2YXRpb24taWRsZS9zcmMvdWkvY3VsdGl2YXRpb24vU3R1ZHlNb2RlV2lkZ2V0LnRzeCJ9

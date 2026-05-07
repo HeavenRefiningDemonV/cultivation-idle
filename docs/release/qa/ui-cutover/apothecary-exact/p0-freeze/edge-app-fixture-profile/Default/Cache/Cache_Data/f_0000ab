@@ -1,0 +1,273 @@
+import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/components/modals/RankUpgradeRitualModal.tsx");import __vite__cjsImport0_react_jsxDevRuntime from "/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=c0e4e3e4"; const jsxDEV = __vite__cjsImport0_react_jsxDevRuntime["jsxDEV"];
+var _s = $RefreshSig$();
+import __vite__cjsImport1_react from "/node_modules/.vite/deps/react.js?v=c0e4e3e4"; const useEffect = __vite__cjsImport1_react["useEffect"]; const useMemo = __vite__cjsImport1_react["useMemo"]; const useState = __vite__cjsImport1_react["useState"];
+import "/src/components/modals/RankUpgradeRitualModal.scss";
+import { useContentStore } from "/src/stores/contentStore.ts";
+import { rankMultiplier, useTechCollectionStore } from "/src/stores/techCollectionStore.ts";
+import { GameIcon } from "/src/ui/icons/index.ts";
+const RUNE_DUST_ITEM_ID = "mat_rune_dust";
+export function RankUpgradeRitualModal({ techId, onClose }) {
+  _s();
+  const techniquesById = useContentStore((state) => state.maps.techniquesById);
+  const itemsById = useContentStore((state) => state.maps.itemsById);
+  const entry = useTechCollectionStore((state) => state.unlockedTechs[techId]);
+  const fragmentsMap = useTechCollectionStore((state) => state.fragments);
+  const getNextRankCost = useTechCollectionStore((state) => state.getNextRankCost);
+  const upgradeRank = useTechCollectionStore((state) => state.upgradeRank);
+  const [stage, setStage] = useState("idle");
+  const [progress, setProgress] = useState(0);
+  const [status, setStatus] = useState(null);
+  useEffect(() => {
+    setStage("idle");
+    setProgress(0);
+    setStatus(null);
+  }, [techId]);
+  const fragmentsOwned = fragmentsMap[techId] ?? 0;
+  const nextRankInfo = useMemo(
+    () => getNextRankCost(techId),
+    [getNextRankCost, techId, entry?.rank, entry?.manualGrade, fragmentsOwned]
+  );
+  const cost = nextRankInfo?.cost;
+  const name = techniquesById[techId]?.name ?? techId;
+  const currentRank = entry?.rank ?? 1;
+  const nextRank = nextRankInfo?.nextRank ?? currentRank + 1;
+  const powerDeltaPct = nextRankInfo ? (rankMultiplier(nextRank) / rankMultiplier(currentRank) - 1) * 100 : 0;
+  const runeDustName = itemsById[RUNE_DUST_ITEM_ID]?.name ?? "Rune Dust";
+  const soulInkName = cost ? itemsById[cost.soulInkItemId]?.name ?? cost.soulInkItemId : "Soul Ink";
+  const ritualDisabledReason = !nextRankInfo ? "Rank cap reached for current grade." : null;
+  const playRitual = () => {
+    if (!nextRankInfo || stage === "animating") return;
+    setStage("animating");
+    setStatus(null);
+    const start = performance.now();
+    const duration = 850;
+    const step = (now) => {
+      const pct = Math.min(1, (now - start) / duration);
+      setProgress(pct);
+      if (pct < 1) {
+        window.requestAnimationFrame(step);
+        return;
+      }
+      const result = upgradeRank(techId);
+      if (result.ok) {
+        setStatus({ type: "success", text: `Power increased: +${powerDeltaPct.toFixed(0)}%` });
+      } else {
+        setStatus({ type: "error", text: result.reason ?? "Upgrade failed. Check materials." });
+      }
+      setStage("result");
+      setProgress(1);
+    };
+    window.requestAnimationFrame(step);
+  };
+  return /* @__PURE__ */ jsxDEV("div", { className: "rankRitualOverlay", children: /* @__PURE__ */ jsxDEV("div", { className: "rankRitualModal", children: [
+    /* @__PURE__ */ jsxDEV("div", { className: "rankRitualHeader", children: [
+      /* @__PURE__ */ jsxDEV("div", { children: [
+        /* @__PURE__ */ jsxDEV("div", { className: "rankRitualTitle", children: "Condense Fragments" }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/RankUpgradeRitualModal.tsx",
+          lineNumber: 81,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { className: "rankRitualSubtitle", children: "Forge a stronger art by advancing its rank." }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/RankUpgradeRitualModal.tsx",
+          lineNumber: 82,
+          columnNumber: 13
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/RankUpgradeRitualModal.tsx",
+        lineNumber: 80,
+        columnNumber: 11
+      }, this),
+      /* @__PURE__ */ jsxDEV("button", { className: "rankRitualClose", onClick: onClose, "aria-label": "Close Rank Upgrade", children: /* @__PURE__ */ jsxDEV(GameIcon, { icon: "inkX", size: 14, decorative: true }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/RankUpgradeRitualModal.tsx",
+        lineNumber: 85,
+        columnNumber: 13
+      }, this) }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/RankUpgradeRitualModal.tsx",
+        lineNumber: 84,
+        columnNumber: 11
+      }, this)
+    ] }, void 0, true, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/RankUpgradeRitualModal.tsx",
+      lineNumber: 79,
+      columnNumber: 9
+    }, this),
+    /* @__PURE__ */ jsxDEV("div", { className: "rankRitualBody", children: [
+      /* @__PURE__ */ jsxDEV("div", { className: "rankRitualName", children: name }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/RankUpgradeRitualModal.tsx",
+        lineNumber: 90,
+        columnNumber: 11
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { className: "rankRitualRanks", children: [
+        /* @__PURE__ */ jsxDEV("span", { className: "rankRitualBadge", children: [
+          "Rank ",
+          currentRank
+        ] }, void 0, true, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/RankUpgradeRitualModal.tsx",
+          lineNumber: 92,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV("span", { className: "rankRitualArrow", children: "→" }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/RankUpgradeRitualModal.tsx",
+          lineNumber: 93,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV("span", { className: "rankRitualBadge rankRitualBadgeNext", children: [
+          "Rank ",
+          nextRank
+        ] }, void 0, true, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/RankUpgradeRitualModal.tsx",
+          lineNumber: 94,
+          columnNumber: 13
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/RankUpgradeRitualModal.tsx",
+        lineNumber: 91,
+        columnNumber: 11
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { className: "rankRitualPower", children: [
+        "Power increase: +",
+        powerDeltaPct.toFixed(0),
+        "%"
+      ] }, void 0, true, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/RankUpgradeRitualModal.tsx",
+        lineNumber: 97,
+        columnNumber: 11
+      }, this),
+      cost ? /* @__PURE__ */ jsxDEV("div", { className: "rankRitualCosts", children: [
+        /* @__PURE__ */ jsxDEV("div", { children: [
+          "Technique Fragments: ",
+          fragmentsOwned,
+          "/",
+          cost.fragmentsRequired
+        ] }, void 0, true, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/RankUpgradeRitualModal.tsx",
+          lineNumber: 101,
+          columnNumber: 15
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { children: [
+          runeDustName,
+          ": ",
+          cost.runeDustRequired
+        ] }, void 0, true, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/RankUpgradeRitualModal.tsx",
+          lineNumber: 104,
+          columnNumber: 15
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { children: [
+          soulInkName,
+          ": ",
+          cost.soulInkRequired
+        ] }, void 0, true, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/RankUpgradeRitualModal.tsx",
+          lineNumber: 107,
+          columnNumber: 15
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/RankUpgradeRitualModal.tsx",
+        lineNumber: 100,
+        columnNumber: 11
+      }, this) : /* @__PURE__ */ jsxDEV("div", { className: "rankRitualCosts", children: "Rank cap reached for current grade." }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/RankUpgradeRitualModal.tsx",
+        lineNumber: 112,
+        columnNumber: 11
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { className: "rankRitualProgress", children: [
+        /* @__PURE__ */ jsxDEV("div", { className: "rankRitualProgressBar", children: /* @__PURE__ */ jsxDEV("div", { className: "rankRitualProgressFill", style: { width: `${Math.round(progress * 100)}%` } }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/RankUpgradeRitualModal.tsx",
+          lineNumber: 117,
+          columnNumber: 15
+        }, this) }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/RankUpgradeRitualModal.tsx",
+          lineNumber: 116,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { className: "rankRitualProgressText", children: stage === "animating" ? "Condensing fragments..." : "Ready to condense fragments" }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/RankUpgradeRitualModal.tsx",
+          lineNumber: 119,
+          columnNumber: 13
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/RankUpgradeRitualModal.tsx",
+        lineNumber: 115,
+        columnNumber: 11
+      }, this),
+      status && /* @__PURE__ */ jsxDEV("div", { className: `rankRitualStatus ${status.type === "success" ? "is-success" : "is-error"}`, children: status.text }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/RankUpgradeRitualModal.tsx",
+        lineNumber: 125,
+        columnNumber: 11
+      }, this)
+    ] }, void 0, true, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/RankUpgradeRitualModal.tsx",
+      lineNumber: 89,
+      columnNumber: 9
+    }, this),
+    /* @__PURE__ */ jsxDEV("div", { className: "rankRitualActions", children: [
+      /* @__PURE__ */ jsxDEV("button", { className: "rankRitualButton rankRitualButtonSecondary", onClick: onClose, children: "Close" }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/RankUpgradeRitualModal.tsx",
+        lineNumber: 132,
+        columnNumber: 11
+      }, this),
+      /* @__PURE__ */ jsxDEV(
+        "button",
+        {
+          className: "rankRitualButton",
+          onClick: playRitual,
+          disabled: Boolean(ritualDisabledReason) || stage === "animating",
+          title: ritualDisabledReason ?? void 0,
+          children: "Condense Fragments"
+        },
+        void 0,
+        false,
+        {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/RankUpgradeRitualModal.tsx",
+          lineNumber: 135,
+          columnNumber: 11
+        },
+        this
+      )
+    ] }, void 0, true, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/RankUpgradeRitualModal.tsx",
+      lineNumber: 131,
+      columnNumber: 9
+    }, this)
+  ] }, void 0, true, {
+    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/RankUpgradeRitualModal.tsx",
+    lineNumber: 78,
+    columnNumber: 7
+  }, this) }, void 0, false, {
+    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/RankUpgradeRitualModal.tsx",
+    lineNumber: 77,
+    columnNumber: 5
+  }, this);
+}
+_s(RankUpgradeRitualModal, "wlavM5vN8csHr8ZoLKkjD+dPwMQ=", false, function() {
+  return [useContentStore, useContentStore, useTechCollectionStore, useTechCollectionStore, useTechCollectionStore, useTechCollectionStore];
+});
+_c = RankUpgradeRitualModal;
+var _c;
+$RefreshReg$(_c, "RankUpgradeRitualModal");
+import * as RefreshRuntime from "/@react-refresh";
+const inWebWorker = typeof WorkerGlobalScope !== "undefined" && self instanceof WorkerGlobalScope;
+if (import.meta.hot && !inWebWorker) {
+  if (!window.$RefreshReg$) {
+    throw new Error(
+      "@vitejs/plugin-react can't detect preamble. Something is wrong."
+    );
+  }
+  RefreshRuntime.__hmr_import(import.meta.url).then((currentExports) => {
+    RefreshRuntime.registerExportsForReactRefresh("C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/RankUpgradeRitualModal.tsx", currentExports);
+    import.meta.hot.accept((nextExports) => {
+      if (!nextExports) return;
+      const invalidateMessage = RefreshRuntime.validateRefreshBoundaryAndEnqueueUpdate("C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/RankUpgradeRitualModal.tsx", currentExports, nextExports);
+      if (invalidateMessage) import.meta.hot.invalidate(invalidateMessage);
+    });
+  });
+}
+function $RefreshReg$(type, id) {
+  return RefreshRuntime.register(type, "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/RankUpgradeRitualModal.tsx " + id);
+}
+function $RefreshSig$() {
+  return RefreshRuntime.createSignatureFunctionForTransform();
+}
+
+//# sourceMappingURL=data:application/json;base64,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QUVDSSxVQUNDLHVCQUFDLFNBQUksV0FBVyxvQkFBb0JBLE9BQU80QixTQUFTLFlBQVksZUFBZSxVQUFVLElBQ3RGNUIsaUJBQU82QixRQURWO0FBQUE7QUFBQTtBQUFBO0FBQUEsYUFFQTtBQUFBLFNBdENKO0FBQUE7QUFBQTtBQUFBO0FBQUEsV0F3Q0E7QUFBQSxJQUVBLHVCQUFDLFNBQUksV0FBVSxxQkFDYjtBQUFBLDZCQUFDLFlBQU8sV0FBVSw4Q0FBNkMsU0FBUzdDLFNBQVMscUJBQWpGO0FBQUE7QUFBQTtBQUFBO0FBQUEsYUFFQTtBQUFBLE1BQ0E7QUFBQSxRQUFDO0FBQUE7QUFBQSxVQUNDLFdBQVU7QUFBQSxVQUNWLFNBQVMrQjtBQUFBQSxVQUNULFVBQVVzQixRQUFRdkIsb0JBQW9CLEtBQUtsQixVQUFVO0FBQUEsVUFDckQsT0FBT2tCLHdCQUF3QndCO0FBQUFBLFVBQVU7QUFBQTtBQUFBLFFBSjNDO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQSxNQU9BO0FBQUEsU0FYRjtBQUFBO0FBQUE7QUFBQTtBQUFBLFdBWUE7QUFBQSxPQWpFRjtBQUFBO0FBQUE7QUFBQTtBQUFBLFNBa0VBLEtBbkVGO0FBQUE7QUFBQTtBQUFBO0FBQUEsU0FvRUE7QUFFSjtBQUFDckQsR0FuSWVILHdCQUFzQjtBQUFBLFVBQ2JMLGlCQUNMQSxpQkFDSkUsd0JBQ09BLHdCQUNHQSx3QkFDSkEsc0JBQXNCO0FBQUE7QUFBQTRELEtBTjVCekQ7QUFBc0IsSUFBQXlEO0FBQUFDLGFBQUFELElBQUEiLCJuYW1lcyI6WyJ1c2VFZmZlY3QiLCJ1c2VNZW1vIiwidXNlU3RhdGUiLCJ1c2VDb250ZW50U3RvcmUiLCJyYW5rTXVsdGlwbGllciIsInVzZVRlY2hDb2xsZWN0aW9uU3RvcmUiLCJHYW1lSWNvbiIsIlJVTkVfRFVTVF9JVEVNX0lEIiwiUmFua1VwZ3JhZGVSaXR1YWxNb2RhbCIsInRlY2hJZCIsIm9uQ2xvc2UiLCJfcyIsInRlY2huaXF1ZXNCeUlkIiwic3RhdGUiLCJtYXBzIiwiaXRlbXNCeUlkIiwiZW50cnkiLCJ1bmxvY2tlZFRlY2hzIiwiZnJhZ21lbnRzTWFwIiwiZnJhZ21lbnRzIiwiZ2V0TmV4dFJhbmtDb3N0IiwidXBncmFkZVJhbmsiLCJzdGFnZSIsInNldFN0YWdlIiwicHJvZ3Jlc3MiLCJzZXRQcm9ncmVzcyIsInN0YXR1cyIsInNldFN0YXR1cyIsImZyYWdtZW50c093bmVkIiwibmV4dFJhbmtJbmZvIiwicmFuayIsIm1hbnVhbEdyYWRlIiwiY29zdCIsIm5hbWUiLCJjdXJyZW50UmFuayIsIm5leHRSYW5rIiwicG93ZXJEZWx0YVBjdCIsInJ1bmVEdXN0TmFtZSIsInNvdWxJbmtOYW1lIiwic291bElua0l0ZW1JZCIsInJpdHVhbERpc2FibGVkUmVhc29uIiwicGxheVJpdHVhbCIsInN0YXJ0IiwicGVyZm9ybWFuY2UiLCJub3ciLCJkdXJhdGlvbiIsInN0ZXAiLCJwY3QiLCJNYXRoIiwibWluIiwid2luZG93IiwicmVxdWVzdEFuaW1hdGlvbkZyYW1lIiwicmVzdWx0Iiwib2siLCJ0eXBlIiwidGV4dCIsInRvRml4ZWQiLCJyZWFzb24iLCJmcmFnbWVudHNSZXF1aXJlZCIsInJ1bmVEdXN0UmVxdWlyZWQiLCJzb3VsSW5rUmVxdWlyZWQiLCJ3aWR0aCIsInJvdW5kIiwiQm9vbGVhbiIsInVuZGVmaW5lZCIsIl9jIiwiJFJlZnJlc2hSZWckIl0sImlnbm9yZUxpc3QiOltdLCJzb3VyY2VzIjpbIlJhbmtVcGdyYWRlUml0dWFsTW9kYWwudHN4Il0sInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7IHVzZUVmZmVjdCwgdXNlTWVtbywgdXNlU3RhdGUgfSBmcm9tICdyZWFjdCc7XHJcbmltcG9ydCAnLi9SYW5rVXBncmFkZVJpdHVhbE1vZGFsLnNjc3MnO1xyXG5pbXBvcnQgeyB1c2VDb250ZW50U3RvcmUgfSBmcm9tICcuLi8uLi9zdG9yZXMvY29udGVudFN0b3JlLmpzJztcclxuaW1wb3J0IHsgcmFua011bHRpcGxpZXIsIHVzZVRlY2hDb2xsZWN0aW9uU3RvcmUgfSBmcm9tICcuLi8uLi9zdG9yZXMvdGVjaENvbGxlY3Rpb25TdG9yZS5qcyc7XHJcbmltcG9ydCB7IEdhbWVJY29uIH0gZnJvbSAnLi4vLi4vdWkvaWNvbnMvaW5kZXguanMnO1xyXG5cclxuaW50ZXJmYWNlIFJhbmtVcGdyYWRlUml0dWFsTW9kYWxQcm9wcyB7XHJcbiAgdGVjaElkOiBzdHJpbmc7XHJcbiAgb25DbG9zZTogKCkgPT4gdm9pZDtcclxufVxyXG5cclxudHlwZSBSaXR1YWxTdGFnZSA9ICdpZGxlJyB8ICdhbmltYXRpbmcnIHwgJ3Jlc3VsdCc7XHJcblxyXG5jb25zdCBSVU5FX0RVU1RfSVRFTV9JRCA9ICdtYXRfcnVuZV9kdXN0JztcclxuXHJcbmV4cG9ydCBmdW5jdGlvbiBSYW5rVXBncmFkZVJpdHVhbE1vZGFsKHsgdGVjaElkLCBvbkNsb3NlIH06IFJhbmtVcGdyYWRlUml0dWFsTW9kYWxQcm9wcykge1xyXG4gIGNvbnN0IHRlY2huaXF1ZXNCeUlkID0gdXNlQ29udGVudFN0b3JlKChzdGF0ZSkgPT4gc3RhdGUubWFwcy50ZWNobmlxdWVzQnlJZCk7XHJcbiAgY29uc3QgaXRlbXNCeUlkID0gdXNlQ29udGVudFN0b3JlKChzdGF0ZSkgPT4gc3RhdGUubWFwcy5pdGVtc0J5SWQpO1xyXG4gIGNvbnN0IGVudHJ5ID0gdXNlVGVjaENvbGxlY3Rpb25TdG9yZSgoc3RhdGUpID0+IHN0YXRlLnVubG9ja2VkVGVjaHNbdGVjaElkXSk7XHJcbiAgY29uc3QgZnJhZ21lbnRzTWFwID0gdXNlVGVjaENvbGxlY3Rpb25TdG9yZSgoc3RhdGUpID0+IHN0YXRlLmZyYWdtZW50cyk7XHJcbiAgY29uc3QgZ2V0TmV4dFJhbmtDb3N0ID0gdXNlVGVjaENvbGxlY3Rpb25TdG9yZSgoc3RhdGUpID0+IHN0YXRlLmdldE5leHRSYW5rQ29zdCk7XHJcbiAgY29uc3QgdXBncmFkZVJhbmsgPSB1c2VUZWNoQ29sbGVjdGlvblN0b3JlKChzdGF0ZSkgPT4gc3RhdGUudXBncmFkZVJhbmspO1xyXG5cclxuICBjb25zdCBbc3RhZ2UsIHNldFN0YWdlXSA9IHVzZVN0YXRlPFJpdHVhbFN0YWdlPignaWRsZScpO1xyXG4gIGNvbnN0IFtwcm9ncmVzcywgc2V0UHJvZ3Jlc3NdID0gdXNlU3RhdGUoMCk7XHJcbiAgY29uc3QgW3N0YXR1cywgc2V0U3RhdHVzXSA9IHVzZVN0YXRlPHsgdHlwZTogJ3N1Y2Nlc3MnIHwgJ2Vycm9yJzsgdGV4dDogc3RyaW5nIH0gfCBudWxsPihudWxsKTtcclxuXHJcbiAgdXNlRWZmZWN0KCgpID0+IHtcclxuICAgIHNldFN0YWdlKCdpZGxlJyk7XHJcbiAgICBzZXRQcm9ncmVzcygwKTtcclxuICAgIHNldFN0YXR1cyhudWxsKTtcclxuICB9LCBbdGVjaElkXSk7XHJcblxyXG4gIGNvbnN0IGZyYWdtZW50c093bmVkID0gZnJhZ21lbnRzTWFwW3RlY2hJZF0gPz8gMDtcclxuICBjb25zdCBuZXh0UmFua0luZm8gPSB1c2VNZW1vKFxyXG4gICAgKCkgPT4gZ2V0TmV4dFJhbmtDb3N0KHRlY2hJZCksXHJcbiAgICBbZ2V0TmV4dFJhbmtDb3N0LCB0ZWNoSWQsIGVudHJ5Py5yYW5rLCBlbnRyeT8ubWFudWFsR3JhZGUsIGZyYWdtZW50c093bmVkXSxcclxuICApO1xyXG4gIGNvbnN0IGNvc3QgPSBuZXh0UmFua0luZm8/LmNvc3Q7XHJcbiAgY29uc3QgbmFtZSA9IHRlY2huaXF1ZXNCeUlkW3RlY2hJZF0/Lm5hbWUgPz8gdGVjaElkO1xyXG4gIGNvbnN0IGN1cnJlbnRSYW5rID0gZW50cnk/LnJhbmsgPz8gMTtcclxuICBjb25zdCBuZXh0UmFuayA9IG5leHRSYW5rSW5mbz8ubmV4dFJhbmsgPz8gY3VycmVudFJhbmsgKyAxO1xyXG4gIGNvbnN0IHBvd2VyRGVsdGFQY3QgPSBuZXh0UmFua0luZm8gPyAocmFua011bHRpcGxpZXIobmV4dFJhbmspIC8gcmFua011bHRpcGxpZXIoY3VycmVudFJhbmspIC0gMSkgKiAxMDAgOiAwO1xyXG4gIGNvbnN0IHJ1bmVEdXN0TmFtZSA9IGl0ZW1zQnlJZFtSVU5FX0RVU1RfSVRFTV9JRF0/Lm5hbWUgPz8gJ1J1bmUgRHVzdCc7XHJcbiAgY29uc3Qgc291bElua05hbWUgPSBjb3N0ID8gaXRlbXNCeUlkW2Nvc3Quc291bElua0l0ZW1JZF0/Lm5hbWUgPz8gY29zdC5zb3VsSW5rSXRlbUlkIDogJ1NvdWwgSW5rJztcclxuICBjb25zdCByaXR1YWxEaXNhYmxlZFJlYXNvbiA9ICFuZXh0UmFua0luZm8gPyAnUmFuayBjYXAgcmVhY2hlZCBmb3IgY3VycmVudCBncmFkZS4nIDogbnVsbDtcclxuXHJcbiAgY29uc3QgcGxheVJpdHVhbCA9ICgpID0+IHtcclxuICAgIGlmICghbmV4dFJhbmtJbmZvIHx8IHN0YWdlID09PSAnYW5pbWF0aW5nJykgcmV0dXJuO1xyXG4gICAgc2V0U3RhZ2UoJ2FuaW1hdGluZycpO1xyXG4gICAgc2V0U3RhdHVzKG51bGwpO1xyXG4gICAgY29uc3Qgc3RhcnQgPSBwZXJmb3JtYW5jZS5ub3coKTtcclxuICAgIGNvbnN0IGR1cmF0aW9uID0gODUwO1xyXG5cclxuICAgIGNvbnN0IHN0ZXAgPSAobm93OiBudW1iZXIpID0+IHtcclxuICAgICAgY29uc3QgcGN0ID0gTWF0aC5taW4oMSwgKG5vdyAtIHN0YXJ0KSAvIGR1cmF0aW9uKTtcclxuICAgICAgc2V0UHJvZ3Jlc3MocGN0KTtcclxuICAgICAgaWYgKHBjdCA8IDEpIHtcclxuICAgICAgICB3aW5kb3cucmVxdWVzdEFuaW1hdGlvbkZyYW1lKHN0ZXApO1xyXG4gICAgICAgIHJldHVybjtcclxuICAgICAgfVxyXG5cclxuICAgICAgY29uc3QgcmVzdWx0ID0gdXBncmFkZVJhbmsodGVjaElkKTtcclxuICAgICAgaWYgKHJlc3VsdC5vaykge1xyXG4gICAgICAgIHNldFN0YXR1cyh7IHR5cGU6ICdzdWNjZXNzJywgdGV4dDogYFBvd2VyIGluY3JlYXNlZDogKyR7cG93ZXJEZWx0YVBjdC50b0ZpeGVkKDApfSVgIH0pO1xyXG4gICAgICB9IGVsc2Uge1xyXG4gICAgICAgIHNldFN0YXR1cyh7IHR5cGU6ICdlcnJvcicsIHRleHQ6IHJlc3VsdC5yZWFzb24gPz8gJ1VwZ3JhZGUgZmFpbGVkLiBDaGVjayBtYXRlcmlhbHMuJyB9KTtcclxuICAgICAgfVxyXG4gICAgICBzZXRTdGFnZSgncmVzdWx0Jyk7XHJcbiAgICAgIHNldFByb2dyZXNzKDEpO1xyXG4gICAgfTtcclxuXHJcbiAgICB3aW5kb3cucmVxdWVzdEFuaW1hdGlvbkZyYW1lKHN0ZXApO1xyXG4gIH07XHJcblxyXG4gIHJldHVybiAoXHJcbiAgICA8ZGl2IGNsYXNzTmFtZT1cInJhbmtSaXR1YWxPdmVybGF5XCI+XHJcbiAgICAgIDxkaXYgY2xhc3NOYW1lPVwicmFua1JpdHVhbE1vZGFsXCI+XHJcbiAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJyYW5rUml0dWFsSGVhZGVyXCI+XHJcbiAgICAgICAgICA8ZGl2PlxyXG4gICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInJhbmtSaXR1YWxUaXRsZVwiPkNvbmRlbnNlIEZyYWdtZW50czwvZGl2PlxyXG4gICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInJhbmtSaXR1YWxTdWJ0aXRsZVwiPkZvcmdlIGEgc3Ryb25nZXIgYXJ0IGJ5IGFkdmFuY2luZyBpdHMgcmFuay48L2Rpdj5cclxuICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgPGJ1dHRvbiBjbGFzc05hbWU9XCJyYW5rUml0dWFsQ2xvc2VcIiBvbkNsaWNrPXtvbkNsb3NlfSBhcmlhLWxhYmVsPVwiQ2xvc2UgUmFuayBVcGdyYWRlXCI+XHJcbiAgICAgICAgICAgIDxHYW1lSWNvbiBpY29uPVwiaW5rWFwiIHNpemU9ezE0fSBkZWNvcmF0aXZlIC8+XHJcbiAgICAgICAgICA8L2J1dHRvbj5cclxuICAgICAgICA8L2Rpdj5cclxuXHJcbiAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJyYW5rUml0dWFsQm9keVwiPlxyXG4gICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJyYW5rUml0dWFsTmFtZVwiPntuYW1lfTwvZGl2PlxyXG4gICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJyYW5rUml0dWFsUmFua3NcIj5cclxuICAgICAgICAgICAgPHNwYW4gY2xhc3NOYW1lPVwicmFua1JpdHVhbEJhZGdlXCI+UmFuayB7Y3VycmVudFJhbmt9PC9zcGFuPlxyXG4gICAgICAgICAgICA8c3BhbiBjbGFzc05hbWU9XCJyYW5rUml0dWFsQXJyb3dcIj7ihpI8L3NwYW4+XHJcbiAgICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT1cInJhbmtSaXR1YWxCYWRnZSByYW5rUml0dWFsQmFkZ2VOZXh0XCI+UmFuayB7bmV4dFJhbmt9PC9zcGFuPlxyXG4gICAgICAgICAgPC9kaXY+XHJcblxyXG4gICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJyYW5rUml0dWFsUG93ZXJcIj5Qb3dlciBpbmNyZWFzZTogK3twb3dlckRlbHRhUGN0LnRvRml4ZWQoMCl9JTwvZGl2PlxyXG5cclxuICAgICAgICAgIHtjb3N0ID8gKFxyXG4gICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInJhbmtSaXR1YWxDb3N0c1wiPlxyXG4gICAgICAgICAgICAgIDxkaXY+XHJcbiAgICAgICAgICAgICAgICBUZWNobmlxdWUgRnJhZ21lbnRzOiB7ZnJhZ21lbnRzT3duZWR9L3tjb3N0LmZyYWdtZW50c1JlcXVpcmVkfVxyXG4gICAgICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgICAgIDxkaXY+XHJcbiAgICAgICAgICAgICAgICB7cnVuZUR1c3ROYW1lfToge2Nvc3QucnVuZUR1c3RSZXF1aXJlZH1cclxuICAgICAgICAgICAgICA8L2Rpdj5cclxuICAgICAgICAgICAgICA8ZGl2PlxyXG4gICAgICAgICAgICAgICAge3NvdWxJbmtOYW1lfToge2Nvc3Quc291bElua1JlcXVpcmVkfVxyXG4gICAgICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgICA8L2Rpdj5cclxuICAgICAgICAgICkgOiAoXHJcbiAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwicmFua1JpdHVhbENvc3RzXCI+UmFuayBjYXAgcmVhY2hlZCBmb3IgY3VycmVudCBncmFkZS48L2Rpdj5cclxuICAgICAgICAgICl9XHJcblxyXG4gICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJyYW5rUml0dWFsUHJvZ3Jlc3NcIj5cclxuICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJyYW5rUml0dWFsUHJvZ3Jlc3NCYXJcIj5cclxuICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInJhbmtSaXR1YWxQcm9ncmVzc0ZpbGxcIiBzdHlsZT17eyB3aWR0aDogYCR7TWF0aC5yb3VuZChwcm9ncmVzcyAqIDEwMCl9JWAgfX0gLz5cclxuICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwicmFua1JpdHVhbFByb2dyZXNzVGV4dFwiPlxyXG4gICAgICAgICAgICAgIHtzdGFnZSA9PT0gJ2FuaW1hdGluZycgPyAnQ29uZGVuc2luZyBmcmFnbWVudHMuLi4nIDogJ1JlYWR5IHRvIGNvbmRlbnNlIGZyYWdtZW50cyd9XHJcbiAgICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgPC9kaXY+XHJcblxyXG4gICAgICAgICAge3N0YXR1cyAmJiAoXHJcbiAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXtgcmFua1JpdHVhbFN0YXR1cyAke3N0YXR1cy50eXBlID09PSAnc3VjY2VzcycgPyAnaXMtc3VjY2VzcycgOiAnaXMtZXJyb3InfWB9PlxyXG4gICAgICAgICAgICAgIHtzdGF0dXMudGV4dH1cclxuICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICApfVxyXG4gICAgICAgIDwvZGl2PlxyXG5cclxuICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInJhbmtSaXR1YWxBY3Rpb25zXCI+XHJcbiAgICAgICAgICA8YnV0dG9uIGNsYXNzTmFtZT1cInJhbmtSaXR1YWxCdXR0b24gcmFua1JpdHVhbEJ1dHRvblNlY29uZGFyeVwiIG9uQ2xpY2s9e29uQ2xvc2V9PlxyXG4gICAgICAgICAgICBDbG9zZVxyXG4gICAgICAgICAgPC9idXR0b24+XHJcbiAgICAgICAgICA8YnV0dG9uXHJcbiAgICAgICAgICAgIGNsYXNzTmFtZT1cInJhbmtSaXR1YWxCdXR0b25cIlxyXG4gICAgICAgICAgICBvbkNsaWNrPXtwbGF5Uml0dWFsfVxyXG4gICAgICAgICAgICBkaXNhYmxlZD17Qm9vbGVhbihyaXR1YWxEaXNhYmxlZFJlYXNvbikgfHwgc3RhZ2UgPT09ICdhbmltYXRpbmcnfVxyXG4gICAgICAgICAgICB0aXRsZT17cml0dWFsRGlzYWJsZWRSZWFzb24gPz8gdW5kZWZpbmVkfVxyXG4gICAgICAgICAgPlxyXG4gICAgICAgICAgICBDb25kZW5zZSBGcmFnbWVudHNcclxuICAgICAgICAgIDwvYnV0dG9uPlxyXG4gICAgICAgIDwvZGl2PlxyXG4gICAgICA8L2Rpdj5cclxuICAgIDwvZGl2PlxyXG4gICk7XHJcbn1cclxuIl0sImZpbGUiOiJDOi9Vc2Vycy9hYmR1bC9EZXNrdG9wL2N1bHRpdmF0aW9uLWlkbGUvc3JjL2NvbXBvbmVudHMvbW9kYWxzL1JhbmtVcGdyYWRlUml0dWFsTW9kYWwudHN4In0=

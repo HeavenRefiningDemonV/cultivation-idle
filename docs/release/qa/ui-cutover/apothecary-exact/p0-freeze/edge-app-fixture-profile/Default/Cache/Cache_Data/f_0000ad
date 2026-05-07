@@ -1,0 +1,333 @@
+import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/components/modals/TraitRerollModal.tsx");import __vite__cjsImport0_react_jsxDevRuntime from "/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=c0e4e3e4"; const jsxDEV = __vite__cjsImport0_react_jsxDevRuntime["jsxDEV"];
+var _s = $RefreshSig$();
+import __vite__cjsImport1_react from "/node_modules/.vite/deps/react.js?v=c0e4e3e4"; const useEffect = __vite__cjsImport1_react["useEffect"]; const useMemo = __vite__cjsImport1_react["useMemo"]; const useState = __vite__cjsImport1_react["useState"];
+import "/src/components/modals/TraitRerollModal.scss";
+import { GameIcon } from "/src/ui/icons/index.ts";
+import { useContentStore } from "/src/stores/contentStore.ts";
+import { useTechCollectionStore } from "/src/stores/techCollectionStore.ts";
+const SOUL_INK_REROLL_ITEM_ID = "reagent_soul_ink_t0";
+export function TraitRerollModal({ techId, onClose }) {
+  _s();
+  const techniquesById = useContentStore((state) => state.maps.techniquesById);
+  const itemsById = useContentStore((state) => state.maps.itemsById);
+  const entry = useTechCollectionStore((state) => state.unlockedTechs[techId]);
+  const ensureTraits = useTechCollectionStore((state) => state.ensureTraits);
+  const rerollTraits = useTechCollectionStore((state) => state.rerollTraits);
+  const getTraitDefinition = useTechCollectionStore((state) => state.getTraitDefinition);
+  const getTraitRollRangeLabel = useTechCollectionStore((state) => state.getTraitRollRangeLabel);
+  const getTraitQualityPct = useTechCollectionStore((state) => state.getTraitQualityPct);
+  const getTraitSlotBreakdown = useTechCollectionStore((state) => state.getTraitSlotBreakdown);
+  const [lockEnabled, setLockEnabled] = useState(false);
+  const [lockIndex, setLockIndex] = useState(null);
+  const [status, setStatus] = useState(null);
+  useEffect(() => {
+    ensureTraits(techId);
+    setLockEnabled(false);
+    setLockIndex(null);
+    setStatus(null);
+  }, [ensureTraits, techId]);
+  const traits = entry?.traits ?? [];
+  const traitSlots = useMemo(
+    () => getTraitSlotBreakdown(techId),
+    [getTraitSlotBreakdown, techId, entry?.manualGrade, entry?.rarity]
+  );
+  const traitName = techniquesById[techId]?.name ?? techId;
+  const rerollCostQty = lockEnabled && lockIndex !== null ? 2 : 1;
+  const rerollItemName = itemsById[SOUL_INK_REROLL_ITEM_ID]?.name ?? "Soul Ink";
+  const noSlotsAvailable = traitSlots.effectiveSlots <= 0;
+  const handleLockToggle = (checked) => {
+    setLockEnabled(checked);
+    if (!checked) {
+      setLockIndex(null);
+      return;
+    }
+    if (traits.length && (lockIndex === null || lockIndex >= traits.length)) {
+      setLockIndex(0);
+    }
+  };
+  const handleReroll = () => {
+    if (lockEnabled && (lockIndex === null || lockIndex >= traits.length)) {
+      setStatus({ type: "error", text: "Select a valid trait slot to lock first." });
+      return;
+    }
+    const result = rerollTraits(techId, {
+      lockEnabled,
+      lockIndex: lockEnabled ? lockIndex ?? void 0 : void 0
+    });
+    if (result.ok) {
+      const lockedNote = result.lockedIndex !== void 0 ? ` (kept slot ${result.lockedIndex + 1})` : "";
+      setStatus({ type: "success", text: `Re-scribed insights${lockedNote}.` });
+      return;
+    }
+    const message = result.reason === "invalid_lock" ? "Select a valid trait slot to lock first." : result.reason === "insufficient_items" ? "Insufficient Soul Ink to reroll." : result.reason ?? "Unable to reroll traits.";
+    setStatus({ type: "error", text: message });
+  };
+  return /* @__PURE__ */ jsxDEV("div", { className: "traitRerollOverlay", children: /* @__PURE__ */ jsxDEV("div", { className: "traitRerollModal", children: [
+    /* @__PURE__ */ jsxDEV("div", { className: "traitRerollHeader", children: [
+      /* @__PURE__ */ jsxDEV("div", { children: [
+        /* @__PURE__ */ jsxDEV("div", { className: "traitRerollTitle", children: "Re-scribe Sub-Insights" }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TraitRerollModal.tsx",
+          lineNumber: 91,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { className: "traitRerollSubtitle", children: "Lock one trait for extra cost; others will be rediscovered." }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TraitRerollModal.tsx",
+          lineNumber: 92,
+          columnNumber: 13
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TraitRerollModal.tsx",
+        lineNumber: 90,
+        columnNumber: 11
+      }, this),
+      /* @__PURE__ */ jsxDEV("button", { className: "traitRerollClose", onClick: onClose, "aria-label": "Close Trait Reroll", children: /* @__PURE__ */ jsxDEV(GameIcon, { icon: "inkX", size: 14, decorative: true }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TraitRerollModal.tsx",
+        lineNumber: 95,
+        columnNumber: 13
+      }, this) }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TraitRerollModal.tsx",
+        lineNumber: 94,
+        columnNumber: 11
+      }, this)
+    ] }, void 0, true, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TraitRerollModal.tsx",
+      lineNumber: 89,
+      columnNumber: 9
+    }, this),
+    /* @__PURE__ */ jsxDEV("div", { className: "traitRerollBody", children: [
+      /* @__PURE__ */ jsxDEV("div", { className: "traitRerollName", children: traitName }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TraitRerollModal.tsx",
+        lineNumber: 100,
+        columnNumber: 11
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { className: "traitRerollSlots", children: [
+        "Rarity slots: ",
+        traitSlots.raritySlots,
+        " · Grade cap: ",
+        traitSlots.gradeCap,
+        " → ",
+        traitSlots.effectiveSlots,
+        " available"
+      ] }, void 0, true, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TraitRerollModal.tsx",
+        lineNumber: 101,
+        columnNumber: 11
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { className: "traitRerollList", children: [
+        traits.length === 0 && !noSlotsAvailable && /* @__PURE__ */ jsxDEV("div", { className: "traitRerollHint", children: "No traits yet. A reroll will inscribe new ones." }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TraitRerollModal.tsx",
+          lineNumber: 106,
+          columnNumber: 58
+        }, this),
+        traits.length === 0 && noSlotsAvailable && /* @__PURE__ */ jsxDEV("div", { className: "traitRerollHint", children: "No trait slots available for this technique." }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TraitRerollModal.tsx",
+          lineNumber: 107,
+          columnNumber: 57
+        }, this),
+        traits.map((trait, idx) => {
+          const def = getTraitDefinition(trait.id);
+          const range = getTraitRollRangeLabel(trait.id);
+          const quality = getTraitQualityPct(trait);
+          const valuePct = trait.value ?? trait.valuePct ?? 0;
+          const label = def?.name || def?.label || trait.id;
+          return /* @__PURE__ */ jsxDEV("div", { className: "traitRerollRow", children: [
+            /* @__PURE__ */ jsxDEV("div", { className: "traitRerollMain", children: [
+              /* @__PURE__ */ jsxDEV("div", { className: "traitRerollLabel", children: label }, void 0, false, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TraitRerollModal.tsx",
+                lineNumber: 117,
+                columnNumber: 21
+              }, this),
+              /* @__PURE__ */ jsxDEV("div", { className: "traitRerollValue", children: [
+                (valuePct * 100).toFixed(1),
+                "%"
+              ] }, void 0, true, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TraitRerollModal.tsx",
+                lineNumber: 118,
+                columnNumber: 21
+              }, this),
+              /* @__PURE__ */ jsxDEV("div", { className: "traitRerollRange", children: range }, void 0, false, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TraitRerollModal.tsx",
+                lineNumber: 119,
+                columnNumber: 21
+              }, this)
+            ] }, void 0, true, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TraitRerollModal.tsx",
+              lineNumber: 116,
+              columnNumber: 19
+            }, this),
+            /* @__PURE__ */ jsxDEV("div", { className: "traitRerollQuality", children: [
+              /* @__PURE__ */ jsxDEV("div", { className: "traitRerollQualityBar", children: /* @__PURE__ */ jsxDEV("div", { className: "traitRerollQualityFill", style: { width: `${quality * 100}%` } }, void 0, false, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TraitRerollModal.tsx",
+                lineNumber: 123,
+                columnNumber: 23
+              }, this) }, void 0, false, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TraitRerollModal.tsx",
+                lineNumber: 122,
+                columnNumber: 21
+              }, this),
+              /* @__PURE__ */ jsxDEV("label", { className: "traitRerollLock", children: [
+                /* @__PURE__ */ jsxDEV(
+                  "input",
+                  {
+                    type: "radio",
+                    name: "traitLock",
+                    checked: lockIndex === idx,
+                    onChange: () => {
+                      setLockIndex(idx);
+                      setLockEnabled(true);
+                    },
+                    disabled: !lockEnabled
+                  },
+                  void 0,
+                  false,
+                  {
+                    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TraitRerollModal.tsx",
+                    lineNumber: 126,
+                    columnNumber: 23
+                  },
+                  this
+                ),
+                "Keep this trait"
+              ] }, void 0, true, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TraitRerollModal.tsx",
+                lineNumber: 125,
+                columnNumber: 21
+              }, this)
+            ] }, void 0, true, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TraitRerollModal.tsx",
+              lineNumber: 121,
+              columnNumber: 19
+            }, this)
+          ] }, `${trait.id}-${idx}`, true, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TraitRerollModal.tsx",
+            lineNumber: 115,
+            columnNumber: 17
+          }, this);
+        })
+      ] }, void 0, true, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TraitRerollModal.tsx",
+        lineNumber: 105,
+        columnNumber: 11
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { className: "traitRerollLockRow", children: [
+        /* @__PURE__ */ jsxDEV("label", { className: "traitRerollToggle", children: [
+          /* @__PURE__ */ jsxDEV(
+            "input",
+            {
+              type: "checkbox",
+              checked: lockEnabled,
+              onChange: (e) => handleLockToggle(e.target.checked),
+              disabled: traits.length === 0
+            },
+            void 0,
+            false,
+            {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TraitRerollModal.tsx",
+              lineNumber: 146,
+              columnNumber: 15
+            },
+            this
+          ),
+          "Lock 1 trait (costs +1 ",
+          rerollItemName,
+          ")"
+        ] }, void 0, true, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TraitRerollModal.tsx",
+          lineNumber: 145,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { className: "traitRerollCost", children: [
+          "Cost: ",
+          rerollCostQty,
+          "× ",
+          rerollItemName
+        ] }, void 0, true, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TraitRerollModal.tsx",
+          lineNumber: 154,
+          columnNumber: 13
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TraitRerollModal.tsx",
+        lineNumber: 144,
+        columnNumber: 11
+      }, this),
+      status && /* @__PURE__ */ jsxDEV("div", { className: `traitRerollStatus ${status.type === "success" ? "is-success" : "is-error"}`, children: status.text }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TraitRerollModal.tsx",
+        lineNumber: 160,
+        columnNumber: 11
+      }, this)
+    ] }, void 0, true, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TraitRerollModal.tsx",
+      lineNumber: 99,
+      columnNumber: 9
+    }, this),
+    /* @__PURE__ */ jsxDEV("div", { className: "traitRerollActions", children: [
+      /* @__PURE__ */ jsxDEV("button", { className: "traitRerollButton traitRerollButtonSecondary", onClick: onClose, children: "Close" }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TraitRerollModal.tsx",
+        lineNumber: 167,
+        columnNumber: 11
+      }, this),
+      /* @__PURE__ */ jsxDEV(
+        "button",
+        {
+          className: "traitRerollButton",
+          onClick: handleReroll,
+          disabled: noSlotsAvailable,
+          title: noSlotsAvailable ? "No trait slots available." : void 0,
+          children: "Re-scribe Insights"
+        },
+        void 0,
+        false,
+        {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TraitRerollModal.tsx",
+          lineNumber: 170,
+          columnNumber: 11
+        },
+        this
+      )
+    ] }, void 0, true, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TraitRerollModal.tsx",
+      lineNumber: 166,
+      columnNumber: 9
+    }, this)
+  ] }, void 0, true, {
+    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TraitRerollModal.tsx",
+    lineNumber: 88,
+    columnNumber: 7
+  }, this) }, void 0, false, {
+    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TraitRerollModal.tsx",
+    lineNumber: 87,
+    columnNumber: 5
+  }, this);
+}
+_s(TraitRerollModal, "lyYqyqYx0kUcFSOuPtxXX4ZZzCs=", false, function() {
+  return [useContentStore, useContentStore, useTechCollectionStore, useTechCollectionStore, useTechCollectionStore, useTechCollectionStore, useTechCollectionStore, useTechCollectionStore, useTechCollectionStore];
+});
+_c = TraitRerollModal;
+var _c;
+$RefreshReg$(_c, "TraitRerollModal");
+import * as RefreshRuntime from "/@react-refresh";
+const inWebWorker = typeof WorkerGlobalScope !== "undefined" && self instanceof WorkerGlobalScope;
+if (import.meta.hot && !inWebWorker) {
+  if (!window.$RefreshReg$) {
+    throw new Error(
+      "@vitejs/plugin-react can't detect preamble. Something is wrong."
+    );
+  }
+  RefreshRuntime.__hmr_import(import.meta.url).then((currentExports) => {
+    RefreshRuntime.registerExportsForReactRefresh("C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TraitRerollModal.tsx", currentExports);
+    import.meta.hot.accept((nextExports) => {
+      if (!nextExports) return;
+      const invalidateMessage = RefreshRuntime.validateRefreshBoundaryAndEnqueueUpdate("C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TraitRerollModal.tsx", currentExports, nextExports);
+      if (invalidateMessage) import.meta.hot.invalidate(invalidateMessage);
+    });
+  });
+}
+function $RefreshReg$(type, id) {
+  return RefreshRuntime.register(type, "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TraitRerollModal.tsx " + id);
+}
+function $RefreshSig$() {
+  return RefreshRuntime.createSignatureFunctionForTransform();
+}
+
+//# sourceMappingURL=data:application/json;base64,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LFNBQUksV0FBVSxtQkFBa0I7QUFBQTtBQUFBLFVBQ3hCRDtBQUFBQSxVQUFjO0FBQUEsVUFBR0M7QUFBQUEsYUFEMUI7QUFBQTtBQUFBO0FBQUE7QUFBQSxlQUVBO0FBQUEsV0FaRjtBQUFBO0FBQUE7QUFBQTtBQUFBLGFBYUE7QUFBQSxNQUVDVCxVQUNDLHVCQUFDLFNBQUksV0FBVyxxQkFBcUJBLE9BQU9nQixTQUFTLFlBQVksZUFBZSxVQUFVLElBQ3ZGaEIsaUJBQU9pQixRQURWO0FBQUE7QUFBQTtBQUFBO0FBQUEsYUFFQTtBQUFBLFNBL0RKO0FBQUE7QUFBQTtBQUFBO0FBQUEsV0FpRUE7QUFBQSxJQUVBLHVCQUFDLFNBQUksV0FBVSxzQkFDYjtBQUFBLDZCQUFDLFlBQU8sV0FBVSxnREFBK0MsU0FBU25DLFNBQVMscUJBQW5GO0FBQUE7QUFBQTtBQUFBO0FBQUEsYUFFQTtBQUFBLE1BQ0E7QUFBQSxRQUFDO0FBQUE7QUFBQSxVQUNDLFdBQVU7QUFBQSxVQUNWLFNBQVNpQztBQUFBQSxVQUNULFVBQVVMO0FBQUFBLFVBQ1YsT0FBT0EsbUJBQW1CLDhCQUE4QlM7QUFBQUEsVUFBVTtBQUFBO0FBQUEsUUFKcEU7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBLE1BT0E7QUFBQSxTQVhGO0FBQUE7QUFBQTtBQUFBO0FBQUEsV0FZQTtBQUFBLE9BMUZGO0FBQUE7QUFBQTtBQUFBO0FBQUEsU0EyRkEsS0E1RkY7QUFBQTtBQUFBO0FBQUE7QUFBQSxTQTZGQTtBQUVKO0FBQUNwQyxHQXRLZUgsa0JBQWdCO0FBQUEsVUFDUEgsaUJBQ0xBLGlCQUNKQyx3QkFDT0Esd0JBQ0FBLHdCQUNNQSx3QkFDSUEsd0JBQ0pBLHdCQUNHQSxzQkFBc0I7QUFBQTtBQUFBK0QsS0FUdEM3RDtBQUFnQixJQUFBNkQ7QUFBQUMsYUFBQUQsSUFBQSIsIm5hbWVzIjpbInVzZUVmZmVjdCIsInVzZU1lbW8iLCJ1c2VTdGF0ZSIsIkdhbWVJY29uIiwidXNlQ29udGVudFN0b3JlIiwidXNlVGVjaENvbGxlY3Rpb25TdG9yZSIsIlNPVUxfSU5LX1JFUk9MTF9JVEVNX0lEIiwiVHJhaXRSZXJvbGxNb2RhbCIsInRlY2hJZCIsIm9uQ2xvc2UiLCJfcyIsInRlY2huaXF1ZXNCeUlkIiwic3RhdGUiLCJtYXBzIiwiaXRlbXNCeUlkIiwiZW50cnkiLCJ1bmxvY2tlZFRlY2hzIiwiZW5zdXJlVHJhaXRzIiwicmVyb2xsVHJhaXRzIiwiZ2V0VHJhaXREZWZpbml0aW9uIiwiZ2V0VHJhaXRSb2xsUmFuZ2VMYWJlbCIsImdldFRyYWl0UXVhbGl0eVBjdCIsImdldFRyYWl0U2xvdEJyZWFrZG93biIsImxvY2tFbmFibGVkIiwic2V0TG9ja0VuYWJsZWQiLCJsb2NrSW5kZXgiLCJzZXRMb2NrSW5kZXgiLCJzdGF0dXMiLCJzZXRTdGF0dXMiLCJ0cmFpdHMiLCJ0cmFpdFNsb3RzIiwibWFudWFsR3JhZGUiLCJyYXJpdHkiLCJ0cmFpdE5hbWUiLCJuYW1lIiwicmVyb2xsQ29zdFF0eSIsInJlcm9sbEl0ZW1OYW1lIiwibm9TbG90c0F2YWlsYWJsZSIsImVmZmVjdGl2ZVNsb3RzIiwiaGFuZGxlTG9ja1RvZ2dsZSIsImNoZWNrZWQiLCJsZW5ndGgiLCJoYW5kbGVSZXJvbGwiLCJ0eXBlIiwidGV4dCIsInJlc3VsdCIsInVuZGVmaW5lZCIsIm9rIiwibG9ja2VkTm90ZSIsImxvY2tlZEluZGV4IiwibWVzc2FnZSIsInJlYXNvbiIsInJhcml0eVNsb3RzIiwiZ3JhZGVDYXAiLCJtYXAiLCJ0cmFpdCIsImlkeCIsImRlZiIsImlkIiwicmFuZ2UiLCJxdWFsaXR5IiwidmFsdWVQY3QiLCJ2YWx1ZSIsImxhYmVsIiwidG9GaXhlZCIsIndpZHRoIiwiZSIsInRhcmdldCIsIl9jIiwiJFJlZnJlc2hSZWckIl0sImlnbm9yZUxpc3QiOltdLCJzb3VyY2VzIjpbIlRyYWl0UmVyb2xsTW9kYWwudHN4Il0sInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7IHVzZUVmZmVjdCwgdXNlTWVtbywgdXNlU3RhdGUgfSBmcm9tICdyZWFjdCc7XHJcbmltcG9ydCAnLi9UcmFpdFJlcm9sbE1vZGFsLnNjc3MnO1xyXG5pbXBvcnQgeyBHYW1lSWNvbiB9IGZyb20gJy4uLy4uL3VpL2ljb25zL2luZGV4LmpzJztcclxuaW1wb3J0IHsgdXNlQ29udGVudFN0b3JlIH0gZnJvbSAnLi4vLi4vc3RvcmVzL2NvbnRlbnRTdG9yZS5qcyc7XHJcbmltcG9ydCB7IHVzZVRlY2hDb2xsZWN0aW9uU3RvcmUgfSBmcm9tICcuLi8uLi9zdG9yZXMvdGVjaENvbGxlY3Rpb25TdG9yZS5qcyc7XHJcblxyXG5pbnRlcmZhY2UgVHJhaXRSZXJvbGxNb2RhbFByb3BzIHtcclxuICB0ZWNoSWQ6IHN0cmluZztcclxuICBvbkNsb3NlOiAoKSA9PiB2b2lkO1xyXG59XHJcblxyXG50eXBlIElubGluZVN0YXR1cyA9IHsgdHlwZTogJ3N1Y2Nlc3MnIHwgJ2Vycm9yJzsgdGV4dDogc3RyaW5nIH0gfCBudWxsO1xyXG5cclxuY29uc3QgU09VTF9JTktfUkVST0xMX0lURU1fSUQgPSAncmVhZ2VudF9zb3VsX2lua190MCc7XHJcblxyXG5leHBvcnQgZnVuY3Rpb24gVHJhaXRSZXJvbGxNb2RhbCh7IHRlY2hJZCwgb25DbG9zZSB9OiBUcmFpdFJlcm9sbE1vZGFsUHJvcHMpIHtcclxuICBjb25zdCB0ZWNobmlxdWVzQnlJZCA9IHVzZUNvbnRlbnRTdG9yZSgoc3RhdGUpID0+IHN0YXRlLm1hcHMudGVjaG5pcXVlc0J5SWQpO1xyXG4gIGNvbnN0IGl0ZW1zQnlJZCA9IHVzZUNvbnRlbnRTdG9yZSgoc3RhdGUpID0+IHN0YXRlLm1hcHMuaXRlbXNCeUlkKTtcclxuICBjb25zdCBlbnRyeSA9IHVzZVRlY2hDb2xsZWN0aW9uU3RvcmUoKHN0YXRlKSA9PiBzdGF0ZS51bmxvY2tlZFRlY2hzW3RlY2hJZF0pO1xyXG4gIGNvbnN0IGVuc3VyZVRyYWl0cyA9IHVzZVRlY2hDb2xsZWN0aW9uU3RvcmUoKHN0YXRlKSA9PiBzdGF0ZS5lbnN1cmVUcmFpdHMpO1xyXG4gIGNvbnN0IHJlcm9sbFRyYWl0cyA9IHVzZVRlY2hDb2xsZWN0aW9uU3RvcmUoKHN0YXRlKSA9PiBzdGF0ZS5yZXJvbGxUcmFpdHMpO1xyXG4gIGNvbnN0IGdldFRyYWl0RGVmaW5pdGlvbiA9IHVzZVRlY2hDb2xsZWN0aW9uU3RvcmUoKHN0YXRlKSA9PiBzdGF0ZS5nZXRUcmFpdERlZmluaXRpb24pO1xyXG4gIGNvbnN0IGdldFRyYWl0Um9sbFJhbmdlTGFiZWwgPSB1c2VUZWNoQ29sbGVjdGlvblN0b3JlKChzdGF0ZSkgPT4gc3RhdGUuZ2V0VHJhaXRSb2xsUmFuZ2VMYWJlbCk7XHJcbiAgY29uc3QgZ2V0VHJhaXRRdWFsaXR5UGN0ID0gdXNlVGVjaENvbGxlY3Rpb25TdG9yZSgoc3RhdGUpID0+IHN0YXRlLmdldFRyYWl0UXVhbGl0eVBjdCk7XHJcbiAgY29uc3QgZ2V0VHJhaXRTbG90QnJlYWtkb3duID0gdXNlVGVjaENvbGxlY3Rpb25TdG9yZSgoc3RhdGUpID0+IHN0YXRlLmdldFRyYWl0U2xvdEJyZWFrZG93bik7XHJcblxyXG4gIGNvbnN0IFtsb2NrRW5hYmxlZCwgc2V0TG9ja0VuYWJsZWRdID0gdXNlU3RhdGUoZmFsc2UpO1xyXG4gIGNvbnN0IFtsb2NrSW5kZXgsIHNldExvY2tJbmRleF0gPSB1c2VTdGF0ZTxudW1iZXIgfCBudWxsPihudWxsKTtcclxuICBjb25zdCBbc3RhdHVzLCBzZXRTdGF0dXNdID0gdXNlU3RhdGU8SW5saW5lU3RhdHVzPihudWxsKTtcclxuXHJcbiAgdXNlRWZmZWN0KCgpID0+IHtcclxuICAgIGVuc3VyZVRyYWl0cyh0ZWNoSWQpO1xyXG4gICAgc2V0TG9ja0VuYWJsZWQoZmFsc2UpO1xyXG4gICAgc2V0TG9ja0luZGV4KG51bGwpO1xyXG4gICAgc2V0U3RhdHVzKG51bGwpO1xyXG4gIH0sIFtlbnN1cmVUcmFpdHMsIHRlY2hJZF0pO1xyXG5cclxuICBjb25zdCB0cmFpdHMgPSBlbnRyeT8udHJhaXRzID8/IFtdO1xyXG4gIGNvbnN0IHRyYWl0U2xvdHMgPSB1c2VNZW1vKFxyXG4gICAgKCkgPT4gZ2V0VHJhaXRTbG90QnJlYWtkb3duKHRlY2hJZCksXHJcbiAgICBbZ2V0VHJhaXRTbG90QnJlYWtkb3duLCB0ZWNoSWQsIGVudHJ5Py5tYW51YWxHcmFkZSwgZW50cnk/LnJhcml0eV0sXHJcbiAgKTtcclxuICBjb25zdCB0cmFpdE5hbWUgPSB0ZWNobmlxdWVzQnlJZFt0ZWNoSWRdPy5uYW1lID8/IHRlY2hJZDtcclxuICBjb25zdCByZXJvbGxDb3N0UXR5ID0gbG9ja0VuYWJsZWQgJiYgbG9ja0luZGV4ICE9PSBudWxsID8gMiA6IDE7XHJcbiAgY29uc3QgcmVyb2xsSXRlbU5hbWUgPSBpdGVtc0J5SWRbU09VTF9JTktfUkVST0xMX0lURU1fSURdPy5uYW1lID8/ICdTb3VsIEluayc7XHJcbiAgY29uc3Qgbm9TbG90c0F2YWlsYWJsZSA9IHRyYWl0U2xvdHMuZWZmZWN0aXZlU2xvdHMgPD0gMDtcclxuXHJcbiAgY29uc3QgaGFuZGxlTG9ja1RvZ2dsZSA9IChjaGVja2VkOiBib29sZWFuKSA9PiB7XHJcbiAgICBzZXRMb2NrRW5hYmxlZChjaGVja2VkKTtcclxuICAgIGlmICghY2hlY2tlZCkge1xyXG4gICAgICBzZXRMb2NrSW5kZXgobnVsbCk7XHJcbiAgICAgIHJldHVybjtcclxuICAgIH1cclxuXHJcbiAgICBpZiAodHJhaXRzLmxlbmd0aCAmJiAobG9ja0luZGV4ID09PSBudWxsIHx8IGxvY2tJbmRleCA+PSB0cmFpdHMubGVuZ3RoKSkge1xyXG4gICAgICBzZXRMb2NrSW5kZXgoMCk7XHJcbiAgICB9XHJcbiAgfTtcclxuXHJcbiAgY29uc3QgaGFuZGxlUmVyb2xsID0gKCkgPT4ge1xyXG4gICAgaWYgKGxvY2tFbmFibGVkICYmIChsb2NrSW5kZXggPT09IG51bGwgfHwgbG9ja0luZGV4ID49IHRyYWl0cy5sZW5ndGgpKSB7XHJcbiAgICAgIHNldFN0YXR1cyh7IHR5cGU6ICdlcnJvcicsIHRleHQ6ICdTZWxlY3QgYSB2YWxpZCB0cmFpdCBzbG90IHRvIGxvY2sgZmlyc3QuJyB9KTtcclxuICAgICAgcmV0dXJuO1xyXG4gICAgfVxyXG5cclxuICAgIGNvbnN0IHJlc3VsdCA9IHJlcm9sbFRyYWl0cyh0ZWNoSWQsIHtcclxuICAgICAgbG9ja0VuYWJsZWQsXHJcbiAgICAgIGxvY2tJbmRleDogbG9ja0VuYWJsZWQgPyBsb2NrSW5kZXggPz8gdW5kZWZpbmVkIDogdW5kZWZpbmVkLFxyXG4gICAgfSk7XHJcblxyXG4gICAgaWYgKHJlc3VsdC5vaykge1xyXG4gICAgICBjb25zdCBsb2NrZWROb3RlID0gcmVzdWx0LmxvY2tlZEluZGV4ICE9PSB1bmRlZmluZWQgPyBgIChrZXB0IHNsb3QgJHtyZXN1bHQubG9ja2VkSW5kZXggKyAxfSlgIDogJyc7XHJcbiAgICAgIHNldFN0YXR1cyh7IHR5cGU6ICdzdWNjZXNzJywgdGV4dDogYFJlLXNjcmliZWQgaW5zaWdodHMke2xvY2tlZE5vdGV9LmAgfSk7XHJcbiAgICAgIHJldHVybjtcclxuICAgIH1cclxuXHJcbiAgICBjb25zdCBtZXNzYWdlID1cclxuICAgICAgcmVzdWx0LnJlYXNvbiA9PT0gJ2ludmFsaWRfbG9jaydcclxuICAgICAgICA/ICdTZWxlY3QgYSB2YWxpZCB0cmFpdCBzbG90IHRvIGxvY2sgZmlyc3QuJ1xyXG4gICAgICAgIDogcmVzdWx0LnJlYXNvbiA9PT0gJ2luc3VmZmljaWVudF9pdGVtcydcclxuICAgICAgICAgID8gJ0luc3VmZmljaWVudCBTb3VsIEluayB0byByZXJvbGwuJ1xyXG4gICAgICAgICAgOiByZXN1bHQucmVhc29uID8/ICdVbmFibGUgdG8gcmVyb2xsIHRyYWl0cy4nO1xyXG4gICAgc2V0U3RhdHVzKHsgdHlwZTogJ2Vycm9yJywgdGV4dDogbWVzc2FnZSB9KTtcclxuICB9O1xyXG5cclxuICByZXR1cm4gKFxyXG4gICAgPGRpdiBjbGFzc05hbWU9XCJ0cmFpdFJlcm9sbE92ZXJsYXlcIj5cclxuICAgICAgPGRpdiBjbGFzc05hbWU9XCJ0cmFpdFJlcm9sbE1vZGFsXCI+XHJcbiAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJ0cmFpdFJlcm9sbEhlYWRlclwiPlxyXG4gICAgICAgICAgPGRpdj5cclxuICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJ0cmFpdFJlcm9sbFRpdGxlXCI+UmUtc2NyaWJlIFN1Yi1JbnNpZ2h0czwvZGl2PlxyXG4gICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInRyYWl0UmVyb2xsU3VidGl0bGVcIj5Mb2NrIG9uZSB0cmFpdCBmb3IgZXh0cmEgY29zdDsgb3RoZXJzIHdpbGwgYmUgcmVkaXNjb3ZlcmVkLjwvZGl2PlxyXG4gICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICA8YnV0dG9uIGNsYXNzTmFtZT1cInRyYWl0UmVyb2xsQ2xvc2VcIiBvbkNsaWNrPXtvbkNsb3NlfSBhcmlhLWxhYmVsPVwiQ2xvc2UgVHJhaXQgUmVyb2xsXCI+XHJcbiAgICAgICAgICAgIDxHYW1lSWNvbiBpY29uPVwiaW5rWFwiIHNpemU9ezE0fSBkZWNvcmF0aXZlIC8+XHJcbiAgICAgICAgICA8L2J1dHRvbj5cclxuICAgICAgICA8L2Rpdj5cclxuXHJcbiAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJ0cmFpdFJlcm9sbEJvZHlcIj5cclxuICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwidHJhaXRSZXJvbGxOYW1lXCI+e3RyYWl0TmFtZX08L2Rpdj5cclxuICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwidHJhaXRSZXJvbGxTbG90c1wiPlxyXG4gICAgICAgICAgICBSYXJpdHkgc2xvdHM6IHt0cmFpdFNsb3RzLnJhcml0eVNsb3RzfSDCtyBHcmFkZSBjYXA6IHt0cmFpdFNsb3RzLmdyYWRlQ2FwfSDihpIge3RyYWl0U2xvdHMuZWZmZWN0aXZlU2xvdHN9IGF2YWlsYWJsZVxyXG4gICAgICAgICAgPC9kaXY+XHJcblxyXG4gICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJ0cmFpdFJlcm9sbExpc3RcIj5cclxuICAgICAgICAgICAge3RyYWl0cy5sZW5ndGggPT09IDAgJiYgIW5vU2xvdHNBdmFpbGFibGUgJiYgPGRpdiBjbGFzc05hbWU9XCJ0cmFpdFJlcm9sbEhpbnRcIj5ObyB0cmFpdHMgeWV0LiBBIHJlcm9sbCB3aWxsIGluc2NyaWJlIG5ldyBvbmVzLjwvZGl2Pn1cclxuICAgICAgICAgICAge3RyYWl0cy5sZW5ndGggPT09IDAgJiYgbm9TbG90c0F2YWlsYWJsZSAmJiA8ZGl2IGNsYXNzTmFtZT1cInRyYWl0UmVyb2xsSGludFwiPk5vIHRyYWl0IHNsb3RzIGF2YWlsYWJsZSBmb3IgdGhpcyB0ZWNobmlxdWUuPC9kaXY+fVxyXG4gICAgICAgICAgICB7dHJhaXRzLm1hcCgodHJhaXQsIGlkeCkgPT4ge1xyXG4gICAgICAgICAgICAgIGNvbnN0IGRlZiA9IGdldFRyYWl0RGVmaW5pdGlvbih0cmFpdC5pZCk7XHJcbiAgICAgICAgICAgICAgY29uc3QgcmFuZ2UgPSBnZXRUcmFpdFJvbGxSYW5nZUxhYmVsKHRyYWl0LmlkKTtcclxuICAgICAgICAgICAgICBjb25zdCBxdWFsaXR5ID0gZ2V0VHJhaXRRdWFsaXR5UGN0KHRyYWl0KTtcclxuICAgICAgICAgICAgICBjb25zdCB2YWx1ZVBjdCA9IHRyYWl0LnZhbHVlID8/IHRyYWl0LnZhbHVlUGN0ID8/IDA7XHJcbiAgICAgICAgICAgICAgY29uc3QgbGFiZWwgPSBkZWY/Lm5hbWUgfHwgZGVmPy5sYWJlbCB8fCB0cmFpdC5pZDtcclxuICAgICAgICAgICAgICByZXR1cm4gKFxyXG4gICAgICAgICAgICAgICAgPGRpdiBrZXk9e2Ake3RyYWl0LmlkfS0ke2lkeH1gfSBjbGFzc05hbWU9XCJ0cmFpdFJlcm9sbFJvd1wiPlxyXG4gICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInRyYWl0UmVyb2xsTWFpblwiPlxyXG4gICAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwidHJhaXRSZXJvbGxMYWJlbFwiPntsYWJlbH08L2Rpdj5cclxuICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInRyYWl0UmVyb2xsVmFsdWVcIj57KHZhbHVlUGN0ICogMTAwKS50b0ZpeGVkKDEpfSU8L2Rpdj5cclxuICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInRyYWl0UmVyb2xsUmFuZ2VcIj57cmFuZ2V9PC9kaXY+XHJcbiAgICAgICAgICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInRyYWl0UmVyb2xsUXVhbGl0eVwiPlxyXG4gICAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwidHJhaXRSZXJvbGxRdWFsaXR5QmFyXCI+XHJcbiAgICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInRyYWl0UmVyb2xsUXVhbGl0eUZpbGxcIiBzdHlsZT17eyB3aWR0aDogYCR7cXVhbGl0eSAqIDEwMH0lYCB9fSAvPlxyXG4gICAgICAgICAgICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgICAgICAgICAgIDxsYWJlbCBjbGFzc05hbWU9XCJ0cmFpdFJlcm9sbExvY2tcIj5cclxuICAgICAgICAgICAgICAgICAgICAgIDxpbnB1dFxyXG4gICAgICAgICAgICAgICAgICAgICAgICB0eXBlPVwicmFkaW9cIlxyXG4gICAgICAgICAgICAgICAgICAgICAgICBuYW1lPVwidHJhaXRMb2NrXCJcclxuICAgICAgICAgICAgICAgICAgICAgICAgY2hlY2tlZD17bG9ja0luZGV4ID09PSBpZHh9XHJcbiAgICAgICAgICAgICAgICAgICAgICAgIG9uQ2hhbmdlPXsoKSA9PiB7XHJcbiAgICAgICAgICAgICAgICAgICAgICAgICAgc2V0TG9ja0luZGV4KGlkeCk7XHJcbiAgICAgICAgICAgICAgICAgICAgICAgICAgc2V0TG9ja0VuYWJsZWQodHJ1ZSk7XHJcbiAgICAgICAgICAgICAgICAgICAgICAgIH19XHJcbiAgICAgICAgICAgICAgICAgICAgICAgIGRpc2FibGVkPXshbG9ja0VuYWJsZWR9XHJcbiAgICAgICAgICAgICAgICAgICAgICAvPlxyXG4gICAgICAgICAgICAgICAgICAgICAgS2VlcCB0aGlzIHRyYWl0XHJcbiAgICAgICAgICAgICAgICAgICAgPC9sYWJlbD5cclxuICAgICAgICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICAgICAgICA8L2Rpdj5cclxuICAgICAgICAgICAgICApO1xyXG4gICAgICAgICAgICB9KX1cclxuICAgICAgICAgIDwvZGl2PlxyXG5cclxuICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwidHJhaXRSZXJvbGxMb2NrUm93XCI+XHJcbiAgICAgICAgICAgIDxsYWJlbCBjbGFzc05hbWU9XCJ0cmFpdFJlcm9sbFRvZ2dsZVwiPlxyXG4gICAgICAgICAgICAgIDxpbnB1dFxyXG4gICAgICAgICAgICAgICAgdHlwZT1cImNoZWNrYm94XCJcclxuICAgICAgICAgICAgICAgIGNoZWNrZWQ9e2xvY2tFbmFibGVkfVxyXG4gICAgICAgICAgICAgICAgb25DaGFuZ2U9eyhlKSA9PiBoYW5kbGVMb2NrVG9nZ2xlKGUudGFyZ2V0LmNoZWNrZWQpfVxyXG4gICAgICAgICAgICAgICAgZGlzYWJsZWQ9e3RyYWl0cy5sZW5ndGggPT09IDB9XHJcbiAgICAgICAgICAgICAgLz5cclxuICAgICAgICAgICAgICBMb2NrIDEgdHJhaXQgKGNvc3RzICsxIHtyZXJvbGxJdGVtTmFtZX0pXHJcbiAgICAgICAgICAgIDwvbGFiZWw+XHJcbiAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwidHJhaXRSZXJvbGxDb3N0XCI+XHJcbiAgICAgICAgICAgICAgQ29zdDoge3Jlcm9sbENvc3RRdHl9w5cge3Jlcm9sbEl0ZW1OYW1lfVxyXG4gICAgICAgICAgICA8L2Rpdj5cclxuICAgICAgICAgIDwvZGl2PlxyXG5cclxuICAgICAgICAgIHtzdGF0dXMgJiYgKFxyXG4gICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT17YHRyYWl0UmVyb2xsU3RhdHVzICR7c3RhdHVzLnR5cGUgPT09ICdzdWNjZXNzJyA/ICdpcy1zdWNjZXNzJyA6ICdpcy1lcnJvcid9YH0+XHJcbiAgICAgICAgICAgICAge3N0YXR1cy50ZXh0fVxyXG4gICAgICAgICAgICA8L2Rpdj5cclxuICAgICAgICAgICl9XHJcbiAgICAgICAgPC9kaXY+XHJcblxyXG4gICAgICAgIDxkaXYgY2xhc3NOYW1lPVwidHJhaXRSZXJvbGxBY3Rpb25zXCI+XHJcbiAgICAgICAgICA8YnV0dG9uIGNsYXNzTmFtZT1cInRyYWl0UmVyb2xsQnV0dG9uIHRyYWl0UmVyb2xsQnV0dG9uU2Vjb25kYXJ5XCIgb25DbGljaz17b25DbG9zZX0+XHJcbiAgICAgICAgICAgIENsb3NlXHJcbiAgICAgICAgICA8L2J1dHRvbj5cclxuICAgICAgICAgIDxidXR0b25cclxuICAgICAgICAgICAgY2xhc3NOYW1lPVwidHJhaXRSZXJvbGxCdXR0b25cIlxyXG4gICAgICAgICAgICBvbkNsaWNrPXtoYW5kbGVSZXJvbGx9XHJcbiAgICAgICAgICAgIGRpc2FibGVkPXtub1Nsb3RzQXZhaWxhYmxlfVxyXG4gICAgICAgICAgICB0aXRsZT17bm9TbG90c0F2YWlsYWJsZSA/ICdObyB0cmFpdCBzbG90cyBhdmFpbGFibGUuJyA6IHVuZGVmaW5lZH1cclxuICAgICAgICAgID5cclxuICAgICAgICAgICAgUmUtc2NyaWJlIEluc2lnaHRzXHJcbiAgICAgICAgICA8L2J1dHRvbj5cclxuICAgICAgICA8L2Rpdj5cclxuICAgICAgPC9kaXY+XHJcbiAgICA8L2Rpdj5cclxuICApO1xyXG59XHJcbiJdLCJmaWxlIjoiQzovVXNlcnMvYWJkdWwvRGVza3RvcC9jdWx0aXZhdGlvbi1pZGxlL3NyYy9jb21wb25lbnRzL21vZGFscy9UcmFpdFJlcm9sbE1vZGFsLnRzeCJ9

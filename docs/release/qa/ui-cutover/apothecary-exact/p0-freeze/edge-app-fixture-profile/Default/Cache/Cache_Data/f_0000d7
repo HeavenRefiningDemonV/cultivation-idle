@@ -1,0 +1,288 @@
+import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/components/combat/theater/TechniqueStrip.tsx");import __vite__cjsImport0_react_jsxDevRuntime from "/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=c0e4e3e4"; const jsxDEV = __vite__cjsImport0_react_jsxDevRuntime["jsxDEV"];
+var _s = $RefreshSig$();
+import __vite__cjsImport1_react from "/node_modules/.vite/deps/react.js?v=c0e4e3e4"; const useEffect = __vite__cjsImport1_react["useEffect"]; const useMemo = __vite__cjsImport1_react["useMemo"]; const useRef = __vite__cjsImport1_react["useRef"]; const useState = __vite__cjsImport1_react["useState"];
+import { useCombatStore } from "/src/stores/combatStore.ts";
+import { useContentStore } from "/src/stores/contentStore.ts";
+import { useGameStore } from "/src/stores/gameStore.ts";
+import { useTechniqueStore } from "/src/stores/techniqueStore.ts";
+import { formatSeconds } from "/src/systems/combat/minibarModel.ts";
+import "/src/components/combat/theater/TechniqueStrip.scss";
+function TechniqueTile({
+  techId,
+  slotType,
+  name,
+  role,
+  type,
+  remainingMs,
+  pctRemaining,
+  isUnknown,
+  isFlashing
+}) {
+  const onCooldown = remainingMs > 0;
+  const cooldownPct = Math.min(1, Math.max(0, pctRemaining));
+  return /* @__PURE__ */ jsxDEV(
+    "div",
+    {
+      className: [
+        "tech-strip__tile",
+        `tech-strip__tile--${slotType}`,
+        onCooldown ? "tech-strip__tile--cooldown" : "",
+        isUnknown ? "tech-strip__tile--unknown" : "",
+        isFlashing ? "tech-strip__tile--flash" : ""
+      ].filter(Boolean).join(" "),
+      children: [
+        /* @__PURE__ */ jsxDEV("div", { className: "tech-strip__tile-header", children: [
+          /* @__PURE__ */ jsxDEV("div", { className: "tech-strip__tile-name", children: name }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/combat/theater/TechniqueStrip.tsx",
+            lineNumber: 48,
+            columnNumber: 9
+          }, this),
+          /* @__PURE__ */ jsxDEV("div", { className: "tech-strip__tile-tags", children: [
+            role && /* @__PURE__ */ jsxDEV("span", { className: "tech-strip__tag", children: role }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/combat/theater/TechniqueStrip.tsx",
+              lineNumber: 50,
+              columnNumber: 20
+            }, this),
+            type && /* @__PURE__ */ jsxDEV("span", { className: "tech-strip__tag tech-strip__tag--type", children: type }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/combat/theater/TechniqueStrip.tsx",
+              lineNumber: 51,
+              columnNumber: 20
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/combat/theater/TechniqueStrip.tsx",
+            lineNumber: 49,
+            columnNumber: 9
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/combat/theater/TechniqueStrip.tsx",
+          lineNumber: 47,
+          columnNumber: 7
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { className: "tech-strip__tile-meta", children: [
+          /* @__PURE__ */ jsxDEV("span", { className: "tech-strip__slot", children: slotType === "ultimate" ? "Ultimate" : slotType === "passive" ? "Passive" : "Active" }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/combat/theater/TechniqueStrip.tsx",
+            lineNumber: 55,
+            columnNumber: 9
+          }, this),
+          onCooldown ? /* @__PURE__ */ jsxDEV("span", { className: "tech-strip__cd-text", children: [
+            "CD ",
+            formatSeconds(remainingMs)
+          ] }, void 0, true, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/combat/theater/TechniqueStrip.tsx",
+            lineNumber: 56,
+            columnNumber: 23
+          }, this) : /* @__PURE__ */ jsxDEV("span", { className: "tech-strip__cd-ready", children: "Ready" }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/combat/theater/TechniqueStrip.tsx",
+            lineNumber: 56,
+            columnNumber: 102
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/combat/theater/TechniqueStrip.tsx",
+          lineNumber: 54,
+          columnNumber: 7
+        }, this),
+        onCooldown && /* @__PURE__ */ jsxDEV(
+          "div",
+          {
+            className: "tech-strip__cooldown",
+            style: { width: `${(cooldownPct * 100).toFixed(1)}%` }
+          },
+          void 0,
+          false,
+          {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/combat/theater/TechniqueStrip.tsx",
+            lineNumber: 59,
+            columnNumber: 7
+          },
+          this
+        ),
+        /* @__PURE__ */ jsxDEV("div", { className: "tech-strip__tile-id", children: techId || "—" }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/combat/theater/TechniqueStrip.tsx",
+          lineNumber: 64,
+          columnNumber: 7
+        }, this)
+      ]
+    },
+    void 0,
+    true,
+    {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/combat/theater/TechniqueStrip.tsx",
+      lineNumber: 36,
+      columnNumber: 5
+    },
+    this
+  );
+}
+_c = TechniqueTile;
+export function TechniqueStrip() {
+  _s();
+  const techniquesById = useContentStore((state) => state.maps.techniquesById);
+  const events = useCombatStore((state) => state.events);
+  const techniqueCooldowns = useCombatStore((state) => state.techniqueCooldowns);
+  const selectedLoadoutId = useTechniqueStore((state) => state.selectedLoadoutId);
+  const loadouts = useTechniqueStore((state) => state.loadouts);
+  const activeSlots = useTechniqueStore((state) => state.activeSlots);
+  const passiveSlots = useTechniqueStore((state) => state.passiveSlots);
+  const realmIndex = useGameStore((state) => state.realm.index ?? 0);
+  const equipped = useMemo(() => {
+    void loadouts;
+    void realmIndex;
+    void activeSlots;
+    void passiveSlots;
+    return useTechniqueStore.getState().getCombatEquippedTechIds(selectedLoadoutId);
+  }, [selectedLoadoutId, loadouts, realmIndex, activeSlots, passiveSlots]);
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const interval = setInterval(() => setNow(Date.now()), 250);
+    return () => clearInterval(interval);
+  }, []);
+  const [flashTechId, setFlashTechId] = useState(null);
+  const lastEventIdRef = useRef(null);
+  useEffect(() => {
+    for (let i = events.length - 1; i >= 0; i -= 1) {
+      const evt = events[i];
+      if (evt.type === "SKILL_CAST") {
+        if (lastEventIdRef.current === evt.id) return;
+        lastEventIdRef.current = evt.id;
+        setFlashTechId(evt.techniqueId);
+        const timeout = setTimeout(() => {
+          setFlashTechId((prev) => prev === evt.techniqueId ? null : prev);
+        }, 400);
+        return () => clearTimeout(timeout);
+      }
+    }
+    return void 0;
+  }, [events]);
+  const lastCastByTechId = useMemo(() => {
+    const map = {};
+    for (let i = events.length - 1; i >= 0; i -= 1) {
+      const evt = events[i];
+      if (evt.type === "SKILL_CAST" && evt.techniqueId && map[evt.techniqueId] === void 0) {
+        map[evt.techniqueId] = evt.at;
+      }
+    }
+    return map;
+  }, [events]);
+  const renderTile = (techId, slotType, fallbackLabel) => {
+    const def = techId ? techniquesById[techId] : void 0;
+    const name = def?.name ?? fallbackLabel;
+    const typeLabel = def?.type;
+    const roleLabel = def?.role;
+    const readyAt = techniqueCooldowns[techId] ?? 0;
+    const remainingMs = Math.max(0, readyAt - now);
+    const lastCastAt = techId ? lastCastByTechId[techId] : void 0;
+    const fallbackCd = def?.cooldownSec ? def.cooldownSec * 1e3 : 1e3;
+    const cdMs = Math.max(1, lastCastAt ? readyAt - lastCastAt : fallbackCd);
+    const pctRemaining = remainingMs > 0 ? remainingMs / cdMs : 0;
+    const isUnknown = !techId || !def;
+    const isFlashing = flashTechId === techId;
+    return /* @__PURE__ */ jsxDEV(
+      TechniqueTile,
+      {
+        techId,
+        slotType,
+        name,
+        role: roleLabel,
+        type: typeLabel,
+        remainingMs,
+        pctRemaining,
+        isUnknown,
+        isFlashing
+      },
+      `${slotType}-${techId || fallbackLabel}`,
+      false,
+      {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/combat/theater/TechniqueStrip.tsx",
+        lineNumber: 140,
+        columnNumber: 7
+      },
+      this
+    );
+  };
+  return /* @__PURE__ */ jsxDEV("div", { className: "tech-strip", children: [
+    /* @__PURE__ */ jsxDEV("div", { className: "tech-strip__section", children: [
+      /* @__PURE__ */ jsxDEV("div", { className: "tech-strip__section-title", children: "Actives" }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/combat/theater/TechniqueStrip.tsx",
+        lineNumber: 158,
+        columnNumber: 9
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { className: "tech-strip__tiles", children: equipped.active.length > 0 ? equipped.active.map((id, idx) => renderTile(id, "active", `Active ${idx + 1}`)) : renderTile("", "active", "Empty active") }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/combat/theater/TechniqueStrip.tsx",
+        lineNumber: 159,
+        columnNumber: 9
+      }, this)
+    ] }, void 0, true, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/combat/theater/TechniqueStrip.tsx",
+      lineNumber: 157,
+      columnNumber: 7
+    }, this),
+    /* @__PURE__ */ jsxDEV("div", { className: "tech-strip__section", children: [
+      /* @__PURE__ */ jsxDEV("div", { className: "tech-strip__section-title", children: "Ultimate" }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/combat/theater/TechniqueStrip.tsx",
+        lineNumber: 167,
+        columnNumber: 9
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { className: "tech-strip__tiles", children: equipped.ultimate ? renderTile(equipped.ultimate, "ultimate", "Ultimate") : renderTile("", "ultimate", "Ultimate locked") }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/combat/theater/TechniqueStrip.tsx",
+        lineNumber: 168,
+        columnNumber: 9
+      }, this)
+    ] }, void 0, true, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/combat/theater/TechniqueStrip.tsx",
+      lineNumber: 166,
+      columnNumber: 7
+    }, this),
+    /* @__PURE__ */ jsxDEV("div", { className: "tech-strip__section", children: [
+      /* @__PURE__ */ jsxDEV("div", { className: "tech-strip__section-title", children: "Passives" }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/combat/theater/TechniqueStrip.tsx",
+        lineNumber: 174,
+        columnNumber: 9
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { className: "tech-strip__tiles tech-strip__tiles--passive", children: equipped.passive.length > 0 ? equipped.passive.map((id, idx) => renderTile(id, "passive", `Passive ${idx + 1}`)) : renderTile("", "passive", "Passive slot") }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/combat/theater/TechniqueStrip.tsx",
+        lineNumber: 175,
+        columnNumber: 9
+      }, this)
+    ] }, void 0, true, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/combat/theater/TechniqueStrip.tsx",
+      lineNumber: 173,
+      columnNumber: 7
+    }, this)
+  ] }, void 0, true, {
+    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/combat/theater/TechniqueStrip.tsx",
+    lineNumber: 156,
+    columnNumber: 5
+  }, this);
+}
+_s(TechniqueStrip, "wGKKzIh1AbZfkLYRYUXBWK2iWFs=", false, function() {
+  return [useContentStore, useCombatStore, useCombatStore, useTechniqueStore, useTechniqueStore, useTechniqueStore, useTechniqueStore, useGameStore];
+});
+_c2 = TechniqueStrip;
+var _c, _c2;
+$RefreshReg$(_c, "TechniqueTile");
+$RefreshReg$(_c2, "TechniqueStrip");
+import * as RefreshRuntime from "/@react-refresh";
+const inWebWorker = typeof WorkerGlobalScope !== "undefined" && self instanceof WorkerGlobalScope;
+if (import.meta.hot && !inWebWorker) {
+  if (!window.$RefreshReg$) {
+    throw new Error(
+      "@vitejs/plugin-react can't detect preamble. Something is wrong."
+    );
+  }
+  RefreshRuntime.__hmr_import(import.meta.url).then((currentExports) => {
+    RefreshRuntime.registerExportsForReactRefresh("C:/Users/abdul/Desktop/cultivation-idle/src/components/combat/theater/TechniqueStrip.tsx", currentExports);
+    import.meta.hot.accept((nextExports) => {
+      if (!nextExports) return;
+      const invalidateMessage = RefreshRuntime.validateRefreshBoundaryAndEnqueueUpdate("C:/Users/abdul/Desktop/cultivation-idle/src/components/combat/theater/TechniqueStrip.tsx", currentExports, nextExports);
+      if (invalidateMessage) import.meta.hot.invalidate(invalidateMessage);
+    });
+  });
+}
+function $RefreshReg$(type, id) {
+  return RefreshRuntime.register(type, "C:/Users/abdul/Desktop/cultivation-idle/src/components/combat/theater/TechniqueStrip.tsx " + id);
+}
+function $RefreshSig$() {
+  return RefreshRuntime.createSignatureFunctionForTransform();
+}
+
+//# sourceMappingURL=data:application/json;base64,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QixTQUFTc0MsVUFBVSxZQUFZLFVBQVUsSUFBSVosV0FBVyxJQUFJLFlBQVksaUJBQWlCLEtBRDNIO0FBQUE7QUFBQTtBQUFBO0FBQUEsYUFFQTtBQUFBLFNBSkY7QUFBQTtBQUFBO0FBQUE7QUFBQSxXQUtBO0FBQUEsSUFFQSx1QkFBQyxTQUFJLFdBQVUsdUJBQ2I7QUFBQSw2QkFBQyxTQUFJLFdBQVUsNkJBQTRCLHdCQUEzQztBQUFBO0FBQUE7QUFBQTtBQUFBLGFBQW1EO0FBQUEsTUFDbkQsdUJBQUMsU0FBSSxXQUFVLGdEQUNaMUIsbUJBQVN1QyxRQUFRMUIsU0FBUyxJQUN2QmIsU0FBU3VDLFFBQVFmLElBQUksQ0FBQ1IsSUFBSXFCLFFBQVFYLFdBQVdWLElBQUksV0FBVyxXQUFXcUIsTUFBTSxDQUFDLEVBQUUsQ0FBQyxJQUNqRlgsV0FBVyxJQUFJLFdBQVcsY0FBYyxLQUg5QztBQUFBO0FBQUE7QUFBQTtBQUFBLGFBSUE7QUFBQSxTQU5GO0FBQUE7QUFBQTtBQUFBO0FBQUEsV0FPQTtBQUFBLE9BeEJGO0FBQUE7QUFBQTtBQUFBO0FBQUEsU0F5QkE7QUFFSjtBQUFDdkMsR0FsSGVELGdCQUFjO0FBQUEsVUFDTHpCLGlCQUNSRCxnQkFDWUEsZ0JBRURHLG1CQUNUQSxtQkFDR0EsbUJBQ0NBLG1CQUNGRCxZQUFZO0FBQUE7QUFBQThFLE1BVGpCdEQ7QUFBYyxJQUFBRCxJQUFBdUQ7QUFBQUMsYUFBQXhELElBQUE7QUFBQXdELGFBQUFELEtBQUEiLCJuYW1lcyI6WyJ1c2VFZmZlY3QiLCJ1c2VNZW1vIiwidXNlUmVmIiwidXNlU3RhdGUiLCJ1c2VDb21iYXRTdG9yZSIsInVzZUNvbnRlbnRTdG9yZSIsInVzZUdhbWVTdG9yZSIsInVzZVRlY2huaXF1ZVN0b3JlIiwiZm9ybWF0U2Vjb25kcyIsIlRlY2huaXF1ZVRpbGUiLCJ0ZWNoSWQiLCJzbG90VHlwZSIsIm5hbWUiLCJyb2xlIiwidHlwZSIsInJlbWFpbmluZ01zIiwicGN0UmVtYWluaW5nIiwiaXNVbmtub3duIiwiaXNGbGFzaGluZyIsIm9uQ29vbGRvd24iLCJjb29sZG93blBjdCIsIk1hdGgiLCJtaW4iLCJtYXgiLCJmaWx0ZXIiLCJCb29sZWFuIiwiam9pbiIsIndpZHRoIiwidG9GaXhlZCIsIl9jIiwiVGVjaG5pcXVlU3RyaXAiLCJfcyIsInRlY2huaXF1ZXNCeUlkIiwic3RhdGUiLCJtYXBzIiwiZXZlbnRzIiwidGVjaG5pcXVlQ29vbGRvd25zIiwic2VsZWN0ZWRMb2Fkb3V0SWQiLCJsb2Fkb3V0cyIsImFjdGl2ZVNsb3RzIiwicGFzc2l2ZVNsb3RzIiwicmVhbG1JbmRleCIsInJlYWxtIiwiaW5kZXgiLCJlcXVpcHBlZCIsImdldFN0YXRlIiwiZ2V0Q29tYmF0RXF1aXBwZWRUZWNoSWRzIiwibm93Iiwic2V0Tm93IiwiRGF0ZSIsImludGVydmFsIiwic2V0SW50ZXJ2YWwiLCJjbGVhckludGVydmFsIiwiZmxhc2hUZWNoSWQiLCJzZXRGbGFzaFRlY2hJZCIsImxhc3RFdmVudElkUmVmIiwiaSIsImxlbmd0aCIsImV2dCIsImN1cnJlbnQiLCJpZCIsInRlY2huaXF1ZUlkIiwidGltZW91dCIsInNldFRpbWVvdXQiLCJwcmV2IiwiY2xlYXJUaW1lb3V0IiwidW5kZWZpbmVkIiwibGFzdENhc3RCeVRlY2hJZCIsIm1hcCIsImF0IiwicmVuZGVyVGlsZSIsImZhbGxiYWNrTGFiZWwiLCJkZWYiLCJ0eXBlTGFiZWwiLCJyb2xlTGFiZWwiLCJyZWFkeUF0IiwibGFzdENhc3RBdCIsImZhbGxiYWNrQ2QiLCJjb29sZG93blNlYyIsImNkTXMiLCJhY3RpdmUiLCJpZHgiLCJ1bHRpbWF0ZSIsInBhc3NpdmUiLCJfYzIiLCIkUmVmcmVzaFJlZyQiXSwiaWdub3JlTGlzdCI6W10sInNvdXJjZXMiOlsiVGVjaG5pcXVlU3RyaXAudHN4Il0sInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7IHVzZUVmZmVjdCwgdXNlTWVtbywgdXNlUmVmLCB1c2VTdGF0ZSB9IGZyb20gJ3JlYWN0JztcclxuaW1wb3J0IHsgdXNlQ29tYmF0U3RvcmUgfSBmcm9tICcuLi8uLi8uLi9zdG9yZXMvY29tYmF0U3RvcmUuanMnO1xyXG5pbXBvcnQgeyB1c2VDb250ZW50U3RvcmUgfSBmcm9tICcuLi8uLi8uLi9zdG9yZXMvY29udGVudFN0b3JlLmpzJztcclxuaW1wb3J0IHsgdXNlR2FtZVN0b3JlIH0gZnJvbSAnLi4vLi4vLi4vc3RvcmVzL2dhbWVTdG9yZS5qcyc7XHJcbmltcG9ydCB7IHVzZVRlY2huaXF1ZVN0b3JlIH0gZnJvbSAnLi4vLi4vLi4vc3RvcmVzL3RlY2huaXF1ZVN0b3JlLmpzJztcclxuaW1wb3J0IHsgZm9ybWF0U2Vjb25kcyB9IGZyb20gJy4uLy4uLy4uL3N5c3RlbXMvY29tYmF0L21pbmliYXJNb2RlbC5qcyc7XHJcbmltcG9ydCAnLi9UZWNobmlxdWVTdHJpcC5zY3NzJztcclxuXHJcbmludGVyZmFjZSBUZWNobmlxdWVUaWxlUHJvcHMge1xyXG4gIHRlY2hJZDogc3RyaW5nO1xyXG4gIHNsb3RUeXBlOiAnYWN0aXZlJyB8ICdwYXNzaXZlJyB8ICd1bHRpbWF0ZSc7XHJcbiAgbmFtZTogc3RyaW5nO1xyXG4gIHJvbGU/OiBzdHJpbmc7XHJcbiAgdHlwZT86IHN0cmluZztcclxuICByZW1haW5pbmdNczogbnVtYmVyO1xyXG4gIHBjdFJlbWFpbmluZzogbnVtYmVyO1xyXG4gIGlzVW5rbm93bjogYm9vbGVhbjtcclxuICBpc0ZsYXNoaW5nOiBib29sZWFuO1xyXG59XHJcblxyXG5mdW5jdGlvbiBUZWNobmlxdWVUaWxlKHtcclxuICB0ZWNoSWQsXHJcbiAgc2xvdFR5cGUsXHJcbiAgbmFtZSxcclxuICByb2xlLFxyXG4gIHR5cGUsXHJcbiAgcmVtYWluaW5nTXMsXHJcbiAgcGN0UmVtYWluaW5nLFxyXG4gIGlzVW5rbm93bixcclxuICBpc0ZsYXNoaW5nLFxyXG59OiBUZWNobmlxdWVUaWxlUHJvcHMpIHtcclxuICBjb25zdCBvbkNvb2xkb3duID0gcmVtYWluaW5nTXMgPiAwO1xyXG4gIGNvbnN0IGNvb2xkb3duUGN0ID0gTWF0aC5taW4oMSwgTWF0aC5tYXgoMCwgcGN0UmVtYWluaW5nKSk7XHJcblxyXG4gIHJldHVybiAoXHJcbiAgICA8ZGl2XHJcbiAgICAgIGNsYXNzTmFtZT17W1xyXG4gICAgICAgICd0ZWNoLXN0cmlwX190aWxlJyxcclxuICAgICAgICBgdGVjaC1zdHJpcF9fdGlsZS0tJHtzbG90VHlwZX1gLFxyXG4gICAgICAgIG9uQ29vbGRvd24gPyAndGVjaC1zdHJpcF9fdGlsZS0tY29vbGRvd24nIDogJycsXHJcbiAgICAgICAgaXNVbmtub3duID8gJ3RlY2gtc3RyaXBfX3RpbGUtLXVua25vd24nIDogJycsXHJcbiAgICAgICAgaXNGbGFzaGluZyA/ICd0ZWNoLXN0cmlwX190aWxlLS1mbGFzaCcgOiAnJyxcclxuICAgICAgXVxyXG4gICAgICAgIC5maWx0ZXIoQm9vbGVhbilcclxuICAgICAgICAuam9pbignICcpfVxyXG4gICAgPlxyXG4gICAgICA8ZGl2IGNsYXNzTmFtZT1cInRlY2gtc3RyaXBfX3RpbGUtaGVhZGVyXCI+XHJcbiAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJ0ZWNoLXN0cmlwX190aWxlLW5hbWVcIj57bmFtZX08L2Rpdj5cclxuICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInRlY2gtc3RyaXBfX3RpbGUtdGFnc1wiPlxyXG4gICAgICAgICAge3JvbGUgJiYgPHNwYW4gY2xhc3NOYW1lPVwidGVjaC1zdHJpcF9fdGFnXCI+e3JvbGV9PC9zcGFuPn1cclxuICAgICAgICAgIHt0eXBlICYmIDxzcGFuIGNsYXNzTmFtZT1cInRlY2gtc3RyaXBfX3RhZyB0ZWNoLXN0cmlwX190YWctLXR5cGVcIj57dHlwZX08L3NwYW4+fVxyXG4gICAgICAgIDwvZGl2PlxyXG4gICAgICA8L2Rpdj5cclxuICAgICAgPGRpdiBjbGFzc05hbWU9XCJ0ZWNoLXN0cmlwX190aWxlLW1ldGFcIj5cclxuICAgICAgICA8c3BhbiBjbGFzc05hbWU9XCJ0ZWNoLXN0cmlwX19zbG90XCI+e3Nsb3RUeXBlID09PSAndWx0aW1hdGUnID8gJ1VsdGltYXRlJyA6IHNsb3RUeXBlID09PSAncGFzc2l2ZScgPyAnUGFzc2l2ZScgOiAnQWN0aXZlJ308L3NwYW4+XHJcbiAgICAgICAge29uQ29vbGRvd24gPyA8c3BhbiBjbGFzc05hbWU9XCJ0ZWNoLXN0cmlwX19jZC10ZXh0XCI+Q0Qge2Zvcm1hdFNlY29uZHMocmVtYWluaW5nTXMpfTwvc3Bhbj4gOiA8c3BhbiBjbGFzc05hbWU9XCJ0ZWNoLXN0cmlwX19jZC1yZWFkeVwiPlJlYWR5PC9zcGFuPn1cclxuICAgICAgPC9kaXY+XHJcbiAgICAgIHtvbkNvb2xkb3duICYmIChcclxuICAgICAgICA8ZGl2XHJcbiAgICAgICAgICBjbGFzc05hbWU9XCJ0ZWNoLXN0cmlwX19jb29sZG93blwiXHJcbiAgICAgICAgICBzdHlsZT17eyB3aWR0aDogYCR7KGNvb2xkb3duUGN0ICogMTAwKS50b0ZpeGVkKDEpfSVgIH19XHJcbiAgICAgICAgLz5cclxuICAgICAgKX1cclxuICAgICAgPGRpdiBjbGFzc05hbWU9XCJ0ZWNoLXN0cmlwX190aWxlLWlkXCI+e3RlY2hJZCB8fCAn4oCUJ308L2Rpdj5cclxuICAgIDwvZGl2PlxyXG4gICk7XHJcbn1cclxuXHJcbmV4cG9ydCBmdW5jdGlvbiBUZWNobmlxdWVTdHJpcCgpIHtcclxuICBjb25zdCB0ZWNobmlxdWVzQnlJZCA9IHVzZUNvbnRlbnRTdG9yZSgoc3RhdGUpID0+IHN0YXRlLm1hcHMudGVjaG5pcXVlc0J5SWQpO1xyXG4gIGNvbnN0IGV2ZW50cyA9IHVzZUNvbWJhdFN0b3JlKChzdGF0ZSkgPT4gc3RhdGUuZXZlbnRzKTtcclxuICBjb25zdCB0ZWNobmlxdWVDb29sZG93bnMgPSB1c2VDb21iYXRTdG9yZSgoc3RhdGUpID0+IHN0YXRlLnRlY2huaXF1ZUNvb2xkb3ducyk7XHJcblxyXG4gIGNvbnN0IHNlbGVjdGVkTG9hZG91dElkID0gdXNlVGVjaG5pcXVlU3RvcmUoKHN0YXRlKSA9PiBzdGF0ZS5zZWxlY3RlZExvYWRvdXRJZCk7XHJcbiAgY29uc3QgbG9hZG91dHMgPSB1c2VUZWNobmlxdWVTdG9yZSgoc3RhdGUpID0+IHN0YXRlLmxvYWRvdXRzKTtcclxuICBjb25zdCBhY3RpdmVTbG90cyA9IHVzZVRlY2huaXF1ZVN0b3JlKChzdGF0ZSkgPT4gc3RhdGUuYWN0aXZlU2xvdHMpO1xyXG4gIGNvbnN0IHBhc3NpdmVTbG90cyA9IHVzZVRlY2huaXF1ZVN0b3JlKChzdGF0ZSkgPT4gc3RhdGUucGFzc2l2ZVNsb3RzKTtcclxuICBjb25zdCByZWFsbUluZGV4ID0gdXNlR2FtZVN0b3JlKChzdGF0ZSkgPT4gc3RhdGUucmVhbG0uaW5kZXggPz8gMCk7XHJcblxyXG4gIGNvbnN0IGVxdWlwcGVkID0gdXNlTWVtbygoKSA9PiB7XHJcbiAgICAvLyBUaGVzZSBkZXBlbmRlbmNpZXMgcmVmbGVjdCB1bmxvY2sgc3RhdGUgYW5kIGxvYWRvdXQgY2hhbmdlcyB0aGF0IGFmZmVjdCBlcXVpcHBlZCB0ZWNobmlxdWVzLlxyXG4gICAgdm9pZCBsb2Fkb3V0cztcclxuICAgIHZvaWQgcmVhbG1JbmRleDtcclxuICAgIHZvaWQgYWN0aXZlU2xvdHM7XHJcbiAgICB2b2lkIHBhc3NpdmVTbG90cztcclxuICAgIHJldHVybiB1c2VUZWNobmlxdWVTdG9yZS5nZXRTdGF0ZSgpLmdldENvbWJhdEVxdWlwcGVkVGVjaElkcyhzZWxlY3RlZExvYWRvdXRJZCk7XHJcbiAgfSwgW3NlbGVjdGVkTG9hZG91dElkLCBsb2Fkb3V0cywgcmVhbG1JbmRleCwgYWN0aXZlU2xvdHMsIHBhc3NpdmVTbG90c10pO1xyXG5cclxuICBjb25zdCBbbm93LCBzZXROb3ddID0gdXNlU3RhdGUoKCkgPT4gRGF0ZS5ub3coKSk7XHJcbiAgdXNlRWZmZWN0KCgpID0+IHtcclxuICAgIGNvbnN0IGludGVydmFsID0gc2V0SW50ZXJ2YWwoKCkgPT4gc2V0Tm93KERhdGUubm93KCkpLCAyNTApO1xyXG4gICAgcmV0dXJuICgpID0+IGNsZWFySW50ZXJ2YWwoaW50ZXJ2YWwpO1xyXG4gIH0sIFtdKTtcclxuXHJcbiAgY29uc3QgW2ZsYXNoVGVjaElkLCBzZXRGbGFzaFRlY2hJZF0gPSB1c2VTdGF0ZTxzdHJpbmcgfCBudWxsPihudWxsKTtcclxuICBjb25zdCBsYXN0RXZlbnRJZFJlZiA9IHVzZVJlZjxzdHJpbmcgfCBudWxsPihudWxsKTtcclxuXHJcbiAgdXNlRWZmZWN0KCgpID0+IHtcclxuICAgIGZvciAobGV0IGkgPSBldmVudHMubGVuZ3RoIC0gMTsgaSA+PSAwOyBpIC09IDEpIHtcclxuICAgICAgY29uc3QgZXZ0ID0gZXZlbnRzW2ldO1xyXG4gICAgICBpZiAoZXZ0LnR5cGUgPT09ICdTS0lMTF9DQVNUJykge1xyXG4gICAgICAgIGlmIChsYXN0RXZlbnRJZFJlZi5jdXJyZW50ID09PSBldnQuaWQpIHJldHVybjtcclxuICAgICAgICBsYXN0RXZlbnRJZFJlZi5jdXJyZW50ID0gZXZ0LmlkO1xyXG4gICAgICAgIHNldEZsYXNoVGVjaElkKGV2dC50ZWNobmlxdWVJZCk7XHJcbiAgICAgICAgY29uc3QgdGltZW91dCA9IHNldFRpbWVvdXQoKCkgPT4ge1xyXG4gICAgICAgICAgc2V0Rmxhc2hUZWNoSWQoKHByZXYpID0+IChwcmV2ID09PSBldnQudGVjaG5pcXVlSWQgPyBudWxsIDogcHJldikpO1xyXG4gICAgICAgIH0sIDQwMCk7XHJcbiAgICAgICAgcmV0dXJuICgpID0+IGNsZWFyVGltZW91dCh0aW1lb3V0KTtcclxuICAgICAgfVxyXG4gICAgfVxyXG4gICAgcmV0dXJuIHVuZGVmaW5lZDtcclxuICB9LCBbZXZlbnRzXSk7XHJcblxyXG4gIGNvbnN0IGxhc3RDYXN0QnlUZWNoSWQgPSB1c2VNZW1vKCgpID0+IHtcclxuICAgIGNvbnN0IG1hcDogUmVjb3JkPHN0cmluZywgbnVtYmVyPiA9IHt9O1xyXG4gICAgZm9yIChsZXQgaSA9IGV2ZW50cy5sZW5ndGggLSAxOyBpID49IDA7IGkgLT0gMSkge1xyXG4gICAgICBjb25zdCBldnQgPSBldmVudHNbaV07XHJcbiAgICAgIGlmIChldnQudHlwZSA9PT0gJ1NLSUxMX0NBU1QnICYmIGV2dC50ZWNobmlxdWVJZCAmJiBtYXBbZXZ0LnRlY2huaXF1ZUlkXSA9PT0gdW5kZWZpbmVkKSB7XHJcbiAgICAgICAgbWFwW2V2dC50ZWNobmlxdWVJZF0gPSBldnQuYXQ7XHJcbiAgICAgIH1cclxuICAgIH1cclxuICAgIHJldHVybiBtYXA7XHJcbiAgfSwgW2V2ZW50c10pO1xyXG5cclxuICBjb25zdCByZW5kZXJUaWxlID0gKHRlY2hJZDogc3RyaW5nLCBzbG90VHlwZTogJ2FjdGl2ZScgfCAncGFzc2l2ZScgfCAndWx0aW1hdGUnLCBmYWxsYmFja0xhYmVsOiBzdHJpbmcpID0+IHtcclxuICAgIGNvbnN0IGRlZiA9IHRlY2hJZCA/IHRlY2huaXF1ZXNCeUlkW3RlY2hJZF0gOiB1bmRlZmluZWQ7XHJcbiAgICBjb25zdCBuYW1lID0gZGVmPy5uYW1lID8/IGZhbGxiYWNrTGFiZWw7XHJcbiAgICBjb25zdCB0eXBlTGFiZWwgPSBkZWY/LnR5cGU7XHJcbiAgICBjb25zdCByb2xlTGFiZWwgPSBkZWY/LnJvbGU7XHJcbiAgICBjb25zdCByZWFkeUF0ID0gdGVjaG5pcXVlQ29vbGRvd25zW3RlY2hJZF0gPz8gMDtcclxuICAgIGNvbnN0IHJlbWFpbmluZ01zID0gTWF0aC5tYXgoMCwgcmVhZHlBdCAtIG5vdyk7XHJcbiAgICBjb25zdCBsYXN0Q2FzdEF0ID0gdGVjaElkID8gbGFzdENhc3RCeVRlY2hJZFt0ZWNoSWRdIDogdW5kZWZpbmVkO1xyXG4gICAgY29uc3QgZmFsbGJhY2tDZCA9IGRlZj8uY29vbGRvd25TZWMgPyBkZWYuY29vbGRvd25TZWMgKiAxMDAwIDogMTAwMDtcclxuICAgIGNvbnN0IGNkTXMgPSBNYXRoLm1heCgxLCBsYXN0Q2FzdEF0ID8gcmVhZHlBdCAtIGxhc3RDYXN0QXQgOiBmYWxsYmFja0NkKTtcclxuICAgIGNvbnN0IHBjdFJlbWFpbmluZyA9IHJlbWFpbmluZ01zID4gMCA/IHJlbWFpbmluZ01zIC8gY2RNcyA6IDA7XHJcbiAgICBjb25zdCBpc1Vua25vd24gPSAhdGVjaElkIHx8ICFkZWY7XHJcbiAgICBjb25zdCBpc0ZsYXNoaW5nID0gZmxhc2hUZWNoSWQgPT09IHRlY2hJZDtcclxuXHJcbiAgICByZXR1cm4gKFxyXG4gICAgICA8VGVjaG5pcXVlVGlsZVxyXG4gICAgICAgIGtleT17YCR7c2xvdFR5cGV9LSR7dGVjaElkIHx8IGZhbGxiYWNrTGFiZWx9YH1cclxuICAgICAgICB0ZWNoSWQ9e3RlY2hJZH1cclxuICAgICAgICBzbG90VHlwZT17c2xvdFR5cGV9XHJcbiAgICAgICAgbmFtZT17bmFtZX1cclxuICAgICAgICByb2xlPXtyb2xlTGFiZWx9XHJcbiAgICAgICAgdHlwZT17dHlwZUxhYmVsfVxyXG4gICAgICAgIHJlbWFpbmluZ01zPXtyZW1haW5pbmdNc31cclxuICAgICAgICBwY3RSZW1haW5pbmc9e3BjdFJlbWFpbmluZ31cclxuICAgICAgICBpc1Vua25vd249e2lzVW5rbm93bn1cclxuICAgICAgICBpc0ZsYXNoaW5nPXtpc0ZsYXNoaW5nfVxyXG4gICAgICAvPlxyXG4gICAgKTtcclxuICB9O1xyXG5cclxuICByZXR1cm4gKFxyXG4gICAgPGRpdiBjbGFzc05hbWU9XCJ0ZWNoLXN0cmlwXCI+XHJcbiAgICAgIDxkaXYgY2xhc3NOYW1lPVwidGVjaC1zdHJpcF9fc2VjdGlvblwiPlxyXG4gICAgICAgIDxkaXYgY2xhc3NOYW1lPVwidGVjaC1zdHJpcF9fc2VjdGlvbi10aXRsZVwiPkFjdGl2ZXM8L2Rpdj5cclxuICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInRlY2gtc3RyaXBfX3RpbGVzXCI+XHJcbiAgICAgICAgICB7ZXF1aXBwZWQuYWN0aXZlLmxlbmd0aCA+IDBcclxuICAgICAgICAgICAgPyBlcXVpcHBlZC5hY3RpdmUubWFwKChpZCwgaWR4KSA9PiByZW5kZXJUaWxlKGlkLCAnYWN0aXZlJywgYEFjdGl2ZSAke2lkeCArIDF9YCkpXHJcbiAgICAgICAgICAgIDogcmVuZGVyVGlsZSgnJywgJ2FjdGl2ZScsICdFbXB0eSBhY3RpdmUnKX1cclxuICAgICAgICA8L2Rpdj5cclxuICAgICAgPC9kaXY+XHJcblxyXG4gICAgICA8ZGl2IGNsYXNzTmFtZT1cInRlY2gtc3RyaXBfX3NlY3Rpb25cIj5cclxuICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInRlY2gtc3RyaXBfX3NlY3Rpb24tdGl0bGVcIj5VbHRpbWF0ZTwvZGl2PlxyXG4gICAgICAgIDxkaXYgY2xhc3NOYW1lPVwidGVjaC1zdHJpcF9fdGlsZXNcIj5cclxuICAgICAgICAgIHtlcXVpcHBlZC51bHRpbWF0ZSA/IHJlbmRlclRpbGUoZXF1aXBwZWQudWx0aW1hdGUsICd1bHRpbWF0ZScsICdVbHRpbWF0ZScpIDogcmVuZGVyVGlsZSgnJywgJ3VsdGltYXRlJywgJ1VsdGltYXRlIGxvY2tlZCcpfVxyXG4gICAgICAgIDwvZGl2PlxyXG4gICAgICA8L2Rpdj5cclxuXHJcbiAgICAgIDxkaXYgY2xhc3NOYW1lPVwidGVjaC1zdHJpcF9fc2VjdGlvblwiPlxyXG4gICAgICAgIDxkaXYgY2xhc3NOYW1lPVwidGVjaC1zdHJpcF9fc2VjdGlvbi10aXRsZVwiPlBhc3NpdmVzPC9kaXY+XHJcbiAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJ0ZWNoLXN0cmlwX190aWxlcyB0ZWNoLXN0cmlwX190aWxlcy0tcGFzc2l2ZVwiPlxyXG4gICAgICAgICAge2VxdWlwcGVkLnBhc3NpdmUubGVuZ3RoID4gMFxyXG4gICAgICAgICAgICA/IGVxdWlwcGVkLnBhc3NpdmUubWFwKChpZCwgaWR4KSA9PiByZW5kZXJUaWxlKGlkLCAncGFzc2l2ZScsIGBQYXNzaXZlICR7aWR4ICsgMX1gKSlcclxuICAgICAgICAgICAgOiByZW5kZXJUaWxlKCcnLCAncGFzc2l2ZScsICdQYXNzaXZlIHNsb3QnKX1cclxuICAgICAgICA8L2Rpdj5cclxuICAgICAgPC9kaXY+XHJcbiAgICA8L2Rpdj5cclxuICApO1xyXG59XHJcbiJdLCJmaWxlIjoiQzovVXNlcnMvYWJkdWwvRGVza3RvcC9jdWx0aXZhdGlvbi1pZGxlL3NyYy9jb21wb25lbnRzL2NvbWJhdC90aGVhdGVyL1RlY2huaXF1ZVN0cmlwLnRzeCJ9

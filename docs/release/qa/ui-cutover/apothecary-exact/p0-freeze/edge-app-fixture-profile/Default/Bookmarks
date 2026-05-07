@@ -1,0 +1,62 @@
+{
+   "checksum": "ab581cda67d179fdb48f3e35efff1019",
+   "roots": {
+      "bookmark_bar": {
+         "children": [ {
+            "date_added": "13285796046957732",
+            "date_last_used": "0",
+            "guid": "f3cbc06c-9b11-4cd4-88f8-962d19f28faa",
+            "id": "7",
+            "name": "",
+            "show_icon": false,
+            "source": "sync",
+            "type": "url",
+            "url": "https://cdn.discordapp.com/attachments/917425661902209078/922541563710685274/physics_notes_Q2.pdf",
+            "visit_count": 0
+         } ],
+         "date_added": "13422626981776733",
+         "date_last_used": "0",
+         "date_modified": "13285796046957732",
+         "guid": "0bc5d13f-2cba-5d74-951f-3f233fe6c908",
+         "id": "1",
+         "name": "Favourites bar",
+         "source": "unknown",
+         "type": "folder"
+      },
+      "other": {
+         "children": [  ],
+         "date_added": "13422626981776733",
+         "date_last_used": "0",
+         "date_modified": "0",
+         "guid": "82b081ec-3dd3-529c-8475-ab6c344590dd",
+         "id": "2",
+         "name": "Other favourites",
+         "source": "unknown",
+         "type": "folder"
+      },
+      "synced": {
+         "children": [  ],
+         "date_added": "13422626981776733",
+         "date_last_used": "0",
+         "date_modified": "0",
+         "guid": "4cf2e351-0e85-532b-bb37-df045d8f8d0f",
+         "id": "3",
+         "name": "Mobile favourites",
+         "source": "unknown",
+         "type": "folder"
+      },
+      "workspaces_v2": {
+         "children": [  ],
+         "date_added": "13422626981776733",
+         "date_last_used": "0",
+         "date_modified": "0",
+         "guid": "75aa6670-344f-549d-b742-660f029506ab",
+         "id": "5",
+         "name": "Workspaces",
+         "source": "unknown",
+         "type": "folder"
+      }
+   },
+   "sync_metadata": "CjEKDgiIgQISCMgiVFiaAQAAEgAqGGNYWXpGbGlrN3VzWVk5VTVDaEtpRlE9PUgDoAYHEo4BCAUSiQEKHHdSQnJaTCs2UEE5YXZLZ2pOUDdKWERMY2Z2cz0SJGVkODQ0YWFiLTYyMzEtNTVhZC04NmIxLTQzMzkwZTI3YTJlYhgAIAAoADDHxdDCpTM4qsbQwqUzQKrG0MKlM0ocbm14NjVzUUR2eEk4VGdFZXYrQStudHRvU240PVoAZQAAAADCPgJgABKOAQgDEokBChxuamdEdTg4ZUNydlhwODZwRDdmSEdjcUZwODg9EiQ4ZDExZDcwNC04ZmIwLTU1NmItYWE0MC0wMTYzYjkxZGU1ODUYACAAKAAwytaBm60vOM2DvafqL0DNg72n6i9KHHl6TkIwMWNuNTRBN2NSVTB1VCsvUGdtVHRVbz1aAGUAAAAAwj4CYAASjgEIARKJAQoceXhKLzZmdmtlY3I3a3A1RVF6QjR0V0xwZGJFPRIkN2NkYWM1MDItYTU1ZS01Yzk3LWI4MGUtNzc4ZTJiNGRiYjZkGAAgACgAMMrWgZutLzifg72n6i9An4O9p+ovShxhUkNXTGdoRjliNUlucUtJRHZ1Si9qdlFrRmM9WgBlAAAAAMI+AmAAEqwBCAcSpwEKHEtHOU85aHgxc0tZUFNDWmpmNTkvN0R2a3NzYz0SJGYzY2JjMDZjLTliMTEtNGNkNC04OGY4LTk2MmQxOWYyOGZhYRgAIAAoADCskMbt7zA425DG7e8wQNuQxu3vMEocTnYxb1JVanZKN1JKa0FOQ2RhdElGZllDZitjPVoeIhwvTnNPdFc4bTN4V1BzRU4vVU1tcFo5ZjFMdk09ZQAAAADCPgJgBRKOAQgCEokBChxZY1NUb252RVNQd3FDczRMMmNyVmh2NjhMOTg9EiQ4MDQwMzhiMS05MzAzLTVkNGQtODMwMC02MjZjMjRmNzU1NDkYACAAKAAwytaBm60vOK6DvafqL0Cug72n6i9KHG9QVmtod0JSYlY2NUtDV1IyK0lPTkhXb091OD1aAGUAAAAAwj4CYAAwADgA",
+   "version": 1
+}

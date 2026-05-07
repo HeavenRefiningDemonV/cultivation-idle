@@ -61,6 +61,8 @@ export type WorldBuildingKey =
 
 export type WorldBuildingModalIntent = null | {
   apothecarySurface?: 'buy' | 'brew' | 'pouch';
+  apothecaryExactMode?: 'live' | 'fixture';
+  apothecaryFocus?: 'prescription' | 'buy' | 'brew' | 'pouch' | 'source';
   ruinsExactMode?: 'live' | 'fixture';
   gateTrialExactMode?: 'live' | 'fixture';
 };
@@ -76,6 +78,8 @@ const normalizeWorldBuildingKey = (buildingKey: WorldBuildingKey): WorldBuilding
 
 const getWorldBuildingIntentKey = (intent: WorldBuildingModalIntent): string => JSON.stringify({
   apothecarySurface: intent?.apothecarySurface ?? null,
+  apothecaryExactMode: intent?.apothecaryExactMode ?? null,
+  apothecaryFocus: intent?.apothecaryFocus ?? null,
   ruinsExactMode: intent?.ruinsExactMode ?? null,
   gateTrialExactMode: intent?.gateTrialExactMode ?? null,
 });

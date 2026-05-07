@@ -1,0 +1,194 @@
+import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/components/modals/CurrentChapterExhaustedModal.tsx");import __vite__cjsImport0_react_jsxDevRuntime from "/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=c0e4e3e4"; const jsxDEV = __vite__cjsImport0_react_jsxDevRuntime["jsxDEV"];
+var _s = $RefreshSig$();
+import { useUIStore } from "/src/stores/uiStore.ts";
+import { RitualModalFrame } from "/src/ui/shell/index.ts";
+import "/src/components/modals/CurrentChapterExhaustedModal.scss";
+export function CurrentChapterExhaustedModal() {
+  _s();
+  const open = useUIStore((state) => state.showCurrentChapterExhaustedModal);
+  const close = useUIStore((state) => state.closeCurrentChapterExhaustedModal);
+  const acknowledge = useUIStore((state) => state.acknowledgeCurrentChapterExhausted);
+  const setActiveTab = useUIStore((state) => state.setActiveTab);
+  const openLifeSummaryModal = useUIStore((state) => state.openLifeSummaryModal);
+  const handleClose = () => {
+    acknowledge();
+    close();
+  };
+  const handleOpenPrestige = () => {
+    acknowledge();
+    close();
+    setActiveTab("prestige");
+  };
+  const handleOpenLifeSummary = () => {
+    acknowledge();
+    close();
+    openLifeSummaryModal("current");
+  };
+  return /* @__PURE__ */ jsxDEV(
+    RitualModalFrame,
+    {
+      open,
+      onClose: handleClose,
+      title: "Current Chapter Exhausted",
+      subtitle: "Spirit Severing is the current authored cap in this build.",
+      variant: "chapterEnd",
+      size: "md",
+      className: "currentChapterExhaustedModal",
+      bodyClassName: "currentChapterExhaustedModal__body",
+      ornament: /* @__PURE__ */ jsxDEV("div", { className: "currentChapterExhaustedModal__seal", "aria-hidden": "true", children: /* @__PURE__ */ jsxDEV("span", {}, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/CurrentChapterExhaustedModal.tsx",
+        lineNumber: 39,
+        columnNumber: 88
+      }, this) }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/CurrentChapterExhaustedModal.tsx",
+        lineNumber: 39,
+        columnNumber: 17
+      }, this),
+      footer: /* @__PURE__ */ jsxDEV("div", { className: "currentChapterExhaustedModal__actionLane", "data-ui": "current-chapter-exhausted-action-lane", children: [
+        /* @__PURE__ */ jsxDEV("p", { className: "currentChapterExhaustedModal__status", role: "status", "aria-live": "polite", children: "Spirit Severing cap reached. Choose your next outer-loop step." }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/CurrentChapterExhaustedModal.tsx",
+          lineNumber: 42,
+          columnNumber: 11
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { className: "currentChapterExhaustedModal__actions", children: [
+          /* @__PURE__ */ jsxDEV("button", { type: "button", className: "currentChapterExhaustedModal__action currentChapterExhaustedModal__action--primary uiNoShift", onClick: handleOpenPrestige, children: "Open Prestige" }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/CurrentChapterExhaustedModal.tsx",
+            lineNumber: 46,
+            columnNumber: 13
+          }, this),
+          /* @__PURE__ */ jsxDEV("button", { type: "button", className: "currentChapterExhaustedModal__action currentChapterExhaustedModal__action--secondary uiNoShift", onClick: handleOpenLifeSummary, children: "View Life Summary" }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/CurrentChapterExhaustedModal.tsx",
+            lineNumber: 47,
+            columnNumber: 13
+          }, this),
+          /* @__PURE__ */ jsxDEV("button", { type: "button", className: "currentChapterExhaustedModal__action currentChapterExhaustedModal__action--tertiary uiNoShift", onClick: handleClose, children: "Continue This Life" }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/CurrentChapterExhaustedModal.tsx",
+            lineNumber: 48,
+            columnNumber: 13
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/CurrentChapterExhaustedModal.tsx",
+          lineNumber: 45,
+          columnNumber: 11
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/CurrentChapterExhaustedModal.tsx",
+        lineNumber: 41,
+        columnNumber: 7
+      }, this),
+      children: [
+        /* @__PURE__ */ jsxDEV("section", { className: "currentChapterExhaustedModal__summary", "data-ui": "current-chapter-exhausted-summary", children: [
+          /* @__PURE__ */ jsxDEV("h3", { children: "What happened" }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/CurrentChapterExhaustedModal.tsx",
+            lineNumber: 54,
+            columnNumber: 9
+          }, this),
+          /* @__PURE__ */ jsxDEV("p", { className: "currentChapterExhaustedModal__lead", children: [
+            "You have reached ",
+            /* @__PURE__ */ jsxDEV("strong", { children: "Spirit Severing" }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/CurrentChapterExhaustedModal.tsx",
+              lineNumber: 56,
+              columnNumber: 28
+            }, this),
+            ", the end of the current authored chapter in this build."
+          ] }, void 0, true, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/CurrentChapterExhaustedModal.tsx",
+            lineNumber: 55,
+            columnNumber: 9
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/CurrentChapterExhaustedModal.tsx",
+          lineNumber: 53,
+          columnNumber: 7
+        }, this),
+        /* @__PURE__ */ jsxDEV("section", { className: "currentChapterExhaustedModal__truthBlock currentChapterExhaustedModal__truthBlock--meaning", children: [
+          /* @__PURE__ */ jsxDEV("h3", { children: "What this means" }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/CurrentChapterExhaustedModal.tsx",
+            lineNumber: 60,
+            columnNumber: 9
+          }, this),
+          /* @__PURE__ */ jsxDEV("p", { children: "There is no live city 6, post-Severing gate chain, or next authored realm beyond this point right now." }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/CurrentChapterExhaustedModal.tsx",
+            lineNumber: 61,
+            columnNumber: 9
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/CurrentChapterExhaustedModal.tsx",
+          lineNumber: 59,
+          columnNumber: 7
+        }, this),
+        /* @__PURE__ */ jsxDEV("section", { className: "currentChapterExhaustedModal__truthBlock currentChapterExhaustedModal__truthBlock--next", children: [
+          /* @__PURE__ */ jsxDEV("h3", { children: "What you can do next" }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/CurrentChapterExhaustedModal.tsx",
+            lineNumber: 66,
+            columnNumber: 9
+          }, this),
+          /* @__PURE__ */ jsxDEV("ul", { children: [
+            /* @__PURE__ */ jsxDEV("li", { children: "Combat and city progression in this life have reached the authored cap." }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/CurrentChapterExhaustedModal.tsx",
+              lineNumber: 68,
+              columnNumber: 11
+            }, this),
+            /* @__PURE__ */ jsxDEV("li", { children: "You can reincarnate for Account Points and begin another life path." }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/CurrentChapterExhaustedModal.tsx",
+              lineNumber: 69,
+              columnNumber: 11
+            }, this),
+            /* @__PURE__ */ jsxDEV("li", { children: "You can review this life’s milestones before deciding." }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/CurrentChapterExhaustedModal.tsx",
+              lineNumber: 70,
+              columnNumber: 11
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/CurrentChapterExhaustedModal.tsx",
+            lineNumber: 67,
+            columnNumber: 9
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/CurrentChapterExhaustedModal.tsx",
+          lineNumber: 65,
+          columnNumber: 7
+        }, this)
+      ]
+    },
+    void 0,
+    true,
+    {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/CurrentChapterExhaustedModal.tsx",
+      lineNumber: 30,
+      columnNumber: 5
+    },
+    this
+  );
+}
+_s(CurrentChapterExhaustedModal, "zSZL5GLZzJzsuzK3BZ+tc0cWOW8=", false, function() {
+  return [useUIStore, useUIStore, useUIStore, useUIStore, useUIStore];
+});
+_c = CurrentChapterExhaustedModal;
+var _c;
+$RefreshReg$(_c, "CurrentChapterExhaustedModal");
+import * as RefreshRuntime from "/@react-refresh";
+const inWebWorker = typeof WorkerGlobalScope !== "undefined" && self instanceof WorkerGlobalScope;
+if (import.meta.hot && !inWebWorker) {
+  if (!window.$RefreshReg$) {
+    throw new Error(
+      "@vitejs/plugin-react can't detect preamble. Something is wrong."
+    );
+  }
+  RefreshRuntime.__hmr_import(import.meta.url).then((currentExports) => {
+    RefreshRuntime.registerExportsForReactRefresh("C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/CurrentChapterExhaustedModal.tsx", currentExports);
+    import.meta.hot.accept((nextExports) => {
+      if (!nextExports) return;
+      const invalidateMessage = RefreshRuntime.validateRefreshBoundaryAndEnqueueUpdate("C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/CurrentChapterExhaustedModal.tsx", currentExports, nextExports);
+      if (invalidateMessage) import.meta.hot.invalidate(invalidateMessage);
+    });
+  });
+}
+function $RefreshReg$(type, id) {
+  return RefreshRuntime.register(type, "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/CurrentChapterExhaustedModal.tsx " + id);
+}
+function $RefreshSig$() {
+  return RefreshRuntime.createSignatureFunctionForTransform();
+}
+
+//# sourceMappingURL=data:application/json;base64,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QUFBLGlDQUFDLFFBQUcsb0NBQUo7QUFBQTtBQUFBO0FBQUE7QUFBQSxpQkFBd0I7QUFBQSxVQUN4Qix1QkFBQyxRQUNDO0FBQUEsbUNBQUMsUUFBRyx1RkFBSjtBQUFBO0FBQUE7QUFBQTtBQUFBLG1CQUEyRTtBQUFBLFlBQzNFLHVCQUFDLFFBQUcsbUZBQUo7QUFBQTtBQUFBO0FBQUE7QUFBQSxtQkFBdUU7QUFBQSxZQUN2RSx1QkFBQyxRQUFHLHNFQUFKO0FBQUE7QUFBQTtBQUFBO0FBQUEsbUJBQTBEO0FBQUEsZUFINUQ7QUFBQTtBQUFBO0FBQUE7QUFBQSxpQkFJQTtBQUFBLGFBTkY7QUFBQTtBQUFBO0FBQUE7QUFBQSxlQU9BO0FBQUE7QUFBQTtBQUFBLElBMUNGO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQSxFQTJDQTtBQUVKO0FBQUNWLEdBdEVlRCw4QkFBNEI7QUFBQSxVQUM3QkYsWUFDQ0EsWUFDTUEsWUFDQ0EsWUFDUUEsVUFBVTtBQUFBO0FBQUFnQixLQUx6QmQ7QUFBNEIsSUFBQWM7QUFBQUMsYUFBQUQsSUFBQSIsIm5hbWVzIjpbInVzZVVJU3RvcmUiLCJSaXR1YWxNb2RhbEZyYW1lIiwiQ3VycmVudENoYXB0ZXJFeGhhdXN0ZWRNb2RhbCIsIl9zIiwib3BlbiIsInN0YXRlIiwic2hvd0N1cnJlbnRDaGFwdGVyRXhoYXVzdGVkTW9kYWwiLCJjbG9zZSIsImNsb3NlQ3VycmVudENoYXB0ZXJFeGhhdXN0ZWRNb2RhbCIsImFja25vd2xlZGdlIiwiYWNrbm93bGVkZ2VDdXJyZW50Q2hhcHRlckV4aGF1c3RlZCIsInNldEFjdGl2ZVRhYiIsIm9wZW5MaWZlU3VtbWFyeU1vZGFsIiwiaGFuZGxlQ2xvc2UiLCJoYW5kbGVPcGVuUHJlc3RpZ2UiLCJoYW5kbGVPcGVuTGlmZVN1bW1hcnkiLCJfYyIsIiRSZWZyZXNoUmVnJCJdLCJpZ25vcmVMaXN0IjpbXSwic291cmNlcyI6WyJDdXJyZW50Q2hhcHRlckV4aGF1c3RlZE1vZGFsLnRzeCJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgeyB1c2VVSVN0b3JlIH0gZnJvbSAnLi4vLi4vc3RvcmVzL3VpU3RvcmUuanMnO1xyXG5pbXBvcnQgeyBSaXR1YWxNb2RhbEZyYW1lIH0gZnJvbSAnLi4vLi4vdWkvc2hlbGwvaW5kZXguanMnO1xyXG5pbXBvcnQgJy4vQ3VycmVudENoYXB0ZXJFeGhhdXN0ZWRNb2RhbC5zY3NzJztcclxuXHJcbmV4cG9ydCBmdW5jdGlvbiBDdXJyZW50Q2hhcHRlckV4aGF1c3RlZE1vZGFsKCkge1xyXG4gIGNvbnN0IG9wZW4gPSB1c2VVSVN0b3JlKChzdGF0ZSkgPT4gc3RhdGUuc2hvd0N1cnJlbnRDaGFwdGVyRXhoYXVzdGVkTW9kYWwpO1xyXG4gIGNvbnN0IGNsb3NlID0gdXNlVUlTdG9yZSgoc3RhdGUpID0+IHN0YXRlLmNsb3NlQ3VycmVudENoYXB0ZXJFeGhhdXN0ZWRNb2RhbCk7XHJcbiAgY29uc3QgYWNrbm93bGVkZ2UgPSB1c2VVSVN0b3JlKChzdGF0ZSkgPT4gc3RhdGUuYWNrbm93bGVkZ2VDdXJyZW50Q2hhcHRlckV4aGF1c3RlZCk7XHJcbiAgY29uc3Qgc2V0QWN0aXZlVGFiID0gdXNlVUlTdG9yZSgoc3RhdGUpID0+IHN0YXRlLnNldEFjdGl2ZVRhYik7XHJcbiAgY29uc3Qgb3BlbkxpZmVTdW1tYXJ5TW9kYWwgPSB1c2VVSVN0b3JlKChzdGF0ZSkgPT4gc3RhdGUub3BlbkxpZmVTdW1tYXJ5TW9kYWwpO1xyXG5cclxuICBjb25zdCBoYW5kbGVDbG9zZSA9ICgpID0+IHtcclxuICAgIGFja25vd2xlZGdlKCk7XHJcbiAgICBjbG9zZSgpO1xyXG4gIH07XHJcblxyXG4gIGNvbnN0IGhhbmRsZU9wZW5QcmVzdGlnZSA9ICgpID0+IHtcclxuICAgIGFja25vd2xlZGdlKCk7XHJcbiAgICBjbG9zZSgpO1xyXG4gICAgc2V0QWN0aXZlVGFiKCdwcmVzdGlnZScpO1xyXG4gIH07XHJcblxyXG4gIGNvbnN0IGhhbmRsZU9wZW5MaWZlU3VtbWFyeSA9ICgpID0+IHtcclxuICAgIGFja25vd2xlZGdlKCk7XHJcbiAgICBjbG9zZSgpO1xyXG4gICAgb3BlbkxpZmVTdW1tYXJ5TW9kYWwoJ2N1cnJlbnQnKTtcclxuICB9O1xyXG5cclxuICByZXR1cm4gKFxyXG4gICAgPFJpdHVhbE1vZGFsRnJhbWVcclxuICAgICAgb3Blbj17b3Blbn1cclxuICAgICAgb25DbG9zZT17aGFuZGxlQ2xvc2V9XHJcbiAgICAgIHRpdGxlPVwiQ3VycmVudCBDaGFwdGVyIEV4aGF1c3RlZFwiXHJcbiAgICAgIHN1YnRpdGxlPVwiU3Bpcml0IFNldmVyaW5nIGlzIHRoZSBjdXJyZW50IGF1dGhvcmVkIGNhcCBpbiB0aGlzIGJ1aWxkLlwiXHJcbiAgICAgIHZhcmlhbnQ9XCJjaGFwdGVyRW5kXCJcclxuICAgICAgc2l6ZT1cIm1kXCJcclxuICAgICAgY2xhc3NOYW1lPVwiY3VycmVudENoYXB0ZXJFeGhhdXN0ZWRNb2RhbFwiXHJcbiAgICAgIGJvZHlDbGFzc05hbWU9XCJjdXJyZW50Q2hhcHRlckV4aGF1c3RlZE1vZGFsX19ib2R5XCJcclxuICAgICAgb3JuYW1lbnQ9ezxkaXYgY2xhc3NOYW1lPVwiY3VycmVudENoYXB0ZXJFeGhhdXN0ZWRNb2RhbF9fc2VhbFwiIGFyaWEtaGlkZGVuPVwidHJ1ZVwiPjxzcGFuIC8+PC9kaXY+fVxyXG4gICAgICBmb290ZXI9eyhcclxuICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImN1cnJlbnRDaGFwdGVyRXhoYXVzdGVkTW9kYWxfX2FjdGlvbkxhbmVcIiBkYXRhLXVpPVwiY3VycmVudC1jaGFwdGVyLWV4aGF1c3RlZC1hY3Rpb24tbGFuZVwiPlxyXG4gICAgICAgICAgPHAgY2xhc3NOYW1lPVwiY3VycmVudENoYXB0ZXJFeGhhdXN0ZWRNb2RhbF9fc3RhdHVzXCIgcm9sZT1cInN0YXR1c1wiIGFyaWEtbGl2ZT1cInBvbGl0ZVwiPlxyXG4gICAgICAgICAgICBTcGlyaXQgU2V2ZXJpbmcgY2FwIHJlYWNoZWQuIENob29zZSB5b3VyIG5leHQgb3V0ZXItbG9vcCBzdGVwLlxyXG4gICAgICAgICAgPC9wPlxyXG4gICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJjdXJyZW50Q2hhcHRlckV4aGF1c3RlZE1vZGFsX19hY3Rpb25zXCI+XHJcbiAgICAgICAgICAgIDxidXR0b24gdHlwZT1cImJ1dHRvblwiIGNsYXNzTmFtZT1cImN1cnJlbnRDaGFwdGVyRXhoYXVzdGVkTW9kYWxfX2FjdGlvbiBjdXJyZW50Q2hhcHRlckV4aGF1c3RlZE1vZGFsX19hY3Rpb24tLXByaW1hcnkgdWlOb1NoaWZ0XCIgb25DbGljaz17aGFuZGxlT3BlblByZXN0aWdlfT5PcGVuIFByZXN0aWdlPC9idXR0b24+XHJcbiAgICAgICAgICAgIDxidXR0b24gdHlwZT1cImJ1dHRvblwiIGNsYXNzTmFtZT1cImN1cnJlbnRDaGFwdGVyRXhoYXVzdGVkTW9kYWxfX2FjdGlvbiBjdXJyZW50Q2hhcHRlckV4aGF1c3RlZE1vZGFsX19hY3Rpb24tLXNlY29uZGFyeSB1aU5vU2hpZnRcIiBvbkNsaWNrPXtoYW5kbGVPcGVuTGlmZVN1bW1hcnl9PlZpZXcgTGlmZSBTdW1tYXJ5PC9idXR0b24+XHJcbiAgICAgICAgICAgIDxidXR0b24gdHlwZT1cImJ1dHRvblwiIGNsYXNzTmFtZT1cImN1cnJlbnRDaGFwdGVyRXhoYXVzdGVkTW9kYWxfX2FjdGlvbiBjdXJyZW50Q2hhcHRlckV4aGF1c3RlZE1vZGFsX19hY3Rpb24tLXRlcnRpYXJ5IHVpTm9TaGlmdFwiIG9uQ2xpY2s9e2hhbmRsZUNsb3NlfT5Db250aW51ZSBUaGlzIExpZmU8L2J1dHRvbj5cclxuICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgIDwvZGl2PlxyXG4gICAgICApfVxyXG4gICAgPlxyXG4gICAgICA8c2VjdGlvbiBjbGFzc05hbWU9XCJjdXJyZW50Q2hhcHRlckV4aGF1c3RlZE1vZGFsX19zdW1tYXJ5XCIgZGF0YS11aT1cImN1cnJlbnQtY2hhcHRlci1leGhhdXN0ZWQtc3VtbWFyeVwiPlxyXG4gICAgICAgIDxoMz5XaGF0IGhhcHBlbmVkPC9oMz5cclxuICAgICAgICA8cCBjbGFzc05hbWU9XCJjdXJyZW50Q2hhcHRlckV4aGF1c3RlZE1vZGFsX19sZWFkXCI+XHJcbiAgICAgICAgICBZb3UgaGF2ZSByZWFjaGVkIDxzdHJvbmc+U3Bpcml0IFNldmVyaW5nPC9zdHJvbmc+LCB0aGUgZW5kIG9mIHRoZSBjdXJyZW50IGF1dGhvcmVkIGNoYXB0ZXIgaW4gdGhpcyBidWlsZC5cclxuICAgICAgICA8L3A+XHJcbiAgICAgIDwvc2VjdGlvbj5cclxuICAgICAgPHNlY3Rpb24gY2xhc3NOYW1lPVwiY3VycmVudENoYXB0ZXJFeGhhdXN0ZWRNb2RhbF9fdHJ1dGhCbG9jayBjdXJyZW50Q2hhcHRlckV4aGF1c3RlZE1vZGFsX190cnV0aEJsb2NrLS1tZWFuaW5nXCI+XHJcbiAgICAgICAgPGgzPldoYXQgdGhpcyBtZWFuczwvaDM+XHJcbiAgICAgICAgPHA+XHJcbiAgICAgICAgICBUaGVyZSBpcyBubyBsaXZlIGNpdHkgNiwgcG9zdC1TZXZlcmluZyBnYXRlIGNoYWluLCBvciBuZXh0IGF1dGhvcmVkIHJlYWxtIGJleW9uZCB0aGlzIHBvaW50IHJpZ2h0IG5vdy5cclxuICAgICAgICA8L3A+XHJcbiAgICAgIDwvc2VjdGlvbj5cclxuICAgICAgPHNlY3Rpb24gY2xhc3NOYW1lPVwiY3VycmVudENoYXB0ZXJFeGhhdXN0ZWRNb2RhbF9fdHJ1dGhCbG9jayBjdXJyZW50Q2hhcHRlckV4aGF1c3RlZE1vZGFsX190cnV0aEJsb2NrLS1uZXh0XCI+XHJcbiAgICAgICAgPGgzPldoYXQgeW91IGNhbiBkbyBuZXh0PC9oMz5cclxuICAgICAgICA8dWw+XHJcbiAgICAgICAgICA8bGk+Q29tYmF0IGFuZCBjaXR5IHByb2dyZXNzaW9uIGluIHRoaXMgbGlmZSBoYXZlIHJlYWNoZWQgdGhlIGF1dGhvcmVkIGNhcC48L2xpPlxyXG4gICAgICAgICAgPGxpPllvdSBjYW4gcmVpbmNhcm5hdGUgZm9yIEFjY291bnQgUG9pbnRzIGFuZCBiZWdpbiBhbm90aGVyIGxpZmUgcGF0aC48L2xpPlxyXG4gICAgICAgICAgPGxpPllvdSBjYW4gcmV2aWV3IHRoaXMgbGlmZeKAmXMgbWlsZXN0b25lcyBiZWZvcmUgZGVjaWRpbmcuPC9saT5cclxuICAgICAgICA8L3VsPlxyXG4gICAgICA8L3NlY3Rpb24+XHJcbiAgICA8L1JpdHVhbE1vZGFsRnJhbWU+XHJcbiAgKTtcclxufVxyXG4iXSwiZmlsZSI6IkM6L1VzZXJzL2FiZHVsL0Rlc2t0b3AvY3VsdGl2YXRpb24taWRsZS9zcmMvY29tcG9uZW50cy9tb2RhbHMvQ3VycmVudENoYXB0ZXJFeGhhdXN0ZWRNb2RhbC50c3gifQ==

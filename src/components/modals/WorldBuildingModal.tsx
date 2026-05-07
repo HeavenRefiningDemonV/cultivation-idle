@@ -3,7 +3,6 @@ import { useContentStore } from '../../stores/contentStore.js';
 import { useUIStore, type WorldBuildingKey, type WorldBuildingModalIntent } from '../../stores/uiStore.js';
 import { resolveModuleRef } from '../screens/world/worldUtils.js';
 import { ManualPavilionPanel } from '../screens/ManualPavilionPanel.js';
-import { ApothecaryPanel } from '../screens/ApothecaryPanel.js';
 import { ForgeWorkshop } from '../../features/professions/forge/ForgeWorkshop.js';
 import { BountyBoardPanel } from '../screens/BountyBoardPanel.js';
 import { ExpeditionBoardPanel } from '../screens/ExpeditionBoardPanel.js';
@@ -19,6 +18,7 @@ import { formatWorldModuleLabel } from '../../ui/text/playerFacingFormatters.js'
 import { inspectWorldFacingModuleTarget } from '../../systems/world/liveWorldLeakAudit.js';
 import { resolveWorldModalEntrySurface } from '../../systems/ui/world/worldBuildingModalEntrySurface.js';
 import { GateTrialScreenOwner } from '../../features/world/gateTrialExact/index.js';
+import { ApothecaryExactScreenOwner } from '../../features/apothecary/exact/index.js';
 
 export interface WorldBuildingModalProps {
   open?: boolean;
@@ -102,14 +102,23 @@ export function WorldBuildingModal({
         break;
       case 'apothecary':
         content = (
-          <ApothecaryPanel
+          <ApothecaryExactScreenOwner
+            cityId={storeCityId}
             shopId={moduleRefId ?? null}
-            initialSurface={storeModalIntent?.apothecarySurface ?? 'buy'}
+            forceFixture={storeModalIntent?.apothecaryExactMode === 'fixture'}
+            focus={storeModalIntent?.apothecaryFocus ?? storeModalIntent?.apothecarySurface ?? 'prescription'}
           />
         );
         break;
       case 'alchemy':
-        content = <ApothecaryPanel shopId={moduleRefId ?? null} initialSurface="brew" />;
+        content = (
+          <ApothecaryExactScreenOwner
+            cityId={storeCityId}
+            shopId={moduleRefId ?? null}
+            forceFixture={storeModalIntent?.apothecaryExactMode === 'fixture'}
+            focus="brew"
+          />
+        );
         break;
       case 'forge':
         content = <ForgeWorkshop cityId={storeCityId} />;

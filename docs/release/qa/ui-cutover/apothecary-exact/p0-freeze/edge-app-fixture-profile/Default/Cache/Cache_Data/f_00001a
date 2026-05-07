@@ -1,0 +1,1151 @@
+import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/components/modals/LifeStartWizardModal.tsx");import.meta.env = {"BASE_URL": "/", "DEV": true, "MODE": "development", "PROD": false, "SSR": false};import __vite__cjsImport0_react_jsxDevRuntime from "/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=c0e4e3e4"; const jsxDEV = __vite__cjsImport0_react_jsxDevRuntime["jsxDEV"];
+var _s = $RefreshSig$();
+import __vite__cjsImport1_react from "/node_modules/.vite/deps/react.js?v=c0e4e3e4"; const useEffect = __vite__cjsImport1_react["useEffect"]; const useMemo = __vite__cjsImport1_react["useMemo"]; const useState = __vite__cjsImport1_react["useState"];
+import "/src/components/modals/LifeStartWizardModal.scss";
+import heavenArt from "/src/assets/menus/path_heaven 1.png?import";
+import earthArt from "/src/assets/menus/path_earth 1.png?import";
+import martialArt from "/src/assets/menus/path_martial 1.png?import";
+import { SaveService } from "/src/services/save/SaveService.ts";
+import { useContentStore } from "/src/stores/contentStore.ts";
+import { useGameStore } from "/src/stores/gameStore.ts";
+import { useHeartLawStore } from "/src/stores/heartLawStore.ts";
+import { usePrestigeStore } from "/src/stores/prestigeStore.ts";
+import { useUIStore } from "/src/stores/uiStore.ts";
+import { getBreathModeSemantics } from "/src/systems/doctrine/breathSemantics.ts";
+import { getPathDoctrineProfile, getPathDoctrineSummary } from "/src/systems/doctrine/pathDoctrineRegistry.ts";
+import { getPathDoctrinePresentation } from "/src/systems/doctrine/pathDoctrinePresentation.ts";
+import { getHeartLawSelectionPresentation } from "/src/systems/doctrine/heartLawSelectionPresentation.ts";
+import {
+  LIFE_START_WIZARD_STEPS,
+  resolveLifeStartWizardUiStep
+} from "/src/systems/ui/lifeStart/lifeStartWizardContract.ts";
+import { InkModalFrame, PaperChip } from "/src/ui/ink/index.ts";
+import { useFxQuality } from "/src/ui/fx/FxQualityProvider.tsx";
+import { getSelectionCommitDelay } from "/src/ui/motion/ritualMotion.ts";
+const LIFE_PATHS = [
+  { id: "heaven", title: "HEAVEN", art: heavenArt, alt: "Heaven path" },
+  { id: "earth", title: "EARTH", art: earthArt, alt: "Earth path" },
+  { id: "martial", title: "MARTIAL", art: martialArt, alt: "Martial path" }
+];
+const BREATH_MODE_IDS = ["balanced", "safe", "fast"];
+export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep } = {}) {
+  _s();
+  const forcedOpen = import.meta.env.DEV && debugForceOpen;
+  const forcedStep = import.meta.env.DEV ? debugForceStep : void 0;
+  const selectedPath = useGameStore((state) => state.selectedPath);
+  const selectPath = useGameStore((state) => state.selectPath);
+  const selectedHeartLawId = useHeartLawStore((state) => state.selectedHeartLawId);
+  const selectHeartLaw = useHeartLawStore((state) => state.selectHeartLaw);
+  const isHeartLawUnlocked = useHeartLawStore((state) => state.isUnlocked);
+  const breathMode = useHeartLawStore((state) => state.breathMode);
+  const setBreathMode = useHeartLawStore((state) => state.setBreathMode);
+  const prestigeCount = usePrestigeStore((state) => state.prestigeCount);
+  const spiritRoot = usePrestigeStore((state) => state.spiritRoot);
+  const setActiveTab = useUIStore((state) => state.setActiveTab);
+  const addNotification = useUIStore((state) => state.addNotification);
+  const lifeStartWizardContext = useUIStore((state) => state.lifeStartWizardContext);
+  const clearLifeStartWizardContext = useUIStore((state) => state.clearLifeStartWizardContext);
+  const contentLoaded = useContentStore((state) => state.isLoaded);
+  const listHeartLaws = useContentStore((state) => state.listHeartLaws);
+  const { effectiveQuality, prefersReducedMotion } = useFxQuality();
+  const [requestedStep, setRequestedStep] = useState(null);
+  const [hoveredPath, setHoveredPath] = useState(null);
+  const [committingPath, setCommittingPath] = useState(null);
+  const [draftHeartLawId, setDraftHeartLawId] = useState(null);
+  const [hoveredHeartLawId, setHoveredHeartLawId] = useState(null);
+  const [draftBreathMode, setDraftBreathMode] = useState(breathMode);
+  const [autoPickChecked, setAutoPickChecked] = useState(false);
+  const [autoPickError, setAutoPickError] = useState(null);
+  const shouldShow = forcedOpen || selectedPath === null || selectedHeartLawId === null;
+  const wizardStep = forcedStep ?? resolveLifeStartWizardUiStep({
+    selectedPath,
+    selectedHeartLawId,
+    draftHeartLawId,
+    requestedStep
+  });
+  useEffect(() => {
+    if (selectedPath === null) {
+      setRequestedStep(null);
+      setDraftHeartLawId(null);
+      setDraftBreathMode(breathMode);
+      setAutoPickChecked(false);
+      setAutoPickError(null);
+      setHoveredHeartLawId(null);
+      return;
+    }
+    if (selectedHeartLawId !== null) {
+      setDraftHeartLawId(selectedHeartLawId);
+      setDraftBreathMode(breathMode);
+    }
+  }, [breathMode, selectedHeartLawId, selectedPath]);
+  useEffect(() => {
+    if (typeof document === "undefined") return void 0;
+    const pathModeActive = shouldShow && wizardStep === 1;
+    document.body.classList.toggle("lifePathMode", pathModeActive);
+    return () => {
+      document.body.classList.remove("lifePathMode");
+    };
+  }, [shouldShow, wizardStep]);
+  const heartLaws = useMemo(() => {
+    if (!contentLoaded) return [];
+    try {
+      return listHeartLaws();
+    } catch (error) {
+      console.warn("[LifeStartWizard] Unable to list heart laws", error);
+      return [];
+    }
+  }, [contentLoaded, listHeartLaws]);
+  const selectedHeartLaw = useMemo(
+    () => heartLaws.find((law) => law.id === draftHeartLawId) ?? null,
+    [draftHeartLawId, heartLaws]
+  );
+  const pathDoctrineProfile = useMemo(() => getPathDoctrineProfile(selectedPath), [selectedPath]);
+  const pathSummary = useMemo(() => getPathDoctrineSummary(selectedPath), [selectedPath]);
+  const draftBreathSemantics = useMemo(() => getBreathModeSemantics(draftBreathMode), [draftBreathMode]);
+  useEffect(() => {
+    if (!autoPickChecked) {
+      setAutoPickError(null);
+      return;
+    }
+    const lastId = lifeStartWizardContext.lastHeartLawId;
+    if (!lastId) {
+      setAutoPickError("No previous Heart Law is recorded yet.");
+      return;
+    }
+    if (!isHeartLawUnlocked(lastId)) {
+      setAutoPickError("Last run Heart Law is not unlocked this life.");
+      return;
+    }
+    setDraftHeartLawId(lastId);
+    setRequestedStep(3);
+    setAutoPickError(null);
+  }, [autoPickChecked, isHeartLawUnlocked, lifeStartWizardContext.lastHeartLawId]);
+  const handleFinish = () => {
+    if (!selectedPath || !draftHeartLawId) {
+      setRequestedStep(2);
+      return;
+    }
+    selectHeartLaw(draftHeartLawId);
+    setBreathMode(draftBreathMode);
+    setActiveTab("cultivation");
+    const pathLabel = selectedPath.charAt(0).toUpperCase() + selectedPath.slice(1);
+    const heartLawLabel = selectedHeartLaw?.name ?? "Heart Law";
+    const breathLabel = draftBreathMode.charAt(0).toUpperCase() + draftBreathMode.slice(1);
+    addNotification("success", `Life begins: ${pathLabel} • ${heartLawLabel} • ${breathLabel}`, 5e3);
+    clearLifeStartWizardContext();
+    setRequestedStep(null);
+    setDraftHeartLawId(null);
+    setAutoPickChecked(false);
+    setAutoPickError(null);
+    SaveService.save();
+  };
+  const handlePickPath = (pathId) => {
+    if (selectedPath !== null || committingPath !== null) return;
+    const commitPath = () => {
+      selectPath(pathId);
+      setRequestedStep(2);
+      setCommittingPath(null);
+    };
+    if (prefersReducedMotion) {
+      commitPath();
+      return;
+    }
+    setCommittingPath(pathId);
+    window.setTimeout(commitPath, getSelectionCommitDelay(prefersReducedMotion));
+  };
+  const handleSelectDraftLaw = (heartLawId) => {
+    setDraftHeartLawId(heartLawId);
+  };
+  const handleChoosePreviewedLaw = () => {
+    if (!previewHeartLaw || !previewUnlocked) return;
+    setDraftHeartLawId(previewHeartLaw.id);
+  };
+  const handleContinueToBreath = () => {
+    if (!draftHeartLawId) return;
+    setRequestedStep(3);
+  };
+  const rememberedHeartLawId = useMemo(() => {
+    const lastId = lifeStartWizardContext.lastHeartLawId;
+    if (!lastId) return null;
+    const exists = heartLaws.some((law) => law.id === lastId);
+    if (!exists || !isHeartLawUnlocked(lastId)) return null;
+    return lastId;
+  }, [heartLaws, isHeartLawUnlocked, lifeStartWizardContext.lastHeartLawId]);
+  const firstUnlockedHeartLawId = useMemo(() => {
+    const firstUnlocked = heartLaws.find((law) => isHeartLawUnlocked(law.id));
+    return firstUnlocked?.id ?? heartLaws[0]?.id ?? null;
+  }, [heartLaws, isHeartLawUnlocked]);
+  const chosenHeartLawId = draftHeartLawId ?? selectedHeartLawId ?? rememberedHeartLawId ?? firstUnlockedHeartLawId;
+  const previewHeartLawId = hoveredHeartLawId ?? chosenHeartLawId;
+  const previewHeartLaw = useMemo(
+    () => heartLaws.find((law) => law.id === previewHeartLawId) ?? null,
+    [heartLaws, previewHeartLawId]
+  );
+  const previewUnlocked = previewHeartLaw ? isHeartLawUnlocked(previewHeartLaw.id) : false;
+  const previewPresentationCard = useMemo(() => {
+    if (!previewHeartLaw) return null;
+    return getHeartLawSelectionPresentation(previewHeartLaw, {
+      spiritRoot,
+      isUnlocked: previewUnlocked,
+      isSelected: chosenHeartLawId === previewHeartLaw.id
+    });
+  }, [chosenHeartLawId, previewHeartLaw, previewUnlocked, spiritRoot]);
+  const showAutoPick = prestigeCount > 0 && Boolean(lifeStartWizardContext.lastHeartLawId);
+  const activePresentationPath = hoveredPath ?? committingPath ?? selectedPath ?? "heaven";
+  const activePresentation = getPathDoctrinePresentation(activePresentationPath);
+  if (!shouldShow) return null;
+  if (wizardStep === 1) {
+    return /* @__PURE__ */ jsxDEV("div", { className: "lifeStartWizardOverlay lifeStartWizardOverlay--path", children: /* @__PURE__ */ jsxDEV("div", { className: "lifeStartWizardModal lifeStartWizardModal--path", children: /* @__PURE__ */ jsxDEV(
+      "div",
+      {
+        className: "lifePathFullscreen",
+        "data-ui": "life-path-fullscreen",
+        "data-fx-quality": effectiveQuality,
+        "data-reduced-motion": prefersReducedMotion ? "true" : "false",
+        children: /* @__PURE__ */ jsxDEV("div", { className: "lifePathHero", children: [
+          /* @__PURE__ */ jsxDEV("div", { className: "lifePathHeroBackdrop", "aria-hidden": true }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+            lineNumber: 256,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV("header", { className: "lifePathHeroHeader", children: [
+            /* @__PURE__ */ jsxDEV("p", { className: "lifePathHeroEyebrow", children: "New Life Ritual" }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+              lineNumber: 258,
+              columnNumber: 17
+            }, this),
+            /* @__PURE__ */ jsxDEV("h2", { className: "lifePathHeroTitle", children: "Choose Your Path" }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+              lineNumber: 259,
+              columnNumber: 17
+            }, this),
+            /* @__PURE__ */ jsxDEV("p", { className: "lifePathHeroSubline", children: "Select the doctrine that will shape this life." }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+              lineNumber: 260,
+              columnNumber: 17
+            }, this),
+            /* @__PURE__ */ jsxDEV("div", { className: "lifePathHeroDividerBar", "aria-hidden": true }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+              lineNumber: 261,
+              columnNumber: 17
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+            lineNumber: 257,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV("div", { className: "lifePathTriptychFrame", children: [
+            /* @__PURE__ */ jsxDEV("div", { className: `lifePathTriptychRail lifePathTriptychRail--${activePresentationPath}`, "data-active-path": activePresentationPath, children: /* @__PURE__ */ jsxDEV(
+              "aside",
+              {
+                id: "lifePath-active-plaque",
+                className: `lifePathPreviewPlaque lifePathPreviewPlaque--${activePresentationPath}`,
+                "aria-live": "polite",
+                children: [
+                  /* @__PURE__ */ jsxDEV("div", { className: "lifePathPreviewPlaque__label", children: activePresentation?.label ?? "Path Preview" }, void 0, false, {
+                    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                    lineNumber: 271,
+                    columnNumber: 21
+                  }, this),
+                  /* @__PURE__ */ jsxDEV("p", { className: "lifePathPreviewPlaque__subtitle", children: activePresentation?.doctrineSubtitle ?? "Choose a doctrine to preview its cadence." }, void 0, false, {
+                    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                    lineNumber: 272,
+                    columnNumber: 21
+                  }, this),
+                  /* @__PURE__ */ jsxDEV("p", { className: "lifePathPreviewPlaque__summary", children: activePresentation?.summary ?? "Choose a doctrine to preview its philosophy." }, void 0, false, {
+                    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                    lineNumber: 273,
+                    columnNumber: 21
+                  }, this),
+                  /* @__PURE__ */ jsxDEV("div", { className: "lifePathPreviewPlaque__highlights", "aria-label": "Path highlights", children: (activePresentation?.statHighlights ?? []).map(
+                    (highlight) => /* @__PURE__ */ jsxDEV("span", { className: "lifePathPreviewPlaque__chip", children: highlight }, highlight, false, {
+                      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                      lineNumber: 276,
+                      columnNumber: 23
+                    }, this)
+                  ) }, void 0, false, {
+                    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                    lineNumber: 274,
+                    columnNumber: 21
+                  }, this),
+                  /* @__PURE__ */ jsxDEV("div", { className: "lifePathPreviewPlaque__tags", "aria-label": "Doctrine tags", children: (activePresentation?.tags ?? []).map(
+                    (tag) => /* @__PURE__ */ jsxDEV("span", { className: "lifePathPreviewPlaque__tag", children: tag }, tag, false, {
+                      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                      lineNumber: 281,
+                      columnNumber: 23
+                    }, this)
+                  ) }, void 0, false, {
+                    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                    lineNumber: 279,
+                    columnNumber: 21
+                  }, this)
+                ]
+              },
+              void 0,
+              true,
+              {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                lineNumber: 266,
+                columnNumber: 19
+              },
+              this
+            ) }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+              lineNumber: 265,
+              columnNumber: 17
+            }, this),
+            /* @__PURE__ */ jsxDEV("div", { className: "lifePathTriptych", "data-ui": "life-path-triptych", "data-preview": activePresentationPath, role: "group", "aria-label": "Choose your Life Path", children: LIFE_PATHS.map((path) => {
+              const selected = selectedPath === path.id;
+              const disabled = selectedPath !== null && !selected;
+              const isActivePresentation = activePresentationPath === path.id;
+              const isDimmed = hoveredPath !== null && hoveredPath !== path.id;
+              const isCommitting = committingPath === path.id;
+              const presentation = getPathDoctrinePresentation(path.id);
+              const roleCue = presentation?.practicalRoleLine ?? "Choose this path to shape your life.";
+              const roleId = `lifePath-role-${path.id}`;
+              const plaqueId = "lifePath-active-plaque";
+              return /* @__PURE__ */ jsxDEV(
+                "div",
+                {
+                  className: `lifePathPanel lifePathPanel--${path.id}${isActivePresentation ? " lifePathPanel--previewed" : ""}${isDimmed ? " lifePathPanel--receded" : ""}${isCommitting ? " lifePathPanel--commit" : ""}`,
+                  children: [
+                    /* @__PURE__ */ jsxDEV("div", { className: "lifePathPanel__frame", "aria-hidden": true }, void 0, false, {
+                      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                      lineNumber: 302,
+                      columnNumber: 23
+                    }, this),
+                    /* @__PURE__ */ jsxDEV("div", { className: "lifePathPanel__veil", "aria-hidden": true }, void 0, false, {
+                      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                      lineNumber: 303,
+                      columnNumber: 23
+                    }, this),
+                    /* @__PURE__ */ jsxDEV("span", { className: "lifePathPanel__stamp", "aria-hidden": "true" }, void 0, false, {
+                      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                      lineNumber: 304,
+                      columnNumber: 23
+                    }, this),
+                    /* @__PURE__ */ jsxDEV("img", { className: "lifePathPanel__art", src: path.art, alt: path.alt, draggable: false }, void 0, false, {
+                      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                      lineNumber: 305,
+                      columnNumber: 23
+                    }, this),
+                    /* @__PURE__ */ jsxDEV("div", { className: "lifePathPanel__title", children: path.title }, void 0, false, {
+                      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                      lineNumber: 306,
+                      columnNumber: 23
+                    }, this),
+                    /* @__PURE__ */ jsxDEV("div", { className: "lifePathPanel__footer", children: [
+                      /* @__PURE__ */ jsxDEV("p", { id: roleId, className: "lifePathPanel__role", children: roleCue }, void 0, false, {
+                        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                        lineNumber: 308,
+                        columnNumber: 25
+                      }, this),
+                      /* @__PURE__ */ jsxDEV("div", { className: "lifePathPanel__actionPlate", children: /* @__PURE__ */ jsxDEV(
+                        "button",
+                        {
+                          type: "button",
+                          className: "lifePathPanel__select",
+                          onClick: () => handlePickPath(path.id),
+                          onMouseEnter: () => setHoveredPath(path.id),
+                          onMouseLeave: () => setHoveredPath(null),
+                          onFocus: () => setHoveredPath(path.id),
+                          onBlur: () => setHoveredPath(null),
+                          disabled: disabled || committingPath !== null,
+                          "aria-label": `Select ${path.title.toLowerCase()} path`,
+                          "aria-pressed": selected,
+                          "aria-describedby": `${roleId} ${plaqueId}`,
+                          children: "Select"
+                        },
+                        void 0,
+                        false,
+                        {
+                          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                          lineNumber: 310,
+                          columnNumber: 27
+                        },
+                        this
+                      ) }, void 0, false, {
+                        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                        lineNumber: 309,
+                        columnNumber: 25
+                      }, this)
+                    ] }, void 0, true, {
+                      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                      lineNumber: 307,
+                      columnNumber: 23
+                    }, this)
+                  ]
+                },
+                path.id,
+                true,
+                {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                  lineNumber: 298,
+                  columnNumber: 23
+                },
+                this
+              );
+            }) }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+              lineNumber: 286,
+              columnNumber: 17
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+            lineNumber: 264,
+            columnNumber: 15
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+          lineNumber: 255,
+          columnNumber: 13
+        }, this)
+      },
+      void 0,
+      false,
+      {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+        lineNumber: 249,
+        columnNumber: 11
+      },
+      this
+    ) }, void 0, false, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+      lineNumber: 248,
+      columnNumber: 9
+    }, this) }, void 0, false, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+      lineNumber: 247,
+      columnNumber: 7
+    }, this);
+  }
+  return /* @__PURE__ */ jsxDEV(
+    InkModalFrame,
+    {
+      ariaLabel: "Begin Your New Life",
+      className: "lifeStartWizardFrame",
+      panelClassName: "lifeStartWizardModal--ink",
+      variant: "heartlaw",
+      watermark: true,
+      children: /* @__PURE__ */ jsxDEV("div", { className: "lifeStartWizardContent", children: [
+        /* @__PURE__ */ jsxDEV("div", { className: "lifeStartWizardHeader", children: [
+          /* @__PURE__ */ jsxDEV("h2", { children: "Begin Your New Life" }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+            lineNumber: 349,
+            columnNumber: 11
+          }, this),
+          /* @__PURE__ */ jsxDEV("p", { children: "Choose your path, scripture, and initial breath focus before cultivation begins." }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+            lineNumber: 350,
+            columnNumber: 11
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+          lineNumber: 348,
+          columnNumber: 9
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { className: "lifeStartWizardSteps", role: "list", "aria-label": "Life start steps", children: LIFE_START_WIZARD_STEPS.map(
+          (step) => /* @__PURE__ */ jsxDEV(
+            PaperChip,
+            {
+              text: step === 1 ? "1 · Life Path" : step === 2 ? "2 · Heart Law" : "3 · Breath Focus",
+              className: `wizardStepChip${wizardStep === step ? " wizardStepChip--active" : ""}`
+            },
+            step,
+            false,
+            {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+              lineNumber: 355,
+              columnNumber: 11
+            },
+            this
+          )
+        ) }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+          lineNumber: 353,
+          columnNumber: 9
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { className: "wizardPathSummary", "aria-live": "polite", children: [
+          /* @__PURE__ */ jsxDEV("div", { className: "wizardPathSummary__title", children: [
+            "Locked Path: ",
+            pathDoctrineProfile?.label ?? "Unknown"
+          ] }, void 0, true, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+            lineNumber: 364,
+            columnNumber: 11
+          }, this),
+          /* @__PURE__ */ jsxDEV("p", { className: "wizardPathSummary__desc", children: pathSummary }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+            lineNumber: 365,
+            columnNumber: 11
+          }, this),
+          /* @__PURE__ */ jsxDEV("div", { className: "wizardPathSummary__chips", children: [
+            pathDoctrineProfile?.coreIdentity ? /* @__PURE__ */ jsxDEV("span", { className: "wizardPathSummary__chip", children: pathDoctrineProfile.coreIdentity }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+              lineNumber: 367,
+              columnNumber: 50
+            }, this) : null,
+            /* @__PURE__ */ jsxDEV("span", { className: "wizardPathSummary__chip", children: [
+              "Breath: ",
+              draftBreathSemantics.label
+            ] }, void 0, true, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+              lineNumber: 368,
+              columnNumber: 13
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+            lineNumber: 366,
+            columnNumber: 11
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+          lineNumber: 363,
+          columnNumber: 9
+        }, this),
+        wizardStep === 2 ? /* @__PURE__ */ jsxDEV("div", { className: "wizardSection lifeStartHeartLawShell", "data-ui": "life-start-heart-law-shell", children: [
+          /* @__PURE__ */ jsxDEV(
+            "div",
+            {
+              className: "lifeStartHeartLawShell__choices",
+              role: "group",
+              "aria-label": "Heart Law choices",
+              "data-ui": "life-start-heart-law-selection-region",
+              children: [
+                /* @__PURE__ */ jsxDEV("div", { className: "lifeStartHeartLawShell__choicesHeader", children: [
+                  /* @__PURE__ */ jsxDEV("h3", { children: "Choose Your Heart Law (Xinfa)" }, void 0, false, {
+                    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                    lineNumber: 381,
+                    columnNumber: 17
+                  }, this),
+                  /* @__PURE__ */ jsxDEV("p", { children: "Select the scripture that governs your verses, resonance, and cultivation cadence." }, void 0, false, {
+                    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                    lineNumber: 382,
+                    columnNumber: 17
+                  }, this)
+                ] }, void 0, true, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                  lineNumber: 380,
+                  columnNumber: 15
+                }, this),
+                /* @__PURE__ */ jsxDEV("div", { className: "lifeStartHeartLawChoicesGrid", children: [
+                  heartLaws.map((law) => {
+                    const unlocked = isHeartLawUnlocked(law.id);
+                    const selected = chosenHeartLawId === law.id;
+                    const previewed = previewHeartLawId === law.id;
+                    const presentation = getHeartLawSelectionPresentation(law, {
+                      spiritRoot,
+                      isUnlocked: unlocked,
+                      isSelected: selected
+                    });
+                    return /* @__PURE__ */ jsxDEV(
+                      "button",
+                      {
+                        type: "button",
+                        className: `lifeStartHeartLawChoice${selected ? " lifeStartHeartLawChoice--selected" : ""}${previewed ? " lifeStartHeartLawChoice--previewed" : ""}${!unlocked ? " lifeStartHeartLawChoice--locked" : ""}`,
+                        onClick: () => unlocked ? handleSelectDraftLaw(law.id) : void 0,
+                        onMouseEnter: () => setHoveredHeartLawId(law.id),
+                        onMouseLeave: () => setHoveredHeartLawId(null),
+                        onFocus: () => setHoveredHeartLawId(law.id),
+                        onBlur: () => setHoveredHeartLawId(null),
+                        "aria-disabled": !unlocked,
+                        "aria-pressed": selected,
+                        "aria-describedby": `lifeStartHeartLawDetailTitle lifeStartHeartLawDetailResonance`,
+                        "aria-label": `${presentation.label}, ${presentation.familyLabel}, Resonance ${presentation.resonanceLabel}, ${presentation.statusLabel}`,
+                        children: [
+                          /* @__PURE__ */ jsxDEV("div", { className: `lifeStartHeartLawChoice__stamp lifeStartHeartLawChoice__stamp--${presentation.statusTone}`, "aria-hidden": "true", children: presentation.statusLabel }, void 0, false, {
+                            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                            lineNumber: 411,
+                            columnNumber: 23
+                          }, this),
+                          /* @__PURE__ */ jsxDEV("div", { className: "lifeStartHeartLawChoice__title", children: presentation.label }, void 0, false, {
+                            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                            lineNumber: 412,
+                            columnNumber: 23
+                          }, this),
+                          /* @__PURE__ */ jsxDEV("div", { className: "lifeStartHeartLawChoice__family", children: presentation.familyLabel }, void 0, false, {
+                            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                            lineNumber: 413,
+                            columnNumber: 23
+                          }, this),
+                          /* @__PURE__ */ jsxDEV("div", { className: `lifeStartHeartLawChoice__resonance lifeStartHeartLawChoice__resonance--${presentation.resonanceTone}`, children: presentation.resonanceLabel }, void 0, false, {
+                            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                            lineNumber: 414,
+                            columnNumber: 23
+                          }, this),
+                          /* @__PURE__ */ jsxDEV("div", { className: "lifeStartHeartLawChoice__role", children: presentation.roleLine }, void 0, false, {
+                            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                            lineNumber: 415,
+                            columnNumber: 23
+                          }, this),
+                          /* @__PURE__ */ jsxDEV("div", { className: "lifeStartHeartLawChoice__tags", children: presentation.tagLabels.map(
+                            (tag) => /* @__PURE__ */ jsxDEV("span", { className: "lifeStartHeartLawChoice__tag", children: tag }, tag, false, {
+                              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                              lineNumber: 418,
+                              columnNumber: 23
+                            }, this)
+                          ) }, void 0, false, {
+                            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                            lineNumber: 416,
+                            columnNumber: 23
+                          }, this),
+                          /* @__PURE__ */ jsxDEV("div", { className: "lifeStartHeartLawChoice__footer", children: [
+                            /* @__PURE__ */ jsxDEV("span", { className: "lifeStartHeartLawChoice__tier", children: presentation.tierLabel }, void 0, false, {
+                              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                              lineNumber: 422,
+                              columnNumber: 25
+                            }, this),
+                            /* @__PURE__ */ jsxDEV("span", { className: "lifeStartHeartLawChoice__statusLine", children: presentation.statusLabel }, void 0, false, {
+                              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                              lineNumber: 423,
+                              columnNumber: 25
+                            }, this)
+                          ] }, void 0, true, {
+                            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                            lineNumber: 421,
+                            columnNumber: 23
+                          }, this),
+                          /* @__PURE__ */ jsxDEV("div", { className: "lifeStartHeartLawChoice__unlock", children: presentation.availabilityLine }, void 0, false, {
+                            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                            lineNumber: 425,
+                            columnNumber: 23
+                          }, this)
+                        ]
+                      },
+                      law.id,
+                      true,
+                      {
+                        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                        lineNumber: 397,
+                        columnNumber: 19
+                      },
+                      this
+                    );
+                  }),
+                  heartLaws.length === 0 ? /* @__PURE__ */ jsxDEV("div", { className: "wizardEmpty", children: "Heart laws are loading..." }, void 0, false, {
+                    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                    lineNumber: 429,
+                    columnNumber: 43
+                  }, this) : null
+                ] }, void 0, true, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                  lineNumber: 385,
+                  columnNumber: 15
+                }, this)
+              ]
+            },
+            void 0,
+            true,
+            {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+              lineNumber: 374,
+              columnNumber: 13
+            },
+            this
+          ),
+          /* @__PURE__ */ jsxDEV(
+            "aside",
+            {
+              className: `lifeStartHeartLawShell__detail lifeStartHeartLawShell__detail--${previewPresentationCard?.previewFamilyTone ?? "unknown"}`,
+              "aria-live": "polite",
+              "data-ui": "life-start-heart-law-detail-region",
+              children: /* @__PURE__ */ jsxDEV("div", { className: "lifeStartHeartLawDetail", children: [
+                /* @__PURE__ */ jsxDEV("p", { className: "lifeStartHeartLawDetail__eyebrow", children: "Scripture Detail" }, void 0, false, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                  lineNumber: 439,
+                  columnNumber: 17
+                }, this),
+                /* @__PURE__ */ jsxDEV("h3", { id: "lifeStartHeartLawDetailTitle", className: "lifeStartHeartLawDetail__title", children: previewHeartLaw?.name ?? "No Heart Law available" }, void 0, false, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                  lineNumber: 440,
+                  columnNumber: 17
+                }, this),
+                /* @__PURE__ */ jsxDEV("p", { className: "lifeStartHeartLawDetail__subtitle", children: previewHeartLaw ? `${previewPresentationCard?.familyLabel ?? "Doctrine"} • ${previewPresentationCard?.tierLabel ?? "Tier ?"} • ${previewPresentationCard?.archetypeLabel ?? "Doctrine"}` : "Awaiting scripture data" }, void 0, false, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                  lineNumber: 441,
+                  columnNumber: 17
+                }, this),
+                /* @__PURE__ */ jsxDEV("p", { className: "lifeStartHeartLawDetail__doctrineSubtitle", children: previewPresentationCard?.doctrineSubtitle ?? "Doctrine scripture." }, void 0, false, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                  lineNumber: 445,
+                  columnNumber: 17
+                }, this),
+                /* @__PURE__ */ jsxDEV("p", { className: "lifeStartHeartLawDetail__roleLine", children: previewPresentationCard?.roleLine ?? "Role: Foundational doctrine support." }, void 0, false, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                  lineNumber: 446,
+                  columnNumber: 17
+                }, this),
+                /* @__PURE__ */ jsxDEV("div", { id: "lifeStartHeartLawDetailResonance", className: `lifeStartHeartLawResonance lifeStartHeartLawResonance--${previewPresentationCard?.resonanceTone ?? "neutral"}`, children: previewPresentationCard ? `Resonance: ${previewPresentationCard.resonanceLabel} — ${previewPresentationCard.resonanceDetail}` : "Resonance: Neutral — No resonance bonus needed." }, void 0, false, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                  lineNumber: 448,
+                  columnNumber: 17
+                }, this),
+                /* @__PURE__ */ jsxDEV("div", { className: "lifeStartHeartLawDetail__anchor", "aria-hidden": "true", "data-ui": "life-start-heart-law-sacred-anchor", children: [
+                  /* @__PURE__ */ jsxDEV("div", { className: "lifeStartHeartLawDetail__anchorSeal" }, void 0, false, {
+                    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                    lineNumber: 453,
+                    columnNumber: 19
+                  }, this),
+                  /* @__PURE__ */ jsxDEV("div", { className: "lifeStartHeartLawDetail__anchorLabel", children: "Inner Scripture Altar" }, void 0, false, {
+                    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                    lineNumber: 454,
+                    columnNumber: 19
+                  }, this),
+                  /* @__PURE__ */ jsxDEV("div", { className: "lifeStartHeartLawDetail__anchorName", children: previewHeartLaw?.name ?? "Scripture Awaiting" }, void 0, false, {
+                    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                    lineNumber: 455,
+                    columnNumber: 19
+                  }, this),
+                  /* @__PURE__ */ jsxDEV("div", { className: "lifeStartHeartLawDetail__anchorLine", children: previewPresentationCard?.doctrineSubtitle ?? "Parchment stillness" }, void 0, false, {
+                    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                    lineNumber: 456,
+                    columnNumber: 19
+                  }, this)
+                ] }, void 0, true, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                  lineNumber: 452,
+                  columnNumber: 17
+                }, this),
+                /* @__PURE__ */ jsxDEV("div", { className: "lifeStartHeartLawDetail__tags", "aria-label": "Dao tags", children: (previewPresentationCard?.tagLabels ?? []).map(
+                  (tag) => /* @__PURE__ */ jsxDEV("span", { className: "lifeStartHeartLawDetail__tag", children: tag }, tag, false, {
+                    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                    lineNumber: 461,
+                    columnNumber: 17
+                  }, this)
+                ) }, void 0, false, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                  lineNumber: 459,
+                  columnNumber: 17
+                }, this),
+                /* @__PURE__ */ jsxDEV("p", { className: "lifeStartHeartLawDetail__fantasy", children: previewPresentationCard?.fantasyDescription ?? "A scripture carried through quiet inner discipline." }, void 0, false, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                  lineNumber: 465,
+                  columnNumber: 17
+                }, this),
+                /* @__PURE__ */ jsxDEV("p", { className: "lifeStartHeartLawDetail__practical", children: previewPresentationCard?.practicalDescription ?? "Best for reliable doctrine development in early lives." }, void 0, false, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                  lineNumber: 466,
+                  columnNumber: 17
+                }, this),
+                /* @__PURE__ */ jsxDEV("div", { className: "lifeStartHeartLawDetail__signature", children: [
+                  /* @__PURE__ */ jsxDEV("p", { className: "lifeStartHeartLawDetail__signatureTitle", children: "Signature" }, void 0, false, {
+                    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                    lineNumber: 469,
+                    columnNumber: 19
+                  }, this),
+                  /* @__PURE__ */ jsxDEV("p", { className: "lifeStartHeartLawDetail__summary", children: previewPresentationCard?.signatureSummary ?? "Doctrine-focused signature." }, void 0, false, {
+                    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                    lineNumber: 470,
+                    columnNumber: 19
+                  }, this),
+                  /* @__PURE__ */ jsxDEV("ul", { className: "lifeStartHeartLawDetail__benefits", children: (previewPresentationCard?.keyBenefits ?? []).slice(0, 3).map(
+                    (benefit) => /* @__PURE__ */ jsxDEV("li", { children: benefit }, benefit, false, {
+                      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                      lineNumber: 473,
+                      columnNumber: 19
+                    }, this)
+                  ) }, void 0, false, {
+                    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                    lineNumber: 471,
+                    columnNumber: 19
+                  }, this)
+                ] }, void 0, true, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                  lineNumber: 468,
+                  columnNumber: 17
+                }, this),
+                /* @__PURE__ */ jsxDEV("p", { className: "lifeStartHeartLawDetail__unlock", children: previewPresentationCard?.availabilityLine ?? "Starter scripture available immediately." }, void 0, false, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                  lineNumber: 478,
+                  columnNumber: 17
+                }, this),
+                /* @__PURE__ */ jsxDEV("div", { className: "lifeStartHeartLawDetail__ctaLane", children: [
+                  /* @__PURE__ */ jsxDEV(
+                    "button",
+                    {
+                      type: "button",
+                      className: "button-secondary uiNoShift",
+                      onClick: handleChoosePreviewedLaw,
+                      disabled: Boolean(previewPresentationCard?.ctaDisabledReason),
+                      children: previewPresentationCard?.ctaLabel ?? "Choose This Heart Law"
+                    },
+                    void 0,
+                    false,
+                    {
+                      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                      lineNumber: 483,
+                      columnNumber: 19
+                    },
+                    this
+                  ),
+                  previewPresentationCard?.ctaDisabledReason ? /* @__PURE__ */ jsxDEV("p", { className: "lifeStartHeartLawDetail__ctaReason", children: previewPresentationCard.ctaDisabledReason }, void 0, false, {
+                    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                    lineNumber: 492,
+                    columnNumber: 17
+                  }, this) : null
+                ] }, void 0, true, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                  lineNumber: 482,
+                  columnNumber: 17
+                }, this),
+                /* @__PURE__ */ jsxDEV("div", { className: "lifeStartHeartLawSupport", children: [
+                  /* @__PURE__ */ jsxDEV("p", { className: "lifeStartHeartLawSupport__hint", children: "This is doctrine preview only; verse progress begins after life-start is confirmed." }, void 0, false, {
+                    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                    lineNumber: 497,
+                    columnNumber: 19
+                  }, this),
+                  showAutoPick ? /* @__PURE__ */ jsxDEV("label", { className: "lifeStartHeartLawMemory", children: [
+                    /* @__PURE__ */ jsxDEV(
+                      "input",
+                      {
+                        type: "checkbox",
+                        checked: autoPickChecked,
+                        onChange: (event) => setAutoPickChecked(event.target.checked),
+                        disabled: lifeStartWizardContext.lastHeartLawId === null
+                      },
+                      void 0,
+                      false,
+                      {
+                        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                        lineNumber: 503,
+                        columnNumber: 23
+                      },
+                      this
+                    ),
+                    /* @__PURE__ */ jsxDEV("span", { children: "Use last run's Heart Law memory" }, void 0, false, {
+                      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                      lineNumber: 509,
+                      columnNumber: 23
+                    }, this)
+                  ] }, void 0, true, {
+                    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                    lineNumber: 502,
+                    columnNumber: 17
+                  }, this) : null,
+                  autoPickError ? /* @__PURE__ */ jsxDEV("div", { className: "lifeStartHeartLawMemory__error", children: autoPickError }, void 0, false, {
+                    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                    lineNumber: 512,
+                    columnNumber: 36
+                  }, this) : null
+                ] }, void 0, true, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                  lineNumber: 496,
+                  columnNumber: 17
+                }, this)
+              ] }, void 0, true, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                lineNumber: 438,
+                columnNumber: 15
+              }, this)
+            },
+            void 0,
+            false,
+            {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+              lineNumber: 433,
+              columnNumber: 13
+            },
+            this
+          ),
+          /* @__PURE__ */ jsxDEV("div", { className: "wizardFooter wizardFooter--stable", children: [
+            /* @__PURE__ */ jsxDEV("div", { className: "wizardFooterLane wizardFooterLane--left", "aria-hidden": "true" }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+              lineNumber: 518,
+              columnNumber: 15
+            }, this),
+            /* @__PURE__ */ jsxDEV("div", { className: "wizardFooterLane wizardFooterLane--right", children: /* @__PURE__ */ jsxDEV(
+              "button",
+              {
+                type: "button",
+                className: "button-primary uiNoShift",
+                onClick: handleContinueToBreath,
+                disabled: !draftHeartLawId,
+                children: "Next"
+              },
+              void 0,
+              false,
+              {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                lineNumber: 520,
+                columnNumber: 17
+              },
+              this
+            ) }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+              lineNumber: 519,
+              columnNumber: 15
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+            lineNumber: 517,
+            columnNumber: 13
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+          lineNumber: 373,
+          columnNumber: 9
+        }, this) : null,
+        wizardStep === 3 ? /* @__PURE__ */ jsxDEV("div", { className: "wizardSection lifeStartBreathShell", "data-ui": "life-start-breath-focus-shell", children: [
+          /* @__PURE__ */ jsxDEV(
+            "section",
+            {
+              className: "lifeStartBreathShell__choices",
+              "aria-label": "Breath focus choices",
+              "data-ui": "life-start-breath-focus-selection-region",
+              children: [
+                /* @__PURE__ */ jsxDEV("div", { className: "lifeStartBreathShell__choicesHeader", children: [
+                  /* @__PURE__ */ jsxDEV("h3", { children: "Choose Breath Focus" }, void 0, false, {
+                    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                    lineNumber: 541,
+                    columnNumber: 17
+                  }, this),
+                  /* @__PURE__ */ jsxDEV("p", { children: "Select how this life will pace cultivation breath cycles." }, void 0, false, {
+                    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                    lineNumber: 542,
+                    columnNumber: 17
+                  }, this)
+                ] }, void 0, true, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                  lineNumber: 540,
+                  columnNumber: 15
+                }, this),
+                /* @__PURE__ */ jsxDEV("div", { className: "lifeStartBreathChoicesGrid", children: BREATH_MODE_IDS.map((modeId) => {
+                  const semantics = getBreathModeSemantics(modeId);
+                  const selected = draftBreathMode === modeId;
+                  const modeName = semantics.label;
+                  return /* @__PURE__ */ jsxDEV(
+                    "button",
+                    {
+                      type: "button",
+                      className: `lifeStartBreathChoice${selected ? " lifeStartBreathChoice--selected" : ""}`,
+                      onClick: () => setDraftBreathMode(modeId),
+                      "aria-pressed": selected,
+                      "aria-describedby": "lifeStartBreathDetailTitle lifeStartBreathDetailSummary",
+                      children: [
+                        /* @__PURE__ */ jsxDEV("div", { className: "lifeStartBreathChoice__stamp", "aria-hidden": "true", children: selected ? "Chosen" : "Discipline" }, void 0, false, {
+                          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                          lineNumber: 558,
+                          columnNumber: 23
+                        }, this),
+                        /* @__PURE__ */ jsxDEV("div", { className: "lifeStartBreathChoice__title", children: modeName }, void 0, false, {
+                          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                          lineNumber: 561,
+                          columnNumber: 23
+                        }, this),
+                        /* @__PURE__ */ jsxDEV("div", { className: "lifeStartBreathChoice__summary", children: semantics.summary }, void 0, false, {
+                          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                          lineNumber: 562,
+                          columnNumber: 23
+                        }, this),
+                        /* @__PURE__ */ jsxDEV("div", { className: "lifeStartBreathChoice__preferredFor", children: [
+                          "Best for: ",
+                          semantics.preferredFor.slice(0, 2).join(", ").replace(/_/g, " ")
+                        ] }, void 0, true, {
+                          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                          lineNumber: 563,
+                          columnNumber: 23
+                        }, this),
+                        /* @__PURE__ */ jsxDEV("div", { className: "lifeStartBreathChoice__meta", children: selected ? "Selected for this life" : "Select focus" }, void 0, false, {
+                          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                          lineNumber: 566,
+                          columnNumber: 23
+                        }, this)
+                      ]
+                    },
+                    modeId,
+                    true,
+                    {
+                      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                      lineNumber: 550,
+                      columnNumber: 19
+                    },
+                    this
+                  );
+                }) }, void 0, false, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                  lineNumber: 544,
+                  columnNumber: 15
+                }, this)
+              ]
+            },
+            void 0,
+            true,
+            {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+              lineNumber: 535,
+              columnNumber: 13
+            },
+            this
+          ),
+          /* @__PURE__ */ jsxDEV(
+            "aside",
+            {
+              className: "lifeStartBreathShell__detail",
+              "aria-live": "polite",
+              "data-ui": "life-start-breath-focus-detail-region",
+              children: /* @__PURE__ */ jsxDEV("div", { className: "lifeStartBreathDetail", children: [
+                /* @__PURE__ */ jsxDEV("p", { className: "lifeStartBreathDetail__eyebrow", children: "Breath Discipline" }, void 0, false, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                  lineNumber: 579,
+                  columnNumber: 17
+                }, this),
+                /* @__PURE__ */ jsxDEV("h3", { id: "lifeStartBreathDetailTitle", className: "lifeStartBreathDetail__title", children: draftBreathSemantics.label }, void 0, false, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                  lineNumber: 580,
+                  columnNumber: 17
+                }, this),
+                /* @__PURE__ */ jsxDEV("p", { id: "lifeStartBreathDetailSummary", className: "lifeStartBreathDetail__summary", children: draftBreathSemantics.summary }, void 0, false, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                  lineNumber: 581,
+                  columnNumber: 17
+                }, this),
+                /* @__PURE__ */ jsxDEV("div", { className: "lifeStartBreathDetail__continuity", children: [
+                  "Path: ",
+                  pathDoctrineProfile?.label ?? "Unknown",
+                  " • Scripture: ",
+                  selectedHeartLaw?.name ?? "Awaiting heart law"
+                ] }, void 0, true, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                  lineNumber: 583,
+                  columnNumber: 17
+                }, this),
+                /* @__PURE__ */ jsxDEV("div", { className: "lifeStartBreathDetail__rail", children: [
+                  /* @__PURE__ */ jsxDEV("div", { className: "lifeStartBreathDetail__block", children: [
+                    /* @__PURE__ */ jsxDEV("p", { className: "lifeStartBreathDetail__blockLabel", children: "Best for" }, void 0, false, {
+                      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                      lineNumber: 589,
+                      columnNumber: 21
+                    }, this),
+                    /* @__PURE__ */ jsxDEV("ul", { className: "lifeStartBreathDetail__list", children: draftBreathSemantics.preferredFor.map(
+                      (entry) => /* @__PURE__ */ jsxDEV("li", { children: entry.replace(/_/g, " ") }, entry, false, {
+                        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                        lineNumber: 592,
+                        columnNumber: 21
+                      }, this)
+                    ) }, void 0, false, {
+                      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                      lineNumber: 590,
+                      columnNumber: 21
+                    }, this)
+                  ] }, void 0, true, {
+                    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                    lineNumber: 588,
+                    columnNumber: 19
+                  }, this),
+                  /* @__PURE__ */ jsxDEV("div", { className: "lifeStartBreathDetail__block", children: [
+                    /* @__PURE__ */ jsxDEV("p", { className: "lifeStartBreathDetail__blockLabel", children: "Caution" }, void 0, false, {
+                      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                      lineNumber: 597,
+                      columnNumber: 21
+                    }, this),
+                    /* @__PURE__ */ jsxDEV("p", { className: "lifeStartBreathDetail__caution", children: draftBreathSemantics.cautions[0] }, void 0, false, {
+                      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                      lineNumber: 598,
+                      columnNumber: 21
+                    }, this)
+                  ] }, void 0, true, {
+                    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                    lineNumber: 596,
+                    columnNumber: 19
+                  }, this)
+                ] }, void 0, true, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                  lineNumber: 587,
+                  columnNumber: 17
+                }, this),
+                /* @__PURE__ */ jsxDEV("div", { className: "lifeStartBreathDetail__ctaLane", children: [
+                  /* @__PURE__ */ jsxDEV("button", { type: "button", className: "button-secondary uiNoShift", onClick: () => setRequestedStep(2), children: "Back" }, void 0, false, {
+                    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                    lineNumber: 603,
+                    columnNumber: 19
+                  }, this),
+                  /* @__PURE__ */ jsxDEV(
+                    "button",
+                    {
+                      type: "button",
+                      className: "button-primary uiNoShift",
+                      onClick: handleFinish,
+                      disabled: !selectedPath || !draftHeartLawId,
+                      children: "Finish"
+                    },
+                    void 0,
+                    false,
+                    {
+                      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                      lineNumber: 606,
+                      columnNumber: 19
+                    },
+                    this
+                  )
+                ] }, void 0, true, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                  lineNumber: 602,
+                  columnNumber: 17
+                }, this)
+              ] }, void 0, true, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+                lineNumber: 578,
+                columnNumber: 15
+              }, this)
+            },
+            void 0,
+            false,
+            {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+              lineNumber: 573,
+              columnNumber: 13
+            },
+            this
+          )
+        ] }, void 0, true, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+          lineNumber: 534,
+          columnNumber: 9
+        }, this) : null
+      ] }, void 0, true, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+        lineNumber: 347,
+        columnNumber: 7
+      }, this)
+    },
+    void 0,
+    false,
+    {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx",
+      lineNumber: 340,
+      columnNumber: 5
+    },
+    this
+  );
+}
+_s(LifeStartWizardModal, "jJ4U32cfWZVwnEzSlNPI2qjB5jI=", false, function() {
+  return [useGameStore, useGameStore, useHeartLawStore, useHeartLawStore, useHeartLawStore, useHeartLawStore, useHeartLawStore, usePrestigeStore, usePrestigeStore, useUIStore, useUIStore, useUIStore, useUIStore, useContentStore, useContentStore, useFxQuality];
+});
+_c = LifeStartWizardModal;
+var _c;
+$RefreshReg$(_c, "LifeStartWizardModal");
+import * as RefreshRuntime from "/@react-refresh";
+const inWebWorker = typeof WorkerGlobalScope !== "undefined" && self instanceof WorkerGlobalScope;
+if (import.meta.hot && !inWebWorker) {
+  if (!window.$RefreshReg$) {
+    throw new Error(
+      "@vitejs/plugin-react can't detect preamble. Something is wrong."
+    );
+  }
+  RefreshRuntime.__hmr_import(import.meta.url).then((currentExports) => {
+    RefreshRuntime.registerExportsForReactRefresh("C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx", currentExports);
+    import.meta.hot.accept((nextExports) => {
+      if (!nextExports) return;
+      const invalidateMessage = RefreshRuntime.validateRefreshBoundaryAndEnqueueUpdate("C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx", currentExports, nextExports);
+      if (invalidateMessage) import.meta.hot.invalidate(invalidateMessage);
+    });
+  });
+}
+function $RefreshReg$(type, id) {
+  return RefreshRuntime.register(type, "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/LifeStartWizardModal.tsx " + id);
+}
+function $RefreshSig$() {
+  return RefreshRuntime.createSignatureFunctionForTransform();
+}
+
+//# sourceMappingURL=data:application/json;base64,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O0FBQUE7QUFBQSxvQkFKOUM7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBLGtCQU9BO0FBQUEscUJBWEY7QUFBQTtBQUFBO0FBQUE7QUFBQSx1QkFZQTtBQUFBLG1CQXBDRjtBQUFBO0FBQUE7QUFBQTtBQUFBLHFCQXFDQTtBQUFBO0FBQUEsWUExQ0Y7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBLFVBMkNBO0FBQUEsYUFsRkY7QUFBQTtBQUFBO0FBQUE7QUFBQSxlQW1GQSxJQUNFO0FBQUEsV0EvUU47QUFBQTtBQUFBO0FBQUE7QUFBQSxhQWdSQTtBQUFBO0FBQUEsSUF2UkY7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBLEVBd1JBO0FBRUo7QUFBQ2pDLEdBdmtCZUgsc0JBQW9CO0FBQUEsVUFJYnJCLGNBQ0ZBLGNBRVFDLGtCQUNKQSxrQkFDSUEsa0JBQ1JBLGtCQUNHQSxrQkFFQUMsa0JBQ0hBLGtCQUVFQyxZQUNHQSxZQUNPQSxZQUNLQSxZQUVkSixpQkFDQUEsaUJBQzZCYyxZQUFZO0FBQUE7QUFBQWtLLEtBdkJqRDFKO0FBQW9CLElBQUEwSjtBQUFBQyxhQUFBRCxJQUFBIiwibmFtZXMiOlsidXNlRWZmZWN0IiwidXNlTWVtbyIsInVzZVN0YXRlIiwiaGVhdmVuQXJ0IiwiZWFydGhBcnQiLCJtYXJ0aWFsQXJ0IiwiU2F2ZVNlcnZpY2UiLCJ1c2VDb250ZW50U3RvcmUiLCJ1c2VHYW1lU3RvcmUiLCJ1c2VIZWFydExhd1N0b3JlIiwidXNlUHJlc3RpZ2VTdG9yZSIsInVzZVVJU3RvcmUiLCJnZXRCcmVhdGhNb2RlU2VtYW50aWNzIiwiZ2V0UGF0aERvY3RyaW5lUHJvZmlsZSIsImdldFBhdGhEb2N0cmluZVN1bW1hcnkiLCJnZXRQYXRoRG9jdHJpbmVQcmVzZW50YXRpb24iLCJnZXRIZWFydExhd1NlbGVjdGlvblByZXNlbnRhdGlvbiIsIkxJRkVfU1RBUlRfV0laQVJEX1NURVBTIiwicmVzb2x2ZUxpZmVTdGFydFdpemFyZFVpU3RlcCIsIklua01vZGFsRnJhbWUiLCJQYXBlckNoaXAiLCJ1c2VGeFF1YWxpdHkiLCJnZXRTZWxlY3Rpb25Db21taXREZWxheSIsIkxJRkVfUEFUSFMiLCJpZCIsInRpdGxlIiwiYXJ0IiwiYWx0IiwiQlJFQVRIX01PREVfSURTIiwiTGlmZVN0YXJ0V2l6YXJkTW9kYWwiLCJkZWJ1Z0ZvcmNlT3BlbiIsImRlYnVnRm9yY2VTdGVwIiwiX3MiLCJmb3JjZWRPcGVuIiwiaW1wb3J0IiwiZW52IiwiREVWIiwiZm9yY2VkU3RlcCIsInVuZGVmaW5lZCIsInNlbGVjdGVkUGF0aCIsInN0YXRlIiwic2VsZWN0UGF0aCIsInNlbGVjdGVkSGVhcnRMYXdJZCIsInNlbGVjdEhlYXJ0TGF3IiwiaXNIZWFydExhd1VubG9ja2VkIiwiaXNVbmxvY2tlZCIsImJyZWF0aE1vZGUiLCJzZXRCcmVhdGhNb2RlIiwicHJlc3RpZ2VDb3VudCIsInNwaXJpdFJvb3QiLCJzZXRBY3RpdmVUYWIiLCJhZGROb3RpZmljYXRpb24iLCJsaWZlU3RhcnRXaXphcmRDb250ZXh0IiwiY2xlYXJMaWZlU3RhcnRXaXphcmRDb250ZXh0IiwiY29udGVudExvYWRlZCIsImlzTG9hZGVkIiwibGlzdEhlYXJ0TGF3cyIsImVmZmVjdGl2ZVF1YWxpdHkiLCJwcmVmZXJzUmVkdWNlZE1vdGlvbiIsInJlcXVlc3RlZFN0ZXAiLCJzZXRSZXF1ZXN0ZWRTdGVwIiwiaG92ZXJlZFBhdGgiLCJzZXRIb3ZlcmVkUGF0aCIsImNvbW1pdHRpbmdQYXRoIiwic2V0Q29tbWl0dGluZ1BhdGgiLCJkcmFmdEhlYXJ0TGF3SWQiLCJzZXREcmFmdEhlYXJ0TGF3SWQiLCJob3ZlcmVkSGVhcnRMYXdJZCIsInNldEhvdmVyZWRIZWFydExhd0lkIiwiZHJhZnRCcmVhdGhNb2RlIiwic2V0RHJhZnRCcmVhdGhNb2RlIiwiYXV0b1BpY2tDaGVja2VkIiwic2V0QXV0b1BpY2tDaGVja2VkIiwiYXV0b1BpY2tFcnJvciIsInNldEF1dG9QaWNrRXJyb3IiLCJzaG91bGRTaG93Iiwid2l6YXJkU3RlcCIsImRvY3VtZW50IiwicGF0aE1vZGVBY3RpdmUiLCJib2R5IiwiY2xhc3NMaXN0IiwidG9nZ2xlIiwicmVtb3ZlIiwiaGVhcnRMYXdzIiwiZXJyb3IiLCJjb25zb2xlIiwid2FybiIsInNlbGVjdGVkSGVhcnRMYXciLCJmaW5kIiwibGF3IiwicGF0aERvY3RyaW5lUHJvZmlsZSIsInBhdGhTdW1tYXJ5IiwiZHJhZnRCcmVhdGhTZW1hbnRpY3MiLCJsYXN0SWQiLCJsYXN0SGVhcnRMYXdJZCIsImhhbmRsZUZpbmlzaCIsInBhdGhMYWJlbCIsImNoYXJBdCIsInRvVXBwZXJDYXNlIiwic2xpY2UiLCJoZWFydExhd0xhYmVsIiwibmFtZSIsImJyZWF0aExhYmVsIiwic2F2ZSIsImhhbmRsZVBpY2tQYXRoIiwicGF0aElkIiwiY29tbWl0UGF0aCIsIndpbmRvdyIsInNldFRpbWVvdXQiLCJoYW5kbGVTZWxlY3REcmFmdExhdyIsImhlYXJ0TGF3SWQiLCJoYW5kbGVDaG9vc2VQcmV2aWV3ZWRMYXciLCJwcmV2aWV3SGVhcnRMYXciLCJwcmV2aWV3VW5sb2NrZWQiLCJoYW5kbGVDb250aW51ZVRvQnJlYXRoIiwicmVtZW1iZXJlZEhlYXJ0TGF3SWQiLCJleGlzdHMiLCJzb21lIiwiZmlyc3RVbmxvY2tlZEhlYXJ0TGF3SWQiLCJmaXJzdFVubG9ja2VkIiwiY2hvc2VuSGVhcnRMYXdJZCIsInByZXZpZXdIZWFydExhd0lkIiwicHJldmlld1ByZXNlbnRhdGlvbkNhcmQiLCJpc1NlbGVjdGVkIiwic2hvd0F1dG9QaWNrIiwiQm9vbGVhbiIsImFjdGl2ZVByZXNlbnRhdGlvblBhdGgiLCJhY3RpdmVQcmVzZW50YXRpb24iLCJsYWJlbCIsImRvY3RyaW5lU3VidGl0bGUiLCJzdW1tYXJ5Iiwic3RhdEhpZ2hsaWdodHMiLCJtYXAiLCJoaWdobGlnaHQiLCJ0YWdzIiwidGFnIiwicGF0aCIsInNlbGVjdGVkIiwiZGlzYWJsZWQiLCJpc0FjdGl2ZVByZXNlbnRhdGlvbiIsImlzRGltbWVkIiwiaXNDb21taXR0aW5nIiwicHJlc2VudGF0aW9uIiwicm9sZUN1ZSIsInByYWN0aWNhbFJvbGVMaW5lIiwicm9sZUlkIiwicGxhcXVlSWQiLCJ0b0xvd2VyQ2FzZSIsInN0ZXAiLCJjb3JlSWRlbnRpdHkiLCJ1bmxvY2tlZCIsInByZXZpZXdlZCIsImZhbWlseUxhYmVsIiwicmVzb25hbmNlTGFiZWwiLCJzdGF0dXNMYWJlbCIsInN0YXR1c1RvbmUiLCJyZXNvbmFuY2VUb25lIiwicm9sZUxpbmUiLCJ0YWdMYWJlbHMiLCJ0aWVyTGFiZWwiLCJhdmFpbGFiaWxpdHlMaW5lIiwibGVuZ3RoIiwicHJldmlld0ZhbWlseVRvbmUiLCJhcmNoZXR5cGVMYWJlbCIsInJlc29uYW5jZURldGFpbCIsImZhbnRhc3lEZXNjcmlwdGlvbiIsInByYWN0aWNhbERlc2NyaXB0aW9uIiwic2lnbmF0dXJlU3VtbWFyeSIsImtleUJlbmVmaXRzIiwiYmVuZWZpdCIsImN0YURpc2FibGVkUmVhc29uIiwiY3RhTGFiZWwiLCJldmVudCIsInRhcmdldCIsImNoZWNrZWQiLCJtb2RlSWQiLCJzZW1hbnRpY3MiLCJtb2RlTmFtZSIsInByZWZlcnJlZEZvciIsImpvaW4iLCJyZXBsYWNlIiwiZW50cnkiLCJjYXV0aW9ucyIsIl9jIiwiJFJlZnJlc2hSZWckIl0sImlnbm9yZUxpc3QiOltdLCJzb3VyY2VzIjpbIkxpZmVTdGFydFdpemFyZE1vZGFsLnRzeCJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgeyB1c2VFZmZlY3QsIHVzZU1lbW8sIHVzZVN0YXRlIH0gZnJvbSAncmVhY3QnO1xyXG5pbXBvcnQgJy4vTGlmZVN0YXJ0V2l6YXJkTW9kYWwuc2Nzcyc7XHJcbmltcG9ydCBoZWF2ZW5BcnQgZnJvbSAnLi4vLi4vYXNzZXRzL21lbnVzL3BhdGhfaGVhdmVuIDEucG5nJztcclxuaW1wb3J0IGVhcnRoQXJ0IGZyb20gJy4uLy4uL2Fzc2V0cy9tZW51cy9wYXRoX2VhcnRoIDEucG5nJztcclxuaW1wb3J0IG1hcnRpYWxBcnQgZnJvbSAnLi4vLi4vYXNzZXRzL21lbnVzL3BhdGhfbWFydGlhbCAxLnBuZyc7XHJcbmltcG9ydCB7IFNhdmVTZXJ2aWNlIH0gZnJvbSAnLi4vLi4vc2VydmljZXMvc2F2ZS9TYXZlU2VydmljZS5qcyc7XHJcbmltcG9ydCB7IHVzZUNvbnRlbnRTdG9yZSB9IGZyb20gJy4uLy4uL3N0b3Jlcy9jb250ZW50U3RvcmUuanMnO1xyXG5pbXBvcnQgeyB1c2VHYW1lU3RvcmUgfSBmcm9tICcuLi8uLi9zdG9yZXMvZ2FtZVN0b3JlLmpzJztcclxuaW1wb3J0IHsgdXNlSGVhcnRMYXdTdG9yZSB9IGZyb20gJy4uLy4uL3N0b3Jlcy9oZWFydExhd1N0b3JlLmpzJztcclxuaW1wb3J0IHsgdXNlUHJlc3RpZ2VTdG9yZSB9IGZyb20gJy4uLy4uL3N0b3Jlcy9wcmVzdGlnZVN0b3JlLmpzJztcclxuaW1wb3J0IHsgdXNlVUlTdG9yZSB9IGZyb20gJy4uLy4uL3N0b3Jlcy91aVN0b3JlLmpzJztcclxuaW1wb3J0IHsgZ2V0QnJlYXRoTW9kZVNlbWFudGljcyB9IGZyb20gJy4uLy4uL3N5c3RlbXMvZG9jdHJpbmUvYnJlYXRoU2VtYW50aWNzLmpzJztcclxuaW1wb3J0IHsgZ2V0UGF0aERvY3RyaW5lUHJvZmlsZSwgZ2V0UGF0aERvY3RyaW5lU3VtbWFyeSB9IGZyb20gJy4uLy4uL3N5c3RlbXMvZG9jdHJpbmUvcGF0aERvY3RyaW5lUmVnaXN0cnkuanMnO1xyXG5pbXBvcnQgeyBnZXRQYXRoRG9jdHJpbmVQcmVzZW50YXRpb24gfSBmcm9tICcuLi8uLi9zeXN0ZW1zL2RvY3RyaW5lL3BhdGhEb2N0cmluZVByZXNlbnRhdGlvbi5qcyc7XHJcbmltcG9ydCB7IGdldEhlYXJ0TGF3U2VsZWN0aW9uUHJlc2VudGF0aW9uIH0gZnJvbSAnLi4vLi4vc3lzdGVtcy9kb2N0cmluZS9oZWFydExhd1NlbGVjdGlvblByZXNlbnRhdGlvbi5qcyc7XHJcbmltcG9ydCB7XHJcbiAgTElGRV9TVEFSVF9XSVpBUkRfU1RFUFMsXHJcbiAgcmVzb2x2ZUxpZmVTdGFydFdpemFyZFVpU3RlcCxcclxuICB0eXBlIExpZmVTdGFydFdpemFyZFN0ZXAsXHJcbn0gZnJvbSAnLi4vLi4vc3lzdGVtcy91aS9saWZlU3RhcnQvbGlmZVN0YXJ0V2l6YXJkQ29udHJhY3QuanMnO1xyXG5pbXBvcnQgeyBJbmtNb2RhbEZyYW1lLCBQYXBlckNoaXAgfSBmcm9tICcuLi8uLi91aS9pbmsvaW5kZXguanMnO1xyXG5pbXBvcnQgeyB1c2VGeFF1YWxpdHkgfSBmcm9tICcuLi8uLi91aS9meC9GeFF1YWxpdHlQcm92aWRlci5qcyc7XHJcbmltcG9ydCB7IGdldFNlbGVjdGlvbkNvbW1pdERlbGF5IH0gZnJvbSAnLi4vLi4vdWkvbW90aW9uL3JpdHVhbE1vdGlvbi5qcyc7XHJcbmltcG9ydCB0eXBlIHsgQnJlYXRoTW9kZSwgQ3VsdGl2YXRpb25QYXRoLCBIZWFydExhd0RlZiB9IGZyb20gJy4uLy4uL3R5cGVzL2luZGV4LmpzJztcclxuXHJcbmNvbnN0IExJRkVfUEFUSFM6IHsgaWQ6IEN1bHRpdmF0aW9uUGF0aDsgdGl0bGU6IHN0cmluZzsgYXJ0OiBzdHJpbmc7IGFsdDogc3RyaW5nIH1bXSA9IFtcclxuICB7IGlkOiAnaGVhdmVuJywgdGl0bGU6ICdIRUFWRU4nLCBhcnQ6IGhlYXZlbkFydCwgYWx0OiAnSGVhdmVuIHBhdGgnIH0sXHJcbiAgeyBpZDogJ2VhcnRoJywgdGl0bGU6ICdFQVJUSCcsIGFydDogZWFydGhBcnQsIGFsdDogJ0VhcnRoIHBhdGgnIH0sXHJcbiAgeyBpZDogJ21hcnRpYWwnLCB0aXRsZTogJ01BUlRJQUwnLCBhcnQ6IG1hcnRpYWxBcnQsIGFsdDogJ01hcnRpYWwgcGF0aCcgfSxcclxuXTtcclxuXHJcbmNvbnN0IEJSRUFUSF9NT0RFX0lEUzogcmVhZG9ubHkgQnJlYXRoTW9kZVtdID0gWydiYWxhbmNlZCcsICdzYWZlJywgJ2Zhc3QnXTtcclxuXHJcbmludGVyZmFjZSBMaWZlU3RhcnRXaXphcmRNb2RhbFByb3BzIHtcclxuICBkZWJ1Z0ZvcmNlT3Blbj86IGJvb2xlYW47XHJcbiAgZGVidWdGb3JjZVN0ZXA/OiBMaWZlU3RhcnRXaXphcmRTdGVwO1xyXG59XHJcblxyXG5leHBvcnQgZnVuY3Rpb24gTGlmZVN0YXJ0V2l6YXJkTW9kYWwoeyBkZWJ1Z0ZvcmNlT3BlbiA9IGZhbHNlLCBkZWJ1Z0ZvcmNlU3RlcCB9OiBMaWZlU3RhcnRXaXphcmRNb2RhbFByb3BzID0ge30pIHtcclxuICBjb25zdCBmb3JjZWRPcGVuID0gaW1wb3J0Lm1ldGEuZW52LkRFViAmJiBkZWJ1Z0ZvcmNlT3BlbjtcclxuICBjb25zdCBmb3JjZWRTdGVwID0gaW1wb3J0Lm1ldGEuZW52LkRFViA/IGRlYnVnRm9yY2VTdGVwIDogdW5kZWZpbmVkO1xyXG5cclxuICBjb25zdCBzZWxlY3RlZFBhdGggPSB1c2VHYW1lU3RvcmUoKHN0YXRlKSA9PiBzdGF0ZS5zZWxlY3RlZFBhdGgpO1xyXG4gIGNvbnN0IHNlbGVjdFBhdGggPSB1c2VHYW1lU3RvcmUoKHN0YXRlKSA9PiBzdGF0ZS5zZWxlY3RQYXRoKTtcclxuXHJcbiAgY29uc3Qgc2VsZWN0ZWRIZWFydExhd0lkID0gdXNlSGVhcnRMYXdTdG9yZSgoc3RhdGUpID0+IHN0YXRlLnNlbGVjdGVkSGVhcnRMYXdJZCk7XHJcbiAgY29uc3Qgc2VsZWN0SGVhcnRMYXcgPSB1c2VIZWFydExhd1N0b3JlKChzdGF0ZSkgPT4gc3RhdGUuc2VsZWN0SGVhcnRMYXcpO1xyXG4gIGNvbnN0IGlzSGVhcnRMYXdVbmxvY2tlZCA9IHVzZUhlYXJ0TGF3U3RvcmUoKHN0YXRlKSA9PiBzdGF0ZS5pc1VubG9ja2VkKTtcclxuICBjb25zdCBicmVhdGhNb2RlID0gdXNlSGVhcnRMYXdTdG9yZSgoc3RhdGUpID0+IHN0YXRlLmJyZWF0aE1vZGUpO1xyXG4gIGNvbnN0IHNldEJyZWF0aE1vZGUgPSB1c2VIZWFydExhd1N0b3JlKChzdGF0ZSkgPT4gc3RhdGUuc2V0QnJlYXRoTW9kZSk7XHJcblxyXG4gIGNvbnN0IHByZXN0aWdlQ291bnQgPSB1c2VQcmVzdGlnZVN0b3JlKChzdGF0ZSkgPT4gc3RhdGUucHJlc3RpZ2VDb3VudCk7XHJcbiAgY29uc3Qgc3Bpcml0Um9vdCA9IHVzZVByZXN0aWdlU3RvcmUoKHN0YXRlKSA9PiBzdGF0ZS5zcGlyaXRSb290KTtcclxuXHJcbiAgY29uc3Qgc2V0QWN0aXZlVGFiID0gdXNlVUlTdG9yZSgoc3RhdGUpID0+IHN0YXRlLnNldEFjdGl2ZVRhYik7XHJcbiAgY29uc3QgYWRkTm90aWZpY2F0aW9uID0gdXNlVUlTdG9yZSgoc3RhdGUpID0+IHN0YXRlLmFkZE5vdGlmaWNhdGlvbik7XHJcbiAgY29uc3QgbGlmZVN0YXJ0V2l6YXJkQ29udGV4dCA9IHVzZVVJU3RvcmUoKHN0YXRlKSA9PiBzdGF0ZS5saWZlU3RhcnRXaXphcmRDb250ZXh0KTtcclxuICBjb25zdCBjbGVhckxpZmVTdGFydFdpemFyZENvbnRleHQgPSB1c2VVSVN0b3JlKChzdGF0ZSkgPT4gc3RhdGUuY2xlYXJMaWZlU3RhcnRXaXphcmRDb250ZXh0KTtcclxuXHJcbiAgY29uc3QgY29udGVudExvYWRlZCA9IHVzZUNvbnRlbnRTdG9yZSgoc3RhdGUpID0+IHN0YXRlLmlzTG9hZGVkKTtcclxuICBjb25zdCBsaXN0SGVhcnRMYXdzID0gdXNlQ29udGVudFN0b3JlKChzdGF0ZSkgPT4gc3RhdGUubGlzdEhlYXJ0TGF3cyk7XHJcbiAgY29uc3QgeyBlZmZlY3RpdmVRdWFsaXR5LCBwcmVmZXJzUmVkdWNlZE1vdGlvbiB9ID0gdXNlRnhRdWFsaXR5KCk7XHJcblxyXG4gIGNvbnN0IFtyZXF1ZXN0ZWRTdGVwLCBzZXRSZXF1ZXN0ZWRTdGVwXSA9IHVzZVN0YXRlPExpZmVTdGFydFdpemFyZFN0ZXAgfCBudWxsPihudWxsKTtcclxuICBjb25zdCBbaG92ZXJlZFBhdGgsIHNldEhvdmVyZWRQYXRoXSA9IHVzZVN0YXRlPEN1bHRpdmF0aW9uUGF0aCB8IG51bGw+KG51bGwpO1xyXG4gIGNvbnN0IFtjb21taXR0aW5nUGF0aCwgc2V0Q29tbWl0dGluZ1BhdGhdID0gdXNlU3RhdGU8Q3VsdGl2YXRpb25QYXRoIHwgbnVsbD4obnVsbCk7XHJcblxyXG4gIGNvbnN0IFtkcmFmdEhlYXJ0TGF3SWQsIHNldERyYWZ0SGVhcnRMYXdJZF0gPSB1c2VTdGF0ZTxzdHJpbmcgfCBudWxsPihudWxsKTtcclxuICBjb25zdCBbaG92ZXJlZEhlYXJ0TGF3SWQsIHNldEhvdmVyZWRIZWFydExhd0lkXSA9IHVzZVN0YXRlPHN0cmluZyB8IG51bGw+KG51bGwpO1xyXG4gIGNvbnN0IFtkcmFmdEJyZWF0aE1vZGUsIHNldERyYWZ0QnJlYXRoTW9kZV0gPSB1c2VTdGF0ZTxCcmVhdGhNb2RlPihicmVhdGhNb2RlKTtcclxuICBjb25zdCBbYXV0b1BpY2tDaGVja2VkLCBzZXRBdXRvUGlja0NoZWNrZWRdID0gdXNlU3RhdGUoZmFsc2UpO1xyXG4gIGNvbnN0IFthdXRvUGlja0Vycm9yLCBzZXRBdXRvUGlja0Vycm9yXSA9IHVzZVN0YXRlPHN0cmluZyB8IG51bGw+KG51bGwpO1xyXG5cclxuICBjb25zdCBzaG91bGRTaG93ID0gZm9yY2VkT3BlbiB8fCBzZWxlY3RlZFBhdGggPT09IG51bGwgfHwgc2VsZWN0ZWRIZWFydExhd0lkID09PSBudWxsO1xyXG5cclxuICBjb25zdCB3aXphcmRTdGVwOiBMaWZlU3RhcnRXaXphcmRTdGVwID0gZm9yY2VkU3RlcFxyXG4gICAgPz8gcmVzb2x2ZUxpZmVTdGFydFdpemFyZFVpU3RlcCh7XHJcbiAgICAgIHNlbGVjdGVkUGF0aCxcclxuICAgICAgc2VsZWN0ZWRIZWFydExhd0lkLFxyXG4gICAgICBkcmFmdEhlYXJ0TGF3SWQsXHJcbiAgICAgIHJlcXVlc3RlZFN0ZXAsXHJcbiAgICB9KTtcclxuXHJcbiAgdXNlRWZmZWN0KCgpID0+IHtcclxuICAgIGlmIChzZWxlY3RlZFBhdGggPT09IG51bGwpIHtcclxuICAgICAgc2V0UmVxdWVzdGVkU3RlcChudWxsKTtcclxuICAgICAgc2V0RHJhZnRIZWFydExhd0lkKG51bGwpO1xyXG4gICAgICBzZXREcmFmdEJyZWF0aE1vZGUoYnJlYXRoTW9kZSk7XHJcbiAgICAgIHNldEF1dG9QaWNrQ2hlY2tlZChmYWxzZSk7XHJcbiAgICAgIHNldEF1dG9QaWNrRXJyb3IobnVsbCk7XHJcbiAgICAgIHNldEhvdmVyZWRIZWFydExhd0lkKG51bGwpO1xyXG4gICAgICByZXR1cm47XHJcbiAgICB9XHJcblxyXG4gICAgaWYgKHNlbGVjdGVkSGVhcnRMYXdJZCAhPT0gbnVsbCkge1xyXG4gICAgICBzZXREcmFmdEhlYXJ0TGF3SWQoc2VsZWN0ZWRIZWFydExhd0lkKTtcclxuICAgICAgc2V0RHJhZnRCcmVhdGhNb2RlKGJyZWF0aE1vZGUpO1xyXG4gICAgfVxyXG4gIH0sIFticmVhdGhNb2RlLCBzZWxlY3RlZEhlYXJ0TGF3SWQsIHNlbGVjdGVkUGF0aF0pO1xyXG5cclxuICB1c2VFZmZlY3QoKCkgPT4ge1xyXG4gICAgaWYgKHR5cGVvZiBkb2N1bWVudCA9PT0gJ3VuZGVmaW5lZCcpIHJldHVybiB1bmRlZmluZWQ7XHJcbiAgICBjb25zdCBwYXRoTW9kZUFjdGl2ZSA9IHNob3VsZFNob3cgJiYgd2l6YXJkU3RlcCA9PT0gMTtcclxuICAgIGRvY3VtZW50LmJvZHkuY2xhc3NMaXN0LnRvZ2dsZSgnbGlmZVBhdGhNb2RlJywgcGF0aE1vZGVBY3RpdmUpO1xyXG4gICAgcmV0dXJuICgpID0+IHtcclxuICAgICAgZG9jdW1lbnQuYm9keS5jbGFzc0xpc3QucmVtb3ZlKCdsaWZlUGF0aE1vZGUnKTtcclxuICAgIH07XHJcbiAgfSwgW3Nob3VsZFNob3csIHdpemFyZFN0ZXBdKTtcclxuXHJcbiAgY29uc3QgaGVhcnRMYXdzOiBIZWFydExhd0RlZltdID0gdXNlTWVtbygoKSA9PiB7XHJcbiAgICBpZiAoIWNvbnRlbnRMb2FkZWQpIHJldHVybiBbXTtcclxuICAgIHRyeSB7XHJcbiAgICAgIHJldHVybiBsaXN0SGVhcnRMYXdzKCk7XHJcbiAgICB9IGNhdGNoIChlcnJvcikge1xyXG4gICAgICBjb25zb2xlLndhcm4oJ1tMaWZlU3RhcnRXaXphcmRdIFVuYWJsZSB0byBsaXN0IGhlYXJ0IGxhd3MnLCBlcnJvcik7XHJcbiAgICAgIHJldHVybiBbXTtcclxuICAgIH1cclxuICB9LCBbY29udGVudExvYWRlZCwgbGlzdEhlYXJ0TGF3c10pO1xyXG5cclxuICBjb25zdCBzZWxlY3RlZEhlYXJ0TGF3ID0gdXNlTWVtbyhcclxuICAgICgpID0+IGhlYXJ0TGF3cy5maW5kKChsYXcpID0+IGxhdy5pZCA9PT0gZHJhZnRIZWFydExhd0lkKSA/PyBudWxsLFxyXG4gICAgW2RyYWZ0SGVhcnRMYXdJZCwgaGVhcnRMYXdzXSxcclxuICApO1xyXG5cclxuICBjb25zdCBwYXRoRG9jdHJpbmVQcm9maWxlID0gdXNlTWVtbygoKSA9PiBnZXRQYXRoRG9jdHJpbmVQcm9maWxlKHNlbGVjdGVkUGF0aCksIFtzZWxlY3RlZFBhdGhdKTtcclxuICBjb25zdCBwYXRoU3VtbWFyeSA9IHVzZU1lbW8oKCkgPT4gZ2V0UGF0aERvY3RyaW5lU3VtbWFyeShzZWxlY3RlZFBhdGgpLCBbc2VsZWN0ZWRQYXRoXSk7XHJcbiAgY29uc3QgZHJhZnRCcmVhdGhTZW1hbnRpY3MgPSB1c2VNZW1vKCgpID0+IGdldEJyZWF0aE1vZGVTZW1hbnRpY3MoZHJhZnRCcmVhdGhNb2RlKSwgW2RyYWZ0QnJlYXRoTW9kZV0pO1xyXG5cclxuICB1c2VFZmZlY3QoKCkgPT4ge1xyXG4gICAgaWYgKCFhdXRvUGlja0NoZWNrZWQpIHtcclxuICAgICAgc2V0QXV0b1BpY2tFcnJvcihudWxsKTtcclxuICAgICAgcmV0dXJuO1xyXG4gICAgfVxyXG5cclxuICAgIGNvbnN0IGxhc3RJZCA9IGxpZmVTdGFydFdpemFyZENvbnRleHQubGFzdEhlYXJ0TGF3SWQ7XHJcbiAgICBpZiAoIWxhc3RJZCkge1xyXG4gICAgICBzZXRBdXRvUGlja0Vycm9yKCdObyBwcmV2aW91cyBIZWFydCBMYXcgaXMgcmVjb3JkZWQgeWV0LicpO1xyXG4gICAgICByZXR1cm47XHJcbiAgICB9XHJcblxyXG4gICAgaWYgKCFpc0hlYXJ0TGF3VW5sb2NrZWQobGFzdElkKSkge1xyXG4gICAgICBzZXRBdXRvUGlja0Vycm9yKCdMYXN0IHJ1biBIZWFydCBMYXcgaXMgbm90IHVubG9ja2VkIHRoaXMgbGlmZS4nKTtcclxuICAgICAgcmV0dXJuO1xyXG4gICAgfVxyXG5cclxuICAgIHNldERyYWZ0SGVhcnRMYXdJZChsYXN0SWQpO1xyXG4gICAgc2V0UmVxdWVzdGVkU3RlcCgzKTtcclxuICAgIHNldEF1dG9QaWNrRXJyb3IobnVsbCk7XHJcbiAgfSwgW2F1dG9QaWNrQ2hlY2tlZCwgaXNIZWFydExhd1VubG9ja2VkLCBsaWZlU3RhcnRXaXphcmRDb250ZXh0Lmxhc3RIZWFydExhd0lkXSk7XHJcblxyXG4gIGNvbnN0IGhhbmRsZUZpbmlzaCA9ICgpID0+IHtcclxuICAgIGlmICghc2VsZWN0ZWRQYXRoIHx8ICFkcmFmdEhlYXJ0TGF3SWQpIHtcclxuICAgICAgc2V0UmVxdWVzdGVkU3RlcCgyKTtcclxuICAgICAgcmV0dXJuO1xyXG4gICAgfVxyXG5cclxuICAgIHNlbGVjdEhlYXJ0TGF3KGRyYWZ0SGVhcnRMYXdJZCk7XHJcbiAgICBzZXRCcmVhdGhNb2RlKGRyYWZ0QnJlYXRoTW9kZSk7XHJcbiAgICBzZXRBY3RpdmVUYWIoJ2N1bHRpdmF0aW9uJyk7XHJcblxyXG4gICAgY29uc3QgcGF0aExhYmVsID0gc2VsZWN0ZWRQYXRoLmNoYXJBdCgwKS50b1VwcGVyQ2FzZSgpICsgc2VsZWN0ZWRQYXRoLnNsaWNlKDEpO1xyXG4gICAgY29uc3QgaGVhcnRMYXdMYWJlbCA9IHNlbGVjdGVkSGVhcnRMYXc/Lm5hbWUgPz8gJ0hlYXJ0IExhdyc7XHJcbiAgICBjb25zdCBicmVhdGhMYWJlbCA9IGRyYWZ0QnJlYXRoTW9kZS5jaGFyQXQoMCkudG9VcHBlckNhc2UoKSArIGRyYWZ0QnJlYXRoTW9kZS5zbGljZSgxKTtcclxuICAgIGFkZE5vdGlmaWNhdGlvbignc3VjY2VzcycsIGBMaWZlIGJlZ2luczogJHtwYXRoTGFiZWx9IOKAoiAke2hlYXJ0TGF3TGFiZWx9IOKAoiAke2JyZWF0aExhYmVsfWAsIDUwMDApO1xyXG5cclxuICAgIGNsZWFyTGlmZVN0YXJ0V2l6YXJkQ29udGV4dCgpO1xyXG4gICAgc2V0UmVxdWVzdGVkU3RlcChudWxsKTtcclxuICAgIHNldERyYWZ0SGVhcnRMYXdJZChudWxsKTtcclxuICAgIHNldEF1dG9QaWNrQ2hlY2tlZChmYWxzZSk7XHJcbiAgICBzZXRBdXRvUGlja0Vycm9yKG51bGwpO1xyXG4gICAgU2F2ZVNlcnZpY2Uuc2F2ZSgpO1xyXG4gIH07XHJcblxyXG4gIGNvbnN0IGhhbmRsZVBpY2tQYXRoID0gKHBhdGhJZDogQ3VsdGl2YXRpb25QYXRoKSA9PiB7XHJcbiAgICBpZiAoc2VsZWN0ZWRQYXRoICE9PSBudWxsIHx8IGNvbW1pdHRpbmdQYXRoICE9PSBudWxsKSByZXR1cm47XHJcblxyXG4gICAgY29uc3QgY29tbWl0UGF0aCA9ICgpID0+IHtcclxuICAgICAgc2VsZWN0UGF0aChwYXRoSWQpO1xyXG4gICAgICBzZXRSZXF1ZXN0ZWRTdGVwKDIpO1xyXG4gICAgICBzZXRDb21taXR0aW5nUGF0aChudWxsKTtcclxuICAgIH07XHJcblxyXG4gICAgaWYgKHByZWZlcnNSZWR1Y2VkTW90aW9uKSB7XHJcbiAgICAgIGNvbW1pdFBhdGgoKTtcclxuICAgICAgcmV0dXJuO1xyXG4gICAgfVxyXG5cclxuICAgIHNldENvbW1pdHRpbmdQYXRoKHBhdGhJZCk7XHJcbiAgICB3aW5kb3cuc2V0VGltZW91dChjb21taXRQYXRoLCBnZXRTZWxlY3Rpb25Db21taXREZWxheShwcmVmZXJzUmVkdWNlZE1vdGlvbikpO1xyXG4gIH07XHJcblxyXG4gIGNvbnN0IGhhbmRsZVNlbGVjdERyYWZ0TGF3ID0gKGhlYXJ0TGF3SWQ6IHN0cmluZykgPT4ge1xyXG4gICAgc2V0RHJhZnRIZWFydExhd0lkKGhlYXJ0TGF3SWQpO1xyXG4gIH07XHJcblxyXG4gIGNvbnN0IGhhbmRsZUNob29zZVByZXZpZXdlZExhdyA9ICgpID0+IHtcclxuICAgIGlmICghcHJldmlld0hlYXJ0TGF3IHx8ICFwcmV2aWV3VW5sb2NrZWQpIHJldHVybjtcclxuICAgIHNldERyYWZ0SGVhcnRMYXdJZChwcmV2aWV3SGVhcnRMYXcuaWQpO1xyXG4gIH07XHJcblxyXG4gIGNvbnN0IGhhbmRsZUNvbnRpbnVlVG9CcmVhdGggPSAoKSA9PiB7XHJcbiAgICBpZiAoIWRyYWZ0SGVhcnRMYXdJZCkgcmV0dXJuO1xyXG4gICAgc2V0UmVxdWVzdGVkU3RlcCgzKTtcclxuICB9O1xyXG5cclxuXHJcbiAgY29uc3QgcmVtZW1iZXJlZEhlYXJ0TGF3SWQgPSB1c2VNZW1vKCgpID0+IHtcclxuICAgIGNvbnN0IGxhc3RJZCA9IGxpZmVTdGFydFdpemFyZENvbnRleHQubGFzdEhlYXJ0TGF3SWQ7XHJcbiAgICBpZiAoIWxhc3RJZCkgcmV0dXJuIG51bGw7XHJcbiAgICBjb25zdCBleGlzdHMgPSBoZWFydExhd3Muc29tZSgobGF3KSA9PiBsYXcuaWQgPT09IGxhc3RJZCk7XHJcbiAgICBpZiAoIWV4aXN0cyB8fCAhaXNIZWFydExhd1VubG9ja2VkKGxhc3RJZCkpIHJldHVybiBudWxsO1xyXG4gICAgcmV0dXJuIGxhc3RJZDtcclxuICB9LCBbaGVhcnRMYXdzLCBpc0hlYXJ0TGF3VW5sb2NrZWQsIGxpZmVTdGFydFdpemFyZENvbnRleHQubGFzdEhlYXJ0TGF3SWRdKTtcclxuXHJcbiAgY29uc3QgZmlyc3RVbmxvY2tlZEhlYXJ0TGF3SWQgPSB1c2VNZW1vKCgpID0+IHtcclxuICAgIGNvbnN0IGZpcnN0VW5sb2NrZWQgPSBoZWFydExhd3MuZmluZCgobGF3KSA9PiBpc0hlYXJ0TGF3VW5sb2NrZWQobGF3LmlkKSk7XHJcbiAgICByZXR1cm4gZmlyc3RVbmxvY2tlZD8uaWQgPz8gaGVhcnRMYXdzWzBdPy5pZCA/PyBudWxsO1xyXG4gIH0sIFtoZWFydExhd3MsIGlzSGVhcnRMYXdVbmxvY2tlZF0pO1xyXG5cclxuICBjb25zdCBjaG9zZW5IZWFydExhd0lkID0gZHJhZnRIZWFydExhd0lkID8/IHNlbGVjdGVkSGVhcnRMYXdJZCA/PyByZW1lbWJlcmVkSGVhcnRMYXdJZCA/PyBmaXJzdFVubG9ja2VkSGVhcnRMYXdJZDtcclxuICBjb25zdCBwcmV2aWV3SGVhcnRMYXdJZCA9IGhvdmVyZWRIZWFydExhd0lkID8/IGNob3NlbkhlYXJ0TGF3SWQ7XHJcblxyXG4gIGNvbnN0IHByZXZpZXdIZWFydExhdyA9IHVzZU1lbW8oXHJcbiAgICAoKSA9PiBoZWFydExhd3MuZmluZCgobGF3KSA9PiBsYXcuaWQgPT09IHByZXZpZXdIZWFydExhd0lkKSA/PyBudWxsLFxyXG4gICAgW2hlYXJ0TGF3cywgcHJldmlld0hlYXJ0TGF3SWRdLFxyXG4gICk7XHJcblxyXG4gIGNvbnN0IHByZXZpZXdVbmxvY2tlZCA9IHByZXZpZXdIZWFydExhdyA/IGlzSGVhcnRMYXdVbmxvY2tlZChwcmV2aWV3SGVhcnRMYXcuaWQpIDogZmFsc2U7XHJcblxyXG4gIGNvbnN0IHByZXZpZXdQcmVzZW50YXRpb25DYXJkID0gdXNlTWVtbygoKSA9PiB7XHJcbiAgICBpZiAoIXByZXZpZXdIZWFydExhdykgcmV0dXJuIG51bGw7XHJcbiAgICByZXR1cm4gZ2V0SGVhcnRMYXdTZWxlY3Rpb25QcmVzZW50YXRpb24ocHJldmlld0hlYXJ0TGF3LCB7XHJcbiAgICAgIHNwaXJpdFJvb3QsXHJcbiAgICAgIGlzVW5sb2NrZWQ6IHByZXZpZXdVbmxvY2tlZCxcclxuICAgICAgaXNTZWxlY3RlZDogY2hvc2VuSGVhcnRMYXdJZCA9PT0gcHJldmlld0hlYXJ0TGF3LmlkLFxyXG4gICAgfSk7XHJcbiAgfSwgW2Nob3NlbkhlYXJ0TGF3SWQsIHByZXZpZXdIZWFydExhdywgcHJldmlld1VubG9ja2VkLCBzcGlyaXRSb290XSk7XHJcblxyXG4gIGNvbnN0IHNob3dBdXRvUGljayA9IHByZXN0aWdlQ291bnQgPiAwICYmIEJvb2xlYW4obGlmZVN0YXJ0V2l6YXJkQ29udGV4dC5sYXN0SGVhcnRMYXdJZCk7XHJcbiAgY29uc3QgYWN0aXZlUHJlc2VudGF0aW9uUGF0aDogQ3VsdGl2YXRpb25QYXRoID0gaG92ZXJlZFBhdGggPz8gY29tbWl0dGluZ1BhdGggPz8gc2VsZWN0ZWRQYXRoID8/ICdoZWF2ZW4nO1xyXG4gIGNvbnN0IGFjdGl2ZVByZXNlbnRhdGlvbiA9IGdldFBhdGhEb2N0cmluZVByZXNlbnRhdGlvbihhY3RpdmVQcmVzZW50YXRpb25QYXRoKTtcclxuXHJcbiAgaWYgKCFzaG91bGRTaG93KSByZXR1cm4gbnVsbDtcclxuXHJcbiAgaWYgKHdpemFyZFN0ZXAgPT09IDEpIHtcclxuICAgIHJldHVybiAoXHJcbiAgICAgIDxkaXYgY2xhc3NOYW1lPVwibGlmZVN0YXJ0V2l6YXJkT3ZlcmxheSBsaWZlU3RhcnRXaXphcmRPdmVybGF5LS1wYXRoXCI+XHJcbiAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJsaWZlU3RhcnRXaXphcmRNb2RhbCBsaWZlU3RhcnRXaXphcmRNb2RhbC0tcGF0aFwiPlxyXG4gICAgICAgICAgPGRpdlxyXG4gICAgICAgICAgICBjbGFzc05hbWU9XCJsaWZlUGF0aEZ1bGxzY3JlZW5cIlxyXG4gICAgICAgICAgICBkYXRhLXVpPVwibGlmZS1wYXRoLWZ1bGxzY3JlZW5cIlxyXG4gICAgICAgICAgICBkYXRhLWZ4LXF1YWxpdHk9e2VmZmVjdGl2ZVF1YWxpdHl9XHJcbiAgICAgICAgICAgIGRhdGEtcmVkdWNlZC1tb3Rpb249e3ByZWZlcnNSZWR1Y2VkTW90aW9uID8gJ3RydWUnIDogJ2ZhbHNlJ31cclxuICAgICAgICAgID5cclxuICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJsaWZlUGF0aEhlcm9cIj5cclxuICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImxpZmVQYXRoSGVyb0JhY2tkcm9wXCIgYXJpYS1oaWRkZW4gLz5cclxuICAgICAgICAgICAgICA8aGVhZGVyIGNsYXNzTmFtZT1cImxpZmVQYXRoSGVyb0hlYWRlclwiPlxyXG4gICAgICAgICAgICAgICAgPHAgY2xhc3NOYW1lPVwibGlmZVBhdGhIZXJvRXllYnJvd1wiPk5ldyBMaWZlIFJpdHVhbDwvcD5cclxuICAgICAgICAgICAgICAgIDxoMiBjbGFzc05hbWU9XCJsaWZlUGF0aEhlcm9UaXRsZVwiPkNob29zZSBZb3VyIFBhdGg8L2gyPlxyXG4gICAgICAgICAgICAgICAgPHAgY2xhc3NOYW1lPVwibGlmZVBhdGhIZXJvU3VibGluZVwiPlNlbGVjdCB0aGUgZG9jdHJpbmUgdGhhdCB3aWxsIHNoYXBlIHRoaXMgbGlmZS48L3A+XHJcbiAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImxpZmVQYXRoSGVyb0RpdmlkZXJCYXJcIiBhcmlhLWhpZGRlbiAvPlxyXG4gICAgICAgICAgICAgIDwvaGVhZGVyPlxyXG5cclxuICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImxpZmVQYXRoVHJpcHR5Y2hGcmFtZVwiPlxyXG4gICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9e2BsaWZlUGF0aFRyaXB0eWNoUmFpbCBsaWZlUGF0aFRyaXB0eWNoUmFpbC0tJHthY3RpdmVQcmVzZW50YXRpb25QYXRofWB9IGRhdGEtYWN0aXZlLXBhdGg9e2FjdGl2ZVByZXNlbnRhdGlvblBhdGh9PlxyXG4gICAgICAgICAgICAgICAgICA8YXNpZGVcclxuICAgICAgICAgICAgICAgICAgICBpZD1cImxpZmVQYXRoLWFjdGl2ZS1wbGFxdWVcIlxyXG4gICAgICAgICAgICAgICAgICAgIGNsYXNzTmFtZT17YGxpZmVQYXRoUHJldmlld1BsYXF1ZSBsaWZlUGF0aFByZXZpZXdQbGFxdWUtLSR7YWN0aXZlUHJlc2VudGF0aW9uUGF0aH1gfVxyXG4gICAgICAgICAgICAgICAgICAgIGFyaWEtbGl2ZT1cInBvbGl0ZVwiXHJcbiAgICAgICAgICAgICAgICAgID5cclxuICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImxpZmVQYXRoUHJldmlld1BsYXF1ZV9fbGFiZWxcIj57YWN0aXZlUHJlc2VudGF0aW9uPy5sYWJlbCA/PyAnUGF0aCBQcmV2aWV3J308L2Rpdj5cclxuICAgICAgICAgICAgICAgICAgICA8cCBjbGFzc05hbWU9XCJsaWZlUGF0aFByZXZpZXdQbGFxdWVfX3N1YnRpdGxlXCI+e2FjdGl2ZVByZXNlbnRhdGlvbj8uZG9jdHJpbmVTdWJ0aXRsZSA/PyAnQ2hvb3NlIGEgZG9jdHJpbmUgdG8gcHJldmlldyBpdHMgY2FkZW5jZS4nfTwvcD5cclxuICAgICAgICAgICAgICAgICAgICA8cCBjbGFzc05hbWU9XCJsaWZlUGF0aFByZXZpZXdQbGFxdWVfX3N1bW1hcnlcIj57YWN0aXZlUHJlc2VudGF0aW9uPy5zdW1tYXJ5ID8/ICdDaG9vc2UgYSBkb2N0cmluZSB0byBwcmV2aWV3IGl0cyBwaGlsb3NvcGh5Lid9PC9wPlxyXG4gICAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwibGlmZVBhdGhQcmV2aWV3UGxhcXVlX19oaWdobGlnaHRzXCIgYXJpYS1sYWJlbD1cIlBhdGggaGlnaGxpZ2h0c1wiPlxyXG4gICAgICAgICAgICAgICAgICAgICAgeyhhY3RpdmVQcmVzZW50YXRpb24/LnN0YXRIaWdobGlnaHRzID8/IFtdKS5tYXAoKGhpZ2hsaWdodCkgPT4gKFxyXG4gICAgICAgICAgICAgICAgICAgICAgICA8c3BhbiBrZXk9e2hpZ2hsaWdodH0gY2xhc3NOYW1lPVwibGlmZVBhdGhQcmV2aWV3UGxhcXVlX19jaGlwXCI+e2hpZ2hsaWdodH08L3NwYW4+XHJcbiAgICAgICAgICAgICAgICAgICAgICApKX1cclxuICAgICAgICAgICAgICAgICAgICA8L2Rpdj5cclxuICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImxpZmVQYXRoUHJldmlld1BsYXF1ZV9fdGFnc1wiIGFyaWEtbGFiZWw9XCJEb2N0cmluZSB0YWdzXCI+XHJcbiAgICAgICAgICAgICAgICAgICAgICB7KGFjdGl2ZVByZXNlbnRhdGlvbj8udGFncyA/PyBbXSkubWFwKCh0YWcpID0+IChcclxuICAgICAgICAgICAgICAgICAgICAgICAgPHNwYW4ga2V5PXt0YWd9IGNsYXNzTmFtZT1cImxpZmVQYXRoUHJldmlld1BsYXF1ZV9fdGFnXCI+e3RhZ308L3NwYW4+XHJcbiAgICAgICAgICAgICAgICAgICAgICApKX1cclxuICAgICAgICAgICAgICAgICAgICA8L2Rpdj5cclxuICAgICAgICAgICAgICAgICAgPC9hc2lkZT5cclxuICAgICAgICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJsaWZlUGF0aFRyaXB0eWNoXCIgZGF0YS11aT1cImxpZmUtcGF0aC10cmlwdHljaFwiIGRhdGEtcHJldmlldz17YWN0aXZlUHJlc2VudGF0aW9uUGF0aH0gcm9sZT1cImdyb3VwXCIgYXJpYS1sYWJlbD1cIkNob29zZSB5b3VyIExpZmUgUGF0aFwiPlxyXG4gICAgICAgICAgICAgICAge0xJRkVfUEFUSFMubWFwKChwYXRoKSA9PiB7XHJcbiAgICAgICAgICAgICAgICAgIGNvbnN0IHNlbGVjdGVkID0gc2VsZWN0ZWRQYXRoID09PSBwYXRoLmlkO1xyXG4gICAgICAgICAgICAgICAgICBjb25zdCBkaXNhYmxlZCA9IHNlbGVjdGVkUGF0aCAhPT0gbnVsbCAmJiAhc2VsZWN0ZWQ7XHJcbiAgICAgICAgICAgICAgICAgIGNvbnN0IGlzQWN0aXZlUHJlc2VudGF0aW9uID0gYWN0aXZlUHJlc2VudGF0aW9uUGF0aCA9PT0gcGF0aC5pZDtcclxuICAgICAgICAgICAgICAgICAgY29uc3QgaXNEaW1tZWQgPSBob3ZlcmVkUGF0aCAhPT0gbnVsbCAmJiBob3ZlcmVkUGF0aCAhPT0gcGF0aC5pZDtcclxuICAgICAgICAgICAgICAgICAgY29uc3QgaXNDb21taXR0aW5nID0gY29tbWl0dGluZ1BhdGggPT09IHBhdGguaWQ7XHJcbiAgICAgICAgICAgICAgICAgIGNvbnN0IHByZXNlbnRhdGlvbiA9IGdldFBhdGhEb2N0cmluZVByZXNlbnRhdGlvbihwYXRoLmlkKTtcclxuICAgICAgICAgICAgICAgICAgY29uc3Qgcm9sZUN1ZSA9IHByZXNlbnRhdGlvbj8ucHJhY3RpY2FsUm9sZUxpbmUgPz8gJ0Nob29zZSB0aGlzIHBhdGggdG8gc2hhcGUgeW91ciBsaWZlLic7XHJcbiAgICAgICAgICAgICAgICAgIGNvbnN0IHJvbGVJZCA9IGBsaWZlUGF0aC1yb2xlLSR7cGF0aC5pZH1gO1xyXG4gICAgICAgICAgICAgICAgICBjb25zdCBwbGFxdWVJZCA9ICdsaWZlUGF0aC1hY3RpdmUtcGxhcXVlJztcclxuICAgICAgICAgICAgICAgICAgcmV0dXJuIChcclxuICAgICAgICAgICAgICAgICAgICA8ZGl2XHJcbiAgICAgICAgICAgICAgICAgICAgICBrZXk9e3BhdGguaWR9XHJcbiAgICAgICAgICAgICAgICAgICAgICBjbGFzc05hbWU9e2BsaWZlUGF0aFBhbmVsIGxpZmVQYXRoUGFuZWwtLSR7cGF0aC5pZH0ke2lzQWN0aXZlUHJlc2VudGF0aW9uID8gJyBsaWZlUGF0aFBhbmVsLS1wcmV2aWV3ZWQnIDogJyd9JHtpc0RpbW1lZCA/ICcgbGlmZVBhdGhQYW5lbC0tcmVjZWRlZCcgOiAnJ30ke2lzQ29tbWl0dGluZyA/ICcgbGlmZVBhdGhQYW5lbC0tY29tbWl0JyA6ICcnfWB9XHJcbiAgICAgICAgICAgICAgICAgICAgPlxyXG4gICAgICAgICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJsaWZlUGF0aFBhbmVsX19mcmFtZVwiIGFyaWEtaGlkZGVuIC8+XHJcbiAgICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImxpZmVQYXRoUGFuZWxfX3ZlaWxcIiBhcmlhLWhpZGRlbiAvPlxyXG4gICAgICAgICAgICAgICAgICAgICAgPHNwYW4gY2xhc3NOYW1lPVwibGlmZVBhdGhQYW5lbF9fc3RhbXBcIiBhcmlhLWhpZGRlbj1cInRydWVcIiAvPlxyXG4gICAgICAgICAgICAgICAgICAgICAgPGltZyBjbGFzc05hbWU9XCJsaWZlUGF0aFBhbmVsX19hcnRcIiBzcmM9e3BhdGguYXJ0fSBhbHQ9e3BhdGguYWx0fSBkcmFnZ2FibGU9e2ZhbHNlfSAvPlxyXG4gICAgICAgICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJsaWZlUGF0aFBhbmVsX190aXRsZVwiPntwYXRoLnRpdGxlfTwvZGl2PlxyXG4gICAgICAgICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJsaWZlUGF0aFBhbmVsX19mb290ZXJcIj5cclxuICAgICAgICAgICAgICAgICAgICAgICAgPHAgaWQ9e3JvbGVJZH0gY2xhc3NOYW1lPVwibGlmZVBhdGhQYW5lbF9fcm9sZVwiPntyb2xlQ3VlfTwvcD5cclxuICAgICAgICAgICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJsaWZlUGF0aFBhbmVsX19hY3Rpb25QbGF0ZVwiPlxyXG4gICAgICAgICAgICAgICAgICAgICAgICAgIDxidXR0b25cclxuICAgICAgICAgICAgICAgICAgICAgICAgICAgIHR5cGU9XCJidXR0b25cIlxyXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3NOYW1lPVwibGlmZVBhdGhQYW5lbF9fc2VsZWN0XCJcclxuICAgICAgICAgICAgICAgICAgICAgICAgICAgIG9uQ2xpY2s9eygpID0+IGhhbmRsZVBpY2tQYXRoKHBhdGguaWQpfVxyXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgb25Nb3VzZUVudGVyPXsoKSA9PiBzZXRIb3ZlcmVkUGF0aChwYXRoLmlkKX1cclxuICAgICAgICAgICAgICAgICAgICAgICAgICAgIG9uTW91c2VMZWF2ZT17KCkgPT4gc2V0SG92ZXJlZFBhdGgobnVsbCl9XHJcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICBvbkZvY3VzPXsoKSA9PiBzZXRIb3ZlcmVkUGF0aChwYXRoLmlkKX1cclxuICAgICAgICAgICAgICAgICAgICAgICAgICAgIG9uQmx1cj17KCkgPT4gc2V0SG92ZXJlZFBhdGgobnVsbCl9XHJcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICBkaXNhYmxlZD17ZGlzYWJsZWQgfHwgY29tbWl0dGluZ1BhdGggIT09IG51bGx9XHJcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICBhcmlhLWxhYmVsPXtgU2VsZWN0ICR7cGF0aC50aXRsZS50b0xvd2VyQ2FzZSgpfSBwYXRoYH1cclxuICAgICAgICAgICAgICAgICAgICAgICAgICAgIGFyaWEtcHJlc3NlZD17c2VsZWN0ZWR9XHJcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICBhcmlhLWRlc2NyaWJlZGJ5PXtgJHtyb2xlSWR9ICR7cGxhcXVlSWR9YH1cclxuICAgICAgICAgICAgICAgICAgICAgICAgICA+XHJcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICBTZWxlY3RcclxuICAgICAgICAgICAgICAgICAgICAgICAgICA8L2J1dHRvbj5cclxuICAgICAgICAgICAgICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICAgICAgICAgICAgICA8L2Rpdj5cclxuICAgICAgICAgICAgICAgICAgICA8L2Rpdj5cclxuICAgICAgICAgICAgICAgICAgKTtcclxuICAgICAgICAgICAgICAgIH0pfVxyXG4gICAgICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgPC9kaXY+XHJcbiAgICAgIDwvZGl2PlxyXG4gICAgKTtcclxuICB9XHJcblxyXG4gIHJldHVybiAoXHJcbiAgICA8SW5rTW9kYWxGcmFtZVxyXG4gICAgICBhcmlhTGFiZWw9XCJCZWdpbiBZb3VyIE5ldyBMaWZlXCJcclxuICAgICAgY2xhc3NOYW1lPVwibGlmZVN0YXJ0V2l6YXJkRnJhbWVcIlxyXG4gICAgICBwYW5lbENsYXNzTmFtZT1cImxpZmVTdGFydFdpemFyZE1vZGFsLS1pbmtcIlxyXG4gICAgICB2YXJpYW50PVwiaGVhcnRsYXdcIlxyXG4gICAgICB3YXRlcm1hcmtcclxuICAgID5cclxuICAgICAgPGRpdiBjbGFzc05hbWU9XCJsaWZlU3RhcnRXaXphcmRDb250ZW50XCI+XHJcbiAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJsaWZlU3RhcnRXaXphcmRIZWFkZXJcIj5cclxuICAgICAgICAgIDxoMj5CZWdpbiBZb3VyIE5ldyBMaWZlPC9oMj5cclxuICAgICAgICAgIDxwPkNob29zZSB5b3VyIHBhdGgsIHNjcmlwdHVyZSwgYW5kIGluaXRpYWwgYnJlYXRoIGZvY3VzIGJlZm9yZSBjdWx0aXZhdGlvbiBiZWdpbnMuPC9wPlxyXG4gICAgICAgIDwvZGl2PlxyXG5cclxuICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImxpZmVTdGFydFdpemFyZFN0ZXBzXCIgcm9sZT1cImxpc3RcIiBhcmlhLWxhYmVsPVwiTGlmZSBzdGFydCBzdGVwc1wiPlxyXG4gICAgICAgICAge0xJRkVfU1RBUlRfV0laQVJEX1NURVBTLm1hcCgoc3RlcCkgPT4gKFxyXG4gICAgICAgICAgICA8UGFwZXJDaGlwXHJcbiAgICAgICAgICAgICAga2V5PXtzdGVwfVxyXG4gICAgICAgICAgICAgIHRleHQ9e3N0ZXAgPT09IDEgPyAnMSDCtyBMaWZlIFBhdGgnIDogc3RlcCA9PT0gMiA/ICcyIMK3IEhlYXJ0IExhdycgOiAnMyDCtyBCcmVhdGggRm9jdXMnfVxyXG4gICAgICAgICAgICAgIGNsYXNzTmFtZT17YHdpemFyZFN0ZXBDaGlwJHt3aXphcmRTdGVwID09PSBzdGVwID8gJyB3aXphcmRTdGVwQ2hpcC0tYWN0aXZlJyA6ICcnfWB9XHJcbiAgICAgICAgICAgIC8+XHJcbiAgICAgICAgICApKX1cclxuICAgICAgICA8L2Rpdj5cclxuXHJcbiAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJ3aXphcmRQYXRoU3VtbWFyeVwiIGFyaWEtbGl2ZT1cInBvbGl0ZVwiPlxyXG4gICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJ3aXphcmRQYXRoU3VtbWFyeV9fdGl0bGVcIj5Mb2NrZWQgUGF0aDoge3BhdGhEb2N0cmluZVByb2ZpbGU/LmxhYmVsID8/ICdVbmtub3duJ308L2Rpdj5cclxuICAgICAgICAgIDxwIGNsYXNzTmFtZT1cIndpemFyZFBhdGhTdW1tYXJ5X19kZXNjXCI+e3BhdGhTdW1tYXJ5fTwvcD5cclxuICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwid2l6YXJkUGF0aFN1bW1hcnlfX2NoaXBzXCI+XHJcbiAgICAgICAgICAgIHtwYXRoRG9jdHJpbmVQcm9maWxlPy5jb3JlSWRlbnRpdHkgPyA8c3BhbiBjbGFzc05hbWU9XCJ3aXphcmRQYXRoU3VtbWFyeV9fY2hpcFwiPntwYXRoRG9jdHJpbmVQcm9maWxlLmNvcmVJZGVudGl0eX08L3NwYW4+IDogbnVsbH1cclxuICAgICAgICAgICAgPHNwYW4gY2xhc3NOYW1lPVwid2l6YXJkUGF0aFN1bW1hcnlfX2NoaXBcIj5CcmVhdGg6IHtkcmFmdEJyZWF0aFNlbWFudGljcy5sYWJlbH08L3NwYW4+XHJcbiAgICAgICAgICA8L2Rpdj5cclxuICAgICAgICA8L2Rpdj5cclxuXHJcbiAgICAgICAge3dpemFyZFN0ZXAgPT09IDIgPyAoXHJcbiAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cIndpemFyZFNlY3Rpb24gbGlmZVN0YXJ0SGVhcnRMYXdTaGVsbFwiIGRhdGEtdWk9XCJsaWZlLXN0YXJ0LWhlYXJ0LWxhdy1zaGVsbFwiPlxyXG4gICAgICAgICAgICA8ZGl2XHJcbiAgICAgICAgICAgICAgY2xhc3NOYW1lPVwibGlmZVN0YXJ0SGVhcnRMYXdTaGVsbF9fY2hvaWNlc1wiXHJcbiAgICAgICAgICAgICAgcm9sZT1cImdyb3VwXCJcclxuICAgICAgICAgICAgICBhcmlhLWxhYmVsPVwiSGVhcnQgTGF3IGNob2ljZXNcIlxyXG4gICAgICAgICAgICAgIGRhdGEtdWk9XCJsaWZlLXN0YXJ0LWhlYXJ0LWxhdy1zZWxlY3Rpb24tcmVnaW9uXCJcclxuICAgICAgICAgICAgPlxyXG4gICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwibGlmZVN0YXJ0SGVhcnRMYXdTaGVsbF9fY2hvaWNlc0hlYWRlclwiPlxyXG4gICAgICAgICAgICAgICAgPGgzPkNob29zZSBZb3VyIEhlYXJ0IExhdyAoWGluZmEpPC9oMz5cclxuICAgICAgICAgICAgICAgIDxwPlNlbGVjdCB0aGUgc2NyaXB0dXJlIHRoYXQgZ292ZXJucyB5b3VyIHZlcnNlcywgcmVzb25hbmNlLCBhbmQgY3VsdGl2YXRpb24gY2FkZW5jZS48L3A+XHJcbiAgICAgICAgICAgICAgPC9kaXY+XHJcblxyXG4gICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwibGlmZVN0YXJ0SGVhcnRMYXdDaG9pY2VzR3JpZFwiPlxyXG4gICAgICAgICAgICAgICAge2hlYXJ0TGF3cy5tYXAoKGxhdykgPT4ge1xyXG4gICAgICAgICAgICAgICAgICBjb25zdCB1bmxvY2tlZCA9IGlzSGVhcnRMYXdVbmxvY2tlZChsYXcuaWQpO1xyXG4gICAgICAgICAgICAgICAgICBjb25zdCBzZWxlY3RlZCA9IGNob3NlbkhlYXJ0TGF3SWQgPT09IGxhdy5pZDtcclxuICAgICAgICAgICAgICAgICAgY29uc3QgcHJldmlld2VkID0gcHJldmlld0hlYXJ0TGF3SWQgPT09IGxhdy5pZDtcclxuICAgICAgICAgICAgICAgICAgY29uc3QgcHJlc2VudGF0aW9uID0gZ2V0SGVhcnRMYXdTZWxlY3Rpb25QcmVzZW50YXRpb24obGF3LCB7XHJcbiAgICAgICAgICAgICAgICAgICAgc3Bpcml0Um9vdCxcclxuICAgICAgICAgICAgICAgICAgICBpc1VubG9ja2VkOiB1bmxvY2tlZCxcclxuICAgICAgICAgICAgICAgICAgICBpc1NlbGVjdGVkOiBzZWxlY3RlZCxcclxuICAgICAgICAgICAgICAgICAgfSk7XHJcblxyXG4gICAgICAgICAgICAgICAgICByZXR1cm4gKFxyXG4gICAgICAgICAgICAgICAgICAgIDxidXR0b25cclxuICAgICAgICAgICAgICAgICAgICAgIGtleT17bGF3LmlkfVxyXG4gICAgICAgICAgICAgICAgICAgICAgdHlwZT1cImJ1dHRvblwiXHJcbiAgICAgICAgICAgICAgICAgICAgICBjbGFzc05hbWU9e2BsaWZlU3RhcnRIZWFydExhd0Nob2ljZSR7c2VsZWN0ZWQgPyAnIGxpZmVTdGFydEhlYXJ0TGF3Q2hvaWNlLS1zZWxlY3RlZCcgOiAnJ30ke3ByZXZpZXdlZCA/ICcgbGlmZVN0YXJ0SGVhcnRMYXdDaG9pY2UtLXByZXZpZXdlZCcgOiAnJ30keyF1bmxvY2tlZCA/ICcgbGlmZVN0YXJ0SGVhcnRMYXdDaG9pY2UtLWxvY2tlZCcgOiAnJ31gfVxyXG4gICAgICAgICAgICAgICAgICAgICAgb25DbGljaz17KCkgPT4gKHVubG9ja2VkID8gaGFuZGxlU2VsZWN0RHJhZnRMYXcobGF3LmlkKSA6IHVuZGVmaW5lZCl9XHJcbiAgICAgICAgICAgICAgICAgICAgICBvbk1vdXNlRW50ZXI9eygpID0+IHNldEhvdmVyZWRIZWFydExhd0lkKGxhdy5pZCl9XHJcbiAgICAgICAgICAgICAgICAgICAgICBvbk1vdXNlTGVhdmU9eygpID0+IHNldEhvdmVyZWRIZWFydExhd0lkKG51bGwpfVxyXG4gICAgICAgICAgICAgICAgICAgICAgb25Gb2N1cz17KCkgPT4gc2V0SG92ZXJlZEhlYXJ0TGF3SWQobGF3LmlkKX1cclxuICAgICAgICAgICAgICAgICAgICAgIG9uQmx1cj17KCkgPT4gc2V0SG92ZXJlZEhlYXJ0TGF3SWQobnVsbCl9XHJcbiAgICAgICAgICAgICAgICAgICAgICBhcmlhLWRpc2FibGVkPXshdW5sb2NrZWR9XHJcbiAgICAgICAgICAgICAgICAgICAgICBhcmlhLXByZXNzZWQ9e3NlbGVjdGVkfVxyXG4gICAgICAgICAgICAgICAgICAgICAgYXJpYS1kZXNjcmliZWRieT17YGxpZmVTdGFydEhlYXJ0TGF3RGV0YWlsVGl0bGUgbGlmZVN0YXJ0SGVhcnRMYXdEZXRhaWxSZXNvbmFuY2VgfVxyXG4gICAgICAgICAgICAgICAgICAgICAgYXJpYS1sYWJlbD17YCR7cHJlc2VudGF0aW9uLmxhYmVsfSwgJHtwcmVzZW50YXRpb24uZmFtaWx5TGFiZWx9LCBSZXNvbmFuY2UgJHtwcmVzZW50YXRpb24ucmVzb25hbmNlTGFiZWx9LCAke3ByZXNlbnRhdGlvbi5zdGF0dXNMYWJlbH1gfVxyXG4gICAgICAgICAgICAgICAgICAgID5cclxuICAgICAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXtgbGlmZVN0YXJ0SGVhcnRMYXdDaG9pY2VfX3N0YW1wIGxpZmVTdGFydEhlYXJ0TGF3Q2hvaWNlX19zdGFtcC0tJHtwcmVzZW50YXRpb24uc3RhdHVzVG9uZX1gfSBhcmlhLWhpZGRlbj1cInRydWVcIj57cHJlc2VudGF0aW9uLnN0YXR1c0xhYmVsfTwvZGl2PlxyXG4gICAgICAgICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJsaWZlU3RhcnRIZWFydExhd0Nob2ljZV9fdGl0bGVcIj57cHJlc2VudGF0aW9uLmxhYmVsfTwvZGl2PlxyXG4gICAgICAgICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJsaWZlU3RhcnRIZWFydExhd0Nob2ljZV9fZmFtaWx5XCI+e3ByZXNlbnRhdGlvbi5mYW1pbHlMYWJlbH08L2Rpdj5cclxuICAgICAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXtgbGlmZVN0YXJ0SGVhcnRMYXdDaG9pY2VfX3Jlc29uYW5jZSBsaWZlU3RhcnRIZWFydExhd0Nob2ljZV9fcmVzb25hbmNlLS0ke3ByZXNlbnRhdGlvbi5yZXNvbmFuY2VUb25lfWB9PntwcmVzZW50YXRpb24ucmVzb25hbmNlTGFiZWx9PC9kaXY+XHJcbiAgICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImxpZmVTdGFydEhlYXJ0TGF3Q2hvaWNlX19yb2xlXCI+e3ByZXNlbnRhdGlvbi5yb2xlTGluZX08L2Rpdj5cclxuICAgICAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwibGlmZVN0YXJ0SGVhcnRMYXdDaG9pY2VfX3RhZ3NcIj5cclxuICAgICAgICAgICAgICAgICAgICAgICAge3ByZXNlbnRhdGlvbi50YWdMYWJlbHMubWFwKCh0YWcpID0+IChcclxuICAgICAgICAgICAgICAgICAgICAgICAgICA8c3BhbiBrZXk9e3RhZ30gY2xhc3NOYW1lPVwibGlmZVN0YXJ0SGVhcnRMYXdDaG9pY2VfX3RhZ1wiPnt0YWd9PC9zcGFuPlxyXG4gICAgICAgICAgICAgICAgICAgICAgICApKX1cclxuICAgICAgICAgICAgICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJsaWZlU3RhcnRIZWFydExhd0Nob2ljZV9fZm9vdGVyXCI+XHJcbiAgICAgICAgICAgICAgICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT1cImxpZmVTdGFydEhlYXJ0TGF3Q2hvaWNlX190aWVyXCI+e3ByZXNlbnRhdGlvbi50aWVyTGFiZWx9PC9zcGFuPlxyXG4gICAgICAgICAgICAgICAgICAgICAgICA8c3BhbiBjbGFzc05hbWU9XCJsaWZlU3RhcnRIZWFydExhd0Nob2ljZV9fc3RhdHVzTGluZVwiPntwcmVzZW50YXRpb24uc3RhdHVzTGFiZWx9PC9zcGFuPlxyXG4gICAgICAgICAgICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImxpZmVTdGFydEhlYXJ0TGF3Q2hvaWNlX191bmxvY2tcIj57cHJlc2VudGF0aW9uLmF2YWlsYWJpbGl0eUxpbmV9PC9kaXY+XHJcbiAgICAgICAgICAgICAgICAgICAgPC9idXR0b24+XHJcbiAgICAgICAgICAgICAgICAgICk7XHJcbiAgICAgICAgICAgICAgICB9KX1cclxuICAgICAgICAgICAgICAgIHtoZWFydExhd3MubGVuZ3RoID09PSAwID8gPGRpdiBjbGFzc05hbWU9XCJ3aXphcmRFbXB0eVwiPkhlYXJ0IGxhd3MgYXJlIGxvYWRpbmcuLi48L2Rpdj4gOiBudWxsfVxyXG4gICAgICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgICA8L2Rpdj5cclxuXHJcbiAgICAgICAgICAgIDxhc2lkZVxyXG4gICAgICAgICAgICAgIGNsYXNzTmFtZT17YGxpZmVTdGFydEhlYXJ0TGF3U2hlbGxfX2RldGFpbCBsaWZlU3RhcnRIZWFydExhd1NoZWxsX19kZXRhaWwtLSR7cHJldmlld1ByZXNlbnRhdGlvbkNhcmQ/LnByZXZpZXdGYW1pbHlUb25lID8/ICd1bmtub3duJ31gfVxyXG4gICAgICAgICAgICAgIGFyaWEtbGl2ZT1cInBvbGl0ZVwiXHJcbiAgICAgICAgICAgICAgZGF0YS11aT1cImxpZmUtc3RhcnQtaGVhcnQtbGF3LWRldGFpbC1yZWdpb25cIlxyXG4gICAgICAgICAgICA+XHJcbiAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJsaWZlU3RhcnRIZWFydExhd0RldGFpbFwiPlxyXG4gICAgICAgICAgICAgICAgPHAgY2xhc3NOYW1lPVwibGlmZVN0YXJ0SGVhcnRMYXdEZXRhaWxfX2V5ZWJyb3dcIj5TY3JpcHR1cmUgRGV0YWlsPC9wPlxyXG4gICAgICAgICAgICAgICAgPGgzIGlkPVwibGlmZVN0YXJ0SGVhcnRMYXdEZXRhaWxUaXRsZVwiIGNsYXNzTmFtZT1cImxpZmVTdGFydEhlYXJ0TGF3RGV0YWlsX190aXRsZVwiPntwcmV2aWV3SGVhcnRMYXc/Lm5hbWUgPz8gJ05vIEhlYXJ0IExhdyBhdmFpbGFibGUnfTwvaDM+XHJcbiAgICAgICAgICAgICAgICA8cCBjbGFzc05hbWU9XCJsaWZlU3RhcnRIZWFydExhd0RldGFpbF9fc3VidGl0bGVcIj5cclxuICAgICAgICAgICAgICAgICAge3ByZXZpZXdIZWFydExhdyA/IGAke3ByZXZpZXdQcmVzZW50YXRpb25DYXJkPy5mYW1pbHlMYWJlbCA/PyAnRG9jdHJpbmUnfSDigKIgJHtwcmV2aWV3UHJlc2VudGF0aW9uQ2FyZD8udGllckxhYmVsID8/ICdUaWVyID8nfSDigKIgJHtwcmV2aWV3UHJlc2VudGF0aW9uQ2FyZD8uYXJjaGV0eXBlTGFiZWwgPz8gJ0RvY3RyaW5lJ31gIDogJ0F3YWl0aW5nIHNjcmlwdHVyZSBkYXRhJ31cclxuICAgICAgICAgICAgICAgIDwvcD5cclxuXHJcbiAgICAgICAgICAgICAgICA8cCBjbGFzc05hbWU9XCJsaWZlU3RhcnRIZWFydExhd0RldGFpbF9fZG9jdHJpbmVTdWJ0aXRsZVwiPntwcmV2aWV3UHJlc2VudGF0aW9uQ2FyZD8uZG9jdHJpbmVTdWJ0aXRsZSA/PyAnRG9jdHJpbmUgc2NyaXB0dXJlLid9PC9wPlxyXG4gICAgICAgICAgICAgICAgPHAgY2xhc3NOYW1lPVwibGlmZVN0YXJ0SGVhcnRMYXdEZXRhaWxfX3JvbGVMaW5lXCI+e3ByZXZpZXdQcmVzZW50YXRpb25DYXJkPy5yb2xlTGluZSA/PyAnUm9sZTogRm91bmRhdGlvbmFsIGRvY3RyaW5lIHN1cHBvcnQuJ308L3A+XHJcblxyXG4gICAgICAgICAgICAgICAgPGRpdiBpZD1cImxpZmVTdGFydEhlYXJ0TGF3RGV0YWlsUmVzb25hbmNlXCIgY2xhc3NOYW1lPXtgbGlmZVN0YXJ0SGVhcnRMYXdSZXNvbmFuY2UgbGlmZVN0YXJ0SGVhcnRMYXdSZXNvbmFuY2UtLSR7cHJldmlld1ByZXNlbnRhdGlvbkNhcmQ/LnJlc29uYW5jZVRvbmUgPz8gJ25ldXRyYWwnfWB9PlxyXG4gICAgICAgICAgICAgICAgICB7cHJldmlld1ByZXNlbnRhdGlvbkNhcmQgPyBgUmVzb25hbmNlOiAke3ByZXZpZXdQcmVzZW50YXRpb25DYXJkLnJlc29uYW5jZUxhYmVsfSDigJQgJHtwcmV2aWV3UHJlc2VudGF0aW9uQ2FyZC5yZXNvbmFuY2VEZXRhaWx9YCA6ICdSZXNvbmFuY2U6IE5ldXRyYWwg4oCUIE5vIHJlc29uYW5jZSBib251cyBuZWVkZWQuJ31cclxuICAgICAgICAgICAgICAgIDwvZGl2PlxyXG5cclxuICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwibGlmZVN0YXJ0SGVhcnRMYXdEZXRhaWxfX2FuY2hvclwiIGFyaWEtaGlkZGVuPVwidHJ1ZVwiIGRhdGEtdWk9XCJsaWZlLXN0YXJ0LWhlYXJ0LWxhdy1zYWNyZWQtYW5jaG9yXCI+XHJcbiAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwibGlmZVN0YXJ0SGVhcnRMYXdEZXRhaWxfX2FuY2hvclNlYWxcIiAvPlxyXG4gICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImxpZmVTdGFydEhlYXJ0TGF3RGV0YWlsX19hbmNob3JMYWJlbFwiPklubmVyIFNjcmlwdHVyZSBBbHRhcjwvZGl2PlxyXG4gICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImxpZmVTdGFydEhlYXJ0TGF3RGV0YWlsX19hbmNob3JOYW1lXCI+e3ByZXZpZXdIZWFydExhdz8ubmFtZSA/PyAnU2NyaXB0dXJlIEF3YWl0aW5nJ308L2Rpdj5cclxuICAgICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJsaWZlU3RhcnRIZWFydExhd0RldGFpbF9fYW5jaG9yTGluZVwiPntwcmV2aWV3UHJlc2VudGF0aW9uQ2FyZD8uZG9jdHJpbmVTdWJ0aXRsZSA/PyAnUGFyY2htZW50IHN0aWxsbmVzcyd9PC9kaXY+XHJcbiAgICAgICAgICAgICAgICA8L2Rpdj5cclxuXHJcbiAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImxpZmVTdGFydEhlYXJ0TGF3RGV0YWlsX190YWdzXCIgYXJpYS1sYWJlbD1cIkRhbyB0YWdzXCI+XHJcbiAgICAgICAgICAgICAgICAgIHsocHJldmlld1ByZXNlbnRhdGlvbkNhcmQ/LnRhZ0xhYmVscyA/PyBbXSkubWFwKCh0YWcpID0+IChcclxuICAgICAgICAgICAgICAgICAgICA8c3BhbiBrZXk9e3RhZ30gY2xhc3NOYW1lPVwibGlmZVN0YXJ0SGVhcnRMYXdEZXRhaWxfX3RhZ1wiPnt0YWd9PC9zcGFuPlxyXG4gICAgICAgICAgICAgICAgICApKX1cclxuICAgICAgICAgICAgICAgIDwvZGl2PlxyXG5cclxuICAgICAgICAgICAgICAgIDxwIGNsYXNzTmFtZT1cImxpZmVTdGFydEhlYXJ0TGF3RGV0YWlsX19mYW50YXN5XCI+e3ByZXZpZXdQcmVzZW50YXRpb25DYXJkPy5mYW50YXN5RGVzY3JpcHRpb24gPz8gJ0Egc2NyaXB0dXJlIGNhcnJpZWQgdGhyb3VnaCBxdWlldCBpbm5lciBkaXNjaXBsaW5lLid9PC9wPlxyXG4gICAgICAgICAgICAgICAgPHAgY2xhc3NOYW1lPVwibGlmZVN0YXJ0SGVhcnRMYXdEZXRhaWxfX3ByYWN0aWNhbFwiPntwcmV2aWV3UHJlc2VudGF0aW9uQ2FyZD8ucHJhY3RpY2FsRGVzY3JpcHRpb24gPz8gJ0Jlc3QgZm9yIHJlbGlhYmxlIGRvY3RyaW5lIGRldmVsb3BtZW50IGluIGVhcmx5IGxpdmVzLid9PC9wPlxyXG5cclxuICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwibGlmZVN0YXJ0SGVhcnRMYXdEZXRhaWxfX3NpZ25hdHVyZVwiPlxyXG4gICAgICAgICAgICAgICAgICA8cCBjbGFzc05hbWU9XCJsaWZlU3RhcnRIZWFydExhd0RldGFpbF9fc2lnbmF0dXJlVGl0bGVcIj5TaWduYXR1cmU8L3A+XHJcbiAgICAgICAgICAgICAgICAgIDxwIGNsYXNzTmFtZT1cImxpZmVTdGFydEhlYXJ0TGF3RGV0YWlsX19zdW1tYXJ5XCI+e3ByZXZpZXdQcmVzZW50YXRpb25DYXJkPy5zaWduYXR1cmVTdW1tYXJ5ID8/ICdEb2N0cmluZS1mb2N1c2VkIHNpZ25hdHVyZS4nfTwvcD5cclxuICAgICAgICAgICAgICAgICAgPHVsIGNsYXNzTmFtZT1cImxpZmVTdGFydEhlYXJ0TGF3RGV0YWlsX19iZW5lZml0c1wiPlxyXG4gICAgICAgICAgICAgICAgICAgIHsocHJldmlld1ByZXNlbnRhdGlvbkNhcmQ/LmtleUJlbmVmaXRzID8/IFtdKS5zbGljZSgwLCAzKS5tYXAoKGJlbmVmaXQpID0+IChcclxuICAgICAgICAgICAgICAgICAgICAgIDxsaSBrZXk9e2JlbmVmaXR9PntiZW5lZml0fTwvbGk+XHJcbiAgICAgICAgICAgICAgICAgICAgKSl9XHJcbiAgICAgICAgICAgICAgICAgIDwvdWw+XHJcbiAgICAgICAgICAgICAgICA8L2Rpdj5cclxuXHJcbiAgICAgICAgICAgICAgICA8cCBjbGFzc05hbWU9XCJsaWZlU3RhcnRIZWFydExhd0RldGFpbF9fdW5sb2NrXCI+XHJcbiAgICAgICAgICAgICAgICAgIHtwcmV2aWV3UHJlc2VudGF0aW9uQ2FyZD8uYXZhaWxhYmlsaXR5TGluZSA/PyAnU3RhcnRlciBzY3JpcHR1cmUgYXZhaWxhYmxlIGltbWVkaWF0ZWx5Lid9XHJcbiAgICAgICAgICAgICAgICA8L3A+XHJcblxyXG4gICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJsaWZlU3RhcnRIZWFydExhd0RldGFpbF9fY3RhTGFuZVwiPlxyXG4gICAgICAgICAgICAgICAgICA8YnV0dG9uXHJcbiAgICAgICAgICAgICAgICAgICAgdHlwZT1cImJ1dHRvblwiXHJcbiAgICAgICAgICAgICAgICAgICAgY2xhc3NOYW1lPVwiYnV0dG9uLXNlY29uZGFyeSB1aU5vU2hpZnRcIlxyXG4gICAgICAgICAgICAgICAgICAgIG9uQ2xpY2s9e2hhbmRsZUNob29zZVByZXZpZXdlZExhd31cclxuICAgICAgICAgICAgICAgICAgICBkaXNhYmxlZD17Qm9vbGVhbihwcmV2aWV3UHJlc2VudGF0aW9uQ2FyZD8uY3RhRGlzYWJsZWRSZWFzb24pfVxyXG4gICAgICAgICAgICAgICAgICA+XHJcbiAgICAgICAgICAgICAgICAgICAge3ByZXZpZXdQcmVzZW50YXRpb25DYXJkPy5jdGFMYWJlbCA/PyAnQ2hvb3NlIFRoaXMgSGVhcnQgTGF3J31cclxuICAgICAgICAgICAgICAgICAgPC9idXR0b24+XHJcbiAgICAgICAgICAgICAgICAgIHtwcmV2aWV3UHJlc2VudGF0aW9uQ2FyZD8uY3RhRGlzYWJsZWRSZWFzb24gPyAoXHJcbiAgICAgICAgICAgICAgICAgICAgPHAgY2xhc3NOYW1lPVwibGlmZVN0YXJ0SGVhcnRMYXdEZXRhaWxfX2N0YVJlYXNvblwiPntwcmV2aWV3UHJlc2VudGF0aW9uQ2FyZC5jdGFEaXNhYmxlZFJlYXNvbn08L3A+XHJcbiAgICAgICAgICAgICAgICAgICkgOiBudWxsfVxyXG4gICAgICAgICAgICAgICAgPC9kaXY+XHJcblxyXG4gICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJsaWZlU3RhcnRIZWFydExhd1N1cHBvcnRcIj5cclxuICAgICAgICAgICAgICAgICAgPHAgY2xhc3NOYW1lPVwibGlmZVN0YXJ0SGVhcnRMYXdTdXBwb3J0X19oaW50XCI+XHJcbiAgICAgICAgICAgICAgICAgICAgVGhpcyBpcyBkb2N0cmluZSBwcmV2aWV3IG9ubHk7IHZlcnNlIHByb2dyZXNzIGJlZ2lucyBhZnRlciBsaWZlLXN0YXJ0IGlzIGNvbmZpcm1lZC5cclxuICAgICAgICAgICAgICAgICAgPC9wPlxyXG5cclxuICAgICAgICAgICAgICAgICAge3Nob3dBdXRvUGljayA/IChcclxuICAgICAgICAgICAgICAgICAgICA8bGFiZWwgY2xhc3NOYW1lPVwibGlmZVN0YXJ0SGVhcnRMYXdNZW1vcnlcIj5cclxuICAgICAgICAgICAgICAgICAgICAgIDxpbnB1dFxyXG4gICAgICAgICAgICAgICAgICAgICAgICB0eXBlPVwiY2hlY2tib3hcIlxyXG4gICAgICAgICAgICAgICAgICAgICAgICBjaGVja2VkPXthdXRvUGlja0NoZWNrZWR9XHJcbiAgICAgICAgICAgICAgICAgICAgICAgIG9uQ2hhbmdlPXsoZXZlbnQpID0+IHNldEF1dG9QaWNrQ2hlY2tlZChldmVudC50YXJnZXQuY2hlY2tlZCl9XHJcbiAgICAgICAgICAgICAgICAgICAgICAgIGRpc2FibGVkPXtsaWZlU3RhcnRXaXphcmRDb250ZXh0Lmxhc3RIZWFydExhd0lkID09PSBudWxsfVxyXG4gICAgICAgICAgICAgICAgICAgICAgLz5cclxuICAgICAgICAgICAgICAgICAgICAgIDxzcGFuPlVzZSBsYXN0IHJ1bidzIEhlYXJ0IExhdyBtZW1vcnk8L3NwYW4+XHJcbiAgICAgICAgICAgICAgICAgICAgPC9sYWJlbD5cclxuICAgICAgICAgICAgICAgICAgKSA6IG51bGx9XHJcbiAgICAgICAgICAgICAgICAgIHthdXRvUGlja0Vycm9yID8gPGRpdiBjbGFzc05hbWU9XCJsaWZlU3RhcnRIZWFydExhd01lbW9yeV9fZXJyb3JcIj57YXV0b1BpY2tFcnJvcn08L2Rpdj4gOiBudWxsfVxyXG4gICAgICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICAgIDwvYXNpZGU+XHJcblxyXG4gICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cIndpemFyZEZvb3RlciB3aXphcmRGb290ZXItLXN0YWJsZVwiPlxyXG4gICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwid2l6YXJkRm9vdGVyTGFuZSB3aXphcmRGb290ZXJMYW5lLS1sZWZ0XCIgYXJpYS1oaWRkZW49XCJ0cnVlXCIgLz5cclxuICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cIndpemFyZEZvb3RlckxhbmUgd2l6YXJkRm9vdGVyTGFuZS0tcmlnaHRcIj5cclxuICAgICAgICAgICAgICAgIDxidXR0b25cclxuICAgICAgICAgICAgICAgICAgdHlwZT1cImJ1dHRvblwiXHJcbiAgICAgICAgICAgICAgICAgIGNsYXNzTmFtZT1cImJ1dHRvbi1wcmltYXJ5IHVpTm9TaGlmdFwiXHJcbiAgICAgICAgICAgICAgICAgIG9uQ2xpY2s9e2hhbmRsZUNvbnRpbnVlVG9CcmVhdGh9XHJcbiAgICAgICAgICAgICAgICAgIGRpc2FibGVkPXshZHJhZnRIZWFydExhd0lkfVxyXG4gICAgICAgICAgICAgICAgPlxyXG4gICAgICAgICAgICAgICAgICBOZXh0XHJcbiAgICAgICAgICAgICAgICA8L2J1dHRvbj5cclxuICAgICAgICAgICAgICA8L2Rpdj5cclxuICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICA8L2Rpdj5cclxuICAgICAgICApIDogbnVsbH1cclxuXHJcbiAgICAgICAge3dpemFyZFN0ZXAgPT09IDMgPyAoXHJcbiAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cIndpemFyZFNlY3Rpb24gbGlmZVN0YXJ0QnJlYXRoU2hlbGxcIiBkYXRhLXVpPVwibGlmZS1zdGFydC1icmVhdGgtZm9jdXMtc2hlbGxcIj5cclxuICAgICAgICAgICAgPHNlY3Rpb25cclxuICAgICAgICAgICAgICBjbGFzc05hbWU9XCJsaWZlU3RhcnRCcmVhdGhTaGVsbF9fY2hvaWNlc1wiXHJcbiAgICAgICAgICAgICAgYXJpYS1sYWJlbD1cIkJyZWF0aCBmb2N1cyBjaG9pY2VzXCJcclxuICAgICAgICAgICAgICBkYXRhLXVpPVwibGlmZS1zdGFydC1icmVhdGgtZm9jdXMtc2VsZWN0aW9uLXJlZ2lvblwiXHJcbiAgICAgICAgICAgID5cclxuICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImxpZmVTdGFydEJyZWF0aFNoZWxsX19jaG9pY2VzSGVhZGVyXCI+XHJcbiAgICAgICAgICAgICAgICA8aDM+Q2hvb3NlIEJyZWF0aCBGb2N1czwvaDM+XHJcbiAgICAgICAgICAgICAgICA8cD5TZWxlY3QgaG93IHRoaXMgbGlmZSB3aWxsIHBhY2UgY3VsdGl2YXRpb24gYnJlYXRoIGN5Y2xlcy48L3A+XHJcbiAgICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJsaWZlU3RhcnRCcmVhdGhDaG9pY2VzR3JpZFwiPlxyXG4gICAgICAgICAgICAgICAge0JSRUFUSF9NT0RFX0lEUy5tYXAoKG1vZGVJZCkgPT4ge1xyXG4gICAgICAgICAgICAgICAgICBjb25zdCBzZW1hbnRpY3MgPSBnZXRCcmVhdGhNb2RlU2VtYW50aWNzKG1vZGVJZCk7XHJcbiAgICAgICAgICAgICAgICAgIGNvbnN0IHNlbGVjdGVkID0gZHJhZnRCcmVhdGhNb2RlID09PSBtb2RlSWQ7XHJcbiAgICAgICAgICAgICAgICAgIGNvbnN0IG1vZGVOYW1lID0gc2VtYW50aWNzLmxhYmVsO1xyXG4gICAgICAgICAgICAgICAgICByZXR1cm4gKFxyXG4gICAgICAgICAgICAgICAgICAgIDxidXR0b25cclxuICAgICAgICAgICAgICAgICAgICAgIGtleT17bW9kZUlkfVxyXG4gICAgICAgICAgICAgICAgICAgICAgdHlwZT1cImJ1dHRvblwiXHJcbiAgICAgICAgICAgICAgICAgICAgICBjbGFzc05hbWU9e2BsaWZlU3RhcnRCcmVhdGhDaG9pY2Uke3NlbGVjdGVkID8gJyBsaWZlU3RhcnRCcmVhdGhDaG9pY2UtLXNlbGVjdGVkJyA6ICcnfWB9XHJcbiAgICAgICAgICAgICAgICAgICAgICBvbkNsaWNrPXsoKSA9PiBzZXREcmFmdEJyZWF0aE1vZGUobW9kZUlkKX1cclxuICAgICAgICAgICAgICAgICAgICAgIGFyaWEtcHJlc3NlZD17c2VsZWN0ZWR9XHJcbiAgICAgICAgICAgICAgICAgICAgICBhcmlhLWRlc2NyaWJlZGJ5PVwibGlmZVN0YXJ0QnJlYXRoRGV0YWlsVGl0bGUgbGlmZVN0YXJ0QnJlYXRoRGV0YWlsU3VtbWFyeVwiXHJcbiAgICAgICAgICAgICAgICAgICAgPlxyXG4gICAgICAgICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJsaWZlU3RhcnRCcmVhdGhDaG9pY2VfX3N0YW1wXCIgYXJpYS1oaWRkZW49XCJ0cnVlXCI+XHJcbiAgICAgICAgICAgICAgICAgICAgICAgIHtzZWxlY3RlZCA/ICdDaG9zZW4nIDogJ0Rpc2NpcGxpbmUnfVxyXG4gICAgICAgICAgICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImxpZmVTdGFydEJyZWF0aENob2ljZV9fdGl0bGVcIj57bW9kZU5hbWV9PC9kaXY+XHJcbiAgICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImxpZmVTdGFydEJyZWF0aENob2ljZV9fc3VtbWFyeVwiPntzZW1hbnRpY3Muc3VtbWFyeX08L2Rpdj5cclxuICAgICAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwibGlmZVN0YXJ0QnJlYXRoQ2hvaWNlX19wcmVmZXJyZWRGb3JcIj5cclxuICAgICAgICAgICAgICAgICAgICAgICAgQmVzdCBmb3I6IHtzZW1hbnRpY3MucHJlZmVycmVkRm9yLnNsaWNlKDAsIDIpLmpvaW4oJywgJykucmVwbGFjZSgvXy9nLCAnICcpfVxyXG4gICAgICAgICAgICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImxpZmVTdGFydEJyZWF0aENob2ljZV9fbWV0YVwiPntzZWxlY3RlZCA/ICdTZWxlY3RlZCBmb3IgdGhpcyBsaWZlJyA6ICdTZWxlY3QgZm9jdXMnfTwvZGl2PlxyXG4gICAgICAgICAgICAgICAgICAgIDwvYnV0dG9uPlxyXG4gICAgICAgICAgICAgICAgICApO1xyXG4gICAgICAgICAgICAgICAgfSl9XHJcbiAgICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICAgIDwvc2VjdGlvbj5cclxuXHJcbiAgICAgICAgICAgIDxhc2lkZVxyXG4gICAgICAgICAgICAgIGNsYXNzTmFtZT1cImxpZmVTdGFydEJyZWF0aFNoZWxsX19kZXRhaWxcIlxyXG4gICAgICAgICAgICAgIGFyaWEtbGl2ZT1cInBvbGl0ZVwiXHJcbiAgICAgICAgICAgICAgZGF0YS11aT1cImxpZmUtc3RhcnQtYnJlYXRoLWZvY3VzLWRldGFpbC1yZWdpb25cIlxyXG4gICAgICAgICAgICA+XHJcbiAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJsaWZlU3RhcnRCcmVhdGhEZXRhaWxcIj5cclxuICAgICAgICAgICAgICAgIDxwIGNsYXNzTmFtZT1cImxpZmVTdGFydEJyZWF0aERldGFpbF9fZXllYnJvd1wiPkJyZWF0aCBEaXNjaXBsaW5lPC9wPlxyXG4gICAgICAgICAgICAgICAgPGgzIGlkPVwibGlmZVN0YXJ0QnJlYXRoRGV0YWlsVGl0bGVcIiBjbGFzc05hbWU9XCJsaWZlU3RhcnRCcmVhdGhEZXRhaWxfX3RpdGxlXCI+e2RyYWZ0QnJlYXRoU2VtYW50aWNzLmxhYmVsfTwvaDM+XHJcbiAgICAgICAgICAgICAgICA8cCBpZD1cImxpZmVTdGFydEJyZWF0aERldGFpbFN1bW1hcnlcIiBjbGFzc05hbWU9XCJsaWZlU3RhcnRCcmVhdGhEZXRhaWxfX3N1bW1hcnlcIj57ZHJhZnRCcmVhdGhTZW1hbnRpY3Muc3VtbWFyeX08L3A+XHJcblxyXG4gICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJsaWZlU3RhcnRCcmVhdGhEZXRhaWxfX2NvbnRpbnVpdHlcIj5cclxuICAgICAgICAgICAgICAgICAgUGF0aDoge3BhdGhEb2N0cmluZVByb2ZpbGU/LmxhYmVsID8/ICdVbmtub3duJ30g4oCiIFNjcmlwdHVyZToge3NlbGVjdGVkSGVhcnRMYXc/Lm5hbWUgPz8gJ0F3YWl0aW5nIGhlYXJ0IGxhdyd9XHJcbiAgICAgICAgICAgICAgICA8L2Rpdj5cclxuXHJcbiAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImxpZmVTdGFydEJyZWF0aERldGFpbF9fcmFpbFwiPlxyXG4gICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImxpZmVTdGFydEJyZWF0aERldGFpbF9fYmxvY2tcIj5cclxuICAgICAgICAgICAgICAgICAgICA8cCBjbGFzc05hbWU9XCJsaWZlU3RhcnRCcmVhdGhEZXRhaWxfX2Jsb2NrTGFiZWxcIj5CZXN0IGZvcjwvcD5cclxuICAgICAgICAgICAgICAgICAgICA8dWwgY2xhc3NOYW1lPVwibGlmZVN0YXJ0QnJlYXRoRGV0YWlsX19saXN0XCI+XHJcbiAgICAgICAgICAgICAgICAgICAgICB7ZHJhZnRCcmVhdGhTZW1hbnRpY3MucHJlZmVycmVkRm9yLm1hcCgoZW50cnkpID0+IChcclxuICAgICAgICAgICAgICAgICAgICAgICAgPGxpIGtleT17ZW50cnl9PntlbnRyeS5yZXBsYWNlKC9fL2csICcgJyl9PC9saT5cclxuICAgICAgICAgICAgICAgICAgICAgICkpfVxyXG4gICAgICAgICAgICAgICAgICAgIDwvdWw+XHJcbiAgICAgICAgICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImxpZmVTdGFydEJyZWF0aERldGFpbF9fYmxvY2tcIj5cclxuICAgICAgICAgICAgICAgICAgICA8cCBjbGFzc05hbWU9XCJsaWZlU3RhcnRCcmVhdGhEZXRhaWxfX2Jsb2NrTGFiZWxcIj5DYXV0aW9uPC9wPlxyXG4gICAgICAgICAgICAgICAgICAgIDxwIGNsYXNzTmFtZT1cImxpZmVTdGFydEJyZWF0aERldGFpbF9fY2F1dGlvblwiPntkcmFmdEJyZWF0aFNlbWFudGljcy5jYXV0aW9uc1swXX08L3A+XHJcbiAgICAgICAgICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgICAgICAgPC9kaXY+XHJcblxyXG4gICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJsaWZlU3RhcnRCcmVhdGhEZXRhaWxfX2N0YUxhbmVcIj5cclxuICAgICAgICAgICAgICAgICAgPGJ1dHRvbiB0eXBlPVwiYnV0dG9uXCIgY2xhc3NOYW1lPVwiYnV0dG9uLXNlY29uZGFyeSB1aU5vU2hpZnRcIiBvbkNsaWNrPXsoKSA9PiBzZXRSZXF1ZXN0ZWRTdGVwKDIpfT5cclxuICAgICAgICAgICAgICAgICAgICBCYWNrXHJcbiAgICAgICAgICAgICAgICAgIDwvYnV0dG9uPlxyXG4gICAgICAgICAgICAgICAgICA8YnV0dG9uXHJcbiAgICAgICAgICAgICAgICAgICAgdHlwZT1cImJ1dHRvblwiXHJcbiAgICAgICAgICAgICAgICAgICAgY2xhc3NOYW1lPVwiYnV0dG9uLXByaW1hcnkgdWlOb1NoaWZ0XCJcclxuICAgICAgICAgICAgICAgICAgICBvbkNsaWNrPXtoYW5kbGVGaW5pc2h9XHJcbiAgICAgICAgICAgICAgICAgICAgZGlzYWJsZWQ9eyFzZWxlY3RlZFBhdGggfHwgIWRyYWZ0SGVhcnRMYXdJZH1cclxuICAgICAgICAgICAgICAgICAgPlxyXG4gICAgICAgICAgICAgICAgICAgIEZpbmlzaFxyXG4gICAgICAgICAgICAgICAgICA8L2J1dHRvbj5cclxuICAgICAgICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgICA8L2FzaWRlPlxyXG4gICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgKSA6IG51bGx9XHJcbiAgICAgIDwvZGl2PlxyXG4gICAgPC9JbmtNb2RhbEZyYW1lPlxyXG4gICk7XHJcbn1cclxuIl0sImZpbGUiOiJDOi9Vc2Vycy9hYmR1bC9EZXNrdG9wL2N1bHRpdmF0aW9uLWlkbGUvc3JjL2NvbXBvbmVudHMvbW9kYWxzL0xpZmVTdGFydFdpemFyZE1vZGFsLnRzeCJ9

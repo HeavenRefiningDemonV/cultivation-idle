@@ -74,7 +74,9 @@
     "release:gate-trial-exact-p0:capture": "node --loader=./scripts/relativeJsLoader.mjs --experimental-strip-types scripts/release/runGateTrialExactP0Capture.ts",
     "release:gate-trial-exact-p0:audit": "node --loader=./scripts/relativeJsLoader.mjs --experimental-strip-types scripts/release/validatePhase6CombatEvidence.ts --surface=gate-trial",
     "release:gate-trial-exact-p0:report": "node --loader=./scripts/relativeJsLoader.mjs --experimental-strip-types scripts/release/buildGateTrialExactP0Baseline.ts --write",
-    "release:gate-trial-exact-p0:report:json": "npm run release:gate-trial-exact-p0:report -- --json"
+    "release:gate-trial-exact-p0:report:json": "npm run release:gate-trial-exact-p0:report -- --json",
+    "release:apothecary-exact-p0:capture": "node --loader=./scripts/relativeJsLoader.mjs --experimental-strip-types scripts/release/runApothecaryExactP0Capture.ts",
+    "release:apothecary-exact-p0:audit": "node --loader=./scripts/relativeJsLoader.mjs --experimental-strip-types scripts/release/validateApothecaryExactP0Evidence.ts"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.9",

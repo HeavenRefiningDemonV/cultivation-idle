@@ -1,0 +1,473 @@
+import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/components/consumables/MedicinePouchPanel.tsx");import __vite__cjsImport0_react_jsxDevRuntime from "/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=c0e4e3e4"; const Fragment = __vite__cjsImport0_react_jsxDevRuntime["Fragment"]; const jsxDEV = __vite__cjsImport0_react_jsxDevRuntime["jsxDEV"];
+var _s = $RefreshSig$();
+import __vite__cjsImport1_react from "/node_modules/.vite/deps/react.js?v=c0e4e3e4"; const useEffect = __vite__cjsImport1_react["useEffect"]; const useMemo = __vite__cjsImport1_react["useMemo"]; const useState = __vite__cjsImport1_react["useState"];
+import { getItemDef } from "/src/stores/contentStore.ts";
+import { useInventoryStore } from "/src/stores/inventoryStore.ts";
+import { useMedicinePouchStore } from "/src/stores/medicinePouchStore.ts";
+import { buildPotionMetaChips } from "/src/features/apothecary/potionMetaIcons.ts";
+import { getConsumableSpec, isCombatUsableConsumable } from "/src/systems/consumables/consumableCatalog.ts";
+import { GameEvents } from "/src/services/events/GameEvents.ts";
+import { ConsumableMetaChips } from "/src/components/consumables/ConsumableMetaChips.tsx";
+import { InkPanel, PaperCard, PaperChip } from "/src/ui/ink/index.ts";
+import { GameIcon } from "/src/ui/icons/index.ts";
+import "/src/components/consumables/MedicinePouchPanel.scss";
+const slotLabels = {
+  healing: "Healing",
+  utility: "Utility",
+  specialty: "Specialty"
+};
+const slotIcons = {
+  healing: "inkHeart",
+  utility: "inkSwirl",
+  specialty: "inkSparkles"
+};
+const triggerOptions = [
+  { value: "manual", label: "Manual only" },
+  { value: "hpBelowPct", label: "HP below %" },
+  { value: "qiBelowPct", label: "Qi below %" },
+  { value: "intentBelowPct", label: "Intent below %" },
+  { value: "fightStart", label: "On fight start" },
+  { value: "bossStart", label: "On boss start" }
+];
+function usageLabel(usage) {
+  switch (usage) {
+    case "combat_only":
+      return "Combat Only";
+    case "combat_or_world":
+      return "Combat or World";
+    case "cultivate_only":
+      return "Cultivation Only";
+    default:
+      return "General";
+  }
+}
+function usageToChipUsage(usage) {
+  switch (usage) {
+    case "combat_only":
+      return "combat";
+    case "cultivate_only":
+      return "cultivation";
+    case "combat_or_world":
+    default:
+      return "both";
+  }
+}
+export function MedicinePouchPanel({ variant = "default" }) {
+  _s();
+  const slots = useMedicinePouchStore((state) => state.slots);
+  const equip = useMedicinePouchStore((state) => state.equip);
+  const setSlotConfig = useMedicinePouchStore((state) => state.setSlotConfig);
+  const inventoryItems = useInventoryStore((state) => state.items);
+  const getQty = useInventoryStore((state) => state.getQty);
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const handle = window.setInterval(() => setNow(Date.now()), 250);
+    return () => window.clearInterval(handle);
+  }, []);
+  useEffect(() => {
+    GameEvents.emit({ type: "pouch/opened", payload: {} });
+    return () => {
+      GameEvents.emit({ type: "pouch/closed", payload: {} });
+    };
+  }, []);
+  const availableOptions = useMemo(
+    () => Object.entries(inventoryItems).filter(([itemId, qty]) => qty > 0 && isCombatUsableConsumable(itemId)).map(([itemId, qty]) => {
+      const itemDef = getItemDef(itemId);
+      return { itemId, qty, name: itemDef?.name ?? itemId };
+    }).sort((a, b) => a.name.localeCompare(b.name)),
+    [inventoryItems]
+  );
+  const renderSlotControls = (slotKey) => {
+    const slot = slots[slotKey];
+    const equippedId = slot?.equippedItemId ?? null;
+    const itemDef = equippedId ? getItemDef(equippedId) : null;
+    const spec = equippedId ? getConsumableSpec(equippedId) : null;
+    const charges = equippedId ? getQty(equippedId) : 0;
+    const requiredCooldownMs = Math.max(slot.cooldownSec, spec?.cooldownSec ?? 0) * 1e3;
+    const remainingCooldownMs = slot.lastUsedAt === null ? 0 : Math.max(0, requiredCooldownMs - (now - slot.lastUsedAt));
+    const shouldShowThreshold = slot.trigger === "hpBelowPct" || slot.trigger === "qiBelowPct" || slot.trigger === "intentBelowPct";
+    const usage = itemDef?.usage;
+    const chips = itemDef ? buildPotionMetaChips({
+      itemId: equippedId ?? itemDef.id,
+      usage: usageToChipUsage(usage),
+      stackSize: itemDef.stackSize,
+      spec,
+      charges,
+      remainingCooldownMs
+    }) : [];
+    const handleConfigChange = (field, value) => {
+      setSlotConfig(slotKey, { [field]: value });
+    };
+    const handleEquip = (value) => {
+      GameEvents.emit({ type: "pouch/slot_selected", payload: { slotKey } });
+      equip(slotKey, value);
+      if (value) {
+        GameEvents.emit({ type: "pouch/equip", payload: { slotKey, itemId: value } });
+      } else {
+        GameEvents.emit({ type: "pouch/unequip", payload: { slotKey, itemId: equippedId } });
+      }
+    };
+    return /* @__PURE__ */ jsxDEV(PaperCard, { className: "medicinePouchCard", variant: "pouch", children: [
+      /* @__PURE__ */ jsxDEV("div", { className: "medicinePouchCardHeader", children: [
+        /* @__PURE__ */ jsxDEV("div", { children: [
+          /* @__PURE__ */ jsxDEV("div", { className: "medicinePouchCardTitle", children: [
+            /* @__PURE__ */ jsxDEV("span", { className: "medicinePouchSlotIcon", "aria-hidden": "true", children: /* @__PURE__ */ jsxDEV(GameIcon, { icon: slotIcons[slotKey], size: 16, decorative: true }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/consumables/MedicinePouchPanel.tsx",
+              lineNumber: 144,
+              columnNumber: 17
+            }, this) }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/consumables/MedicinePouchPanel.tsx",
+              lineNumber: 143,
+              columnNumber: 15
+            }, this),
+            slotLabels[slotKey],
+            " Slot"
+          ] }, void 0, true, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/consumables/MedicinePouchPanel.tsx",
+            lineNumber: 142,
+            columnNumber: 13
+          }, this),
+          /* @__PURE__ */ jsxDEV("div", { className: "medicinePouchCardSubtitle", children: equippedId ? itemDef?.name ?? equippedId : "Empty" }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/consumables/MedicinePouchPanel.tsx",
+            lineNumber: 148,
+            columnNumber: 13
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/consumables/MedicinePouchPanel.tsx",
+          lineNumber: 141,
+          columnNumber: 11
+        }, this),
+        /* @__PURE__ */ jsxDEV(PaperChip, { className: "medicinePouchTag", text: usageLabel(usage), variant: "tag", tone: "ink" }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/consumables/MedicinePouchPanel.tsx",
+          lineNumber: 152,
+          columnNumber: 11
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/consumables/MedicinePouchPanel.tsx",
+        lineNumber: 140,
+        columnNumber: 9
+      }, this),
+      chips.length > 0 && /* @__PURE__ */ jsxDEV("div", { className: "medicinePouchChips", children: /* @__PURE__ */ jsxDEV(ConsumableMetaChips, { chips, compact: true }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/consumables/MedicinePouchPanel.tsx",
+        lineNumber: 157,
+        columnNumber: 13
+      }, this) }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/consumables/MedicinePouchPanel.tsx",
+        lineNumber: 156,
+        columnNumber: 9
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { className: "medicinePouchField", children: [
+        /* @__PURE__ */ jsxDEV("label", { className: "medicinePouchLabel", htmlFor: `${slotKey}-select`, children: "Equip" }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/consumables/MedicinePouchPanel.tsx",
+          lineNumber: 162,
+          columnNumber: 11
+        }, this),
+        /* @__PURE__ */ jsxDEV(
+          "select",
+          {
+            id: `${slotKey}-select`,
+            className: "medicinePouchSelect",
+            value: equippedId ?? "",
+            onChange: (e) => handleEquip(e.target.value || null),
+            children: [
+              /* @__PURE__ */ jsxDEV("option", { value: "", children: "(Empty)" }, void 0, false, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/consumables/MedicinePouchPanel.tsx",
+                lineNumber: 171,
+                columnNumber: 13
+              }, this),
+              availableOptions.map(
+                (option) => /* @__PURE__ */ jsxDEV("option", { value: option.itemId, children: [
+                  option.name,
+                  " (x",
+                  option.qty,
+                  ")"
+                ] }, option.itemId, true, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/consumables/MedicinePouchPanel.tsx",
+                  lineNumber: 173,
+                  columnNumber: 13
+                }, this)
+              )
+            ]
+          },
+          void 0,
+          true,
+          {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/consumables/MedicinePouchPanel.tsx",
+            lineNumber: 165,
+            columnNumber: 11
+          },
+          this
+        ),
+        /* @__PURE__ */ jsxDEV("button", { className: "medicinePouchButton medicinePouchButton--ghost", onClick: () => handleEquip(null), children: "Clear" }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/consumables/MedicinePouchPanel.tsx",
+          lineNumber: 178,
+          columnNumber: 11
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/consumables/MedicinePouchPanel.tsx",
+        lineNumber: 161,
+        columnNumber: 9
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { className: "medicinePouchField medicinePouchField--inline", children: [
+        /* @__PURE__ */ jsxDEV("label", { className: "medicinePouchCheckbox", children: [
+          /* @__PURE__ */ jsxDEV(
+            "input",
+            {
+              type: "checkbox",
+              checked: slot.enabled,
+              onChange: (e) => handleConfigChange("enabled", e.target.checked)
+            },
+            void 0,
+            false,
+            {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/consumables/MedicinePouchPanel.tsx",
+              lineNumber: 185,
+              columnNumber: 13
+            },
+            this
+          ),
+          "Slot enabled"
+        ] }, void 0, true, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/consumables/MedicinePouchPanel.tsx",
+          lineNumber: 184,
+          columnNumber: 11
+        }, this),
+        /* @__PURE__ */ jsxDEV("label", { className: "medicinePouchCheckbox", children: [
+          /* @__PURE__ */ jsxDEV(
+            "input",
+            {
+              type: "checkbox",
+              checked: slot.bossOnly,
+              onChange: (e) => handleConfigChange("bossOnly", e.target.checked)
+            },
+            void 0,
+            false,
+            {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/consumables/MedicinePouchPanel.tsx",
+              lineNumber: 193,
+              columnNumber: 13
+            },
+            this
+          ),
+          "Boss only"
+        ] }, void 0, true, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/consumables/MedicinePouchPanel.tsx",
+          lineNumber: 192,
+          columnNumber: 11
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/consumables/MedicinePouchPanel.tsx",
+        lineNumber: 183,
+        columnNumber: 9
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { className: "medicinePouchField", children: [
+        /* @__PURE__ */ jsxDEV("label", { className: "medicinePouchLabel", htmlFor: `${slotKey}-trigger`, children: "Trigger" }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/consumables/MedicinePouchPanel.tsx",
+          lineNumber: 203,
+          columnNumber: 11
+        }, this),
+        /* @__PURE__ */ jsxDEV(
+          "select",
+          {
+            id: `${slotKey}-trigger`,
+            className: "medicinePouchSelect",
+            value: slot.trigger,
+            onChange: (e) => handleConfigChange("trigger", e.target.value),
+            children: triggerOptions.map(
+              (option) => /* @__PURE__ */ jsxDEV("option", { value: option.value, children: option.label }, option.value, false, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/consumables/MedicinePouchPanel.tsx",
+                lineNumber: 213,
+                columnNumber: 13
+              }, this)
+            )
+          },
+          void 0,
+          false,
+          {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/consumables/MedicinePouchPanel.tsx",
+            lineNumber: 206,
+            columnNumber: 11
+          },
+          this
+        )
+      ] }, void 0, true, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/consumables/MedicinePouchPanel.tsx",
+        lineNumber: 202,
+        columnNumber: 9
+      }, this),
+      shouldShowThreshold && /* @__PURE__ */ jsxDEV("div", { className: "medicinePouchField", children: [
+        /* @__PURE__ */ jsxDEV("label", { className: "medicinePouchLabel", htmlFor: `${slotKey}-threshold`, children: "Threshold (%)" }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/consumables/MedicinePouchPanel.tsx",
+          lineNumber: 222,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV(
+          "input",
+          {
+            id: `${slotKey}-threshold`,
+            type: "number",
+            min: 0,
+            max: 100,
+            className: "medicinePouchInput",
+            value: slot.thresholdPct,
+            onChange: (e) => handleConfigChange("thresholdPct", Number(e.target.value))
+          },
+          void 0,
+          false,
+          {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/consumables/MedicinePouchPanel.tsx",
+            lineNumber: 225,
+            columnNumber: 13
+          },
+          this
+        )
+      ] }, void 0, true, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/consumables/MedicinePouchPanel.tsx",
+        lineNumber: 221,
+        columnNumber: 9
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { className: "medicinePouchField", children: [
+        /* @__PURE__ */ jsxDEV("label", { className: "medicinePouchLabel", htmlFor: `${slotKey}-cooldown`, children: "Cooldown (seconds)" }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/consumables/MedicinePouchPanel.tsx",
+          lineNumber: 238,
+          columnNumber: 11
+        }, this),
+        /* @__PURE__ */ jsxDEV(
+          "input",
+          {
+            id: `${slotKey}-cooldown`,
+            type: "number",
+            min: 0,
+            max: 3600,
+            className: "medicinePouchInput",
+            value: slot.cooldownSec,
+            onChange: (e) => handleConfigChange("cooldownSec", Number(e.target.value))
+          },
+          void 0,
+          false,
+          {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/consumables/MedicinePouchPanel.tsx",
+            lineNumber: 241,
+            columnNumber: 11
+          },
+          this
+        ),
+        /* @__PURE__ */ jsxDEV("div", { className: "medicinePouchHint", children: [
+          "Baseline: ",
+          spec ? `${spec.cooldownSec}s` : "—",
+          " (uses max of slot and item)"
+        ] }, void 0, true, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/consumables/MedicinePouchPanel.tsx",
+          lineNumber: 250,
+          columnNumber: 11
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/consumables/MedicinePouchPanel.tsx",
+        lineNumber: 237,
+        columnNumber: 9
+      }, this)
+    ] }, slotKey, true, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/consumables/MedicinePouchPanel.tsx",
+      lineNumber: 139,
+      columnNumber: 7
+    }, this);
+  };
+  const equippedCount = Object.values(slots || {}).filter((slot) => Boolean(slot?.equippedItemId)).length;
+  const panelContent = /* @__PURE__ */ jsxDEV(Fragment, { children: [
+    variant === "default" && /* @__PURE__ */ jsxDEV("div", { className: "medicinePouchPanelHeader", children: [
+      /* @__PURE__ */ jsxDEV("div", { children: [
+        /* @__PURE__ */ jsxDEV("div", { className: "medicinePouchTitle", children: "Medicine Pouch" }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/consumables/MedicinePouchPanel.tsx",
+          lineNumber: 265,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { className: "medicinePouchSubtitle", children: "Configure the consumables you keep ready. Auto-use still respects the combat toggle." }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/consumables/MedicinePouchPanel.tsx",
+          lineNumber: 266,
+          columnNumber: 13
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/consumables/MedicinePouchPanel.tsx",
+        lineNumber: 264,
+        columnNumber: 11
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { className: "medicinePouchFootnote", children: "Auto-use requires enabling “Use consumables in combat” in Combat Theater controls." }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/consumables/MedicinePouchPanel.tsx",
+        lineNumber: 270,
+        columnNumber: 11
+      }, this)
+    ] }, void 0, true, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/consumables/MedicinePouchPanel.tsx",
+      lineNumber: 263,
+      columnNumber: 5
+    }, this),
+    variant === "modal" && equippedCount === 0 && /* @__PURE__ */ jsxDEV(PaperCard, { className: "medicinePouchEmptyState", variant: "label", children: [
+      /* @__PURE__ */ jsxDEV("div", { className: "medicinePouchEmptyTitle", children: "Your pouch is empty." }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/consumables/MedicinePouchPanel.tsx",
+        lineNumber: 278,
+        columnNumber: 11
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { className: "medicinePouchEmptyBody", children: "Buy or brew a few consumables in the Apothecary, then equip them here." }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/consumables/MedicinePouchPanel.tsx",
+        lineNumber: 279,
+        columnNumber: 11
+      }, this)
+    ] }, void 0, true, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/consumables/MedicinePouchPanel.tsx",
+      lineNumber: 277,
+      columnNumber: 5
+    }, this),
+    /* @__PURE__ */ jsxDEV("div", { className: "medicinePouchGrid", children: ["healing", "utility", "specialty"].map((slotKey) => renderSlotControls(slotKey)) }, void 0, false, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/consumables/MedicinePouchPanel.tsx",
+      lineNumber: 283,
+      columnNumber: 7
+    }, this)
+  ] }, void 0, true, {
+    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/consumables/MedicinePouchPanel.tsx",
+    lineNumber: 261,
+    columnNumber: 3
+  }, this);
+  if (variant === "modal") {
+    return /* @__PURE__ */ jsxDEV("div", { className: "medicinePouchPanel medicinePouchPanel--modal", children: panelContent }, void 0, false, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/consumables/MedicinePouchPanel.tsx",
+      lineNumber: 290,
+      columnNumber: 12
+    }, this);
+  }
+  return /* @__PURE__ */ jsxDEV(InkPanel, { variant: "pouch", watermark: true, className: "medicinePouchPanel", children: panelContent }, void 0, false, {
+    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/consumables/MedicinePouchPanel.tsx",
+    lineNumber: 294,
+    columnNumber: 5
+  }, this);
+}
+_s(MedicinePouchPanel, "F5b4rHaG4xnHOuK2lMuiEl7Al1s=", false, function() {
+  return [useMedicinePouchStore, useMedicinePouchStore, useMedicinePouchStore, useInventoryStore, useInventoryStore];
+});
+_c = MedicinePouchPanel;
+var _c;
+$RefreshReg$(_c, "MedicinePouchPanel");
+import * as RefreshRuntime from "/@react-refresh";
+const inWebWorker = typeof WorkerGlobalScope !== "undefined" && self instanceof WorkerGlobalScope;
+if (import.meta.hot && !inWebWorker) {
+  if (!window.$RefreshReg$) {
+    throw new Error(
+      "@vitejs/plugin-react can't detect preamble. Something is wrong."
+    );
+  }
+  RefreshRuntime.__hmr_import(import.meta.url).then((currentExports) => {
+    RefreshRuntime.registerExportsForReactRefresh("C:/Users/abdul/Desktop/cultivation-idle/src/components/consumables/MedicinePouchPanel.tsx", currentExports);
+    import.meta.hot.accept((nextExports) => {
+      if (!nextExports) return;
+      const invalidateMessage = RefreshRuntime.validateRefreshBoundaryAndEnqueueUpdate("C:/Users/abdul/Desktop/cultivation-idle/src/components/consumables/MedicinePouchPanel.tsx", currentExports, nextExports);
+      if (invalidateMessage) import.meta.hot.invalidate(invalidateMessage);
+    });
+  });
+}
+function $RefreshReg$(type, id) {
+  return RefreshRuntime.register(type, "C:/Users/abdul/Desktop/cultivation-idle/src/components/consumables/MedicinePouchPanel.tsx " + id);
+}
+function $RefreshSig$() {
+  return RefreshRuntime.createSignatureFunctionForTransform();
+}
+
+//# sourceMappingURL=data:application/json;base64,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QUEyQixvQ0FBM0M7QUFBQTtBQUFBO0FBQUE7QUFBQSxhQUErRDtBQUFBLE1BQy9ELHVCQUFDLFNBQUksV0FBVywwQkFBMEIsc0ZBQTFDO0FBQUE7QUFBQTtBQUFBO0FBQUEsYUFBZ0g7QUFBQSxTQUZsSDtBQUFBO0FBQUE7QUFBQTtBQUFBLFdBR0E7QUFBQSxJQUdGLHVCQUFDLFNBQUksV0FBVyxxQkFDWixXQUFDLFdBQVcsV0FBVyxXQUFXLEVBQTZCckMsSUFBSSxDQUFDUSxZQUFZRCxtQkFBbUJDLE9BQU8sQ0FBQyxLQUQvRztBQUFBO0FBQUE7QUFBQTtBQUFBLFdBRUE7QUFBQSxPQXhCRjtBQUFBO0FBQUE7QUFBQTtBQUFBLFNBeUJBO0FBR0YsTUFBSWpDLFlBQVksU0FBUztBQUN2QixXQUFPLHVCQUFDLFNBQUksV0FBVSxnREFBZ0RpRSwwQkFBL0Q7QUFBQTtBQUFBO0FBQUE7QUFBQSxXQUE0RTtBQUFBLEVBQ3JGO0FBRUEsU0FDRSx1QkFBQyxZQUFTLFNBQVEsU0FBUSxXQUFTLE1BQUMsV0FBVSxzQkFDM0NBLDBCQURIO0FBQUE7QUFBQTtBQUFBO0FBQUEsU0FFQTtBQUVKO0FBQUNoRSxHQXZPZUYsb0JBQWtCO0FBQUEsVUFDbEJyQix1QkFDQUEsdUJBQ1FBLHVCQUVDRCxtQkFDUkEsaUJBQWlCO0FBQUE7QUFBQXlGLEtBTmxCbkU7QUFBa0IsSUFBQW1FO0FBQUFDLGFBQUFELElBQUEiLCJuYW1lcyI6WyJ1c2VFZmZlY3QiLCJ1c2VNZW1vIiwidXNlU3RhdGUiLCJnZXRJdGVtRGVmIiwidXNlSW52ZW50b3J5U3RvcmUiLCJ1c2VNZWRpY2luZVBvdWNoU3RvcmUiLCJidWlsZFBvdGlvbk1ldGFDaGlwcyIsImdldENvbnN1bWFibGVTcGVjIiwiaXNDb21iYXRVc2FibGVDb25zdW1hYmxlIiwiR2FtZUV2ZW50cyIsIkNvbnN1bWFibGVNZXRhQ2hpcHMiLCJJbmtQYW5lbCIsIlBhcGVyQ2FyZCIsIlBhcGVyQ2hpcCIsIkdhbWVJY29uIiwic2xvdExhYmVscyIsImhlYWxpbmciLCJ1dGlsaXR5Iiwic3BlY2lhbHR5Iiwic2xvdEljb25zIiwidHJpZ2dlck9wdGlvbnMiLCJ2YWx1ZSIsImxhYmVsIiwidXNhZ2VMYWJlbCIsInVzYWdlIiwidXNhZ2VUb0NoaXBVc2FnZSIsIk1lZGljaW5lUG91Y2hQYW5lbCIsInZhcmlhbnQiLCJfcyIsInNsb3RzIiwic3RhdGUiLCJlcXVpcCIsInNldFNsb3RDb25maWciLCJpbnZlbnRvcnlJdGVtcyIsIml0ZW1zIiwiZ2V0UXR5Iiwibm93Iiwic2V0Tm93IiwiRGF0ZSIsImhhbmRsZSIsIndpbmRvdyIsInNldEludGVydmFsIiwiY2xlYXJJbnRlcnZhbCIsImVtaXQiLCJ0eXBlIiwicGF5bG9hZCIsImF2YWlsYWJsZU9wdGlvbnMiLCJPYmplY3QiLCJlbnRyaWVzIiwiZmlsdGVyIiwiaXRlbUlkIiwicXR5IiwibWFwIiwiaXRlbURlZiIsIm5hbWUiLCJzb3J0IiwiYSIsImIiLCJsb2NhbGVDb21wYXJlIiwicmVuZGVyU2xvdENvbnRyb2xzIiwic2xvdEtleSIsInNsb3QiLCJlcXVpcHBlZElkIiwiZXF1aXBwZWRJdGVtSWQiLCJzcGVjIiwiY2hhcmdlcyIsInJlcXVpcmVkQ29vbGRvd25NcyIsIk1hdGgiLCJtYXgiLCJjb29sZG93blNlYyIsInJlbWFpbmluZ0Nvb2xkb3duTXMiLCJsYXN0VXNlZEF0Iiwic2hvdWxkU2hvd1RocmVzaG9sZCIsInRyaWdnZXIiLCJjaGlwcyIsImlkIiwic3RhY2tTaXplIiwiaGFuZGxlQ29uZmlnQ2hhbmdlIiwiZmllbGQiLCJoYW5kbGVFcXVpcCIsImxlbmd0aCIsImUiLCJ0YXJnZXQiLCJvcHRpb24iLCJlbmFibGVkIiwiY2hlY2tlZCIsImJvc3NPbmx5IiwidGhyZXNob2xkUGN0IiwiTnVtYmVyIiwiZXF1aXBwZWRDb3VudCIsInZhbHVlcyIsIkJvb2xlYW4iLCJwYW5lbENvbnRlbnQiLCJfYyIsIiRSZWZyZXNoUmVnJCJdLCJpZ25vcmVMaXN0IjpbXSwic291cmNlcyI6WyJNZWRpY2luZVBvdWNoUGFuZWwudHN4Il0sInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7IHVzZUVmZmVjdCwgdXNlTWVtbywgdXNlU3RhdGUgfSBmcm9tICdyZWFjdCc7XHJcbmltcG9ydCB7IGdldEl0ZW1EZWYgfSBmcm9tICcuLi8uLi9zdG9yZXMvY29udGVudFN0b3JlLmpzJztcclxuaW1wb3J0IHsgdXNlSW52ZW50b3J5U3RvcmUgfSBmcm9tICcuLi8uLi9zdG9yZXMvaW52ZW50b3J5U3RvcmUuanMnO1xyXG5pbXBvcnQgeyB1c2VNZWRpY2luZVBvdWNoU3RvcmUgfSBmcm9tICcuLi8uLi9zdG9yZXMvbWVkaWNpbmVQb3VjaFN0b3JlLmpzJztcclxuaW1wb3J0IHsgYnVpbGRQb3Rpb25NZXRhQ2hpcHMgfSBmcm9tICcuLi8uLi9mZWF0dXJlcy9hcG90aGVjYXJ5L3BvdGlvbk1ldGFJY29ucy5qcyc7XHJcbmltcG9ydCB7IGdldENvbnN1bWFibGVTcGVjLCBpc0NvbWJhdFVzYWJsZUNvbnN1bWFibGUgfSBmcm9tICcuLi8uLi9zeXN0ZW1zL2NvbnN1bWFibGVzL2NvbnN1bWFibGVDYXRhbG9nLmpzJztcclxuaW1wb3J0IHR5cGUgeyBNZWRpY2luZVBvdWNoU2xvdEtleSwgTWVkaWNpbmVQb3VjaFRyaWdnZXIgfSBmcm9tICcuLi8uLi90eXBlcy9pbmRleC5qcyc7XHJcbmltcG9ydCB7IEdhbWVFdmVudHMgfSBmcm9tICcuLi8uLi9zZXJ2aWNlcy9ldmVudHMvR2FtZUV2ZW50cy5qcyc7XHJcbmltcG9ydCB7IENvbnN1bWFibGVNZXRhQ2hpcHMgfSBmcm9tICcuL0NvbnN1bWFibGVNZXRhQ2hpcHMuanMnO1xyXG5pbXBvcnQgeyBJbmtQYW5lbCwgUGFwZXJDYXJkLCBQYXBlckNoaXAgfSBmcm9tICcuLi8uLi91aS9pbmsvaW5kZXguanMnO1xyXG5pbXBvcnQgdHlwZSB7IEljb25JZCB9IGZyb20gJy4uLy4uL3VpL2ljb25zL2luZGV4LmpzJztcclxuaW1wb3J0IHsgR2FtZUljb24gfSBmcm9tICcuLi8uLi91aS9pY29ucy9pbmRleC5qcyc7XHJcbmltcG9ydCAnLi9NZWRpY2luZVBvdWNoUGFuZWwuc2Nzcyc7XHJcblxyXG50eXBlIFNsb3RDb25maWdGaWVsZCA9ICdlbmFibGVkJyB8ICd0cmlnZ2VyJyB8ICd0aHJlc2hvbGRQY3QnIHwgJ2Nvb2xkb3duU2VjJyB8ICdib3NzT25seSc7XHJcblxyXG5jb25zdCBzbG90TGFiZWxzOiBSZWNvcmQ8TWVkaWNpbmVQb3VjaFNsb3RLZXksIHN0cmluZz4gPSB7XHJcbiAgaGVhbGluZzogJ0hlYWxpbmcnLFxyXG4gIHV0aWxpdHk6ICdVdGlsaXR5JyxcclxuICBzcGVjaWFsdHk6ICdTcGVjaWFsdHknLFxyXG59O1xyXG5cclxuY29uc3Qgc2xvdEljb25zOiBSZWNvcmQ8TWVkaWNpbmVQb3VjaFNsb3RLZXksIEljb25JZD4gPSB7XHJcbiAgaGVhbGluZzogJ2lua0hlYXJ0JyxcclxuICB1dGlsaXR5OiAnaW5rU3dpcmwnLFxyXG4gIHNwZWNpYWx0eTogJ2lua1NwYXJrbGVzJyxcclxufTtcclxuXHJcbmNvbnN0IHRyaWdnZXJPcHRpb25zOiB7IHZhbHVlOiBNZWRpY2luZVBvdWNoVHJpZ2dlcjsgbGFiZWw6IHN0cmluZyB9W10gPSBbXHJcbiAgeyB2YWx1ZTogJ21hbnVhbCcsIGxhYmVsOiAnTWFudWFsIG9ubHknIH0sXHJcbiAgeyB2YWx1ZTogJ2hwQmVsb3dQY3QnLCBsYWJlbDogJ0hQIGJlbG93ICUnIH0sXHJcbiAgeyB2YWx1ZTogJ3FpQmVsb3dQY3QnLCBsYWJlbDogJ1FpIGJlbG93ICUnIH0sXHJcbiAgeyB2YWx1ZTogJ2ludGVudEJlbG93UGN0JywgbGFiZWw6ICdJbnRlbnQgYmVsb3cgJScgfSxcclxuICB7IHZhbHVlOiAnZmlnaHRTdGFydCcsIGxhYmVsOiAnT24gZmlnaHQgc3RhcnQnIH0sXHJcbiAgeyB2YWx1ZTogJ2Jvc3NTdGFydCcsIGxhYmVsOiAnT24gYm9zcyBzdGFydCcgfSxcclxuXTtcclxuXHJcbmZ1bmN0aW9uIHVzYWdlTGFiZWwodXNhZ2U/OiAnY29tYmF0X29ubHknIHwgJ2NvbWJhdF9vcl93b3JsZCcgfCAnY3VsdGl2YXRlX29ubHknKSB7XHJcbiAgc3dpdGNoICh1c2FnZSkge1xyXG4gICAgY2FzZSAnY29tYmF0X29ubHknOlxyXG4gICAgICByZXR1cm4gJ0NvbWJhdCBPbmx5JztcclxuICAgIGNhc2UgJ2NvbWJhdF9vcl93b3JsZCc6XHJcbiAgICAgIHJldHVybiAnQ29tYmF0IG9yIFdvcmxkJztcclxuICAgIGNhc2UgJ2N1bHRpdmF0ZV9vbmx5JzpcclxuICAgICAgcmV0dXJuICdDdWx0aXZhdGlvbiBPbmx5JztcclxuICAgIGRlZmF1bHQ6XHJcbiAgICAgIHJldHVybiAnR2VuZXJhbCc7XHJcbiAgfVxyXG59XHJcblxyXG5mdW5jdGlvbiB1c2FnZVRvQ2hpcFVzYWdlKHVzYWdlPzogJ2NvbWJhdF9vbmx5JyB8ICdjb21iYXRfb3Jfd29ybGQnIHwgJ2N1bHRpdmF0ZV9vbmx5Jykge1xyXG4gIHN3aXRjaCAodXNhZ2UpIHtcclxuICAgIGNhc2UgJ2NvbWJhdF9vbmx5JzpcclxuICAgICAgcmV0dXJuICdjb21iYXQnO1xyXG4gICAgY2FzZSAnY3VsdGl2YXRlX29ubHknOlxyXG4gICAgICByZXR1cm4gJ2N1bHRpdmF0aW9uJztcclxuICAgIGNhc2UgJ2NvbWJhdF9vcl93b3JsZCc6XHJcbiAgICBkZWZhdWx0OlxyXG4gICAgICByZXR1cm4gJ2JvdGgnO1xyXG4gIH1cclxufVxyXG5cclxuaW50ZXJmYWNlIE1lZGljaW5lUG91Y2hQYW5lbFByb3BzIHtcclxuICB2YXJpYW50PzogJ2RlZmF1bHQnIHwgJ21vZGFsJztcclxufVxyXG5cclxuZXhwb3J0IGZ1bmN0aW9uIE1lZGljaW5lUG91Y2hQYW5lbCh7IHZhcmlhbnQgPSAnZGVmYXVsdCcgfTogTWVkaWNpbmVQb3VjaFBhbmVsUHJvcHMpIHtcclxuICBjb25zdCBzbG90cyA9IHVzZU1lZGljaW5lUG91Y2hTdG9yZSgoc3RhdGUpID0+IHN0YXRlLnNsb3RzKTtcclxuICBjb25zdCBlcXVpcCA9IHVzZU1lZGljaW5lUG91Y2hTdG9yZSgoc3RhdGUpID0+IHN0YXRlLmVxdWlwKTtcclxuICBjb25zdCBzZXRTbG90Q29uZmlnID0gdXNlTWVkaWNpbmVQb3VjaFN0b3JlKChzdGF0ZSkgPT4gc3RhdGUuc2V0U2xvdENvbmZpZyk7XHJcblxyXG4gIGNvbnN0IGludmVudG9yeUl0ZW1zID0gdXNlSW52ZW50b3J5U3RvcmUoKHN0YXRlKSA9PiBzdGF0ZS5pdGVtcyk7XHJcbiAgY29uc3QgZ2V0UXR5ID0gdXNlSW52ZW50b3J5U3RvcmUoKHN0YXRlKSA9PiBzdGF0ZS5nZXRRdHkpO1xyXG5cclxuICBjb25zdCBbbm93LCBzZXROb3ddID0gdXNlU3RhdGUoKCkgPT4gRGF0ZS5ub3coKSk7XHJcblxyXG4gIHVzZUVmZmVjdCgoKSA9PiB7XHJcbiAgICBjb25zdCBoYW5kbGUgPSB3aW5kb3cuc2V0SW50ZXJ2YWwoKCkgPT4gc2V0Tm93KERhdGUubm93KCkpLCAyNTApO1xyXG4gICAgcmV0dXJuICgpID0+IHdpbmRvdy5jbGVhckludGVydmFsKGhhbmRsZSk7XHJcbiAgfSwgW10pO1xyXG5cclxuICB1c2VFZmZlY3QoKCkgPT4ge1xyXG4gICAgR2FtZUV2ZW50cy5lbWl0KHsgdHlwZTogJ3BvdWNoL29wZW5lZCcsIHBheWxvYWQ6IHt9IH0pO1xyXG4gICAgcmV0dXJuICgpID0+IHtcclxuICAgICAgR2FtZUV2ZW50cy5lbWl0KHsgdHlwZTogJ3BvdWNoL2Nsb3NlZCcsIHBheWxvYWQ6IHt9IH0pO1xyXG4gICAgfTtcclxuICB9LCBbXSk7XHJcblxyXG4gIGNvbnN0IGF2YWlsYWJsZU9wdGlvbnMgPSB1c2VNZW1vKFxyXG4gICAgKCkgPT5cclxuICAgICAgT2JqZWN0LmVudHJpZXMoaW52ZW50b3J5SXRlbXMpXHJcbiAgICAgICAgLmZpbHRlcigoW2l0ZW1JZCwgcXR5XSkgPT4gcXR5ID4gMCAmJiBpc0NvbWJhdFVzYWJsZUNvbnN1bWFibGUoaXRlbUlkKSlcclxuICAgICAgICAubWFwKChbaXRlbUlkLCBxdHldKSA9PiB7XHJcbiAgICAgICAgICBjb25zdCBpdGVtRGVmID0gZ2V0SXRlbURlZihpdGVtSWQpO1xyXG4gICAgICAgICAgcmV0dXJuIHsgaXRlbUlkLCBxdHksIG5hbWU6IGl0ZW1EZWY/Lm5hbWUgPz8gaXRlbUlkIH07XHJcbiAgICAgICAgfSlcclxuICAgICAgICAuc29ydCgoYSwgYikgPT4gYS5uYW1lLmxvY2FsZUNvbXBhcmUoYi5uYW1lKSksXHJcbiAgICBbaW52ZW50b3J5SXRlbXNdLFxyXG4gICk7XHJcblxyXG4gIGNvbnN0IHJlbmRlclNsb3RDb250cm9scyA9IChzbG90S2V5OiBNZWRpY2luZVBvdWNoU2xvdEtleSkgPT4ge1xyXG4gICAgY29uc3Qgc2xvdCA9IHNsb3RzW3Nsb3RLZXldO1xyXG4gICAgY29uc3QgZXF1aXBwZWRJZCA9IHNsb3Q/LmVxdWlwcGVkSXRlbUlkID8/IG51bGw7XHJcbiAgICBjb25zdCBpdGVtRGVmID0gZXF1aXBwZWRJZCA/IGdldEl0ZW1EZWYoZXF1aXBwZWRJZCkgOiBudWxsO1xyXG4gICAgY29uc3Qgc3BlYyA9IGVxdWlwcGVkSWQgPyBnZXRDb25zdW1hYmxlU3BlYyhlcXVpcHBlZElkKSA6IG51bGw7XHJcbiAgICBjb25zdCBjaGFyZ2VzID0gZXF1aXBwZWRJZCA/IGdldFF0eShlcXVpcHBlZElkKSA6IDA7XHJcbiAgICBjb25zdCByZXF1aXJlZENvb2xkb3duTXMgPSBNYXRoLm1heChzbG90LmNvb2xkb3duU2VjLCBzcGVjPy5jb29sZG93blNlYyA/PyAwKSAqIDEwMDA7XHJcbiAgICBjb25zdCByZW1haW5pbmdDb29sZG93bk1zID1cclxuICAgICAgc2xvdC5sYXN0VXNlZEF0ID09PSBudWxsID8gMCA6IE1hdGgubWF4KDAsIHJlcXVpcmVkQ29vbGRvd25NcyAtIChub3cgLSBzbG90Lmxhc3RVc2VkQXQpKTtcclxuICAgIGNvbnN0IHNob3VsZFNob3dUaHJlc2hvbGQgPVxyXG4gICAgICBzbG90LnRyaWdnZXIgPT09ICdocEJlbG93UGN0JyB8fCBzbG90LnRyaWdnZXIgPT09ICdxaUJlbG93UGN0JyB8fCBzbG90LnRyaWdnZXIgPT09ICdpbnRlbnRCZWxvd1BjdCc7XHJcbiAgICBjb25zdCB1c2FnZSA9IGl0ZW1EZWY/LnVzYWdlO1xyXG4gICAgY29uc3QgY2hpcHMgPSBpdGVtRGVmXHJcbiAgICAgID8gYnVpbGRQb3Rpb25NZXRhQ2hpcHMoe1xyXG4gICAgICAgICAgaXRlbUlkOiBlcXVpcHBlZElkID8/IGl0ZW1EZWYuaWQsXHJcbiAgICAgICAgICB1c2FnZTogdXNhZ2VUb0NoaXBVc2FnZSh1c2FnZSksXHJcbiAgICAgICAgICBzdGFja1NpemU6IGl0ZW1EZWYuc3RhY2tTaXplLFxyXG4gICAgICAgICAgc3BlYyxcclxuICAgICAgICAgIGNoYXJnZXMsXHJcbiAgICAgICAgICByZW1haW5pbmdDb29sZG93bk1zLFxyXG4gICAgICAgIH0pXHJcbiAgICAgIDogW107XHJcblxyXG4gICAgY29uc3QgaGFuZGxlQ29uZmlnQ2hhbmdlID0gKGZpZWxkOiBTbG90Q29uZmlnRmllbGQsIHZhbHVlOiB1bmtub3duKSA9PiB7XHJcbiAgICAgIHNldFNsb3RDb25maWcoc2xvdEtleSwgeyBbZmllbGRdOiB2YWx1ZSB9IGFzIFBhcnRpYWw8dHlwZW9mIHNsb3Q+KTtcclxuICAgIH07XHJcblxyXG4gICAgY29uc3QgaGFuZGxlRXF1aXAgPSAodmFsdWU6IHN0cmluZyB8IG51bGwpID0+IHtcclxuICAgICAgR2FtZUV2ZW50cy5lbWl0KHsgdHlwZTogJ3BvdWNoL3Nsb3Rfc2VsZWN0ZWQnLCBwYXlsb2FkOiB7IHNsb3RLZXkgfSB9KTtcclxuICAgICAgZXF1aXAoc2xvdEtleSwgdmFsdWUpO1xyXG4gICAgICBpZiAodmFsdWUpIHtcclxuICAgICAgICBHYW1lRXZlbnRzLmVtaXQoeyB0eXBlOiAncG91Y2gvZXF1aXAnLCBwYXlsb2FkOiB7IHNsb3RLZXksIGl0ZW1JZDogdmFsdWUgfSB9KTtcclxuICAgICAgfSBlbHNlIHtcclxuICAgICAgICBHYW1lRXZlbnRzLmVtaXQoeyB0eXBlOiAncG91Y2gvdW5lcXVpcCcsIHBheWxvYWQ6IHsgc2xvdEtleSwgaXRlbUlkOiBlcXVpcHBlZElkIH0gfSk7XHJcbiAgICAgIH1cclxuICAgIH07XHJcblxyXG4gICAgcmV0dXJuIChcclxuICAgICAgPFBhcGVyQ2FyZCBrZXk9e3Nsb3RLZXl9IGNsYXNzTmFtZT17J21lZGljaW5lUG91Y2hDYXJkJ30gdmFyaWFudD1cInBvdWNoXCI+XHJcbiAgICAgICAgPGRpdiBjbGFzc05hbWU9eydtZWRpY2luZVBvdWNoQ2FyZEhlYWRlcid9PlxyXG4gICAgICAgICAgPGRpdj5cclxuICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9eydtZWRpY2luZVBvdWNoQ2FyZFRpdGxlJ30+XHJcbiAgICAgICAgICAgICAgPHNwYW4gY2xhc3NOYW1lPXsnbWVkaWNpbmVQb3VjaFNsb3RJY29uJ30gYXJpYS1oaWRkZW49XCJ0cnVlXCI+XHJcbiAgICAgICAgICAgICAgICA8R2FtZUljb24gaWNvbj17c2xvdEljb25zW3Nsb3RLZXldfSBzaXplPXsxNn0gZGVjb3JhdGl2ZSAvPlxyXG4gICAgICAgICAgICAgIDwvc3Bhbj5cclxuICAgICAgICAgICAgICB7c2xvdExhYmVsc1tzbG90S2V5XX0gU2xvdFxyXG4gICAgICAgICAgICA8L2Rpdj5cclxuICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9eydtZWRpY2luZVBvdWNoQ2FyZFN1YnRpdGxlJ30+XHJcbiAgICAgICAgICAgICAge2VxdWlwcGVkSWQgPyBpdGVtRGVmPy5uYW1lID8/IGVxdWlwcGVkSWQgOiAnRW1wdHknfVxyXG4gICAgICAgICAgICA8L2Rpdj5cclxuICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgPFBhcGVyQ2hpcCBjbGFzc05hbWU9eydtZWRpY2luZVBvdWNoVGFnJ30gdGV4dD17dXNhZ2VMYWJlbCh1c2FnZSl9IHZhcmlhbnQ9XCJ0YWdcIiB0b25lPVwiaW5rXCIgLz5cclxuICAgICAgICA8L2Rpdj5cclxuXHJcbiAgICAgICAge2NoaXBzLmxlbmd0aCA+IDAgJiYgKFxyXG4gICAgICAgICAgPGRpdiBjbGFzc05hbWU9eydtZWRpY2luZVBvdWNoQ2hpcHMnfT5cclxuICAgICAgICAgICAgPENvbnN1bWFibGVNZXRhQ2hpcHMgY2hpcHM9e2NoaXBzfSBjb21wYWN0IC8+XHJcbiAgICAgICAgICA8L2Rpdj5cclxuICAgICAgICApfVxyXG5cclxuICAgICAgICA8ZGl2IGNsYXNzTmFtZT17J21lZGljaW5lUG91Y2hGaWVsZCd9PlxyXG4gICAgICAgICAgPGxhYmVsIGNsYXNzTmFtZT17J21lZGljaW5lUG91Y2hMYWJlbCd9IGh0bWxGb3I9e2Ake3Nsb3RLZXl9LXNlbGVjdGB9PlxyXG4gICAgICAgICAgICBFcXVpcFxyXG4gICAgICAgICAgPC9sYWJlbD5cclxuICAgICAgICAgIDxzZWxlY3RcclxuICAgICAgICAgICAgaWQ9e2Ake3Nsb3RLZXl9LXNlbGVjdGB9XHJcbiAgICAgICAgICAgIGNsYXNzTmFtZT17J21lZGljaW5lUG91Y2hTZWxlY3QnfVxyXG4gICAgICAgICAgICB2YWx1ZT17ZXF1aXBwZWRJZCA/PyAnJ31cclxuICAgICAgICAgICAgb25DaGFuZ2U9eyhlKSA9PiBoYW5kbGVFcXVpcChlLnRhcmdldC52YWx1ZSB8fCBudWxsKX1cclxuICAgICAgICAgID5cclxuICAgICAgICAgICAgPG9wdGlvbiB2YWx1ZT1cIlwiPihFbXB0eSk8L29wdGlvbj5cclxuICAgICAgICAgICAge2F2YWlsYWJsZU9wdGlvbnMubWFwKChvcHRpb24pID0+IChcclxuICAgICAgICAgICAgICA8b3B0aW9uIGtleT17b3B0aW9uLml0ZW1JZH0gdmFsdWU9e29wdGlvbi5pdGVtSWR9PlxyXG4gICAgICAgICAgICAgICAge29wdGlvbi5uYW1lfSAoeHtvcHRpb24ucXR5fSlcclxuICAgICAgICAgICAgICA8L29wdGlvbj5cclxuICAgICAgICAgICAgKSl9XHJcbiAgICAgICAgICA8L3NlbGVjdD5cclxuICAgICAgICAgIDxidXR0b24gY2xhc3NOYW1lPXsnbWVkaWNpbmVQb3VjaEJ1dHRvbiBtZWRpY2luZVBvdWNoQnV0dG9uLS1naG9zdCd9IG9uQ2xpY2s9eygpID0+IGhhbmRsZUVxdWlwKG51bGwpfT5cclxuICAgICAgICAgICAgQ2xlYXJcclxuICAgICAgICAgIDwvYnV0dG9uPlxyXG4gICAgICAgIDwvZGl2PlxyXG5cclxuICAgICAgICA8ZGl2IGNsYXNzTmFtZT17J21lZGljaW5lUG91Y2hGaWVsZCBtZWRpY2luZVBvdWNoRmllbGQtLWlubGluZSd9PlxyXG4gICAgICAgICAgPGxhYmVsIGNsYXNzTmFtZT17J21lZGljaW5lUG91Y2hDaGVja2JveCd9PlxyXG4gICAgICAgICAgICA8aW5wdXRcclxuICAgICAgICAgICAgICB0eXBlPVwiY2hlY2tib3hcIlxyXG4gICAgICAgICAgICAgIGNoZWNrZWQ9e3Nsb3QuZW5hYmxlZH1cclxuICAgICAgICAgICAgICBvbkNoYW5nZT17KGUpID0+IGhhbmRsZUNvbmZpZ0NoYW5nZSgnZW5hYmxlZCcsIGUudGFyZ2V0LmNoZWNrZWQpfVxyXG4gICAgICAgICAgICAvPlxyXG4gICAgICAgICAgICBTbG90IGVuYWJsZWRcclxuICAgICAgICAgIDwvbGFiZWw+XHJcbiAgICAgICAgICA8bGFiZWwgY2xhc3NOYW1lPXsnbWVkaWNpbmVQb3VjaENoZWNrYm94J30+XHJcbiAgICAgICAgICAgIDxpbnB1dFxyXG4gICAgICAgICAgICAgIHR5cGU9XCJjaGVja2JveFwiXHJcbiAgICAgICAgICAgICAgY2hlY2tlZD17c2xvdC5ib3NzT25seX1cclxuICAgICAgICAgICAgICBvbkNoYW5nZT17KGUpID0+IGhhbmRsZUNvbmZpZ0NoYW5nZSgnYm9zc09ubHknLCBlLnRhcmdldC5jaGVja2VkKX1cclxuICAgICAgICAgICAgLz5cclxuICAgICAgICAgICAgQm9zcyBvbmx5XHJcbiAgICAgICAgICA8L2xhYmVsPlxyXG4gICAgICAgIDwvZGl2PlxyXG5cclxuICAgICAgICA8ZGl2IGNsYXNzTmFtZT17J21lZGljaW5lUG91Y2hGaWVsZCd9PlxyXG4gICAgICAgICAgPGxhYmVsIGNsYXNzTmFtZT17J21lZGljaW5lUG91Y2hMYWJlbCd9IGh0bWxGb3I9e2Ake3Nsb3RLZXl9LXRyaWdnZXJgfT5cclxuICAgICAgICAgICAgVHJpZ2dlclxyXG4gICAgICAgICAgPC9sYWJlbD5cclxuICAgICAgICAgIDxzZWxlY3RcclxuICAgICAgICAgICAgaWQ9e2Ake3Nsb3RLZXl9LXRyaWdnZXJgfVxyXG4gICAgICAgICAgICBjbGFzc05hbWU9eydtZWRpY2luZVBvdWNoU2VsZWN0J31cclxuICAgICAgICAgICAgdmFsdWU9e3Nsb3QudHJpZ2dlcn1cclxuICAgICAgICAgICAgb25DaGFuZ2U9eyhlKSA9PiBoYW5kbGVDb25maWdDaGFuZ2UoJ3RyaWdnZXInLCBlLnRhcmdldC52YWx1ZSBhcyBNZWRpY2luZVBvdWNoVHJpZ2dlcil9XHJcbiAgICAgICAgICA+XHJcbiAgICAgICAgICAgIHt0cmlnZ2VyT3B0aW9ucy5tYXAoKG9wdGlvbikgPT4gKFxyXG4gICAgICAgICAgICAgIDxvcHRpb24ga2V5PXtvcHRpb24udmFsdWV9IHZhbHVlPXtvcHRpb24udmFsdWV9PlxyXG4gICAgICAgICAgICAgICAge29wdGlvbi5sYWJlbH1cclxuICAgICAgICAgICAgICA8L29wdGlvbj5cclxuICAgICAgICAgICAgKSl9XHJcbiAgICAgICAgICA8L3NlbGVjdD5cclxuICAgICAgICA8L2Rpdj5cclxuXHJcbiAgICAgICAge3Nob3VsZFNob3dUaHJlc2hvbGQgJiYgKFxyXG4gICAgICAgICAgPGRpdiBjbGFzc05hbWU9eydtZWRpY2luZVBvdWNoRmllbGQnfT5cclxuICAgICAgICAgICAgPGxhYmVsIGNsYXNzTmFtZT17J21lZGljaW5lUG91Y2hMYWJlbCd9IGh0bWxGb3I9e2Ake3Nsb3RLZXl9LXRocmVzaG9sZGB9PlxyXG4gICAgICAgICAgICAgIFRocmVzaG9sZCAoJSlcclxuICAgICAgICAgICAgPC9sYWJlbD5cclxuICAgICAgICAgICAgPGlucHV0XHJcbiAgICAgICAgICAgICAgaWQ9e2Ake3Nsb3RLZXl9LXRocmVzaG9sZGB9XHJcbiAgICAgICAgICAgICAgdHlwZT1cIm51bWJlclwiXHJcbiAgICAgICAgICAgICAgbWluPXswfVxyXG4gICAgICAgICAgICAgIG1heD17MTAwfVxyXG4gICAgICAgICAgICAgIGNsYXNzTmFtZT17J21lZGljaW5lUG91Y2hJbnB1dCd9XHJcbiAgICAgICAgICAgICAgdmFsdWU9e3Nsb3QudGhyZXNob2xkUGN0fVxyXG4gICAgICAgICAgICAgIG9uQ2hhbmdlPXsoZSkgPT4gaGFuZGxlQ29uZmlnQ2hhbmdlKCd0aHJlc2hvbGRQY3QnLCBOdW1iZXIoZS50YXJnZXQudmFsdWUpKX1cclxuICAgICAgICAgICAgLz5cclxuICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICl9XHJcblxyXG4gICAgICAgIDxkaXYgY2xhc3NOYW1lPXsnbWVkaWNpbmVQb3VjaEZpZWxkJ30+XHJcbiAgICAgICAgICA8bGFiZWwgY2xhc3NOYW1lPXsnbWVkaWNpbmVQb3VjaExhYmVsJ30gaHRtbEZvcj17YCR7c2xvdEtleX0tY29vbGRvd25gfT5cclxuICAgICAgICAgICAgQ29vbGRvd24gKHNlY29uZHMpXHJcbiAgICAgICAgICA8L2xhYmVsPlxyXG4gICAgICAgICAgPGlucHV0XHJcbiAgICAgICAgICAgIGlkPXtgJHtzbG90S2V5fS1jb29sZG93bmB9XHJcbiAgICAgICAgICAgIHR5cGU9XCJudW1iZXJcIlxyXG4gICAgICAgICAgICBtaW49ezB9XHJcbiAgICAgICAgICAgIG1heD17MzYwMH1cclxuICAgICAgICAgICAgY2xhc3NOYW1lPXsnbWVkaWNpbmVQb3VjaElucHV0J31cclxuICAgICAgICAgICAgdmFsdWU9e3Nsb3QuY29vbGRvd25TZWN9XHJcbiAgICAgICAgICAgIG9uQ2hhbmdlPXsoZSkgPT4gaGFuZGxlQ29uZmlnQ2hhbmdlKCdjb29sZG93blNlYycsIE51bWJlcihlLnRhcmdldC52YWx1ZSkpfVxyXG4gICAgICAgICAgLz5cclxuICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXsnbWVkaWNpbmVQb3VjaEhpbnQnfT5cclxuICAgICAgICAgICAgQmFzZWxpbmU6IHtzcGVjID8gYCR7c3BlYy5jb29sZG93blNlY31zYCA6ICfigJQnfSAodXNlcyBtYXggb2Ygc2xvdCBhbmQgaXRlbSlcclxuICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgIDwvZGl2PlxyXG4gICAgICA8L1BhcGVyQ2FyZD5cclxuICAgICk7XHJcbiAgfTtcclxuXHJcbiAgY29uc3QgZXF1aXBwZWRDb3VudCA9IE9iamVjdC52YWx1ZXMoc2xvdHMgfHwge30pLmZpbHRlcigoc2xvdCkgPT4gQm9vbGVhbihzbG90Py5lcXVpcHBlZEl0ZW1JZCkpLmxlbmd0aDtcclxuXHJcbiAgY29uc3QgcGFuZWxDb250ZW50ID0gKFxyXG4gICAgPD5cclxuICAgICAge3ZhcmlhbnQgPT09ICdkZWZhdWx0JyAmJiAoXHJcbiAgICAgICAgPGRpdiBjbGFzc05hbWU9eydtZWRpY2luZVBvdWNoUGFuZWxIZWFkZXInfT5cclxuICAgICAgICAgIDxkaXY+XHJcbiAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXsnbWVkaWNpbmVQb3VjaFRpdGxlJ30+TWVkaWNpbmUgUG91Y2g8L2Rpdj5cclxuICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9eydtZWRpY2luZVBvdWNoU3VidGl0bGUnfT5cclxuICAgICAgICAgICAgICBDb25maWd1cmUgdGhlIGNvbnN1bWFibGVzIHlvdSBrZWVwIHJlYWR5LiBBdXRvLXVzZSBzdGlsbCByZXNwZWN0cyB0aGUgY29tYmF0IHRvZ2dsZS5cclxuICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICA8L2Rpdj5cclxuICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXsnbWVkaWNpbmVQb3VjaEZvb3Rub3RlJ30+XHJcbiAgICAgICAgICAgIEF1dG8tdXNlIHJlcXVpcmVzIGVuYWJsaW5nIOKAnFVzZSBjb25zdW1hYmxlcyBpbiBjb21iYXTigJ0gaW4gQ29tYmF0IFRoZWF0ZXIgY29udHJvbHMuXHJcbiAgICAgICAgICA8L2Rpdj5cclxuICAgICAgICA8L2Rpdj5cclxuICAgICAgKX1cclxuXHJcbiAgICAgIHt2YXJpYW50ID09PSAnbW9kYWwnICYmIGVxdWlwcGVkQ291bnQgPT09IDAgJiYgKFxyXG4gICAgICAgIDxQYXBlckNhcmQgY2xhc3NOYW1lPXsnbWVkaWNpbmVQb3VjaEVtcHR5U3RhdGUnfSB2YXJpYW50PVwibGFiZWxcIj5cclxuICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXsnbWVkaWNpbmVQb3VjaEVtcHR5VGl0bGUnfT5Zb3VyIHBvdWNoIGlzIGVtcHR5LjwvZGl2PlxyXG4gICAgICAgICAgPGRpdiBjbGFzc05hbWU9eydtZWRpY2luZVBvdWNoRW1wdHlCb2R5J30+QnV5IG9yIGJyZXcgYSBmZXcgY29uc3VtYWJsZXMgaW4gdGhlIEFwb3RoZWNhcnksIHRoZW4gZXF1aXAgdGhlbSBoZXJlLjwvZGl2PlxyXG4gICAgICAgIDwvUGFwZXJDYXJkPlxyXG4gICAgICApfVxyXG5cclxuICAgICAgPGRpdiBjbGFzc05hbWU9eydtZWRpY2luZVBvdWNoR3JpZCd9PlxyXG4gICAgICAgIHsoWydoZWFsaW5nJywgJ3V0aWxpdHknLCAnc3BlY2lhbHR5J10gYXMgTWVkaWNpbmVQb3VjaFNsb3RLZXlbXSkubWFwKChzbG90S2V5KSA9PiByZW5kZXJTbG90Q29udHJvbHMoc2xvdEtleSkpfVxyXG4gICAgICA8L2Rpdj5cclxuICAgIDwvPlxyXG4gICk7XHJcblxyXG4gIGlmICh2YXJpYW50ID09PSAnbW9kYWwnKSB7XHJcbiAgICByZXR1cm4gPGRpdiBjbGFzc05hbWU9XCJtZWRpY2luZVBvdWNoUGFuZWwgbWVkaWNpbmVQb3VjaFBhbmVsLS1tb2RhbFwiPntwYW5lbENvbnRlbnR9PC9kaXY+O1xyXG4gIH1cclxuXHJcbiAgcmV0dXJuIChcclxuICAgIDxJbmtQYW5lbCB2YXJpYW50PVwicG91Y2hcIiB3YXRlcm1hcmsgY2xhc3NOYW1lPVwibWVkaWNpbmVQb3VjaFBhbmVsXCI+XHJcbiAgICAgIHtwYW5lbENvbnRlbnR9XHJcbiAgICA8L0lua1BhbmVsPlxyXG4gICk7XHJcbn1cclxuIl0sImZpbGUiOiJDOi9Vc2Vycy9hYmR1bC9EZXNrdG9wL2N1bHRpdmF0aW9uLWlkbGUvc3JjL2NvbXBvbmVudHMvY29uc3VtYWJsZXMvTWVkaWNpbmVQb3VjaFBhbmVsLnRzeCJ9

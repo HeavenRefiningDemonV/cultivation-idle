@@ -1,0 +1,298 @@
+import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/ui/status/RunCompass.tsx");import __vite__cjsImport0_react_jsxDevRuntime from "/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=c0e4e3e4"; const Fragment = __vite__cjsImport0_react_jsxDevRuntime["Fragment"]; const jsxDEV = __vite__cjsImport0_react_jsxDevRuntime["jsxDEV"];
+import classNames from "/vendor/classnames/index.js";
+import { PaperChip } from "/src/ui/ink/PaperChip.tsx";
+import { InkPanel } from "/src/ui/ink/InkPanel.tsx";
+import { RunCompassSection } from "/src/ui/status/RunCompassSection.tsx";
+import "/src/ui/status/RunCompass.scss";
+function toneForLine(tone) {
+  if (tone === "warning") return "danger";
+  if (tone === "success") return "success";
+  return "neutral";
+}
+function renderActionButton(action, onAction) {
+  if (!onAction || action.blocked || !action.target) return null;
+  return /* @__PURE__ */ jsxDEV("button", { type: "button", className: "runCompassAction__button", onClick: () => onAction(action), children: [
+    "Open ",
+    action.destinationLabel
+  ] }, void 0, true, {
+    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/RunCompass.tsx",
+    lineNumber: 27,
+    columnNumber: 5
+  }, this);
+}
+export function RunCompass({ surface, tone = "paper", density = "regular", className, onAction }) {
+  const content = !surface ? /* @__PURE__ */ jsxDEV("div", { className: "runCompassFallback", children: "Run Compass unavailable." }, void 0, false, {
+    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/RunCompass.tsx",
+    lineNumber: 35,
+    columnNumber: 3
+  }, this) : /* @__PURE__ */ jsxDEV(Fragment, { children: [
+    /* @__PURE__ */ jsxDEV(RunCompassSection, { title: "Next Milestone", children: /* @__PURE__ */ jsxDEV("div", { className: "runCompassMilestone", children: [
+      /* @__PURE__ */ jsxDEV("div", { className: "runCompassMilestone__header", children: [
+        /* @__PURE__ */ jsxDEV("div", { children: [
+          /* @__PURE__ */ jsxDEV("div", { className: "runCompassMilestone__title", children: surface.milestone.title }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/RunCompass.tsx",
+            lineNumber: 42,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV("div", { className: "runCompassMilestone__detail", children: surface.milestone.detail }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/RunCompass.tsx",
+            lineNumber: 43,
+            columnNumber: 15
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/RunCompass.tsx",
+          lineNumber: 41,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV(PaperChip, { text: surface.milestone.readinessLabel, tone: surface.milestone.readinessLabel === "Ready" ? "success" : "neutral" }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/RunCompass.tsx",
+          lineNumber: 45,
+          columnNumber: 13
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/RunCompass.tsx",
+        lineNumber: 40,
+        columnNumber: 11
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { className: "runCompassMilestone__context", children: surface.milestone.contextLine }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/RunCompass.tsx",
+        lineNumber: 47,
+        columnNumber: 11
+      }, this),
+      surface.milestone.prestigeLine ? /* @__PURE__ */ jsxDEV("div", { className: "runCompassMilestone__prestige", children: surface.milestone.prestigeLine }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/RunCompass.tsx",
+        lineNumber: 48,
+        columnNumber: 45
+      }, this) : null
+    ] }, void 0, true, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/RunCompass.tsx",
+      lineNumber: 39,
+      columnNumber: 9
+    }, this) }, void 0, false, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/RunCompass.tsx",
+      lineNumber: 38,
+      columnNumber: 7
+    }, this),
+    /* @__PURE__ */ jsxDEV(RunCompassSection, { title: "Readiness", children: [
+      /* @__PURE__ */ jsxDEV("div", { className: "runCompassReadinessHead", children: [
+        /* @__PURE__ */ jsxDEV(PaperChip, { text: surface.readiness.label, tone: surface.readiness.label === "Ready" ? "success" : "neutral" }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/RunCompass.tsx",
+          lineNumber: 54,
+          columnNumber: 11
+        }, this),
+        surface.readiness.diagnosisLabel ? /* @__PURE__ */ jsxDEV("div", { className: "runCompassReadinessHead__diagnosis", children: surface.readiness.diagnosisLabel }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/RunCompass.tsx",
+          lineNumber: 55,
+          columnNumber: 47
+        }, this) : null
+      ] }, void 0, true, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/RunCompass.tsx",
+        lineNumber: 53,
+        columnNumber: 9
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { className: "runCompassReadinessDetail", children: surface.readiness.detail }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/RunCompass.tsx",
+        lineNumber: 57,
+        columnNumber: 9
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { className: "runCompassInfoList runCompassInfoList--fixed3", children: surface.readiness.rows.map(
+        (row) => /* @__PURE__ */ jsxDEV("div", { className: classNames("runCompassInfoRow", { "is-placeholder": row.placeholder }), children: [
+          /* @__PURE__ */ jsxDEV("div", { className: "runCompassInfoRow__main", children: [
+            /* @__PURE__ */ jsxDEV("div", { className: "runCompassInfoRow__label", children: row.label }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/RunCompass.tsx",
+              lineNumber: 62,
+              columnNumber: 17
+            }, this),
+            /* @__PURE__ */ jsxDEV("div", { className: "runCompassInfoRow__detail", children: row.detail }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/RunCompass.tsx",
+              lineNumber: 63,
+              columnNumber: 17
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/RunCompass.tsx",
+            lineNumber: 61,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV(PaperChip, { text: row.placeholder ? "Hold" : row.label, tone: toneForLine(row.tone), variant: "tag" }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/RunCompass.tsx",
+            lineNumber: 65,
+            columnNumber: 15
+          }, this)
+        ] }, row.id, true, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/RunCompass.tsx",
+          lineNumber: 60,
+          columnNumber: 9
+        }, this)
+      ) }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/RunCompass.tsx",
+        lineNumber: 58,
+        columnNumber: 9
+      }, this)
+    ] }, void 0, true, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/RunCompass.tsx",
+      lineNumber: 52,
+      columnNumber: 7
+    }, this),
+    /* @__PURE__ */ jsxDEV(RunCompassSection, { title: "Missing Requirements", children: /* @__PURE__ */ jsxDEV("div", { className: "runCompassInfoList runCompassInfoList--fixed3", children: surface.missingRequirements.map(
+      (row) => /* @__PURE__ */ jsxDEV("div", { className: classNames("runCompassInfoRow", { "is-placeholder": row.placeholder }), children: [
+        /* @__PURE__ */ jsxDEV("div", { className: "runCompassInfoRow__main", children: [
+          /* @__PURE__ */ jsxDEV("div", { className: "runCompassInfoRow__label", children: row.label }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/RunCompass.tsx",
+            lineNumber: 76,
+            columnNumber: 17
+          }, this),
+          /* @__PURE__ */ jsxDEV("div", { className: "runCompassInfoRow__detail", children: row.detail }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/RunCompass.tsx",
+            lineNumber: 77,
+            columnNumber: 17
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/RunCompass.tsx",
+          lineNumber: 75,
+          columnNumber: 15
+        }, this),
+        /* @__PURE__ */ jsxDEV(PaperChip, { text: row.placeholder ? "Queued" : row.tone === "success" ? "Clear" : "Watch", tone: toneForLine(row.tone), variant: "tag" }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/RunCompass.tsx",
+          lineNumber: 79,
+          columnNumber: 15
+        }, this)
+      ] }, row.id, true, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/RunCompass.tsx",
+        lineNumber: 74,
+        columnNumber: 9
+      }, this)
+    ) }, void 0, false, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/RunCompass.tsx",
+      lineNumber: 72,
+      columnNumber: 9
+    }, this) }, void 0, false, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/RunCompass.tsx",
+      lineNumber: 71,
+      columnNumber: 7
+    }, this),
+    /* @__PURE__ */ jsxDEV(RunCompassSection, { title: "Best Next Actions", children: /* @__PURE__ */ jsxDEV("div", { className: "runCompassActionList runCompassActionList--fixed3", children: surface.bestNextActions.map(
+      (action) => /* @__PURE__ */ jsxDEV("div", { className: classNames("runCompassAction", { "is-blocked": action.blocked }), children: [
+        /* @__PURE__ */ jsxDEV("div", { className: "runCompassAction__main", children: [
+          /* @__PURE__ */ jsxDEV("div", { className: "runCompassAction__top", children: [
+            /* @__PURE__ */ jsxDEV("div", { className: "runCompassAction__label", children: action.label }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/RunCompass.tsx",
+              lineNumber: 91,
+              columnNumber: 19
+            }, this),
+            /* @__PURE__ */ jsxDEV(PaperChip, { text: action.destinationLabel, variant: "tag", tone: action.blocked ? "danger" : "ink" }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/RunCompass.tsx",
+              lineNumber: 92,
+              columnNumber: 19
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/RunCompass.tsx",
+            lineNumber: 90,
+            columnNumber: 17
+          }, this),
+          /* @__PURE__ */ jsxDEV("div", { className: "runCompassAction__why", children: action.why }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/RunCompass.tsx",
+            lineNumber: 94,
+            columnNumber: 17
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/RunCompass.tsx",
+          lineNumber: 89,
+          columnNumber: 15
+        }, this),
+        renderActionButton(action, onAction)
+      ] }, action.id, true, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/RunCompass.tsx",
+        lineNumber: 88,
+        columnNumber: 9
+      }, this)
+    ) }, void 0, false, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/RunCompass.tsx",
+      lineNumber: 86,
+      columnNumber: 9
+    }, this) }, void 0, false, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/RunCompass.tsx",
+      lineNumber: 85,
+      columnNumber: 7
+    }, this),
+    /* @__PURE__ */ jsxDEV(RunCompassSection, { title: "Safety Net", children: /* @__PURE__ */ jsxDEV("div", { className: "runCompassSafetyNet", children: [
+      /* @__PURE__ */ jsxDEV("div", { className: "runCompassSafetyNet__title", children: surface.safetyNet.title }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/RunCompass.tsx",
+        lineNumber: 104,
+        columnNumber: 11
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { className: "runCompassSafetyNet__line", children: surface.safetyNet.progressLine }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/RunCompass.tsx",
+        lineNumber: 105,
+        columnNumber: 11
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { className: "runCompassSafetyNet__line", children: surface.safetyNet.costLine }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/RunCompass.tsx",
+        lineNumber: 106,
+        columnNumber: 11
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { className: "runCompassSafetyNet__line", children: surface.safetyNet.reserveLine }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/RunCompass.tsx",
+        lineNumber: 107,
+        columnNumber: 11
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { className: "runCompassSafetyNet__detail", children: surface.safetyNet.detailLine }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/RunCompass.tsx",
+        lineNumber: 108,
+        columnNumber: 11
+      }, this)
+    ] }, void 0, true, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/RunCompass.tsx",
+      lineNumber: 103,
+      columnNumber: 9
+    }, this) }, void 0, false, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/RunCompass.tsx",
+      lineNumber: 102,
+      columnNumber: 7
+    }, this)
+  ] }, void 0, true, {
+    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/RunCompass.tsx",
+    lineNumber: 37,
+    columnNumber: 3
+  }, this);
+  const classes = classNames("runCompass", `runCompass--${tone}`, `runCompass--${density}`, className);
+  if (tone === "ink") {
+    return /* @__PURE__ */ jsxDEV(InkPanel, { className: classes, children: content }, void 0, false, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/RunCompass.tsx",
+      lineNumber: 116,
+      columnNumber: 12
+    }, this);
+  }
+  return /* @__PURE__ */ jsxDEV("div", { className: classes, children: content }, void 0, false, {
+    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/RunCompass.tsx",
+    lineNumber: 118,
+    columnNumber: 10
+  }, this);
+}
+_c = RunCompass;
+var _c;
+$RefreshReg$(_c, "RunCompass");
+import * as RefreshRuntime from "/@react-refresh";
+const inWebWorker = typeof WorkerGlobalScope !== "undefined" && self instanceof WorkerGlobalScope;
+if (import.meta.hot && !inWebWorker) {
+  if (!window.$RefreshReg$) {
+    throw new Error(
+      "@vitejs/plugin-react can't detect preamble. Something is wrong."
+    );
+  }
+  RefreshRuntime.__hmr_import(import.meta.url).then((currentExports) => {
+    RefreshRuntime.registerExportsForReactRefresh("C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/RunCompass.tsx", currentExports);
+    import.meta.hot.accept((nextExports) => {
+      if (!nextExports) return;
+      const invalidateMessage = RefreshRuntime.validateRefreshBoundaryAndEnqueueUpdate("C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/RunCompass.tsx", currentExports, nextExports);
+      if (invalidateMessage) import.meta.hot.invalidate(invalidateMessage);
+    });
+  });
+}
+function $RefreshReg$(type, id) {
+  return RefreshRuntime.register(type, "C:/Users/abdul/Desktop/cultivation-idle/src/ui/status/RunCompass.tsx " + id);
+}
+function $RefreshSig$() {
+  return RefreshRuntime.createSignatureFunctionForTransform();
+}
+
+//# sourceMappingURL=data:application/json;base64,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cGFzc1NlY3Rpb24iLCJ0b25lRm9yTGluZSIsInRvbmUiLCJyZW5kZXJBY3Rpb25CdXR0b24iLCJhY3Rpb24iLCJvbkFjdGlvbiIsImJsb2NrZWQiLCJ0YXJnZXQiLCJkZXN0aW5hdGlvbkxhYmVsIiwiUnVuQ29tcGFzcyIsInN1cmZhY2UiLCJkZW5zaXR5IiwiY2xhc3NOYW1lIiwiY29udGVudCIsIm1pbGVzdG9uZSIsInRpdGxlIiwiZGV0YWlsIiwicmVhZGluZXNzTGFiZWwiLCJjb250ZXh0TGluZSIsInByZXN0aWdlTGluZSIsInJlYWRpbmVzcyIsImxhYmVsIiwiZGlhZ25vc2lzTGFiZWwiLCJyb3dzIiwibWFwIiwicm93IiwicGxhY2Vob2xkZXIiLCJpZCIsIm1pc3NpbmdSZXF1aXJlbWVudHMiLCJiZXN0TmV4dEFjdGlvbnMiLCJ3aHkiLCJzYWZldHlOZXQiLCJwcm9ncmVzc0xpbmUiLCJjb3N0TGluZSIsInJlc2VydmVMaW5lIiwiZGV0YWlsTGluZSIsImNsYXNzZXMiLCJfYyIsIiRSZWZyZXNoUmVnJCJdLCJpZ25vcmVMaXN0IjpbXSwic291cmNlcyI6WyJSdW5Db21wYXNzLnRzeCJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgY2xhc3NOYW1lcyBmcm9tICdjbGFzc25hbWVzJztcclxuaW1wb3J0IHR5cGUgeyBSdW5Db21wYXNzQWN0aW9uTGluZSwgUnVuQ29tcGFzc1N1cmZhY2UgfSBmcm9tICcuLi8uLi9zeXN0ZW1zL3VpL3J1bkNvbXBhc3MvaW5kZXguanMnO1xyXG5pbXBvcnQgeyBQYXBlckNoaXAgfSBmcm9tICcuLi9pbmsvUGFwZXJDaGlwLmpzJztcclxuaW1wb3J0IHsgSW5rUGFuZWwgfSBmcm9tICcuLi9pbmsvSW5rUGFuZWwuanMnO1xyXG5pbXBvcnQgeyBSdW5Db21wYXNzU2VjdGlvbiB9IGZyb20gJy4vUnVuQ29tcGFzc1NlY3Rpb24uanMnO1xyXG5pbXBvcnQgJy4vUnVuQ29tcGFzcy5zY3NzJztcclxuXHJcbmV4cG9ydCB0eXBlIFJ1bkNvbXBhc3NUb25lID0gJ3BhcGVyJyB8ICdpbmsnO1xyXG5cclxuZXhwb3J0IGludGVyZmFjZSBSdW5Db21wYXNzUHJvcHMge1xyXG4gIHN1cmZhY2U6IFJ1bkNvbXBhc3NTdXJmYWNlIHwgbnVsbDtcclxuICB0b25lPzogUnVuQ29tcGFzc1RvbmU7XHJcbiAgZGVuc2l0eT86ICdyZWd1bGFyJyB8ICdkZW5zZSc7XHJcbiAgY2xhc3NOYW1lPzogc3RyaW5nO1xyXG4gIG9uQWN0aW9uPzogKGFjdGlvbjogUnVuQ29tcGFzc0FjdGlvbkxpbmUpID0+IHZvaWQ7XHJcbn1cclxuXHJcbmZ1bmN0aW9uIHRvbmVGb3JMaW5lKHRvbmU6IHN0cmluZyB8IHVuZGVmaW5lZCkge1xyXG4gIGlmICh0b25lID09PSAnd2FybmluZycpIHJldHVybiAnZGFuZ2VyJyBhcyBjb25zdDtcclxuICBpZiAodG9uZSA9PT0gJ3N1Y2Nlc3MnKSByZXR1cm4gJ3N1Y2Nlc3MnIGFzIGNvbnN0O1xyXG4gIHJldHVybiAnbmV1dHJhbCcgYXMgY29uc3Q7XHJcbn1cclxuXHJcbmZ1bmN0aW9uIHJlbmRlckFjdGlvbkJ1dHRvbihhY3Rpb246IFJ1bkNvbXBhc3NBY3Rpb25MaW5lLCBvbkFjdGlvbj86IChhY3Rpb246IFJ1bkNvbXBhc3NBY3Rpb25MaW5lKSA9PiB2b2lkKSB7XHJcbiAgaWYgKCFvbkFjdGlvbiB8fCBhY3Rpb24uYmxvY2tlZCB8fCAhYWN0aW9uLnRhcmdldCkgcmV0dXJuIG51bGw7XHJcbiAgcmV0dXJuIChcclxuICAgIDxidXR0b24gdHlwZT1cImJ1dHRvblwiIGNsYXNzTmFtZT1cInJ1bkNvbXBhc3NBY3Rpb25fX2J1dHRvblwiIG9uQ2xpY2s9eygpID0+IG9uQWN0aW9uKGFjdGlvbil9PlxyXG4gICAgICBPcGVuIHthY3Rpb24uZGVzdGluYXRpb25MYWJlbH1cclxuICAgIDwvYnV0dG9uPlxyXG4gICk7XHJcbn1cclxuXHJcbmV4cG9ydCBmdW5jdGlvbiBSdW5Db21wYXNzKHsgc3VyZmFjZSwgdG9uZSA9ICdwYXBlcicsIGRlbnNpdHkgPSAncmVndWxhcicsIGNsYXNzTmFtZSwgb25BY3Rpb24gfTogUnVuQ29tcGFzc1Byb3BzKSB7XHJcbiAgY29uc3QgY29udGVudCA9ICFzdXJmYWNlID8gKFxyXG4gICAgPGRpdiBjbGFzc05hbWU9XCJydW5Db21wYXNzRmFsbGJhY2tcIj5SdW4gQ29tcGFzcyB1bmF2YWlsYWJsZS48L2Rpdj5cclxuICApIDogKFxyXG4gICAgPD5cclxuICAgICAgPFJ1bkNvbXBhc3NTZWN0aW9uIHRpdGxlPVwiTmV4dCBNaWxlc3RvbmVcIj5cclxuICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInJ1bkNvbXBhc3NNaWxlc3RvbmVcIj5cclxuICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwicnVuQ29tcGFzc01pbGVzdG9uZV9faGVhZGVyXCI+XHJcbiAgICAgICAgICAgIDxkaXY+XHJcbiAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJydW5Db21wYXNzTWlsZXN0b25lX190aXRsZVwiPntzdXJmYWNlLm1pbGVzdG9uZS50aXRsZX08L2Rpdj5cclxuICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInJ1bkNvbXBhc3NNaWxlc3RvbmVfX2RldGFpbFwiPntzdXJmYWNlLm1pbGVzdG9uZS5kZXRhaWx9PC9kaXY+XHJcbiAgICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgICA8UGFwZXJDaGlwIHRleHQ9e3N1cmZhY2UubWlsZXN0b25lLnJlYWRpbmVzc0xhYmVsfSB0b25lPXtzdXJmYWNlLm1pbGVzdG9uZS5yZWFkaW5lc3NMYWJlbCA9PT0gJ1JlYWR5JyA/ICdzdWNjZXNzJyA6ICduZXV0cmFsJ30gLz5cclxuICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJydW5Db21wYXNzTWlsZXN0b25lX19jb250ZXh0XCI+e3N1cmZhY2UubWlsZXN0b25lLmNvbnRleHRMaW5lfTwvZGl2PlxyXG4gICAgICAgICAge3N1cmZhY2UubWlsZXN0b25lLnByZXN0aWdlTGluZSA/IDxkaXYgY2xhc3NOYW1lPVwicnVuQ29tcGFzc01pbGVzdG9uZV9fcHJlc3RpZ2VcIj57c3VyZmFjZS5taWxlc3RvbmUucHJlc3RpZ2VMaW5lfTwvZGl2PiA6IG51bGx9XHJcbiAgICAgICAgPC9kaXY+XHJcbiAgICAgIDwvUnVuQ29tcGFzc1NlY3Rpb24+XHJcblxyXG4gICAgICA8UnVuQ29tcGFzc1NlY3Rpb24gdGl0bGU9XCJSZWFkaW5lc3NcIj5cclxuICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInJ1bkNvbXBhc3NSZWFkaW5lc3NIZWFkXCI+XHJcbiAgICAgICAgICA8UGFwZXJDaGlwIHRleHQ9e3N1cmZhY2UucmVhZGluZXNzLmxhYmVsfSB0b25lPXtzdXJmYWNlLnJlYWRpbmVzcy5sYWJlbCA9PT0gJ1JlYWR5JyA/ICdzdWNjZXNzJyA6ICduZXV0cmFsJ30gLz5cclxuICAgICAgICAgIHtzdXJmYWNlLnJlYWRpbmVzcy5kaWFnbm9zaXNMYWJlbCA/IDxkaXYgY2xhc3NOYW1lPVwicnVuQ29tcGFzc1JlYWRpbmVzc0hlYWRfX2RpYWdub3Npc1wiPntzdXJmYWNlLnJlYWRpbmVzcy5kaWFnbm9zaXNMYWJlbH08L2Rpdj4gOiBudWxsfVxyXG4gICAgICAgIDwvZGl2PlxyXG4gICAgICAgIDxkaXYgY2xhc3NOYW1lPVwicnVuQ29tcGFzc1JlYWRpbmVzc0RldGFpbFwiPntzdXJmYWNlLnJlYWRpbmVzcy5kZXRhaWx9PC9kaXY+XHJcbiAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJydW5Db21wYXNzSW5mb0xpc3QgcnVuQ29tcGFzc0luZm9MaXN0LS1maXhlZDNcIj5cclxuICAgICAgICAgIHtzdXJmYWNlLnJlYWRpbmVzcy5yb3dzLm1hcCgocm93KSA9PiAoXHJcbiAgICAgICAgICAgIDxkaXYga2V5PXtyb3cuaWR9IGNsYXNzTmFtZT17Y2xhc3NOYW1lcygncnVuQ29tcGFzc0luZm9Sb3cnLCB7ICdpcy1wbGFjZWhvbGRlcic6IHJvdy5wbGFjZWhvbGRlciB9KX0+XHJcbiAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJydW5Db21wYXNzSW5mb1Jvd19fbWFpblwiPlxyXG4gICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJydW5Db21wYXNzSW5mb1Jvd19fbGFiZWxcIj57cm93LmxhYmVsfTwvZGl2PlxyXG4gICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJydW5Db21wYXNzSW5mb1Jvd19fZGV0YWlsXCI+e3Jvdy5kZXRhaWx9PC9kaXY+XHJcbiAgICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICAgICAgPFBhcGVyQ2hpcCB0ZXh0PXtyb3cucGxhY2Vob2xkZXIgPyAnSG9sZCcgOiByb3cubGFiZWx9IHRvbmU9e3RvbmVGb3JMaW5lKHJvdy50b25lKX0gdmFyaWFudD1cInRhZ1wiIC8+XHJcbiAgICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgKSl9XHJcbiAgICAgICAgPC9kaXY+XHJcbiAgICAgIDwvUnVuQ29tcGFzc1NlY3Rpb24+XHJcblxyXG4gICAgICA8UnVuQ29tcGFzc1NlY3Rpb24gdGl0bGU9XCJNaXNzaW5nIFJlcXVpcmVtZW50c1wiPlxyXG4gICAgICAgIDxkaXYgY2xhc3NOYW1lPVwicnVuQ29tcGFzc0luZm9MaXN0IHJ1bkNvbXBhc3NJbmZvTGlzdC0tZml4ZWQzXCI+XHJcbiAgICAgICAgICB7c3VyZmFjZS5taXNzaW5nUmVxdWlyZW1lbnRzLm1hcCgocm93KSA9PiAoXHJcbiAgICAgICAgICAgIDxkaXYga2V5PXtyb3cuaWR9IGNsYXNzTmFtZT17Y2xhc3NOYW1lcygncnVuQ29tcGFzc0luZm9Sb3cnLCB7ICdpcy1wbGFjZWhvbGRlcic6IHJvdy5wbGFjZWhvbGRlciB9KX0+XHJcbiAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJydW5Db21wYXNzSW5mb1Jvd19fbWFpblwiPlxyXG4gICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJydW5Db21wYXNzSW5mb1Jvd19fbGFiZWxcIj57cm93LmxhYmVsfTwvZGl2PlxyXG4gICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJydW5Db21wYXNzSW5mb1Jvd19fZGV0YWlsXCI+e3Jvdy5kZXRhaWx9PC9kaXY+XHJcbiAgICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICAgICAgPFBhcGVyQ2hpcCB0ZXh0PXtyb3cucGxhY2Vob2xkZXIgPyAnUXVldWVkJyA6IHJvdy50b25lID09PSAnc3VjY2VzcycgPyAnQ2xlYXInIDogJ1dhdGNoJ30gdG9uZT17dG9uZUZvckxpbmUocm93LnRvbmUpfSB2YXJpYW50PVwidGFnXCIgLz5cclxuICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICApKX1cclxuICAgICAgICA8L2Rpdj5cclxuICAgICAgPC9SdW5Db21wYXNzU2VjdGlvbj5cclxuXHJcbiAgICAgIDxSdW5Db21wYXNzU2VjdGlvbiB0aXRsZT1cIkJlc3QgTmV4dCBBY3Rpb25zXCI+XHJcbiAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJydW5Db21wYXNzQWN0aW9uTGlzdCBydW5Db21wYXNzQWN0aW9uTGlzdC0tZml4ZWQzXCI+XHJcbiAgICAgICAgICB7c3VyZmFjZS5iZXN0TmV4dEFjdGlvbnMubWFwKChhY3Rpb24pID0+IChcclxuICAgICAgICAgICAgPGRpdiBrZXk9e2FjdGlvbi5pZH0gY2xhc3NOYW1lPXtjbGFzc05hbWVzKCdydW5Db21wYXNzQWN0aW9uJywgeyAnaXMtYmxvY2tlZCc6IGFjdGlvbi5ibG9ja2VkIH0pfT5cclxuICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInJ1bkNvbXBhc3NBY3Rpb25fX21haW5cIj5cclxuICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwicnVuQ29tcGFzc0FjdGlvbl9fdG9wXCI+XHJcbiAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwicnVuQ29tcGFzc0FjdGlvbl9fbGFiZWxcIj57YWN0aW9uLmxhYmVsfTwvZGl2PlxyXG4gICAgICAgICAgICAgICAgICA8UGFwZXJDaGlwIHRleHQ9e2FjdGlvbi5kZXN0aW5hdGlvbkxhYmVsfSB2YXJpYW50PVwidGFnXCIgdG9uZT17YWN0aW9uLmJsb2NrZWQgPyAnZGFuZ2VyJyA6ICdpbmsnfSAvPlxyXG4gICAgICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInJ1bkNvbXBhc3NBY3Rpb25fX3doeVwiPnthY3Rpb24ud2h5fTwvZGl2PlxyXG4gICAgICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgICAgIHtyZW5kZXJBY3Rpb25CdXR0b24oYWN0aW9uLCBvbkFjdGlvbil9XHJcbiAgICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgKSl9XHJcbiAgICAgICAgPC9kaXY+XHJcbiAgICAgIDwvUnVuQ29tcGFzc1NlY3Rpb24+XHJcblxyXG4gICAgICA8UnVuQ29tcGFzc1NlY3Rpb24gdGl0bGU9XCJTYWZldHkgTmV0XCI+XHJcbiAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJydW5Db21wYXNzU2FmZXR5TmV0XCI+XHJcbiAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInJ1bkNvbXBhc3NTYWZldHlOZXRfX3RpdGxlXCI+e3N1cmZhY2Uuc2FmZXR5TmV0LnRpdGxlfTwvZGl2PlxyXG4gICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJydW5Db21wYXNzU2FmZXR5TmV0X19saW5lXCI+e3N1cmZhY2Uuc2FmZXR5TmV0LnByb2dyZXNzTGluZX08L2Rpdj5cclxuICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwicnVuQ29tcGFzc1NhZmV0eU5ldF9fbGluZVwiPntzdXJmYWNlLnNhZmV0eU5ldC5jb3N0TGluZX08L2Rpdj5cclxuICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwicnVuQ29tcGFzc1NhZmV0eU5ldF9fbGluZVwiPntzdXJmYWNlLnNhZmV0eU5ldC5yZXNlcnZlTGluZX08L2Rpdj5cclxuICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwicnVuQ29tcGFzc1NhZmV0eU5ldF9fZGV0YWlsXCI+e3N1cmZhY2Uuc2FmZXR5TmV0LmRldGFpbExpbmV9PC9kaXY+XHJcbiAgICAgICAgPC9kaXY+XHJcbiAgICAgIDwvUnVuQ29tcGFzc1NlY3Rpb24+XHJcbiAgICA8Lz5cclxuICApO1xyXG5cclxuICBjb25zdCBjbGFzc2VzID0gY2xhc3NOYW1lcygncnVuQ29tcGFzcycsIGBydW5Db21wYXNzLS0ke3RvbmV9YCwgYHJ1bkNvbXBhc3MtLSR7ZGVuc2l0eX1gLCBjbGFzc05hbWUpO1xyXG4gIGlmICh0b25lID09PSAnaW5rJykge1xyXG4gICAgcmV0dXJuIDxJbmtQYW5lbCBjbGFzc05hbWU9e2NsYXNzZXN9Pntjb250ZW50fTwvSW5rUGFuZWw+O1xyXG4gIH1cclxuICByZXR1cm4gPGRpdiBjbGFzc05hbWU9e2NsYXNzZXN9Pntjb250ZW50fTwvZGl2PjtcclxufVxyXG4iXSwiZmlsZSI6IkM6L1VzZXJzL2FiZHVsL0Rlc2t0b3AvY3VsdGl2YXRpb24taWRsZS9zcmMvdWkvc3RhdHVzL1J1bkNvbXBhc3MudHN4In0=

@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useUIStore } from '../stores/uiStore.js';
+import { useContentStore } from '../stores/contentStore.js';
 import { CultivateScreen } from './screens/CultivateScreen.js';
 import { StatusScreen } from './screens/StatusScreen.js';
 import { WorldScreen } from './screens/WorldScreen.js';
@@ -18,6 +19,7 @@ import { FxQualityProvider } from '../ui/fx/FxQualityProvider.js';
 import { CityArrivalBanner } from './system/CityArrivalBanner.js';
 import { BottomTabBar } from './BottomTabBar.js';
 import { WorldBuildingModal } from './modals/WorldBuildingModal.js';
+import { isApothecaryExactFixtureRouteEnabled } from '../features/apothecary/exact/index.js';
 import { AudioBindings } from '../app/AudioBindings.js';
 import { GameIcon } from '../ui/icons/index.js';
 import { buildLiveEconomicRecommendationEngine } from '../systems/economy/economicRecommendationEngine.js';
@@ -74,6 +76,9 @@ export function GameLayout() {
   const showOfflineProgressModal = useUIStore((state) => state.showOfflineProgressModal);
   const showOfflineModalSetting = useUIStore((state) => state.settings.showOfflineModal);
   const showSystemStatusOverlay = useUIStore((state) => state.settings.showSystemStatusPanel);
+  const worldBuildingModalKey = useUIStore((state) => state.worldBuildingModalKey);
+  const openWorldBuildingModal = useUIStore((state) => state.openWorldBuildingModal);
+  const setActiveTab = useUIStore((state) => state.setActiveTab);
   const showManualSatchelModal = useUIStore((state) => state.showManualSatchelModal);
   const showTechniqueLearnedModal = useUIStore((state) => state.showTechniqueLearnedModal);
   const showWorldBuildingModal = useUIStore((state) => state.showWorldBuildingModal);
@@ -90,8 +95,15 @@ export function GameLayout() {
   const prestigeCount = usePrestigeStore((state) => state.prestigeCount);
   const resetOnboardingLifeState = useUIStore((state) => state.resetOnboardingLifeState);
   const layoutBackgroundOverride = useUIStore((state) => state.layoutBackgroundOverride);
+  const fixtureCityId = useContentStore((state) => (
+    state.maps.citiesById.city_pinewind_hamlet ? 'city_pinewind_hamlet' : state.citiesSorted[0]?.id ?? null
+  ));
   const isScrollable = activeTab === 'status' || activeTab === 'prestige';
   const lastPrestigeCountRef = useRef(prestigeCount);
+  const fixtureRouteOpenedRef = useRef(false);
+  const apothecaryExactFixtureRouteEnabled = isApothecaryExactFixtureRouteEnabled();
+  const apothecaryExactModalOpen = showWorldBuildingModal && (worldBuildingModalKey === 'apothecary' || worldBuildingModalKey === 'alchemy');
+  const suppressApothecaryExactFixtureChrome = apothecaryExactFixtureRouteEnabled && apothecaryExactModalOpen;
 
   useEffect(() => {
     if (prestigeCount > lastPrestigeCountRef.current) {
@@ -99,6 +111,17 @@ export function GameLayout() {
     }
     lastPrestigeCountRef.current = prestigeCount;
   }, [prestigeCount, resetOnboardingLifeState]);
+
+  useEffect(() => {
+    if (!apothecaryExactFixtureRouteEnabled || fixtureRouteOpenedRef.current || !fixtureCityId) return;
+    fixtureRouteOpenedRef.current = true;
+    setActiveTab('adventure');
+    openWorldBuildingModal({
+      cityId: fixtureCityId,
+      buildingKey: 'apothecary',
+      intent: { apothecaryExactMode: 'fixture', apothecaryFocus: 'prescription' },
+    });
+  }, [apothecaryExactFixtureRouteEnabled, fixtureCityId, openWorldBuildingModal, setActiveTab]);
 
   useEffect(() => {
     let atAuthoredCap = false;
@@ -200,22 +223,22 @@ export function GameLayout() {
           {renderContent()}
         </div>
 
-        <BottomTabBar />
+        {!apothecaryExactFixtureRouteEnabled && <BottomTabBar />}
 
-        {showOfflineProgressModal && showOfflineModalSetting && <OfflineProgressModal />}
-        {showManualSatchelModal && <ManualSatchelModal />}
-        {showTechniqueLearnedModal && <TechniqueLearnedModal />}
+        {showOfflineProgressModal && showOfflineModalSetting && !suppressApothecaryExactFixtureChrome && <OfflineProgressModal />}
+        {showManualSatchelModal && !suppressApothecaryExactFixtureChrome && <ManualSatchelModal />}
+        {showTechniqueLearnedModal && !suppressApothecaryExactFixtureChrome && <TechniqueLearnedModal />}
         {showWorldBuildingModal && <WorldBuildingModal />}
-        {showCurrentChapterExhaustedModal && <CurrentChapterExhaustedModal />}
-        {showLifeSummaryModal && <LifeSummaryModal />}
-        {showMigrationIssuesModal && <MigrationIssuesModal />}
-        {showSystemStatusOverlay && <SystemStatusPanelOverlay />}
+        {showCurrentChapterExhaustedModal && !suppressApothecaryExactFixtureChrome && <CurrentChapterExhaustedModal />}
+        {showLifeSummaryModal && !suppressApothecaryExactFixtureChrome && <LifeSummaryModal />}
+        {showMigrationIssuesModal && !suppressApothecaryExactFixtureChrome && <MigrationIssuesModal />}
+        {showSystemStatusOverlay && !apothecaryExactModalOpen && <SystemStatusPanelOverlay />}
         <CombatPresentationHost />
-        <OnboardingPromptRuntime />
-        <LifeStartWizardModal />
-        <CityArrivalBanner />
-        <OnboardingPromptHost />
-        <NotificationToasts />
+        {!suppressApothecaryExactFixtureChrome && <OnboardingPromptRuntime />}
+        {!suppressApothecaryExactFixtureChrome && <LifeStartWizardModal />}
+        {!suppressApothecaryExactFixtureChrome && <CityArrivalBanner />}
+        {!suppressApothecaryExactFixtureChrome && <OnboardingPromptHost />}
+        {!suppressApothecaryExactFixtureChrome && <NotificationToasts />}
         {showSectionCAuditHarness ? <SectionCAuditHarness /> : null}
         {showPhase0CoreAuditHarness ? <Phase0CoreAuditHarness /> : null}
         {showPhase6CombatAuditHarness ? <Phase6CombatAuditHarness /> : null}

@@ -1,8 +1,8 @@
 import type { WorldBuildingKey, WorldBuildingModalIntent } from '../../../stores/uiStore.js';
 import { formatWorldModuleLabel } from '../../../ui/text/playerFacingFormatters.js';
 
-export type BackgroundVariant = 'manual-pavilion' | 'apothecary' | 'bounty-board' | 'inside-dungeon' | 'forge' | 'outskirts-exact' | 'ruins-exact' | 'gate-trial-exact';
-export type WorldModalShellFamily = 'prep-room' | 'support-board' | 'combat-path' | 'outskirts-scenic' | 'ruins-scenic' | 'gate-trial-scenic';
+export type BackgroundVariant = 'manual-pavilion' | 'apothecary' | 'apothecary-exact' | 'bounty-board' | 'inside-dungeon' | 'forge' | 'outskirts-exact' | 'ruins-exact' | 'gate-trial-exact';
+export type WorldModalShellFamily = 'prep-room' | 'apothecary-scenic' | 'support-board' | 'combat-path' | 'outskirts-scenic' | 'ruins-scenic' | 'gate-trial-scenic';
 export type WorldModalShellMode = 'context-strip' | 'close-only' | 'screen-owned';
 
 export type WorldModalEntrySurface = {
@@ -25,11 +25,15 @@ function formatIntentReason(
     return null;
   }
 
-  switch (intent?.apothecarySurface) {
+  switch (intent?.apothecaryFocus ?? intent?.apothecarySurface) {
+    case 'prescription':
+      return 'Opened to Prescription';
     case 'brew':
       return 'Opened to Brew';
     case 'pouch':
       return 'Opened for Medicine Pouch';
+    case 'source':
+      return 'Opened to Source';
     default:
       return null;
   }
@@ -55,7 +59,10 @@ export function resolveWorldModalEntrySurface(args: {
   switch (buildingKey) {
     case 'apothecary':
     case 'alchemy':
-      backgroundVariant = 'apothecary';
+      backgroundVariant = 'apothecary-exact';
+      shellFamily = 'apothecary-scenic';
+      shellMode = 'screen-owned';
+      showShellClose = false;
       break;
     case 'bounties':
     case 'expeditions':

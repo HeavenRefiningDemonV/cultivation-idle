@@ -1,0 +1,808 @@
+.apothecaryExactPage {
+  --plane-w: 2048px;
+  --plane-h: 1152px;
+  --apoth-ink: #2f2217;
+  --apoth-ink-soft: #5a3c25;
+  --apoth-paper: #e8d8bd;
+  --apoth-paper-dark: #d7c2a1;
+  --apoth-paper-shadow: #9f8159;
+  --apoth-cinnabar: #8f2f23;
+  --apoth-cinnabar-dark: #5f1f18;
+  --apoth-jade: #406f55;
+  --apoth-jade-soft: #6c9274;
+  --apoth-bronze: #9a6b2f;
+  --apoth-gold: #c79738;
+  --apoth-room-shadow: #1d140c;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  overflow: hidden;
+  color: var(--apoth-ink);
+  background: #1e170f;
+  font-family: Georgia, "Times New Roman", serif;
+  letter-spacing: 0;
+}
+
+.apothecaryExactPage h1,
+.apothecaryExactPage h2,
+.apothecaryExactPage h3,
+.apothecaryExactPage p,
+.apothecaryExactPage span,
+.apothecaryExactPage strong,
+.apothecaryExactPage button {
+  font-family: Georgia, "Times New Roman", serif !important;
+}
+
+.apothecaryExactPage *,
+.apothecaryExactPage *::before,
+.apothecaryExactPage *::after {
+  box-sizing: border-box;
+}
+
+.apothecaryExactScreenOwner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.apothecaryExactSrAnchor {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.apothecaryExactPlane {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--plane-w);
+  height: var(--plane-h);
+  transform: translate(-50%, -50%) scale(var(--apoth-exact-scale, 1));
+  transform-origin: center center;
+  overflow: hidden;
+}
+
+.apothecaryExactPlane::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 226px;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(235, 216, 184, 0.84) 0%, rgba(231, 209, 174, 0.76) 62%, rgba(171, 124, 72, 0.18) 100%),
+    linear-gradient(90deg, rgba(83, 51, 24, 0.24), transparent 22%, transparent 78%, rgba(83, 51, 24, 0.24));
+  border-bottom: 4px solid rgba(47, 34, 23, 0.66);
+}
+
+.apothecaryExactPlane::after {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  z-index: 2;
+  pointer-events: none;
+  border: 4px solid rgba(37, 24, 13, 0.88);
+  box-shadow:
+    inset 0 0 0 3px rgba(212, 173, 106, 0.42),
+    inset 0 0 36px rgba(45, 27, 11, 0.42);
+}
+
+.apothecaryExactRoomPlate {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+.apothecaryExactHeader {
+  position: absolute;
+  left: 74px;
+  top: 27px;
+  width: 420px;
+  height: 80px;
+  z-index: 8;
+}
+
+.apothecaryExactHeader__titleRow {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.apothecaryExactHeader h1 {
+  margin: 0;
+  font-size: 61px;
+  line-height: 0.95;
+  font-weight: 700;
+  color: #21150d;
+  text-shadow: 0 1px 0 rgba(246, 224, 186, 0.82);
+}
+
+.apothecaryExactHeader p {
+  margin: 9px 0 0;
+  font-size: 20px;
+  line-height: 1.15;
+  color: #1f150e;
+  white-space: nowrap;
+  text-shadow: 0 1px 0 rgba(246, 224, 186, 0.68);
+}
+
+.apothecaryExactHeader__seal,
+.apothecaryExactPrescription__seal {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--apoth-cinnabar);
+  color: var(--apoth-cinnabar);
+  background:
+    linear-gradient(90deg, transparent 46%, rgba(143, 47, 35, 0.35) 47% 53%, transparent 54%),
+    linear-gradient(0deg, transparent 46%, rgba(143, 47, 35, 0.35) 47% 53%, transparent 54%),
+    rgba(234, 209, 173, 0.55);
+  box-shadow: inset 0 0 0 2px rgba(143, 47, 35, 0.18);
+}
+
+.apothecaryExactCityChip {
+  position: absolute;
+  left: 1328px;
+  top: 28px;
+  width: 593px;
+  height: 55px;
+  z-index: 8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 28px;
+  font-size: 20px;
+  font-weight: 700;
+  white-space: nowrap;
+  background: rgba(232, 216, 189, 0.76);
+  border: 2px solid rgba(95, 65, 38, 0.55);
+  box-shadow: inset 0 0 0 2px rgba(249, 233, 196, 0.35), 0 5px 12px rgba(42, 25, 11, 0.24);
+}
+
+.apothecaryExactCityChip::before,
+.apothecaryExactCityChip::after {
+  content: "";
+  position: absolute;
+  top: 9px;
+  width: 18px;
+  height: 37px;
+  border-top: 2px solid rgba(95, 65, 38, 0.55);
+  border-bottom: 2px solid rgba(95, 65, 38, 0.55);
+}
+
+.apothecaryExactCityChip::before {
+  left: 8px;
+  border-left: 2px solid rgba(95, 65, 38, 0.55);
+}
+
+.apothecaryExactCityChip::after {
+  right: 8px;
+  border-right: 2px solid rgba(95, 65, 38, 0.55);
+}
+
+.apothecaryExactPrepStrip {
+  position: absolute;
+  left: 74px;
+  top: 120px;
+  width: 1902px;
+  height: 100px;
+  z-index: 8;
+  display: grid;
+  grid-template-columns: 1.32fr 0.96fr 1.05fr 1.12fr 0.96fr 0.9fr 0.92fr;
+  gap: 0;
+  background: rgba(226, 205, 170, 0.82);
+  border: 3px solid rgba(61, 38, 20, 0.72);
+  box-shadow: inset 0 0 0 3px rgba(248, 231, 194, 0.34), 0 9px 16px rgba(28, 16, 8, 0.38);
+}
+
+.apothecaryExactPrepCell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 20px;
+  min-width: 0;
+  border-right: 2px solid rgba(77, 48, 25, 0.44);
+}
+
+.apothecaryExactPrepCell:last-child {
+  border-right: 0;
+}
+
+.apothecaryExactPrepCell[data-cell-id="next-test"] {
+  gap: 14px;
+  padding-right: 12px;
+}
+
+.apothecaryExactPrepCell__icon img,
+.apothecaryExactIcon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.apothecaryExactIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 54px;
+  height: 54px;
+}
+
+.apothecaryExactIcon--small {
+  width: 24px;
+  height: 24px;
+}
+
+.apothecaryExactIcon--tiny {
+  width: 26px;
+  height: 26px;
+  vertical-align: middle;
+  margin-right: 5px;
+}
+
+.apothecaryExactPrepCell__copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.apothecaryExactPrepCell__label {
+  font-size: 18px;
+  color: var(--apoth-ink-soft);
+}
+
+.apothecaryExactPrepCell__value {
+  font-size: 25px;
+  line-height: 1.12;
+  white-space: nowrap;
+  color: #20140c;
+}
+
+.apothecaryExactPrepCell[data-cell-id="next-test"] .apothecaryExactPrepCell__value {
+  font-size: 24px;
+}
+
+.apothecaryExactPrescription {
+  position: absolute;
+  left: 486px;
+  top: 225px;
+  width: 1014px;
+  height: 318px;
+  z-index: 6;
+  padding: 23px 62px 22px 82px;
+  overflow: hidden;
+  filter: drop-shadow(0 8px 12px rgba(30, 18, 8, 0.34));
+}
+
+.apothecaryExactPrescription__frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.apothecaryExactPrescription__header {
+  text-align: center;
+  position: relative;
+  z-index: 2;
+  margin-bottom: 7px;
+}
+
+.apothecaryExactPrescription__header h2 {
+  margin: 0;
+  font-size: 29px;
+  line-height: 1.1;
+  font-weight: 700;
+}
+
+.apothecaryExactPrescription__header p {
+  margin: 4px 0 0;
+  font-size: 16px;
+}
+
+.apothecaryExactPrescription__seal {
+  position: absolute;
+  right: 58px;
+  top: 22px;
+  width: 54px;
+  height: 54px;
+  border-width: 4px;
+  border-radius: 50%;
+  transform: rotate(-10deg);
+  opacity: 0.9;
+}
+
+.apothecaryExactPrescription__leftScript {
+  position: absolute;
+  left: 42px;
+  top: 56px;
+  width: 24px;
+  height: 204px;
+  border-left: 3px solid rgba(95, 31, 24, 0.42);
+  border-right: 1px solid rgba(95, 31, 24, 0.22);
+}
+
+.apothecaryExactPrescription__table {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-rows: 25px repeat(4, 43px);
+  border: 1px solid rgba(92, 60, 34, 0.35);
+  background: rgba(237, 222, 195, 0.46);
+}
+
+.apothecaryExactPrescription__head,
+.apothecaryExactPrescription__row {
+  display: grid;
+  grid-template-columns: 1.85fr 0.7fr 0.92fr 0.72fr 1.72fr;
+  align-items: center;
+}
+
+.apothecaryExactPrescription__head {
+  font-size: 13px;
+  color: var(--apoth-ink-soft);
+  text-align: center;
+  border-bottom: 1px solid rgba(92, 60, 34, 0.35);
+}
+
+.apothecaryExactPrescription__row {
+  min-height: 0;
+  font-size: 20px;
+  border-bottom: 1px solid rgba(92, 60, 34, 0.25);
+  text-align: center;
+}
+
+.apothecaryExactPrescription__row:last-child {
+  border-bottom: 0;
+}
+
+.apothecaryExactPrescription__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-left: 17px;
+  text-align: left;
+}
+
+.apothecaryExactPrescription__item .apothecaryExactIcon {
+  width: 39px;
+  height: 34px;
+}
+
+.apothecaryExactPrescription__item strong {
+  color: var(--apoth-ink);
+  white-space: nowrap;
+}
+
+.apothecaryExactPrescription__missing {
+  color: var(--apoth-cinnabar);
+  font-weight: 700;
+}
+
+.apothecaryExactPrescription__actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  padding: 0 8px;
+}
+
+.apothecaryExactWarnings {
+  position: absolute;
+  left: 500px;
+  top: 554px;
+  width: 1009px;
+  height: 45px;
+  z-index: 7;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+}
+
+.apothecaryExactWarningChip {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  height: 45px;
+  padding: 0 12px 0 50px;
+  background: linear-gradient(180deg, rgba(174, 101, 61, 0.9), rgba(117, 58, 34, 0.94));
+  border: 2px solid rgba(66, 31, 18, 0.72);
+  color: #22130b;
+  box-shadow: inset 0 0 0 1px rgba(239, 177, 92, 0.32), 0 5px 9px rgba(31, 17, 8, 0.35);
+  font-size: 16px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.apothecaryExactWarningChip .apothecaryExactIcon {
+  position: absolute;
+  left: -19px;
+  width: 52px;
+  height: 52px;
+}
+
+.apothecaryExactWarningChip--reserved {
+  opacity: 0;
+}
+
+.apothecaryExactPanel {
+  background: rgba(229, 211, 181, 0.84);
+  border: 3px solid rgba(62, 38, 20, 0.7);
+  box-shadow: inset 0 0 0 3px rgba(249, 232, 196, 0.35), 0 9px 17px rgba(27, 15, 7, 0.45);
+}
+
+.apothecaryExactBuyLane {
+  position: absolute;
+  left: 51px;
+  top: 629px;
+  width: 481px;
+  height: 346px;
+  z-index: 5;
+  padding: 14px 16px 10px;
+}
+
+.apothecaryExactBrewLane {
+  position: absolute;
+  left: 680px;
+  top: 629px;
+  width: 518px;
+  height: 346px;
+  z-index: 5;
+  padding: 14px 16px 10px;
+}
+
+.apothecaryExactPouchCard {
+  position: absolute;
+  left: 1341px;
+  top: 629px;
+  width: 380px;
+  height: 346px;
+  z-index: 5;
+  padding: 18px 20px 16px;
+}
+
+.apothecaryExactLaneHeader {
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+.apothecaryExactLaneHeader h3 {
+  margin: 0;
+  font-size: 30px;
+  line-height: 1.04;
+}
+
+.apothecaryExactLaneHeader p {
+  margin: 3px 0 0;
+  font-size: 16px;
+}
+
+.apothecaryExactLaneRows {
+  display: grid;
+  gap: 6px;
+}
+
+.apothecaryExactLaneRow {
+  min-height: 74px;
+  display: grid;
+  grid-template-columns: 60px minmax(0, 1fr) 108px 88px;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+.apothecaryExactBrewLane .apothecaryExactLaneRow {
+  grid-template-columns: 62px minmax(0, 1fr) 90px 100px;
+}
+
+.apothecaryExactLaneRow .apothecaryExactIcon {
+  width: 58px;
+  height: 56px;
+}
+
+.apothecaryExactLaneRow__copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 17px;
+}
+
+.apothecaryExactLaneRow__copy strong {
+  font-size: 21px;
+  line-height: 1.05;
+  color: var(--apoth-ink);
+  white-space: nowrap;
+}
+
+.apothecaryExactLaneRow__meta {
+  font-size: 14px;
+  text-align: center;
+  color: var(--apoth-ink-soft);
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.apothecaryExactBrewLane .apothecaryExactLaneRow__meta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-size: 17px;
+  line-height: 1;
+}
+
+.apothecaryExactCoin {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  margin-right: 6px;
+  vertical-align: -3px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, #f2ce65 0 24%, #895d20 26% 36%, #cf9a35 38% 72%, #5e3d16 74%);
+  box-shadow: 0 1px 2px rgba(45, 26, 8, 0.45);
+}
+
+.apothecaryExactPouchLines {
+  display: grid;
+  gap: 12px;
+  margin: 20px 0 18px;
+}
+
+.apothecaryExactPouchLine {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 17px;
+  line-height: 1.25;
+}
+
+.apothecaryExactPouchButtons {
+  display: grid;
+  gap: 9px;
+}
+
+.apothecaryExactPouchObject {
+  position: absolute;
+  left: 1709px;
+  top: 643px;
+  width: 294px;
+  height: 306px;
+  z-index: 4;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  filter: drop-shadow(0 16px 12px rgba(25, 14, 8, 0.46));
+}
+
+.apothecaryExactPouchObject img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.apothecaryExactBottomActions {
+  position: absolute;
+  left: 68px;
+  top: 997px;
+  width: 636px;
+  height: 88px;
+  z-index: 9;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.apothecaryExactPrimaryCta {
+  position: absolute;
+  left: 724px;
+  top: 977px;
+  width: 530px;
+  height: 121px;
+  z-index: 10;
+}
+
+.apothecaryExactReturnGate {
+  position: absolute;
+  left: 1284px;
+  top: 997px;
+  width: 176px;
+  height: 88px;
+  z-index: 9;
+}
+
+.apothecaryExactAttemptFit {
+  position: absolute;
+  left: 1472px;
+  top: 987px;
+  width: 528px;
+  height: 125px;
+  z-index: 9;
+  padding: 14px 30px;
+  background: rgba(232, 216, 189, 0.87);
+  border: 3px solid rgba(64, 39, 21, 0.7);
+  box-shadow: inset 0 0 0 3px rgba(249, 232, 196, 0.34), 0 8px 14px rgba(28, 16, 8, 0.38);
+}
+
+.apothecaryExactAttemptFit h3 {
+  margin: 0 0 6px;
+  font-size: 25px;
+}
+
+.apothecaryExactAttemptFit__line {
+  display: grid;
+  grid-template-columns: 88px minmax(0, 1fr);
+  gap: 8px;
+  align-items: baseline;
+  font-size: 16px;
+  line-height: 1.22;
+}
+
+.apothecaryExactAttemptFit__line span {
+  color: var(--apoth-ink-soft);
+}
+
+.apothecaryExactAttemptFit__line strong {
+  min-width: 0;
+}
+
+.apothecaryExactButton {
+  appearance: none;
+  border: 0;
+  border-radius: 3px;
+  color: var(--apoth-ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 700;
+  line-height: 1.05;
+  cursor: pointer;
+  background:
+    linear-gradient(180deg, rgba(238, 222, 193, 0.95), rgba(205, 177, 133, 0.94));
+  box-shadow: inset 0 0 0 2px rgba(111, 76, 38, 0.6), inset 0 0 0 4px rgba(247, 231, 199, 0.3);
+}
+
+.apothecaryExactButton:disabled {
+  cursor: default;
+  opacity: 0.72;
+  filter: saturate(0.78);
+}
+
+.apothecaryExactButton--chip {
+  min-height: 36px;
+  padding: 0 8px;
+  font-size: 16px;
+  white-space: nowrap;
+}
+
+.apothecaryExactButton--lane {
+  min-height: 48px;
+  padding: 4px 6px;
+  font-size: 16px;
+  white-space: normal;
+}
+
+.apothecaryExactBrewLane .apothecaryExactButton--lane {
+  font-size: 15px;
+}
+
+.apothecaryExactButton--wide {
+  min-height: 39px;
+  font-size: 16px;
+}
+
+.apothecaryExactButton--secondary,
+.apothecaryExactButton--return {
+  width: 100%;
+  height: 100%;
+  font-size: 20px;
+  padding: 0 12px;
+  background:
+    linear-gradient(180deg, rgba(233, 217, 188, 0.96), rgba(199, 172, 132, 0.96));
+}
+
+.apothecaryExactButton--secondary {
+  font-size: 19px;
+  white-space: nowrap;
+}
+
+.apothecaryExactButton--primary {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  overflow: visible;
+  color: #fff1bd;
+  background: transparent;
+  box-shadow: none;
+  text-shadow: 0 2px 2px rgba(54, 31, 9, 0.7);
+  font-size: 34px;
+  white-space: nowrap;
+}
+
+.apothecaryExactButton--primary:disabled {
+  opacity: 1;
+  filter: none;
+}
+
+.apothecaryExactButton--primary img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  pointer-events: none;
+}
+
+.apothecaryExactButton--primary span {
+  position: relative;
+  z-index: 1;
+}
+
+.apothecaryExactButton--return {
+  font-size: 21px;
+}
+
+.apothecaryExactTone--ready,
+.apothecaryExactTone--ready strong {
+  color: var(--apoth-jade);
+}
+
+.apothecaryExactTone--warning,
+.apothecaryExactTone--warning strong {
+  color: var(--apoth-cinnabar);
+}
+
+.apothecaryExactTone--danger,
+.apothecaryExactTone--danger strong {
+  color: var(--apoth-cinnabar-dark);
+}
+
+.apothecaryExactPrescription__item strong,
+.apothecaryExactLaneRow__copy strong {
+  color: var(--apoth-ink);
+}
+
+.apothecaryExactPrescription__row > span {
+  color: var(--apoth-ink);
+}
+
+.apothecaryExactPrescription__missing {
+  color: var(--apoth-cinnabar) !important;
+}
+
+.apothecaryExactPrescription__row.apothecaryExactTone--neutral .apothecaryExactPrescription__missing {
+  color: var(--apoth-ink) !important;
+}
+
+.apothecaryExactWarningChip span {
+  color: #21130b;
+}
+
+.apothecaryExactLaneRow__copy span {
+  color: var(--apoth-ink-soft);
+}
+
+.apothecaryExactBrewLane .apothecaryExactTone--ready .apothecaryExactLaneRow__copy strong,
+.apothecaryExactBrewLane .apothecaryExactTone--ready .apothecaryExactLaneRow__copy span {
+  color: var(--apoth-jade);
+}

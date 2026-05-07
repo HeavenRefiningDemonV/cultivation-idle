@@ -1,0 +1,1744 @@
+import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/components/screens/SettingsScreen.tsx");import.meta.env = {"BASE_URL": "/", "DEV": true, "MODE": "development", "PROD": false, "SSR": false};import __vite__cjsImport0_react_jsxDevRuntime from "/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=c0e4e3e4"; const jsxDEV = __vite__cjsImport0_react_jsxDevRuntime["jsxDEV"];
+var _s = $RefreshSig$();
+import __vite__cjsImport1_react from "/node_modules/.vite/deps/react.js?v=c0e4e3e4"; const useEffect = __vite__cjsImport1_react["useEffect"]; const useState = __vite__cjsImport1_react["useState"];
+import { SaveService } from "/src/services/save/SaveService.ts";
+import { useContentStore } from "/src/stores/contentStore.ts";
+import { getContentBaseUrl } from "/src/content/index.ts";
+import { RewardService } from "/src/services/rewards/index.ts";
+import { buildMegaRewardBundle } from "/src/debug/buildMegaRewardBundle.ts";
+import { useUIStore } from "/src/stores/uiStore.ts";
+import { useRewardsLogStore } from "/src/stores/rewardsLogStore.ts";
+import { useManualSatchelStore } from "/src/stores/manualSatchelStore.ts";
+import { SystemStatusPanel } from "/src/components/SystemStatusPanel.tsx";
+import { useTelemetryStore } from "/src/stores/telemetryStore.ts";
+import { useErrorLogStore } from "/src/stores/errorLogStore.ts";
+import { AudioDebugPanel } from "/src/ui/debug/AudioDebugPanel.tsx";
+import { buildDiagnosticsBundle } from "/src/services/diagnostics/buildDiagnosticsBundle.ts";
+import {
+  buildBalanceTelemetryCsvFiles,
+  buildBalanceTelemetryExportEnvelope,
+  serializeBalanceTelemetryExport,
+  summarizeBalanceTelemetryReport
+} from "/src/services/diagnostics/balanceTelemetryExport.ts";
+import {
+  applySafeRepairs,
+  runRuntimeValidation
+} from "/src/services/diagnostics/runValidation.ts";
+import "/src/components/screens/SettingsScreen.scss";
+function downloadJson(filename, data) {
+  try {
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    link.click();
+    URL.revokeObjectURL(url);
+  } catch (error) {
+    console.warn("[Diagnostics] Failed to download JSON", error);
+  }
+}
+async function copyToClipboard(text) {
+  if (navigator?.clipboard?.writeText) {
+    await navigator.clipboard.writeText(text);
+    return;
+  }
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  textarea.style.position = "fixed";
+  textarea.style.opacity = "0";
+  document.body.appendChild(textarea);
+  textarea.select();
+  document.execCommand("copy");
+  document.body.removeChild(textarea);
+}
+function formatDiagnosticsSummary(bundle) {
+  const parts = [];
+  parts.push(`Timestamp: ${new Date(bundle.createdAt).toISOString()}`);
+  parts.push(`App: ${bundle.app.name} v${bundle.app.version} (${bundle.app.mode})`);
+  parts.push(`Last save: ${bundle.save.lastSaveAt ? new Date(bundle.save.lastSaveAt).toISOString() : "unknown"}`);
+  const activity = bundle.status.activity;
+  parts.push(`Activity: ${activity?.type ?? "none"}`);
+  const combatLabel = bundle.status.combat?.inCombat ? `active (${bundle.status.combat.type ?? "unknown"})` : "idle";
+  parts.push(`Combat: ${combatLabel}`);
+  parts.push(`Telemetry: events=${bundle.telemetry.recentEvents.length} errors=${bundle.telemetry.recentErrors.length}`);
+  parts.push(`Balance telemetry: events=${bundle.telemetry.recentBalanceEvents.length} capture=${bundle.telemetry.balanceCaptureEnabled ? "on" : "off"}`);
+  parts.push(`Validation: ${bundle.validation.errorCount} errors, ${bundle.validation.warningCount} warnings`);
+  if (bundle.errors && bundle.errors.length > 0) {
+    parts.push(`Bundle warnings: ${bundle.errors.join("; ")}`);
+  }
+  return parts.join("\n");
+}
+export function SettingsScreen() {
+  _s();
+  const showOfflineModal = useUIStore((state) => state.settings.showOfflineModal);
+  const showCombatLog = useUIStore((state) => state.settings.showCombatLog);
+  const showCombatMinibar = useUIStore((state) => state.settings.showCombatMinibar);
+  const combatMinibarExpanded = useUIStore((state) => state.settings.combatMinibarExpanded);
+  const requirePrestigeConfirm = useUIStore((state) => state.settings.requirePrestigeConfirm);
+  const showSystemStatusPanel = useUIStore((state) => state.settings.showSystemStatusPanel);
+  const setSettings = useUIStore((state) => state.setSettings);
+  const setHeaderTitles = useUIStore((state) => state.setHeaderTitles);
+  const addNotification = useUIStore((state) => state.addNotification);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const contentIsLoaded = useContentStore((state) => state.isLoaded);
+  const contentIsLoading = useContentStore((state) => state.isLoading);
+  const contentError = useContentStore((state) => state.error);
+  const cities = useContentStore((state) => state.citiesSorted);
+  const techniquesByPath = useContentStore((state) => state.techniquesByPath);
+  const itemsCount = useContentStore((state) => Object.keys(state.maps.itemsById).length);
+  const techniquesById = useContentStore((state) => state.maps.techniquesById);
+  const techniquesCount = useContentStore((state) => Object.keys(state.maps.techniquesById).length);
+  const pavilionsById = useContentStore((state) => state.maps.pavilionsById);
+  const outskirtsCount = useContentStore((state) => Object.keys(state.maps.outskirtsById).length);
+  const enemiesCount = useContentStore((state) => Object.keys(state.maps.enemiesById).length);
+  const trialsCount = useContentStore((state) => Object.keys(state.maps.trialsById).length);
+  const ruinsCount = useContentStore((state) => Object.keys(state.maps.ruinsById).length);
+  const pavilionsCount = useContentStore((state) => Object.keys(state.maps.pavilionsById).length);
+  const telemetryEvents = useTelemetryStore((state) => state.events);
+  const clearTelemetry = useTelemetryStore((state) => state.clear);
+  const balanceTelemetryEvents = useTelemetryStore((state) => state.balanceEvents);
+  const clearBalanceTelemetry = useTelemetryStore((state) => state.clearBalanceEvents);
+  const balanceCaptureEnabled = useTelemetryStore((state) => state.balanceCaptureEnabled);
+  const setBalanceCaptureEnabled = useTelemetryStore((state) => state.setBalanceCaptureEnabled);
+  const maxBalanceEvents = useTelemetryStore((state) => state.maxBalanceEvents);
+  const errorEntries = useErrorLogStore((state) => state.errors);
+  const clearErrors = useErrorLogStore((state) => state.clear);
+  const isDev = import.meta.env.DEV;
+  const [validationIssues, setValidationIssues] = useState([]);
+  const [validationRanAt, setValidationRanAt] = useState(null);
+  const [diagnosticsError, setDiagnosticsError] = useState(null);
+  const [repairNotes, setRepairNotes] = useState([]);
+  const [repairedCount, setRepairedCount] = useState(null);
+  const rewardLogEntries = useRewardsLogStore((state) => state.entries);
+  const clearRewardLog = useRewardsLogStore((state) => state.clear);
+  const unlockRandomTechnique = useManualSatchelStore((state) => state.unlockRandomTechnique);
+  const toggleOfflineModal = () => setSettings({ showOfflineModal: !showOfflineModal });
+  const toggleCombatLog = () => setSettings({ showCombatLog: !showCombatLog });
+  const toggleCombatMinibar = () => setSettings({ showCombatMinibar: !showCombatMinibar });
+  const toggleCombatMinibarExpanded = () => setSettings({ combatMinibarExpanded: !combatMinibarExpanded });
+  const togglePrestigeConfirm = () => setSettings({ requirePrestigeConfirm: !requirePrestigeConfirm });
+  const toggleSystemStatus = () => setSettings({ showSystemStatusPanel: !showSystemStatusPanel });
+  const handleDeleteSave = () => {
+    setShowDeleteModal(false);
+    SaveService.deleteSaveAndHardReset();
+  };
+  const handleTestGrantRewards = () => {
+    if (!import.meta.env.DEV) return;
+    const confirmed = window.confirm("Grant large amounts of ALL rewards?");
+    if (!confirmed) return;
+    const bundle = buildMegaRewardBundle();
+    const result = RewardService.grantRewards(bundle, "debug:mega_grant");
+    console.log("[Rewards] Test Grant Rewards result", result);
+  };
+  const handleUnlockRandomManual = () => {
+    if (!contentIsLoaded) {
+      addNotification("warning", "Manuals are not available yet.", 3e3);
+      return;
+    }
+    const unlockedTechId = unlockRandomTechnique();
+    if (!unlockedTechId) {
+      addNotification("info", "No eligible techniques to unlock right now.", 3e3);
+      return;
+    }
+    const techName = techniquesById[unlockedTechId]?.name ?? unlockedTechId;
+    addNotification("success", `Insight gained — ${techName} mastered.`, 3e3);
+  };
+  const handleCopyTelemetry = () => {
+    const slice = telemetryEvents.slice(0, 30);
+    const text = JSON.stringify(slice, null, 2);
+    void copyToClipboard(text).catch((error) => {
+      console.warn("[Diagnostics] Failed to copy telemetry", error);
+    });
+  };
+  const handleCopyErrors = () => {
+    const slice = errorEntries.slice(0, 30);
+    const text = JSON.stringify(slice, null, 2);
+    void copyToClipboard(text).catch((error) => {
+      console.warn("[Diagnostics] Failed to copy errors", error);
+    });
+  };
+  const buildBalanceEnvelope = () => buildBalanceTelemetryExportEnvelope({
+    events: balanceTelemetryEvents.map((entry) => entry.payload),
+    balanceCaptureEnabled,
+    maxBalanceEvents,
+    app: {
+      name: "cultivation-idle",
+      version: import.meta.env?.VITE_APP_VERSION ?? "unknown",
+      mode: import.meta.env?.MODE ?? "unknown"
+    }
+  });
+  const handleDownloadBalanceTelemetry = () => {
+    try {
+      const envelope = buildBalanceEnvelope();
+      downloadJson(`cultivation_balance_telemetry_${new Date(envelope.exportedAt).toISOString()}.json`, envelope);
+      setDiagnosticsError(null);
+    } catch (error) {
+      setDiagnosticsError(`Failed to download balance telemetry: ${String(error)}`);
+    }
+  };
+  const handleCopyBalanceSummary = () => {
+    try {
+      const summary = summarizeBalanceTelemetryReport(buildBalanceEnvelope().summary);
+      void copyToClipboard(summary);
+      setDiagnosticsError(null);
+    } catch (error) {
+      setDiagnosticsError(`Failed to copy balance summary: ${String(error)}`);
+    }
+  };
+  const handleCopyBalanceEventsJson = () => {
+    try {
+      const text = serializeBalanceTelemetryExport(buildBalanceEnvelope());
+      void copyToClipboard(text);
+      setDiagnosticsError(null);
+    } catch (error) {
+      setDiagnosticsError(`Failed to copy balance telemetry JSON: ${String(error)}`);
+    }
+  };
+  const handleDownloadBalanceCsv = () => {
+    try {
+      const csvMap = buildBalanceTelemetryCsvFiles(balanceTelemetryEvents.map((entry) => entry.payload));
+      Object.entries(csvMap).forEach(([filename, csv]) => {
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = filename;
+        link.click();
+        URL.revokeObjectURL(url);
+      });
+      setDiagnosticsError(null);
+    } catch (error) {
+      setDiagnosticsError(`Failed to download balance CSV: ${String(error)}`);
+    }
+  };
+  const handleDownloadDiagnostics = () => {
+    try {
+      const bundle = buildDiagnosticsBundle();
+      downloadJson(`cultivation_diagnostics_${new Date(bundle.createdAt).toISOString()}.json`, bundle);
+      setDiagnosticsError(null);
+    } catch (error) {
+      setDiagnosticsError(`Failed to build diagnostics: ${String(error)}`);
+    }
+  };
+  const handleCopyQuickSummary = () => {
+    try {
+      const bundle = buildDiagnosticsBundle();
+      const summary = formatDiagnosticsSummary(bundle);
+      void copyToClipboard(summary).catch((error) => {
+        console.warn("[Diagnostics] Failed to copy summary", error);
+      });
+      setDiagnosticsError(null);
+    } catch (error) {
+      setDiagnosticsError(`Failed to copy summary: ${String(error)}`);
+    }
+  };
+  const handleRunValidation = () => {
+    try {
+      const issues = runRuntimeValidation();
+      setValidationIssues(issues);
+      setValidationRanAt(Date.now());
+      setRepairedCount(null);
+      setRepairNotes([]);
+      setDiagnosticsError(null);
+    } catch (error) {
+      setDiagnosticsError(`Validation failed: ${String(error)}`);
+    }
+  };
+  const handleApplyRepairs = () => {
+    if (!window.confirm("Apply safe repairs to obvious issues?")) return;
+    try {
+      const result = applySafeRepairs(validationIssues);
+      setRepairNotes(result.notes);
+      setRepairedCount(result.repairedCount);
+      const refreshed = runRuntimeValidation();
+      setValidationIssues(refreshed);
+      setValidationRanAt(Date.now());
+      setDiagnosticsError(null);
+    } catch (error) {
+      setDiagnosticsError(`Repairs failed: ${String(error)}`);
+    }
+  };
+  const handleGenerateTestError = () => {
+    if (!window.confirm("Generate a test error to validate diagnostics?")) return;
+    setTimeout(() => {
+      throw new Error("Diagnostics test error");
+    }, 0);
+  };
+  useEffect(() => {
+    setHeaderTitles("Settings", "Configure UI behavior and manage your save data.");
+  }, [setHeaderTitles]);
+  return /* @__PURE__ */ jsxDEV("div", { className: "settingsScreenRoot", children: [
+    /* @__PURE__ */ jsxDEV("div", { className: "settingsScreenBackground" }, void 0, false, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+      lineNumber: 299,
+      columnNumber: 7
+    }, this),
+    /* @__PURE__ */ jsxDEV("div", { className: "settingsScreenContent", children: /* @__PURE__ */ jsxDEV("div", { className: "settingsScreenGrid", children: [
+      /* @__PURE__ */ jsxDEV("div", { className: `${"settingsScreenPanel"} ${"settingsScreenPanelDefault"}`, children: [
+        /* @__PURE__ */ jsxDEV("h2", { className: "settingsScreenPanelTitle", children: "Gameplay & UI" }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+          lineNumber: 304,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV("p", { className: "settingsScreenPanelSubtitle", children: "Toggle interface elements and confirmations." }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+          lineNumber: 305,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { className: "settingsScreenOptionList", children: [
+          /* @__PURE__ */ jsxDEV("label", { className: "settingsScreenOptionRow", children: [
+            /* @__PURE__ */ jsxDEV(
+              "input",
+              {
+                type: "checkbox",
+                checked: showOfflineModal,
+                onChange: toggleOfflineModal,
+                className: "settingsScreenCheckbox"
+              },
+              void 0,
+              false,
+              {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                lineNumber: 308,
+                columnNumber: 17
+              },
+              this
+            ),
+            /* @__PURE__ */ jsxDEV("div", { children: [
+              /* @__PURE__ */ jsxDEV("div", { className: "settingsScreenOptionLabel", children: "Show offline progress modal" }, void 0, false, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                lineNumber: 315,
+                columnNumber: 19
+              }, this),
+              /* @__PURE__ */ jsxDEV("p", { className: "settingsScreenOptionDescription", children: "Display rewards earned while away when you return." }, void 0, false, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                lineNumber: 316,
+                columnNumber: 19
+              }, this)
+            ] }, void 0, true, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+              lineNumber: 314,
+              columnNumber: 17
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+            lineNumber: 307,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV("label", { className: "settingsScreenOptionRow", children: [
+            /* @__PURE__ */ jsxDEV(
+              "input",
+              {
+                type: "checkbox",
+                checked: showCombatLog,
+                onChange: toggleCombatLog,
+                className: "settingsScreenCheckbox"
+              },
+              void 0,
+              false,
+              {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                lineNumber: 321,
+                columnNumber: 17
+              },
+              this
+            ),
+            /* @__PURE__ */ jsxDEV("div", { children: [
+              /* @__PURE__ */ jsxDEV("div", { className: "settingsScreenOptionLabel", children: "Show combat log" }, void 0, false, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                lineNumber: 328,
+                columnNumber: 19
+              }, this),
+              /* @__PURE__ */ jsxDEV("p", { className: "settingsScreenOptionDescription", children: "Hide or reveal the detailed combat event log." }, void 0, false, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                lineNumber: 329,
+                columnNumber: 19
+              }, this)
+            ] }, void 0, true, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+              lineNumber: 327,
+              columnNumber: 17
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+            lineNumber: 320,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV("label", { className: "settingsScreenOptionRow", children: [
+            /* @__PURE__ */ jsxDEV(
+              "input",
+              {
+                type: "checkbox",
+                checked: showCombatMinibar,
+                onChange: toggleCombatMinibar,
+                className: "settingsScreenCheckbox"
+              },
+              void 0,
+              false,
+              {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                lineNumber: 334,
+                columnNumber: 17
+              },
+              this
+            ),
+            /* @__PURE__ */ jsxDEV("div", { children: [
+              /* @__PURE__ */ jsxDEV("div", { className: "settingsScreenOptionLabel", children: "Show combat minibar" }, void 0, false, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                lineNumber: 341,
+                columnNumber: 19
+              }, this),
+              /* @__PURE__ */ jsxDEV("p", { className: "settingsScreenOptionDescription", children: "Always display the compact combat overlay during fights and combat activities." }, void 0, false, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                lineNumber: 342,
+                columnNumber: 19
+              }, this)
+            ] }, void 0, true, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+              lineNumber: 340,
+              columnNumber: 17
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+            lineNumber: 333,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV("label", { className: "settingsScreenOptionRow", children: [
+            /* @__PURE__ */ jsxDEV(
+              "input",
+              {
+                type: "checkbox",
+                checked: combatMinibarExpanded,
+                onChange: toggleCombatMinibarExpanded,
+                className: "settingsScreenCheckbox"
+              },
+              void 0,
+              false,
+              {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                lineNumber: 349,
+                columnNumber: 17
+              },
+              this
+            ),
+            /* @__PURE__ */ jsxDEV("div", { children: [
+              /* @__PURE__ */ jsxDEV("div", { className: "settingsScreenOptionLabel", children: "Combat minibar expanded by default" }, void 0, false, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                lineNumber: 356,
+                columnNumber: 19
+              }, this),
+              /* @__PURE__ */ jsxDEV("p", { className: "settingsScreenOptionDescription", children: "Keep the minibar unfolded when it appears; collapse later if screen space is tight." }, void 0, false, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                lineNumber: 357,
+                columnNumber: 19
+              }, this)
+            ] }, void 0, true, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+              lineNumber: 355,
+              columnNumber: 17
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+            lineNumber: 348,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV("label", { className: "settingsScreenOptionRow", children: [
+            /* @__PURE__ */ jsxDEV(
+              "input",
+              {
+                type: "checkbox",
+                checked: requirePrestigeConfirm,
+                onChange: togglePrestigeConfirm,
+                className: "settingsScreenCheckbox"
+              },
+              void 0,
+              false,
+              {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                lineNumber: 364,
+                columnNumber: 17
+              },
+              this
+            ),
+            /* @__PURE__ */ jsxDEV("div", { children: [
+              /* @__PURE__ */ jsxDEV("div", { className: "settingsScreenOptionLabel", children: "Require prestige confirmation" }, void 0, false, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                lineNumber: 371,
+                columnNumber: 19
+              }, this),
+              /* @__PURE__ */ jsxDEV("p", { className: "settingsScreenOptionDescription", children: "Ask for confirmation before reincarnating." }, void 0, false, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                lineNumber: 372,
+                columnNumber: 19
+              }, this)
+            ] }, void 0, true, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+              lineNumber: 370,
+              columnNumber: 17
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+            lineNumber: 363,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV("label", { className: "settingsScreenOptionRow", children: [
+            /* @__PURE__ */ jsxDEV(
+              "input",
+              {
+                type: "checkbox",
+                checked: showSystemStatusPanel,
+                onChange: toggleSystemStatus,
+                className: "settingsScreenCheckbox"
+              },
+              void 0,
+              false,
+              {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                lineNumber: 377,
+                columnNumber: 17
+              },
+              this
+            ),
+            /* @__PURE__ */ jsxDEV("div", { children: [
+              /* @__PURE__ */ jsxDEV("div", { className: "settingsScreenOptionLabel", children: "Show system status overlay (dev)" }, void 0, false, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                lineNumber: 384,
+                columnNumber: 19
+              }, this),
+              /* @__PURE__ */ jsxDEV("p", { className: "settingsScreenOptionDescription", children: "Display runtime diagnostics: activity, combat gating, saves, and queues." }, void 0, false, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                lineNumber: 385,
+                columnNumber: 19
+              }, this)
+            ] }, void 0, true, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+              lineNumber: 383,
+              columnNumber: 17
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+            lineNumber: 376,
+            columnNumber: 15
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+          lineNumber: 306,
+          columnNumber: 13
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+        lineNumber: 303,
+        columnNumber: 11
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { className: `${"settingsScreenPanel"} ${"settingsScreenPanelDefault"}`, children: /* @__PURE__ */ jsxDEV(SystemStatusPanel, {}, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+        lineNumber: 394,
+        columnNumber: 13
+      }, this) }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+        lineNumber: 393,
+        columnNumber: 11
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { className: `${"settingsScreenPanel"} ${"settingsScreenPanelDefault"}`, children: [
+        /* @__PURE__ */ jsxDEV("h2", { className: "settingsScreenPanelTitle", children: "Rewards Debug" }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+          lineNumber: 398,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV("p", { className: "settingsScreenPanelSubtitle", children: "Validate the central reward pipeline (currencies + items)." }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+          lineNumber: 399,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { className: "settingsRewardsActions", children: [
+          /* @__PURE__ */ jsxDEV(
+            "button",
+            {
+              onClick: handleTestGrantRewards,
+              className: "button-standard settingsScreenDebugButton",
+              disabled: !contentIsLoaded || !import.meta.env.DEV,
+              children: "Test Grant Rewards (Mega Bundle)"
+            },
+            void 0,
+            false,
+            {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+              lineNumber: 402,
+              columnNumber: 15
+            },
+            this
+          ),
+          /* @__PURE__ */ jsxDEV(
+            "button",
+            {
+              onClick: handleUnlockRandomManual,
+              className: "button-standard settingsScreenDebugButton settingsScreenDebugButtonSecondary",
+              disabled: !contentIsLoaded,
+              children: "Unlock Random Technique (Studied)"
+            },
+            void 0,
+            false,
+            {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+              lineNumber: 409,
+              columnNumber: 15
+            },
+            this
+          ),
+          /* @__PURE__ */ jsxDEV(
+            "button",
+            {
+              onClick: clearRewardLog,
+              className: "button-standard settingsScreenDebugButton settingsScreenDebugButtonSecondary",
+              disabled: rewardLogEntries.length === 0,
+              children: "Clear Reward Log"
+            },
+            void 0,
+            false,
+            {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+              lineNumber: 416,
+              columnNumber: 15
+            },
+            this
+          )
+        ] }, void 0, true, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+          lineNumber: 401,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { className: "settingsRewardsLog", children: [
+          /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugLabel", children: "Recent Grants" }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+            lineNumber: 426,
+            columnNumber: 15
+          }, this),
+          rewardLogEntries.length === 0 ? /* @__PURE__ */ jsxDEV("div", { className: "settingsRewardsEmpty", children: "No reward grants yet." }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+            lineNumber: 428,
+            columnNumber: 15
+          }, this) : /* @__PURE__ */ jsxDEV("div", { className: "settingsRewardsList", children: rewardLogEntries.slice(0, 6).map(
+            (entry) => /* @__PURE__ */ jsxDEV("div", { className: "settingsRewardsEntry", children: [
+              /* @__PURE__ */ jsxDEV("div", { className: "settingsRewardsEntryHeader", children: [
+                /* @__PURE__ */ jsxDEV("span", { className: "settingsRewardsEntryReason", children: entry.reason }, void 0, false, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                  lineNumber: 434,
+                  columnNumber: 25
+                }, this),
+                /* @__PURE__ */ jsxDEV("span", { className: "settingsRewardsEntryTime", children: new Date(entry.timestamp).toLocaleTimeString() }, void 0, false, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                  lineNumber: 435,
+                  columnNumber: 25
+                }, this)
+              ] }, void 0, true, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                lineNumber: 433,
+                columnNumber: 23
+              }, this),
+              /* @__PURE__ */ jsxDEV("div", { className: "settingsRewardsEntrySummary", children: entry.summary }, void 0, false, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                lineNumber: 439,
+                columnNumber: 23
+              }, this)
+            ] }, entry.id, true, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+              lineNumber: 432,
+              columnNumber: 17
+            }, this)
+          ) }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+            lineNumber: 430,
+            columnNumber: 15
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+          lineNumber: 425,
+          columnNumber: 13
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+        lineNumber: 397,
+        columnNumber: 11
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { className: `${"settingsScreenPanel"} ${"settingsScreenPanelDefault"}`, children: [
+        /* @__PURE__ */ jsxDEV("h2", { className: "settingsScreenPanelTitle", children: "Diagnostics (Dev)" }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+          lineNumber: 449,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV("p", { className: "settingsScreenPanelSubtitle", children: "Telemetry + error capture + diagnostics tools." }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+          lineNumber: 450,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { className: "settingsDiagnosticsActions", children: [
+          /* @__PURE__ */ jsxDEV("button", { className: "button-standard settingsScreenDebugButton", onClick: handleDownloadDiagnostics, children: "Download Diagnostics (.json)" }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+            lineNumber: 453,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV("button", { className: "button-standard settingsScreenDebugButton", onClick: handleCopyQuickSummary, children: "Copy Quick Summary" }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+            lineNumber: 456,
+            columnNumber: 15
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+          lineNumber: 452,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { className: "settingsDiagnosticsActions", children: [
+          /* @__PURE__ */ jsxDEV("button", { className: "button-standard settingsScreenDebugButton", onClick: handleRunValidation, children: "Run Validation" }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+            lineNumber: 462,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV(
+            "button",
+            {
+              className: "button-standard settingsScreenDebugButton settingsScreenDebugButtonSecondary",
+              onClick: handleApplyRepairs,
+              disabled: validationIssues.length === 0,
+              children: "Apply Safe Repairs"
+            },
+            void 0,
+            false,
+            {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+              lineNumber: 465,
+              columnNumber: 15
+            },
+            this
+          )
+        ] }, void 0, true, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+          lineNumber: 461,
+          columnNumber: 13
+        }, this),
+        diagnosticsError ? /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugError", children: diagnosticsError }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+          lineNumber: 474,
+          columnNumber: 33
+        }, this) : null,
+        /* @__PURE__ */ jsxDEV("div", { className: "settingsDiagnosticsList", children: [
+          /* @__PURE__ */ jsxDEV("div", { className: "settingsDiagnosticsRow", children: [
+            /* @__PURE__ */ jsxDEV("div", { children: [
+              /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugLabel", children: "Validation" }, void 0, false, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                lineNumber: 479,
+                columnNumber: 19
+              }, this),
+              /* @__PURE__ */ jsxDEV("div", { className: "settingsDiagnosticsMeta", children: validationRanAt ? `Last run: ${new Date(validationRanAt).toLocaleTimeString()}` : "Not run yet" }, void 0, false, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                lineNumber: 480,
+                columnNumber: 19
+              }, this)
+            ] }, void 0, true, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+              lineNumber: 478,
+              columnNumber: 17
+            }, this),
+            /* @__PURE__ */ jsxDEV("div", { className: "settingsDiagnosticsMeta", children: [
+              validationIssues.length,
+              " issue",
+              validationIssues.length === 1 ? "" : "s"
+            ] }, void 0, true, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+              lineNumber: 484,
+              columnNumber: 17
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+            lineNumber: 477,
+            columnNumber: 15
+          }, this),
+          validationIssues.length === 0 ? /* @__PURE__ */ jsxDEV("div", { className: "settingsDiagnosticsEmpty", children: "No validation issues detected yet." }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+            lineNumber: 490,
+            columnNumber: 15
+          }, this) : /* @__PURE__ */ jsxDEV("div", { className: "settingsDiagnosticsEntries", children: validationIssues.slice(0, 20).map(
+            (issue) => /* @__PURE__ */ jsxDEV("div", { className: "settingsDiagnosticsEntry settingsDiagnosticsIssue", children: [
+              /* @__PURE__ */ jsxDEV("div", { className: "settingsDiagnosticsRow", children: [
+                /* @__PURE__ */ jsxDEV("div", { children: [
+                  /* @__PURE__ */ jsxDEV("div", { className: "settingsDiagnosticsSeverity settingsDiagnosticsSeverity-" + issue.severity, children: issue.severity.toUpperCase() }, void 0, false, {
+                    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                    lineNumber: 497,
+                    columnNumber: 27
+                  }, this),
+                  /* @__PURE__ */ jsxDEV("div", { className: "settingsDiagnosticsMeta", children: issue.id }, void 0, false, {
+                    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                    lineNumber: 500,
+                    columnNumber: 27
+                  }, this)
+                ] }, void 0, true, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                  lineNumber: 496,
+                  columnNumber: 25
+                }, this),
+                /* @__PURE__ */ jsxDEV("div", { className: "settingsDiagnosticsSummary", children: issue.message }, void 0, false, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                  lineNumber: 502,
+                  columnNumber: 25
+                }, this)
+              ] }, void 0, true, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                lineNumber: 495,
+                columnNumber: 23
+              }, this),
+              issue.hint ? /* @__PURE__ */ jsxDEV("div", { className: "settingsDiagnosticsMeta", children: issue.hint }, void 0, false, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                lineNumber: 504,
+                columnNumber: 37
+              }, this) : null
+            ] }, issue.id, true, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+              lineNumber: 494,
+              columnNumber: 17
+            }, this)
+          ) }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+            lineNumber: 492,
+            columnNumber: 15
+          }, this),
+          repairedCount != null ? /* @__PURE__ */ jsxDEV("div", { className: "settingsDiagnosticsMeta", children: [
+            "Repairs applied: ",
+            repairedCount,
+            " ",
+            repairedCount === 1 ? "change" : "changes",
+            ".",
+            repairNotes.length > 0 ? ` Notes: ${repairNotes.join("; ")}` : ""
+          ] }, void 0, true, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+            lineNumber: 511,
+            columnNumber: 15
+          }, this) : null
+        ] }, void 0, true, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+          lineNumber: 476,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { className: "settingsDiagnosticsList", children: [
+          /* @__PURE__ */ jsxDEV("div", { className: "settingsDiagnosticsRow", children: [
+            /* @__PURE__ */ jsxDEV("div", { children: [
+              /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugLabel", children: "Balance Telemetry" }, void 0, false, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                lineNumber: 521,
+                columnNumber: 19
+              }, this),
+              /* @__PURE__ */ jsxDEV("div", { className: "settingsDiagnosticsMeta", children: [
+                "Showing ",
+                Math.min(10, balanceTelemetryEvents.length),
+                " of ",
+                balanceTelemetryEvents.length,
+                " events"
+              ] }, void 0, true, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                lineNumber: 522,
+                columnNumber: 19
+              }, this)
+            ] }, void 0, true, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+              lineNumber: 520,
+              columnNumber: 17
+            }, this),
+            /* @__PURE__ */ jsxDEV("div", { className: "settingsDiagnosticsActions", children: [
+              /* @__PURE__ */ jsxDEV("label", { className: "settingsScreenOptionRow", style: { marginBottom: 0 }, children: [
+                /* @__PURE__ */ jsxDEV(
+                  "input",
+                  {
+                    type: "checkbox",
+                    checked: balanceCaptureEnabled,
+                    onChange: (event) => setBalanceCaptureEnabled(event.target.checked),
+                    className: "settingsScreenCheckbox"
+                  },
+                  void 0,
+                  false,
+                  {
+                    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                    lineNumber: 528,
+                    columnNumber: 21
+                  },
+                  this
+                ),
+                /* @__PURE__ */ jsxDEV("div", { children: /* @__PURE__ */ jsxDEV("div", { className: "settingsScreenOptionLabel", children: "Capture enabled" }, void 0, false, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                  lineNumber: 535,
+                  columnNumber: 23
+                }, this) }, void 0, false, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                  lineNumber: 534,
+                  columnNumber: 21
+                }, this)
+              ] }, void 0, true, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                lineNumber: 527,
+                columnNumber: 19
+              }, this),
+              /* @__PURE__ */ jsxDEV(
+                "button",
+                {
+                  className: "button-standard settingsScreenDebugButton settingsScreenDebugButtonSecondary",
+                  onClick: clearBalanceTelemetry,
+                  disabled: balanceTelemetryEvents.length === 0,
+                  children: "Clear Balance Events"
+                },
+                void 0,
+                false,
+                {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                  lineNumber: 538,
+                  columnNumber: 19
+                },
+                this
+              ),
+              /* @__PURE__ */ jsxDEV(
+                "button",
+                {
+                  className: "button-standard settingsScreenDebugButton settingsScreenDebugButtonSecondary",
+                  onClick: handleCopyBalanceSummary,
+                  disabled: balanceTelemetryEvents.length === 0,
+                  children: "Copy Balance Summary"
+                },
+                void 0,
+                false,
+                {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                  lineNumber: 545,
+                  columnNumber: 19
+                },
+                this
+              )
+            ] }, void 0, true, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+              lineNumber: 526,
+              columnNumber: 17
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+            lineNumber: 519,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV("div", { className: "settingsDiagnosticsActions", children: [
+            /* @__PURE__ */ jsxDEV(
+              "button",
+              {
+                className: "button-standard settingsScreenDebugButton settingsScreenDebugButtonSecondary",
+                onClick: handleDownloadBalanceTelemetry,
+                disabled: balanceTelemetryEvents.length === 0,
+                children: "Download Balance Telemetry (.json)"
+              },
+              void 0,
+              false,
+              {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                lineNumber: 555,
+                columnNumber: 17
+              },
+              this
+            ),
+            /* @__PURE__ */ jsxDEV(
+              "button",
+              {
+                className: "button-standard settingsScreenDebugButton settingsScreenDebugButtonSecondary",
+                onClick: handleDownloadBalanceCsv,
+                disabled: balanceTelemetryEvents.length === 0,
+                children: "Download Balance CSV"
+              },
+              void 0,
+              false,
+              {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                lineNumber: 562,
+                columnNumber: 17
+              },
+              this
+            ),
+            /* @__PURE__ */ jsxDEV(
+              "button",
+              {
+                className: "button-standard settingsScreenDebugButton settingsScreenDebugButtonSecondary",
+                onClick: handleCopyBalanceEventsJson,
+                disabled: balanceTelemetryEvents.length === 0,
+                children: "Copy Balance Events (JSON)"
+              },
+              void 0,
+              false,
+              {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                lineNumber: 569,
+                columnNumber: 17
+              },
+              this
+            )
+          ] }, void 0, true, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+            lineNumber: 554,
+            columnNumber: 15
+          }, this),
+          balanceTelemetryEvents.length > 0 ? /* @__PURE__ */ jsxDEV("div", { className: "settingsDiagnosticsEntries", children: balanceTelemetryEvents.slice(0, 10).map(
+            (entry) => /* @__PURE__ */ jsxDEV("div", { className: "settingsDiagnosticsEntry", children: /* @__PURE__ */ jsxDEV("div", { className: "settingsDiagnosticsRow", children: [
+              /* @__PURE__ */ jsxDEV("div", { children: [
+                /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugLabel", children: entry.kind }, void 0, false, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                  lineNumber: 583,
+                  columnNumber: 27
+                }, this),
+                /* @__PURE__ */ jsxDEV("div", { className: "settingsDiagnosticsMeta", children: new Date(entry.ts).toLocaleTimeString() }, void 0, false, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                  lineNumber: 584,
+                  columnNumber: 27
+                }, this)
+              ] }, void 0, true, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                lineNumber: 582,
+                columnNumber: 25
+              }, this),
+              /* @__PURE__ */ jsxDEV("div", { className: "settingsDiagnosticsSummary", children: entry.summary }, void 0, false, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                lineNumber: 588,
+                columnNumber: 25
+              }, this)
+            ] }, void 0, true, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+              lineNumber: 581,
+              columnNumber: 23
+            }, this) }, entry.id, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+              lineNumber: 580,
+              columnNumber: 17
+            }, this)
+          ) }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+            lineNumber: 578,
+            columnNumber: 15
+          }, this) : /* @__PURE__ */ jsxDEV("div", { className: "settingsDiagnosticsEmpty", children: "No balance telemetry events captured yet." }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+            lineNumber: 594,
+            columnNumber: 15
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+          lineNumber: 518,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { className: "settingsDiagnosticsList", children: [
+          /* @__PURE__ */ jsxDEV("div", { className: "settingsDiagnosticsRow", children: [
+            /* @__PURE__ */ jsxDEV("div", { children: [
+              /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugLabel", children: "Telemetry" }, void 0, false, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                lineNumber: 601,
+                columnNumber: 19
+              }, this),
+              /* @__PURE__ */ jsxDEV("div", { className: "settingsDiagnosticsMeta", children: [
+                "Showing ",
+                Math.min(15, telemetryEvents.length),
+                " of ",
+                telemetryEvents.length,
+                " events"
+              ] }, void 0, true, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                lineNumber: 602,
+                columnNumber: 19
+              }, this)
+            ] }, void 0, true, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+              lineNumber: 600,
+              columnNumber: 17
+            }, this),
+            /* @__PURE__ */ jsxDEV("div", { className: "settingsDiagnosticsActions", children: [
+              /* @__PURE__ */ jsxDEV(
+                "button",
+                {
+                  className: "button-standard settingsScreenDebugButton settingsScreenDebugButtonSecondary",
+                  onClick: clearTelemetry,
+                  disabled: telemetryEvents.length === 0,
+                  children: "Clear Events"
+                },
+                void 0,
+                false,
+                {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                  lineNumber: 607,
+                  columnNumber: 19
+                },
+                this
+              ),
+              /* @__PURE__ */ jsxDEV(
+                "button",
+                {
+                  className: "button-standard settingsScreenDebugButton settingsScreenDebugButtonSecondary",
+                  onClick: handleCopyTelemetry,
+                  disabled: telemetryEvents.length === 0,
+                  children: "Copy Events (JSON)"
+                },
+                void 0,
+                false,
+                {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                  lineNumber: 614,
+                  columnNumber: 19
+                },
+                this
+              )
+            ] }, void 0, true, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+              lineNumber: 606,
+              columnNumber: 17
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+            lineNumber: 599,
+            columnNumber: 15
+          }, this),
+          telemetryEvents.length === 0 ? /* @__PURE__ */ jsxDEV("div", { className: "settingsDiagnosticsEmpty", children: "No telemetry events captured yet." }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+            lineNumber: 625,
+            columnNumber: 15
+          }, this) : /* @__PURE__ */ jsxDEV("div", { className: "settingsDiagnosticsEntries", children: telemetryEvents.slice(0, 15).map(
+            (entry) => /* @__PURE__ */ jsxDEV("div", { className: "settingsDiagnosticsEntry", children: /* @__PURE__ */ jsxDEV("div", { className: "settingsDiagnosticsRow", children: [
+              /* @__PURE__ */ jsxDEV("div", { children: [
+                /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugLabel", children: entry.type }, void 0, false, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                  lineNumber: 632,
+                  columnNumber: 27
+                }, this),
+                /* @__PURE__ */ jsxDEV("div", { className: "settingsDiagnosticsMeta", children: new Date(entry.ts).toLocaleTimeString() }, void 0, false, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                  lineNumber: 633,
+                  columnNumber: 27
+                }, this)
+              ] }, void 0, true, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                lineNumber: 631,
+                columnNumber: 25
+              }, this),
+              /* @__PURE__ */ jsxDEV("div", { className: "settingsDiagnosticsSummary", children: entry.summary }, void 0, false, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                lineNumber: 637,
+                columnNumber: 25
+              }, this)
+            ] }, void 0, true, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+              lineNumber: 630,
+              columnNumber: 23
+            }, this) }, entry.id, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+              lineNumber: 629,
+              columnNumber: 17
+            }, this)
+          ) }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+            lineNumber: 627,
+            columnNumber: 15
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+          lineNumber: 598,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { className: "settingsDiagnosticsList", children: [
+          /* @__PURE__ */ jsxDEV("div", { className: "settingsDiagnosticsRow", children: [
+            /* @__PURE__ */ jsxDEV("div", { children: [
+              /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugLabel", children: "Errors" }, void 0, false, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                lineNumber: 648,
+                columnNumber: 19
+              }, this),
+              /* @__PURE__ */ jsxDEV("div", { className: "settingsDiagnosticsMeta", children: [
+                "Showing ",
+                Math.min(10, errorEntries.length),
+                " of ",
+                errorEntries.length,
+                " errors"
+              ] }, void 0, true, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                lineNumber: 649,
+                columnNumber: 19
+              }, this)
+            ] }, void 0, true, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+              lineNumber: 647,
+              columnNumber: 17
+            }, this),
+            /* @__PURE__ */ jsxDEV("div", { className: "settingsDiagnosticsActions", children: [
+              /* @__PURE__ */ jsxDEV(
+                "button",
+                {
+                  className: "button-standard settingsScreenDebugButton settingsScreenDebugButtonSecondary",
+                  onClick: clearErrors,
+                  disabled: errorEntries.length === 0,
+                  children: "Clear Errors"
+                },
+                void 0,
+                false,
+                {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                  lineNumber: 654,
+                  columnNumber: 19
+                },
+                this
+              ),
+              /* @__PURE__ */ jsxDEV(
+                "button",
+                {
+                  className: "button-standard settingsScreenDebugButton settingsScreenDebugButtonSecondary",
+                  onClick: handleCopyErrors,
+                  disabled: errorEntries.length === 0,
+                  children: "Copy Errors (JSON)"
+                },
+                void 0,
+                false,
+                {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                  lineNumber: 661,
+                  columnNumber: 19
+                },
+                this
+              )
+            ] }, void 0, true, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+              lineNumber: 653,
+              columnNumber: 17
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+            lineNumber: 646,
+            columnNumber: 15
+          }, this),
+          errorEntries.length === 0 ? /* @__PURE__ */ jsxDEV("div", { className: "settingsDiagnosticsEmpty", children: "No captured errors." }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+            lineNumber: 672,
+            columnNumber: 15
+          }, this) : /* @__PURE__ */ jsxDEV("div", { className: "settingsDiagnosticsEntries", children: errorEntries.slice(0, 10).map(
+            (entry) => /* @__PURE__ */ jsxDEV("div", { className: "settingsDiagnosticsEntry", children: [
+              /* @__PURE__ */ jsxDEV("div", { className: "settingsDiagnosticsRow", children: [
+                /* @__PURE__ */ jsxDEV("div", { children: [
+                  /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugLabel", children: entry.kind }, void 0, false, {
+                    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                    lineNumber: 679,
+                    columnNumber: 27
+                  }, this),
+                  /* @__PURE__ */ jsxDEV("div", { className: "settingsDiagnosticsMeta", children: new Date(entry.ts).toLocaleTimeString() }, void 0, false, {
+                    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                    lineNumber: 680,
+                    columnNumber: 27
+                  }, this)
+                ] }, void 0, true, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                  lineNumber: 678,
+                  columnNumber: 25
+                }, this),
+                /* @__PURE__ */ jsxDEV("div", { className: "settingsDiagnosticsSummary", children: entry.message }, void 0, false, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                  lineNumber: 684,
+                  columnNumber: 25
+                }, this)
+              ] }, void 0, true, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                lineNumber: 677,
+                columnNumber: 23
+              }, this),
+              entry.stack ? /* @__PURE__ */ jsxDEV("div", { className: "settingsDiagnosticsCode", children: entry.stack.split("\n").slice(0, 2).join("\n") }, void 0, false, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                lineNumber: 687,
+                columnNumber: 19
+              }, this) : null,
+              entry.source ? /* @__PURE__ */ jsxDEV("div", { className: "settingsDiagnosticsMeta", children: [
+                "Source: ",
+                entry.source
+              ] }, void 0, true, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                lineNumber: 692,
+                columnNumber: 19
+              }, this) : null
+            ] }, entry.id, true, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+              lineNumber: 676,
+              columnNumber: 17
+            }, this)
+          ) }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+            lineNumber: 674,
+            columnNumber: 15
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+          lineNumber: 645,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { className: "settingsDiagnosticsActions", children: /* @__PURE__ */ jsxDEV("button", { className: "button-standard settingsScreenDebugButton", onClick: handleGenerateTestError, children: "Generate Test Error" }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+          lineNumber: 701,
+          columnNumber: 15
+        }, this) }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+          lineNumber: 700,
+          columnNumber: 13
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+        lineNumber: 448,
+        columnNumber: 11
+      }, this),
+      isDev ? /* @__PURE__ */ jsxDEV("div", { className: `${"settingsScreenPanel"} ${"settingsScreenPanelDefault"}`, children: [
+        /* @__PURE__ */ jsxDEV("h2", { className: "settingsScreenPanelTitle", children: "Audio Debug (Dev)" }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+          lineNumber: 709,
+          columnNumber: 15
+        }, this),
+        /* @__PURE__ */ jsxDEV("p", { className: "settingsScreenPanelSubtitle", children: "Trigger sound playback for any registered SoundId." }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+          lineNumber: 710,
+          columnNumber: 15
+        }, this),
+        /* @__PURE__ */ jsxDEV(AudioDebugPanel, {}, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+          lineNumber: 713,
+          columnNumber: 15
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+        lineNumber: 708,
+        columnNumber: 11
+      }, this) : null,
+      /* @__PURE__ */ jsxDEV("div", { className: `${"settingsScreenPanel"} ${"settingsScreenPanelDanger"}`, children: [
+        /* @__PURE__ */ jsxDEV("h2", { className: "settingsScreenPanelTitle", children: "Save Management" }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+          lineNumber: 718,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV("p", { className: "settingsScreenPanelSubtitle", children: "Delete all progress and restart as if the game was freshly installed." }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+          lineNumber: 719,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV(
+          "button",
+          {
+            onClick: () => setShowDeleteModal(true),
+            className: "button-standard settingsScreenDangerButton",
+            children: "Delete Save & Hard Reset"
+          },
+          void 0,
+          false,
+          {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+            lineNumber: 722,
+            columnNumber: 13
+          },
+          this
+        ),
+        /* @__PURE__ */ jsxDEV("p", { className: "settingsScreenDangerNote", children: "This will remove all saves, Ascension Points, upgrades, spirit roots, auras, and items. This action cannot be undone." }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+          lineNumber: 728,
+          columnNumber: 13
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+        lineNumber: 717,
+        columnNumber: 11
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { className: `${"settingsScreenPanel"} ${"settingsScreenPanelDefault"}`, children: [
+        /* @__PURE__ */ jsxDEV("h2", { className: "settingsScreenPanelTitle", children: "Content Debug" }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+          lineNumber: 735,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV("p", { className: "settingsScreenPanelSubtitle", children: "Inspect loaded content pack counts and pavilion pools (Cities 1-5)." }, void 0, false, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+          lineNumber: 736,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugRow", children: [
+          /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugLabel", children: "Base URL" }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+            lineNumber: 741,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugValue", children: getContentBaseUrl() }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+            lineNumber: 742,
+            columnNumber: 15
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+          lineNumber: 740,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugRow", children: [
+          /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugLabel", children: "Loaded" }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+            lineNumber: 745,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugValue", children: contentIsLoaded ? "Yes" : contentIsLoading ? "Loading…" : "No" }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+            lineNumber: 746,
+            columnNumber: 15
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+          lineNumber: 744,
+          columnNumber: 13
+        }, this),
+        contentError && /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugError", children: [
+          "Error: ",
+          contentError
+        ] }, void 0, true, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+          lineNumber: 750,
+          columnNumber: 30
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugGrid", children: [
+          /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugItem", children: [
+            /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugLabel", children: "Cities" }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+              lineNumber: 754,
+              columnNumber: 17
+            }, this),
+            /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugValue", children: cities.length }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+              lineNumber: 755,
+              columnNumber: 17
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+            lineNumber: 753,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugItem", children: [
+            /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugLabel", children: "Items" }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+              lineNumber: 758,
+              columnNumber: 17
+            }, this),
+            /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugValue", children: itemsCount }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+              lineNumber: 759,
+              columnNumber: 17
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+            lineNumber: 757,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugItem", children: [
+            /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugLabel", children: "Techniques" }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+              lineNumber: 762,
+              columnNumber: 17
+            }, this),
+            /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugValue", children: techniquesCount }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+              lineNumber: 763,
+              columnNumber: 17
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+            lineNumber: 761,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugItem", children: [
+            /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugLabel", children: "Heaven Path" }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+              lineNumber: 766,
+              columnNumber: 17
+            }, this),
+            /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugValue", children: techniquesByPath.heaven.length }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+              lineNumber: 767,
+              columnNumber: 17
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+            lineNumber: 765,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugItem", children: [
+            /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugLabel", children: "Earth Path" }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+              lineNumber: 770,
+              columnNumber: 17
+            }, this),
+            /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugValue", children: techniquesByPath.earth.length }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+              lineNumber: 771,
+              columnNumber: 17
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+            lineNumber: 769,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugItem", children: [
+            /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugLabel", children: "Martial Path" }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+              lineNumber: 774,
+              columnNumber: 17
+            }, this),
+            /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugValue", children: techniquesByPath.martial.length }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+              lineNumber: 775,
+              columnNumber: 17
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+            lineNumber: 773,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugItem", children: [
+            /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugLabel", children: "Pavilions" }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+              lineNumber: 778,
+              columnNumber: 17
+            }, this),
+            /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugValue", children: pavilionsCount }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+              lineNumber: 779,
+              columnNumber: 17
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+            lineNumber: 777,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugItem", children: [
+            /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugLabel", children: "Outskirts" }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+              lineNumber: 782,
+              columnNumber: 17
+            }, this),
+            /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugValue", children: outskirtsCount }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+              lineNumber: 783,
+              columnNumber: 17
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+            lineNumber: 781,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugItem", children: [
+            /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugLabel", children: "Enemies" }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+              lineNumber: 786,
+              columnNumber: 17
+            }, this),
+            /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugValue", children: enemiesCount }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+              lineNumber: 787,
+              columnNumber: 17
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+            lineNumber: 785,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugItem", children: [
+            /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugLabel", children: "Trials" }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+              lineNumber: 790,
+              columnNumber: 17
+            }, this),
+            /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugValue", children: trialsCount }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+              lineNumber: 791,
+              columnNumber: 17
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+            lineNumber: 789,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugItem", children: [
+            /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugLabel", children: "Ruins" }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+              lineNumber: 794,
+              columnNumber: 17
+            }, this),
+            /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugValue", children: ruinsCount }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+              lineNumber: 795,
+              columnNumber: 17
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+            lineNumber: 793,
+            columnNumber: 15
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+          lineNumber: 752,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugPools", children: [
+          /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugLabel", children: "Pavilion Pools (Cities 1-5)" }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+            lineNumber: 800,
+            columnNumber: 15
+          }, this),
+          cities.filter((city) => city.index <= 4).map((city) => {
+            const pavilion = pavilionsById[city.refs.pavilionId];
+            const pools = pavilion?.poolByPath ?? { heaven: [], earth: [], martial: [] };
+            return /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugPoolRow", children: [
+              /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugPoolCity", children: [
+                "City ",
+                city.index + 1,
+                ": ",
+                city.name
+              ] }, void 0, true, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                lineNumber: 808,
+                columnNumber: 23
+              }, this),
+              /* @__PURE__ */ jsxDEV("div", { className: "settingsDebugPoolCounts", children: [
+                /* @__PURE__ */ jsxDEV("span", { children: [
+                  "H: ",
+                  pools.heaven?.length ?? 0
+                ] }, void 0, true, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                  lineNumber: 812,
+                  columnNumber: 25
+                }, this),
+                /* @__PURE__ */ jsxDEV("span", { children: [
+                  "E: ",
+                  pools.earth?.length ?? 0
+                ] }, void 0, true, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                  lineNumber: 813,
+                  columnNumber: 25
+                }, this),
+                /* @__PURE__ */ jsxDEV("span", { children: [
+                  "M: ",
+                  pools.martial?.length ?? 0
+                ] }, void 0, true, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                  lineNumber: 814,
+                  columnNumber: 25
+                }, this)
+              ] }, void 0, true, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+                lineNumber: 811,
+                columnNumber: 23
+              }, this)
+            ] }, city.id, true, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+              lineNumber: 807,
+              columnNumber: 19
+            }, this);
+          })
+        ] }, void 0, true, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+          lineNumber: 799,
+          columnNumber: 13
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+        lineNumber: 734,
+        columnNumber: 11
+      }, this)
+    ] }, void 0, true, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+      lineNumber: 302,
+      columnNumber: 9
+    }, this) }, void 0, false, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+      lineNumber: 301,
+      columnNumber: 7
+    }, this),
+    showDeleteModal && /* @__PURE__ */ jsxDEV("div", { className: "settingsScreenModalOverlay", children: /* @__PURE__ */ jsxDEV("div", { className: "settingsScreenModalCard", children: [
+      /* @__PURE__ */ jsxDEV("h3", { className: "settingsScreenModalTitle", children: "Delete All Save Data?" }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+        lineNumber: 828,
+        columnNumber: 13
+      }, this),
+      /* @__PURE__ */ jsxDEV("p", { className: "settingsScreenModalText", children: "This will delete all save data, including AP, upgrades, auras, items, and progress. This cannot be undone." }, void 0, false, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+        lineNumber: 829,
+        columnNumber: 13
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { className: "settingsScreenModalActions", children: [
+        /* @__PURE__ */ jsxDEV(
+          "button",
+          {
+            onClick: () => setShowDeleteModal(false),
+            className: `${"button-standard"} ${"settingsScreenModalButton"} ${"settingsScreenModalCancel"}`,
+            children: "Cancel"
+          },
+          void 0,
+          false,
+          {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+            lineNumber: 833,
+            columnNumber: 15
+          },
+          this
+        ),
+        /* @__PURE__ */ jsxDEV(
+          "button",
+          {
+            onClick: handleDeleteSave,
+            className: `${"button-standard"} ${"settingsScreenModalButton"} ${"settingsScreenModalConfirm"}`,
+            children: "Delete & Restart"
+          },
+          void 0,
+          false,
+          {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+            lineNumber: 839,
+            columnNumber: 15
+          },
+          this
+        )
+      ] }, void 0, true, {
+        fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+        lineNumber: 832,
+        columnNumber: 13
+      }, this)
+    ] }, void 0, true, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+      lineNumber: 827,
+      columnNumber: 11
+    }, this) }, void 0, false, {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+      lineNumber: 826,
+      columnNumber: 7
+    }, this)
+  ] }, void 0, true, {
+    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx",
+    lineNumber: 298,
+    columnNumber: 5
+  }, this);
+}
+_s(SettingsScreen, "xSZhvuLwIAYJGlGhANdMYrOkqWU=", false, function() {
+  return [useUIStore, useUIStore, useUIStore, useUIStore, useUIStore, useUIStore, useUIStore, useUIStore, useUIStore, useContentStore, useContentStore, useContentStore, useContentStore, useContentStore, useContentStore, useContentStore, useContentStore, useContentStore, useContentStore, useContentStore, useContentStore, useContentStore, useContentStore, useTelemetryStore, useTelemetryStore, useTelemetryStore, useTelemetryStore, useTelemetryStore, useTelemetryStore, useTelemetryStore, useErrorLogStore, useErrorLogStore, useRewardsLogStore, useRewardsLogStore, useManualSatchelStore];
+});
+_c = SettingsScreen;
+var _c;
+$RefreshReg$(_c, "SettingsScreen");
+import * as RefreshRuntime from "/@react-refresh";
+const inWebWorker = typeof WorkerGlobalScope !== "undefined" && self instanceof WorkerGlobalScope;
+if (import.meta.hot && !inWebWorker) {
+  if (!window.$RefreshReg$) {
+    throw new Error(
+      "@vitejs/plugin-react can't detect preamble. Something is wrong."
+    );
+  }
+  RefreshRuntime.__hmr_import(import.meta.url).then((currentExports) => {
+    RefreshRuntime.registerExportsForReactRefresh("C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx", currentExports);
+    import.meta.hot.accept((nextExports) => {
+      if (!nextExports) return;
+      const invalidateMessage = RefreshRuntime.validateRefreshBoundaryAndEnqueueUpdate("C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx", currentExports, nextExports);
+      if (invalidateMessage) import.meta.hot.invalidate(invalidateMessage);
+    });
+  });
+}
+function $RefreshReg$(type, id) {
+  return RefreshRuntime.register(type, "C:/Users/abdul/Desktop/cultivation-idle/src/components/screens/SettingsScreen.tsx " + id);
+}
+function $RefreshSig$() {
+  return RefreshRuntime.createSignatureFunctionForTransform();
+}
+
+//# sourceMappingURL=data:application/json;base64,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QUFBYyxJQUFBdUo7QUFBQUMsYUFBQUQsSUFBQSIsIm5hbWVzIjpbInVzZUVmZmVjdCIsInVzZVN0YXRlIiwiU2F2ZVNlcnZpY2UiLCJ1c2VDb250ZW50U3RvcmUiLCJnZXRDb250ZW50QmFzZVVybCIsIlJld2FyZFNlcnZpY2UiLCJidWlsZE1lZ2FSZXdhcmRCdW5kbGUiLCJ1c2VVSVN0b3JlIiwidXNlUmV3YXJkc0xvZ1N0b3JlIiwidXNlTWFudWFsU2F0Y2hlbFN0b3JlIiwiU3lzdGVtU3RhdHVzUGFuZWwiLCJ1c2VUZWxlbWV0cnlTdG9yZSIsInVzZUVycm9yTG9nU3RvcmUiLCJBdWRpb0RlYnVnUGFuZWwiLCJidWlsZERpYWdub3N0aWNzQnVuZGxlIiwiYnVpbGRCYWxhbmNlVGVsZW1ldHJ5Q3N2RmlsZXMiLCJidWlsZEJhbGFuY2VUZWxlbWV0cnlFeHBvcnRFbnZlbG9wZSIsInNlcmlhbGl6ZUJhbGFuY2VUZWxlbWV0cnlFeHBvcnQiLCJzdW1tYXJpemVCYWxhbmNlVGVsZW1ldHJ5UmVwb3J0IiwiYXBwbHlTYWZlUmVwYWlycyIsInJ1blJ1bnRpbWVWYWxpZGF0aW9uIiwiZG93bmxvYWRKc29uIiwiZmlsZW5hbWUiLCJkYXRhIiwiYmxvYiIsIkJsb2IiLCJKU09OIiwic3RyaW5naWZ5IiwidHlwZSIsInVybCIsIlVSTCIsImNyZWF0ZU9iamVjdFVSTCIsImxpbmsiLCJkb2N1bWVudCIsImNyZWF0ZUVsZW1lbnQiLCJocmVmIiwiZG93bmxvYWQiLCJjbGljayIsInJldm9rZU9iamVjdFVSTCIsImVycm9yIiwiY29uc29sZSIsIndhcm4iLCJjb3B5VG9DbGlwYm9hcmQiLCJ0ZXh0IiwibmF2aWdhdG9yIiwiY2xpcGJvYXJkIiwid3JpdGVUZXh0IiwidGV4dGFyZWEiLCJ2YWx1ZSIsInN0eWxlIiwicG9zaXRpb24iLCJvcGFjaXR5IiwiYm9keSIsImFwcGVuZENoaWxkIiwic2VsZWN0IiwiZXhlY0NvbW1hbmQiLCJyZW1vdmVDaGlsZCIsImZvcm1hdERpYWdub3N0aWNzU3VtbWFyeSIsImJ1bmRsZSIsInBhcnRzIiwicHVzaCIsIkRhdGUiLCJjcmVhdGVkQXQiLCJ0b0lTT1N0cmluZyIsImFwcCIsIm5hbWUiLCJ2ZXJzaW9uIiwibW9kZSIsInNhdmUiLCJsYXN0U2F2ZUF0IiwiYWN0aXZpdHkiLCJzdGF0dXMiLCJjb21iYXRMYWJlbCIsImNvbWJhdCIsImluQ29tYmF0IiwidGVsZW1ldHJ5IiwicmVjZW50RXZlbnRzIiwibGVuZ3RoIiwicmVjZW50RXJyb3JzIiwicmVjZW50QmFsYW5jZUV2ZW50cyIsImJhbGFuY2VDYXB0dXJlRW5hYmxlZCIsInZhbGlkYXRpb24iLCJlcnJvckNvdW50Iiwid2FybmluZ0NvdW50IiwiZXJyb3JzIiwiam9pbiIsIlNldHRpbmdzU2NyZWVuIiwiX3MiLCJzaG93T2ZmbGluZU1vZGFsIiwic3RhdGUiLCJzZXR0aW5ncyIsInNob3dDb21iYXRMb2ciLCJzaG93Q29tYmF0TWluaWJhciIsImNvbWJhdE1pbmliYXJFeHBhbmRlZCIsInJlcXVpcmVQcmVzdGlnZUNvbmZpcm0iLCJzaG93U3lzdGVtU3RhdHVzUGFuZWwiLCJzZXRTZXR0aW5ncyIsInNldEhlYWRlclRpdGxlcyIsImFkZE5vdGlmaWNhdGlvbiIsInNob3dEZWxldGVNb2RhbCIsInNldFNob3dEZWxldGVNb2RhbCIsImNvbnRlbnRJc0xvYWRlZCIsImlzTG9hZGVkIiwiY29udGVudElzTG9hZGluZyIsImlzTG9hZGluZyIsImNvbnRlbnRFcnJvciIsImNpdGllcyIsImNpdGllc1NvcnRlZCIsInRlY2huaXF1ZXNCeVBhdGgiLCJpdGVtc0NvdW50IiwiT2JqZWN0Iiwia2V5cyIsIm1hcHMiLCJpdGVtc0J5SWQiLCJ0ZWNobmlxdWVzQnlJZCIsInRlY2huaXF1ZXNDb3VudCIsInBhdmlsaW9uc0J5SWQiLCJvdXRza2lydHNDb3VudCIsIm91dHNraXJ0c0J5SWQiLCJlbmVtaWVzQ291bnQiLCJlbmVtaWVzQnlJZCIsInRyaWFsc0NvdW50IiwidHJpYWxzQnlJZCIsInJ1aW5zQ291bnQiLCJydWluc0J5SWQiLCJwYXZpbGlvbnNDb3VudCIsInRlbGVtZXRyeUV2ZW50cyIsImV2ZW50cyIsImNsZWFyVGVsZW1ldHJ5IiwiY2xlYXIiLCJiYWxhbmNlVGVsZW1ldHJ5RXZlbnRzIiwiYmFsYW5jZUV2ZW50cyIsImNsZWFyQmFsYW5jZVRlbGVtZXRyeSIsImNsZWFyQmFsYW5jZUV2ZW50cyIsInNldEJhbGFuY2VDYXB0dXJlRW5hYmxlZCIsIm1heEJhbGFuY2VFdmVudHMiLCJlcnJvckVudHJpZXMiLCJjbGVhckVycm9ycyIsImlzRGV2IiwiaW1wb3J0IiwiZW52IiwiREVWIiwidmFsaWRhdGlvbklzc3VlcyIsInNldFZhbGlkYXRpb25Jc3N1ZXMiLCJ2YWxpZGF0aW9uUmFuQXQiLCJzZXRWYWxpZGF0aW9uUmFuQXQiLCJkaWFnbm9zdGljc0Vycm9yIiwic2V0RGlhZ25vc3RpY3NFcnJvciIsInJlcGFpck5vdGVzIiwic2V0UmVwYWlyTm90ZXMiLCJyZXBhaXJlZENvdW50Iiwic2V0UmVwYWlyZWRDb3VudCIsInJld2FyZExvZ0VudHJpZXMiLCJlbnRyaWVzIiwiY2xlYXJSZXdhcmRMb2ciLCJ1bmxvY2tSYW5kb21UZWNobmlxdWUiLCJ0b2dnbGVPZmZsaW5lTW9kYWwiLCJ0b2dnbGVDb21iYXRMb2ciLCJ0b2dnbGVDb21iYXRNaW5pYmFyIiwidG9nZ2xlQ29tYmF0TWluaWJhckV4cGFuZGVkIiwidG9nZ2xlUHJlc3RpZ2VDb25maXJtIiwidG9nZ2xlU3lzdGVtU3RhdHVzIiwiaGFuZGxlRGVsZXRlU2F2ZSIsImRlbGV0ZVNhdmVBbmRIYXJkUmVzZXQiLCJoYW5kbGVUZXN0R3JhbnRSZXdhcmRzIiwiY29uZmlybWVkIiwid2luZG93IiwiY29uZmlybSIsInJlc3VsdCIsImdyYW50UmV3YXJkcyIsImxvZyIsImhhbmRsZVVubG9ja1JhbmRvbU1hbnVhbCIsInVubG9ja2VkVGVjaElkIiwidGVjaE5hbWUiLCJoYW5kbGVDb3B5VGVsZW1ldHJ5Iiwic2xpY2UiLCJjYXRjaCIsImhhbmRsZUNvcHlFcnJvcnMiLCJidWlsZEJhbGFuY2VFbnZlbG9wZSIsIm1hcCIsImVudHJ5IiwicGF5bG9hZCIsIlZJVEVfQVBQX1ZFUlNJT04iLCJNT0RFIiwiaGFuZGxlRG93bmxvYWRCYWxhbmNlVGVsZW1ldHJ5IiwiZW52ZWxvcGUiLCJleHBvcnRlZEF0IiwiU3RyaW5nIiwiaGFuZGxlQ29weUJhbGFuY2VTdW1tYXJ5Iiwic3VtbWFyeSIsImhhbmRsZUNvcHlCYWxhbmNlRXZlbnRzSnNvbiIsImhhbmRsZURvd25sb2FkQmFsYW5jZUNzdiIsImNzdk1hcCIsImZvckVhY2giLCJjc3YiLCJoYW5kbGVEb3dubG9hZERpYWdub3N0aWNzIiwiaGFuZGxlQ29weVF1aWNrU3VtbWFyeSIsImhhbmRsZVJ1blZhbGlkYXRpb24iLCJpc3N1ZXMiLCJub3ciLCJoYW5kbGVBcHBseVJlcGFpcnMiLCJub3RlcyIsInJlZnJlc2hlZCIsImhhbmRsZUdlbmVyYXRlVGVzdEVycm9yIiwic2V0VGltZW91dCIsIkVycm9yIiwicmVhc29uIiwidGltZXN0YW1wIiwidG9Mb2NhbGVUaW1lU3RyaW5nIiwiaWQiLCJpc3N1ZSIsInNldmVyaXR5IiwidG9VcHBlckNhc2UiLCJtZXNzYWdlIiwiaGludCIsIk1hdGgiLCJtaW4iLCJtYXJnaW5Cb3R0b20iLCJldmVudCIsInRhcmdldCIsImNoZWNrZWQiLCJraW5kIiwidHMiLCJzdGFjayIsInNwbGl0Iiwic291cmNlIiwiaGVhdmVuIiwiZWFydGgiLCJtYXJ0aWFsIiwiZmlsdGVyIiwiY2l0eSIsImluZGV4IiwicGF2aWxpb24iLCJyZWZzIiwicGF2aWxpb25JZCIsInBvb2xzIiwicG9vbEJ5UGF0aCIsIl9jIiwiJFJlZnJlc2hSZWckIl0sImlnbm9yZUxpc3QiOltdLCJzb3VyY2VzIjpbIlNldHRpbmdzU2NyZWVuLnRzeCJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgeyB1c2VFZmZlY3QsIHVzZVN0YXRlIH0gZnJvbSAncmVhY3QnO1xyXG5pbXBvcnQgeyBTYXZlU2VydmljZSB9IGZyb20gJy4uLy4uL3NlcnZpY2VzL3NhdmUvU2F2ZVNlcnZpY2UuanMnO1xyXG5pbXBvcnQgeyB1c2VDb250ZW50U3RvcmUgfSBmcm9tICcuLi8uLi9zdG9yZXMvY29udGVudFN0b3JlLmpzJztcclxuaW1wb3J0IHsgZ2V0Q29udGVudEJhc2VVcmwgfSBmcm9tICcuLi8uLi9jb250ZW50L2luZGV4LmpzJztcclxuaW1wb3J0IHsgUmV3YXJkU2VydmljZSB9IGZyb20gJy4uLy4uL3NlcnZpY2VzL3Jld2FyZHMvaW5kZXguanMnO1xyXG5pbXBvcnQgeyBidWlsZE1lZ2FSZXdhcmRCdW5kbGUgfSBmcm9tICcuLi8uLi9kZWJ1Zy9idWlsZE1lZ2FSZXdhcmRCdW5kbGUuanMnO1xyXG5pbXBvcnQgeyB1c2VVSVN0b3JlIH0gZnJvbSAnLi4vLi4vc3RvcmVzL3VpU3RvcmUuanMnO1xyXG5pbXBvcnQgeyB1c2VSZXdhcmRzTG9nU3RvcmUgfSBmcm9tICcuLi8uLi9zdG9yZXMvcmV3YXJkc0xvZ1N0b3JlLmpzJztcclxuaW1wb3J0IHsgdXNlTWFudWFsU2F0Y2hlbFN0b3JlIH0gZnJvbSAnLi4vLi4vc3RvcmVzL21hbnVhbFNhdGNoZWxTdG9yZS5qcyc7XHJcbmltcG9ydCB7IFN5c3RlbVN0YXR1c1BhbmVsIH0gZnJvbSAnLi4vU3lzdGVtU3RhdHVzUGFuZWwuanMnO1xyXG5pbXBvcnQgeyB1c2VUZWxlbWV0cnlTdG9yZSB9IGZyb20gJy4uLy4uL3N0b3Jlcy90ZWxlbWV0cnlTdG9yZS5qcyc7XHJcbmltcG9ydCB7IHVzZUVycm9yTG9nU3RvcmUgfSBmcm9tICcuLi8uLi9zdG9yZXMvZXJyb3JMb2dTdG9yZS5qcyc7XHJcbmltcG9ydCB7IEF1ZGlvRGVidWdQYW5lbCB9IGZyb20gJy4uLy4uL3VpL2RlYnVnL0F1ZGlvRGVidWdQYW5lbC5qcyc7XHJcbmltcG9ydCB7IGJ1aWxkRGlhZ25vc3RpY3NCdW5kbGUsIHR5cGUgRGlhZ25vc3RpY3NCdW5kbGVWMSB9IGZyb20gJy4uLy4uL3NlcnZpY2VzL2RpYWdub3N0aWNzL2J1aWxkRGlhZ25vc3RpY3NCdW5kbGUuanMnO1xyXG5pbXBvcnQge1xyXG4gIGJ1aWxkQmFsYW5jZVRlbGVtZXRyeUNzdkZpbGVzLFxyXG4gIGJ1aWxkQmFsYW5jZVRlbGVtZXRyeUV4cG9ydEVudmVsb3BlLFxyXG4gIHNlcmlhbGl6ZUJhbGFuY2VUZWxlbWV0cnlFeHBvcnQsXHJcbiAgc3VtbWFyaXplQmFsYW5jZVRlbGVtZXRyeVJlcG9ydCxcclxufSBmcm9tICcuLi8uLi9zZXJ2aWNlcy9kaWFnbm9zdGljcy9iYWxhbmNlVGVsZW1ldHJ5RXhwb3J0LmpzJztcclxuaW1wb3J0IHtcclxuICBhcHBseVNhZmVSZXBhaXJzLFxyXG4gIHJ1blJ1bnRpbWVWYWxpZGF0aW9uLFxyXG4gIHR5cGUgVmFsaWRhdGlvbklzc3VlLFxyXG59IGZyb20gJy4uLy4uL3NlcnZpY2VzL2RpYWdub3N0aWNzL3J1blZhbGlkYXRpb24uanMnO1xyXG5pbXBvcnQgJy4vU2V0dGluZ3NTY3JlZW4uc2Nzcyc7XHJcblxyXG5mdW5jdGlvbiBkb3dubG9hZEpzb24oZmlsZW5hbWU6IHN0cmluZywgZGF0YTogdW5rbm93bikge1xyXG4gIHRyeSB7XHJcbiAgICBjb25zdCBibG9iID0gbmV3IEJsb2IoW0pTT04uc3RyaW5naWZ5KGRhdGEsIG51bGwsIDIpXSwgeyB0eXBlOiAnYXBwbGljYXRpb24vanNvbicgfSk7XHJcbiAgICBjb25zdCB1cmwgPSBVUkwuY3JlYXRlT2JqZWN0VVJMKGJsb2IpO1xyXG4gICAgY29uc3QgbGluayA9IGRvY3VtZW50LmNyZWF0ZUVsZW1lbnQoJ2EnKTtcclxuICAgIGxpbmsuaHJlZiA9IHVybDtcclxuICAgIGxpbmsuZG93bmxvYWQgPSBmaWxlbmFtZTtcclxuICAgIGxpbmsuY2xpY2soKTtcclxuICAgIFVSTC5yZXZva2VPYmplY3RVUkwodXJsKTtcclxuICB9IGNhdGNoIChlcnJvcikge1xyXG4gICAgY29uc29sZS53YXJuKCdbRGlhZ25vc3RpY3NdIEZhaWxlZCB0byBkb3dubG9hZCBKU09OJywgZXJyb3IpO1xyXG4gIH1cclxufVxyXG5cclxuYXN5bmMgZnVuY3Rpb24gY29weVRvQ2xpcGJvYXJkKHRleHQ6IHN0cmluZykge1xyXG4gIGlmIChuYXZpZ2F0b3I/LmNsaXBib2FyZD8ud3JpdGVUZXh0KSB7XHJcbiAgICBhd2FpdCBuYXZpZ2F0b3IuY2xpcGJvYXJkLndyaXRlVGV4dCh0ZXh0KTtcclxuICAgIHJldHVybjtcclxuICB9XHJcbiAgY29uc3QgdGV4dGFyZWEgPSBkb2N1bWVudC5jcmVhdGVFbGVtZW50KCd0ZXh0YXJlYScpO1xyXG4gIHRleHRhcmVhLnZhbHVlID0gdGV4dDtcclxuICB0ZXh0YXJlYS5zdHlsZS5wb3NpdGlvbiA9ICdmaXhlZCc7XHJcbiAgdGV4dGFyZWEuc3R5bGUub3BhY2l0eSA9ICcwJztcclxuICBkb2N1bWVudC5ib2R5LmFwcGVuZENoaWxkKHRleHRhcmVhKTtcclxuICB0ZXh0YXJlYS5zZWxlY3QoKTtcclxuICBkb2N1bWVudC5leGVjQ29tbWFuZCgnY29weScpO1xyXG4gIGRvY3VtZW50LmJvZHkucmVtb3ZlQ2hpbGQodGV4dGFyZWEpO1xyXG59XHJcblxyXG5mdW5jdGlvbiBmb3JtYXREaWFnbm9zdGljc1N1bW1hcnkoYnVuZGxlOiBEaWFnbm9zdGljc0J1bmRsZVYxKTogc3RyaW5nIHtcclxuICBjb25zdCBwYXJ0czogc3RyaW5nW10gPSBbXTtcclxuICBwYXJ0cy5wdXNoKGBUaW1lc3RhbXA6ICR7bmV3IERhdGUoYnVuZGxlLmNyZWF0ZWRBdCkudG9JU09TdHJpbmcoKX1gKTtcclxuICBwYXJ0cy5wdXNoKGBBcHA6ICR7YnVuZGxlLmFwcC5uYW1lfSB2JHtidW5kbGUuYXBwLnZlcnNpb259ICgke2J1bmRsZS5hcHAubW9kZX0pYCk7XHJcbiAgcGFydHMucHVzaChgTGFzdCBzYXZlOiAke2J1bmRsZS5zYXZlLmxhc3RTYXZlQXQgPyBuZXcgRGF0ZShidW5kbGUuc2F2ZS5sYXN0U2F2ZUF0KS50b0lTT1N0cmluZygpIDogJ3Vua25vd24nfWApO1xyXG4gIGNvbnN0IGFjdGl2aXR5ID0gYnVuZGxlLnN0YXR1cy5hY3Rpdml0eSBhcyB7IHR5cGU/OiBzdHJpbmcgfSB8IG51bGw7XHJcbiAgcGFydHMucHVzaChgQWN0aXZpdHk6ICR7YWN0aXZpdHk/LnR5cGUgPz8gJ25vbmUnfWApO1xyXG4gIGNvbnN0IGNvbWJhdExhYmVsID0gYnVuZGxlLnN0YXR1cy5jb21iYXQ/LmluQ29tYmF0XHJcbiAgICA/IGBhY3RpdmUgKCR7YnVuZGxlLnN0YXR1cy5jb21iYXQudHlwZSA/PyAndW5rbm93bid9KWBcclxuICAgIDogJ2lkbGUnO1xyXG4gIHBhcnRzLnB1c2goYENvbWJhdDogJHtjb21iYXRMYWJlbH1gKTtcclxuICBwYXJ0cy5wdXNoKGBUZWxlbWV0cnk6IGV2ZW50cz0ke2J1bmRsZS50ZWxlbWV0cnkucmVjZW50RXZlbnRzLmxlbmd0aH0gZXJyb3JzPSR7YnVuZGxlLnRlbGVtZXRyeS5yZWNlbnRFcnJvcnMubGVuZ3RofWApO1xyXG4gIHBhcnRzLnB1c2goYEJhbGFuY2UgdGVsZW1ldHJ5OiBldmVudHM9JHtidW5kbGUudGVsZW1ldHJ5LnJlY2VudEJhbGFuY2VFdmVudHMubGVuZ3RofSBjYXB0dXJlPSR7YnVuZGxlLnRlbGVtZXRyeS5iYWxhbmNlQ2FwdHVyZUVuYWJsZWQgPyAnb24nIDogJ29mZid9YCk7XHJcbiAgcGFydHMucHVzaChgVmFsaWRhdGlvbjogJHtidW5kbGUudmFsaWRhdGlvbi5lcnJvckNvdW50fSBlcnJvcnMsICR7YnVuZGxlLnZhbGlkYXRpb24ud2FybmluZ0NvdW50fSB3YXJuaW5nc2ApO1xyXG4gIGlmIChidW5kbGUuZXJyb3JzICYmIGJ1bmRsZS5lcnJvcnMubGVuZ3RoID4gMCkge1xyXG4gICAgcGFydHMucHVzaChgQnVuZGxlIHdhcm5pbmdzOiAke2J1bmRsZS5lcnJvcnMuam9pbignOyAnKX1gKTtcclxuICB9XHJcbiAgcmV0dXJuIHBhcnRzLmpvaW4oJ1xcbicpO1xyXG59XHJcblxyXG5leHBvcnQgZnVuY3Rpb24gU2V0dGluZ3NTY3JlZW4oKSB7XHJcbiAgY29uc3Qgc2hvd09mZmxpbmVNb2RhbCA9IHVzZVVJU3RvcmUoKHN0YXRlKSA9PiBzdGF0ZS5zZXR0aW5ncy5zaG93T2ZmbGluZU1vZGFsKTtcclxuICBjb25zdCBzaG93Q29tYmF0TG9nID0gdXNlVUlTdG9yZSgoc3RhdGUpID0+IHN0YXRlLnNldHRpbmdzLnNob3dDb21iYXRMb2cpO1xyXG4gIGNvbnN0IHNob3dDb21iYXRNaW5pYmFyID0gdXNlVUlTdG9yZSgoc3RhdGUpID0+IHN0YXRlLnNldHRpbmdzLnNob3dDb21iYXRNaW5pYmFyKTtcclxuICBjb25zdCBjb21iYXRNaW5pYmFyRXhwYW5kZWQgPSB1c2VVSVN0b3JlKChzdGF0ZSkgPT4gc3RhdGUuc2V0dGluZ3MuY29tYmF0TWluaWJhckV4cGFuZGVkKTtcclxuICBjb25zdCByZXF1aXJlUHJlc3RpZ2VDb25maXJtID0gdXNlVUlTdG9yZSgoc3RhdGUpID0+IHN0YXRlLnNldHRpbmdzLnJlcXVpcmVQcmVzdGlnZUNvbmZpcm0pO1xyXG4gIGNvbnN0IHNob3dTeXN0ZW1TdGF0dXNQYW5lbCA9IHVzZVVJU3RvcmUoKHN0YXRlKSA9PiBzdGF0ZS5zZXR0aW5ncy5zaG93U3lzdGVtU3RhdHVzUGFuZWwpO1xyXG4gIGNvbnN0IHNldFNldHRpbmdzID0gdXNlVUlTdG9yZSgoc3RhdGUpID0+IHN0YXRlLnNldFNldHRpbmdzKTtcclxuICBjb25zdCBzZXRIZWFkZXJUaXRsZXMgPSB1c2VVSVN0b3JlKChzdGF0ZSkgPT4gc3RhdGUuc2V0SGVhZGVyVGl0bGVzKTtcclxuICBjb25zdCBhZGROb3RpZmljYXRpb24gPSB1c2VVSVN0b3JlKChzdGF0ZSkgPT4gc3RhdGUuYWRkTm90aWZpY2F0aW9uKTtcclxuICBjb25zdCBbc2hvd0RlbGV0ZU1vZGFsLCBzZXRTaG93RGVsZXRlTW9kYWxdID0gdXNlU3RhdGUoZmFsc2UpO1xyXG4gIGNvbnN0IGNvbnRlbnRJc0xvYWRlZCA9IHVzZUNvbnRlbnRTdG9yZSgoc3RhdGUpID0+IHN0YXRlLmlzTG9hZGVkKTtcclxuICBjb25zdCBjb250ZW50SXNMb2FkaW5nID0gdXNlQ29udGVudFN0b3JlKChzdGF0ZSkgPT4gc3RhdGUuaXNMb2FkaW5nKTtcclxuICBjb25zdCBjb250ZW50RXJyb3IgPSB1c2VDb250ZW50U3RvcmUoKHN0YXRlKSA9PiBzdGF0ZS5lcnJvcik7XHJcbiAgY29uc3QgY2l0aWVzID0gdXNlQ29udGVudFN0b3JlKChzdGF0ZSkgPT4gc3RhdGUuY2l0aWVzU29ydGVkKTtcclxuICBjb25zdCB0ZWNobmlxdWVzQnlQYXRoID0gdXNlQ29udGVudFN0b3JlKChzdGF0ZSkgPT4gc3RhdGUudGVjaG5pcXVlc0J5UGF0aCk7XHJcbiAgY29uc3QgaXRlbXNDb3VudCA9IHVzZUNvbnRlbnRTdG9yZSgoc3RhdGUpID0+IE9iamVjdC5rZXlzKHN0YXRlLm1hcHMuaXRlbXNCeUlkKS5sZW5ndGgpO1xyXG4gIGNvbnN0IHRlY2huaXF1ZXNCeUlkID0gdXNlQ29udGVudFN0b3JlKChzdGF0ZSkgPT4gc3RhdGUubWFwcy50ZWNobmlxdWVzQnlJZCk7XHJcbiAgY29uc3QgdGVjaG5pcXVlc0NvdW50ID0gdXNlQ29udGVudFN0b3JlKChzdGF0ZSkgPT4gT2JqZWN0LmtleXMoc3RhdGUubWFwcy50ZWNobmlxdWVzQnlJZCkubGVuZ3RoKTtcclxuICBjb25zdCBwYXZpbGlvbnNCeUlkID0gdXNlQ29udGVudFN0b3JlKChzdGF0ZSkgPT4gc3RhdGUubWFwcy5wYXZpbGlvbnNCeUlkKTtcclxuICBjb25zdCBvdXRza2lydHNDb3VudCA9IHVzZUNvbnRlbnRTdG9yZSgoc3RhdGUpID0+IE9iamVjdC5rZXlzKHN0YXRlLm1hcHMub3V0c2tpcnRzQnlJZCkubGVuZ3RoKTtcclxuICBjb25zdCBlbmVtaWVzQ291bnQgPSB1c2VDb250ZW50U3RvcmUoKHN0YXRlKSA9PiBPYmplY3Qua2V5cyhzdGF0ZS5tYXBzLmVuZW1pZXNCeUlkKS5sZW5ndGgpO1xyXG4gIGNvbnN0IHRyaWFsc0NvdW50ID0gdXNlQ29udGVudFN0b3JlKChzdGF0ZSkgPT4gT2JqZWN0LmtleXMoc3RhdGUubWFwcy50cmlhbHNCeUlkKS5sZW5ndGgpO1xyXG4gIGNvbnN0IHJ1aW5zQ291bnQgPSB1c2VDb250ZW50U3RvcmUoKHN0YXRlKSA9PiBPYmplY3Qua2V5cyhzdGF0ZS5tYXBzLnJ1aW5zQnlJZCkubGVuZ3RoKTtcclxuICBjb25zdCBwYXZpbGlvbnNDb3VudCA9IHVzZUNvbnRlbnRTdG9yZSgoc3RhdGUpID0+IE9iamVjdC5rZXlzKHN0YXRlLm1hcHMucGF2aWxpb25zQnlJZCkubGVuZ3RoKTtcclxuICBjb25zdCB0ZWxlbWV0cnlFdmVudHMgPSB1c2VUZWxlbWV0cnlTdG9yZSgoc3RhdGUpID0+IHN0YXRlLmV2ZW50cyk7XHJcbiAgY29uc3QgY2xlYXJUZWxlbWV0cnkgPSB1c2VUZWxlbWV0cnlTdG9yZSgoc3RhdGUpID0+IHN0YXRlLmNsZWFyKTtcclxuICBjb25zdCBiYWxhbmNlVGVsZW1ldHJ5RXZlbnRzID0gdXNlVGVsZW1ldHJ5U3RvcmUoKHN0YXRlKSA9PiBzdGF0ZS5iYWxhbmNlRXZlbnRzKTtcclxuICBjb25zdCBjbGVhckJhbGFuY2VUZWxlbWV0cnkgPSB1c2VUZWxlbWV0cnlTdG9yZSgoc3RhdGUpID0+IHN0YXRlLmNsZWFyQmFsYW5jZUV2ZW50cyk7XHJcbiAgY29uc3QgYmFsYW5jZUNhcHR1cmVFbmFibGVkID0gdXNlVGVsZW1ldHJ5U3RvcmUoKHN0YXRlKSA9PiBzdGF0ZS5iYWxhbmNlQ2FwdHVyZUVuYWJsZWQpO1xyXG4gIGNvbnN0IHNldEJhbGFuY2VDYXB0dXJlRW5hYmxlZCA9IHVzZVRlbGVtZXRyeVN0b3JlKChzdGF0ZSkgPT4gc3RhdGUuc2V0QmFsYW5jZUNhcHR1cmVFbmFibGVkKTtcclxuICBjb25zdCBtYXhCYWxhbmNlRXZlbnRzID0gdXNlVGVsZW1ldHJ5U3RvcmUoKHN0YXRlKSA9PiBzdGF0ZS5tYXhCYWxhbmNlRXZlbnRzKTtcclxuICBjb25zdCBlcnJvckVudHJpZXMgPSB1c2VFcnJvckxvZ1N0b3JlKChzdGF0ZSkgPT4gc3RhdGUuZXJyb3JzKTtcclxuICBjb25zdCBjbGVhckVycm9ycyA9IHVzZUVycm9yTG9nU3RvcmUoKHN0YXRlKSA9PiBzdGF0ZS5jbGVhcik7XHJcbiAgY29uc3QgaXNEZXYgPSBpbXBvcnQubWV0YS5lbnYuREVWO1xyXG5cclxuICBjb25zdCBbdmFsaWRhdGlvbklzc3Vlcywgc2V0VmFsaWRhdGlvbklzc3Vlc10gPSB1c2VTdGF0ZTxWYWxpZGF0aW9uSXNzdWVbXT4oW10pO1xyXG4gIGNvbnN0IFt2YWxpZGF0aW9uUmFuQXQsIHNldFZhbGlkYXRpb25SYW5BdF0gPSB1c2VTdGF0ZTxudW1iZXIgfCBudWxsPihudWxsKTtcclxuICBjb25zdCBbZGlhZ25vc3RpY3NFcnJvciwgc2V0RGlhZ25vc3RpY3NFcnJvcl0gPSB1c2VTdGF0ZTxzdHJpbmcgfCBudWxsPihudWxsKTtcclxuICBjb25zdCBbcmVwYWlyTm90ZXMsIHNldFJlcGFpck5vdGVzXSA9IHVzZVN0YXRlPHN0cmluZ1tdPihbXSk7XHJcbiAgY29uc3QgW3JlcGFpcmVkQ291bnQsIHNldFJlcGFpcmVkQ291bnRdID0gdXNlU3RhdGU8bnVtYmVyIHwgbnVsbD4obnVsbCk7XHJcblxyXG4gIGNvbnN0IHJld2FyZExvZ0VudHJpZXMgPSB1c2VSZXdhcmRzTG9nU3RvcmUoKHN0YXRlKSA9PiBzdGF0ZS5lbnRyaWVzKTtcclxuICBjb25zdCBjbGVhclJld2FyZExvZyA9IHVzZVJld2FyZHNMb2dTdG9yZSgoc3RhdGUpID0+IHN0YXRlLmNsZWFyKTtcclxuICBjb25zdCB1bmxvY2tSYW5kb21UZWNobmlxdWUgPSB1c2VNYW51YWxTYXRjaGVsU3RvcmUoKHN0YXRlKSA9PiBzdGF0ZS51bmxvY2tSYW5kb21UZWNobmlxdWUpO1xyXG5cclxuICBjb25zdCB0b2dnbGVPZmZsaW5lTW9kYWwgPSAoKSA9PiBzZXRTZXR0aW5ncyh7IHNob3dPZmZsaW5lTW9kYWw6ICFzaG93T2ZmbGluZU1vZGFsIH0pO1xyXG4gIGNvbnN0IHRvZ2dsZUNvbWJhdExvZyA9ICgpID0+IHNldFNldHRpbmdzKHsgc2hvd0NvbWJhdExvZzogIXNob3dDb21iYXRMb2cgfSk7XHJcbiAgY29uc3QgdG9nZ2xlQ29tYmF0TWluaWJhciA9ICgpID0+IHNldFNldHRpbmdzKHsgc2hvd0NvbWJhdE1pbmliYXI6ICFzaG93Q29tYmF0TWluaWJhciB9KTtcclxuICBjb25zdCB0b2dnbGVDb21iYXRNaW5pYmFyRXhwYW5kZWQgPSAoKSA9PlxyXG4gICAgc2V0U2V0dGluZ3MoeyBjb21iYXRNaW5pYmFyRXhwYW5kZWQ6ICFjb21iYXRNaW5pYmFyRXhwYW5kZWQgfSk7XHJcbiAgY29uc3QgdG9nZ2xlUHJlc3RpZ2VDb25maXJtID0gKCkgPT5cclxuICAgIHNldFNldHRpbmdzKHsgcmVxdWlyZVByZXN0aWdlQ29uZmlybTogIXJlcXVpcmVQcmVzdGlnZUNvbmZpcm0gfSk7XHJcbiAgY29uc3QgdG9nZ2xlU3lzdGVtU3RhdHVzID0gKCkgPT4gc2V0U2V0dGluZ3MoeyBzaG93U3lzdGVtU3RhdHVzUGFuZWw6ICFzaG93U3lzdGVtU3RhdHVzUGFuZWwgfSk7XHJcblxyXG4gIGNvbnN0IGhhbmRsZURlbGV0ZVNhdmUgPSAoKSA9PiB7XHJcbiAgICBzZXRTaG93RGVsZXRlTW9kYWwoZmFsc2UpO1xyXG4gICAgU2F2ZVNlcnZpY2UuZGVsZXRlU2F2ZUFuZEhhcmRSZXNldCgpO1xyXG4gIH07XHJcblxyXG4gIGNvbnN0IGhhbmRsZVRlc3RHcmFudFJld2FyZHMgPSAoKSA9PiB7XHJcbiAgICBpZiAoIWltcG9ydC5tZXRhLmVudi5ERVYpIHJldHVybjtcclxuICAgIGNvbnN0IGNvbmZpcm1lZCA9IHdpbmRvdy5jb25maXJtKCdHcmFudCBsYXJnZSBhbW91bnRzIG9mIEFMTCByZXdhcmRzPycpO1xyXG4gICAgaWYgKCFjb25maXJtZWQpIHJldHVybjtcclxuICAgIGNvbnN0IGJ1bmRsZSA9IGJ1aWxkTWVnYVJld2FyZEJ1bmRsZSgpO1xyXG4gICAgY29uc3QgcmVzdWx0ID0gUmV3YXJkU2VydmljZS5ncmFudFJld2FyZHMoYnVuZGxlLCAnZGVidWc6bWVnYV9ncmFudCcpO1xyXG4gICAgY29uc29sZS5sb2coJ1tSZXdhcmRzXSBUZXN0IEdyYW50IFJld2FyZHMgcmVzdWx0JywgcmVzdWx0KTtcclxuICB9O1xyXG5cclxuICBjb25zdCBoYW5kbGVVbmxvY2tSYW5kb21NYW51YWwgPSAoKSA9PiB7XHJcbiAgICBpZiAoIWNvbnRlbnRJc0xvYWRlZCkge1xyXG4gICAgICBhZGROb3RpZmljYXRpb24oJ3dhcm5pbmcnLCAnTWFudWFscyBhcmUgbm90IGF2YWlsYWJsZSB5ZXQuJywgMzAwMCk7XHJcbiAgICAgIHJldHVybjtcclxuICAgIH1cclxuICAgIGNvbnN0IHVubG9ja2VkVGVjaElkID0gdW5sb2NrUmFuZG9tVGVjaG5pcXVlKCk7XHJcbiAgICBpZiAoIXVubG9ja2VkVGVjaElkKSB7XHJcbiAgICAgIGFkZE5vdGlmaWNhdGlvbignaW5mbycsICdObyBlbGlnaWJsZSB0ZWNobmlxdWVzIHRvIHVubG9jayByaWdodCBub3cuJywgMzAwMCk7XHJcbiAgICAgIHJldHVybjtcclxuICAgIH1cclxuICAgIGNvbnN0IHRlY2hOYW1lID0gdGVjaG5pcXVlc0J5SWRbdW5sb2NrZWRUZWNoSWRdPy5uYW1lID8/IHVubG9ja2VkVGVjaElkO1xyXG4gICAgYWRkTm90aWZpY2F0aW9uKCdzdWNjZXNzJywgYEluc2lnaHQgZ2FpbmVkIOKAlCAke3RlY2hOYW1lfSBtYXN0ZXJlZC5gLCAzMDAwKTtcclxuICB9O1xyXG5cclxuICBjb25zdCBoYW5kbGVDb3B5VGVsZW1ldHJ5ID0gKCkgPT4ge1xyXG4gICAgY29uc3Qgc2xpY2UgPSB0ZWxlbWV0cnlFdmVudHMuc2xpY2UoMCwgMzApO1xyXG4gICAgY29uc3QgdGV4dCA9IEpTT04uc3RyaW5naWZ5KHNsaWNlLCBudWxsLCAyKTtcclxuICAgIHZvaWQgY29weVRvQ2xpcGJvYXJkKHRleHQpLmNhdGNoKChlcnJvcikgPT4ge1xyXG4gICAgICBjb25zb2xlLndhcm4oJ1tEaWFnbm9zdGljc10gRmFpbGVkIHRvIGNvcHkgdGVsZW1ldHJ5JywgZXJyb3IpO1xyXG4gICAgfSk7XHJcbiAgfTtcclxuXHJcbiAgY29uc3QgaGFuZGxlQ29weUVycm9ycyA9ICgpID0+IHtcclxuICAgIGNvbnN0IHNsaWNlID0gZXJyb3JFbnRyaWVzLnNsaWNlKDAsIDMwKTtcclxuICAgIGNvbnN0IHRleHQgPSBKU09OLnN0cmluZ2lmeShzbGljZSwgbnVsbCwgMik7XHJcbiAgICB2b2lkIGNvcHlUb0NsaXBib2FyZCh0ZXh0KS5jYXRjaCgoZXJyb3IpID0+IHtcclxuICAgICAgY29uc29sZS53YXJuKCdbRGlhZ25vc3RpY3NdIEZhaWxlZCB0byBjb3B5IGVycm9ycycsIGVycm9yKTtcclxuICAgIH0pO1xyXG4gIH07XHJcblxyXG4gIGNvbnN0IGJ1aWxkQmFsYW5jZUVudmVsb3BlID0gKCkgPT4gYnVpbGRCYWxhbmNlVGVsZW1ldHJ5RXhwb3J0RW52ZWxvcGUoe1xyXG4gICAgZXZlbnRzOiBiYWxhbmNlVGVsZW1ldHJ5RXZlbnRzLm1hcCgoZW50cnkpID0+IGVudHJ5LnBheWxvYWQpLFxyXG4gICAgYmFsYW5jZUNhcHR1cmVFbmFibGVkLFxyXG4gICAgbWF4QmFsYW5jZUV2ZW50cyxcclxuICAgIGFwcDoge1xyXG4gICAgICBuYW1lOiAnY3VsdGl2YXRpb24taWRsZScsXHJcbiAgICAgIHZlcnNpb246IGltcG9ydC5tZXRhLmVudj8uVklURV9BUFBfVkVSU0lPTiA/PyAndW5rbm93bicsXHJcbiAgICAgIG1vZGU6IGltcG9ydC5tZXRhLmVudj8uTU9ERSA/PyAndW5rbm93bicsXHJcbiAgICB9LFxyXG4gIH0pO1xyXG5cclxuICBjb25zdCBoYW5kbGVEb3dubG9hZEJhbGFuY2VUZWxlbWV0cnkgPSAoKSA9PiB7XHJcbiAgICB0cnkge1xyXG4gICAgICBjb25zdCBlbnZlbG9wZSA9IGJ1aWxkQmFsYW5jZUVudmVsb3BlKCk7XHJcbiAgICAgIGRvd25sb2FkSnNvbihgY3VsdGl2YXRpb25fYmFsYW5jZV90ZWxlbWV0cnlfJHtuZXcgRGF0ZShlbnZlbG9wZS5leHBvcnRlZEF0KS50b0lTT1N0cmluZygpfS5qc29uYCwgZW52ZWxvcGUpO1xyXG4gICAgICBzZXREaWFnbm9zdGljc0Vycm9yKG51bGwpO1xyXG4gICAgfSBjYXRjaCAoZXJyb3IpIHtcclxuICAgICAgc2V0RGlhZ25vc3RpY3NFcnJvcihgRmFpbGVkIHRvIGRvd25sb2FkIGJhbGFuY2UgdGVsZW1ldHJ5OiAke1N0cmluZyhlcnJvcil9YCk7XHJcbiAgICB9XHJcbiAgfTtcclxuXHJcbiAgY29uc3QgaGFuZGxlQ29weUJhbGFuY2VTdW1tYXJ5ID0gKCkgPT4ge1xyXG4gICAgdHJ5IHtcclxuICAgICAgY29uc3Qgc3VtbWFyeSA9IHN1bW1hcml6ZUJhbGFuY2VUZWxlbWV0cnlSZXBvcnQoYnVpbGRCYWxhbmNlRW52ZWxvcGUoKS5zdW1tYXJ5KTtcclxuICAgICAgdm9pZCBjb3B5VG9DbGlwYm9hcmQoc3VtbWFyeSk7XHJcbiAgICAgIHNldERpYWdub3N0aWNzRXJyb3IobnVsbCk7XHJcbiAgICB9IGNhdGNoIChlcnJvcikge1xyXG4gICAgICBzZXREaWFnbm9zdGljc0Vycm9yKGBGYWlsZWQgdG8gY29weSBiYWxhbmNlIHN1bW1hcnk6ICR7U3RyaW5nKGVycm9yKX1gKTtcclxuICAgIH1cclxuICB9O1xyXG5cclxuICBjb25zdCBoYW5kbGVDb3B5QmFsYW5jZUV2ZW50c0pzb24gPSAoKSA9PiB7XHJcbiAgICB0cnkge1xyXG4gICAgICBjb25zdCB0ZXh0ID0gc2VyaWFsaXplQmFsYW5jZVRlbGVtZXRyeUV4cG9ydChidWlsZEJhbGFuY2VFbnZlbG9wZSgpKTtcclxuICAgICAgdm9pZCBjb3B5VG9DbGlwYm9hcmQodGV4dCk7XHJcbiAgICAgIHNldERpYWdub3N0aWNzRXJyb3IobnVsbCk7XHJcbiAgICB9IGNhdGNoIChlcnJvcikge1xyXG4gICAgICBzZXREaWFnbm9zdGljc0Vycm9yKGBGYWlsZWQgdG8gY29weSBiYWxhbmNlIHRlbGVtZXRyeSBKU09OOiAke1N0cmluZyhlcnJvcil9YCk7XHJcbiAgICB9XHJcbiAgfTtcclxuXHJcbiAgY29uc3QgaGFuZGxlRG93bmxvYWRCYWxhbmNlQ3N2ID0gKCkgPT4ge1xyXG4gICAgdHJ5IHtcclxuICAgICAgY29uc3QgY3N2TWFwID0gYnVpbGRCYWxhbmNlVGVsZW1ldHJ5Q3N2RmlsZXMoYmFsYW5jZVRlbGVtZXRyeUV2ZW50cy5tYXAoKGVudHJ5KSA9PiBlbnRyeS5wYXlsb2FkKSk7XHJcbiAgICAgIE9iamVjdC5lbnRyaWVzKGNzdk1hcCkuZm9yRWFjaCgoW2ZpbGVuYW1lLCBjc3ZdKSA9PiB7XHJcbiAgICAgICAgY29uc3QgYmxvYiA9IG5ldyBCbG9iKFtjc3ZdLCB7IHR5cGU6ICd0ZXh0L2NzdjtjaGFyc2V0PXV0Zi04JyB9KTtcclxuICAgICAgICBjb25zdCB1cmwgPSBVUkwuY3JlYXRlT2JqZWN0VVJMKGJsb2IpO1xyXG4gICAgICAgIGNvbnN0IGxpbmsgPSBkb2N1bWVudC5jcmVhdGVFbGVtZW50KCdhJyk7XHJcbiAgICAgICAgbGluay5ocmVmID0gdXJsO1xyXG4gICAgICAgIGxpbmsuZG93bmxvYWQgPSBmaWxlbmFtZTtcclxuICAgICAgICBsaW5rLmNsaWNrKCk7XHJcbiAgICAgICAgVVJMLnJldm9rZU9iamVjdFVSTCh1cmwpO1xyXG4gICAgICB9KTtcclxuICAgICAgc2V0RGlhZ25vc3RpY3NFcnJvcihudWxsKTtcclxuICAgIH0gY2F0Y2ggKGVycm9yKSB7XHJcbiAgICAgIHNldERpYWdub3N0aWNzRXJyb3IoYEZhaWxlZCB0byBkb3dubG9hZCBiYWxhbmNlIENTVjogJHtTdHJpbmcoZXJyb3IpfWApO1xyXG4gICAgfVxyXG4gIH07XHJcblxyXG4gIGNvbnN0IGhhbmRsZURvd25sb2FkRGlhZ25vc3RpY3MgPSAoKSA9PiB7XHJcbiAgICB0cnkge1xyXG4gICAgICBjb25zdCBidW5kbGUgPSBidWlsZERpYWdub3N0aWNzQnVuZGxlKCk7XHJcbiAgICAgIGRvd25sb2FkSnNvbihgY3VsdGl2YXRpb25fZGlhZ25vc3RpY3NfJHtuZXcgRGF0ZShidW5kbGUuY3JlYXRlZEF0KS50b0lTT1N0cmluZygpfS5qc29uYCwgYnVuZGxlKTtcclxuICAgICAgc2V0RGlhZ25vc3RpY3NFcnJvcihudWxsKTtcclxuICAgIH0gY2F0Y2ggKGVycm9yKSB7XHJcbiAgICAgIHNldERpYWdub3N0aWNzRXJyb3IoYEZhaWxlZCB0byBidWlsZCBkaWFnbm9zdGljczogJHtTdHJpbmcoZXJyb3IpfWApO1xyXG4gICAgfVxyXG4gIH07XHJcblxyXG4gIGNvbnN0IGhhbmRsZUNvcHlRdWlja1N1bW1hcnkgPSAoKSA9PiB7XHJcbiAgICB0cnkge1xyXG4gICAgICBjb25zdCBidW5kbGUgPSBidWlsZERpYWdub3N0aWNzQnVuZGxlKCk7XHJcbiAgICAgIGNvbnN0IHN1bW1hcnkgPSBmb3JtYXREaWFnbm9zdGljc1N1bW1hcnkoYnVuZGxlKTtcclxuICAgICAgdm9pZCBjb3B5VG9DbGlwYm9hcmQoc3VtbWFyeSkuY2F0Y2goKGVycm9yKSA9PiB7XHJcbiAgICAgICAgY29uc29sZS53YXJuKCdbRGlhZ25vc3RpY3NdIEZhaWxlZCB0byBjb3B5IHN1bW1hcnknLCBlcnJvcik7XHJcbiAgICAgIH0pO1xyXG4gICAgICBzZXREaWFnbm9zdGljc0Vycm9yKG51bGwpO1xyXG4gICAgfSBjYXRjaCAoZXJyb3IpIHtcclxuICAgICAgc2V0RGlhZ25vc3RpY3NFcnJvcihgRmFpbGVkIHRvIGNvcHkgc3VtbWFyeTogJHtTdHJpbmcoZXJyb3IpfWApO1xyXG4gICAgfVxyXG4gIH07XHJcblxyXG4gIGNvbnN0IGhhbmRsZVJ1blZhbGlkYXRpb24gPSAoKSA9PiB7XHJcbiAgICB0cnkge1xyXG4gICAgICBjb25zdCBpc3N1ZXMgPSBydW5SdW50aW1lVmFsaWRhdGlvbigpO1xyXG4gICAgICBzZXRWYWxpZGF0aW9uSXNzdWVzKGlzc3Vlcyk7XHJcbiAgICAgIHNldFZhbGlkYXRpb25SYW5BdChEYXRlLm5vdygpKTtcclxuICAgICAgc2V0UmVwYWlyZWRDb3VudChudWxsKTtcclxuICAgICAgc2V0UmVwYWlyTm90ZXMoW10pO1xyXG4gICAgICBzZXREaWFnbm9zdGljc0Vycm9yKG51bGwpO1xyXG4gICAgfSBjYXRjaCAoZXJyb3IpIHtcclxuICAgICAgc2V0RGlhZ25vc3RpY3NFcnJvcihgVmFsaWRhdGlvbiBmYWlsZWQ6ICR7U3RyaW5nKGVycm9yKX1gKTtcclxuICAgIH1cclxuICB9O1xyXG5cclxuICBjb25zdCBoYW5kbGVBcHBseVJlcGFpcnMgPSAoKSA9PiB7XHJcbiAgICBpZiAoIXdpbmRvdy5jb25maXJtKCdBcHBseSBzYWZlIHJlcGFpcnMgdG8gb2J2aW91cyBpc3N1ZXM/JykpIHJldHVybjtcclxuICAgIHRyeSB7XHJcbiAgICAgIGNvbnN0IHJlc3VsdCA9IGFwcGx5U2FmZVJlcGFpcnModmFsaWRhdGlvbklzc3Vlcyk7XHJcbiAgICAgIHNldFJlcGFpck5vdGVzKHJlc3VsdC5ub3Rlcyk7XHJcbiAgICAgIHNldFJlcGFpcmVkQ291bnQocmVzdWx0LnJlcGFpcmVkQ291bnQpO1xyXG4gICAgICBjb25zdCByZWZyZXNoZWQgPSBydW5SdW50aW1lVmFsaWRhdGlvbigpO1xyXG4gICAgICBzZXRWYWxpZGF0aW9uSXNzdWVzKHJlZnJlc2hlZCk7XHJcbiAgICAgIHNldFZhbGlkYXRpb25SYW5BdChEYXRlLm5vdygpKTtcclxuICAgICAgc2V0RGlhZ25vc3RpY3NFcnJvcihudWxsKTtcclxuICAgIH0gY2F0Y2ggKGVycm9yKSB7XHJcbiAgICAgIHNldERpYWdub3N0aWNzRXJyb3IoYFJlcGFpcnMgZmFpbGVkOiAke1N0cmluZyhlcnJvcil9YCk7XHJcbiAgICB9XHJcbiAgfTtcclxuXHJcbiAgY29uc3QgaGFuZGxlR2VuZXJhdGVUZXN0RXJyb3IgPSAoKSA9PiB7XHJcbiAgICBpZiAoIXdpbmRvdy5jb25maXJtKCdHZW5lcmF0ZSBhIHRlc3QgZXJyb3IgdG8gdmFsaWRhdGUgZGlhZ25vc3RpY3M/JykpIHJldHVybjtcclxuICAgIHNldFRpbWVvdXQoKCkgPT4ge1xyXG4gICAgICB0aHJvdyBuZXcgRXJyb3IoJ0RpYWdub3N0aWNzIHRlc3QgZXJyb3InKTtcclxuICAgIH0sIDApO1xyXG4gIH07XHJcblxyXG4gIHVzZUVmZmVjdCgoKSA9PiB7XHJcbiAgICBzZXRIZWFkZXJUaXRsZXMoJ1NldHRpbmdzJywgJ0NvbmZpZ3VyZSBVSSBiZWhhdmlvciBhbmQgbWFuYWdlIHlvdXIgc2F2ZSBkYXRhLicpO1xyXG4gIH0sIFtzZXRIZWFkZXJUaXRsZXNdKTtcclxuXHJcbiAgcmV0dXJuIChcclxuICAgIDxkaXYgY2xhc3NOYW1lPXsnc2V0dGluZ3NTY3JlZW5Sb290J30+XHJcbiAgICAgIDxkaXYgY2xhc3NOYW1lPXsnc2V0dGluZ3NTY3JlZW5CYWNrZ3JvdW5kJ30gLz5cclxuXHJcbiAgICAgIDxkaXYgY2xhc3NOYW1lPXsnc2V0dGluZ3NTY3JlZW5Db250ZW50J30+XHJcbiAgICAgICAgPGRpdiBjbGFzc05hbWU9eydzZXR0aW5nc1NjcmVlbkdyaWQnfT5cclxuICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXtgJHsnc2V0dGluZ3NTY3JlZW5QYW5lbCd9ICR7J3NldHRpbmdzU2NyZWVuUGFuZWxEZWZhdWx0J31gfT5cclxuICAgICAgICAgICAgPGgyIGNsYXNzTmFtZT17J3NldHRpbmdzU2NyZWVuUGFuZWxUaXRsZSd9PkdhbWVwbGF5ICZhbXA7IFVJPC9oMj5cclxuICAgICAgICAgICAgPHAgY2xhc3NOYW1lPXsnc2V0dGluZ3NTY3JlZW5QYW5lbFN1YnRpdGxlJ30+VG9nZ2xlIGludGVyZmFjZSBlbGVtZW50cyBhbmQgY29uZmlybWF0aW9ucy48L3A+XHJcbiAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXsnc2V0dGluZ3NTY3JlZW5PcHRpb25MaXN0J30+XHJcbiAgICAgICAgICAgICAgPGxhYmVsIGNsYXNzTmFtZT17J3NldHRpbmdzU2NyZWVuT3B0aW9uUm93J30+XHJcbiAgICAgICAgICAgICAgICA8aW5wdXRcclxuICAgICAgICAgICAgICAgICAgdHlwZT1cImNoZWNrYm94XCJcclxuICAgICAgICAgICAgICAgICAgY2hlY2tlZD17c2hvd09mZmxpbmVNb2RhbH1cclxuICAgICAgICAgICAgICAgICAgb25DaGFuZ2U9e3RvZ2dsZU9mZmxpbmVNb2RhbH1cclxuICAgICAgICAgICAgICAgICAgY2xhc3NOYW1lPXsnc2V0dGluZ3NTY3JlZW5DaGVja2JveCd9XHJcbiAgICAgICAgICAgICAgICAvPlxyXG4gICAgICAgICAgICAgICAgPGRpdj5cclxuICAgICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9eydzZXR0aW5nc1NjcmVlbk9wdGlvbkxhYmVsJ30+U2hvdyBvZmZsaW5lIHByb2dyZXNzIG1vZGFsPC9kaXY+XHJcbiAgICAgICAgICAgICAgICAgIDxwIGNsYXNzTmFtZT17J3NldHRpbmdzU2NyZWVuT3B0aW9uRGVzY3JpcHRpb24nfT5EaXNwbGF5IHJld2FyZHMgZWFybmVkIHdoaWxlIGF3YXkgd2hlbiB5b3UgcmV0dXJuLjwvcD5cclxuICAgICAgICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgICAgIDwvbGFiZWw+XHJcblxyXG4gICAgICAgICAgICAgIDxsYWJlbCBjbGFzc05hbWU9eydzZXR0aW5nc1NjcmVlbk9wdGlvblJvdyd9PlxyXG4gICAgICAgICAgICAgICAgPGlucHV0XHJcbiAgICAgICAgICAgICAgICAgIHR5cGU9XCJjaGVja2JveFwiXHJcbiAgICAgICAgICAgICAgICAgIGNoZWNrZWQ9e3Nob3dDb21iYXRMb2d9XHJcbiAgICAgICAgICAgICAgICAgIG9uQ2hhbmdlPXt0b2dnbGVDb21iYXRMb2d9XHJcbiAgICAgICAgICAgICAgICAgIGNsYXNzTmFtZT17J3NldHRpbmdzU2NyZWVuQ2hlY2tib3gnfVxyXG4gICAgICAgICAgICAgICAgLz5cclxuICAgICAgICAgICAgICAgIDxkaXY+XHJcbiAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXsnc2V0dGluZ3NTY3JlZW5PcHRpb25MYWJlbCd9PlNob3cgY29tYmF0IGxvZzwvZGl2PlxyXG4gICAgICAgICAgICAgICAgICA8cCBjbGFzc05hbWU9eydzZXR0aW5nc1NjcmVlbk9wdGlvbkRlc2NyaXB0aW9uJ30+SGlkZSBvciByZXZlYWwgdGhlIGRldGFpbGVkIGNvbWJhdCBldmVudCBsb2cuPC9wPlxyXG4gICAgICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICAgICAgPC9sYWJlbD5cclxuXHJcbiAgICAgICAgICAgICAgPGxhYmVsIGNsYXNzTmFtZT17J3NldHRpbmdzU2NyZWVuT3B0aW9uUm93J30+XHJcbiAgICAgICAgICAgICAgICA8aW5wdXRcclxuICAgICAgICAgICAgICAgICAgdHlwZT1cImNoZWNrYm94XCJcclxuICAgICAgICAgICAgICAgICAgY2hlY2tlZD17c2hvd0NvbWJhdE1pbmliYXJ9XHJcbiAgICAgICAgICAgICAgICAgIG9uQ2hhbmdlPXt0b2dnbGVDb21iYXRNaW5pYmFyfVxyXG4gICAgICAgICAgICAgICAgICBjbGFzc05hbWU9eydzZXR0aW5nc1NjcmVlbkNoZWNrYm94J31cclxuICAgICAgICAgICAgICAgIC8+XHJcbiAgICAgICAgICAgICAgICA8ZGl2PlxyXG4gICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT17J3NldHRpbmdzU2NyZWVuT3B0aW9uTGFiZWwnfT5TaG93IGNvbWJhdCBtaW5pYmFyPC9kaXY+XHJcbiAgICAgICAgICAgICAgICAgIDxwIGNsYXNzTmFtZT17J3NldHRpbmdzU2NyZWVuT3B0aW9uRGVzY3JpcHRpb24nfT5cclxuICAgICAgICAgICAgICAgICAgICBBbHdheXMgZGlzcGxheSB0aGUgY29tcGFjdCBjb21iYXQgb3ZlcmxheSBkdXJpbmcgZmlnaHRzIGFuZCBjb21iYXQgYWN0aXZpdGllcy5cclxuICAgICAgICAgICAgICAgICAgPC9wPlxyXG4gICAgICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICAgICAgPC9sYWJlbD5cclxuXHJcbiAgICAgICAgICAgICAgPGxhYmVsIGNsYXNzTmFtZT17J3NldHRpbmdzU2NyZWVuT3B0aW9uUm93J30+XHJcbiAgICAgICAgICAgICAgICA8aW5wdXRcclxuICAgICAgICAgICAgICAgICAgdHlwZT1cImNoZWNrYm94XCJcclxuICAgICAgICAgICAgICAgICAgY2hlY2tlZD17Y29tYmF0TWluaWJhckV4cGFuZGVkfVxyXG4gICAgICAgICAgICAgICAgICBvbkNoYW5nZT17dG9nZ2xlQ29tYmF0TWluaWJhckV4cGFuZGVkfVxyXG4gICAgICAgICAgICAgICAgICBjbGFzc05hbWU9eydzZXR0aW5nc1NjcmVlbkNoZWNrYm94J31cclxuICAgICAgICAgICAgICAgIC8+XHJcbiAgICAgICAgICAgICAgICA8ZGl2PlxyXG4gICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT17J3NldHRpbmdzU2NyZWVuT3B0aW9uTGFiZWwnfT5Db21iYXQgbWluaWJhciBleHBhbmRlZCBieSBkZWZhdWx0PC9kaXY+XHJcbiAgICAgICAgICAgICAgICAgIDxwIGNsYXNzTmFtZT17J3NldHRpbmdzU2NyZWVuT3B0aW9uRGVzY3JpcHRpb24nfT5cclxuICAgICAgICAgICAgICAgICAgICBLZWVwIHRoZSBtaW5pYmFyIHVuZm9sZGVkIHdoZW4gaXQgYXBwZWFyczsgY29sbGFwc2UgbGF0ZXIgaWYgc2NyZWVuIHNwYWNlIGlzIHRpZ2h0LlxyXG4gICAgICAgICAgICAgICAgICA8L3A+XHJcbiAgICAgICAgICAgICAgICA8L2Rpdj5cclxuICAgICAgICAgICAgICA8L2xhYmVsPlxyXG5cclxuICAgICAgICAgICAgICA8bGFiZWwgY2xhc3NOYW1lPXsnc2V0dGluZ3NTY3JlZW5PcHRpb25Sb3cnfT5cclxuICAgICAgICAgICAgICAgIDxpbnB1dFxyXG4gICAgICAgICAgICAgICAgICB0eXBlPVwiY2hlY2tib3hcIlxyXG4gICAgICAgICAgICAgICAgICBjaGVja2VkPXtyZXF1aXJlUHJlc3RpZ2VDb25maXJtfVxyXG4gICAgICAgICAgICAgICAgICBvbkNoYW5nZT17dG9nZ2xlUHJlc3RpZ2VDb25maXJtfVxyXG4gICAgICAgICAgICAgICAgICBjbGFzc05hbWU9eydzZXR0aW5nc1NjcmVlbkNoZWNrYm94J31cclxuICAgICAgICAgICAgICAgIC8+XHJcbiAgICAgICAgICAgICAgICA8ZGl2PlxyXG4gICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT17J3NldHRpbmdzU2NyZWVuT3B0aW9uTGFiZWwnfT5SZXF1aXJlIHByZXN0aWdlIGNvbmZpcm1hdGlvbjwvZGl2PlxyXG4gICAgICAgICAgICAgICAgICA8cCBjbGFzc05hbWU9eydzZXR0aW5nc1NjcmVlbk9wdGlvbkRlc2NyaXB0aW9uJ30+QXNrIGZvciBjb25maXJtYXRpb24gYmVmb3JlIHJlaW5jYXJuYXRpbmcuPC9wPlxyXG4gICAgICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICAgICAgPC9sYWJlbD5cclxuXHJcbiAgICAgICAgICAgICAgPGxhYmVsIGNsYXNzTmFtZT17J3NldHRpbmdzU2NyZWVuT3B0aW9uUm93J30+XHJcbiAgICAgICAgICAgICAgICA8aW5wdXRcclxuICAgICAgICAgICAgICAgICAgdHlwZT1cImNoZWNrYm94XCJcclxuICAgICAgICAgICAgICAgICAgY2hlY2tlZD17c2hvd1N5c3RlbVN0YXR1c1BhbmVsfVxyXG4gICAgICAgICAgICAgICAgICBvbkNoYW5nZT17dG9nZ2xlU3lzdGVtU3RhdHVzfVxyXG4gICAgICAgICAgICAgICAgICBjbGFzc05hbWU9eydzZXR0aW5nc1NjcmVlbkNoZWNrYm94J31cclxuICAgICAgICAgICAgICAgIC8+XHJcbiAgICAgICAgICAgICAgICA8ZGl2PlxyXG4gICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT17J3NldHRpbmdzU2NyZWVuT3B0aW9uTGFiZWwnfT5TaG93IHN5c3RlbSBzdGF0dXMgb3ZlcmxheSAoZGV2KTwvZGl2PlxyXG4gICAgICAgICAgICAgICAgICA8cCBjbGFzc05hbWU9eydzZXR0aW5nc1NjcmVlbk9wdGlvbkRlc2NyaXB0aW9uJ30+XHJcbiAgICAgICAgICAgICAgICAgICAgRGlzcGxheSBydW50aW1lIGRpYWdub3N0aWNzOiBhY3Rpdml0eSwgY29tYmF0IGdhdGluZywgc2F2ZXMsIGFuZCBxdWV1ZXMuXHJcbiAgICAgICAgICAgICAgICAgIDwvcD5cclxuICAgICAgICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgICAgIDwvbGFiZWw+XHJcbiAgICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgPC9kaXY+XHJcblxyXG4gICAgICAgICAgPGRpdiBjbGFzc05hbWU9e2AkeydzZXR0aW5nc1NjcmVlblBhbmVsJ30gJHsnc2V0dGluZ3NTY3JlZW5QYW5lbERlZmF1bHQnfWB9PlxyXG4gICAgICAgICAgICA8U3lzdGVtU3RhdHVzUGFuZWwgLz5cclxuICAgICAgICAgIDwvZGl2PlxyXG5cclxuICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXtgJHsnc2V0dGluZ3NTY3JlZW5QYW5lbCd9ICR7J3NldHRpbmdzU2NyZWVuUGFuZWxEZWZhdWx0J31gfT5cclxuICAgICAgICAgICAgPGgyIGNsYXNzTmFtZT17J3NldHRpbmdzU2NyZWVuUGFuZWxUaXRsZSd9PlJld2FyZHMgRGVidWc8L2gyPlxyXG4gICAgICAgICAgICA8cCBjbGFzc05hbWU9eydzZXR0aW5nc1NjcmVlblBhbmVsU3VidGl0bGUnfT5WYWxpZGF0ZSB0aGUgY2VudHJhbCByZXdhcmQgcGlwZWxpbmUgKGN1cnJlbmNpZXMgKyBpdGVtcykuPC9wPlxyXG5cclxuICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9eydzZXR0aW5nc1Jld2FyZHNBY3Rpb25zJ30+XHJcbiAgICAgICAgICAgICAgPGJ1dHRvblxyXG4gICAgICAgICAgICAgICAgb25DbGljaz17aGFuZGxlVGVzdEdyYW50UmV3YXJkc31cclxuICAgICAgICAgICAgICAgIGNsYXNzTmFtZT17J2J1dHRvbi1zdGFuZGFyZCBzZXR0aW5nc1NjcmVlbkRlYnVnQnV0dG9uJ31cclxuICAgICAgICAgICAgICAgIGRpc2FibGVkPXshY29udGVudElzTG9hZGVkIHx8ICFpbXBvcnQubWV0YS5lbnYuREVWfVxyXG4gICAgICAgICAgICAgID5cclxuICAgICAgICAgICAgICAgIFRlc3QgR3JhbnQgUmV3YXJkcyAoTWVnYSBCdW5kbGUpXHJcbiAgICAgICAgICAgICAgPC9idXR0b24+XHJcbiAgICAgICAgICAgICAgPGJ1dHRvblxyXG4gICAgICAgICAgICAgICAgb25DbGljaz17aGFuZGxlVW5sb2NrUmFuZG9tTWFudWFsfVxyXG4gICAgICAgICAgICAgICAgY2xhc3NOYW1lPXsnYnV0dG9uLXN0YW5kYXJkIHNldHRpbmdzU2NyZWVuRGVidWdCdXR0b24gc2V0dGluZ3NTY3JlZW5EZWJ1Z0J1dHRvblNlY29uZGFyeSd9XHJcbiAgICAgICAgICAgICAgICBkaXNhYmxlZD17IWNvbnRlbnRJc0xvYWRlZH1cclxuICAgICAgICAgICAgICA+XHJcbiAgICAgICAgICAgICAgICBVbmxvY2sgUmFuZG9tIFRlY2huaXF1ZSAoU3R1ZGllZClcclxuICAgICAgICAgICAgICA8L2J1dHRvbj5cclxuICAgICAgICAgICAgICA8YnV0dG9uXHJcbiAgICAgICAgICAgICAgICBvbkNsaWNrPXtjbGVhclJld2FyZExvZ31cclxuICAgICAgICAgICAgICAgIGNsYXNzTmFtZT17J2J1dHRvbi1zdGFuZGFyZCBzZXR0aW5nc1NjcmVlbkRlYnVnQnV0dG9uIHNldHRpbmdzU2NyZWVuRGVidWdCdXR0b25TZWNvbmRhcnknfVxyXG4gICAgICAgICAgICAgICAgZGlzYWJsZWQ9e3Jld2FyZExvZ0VudHJpZXMubGVuZ3RoID09PSAwfVxyXG4gICAgICAgICAgICAgID5cclxuICAgICAgICAgICAgICAgIENsZWFyIFJld2FyZCBMb2dcclxuICAgICAgICAgICAgICA8L2J1dHRvbj5cclxuICAgICAgICAgICAgPC9kaXY+XHJcblxyXG4gICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT17J3NldHRpbmdzUmV3YXJkc0xvZyd9PlxyXG4gICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXsnc2V0dGluZ3NEZWJ1Z0xhYmVsJ30+UmVjZW50IEdyYW50czwvZGl2PlxyXG4gICAgICAgICAgICAgIHtyZXdhcmRMb2dFbnRyaWVzLmxlbmd0aCA9PT0gMCA/IChcclxuICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXsnc2V0dGluZ3NSZXdhcmRzRW1wdHknfT5ObyByZXdhcmQgZ3JhbnRzIHlldC48L2Rpdj5cclxuICAgICAgICAgICAgICApIDogKFxyXG4gICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9eydzZXR0aW5nc1Jld2FyZHNMaXN0J30+XHJcbiAgICAgICAgICAgICAgICAgIHtyZXdhcmRMb2dFbnRyaWVzLnNsaWNlKDAsIDYpLm1hcCgoZW50cnkpID0+IChcclxuICAgICAgICAgICAgICAgICAgICA8ZGl2IGtleT17ZW50cnkuaWR9IGNsYXNzTmFtZT17J3NldHRpbmdzUmV3YXJkc0VudHJ5J30+XHJcbiAgICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT17J3NldHRpbmdzUmV3YXJkc0VudHJ5SGVhZGVyJ30+XHJcbiAgICAgICAgICAgICAgICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT17J3NldHRpbmdzUmV3YXJkc0VudHJ5UmVhc29uJ30+e2VudHJ5LnJlYXNvbn08L3NwYW4+XHJcbiAgICAgICAgICAgICAgICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT17J3NldHRpbmdzUmV3YXJkc0VudHJ5VGltZSd9PlxyXG4gICAgICAgICAgICAgICAgICAgICAgICAgIHtuZXcgRGF0ZShlbnRyeS50aW1lc3RhbXApLnRvTG9jYWxlVGltZVN0cmluZygpfVxyXG4gICAgICAgICAgICAgICAgICAgICAgICA8L3NwYW4+XHJcbiAgICAgICAgICAgICAgICAgICAgICA8L2Rpdj5cclxuICAgICAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXsnc2V0dGluZ3NSZXdhcmRzRW50cnlTdW1tYXJ5J30+e2VudHJ5LnN1bW1hcnl9PC9kaXY+XHJcbiAgICAgICAgICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICAgICAgICAgICkpfVxyXG4gICAgICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICAgICAgKX1cclxuICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICA8L2Rpdj5cclxuXHJcblxyXG4gICAgICAgICAgPGRpdiBjbGFzc05hbWU9e2AkeydzZXR0aW5nc1NjcmVlblBhbmVsJ30gJHsnc2V0dGluZ3NTY3JlZW5QYW5lbERlZmF1bHQnfWB9PlxyXG4gICAgICAgICAgICA8aDIgY2xhc3NOYW1lPXsnc2V0dGluZ3NTY3JlZW5QYW5lbFRpdGxlJ30+RGlhZ25vc3RpY3MgKERldik8L2gyPlxyXG4gICAgICAgICAgICA8cCBjbGFzc05hbWU9eydzZXR0aW5nc1NjcmVlblBhbmVsU3VidGl0bGUnfT5UZWxlbWV0cnkgKyBlcnJvciBjYXB0dXJlICsgZGlhZ25vc3RpY3MgdG9vbHMuPC9wPlxyXG5cclxuICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9eydzZXR0aW5nc0RpYWdub3N0aWNzQWN0aW9ucyd9PlxyXG4gICAgICAgICAgICAgIDxidXR0b24gY2xhc3NOYW1lPXsnYnV0dG9uLXN0YW5kYXJkIHNldHRpbmdzU2NyZWVuRGVidWdCdXR0b24nfSBvbkNsaWNrPXtoYW5kbGVEb3dubG9hZERpYWdub3N0aWNzfT5cclxuICAgICAgICAgICAgICAgIERvd25sb2FkIERpYWdub3N0aWNzICguanNvbilcclxuICAgICAgICAgICAgICA8L2J1dHRvbj5cclxuICAgICAgICAgICAgICA8YnV0dG9uIGNsYXNzTmFtZT17J2J1dHRvbi1zdGFuZGFyZCBzZXR0aW5nc1NjcmVlbkRlYnVnQnV0dG9uJ30gb25DbGljaz17aGFuZGxlQ29weVF1aWNrU3VtbWFyeX0+XHJcbiAgICAgICAgICAgICAgICBDb3B5IFF1aWNrIFN1bW1hcnlcclxuICAgICAgICAgICAgICA8L2J1dHRvbj5cclxuICAgICAgICAgICAgPC9kaXY+XHJcblxyXG4gICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT17J3NldHRpbmdzRGlhZ25vc3RpY3NBY3Rpb25zJ30+XHJcbiAgICAgICAgICAgICAgPGJ1dHRvbiBjbGFzc05hbWU9eydidXR0b24tc3RhbmRhcmQgc2V0dGluZ3NTY3JlZW5EZWJ1Z0J1dHRvbid9IG9uQ2xpY2s9e2hhbmRsZVJ1blZhbGlkYXRpb259PlxyXG4gICAgICAgICAgICAgICAgUnVuIFZhbGlkYXRpb25cclxuICAgICAgICAgICAgICA8L2J1dHRvbj5cclxuICAgICAgICAgICAgICA8YnV0dG9uXHJcbiAgICAgICAgICAgICAgICBjbGFzc05hbWU9eydidXR0b24tc3RhbmRhcmQgc2V0dGluZ3NTY3JlZW5EZWJ1Z0J1dHRvbiBzZXR0aW5nc1NjcmVlbkRlYnVnQnV0dG9uU2Vjb25kYXJ5J31cclxuICAgICAgICAgICAgICAgIG9uQ2xpY2s9e2hhbmRsZUFwcGx5UmVwYWlyc31cclxuICAgICAgICAgICAgICAgIGRpc2FibGVkPXt2YWxpZGF0aW9uSXNzdWVzLmxlbmd0aCA9PT0gMH1cclxuICAgICAgICAgICAgICA+XHJcbiAgICAgICAgICAgICAgICBBcHBseSBTYWZlIFJlcGFpcnNcclxuICAgICAgICAgICAgICA8L2J1dHRvbj5cclxuICAgICAgICAgICAgPC9kaXY+XHJcblxyXG4gICAgICAgICAgICB7ZGlhZ25vc3RpY3NFcnJvciA/IDxkaXYgY2xhc3NOYW1lPXsnc2V0dGluZ3NEZWJ1Z0Vycm9yJ30+e2RpYWdub3N0aWNzRXJyb3J9PC9kaXY+IDogbnVsbH1cclxuXHJcbiAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXsnc2V0dGluZ3NEaWFnbm9zdGljc0xpc3QnfT5cclxuICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT17J3NldHRpbmdzRGlhZ25vc3RpY3NSb3cnfT5cclxuICAgICAgICAgICAgICAgIDxkaXY+XHJcbiAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXsnc2V0dGluZ3NEZWJ1Z0xhYmVsJ30+VmFsaWRhdGlvbjwvZGl2PlxyXG4gICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT17J3NldHRpbmdzRGlhZ25vc3RpY3NNZXRhJ30+XHJcbiAgICAgICAgICAgICAgICAgICAge3ZhbGlkYXRpb25SYW5BdCA/IGBMYXN0IHJ1bjogJHtuZXcgRGF0ZSh2YWxpZGF0aW9uUmFuQXQpLnRvTG9jYWxlVGltZVN0cmluZygpfWAgOiAnTm90IHJ1biB5ZXQnfVxyXG4gICAgICAgICAgICAgICAgICA8L2Rpdj5cclxuICAgICAgICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9eydzZXR0aW5nc0RpYWdub3N0aWNzTWV0YSd9PlxyXG4gICAgICAgICAgICAgICAgICB7dmFsaWRhdGlvbklzc3Vlcy5sZW5ndGh9IGlzc3Vle3ZhbGlkYXRpb25Jc3N1ZXMubGVuZ3RoID09PSAxID8gJycgOiAncyd9XHJcbiAgICAgICAgICAgICAgICA8L2Rpdj5cclxuICAgICAgICAgICAgICA8L2Rpdj5cclxuXHJcbiAgICAgICAgICAgICAge3ZhbGlkYXRpb25Jc3N1ZXMubGVuZ3RoID09PSAwID8gKFxyXG4gICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9eydzZXR0aW5nc0RpYWdub3N0aWNzRW1wdHknfT5ObyB2YWxpZGF0aW9uIGlzc3VlcyBkZXRlY3RlZCB5ZXQuPC9kaXY+XHJcbiAgICAgICAgICAgICAgKSA6IChcclxuICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXsnc2V0dGluZ3NEaWFnbm9zdGljc0VudHJpZXMnfT5cclxuICAgICAgICAgICAgICAgICAge3ZhbGlkYXRpb25Jc3N1ZXMuc2xpY2UoMCwgMjApLm1hcCgoaXNzdWUpID0+IChcclxuICAgICAgICAgICAgICAgICAgICA8ZGl2IGtleT17aXNzdWUuaWR9IGNsYXNzTmFtZT17J3NldHRpbmdzRGlhZ25vc3RpY3NFbnRyeSBzZXR0aW5nc0RpYWdub3N0aWNzSXNzdWUnfT5cclxuICAgICAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXsnc2V0dGluZ3NEaWFnbm9zdGljc1Jvdyd9PlxyXG4gICAgICAgICAgICAgICAgICAgICAgICA8ZGl2PlxyXG4gICAgICAgICAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXsnc2V0dGluZ3NEaWFnbm9zdGljc1NldmVyaXR5IHNldHRpbmdzRGlhZ25vc3RpY3NTZXZlcml0eS0nICsgaXNzdWUuc2V2ZXJpdHl9PlxyXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAge2lzc3VlLnNldmVyaXR5LnRvVXBwZXJDYXNlKCl9XHJcbiAgICAgICAgICAgICAgICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICAgICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9eydzZXR0aW5nc0RpYWdub3N0aWNzTWV0YSd9Pntpc3N1ZS5pZH08L2Rpdj5cclxuICAgICAgICAgICAgICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXsnc2V0dGluZ3NEaWFnbm9zdGljc1N1bW1hcnknfT57aXNzdWUubWVzc2FnZX08L2Rpdj5cclxuICAgICAgICAgICAgICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgICAgICAgICAgICAge2lzc3VlLmhpbnQgPyA8ZGl2IGNsYXNzTmFtZT17J3NldHRpbmdzRGlhZ25vc3RpY3NNZXRhJ30+e2lzc3VlLmhpbnR9PC9kaXY+IDogbnVsbH1cclxuICAgICAgICAgICAgICAgICAgICA8L2Rpdj5cclxuICAgICAgICAgICAgICAgICAgKSl9XHJcbiAgICAgICAgICAgICAgICA8L2Rpdj5cclxuICAgICAgICAgICAgICApfVxyXG5cclxuICAgICAgICAgICAgICB7cmVwYWlyZWRDb3VudCAhPSBudWxsID8gKFxyXG4gICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9eydzZXR0aW5nc0RpYWdub3N0aWNzTWV0YSd9PlxyXG4gICAgICAgICAgICAgICAgICBSZXBhaXJzIGFwcGxpZWQ6IHtyZXBhaXJlZENvdW50fSB7cmVwYWlyZWRDb3VudCA9PT0gMSA/ICdjaGFuZ2UnIDogJ2NoYW5nZXMnfS5cclxuICAgICAgICAgICAgICAgICAge3JlcGFpck5vdGVzLmxlbmd0aCA+IDAgPyBgIE5vdGVzOiAke3JlcGFpck5vdGVzLmpvaW4oJzsgJyl9YCA6ICcnfVxyXG4gICAgICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICAgICAgKSA6IG51bGx9XHJcbiAgICAgICAgICAgIDwvZGl2PlxyXG5cclxuICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9eydzZXR0aW5nc0RpYWdub3N0aWNzTGlzdCd9PlxyXG4gICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXsnc2V0dGluZ3NEaWFnbm9zdGljc1Jvdyd9PlxyXG4gICAgICAgICAgICAgICAgPGRpdj5cclxuICAgICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9eydzZXR0aW5nc0RlYnVnTGFiZWwnfT5CYWxhbmNlIFRlbGVtZXRyeTwvZGl2PlxyXG4gICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT17J3NldHRpbmdzRGlhZ25vc3RpY3NNZXRhJ30+XHJcbiAgICAgICAgICAgICAgICAgICAgU2hvd2luZyB7TWF0aC5taW4oMTAsIGJhbGFuY2VUZWxlbWV0cnlFdmVudHMubGVuZ3RoKX0gb2Yge2JhbGFuY2VUZWxlbWV0cnlFdmVudHMubGVuZ3RofSBldmVudHNcclxuICAgICAgICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICAgICAgICA8L2Rpdj5cclxuICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXsnc2V0dGluZ3NEaWFnbm9zdGljc0FjdGlvbnMnfT5cclxuICAgICAgICAgICAgICAgICAgPGxhYmVsIGNsYXNzTmFtZT17J3NldHRpbmdzU2NyZWVuT3B0aW9uUm93J30gc3R5bGU9e3sgbWFyZ2luQm90dG9tOiAwIH19PlxyXG4gICAgICAgICAgICAgICAgICAgIDxpbnB1dFxyXG4gICAgICAgICAgICAgICAgICAgICAgdHlwZT1cImNoZWNrYm94XCJcclxuICAgICAgICAgICAgICAgICAgICAgIGNoZWNrZWQ9e2JhbGFuY2VDYXB0dXJlRW5hYmxlZH1cclxuICAgICAgICAgICAgICAgICAgICAgIG9uQ2hhbmdlPXsoZXZlbnQpID0+IHNldEJhbGFuY2VDYXB0dXJlRW5hYmxlZChldmVudC50YXJnZXQuY2hlY2tlZCl9XHJcbiAgICAgICAgICAgICAgICAgICAgICBjbGFzc05hbWU9eydzZXR0aW5nc1NjcmVlbkNoZWNrYm94J31cclxuICAgICAgICAgICAgICAgICAgICAvPlxyXG4gICAgICAgICAgICAgICAgICAgIDxkaXY+XHJcbiAgICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT17J3NldHRpbmdzU2NyZWVuT3B0aW9uTGFiZWwnfT5DYXB0dXJlIGVuYWJsZWQ8L2Rpdj5cclxuICAgICAgICAgICAgICAgICAgICA8L2Rpdj5cclxuICAgICAgICAgICAgICAgICAgPC9sYWJlbD5cclxuICAgICAgICAgICAgICAgICAgPGJ1dHRvblxyXG4gICAgICAgICAgICAgICAgICAgIGNsYXNzTmFtZT17J2J1dHRvbi1zdGFuZGFyZCBzZXR0aW5nc1NjcmVlbkRlYnVnQnV0dG9uIHNldHRpbmdzU2NyZWVuRGVidWdCdXR0b25TZWNvbmRhcnknfVxyXG4gICAgICAgICAgICAgICAgICAgIG9uQ2xpY2s9e2NsZWFyQmFsYW5jZVRlbGVtZXRyeX1cclxuICAgICAgICAgICAgICAgICAgICBkaXNhYmxlZD17YmFsYW5jZVRlbGVtZXRyeUV2ZW50cy5sZW5ndGggPT09IDB9XHJcbiAgICAgICAgICAgICAgICAgID5cclxuICAgICAgICAgICAgICAgICAgICBDbGVhciBCYWxhbmNlIEV2ZW50c1xyXG4gICAgICAgICAgICAgICAgICA8L2J1dHRvbj5cclxuICAgICAgICAgICAgICAgICAgPGJ1dHRvblxyXG4gICAgICAgICAgICAgICAgICAgIGNsYXNzTmFtZT17J2J1dHRvbi1zdGFuZGFyZCBzZXR0aW5nc1NjcmVlbkRlYnVnQnV0dG9uIHNldHRpbmdzU2NyZWVuRGVidWdCdXR0b25TZWNvbmRhcnknfVxyXG4gICAgICAgICAgICAgICAgICAgIG9uQ2xpY2s9e2hhbmRsZUNvcHlCYWxhbmNlU3VtbWFyeX1cclxuICAgICAgICAgICAgICAgICAgICBkaXNhYmxlZD17YmFsYW5jZVRlbGVtZXRyeUV2ZW50cy5sZW5ndGggPT09IDB9XHJcbiAgICAgICAgICAgICAgICAgID5cclxuICAgICAgICAgICAgICAgICAgICBDb3B5IEJhbGFuY2UgU3VtbWFyeVxyXG4gICAgICAgICAgICAgICAgICA8L2J1dHRvbj5cclxuICAgICAgICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXsnc2V0dGluZ3NEaWFnbm9zdGljc0FjdGlvbnMnfT5cclxuICAgICAgICAgICAgICAgIDxidXR0b25cclxuICAgICAgICAgICAgICAgICAgY2xhc3NOYW1lPXsnYnV0dG9uLXN0YW5kYXJkIHNldHRpbmdzU2NyZWVuRGVidWdCdXR0b24gc2V0dGluZ3NTY3JlZW5EZWJ1Z0J1dHRvblNlY29uZGFyeSd9XHJcbiAgICAgICAgICAgICAgICAgIG9uQ2xpY2s9e2hhbmRsZURvd25sb2FkQmFsYW5jZVRlbGVtZXRyeX1cclxuICAgICAgICAgICAgICAgICAgZGlzYWJsZWQ9e2JhbGFuY2VUZWxlbWV0cnlFdmVudHMubGVuZ3RoID09PSAwfVxyXG4gICAgICAgICAgICAgICAgPlxyXG4gICAgICAgICAgICAgICAgICBEb3dubG9hZCBCYWxhbmNlIFRlbGVtZXRyeSAoLmpzb24pXHJcbiAgICAgICAgICAgICAgICA8L2J1dHRvbj5cclxuICAgICAgICAgICAgICAgIDxidXR0b25cclxuICAgICAgICAgICAgICAgICAgY2xhc3NOYW1lPXsnYnV0dG9uLXN0YW5kYXJkIHNldHRpbmdzU2NyZWVuRGVidWdCdXR0b24gc2V0dGluZ3NTY3JlZW5EZWJ1Z0J1dHRvblNlY29uZGFyeSd9XHJcbiAgICAgICAgICAgICAgICAgIG9uQ2xpY2s9e2hhbmRsZURvd25sb2FkQmFsYW5jZUNzdn1cclxuICAgICAgICAgICAgICAgICAgZGlzYWJsZWQ9e2JhbGFuY2VUZWxlbWV0cnlFdmVudHMubGVuZ3RoID09PSAwfVxyXG4gICAgICAgICAgICAgICAgPlxyXG4gICAgICAgICAgICAgICAgICBEb3dubG9hZCBCYWxhbmNlIENTVlxyXG4gICAgICAgICAgICAgICAgPC9idXR0b24+XHJcbiAgICAgICAgICAgICAgICA8YnV0dG9uXHJcbiAgICAgICAgICAgICAgICAgIGNsYXNzTmFtZT17J2J1dHRvbi1zdGFuZGFyZCBzZXR0aW5nc1NjcmVlbkRlYnVnQnV0dG9uIHNldHRpbmdzU2NyZWVuRGVidWdCdXR0b25TZWNvbmRhcnknfVxyXG4gICAgICAgICAgICAgICAgICBvbkNsaWNrPXtoYW5kbGVDb3B5QmFsYW5jZUV2ZW50c0pzb259XHJcbiAgICAgICAgICAgICAgICAgIGRpc2FibGVkPXtiYWxhbmNlVGVsZW1ldHJ5RXZlbnRzLmxlbmd0aCA9PT0gMH1cclxuICAgICAgICAgICAgICAgID5cclxuICAgICAgICAgICAgICAgICAgQ29weSBCYWxhbmNlIEV2ZW50cyAoSlNPTilcclxuICAgICAgICAgICAgICAgIDwvYnV0dG9uPlxyXG4gICAgICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgICAgIHtiYWxhbmNlVGVsZW1ldHJ5RXZlbnRzLmxlbmd0aCA+IDAgPyAoXHJcbiAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT17J3NldHRpbmdzRGlhZ25vc3RpY3NFbnRyaWVzJ30+XHJcbiAgICAgICAgICAgICAgICAgIHtiYWxhbmNlVGVsZW1ldHJ5RXZlbnRzLnNsaWNlKDAsIDEwKS5tYXAoKGVudHJ5KSA9PiAoXHJcbiAgICAgICAgICAgICAgICAgICAgPGRpdiBrZXk9e2VudHJ5LmlkfSBjbGFzc05hbWU9eydzZXR0aW5nc0RpYWdub3N0aWNzRW50cnknfT5cclxuICAgICAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXsnc2V0dGluZ3NEaWFnbm9zdGljc1Jvdyd9PlxyXG4gICAgICAgICAgICAgICAgICAgICAgICA8ZGl2PlxyXG4gICAgICAgICAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXsnc2V0dGluZ3NEZWJ1Z0xhYmVsJ30+e2VudHJ5LmtpbmR9PC9kaXY+XHJcbiAgICAgICAgICAgICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9eydzZXR0aW5nc0RpYWdub3N0aWNzTWV0YSd9PlxyXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAge25ldyBEYXRlKGVudHJ5LnRzKS50b0xvY2FsZVRpbWVTdHJpbmcoKX1cclxuICAgICAgICAgICAgICAgICAgICAgICAgICA8L2Rpdj5cclxuICAgICAgICAgICAgICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXsnc2V0dGluZ3NEaWFnbm9zdGljc1N1bW1hcnknfT57ZW50cnkuc3VtbWFyeX08L2Rpdj5cclxuICAgICAgICAgICAgICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgICAgICAgICApKX1cclxuICAgICAgICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgICAgICkgOiAoXHJcbiAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT17J3NldHRpbmdzRGlhZ25vc3RpY3NFbXB0eSd9Pk5vIGJhbGFuY2UgdGVsZW1ldHJ5IGV2ZW50cyBjYXB0dXJlZCB5ZXQuPC9kaXY+XHJcbiAgICAgICAgICAgICAgKX1cclxuICAgICAgICAgICAgPC9kaXY+XHJcblxyXG4gICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT17J3NldHRpbmdzRGlhZ25vc3RpY3NMaXN0J30+XHJcbiAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9eydzZXR0aW5nc0RpYWdub3N0aWNzUm93J30+XHJcbiAgICAgICAgICAgICAgICA8ZGl2PlxyXG4gICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT17J3NldHRpbmdzRGVidWdMYWJlbCd9PlRlbGVtZXRyeTwvZGl2PlxyXG4gICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT17J3NldHRpbmdzRGlhZ25vc3RpY3NNZXRhJ30+XHJcbiAgICAgICAgICAgICAgICAgICAgU2hvd2luZyB7TWF0aC5taW4oMTUsIHRlbGVtZXRyeUV2ZW50cy5sZW5ndGgpfSBvZiB7dGVsZW1ldHJ5RXZlbnRzLmxlbmd0aH0gZXZlbnRzXHJcbiAgICAgICAgICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT17J3NldHRpbmdzRGlhZ25vc3RpY3NBY3Rpb25zJ30+XHJcbiAgICAgICAgICAgICAgICAgIDxidXR0b25cclxuICAgICAgICAgICAgICAgICAgICBjbGFzc05hbWU9eydidXR0b24tc3RhbmRhcmQgc2V0dGluZ3NTY3JlZW5EZWJ1Z0J1dHRvbiBzZXR0aW5nc1NjcmVlbkRlYnVnQnV0dG9uU2Vjb25kYXJ5J31cclxuICAgICAgICAgICAgICAgICAgICBvbkNsaWNrPXtjbGVhclRlbGVtZXRyeX1cclxuICAgICAgICAgICAgICAgICAgICBkaXNhYmxlZD17dGVsZW1ldHJ5RXZlbnRzLmxlbmd0aCA9PT0gMH1cclxuICAgICAgICAgICAgICAgICAgPlxyXG4gICAgICAgICAgICAgICAgICAgIENsZWFyIEV2ZW50c1xyXG4gICAgICAgICAgICAgICAgICA8L2J1dHRvbj5cclxuICAgICAgICAgICAgICAgICAgPGJ1dHRvblxyXG4gICAgICAgICAgICAgICAgICAgIGNsYXNzTmFtZT17J2J1dHRvbi1zdGFuZGFyZCBzZXR0aW5nc1NjcmVlbkRlYnVnQnV0dG9uIHNldHRpbmdzU2NyZWVuRGVidWdCdXR0b25TZWNvbmRhcnknfVxyXG4gICAgICAgICAgICAgICAgICAgIG9uQ2xpY2s9e2hhbmRsZUNvcHlUZWxlbWV0cnl9XHJcbiAgICAgICAgICAgICAgICAgICAgZGlzYWJsZWQ9e3RlbGVtZXRyeUV2ZW50cy5sZW5ndGggPT09IDB9XHJcbiAgICAgICAgICAgICAgICAgID5cclxuICAgICAgICAgICAgICAgICAgICBDb3B5IEV2ZW50cyAoSlNPTilcclxuICAgICAgICAgICAgICAgICAgPC9idXR0b24+XHJcbiAgICAgICAgICAgICAgICA8L2Rpdj5cclxuICAgICAgICAgICAgICA8L2Rpdj5cclxuXHJcbiAgICAgICAgICAgICAge3RlbGVtZXRyeUV2ZW50cy5sZW5ndGggPT09IDAgPyAoXHJcbiAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT17J3NldHRpbmdzRGlhZ25vc3RpY3NFbXB0eSd9Pk5vIHRlbGVtZXRyeSBldmVudHMgY2FwdHVyZWQgeWV0LjwvZGl2PlxyXG4gICAgICAgICAgICAgICkgOiAoXHJcbiAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT17J3NldHRpbmdzRGlhZ25vc3RpY3NFbnRyaWVzJ30+XHJcbiAgICAgICAgICAgICAgICAgIHt0ZWxlbWV0cnlFdmVudHMuc2xpY2UoMCwgMTUpLm1hcCgoZW50cnkpID0+IChcclxuICAgICAgICAgICAgICAgICAgICA8ZGl2IGtleT17ZW50cnkuaWR9IGNsYXNzTmFtZT17J3NldHRpbmdzRGlhZ25vc3RpY3NFbnRyeSd9PlxyXG4gICAgICAgICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9eydzZXR0aW5nc0RpYWdub3N0aWNzUm93J30+XHJcbiAgICAgICAgICAgICAgICAgICAgICAgIDxkaXY+XHJcbiAgICAgICAgICAgICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9eydzZXR0aW5nc0RlYnVnTGFiZWwnfT57ZW50cnkudHlwZX08L2Rpdj5cclxuICAgICAgICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT17J3NldHRpbmdzRGlhZ25vc3RpY3NNZXRhJ30+XHJcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICB7bmV3IERhdGUoZW50cnkudHMpLnRvTG9jYWxlVGltZVN0cmluZygpfVxyXG4gICAgICAgICAgICAgICAgICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgICAgICAgICAgICAgICA8L2Rpdj5cclxuICAgICAgICAgICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9eydzZXR0aW5nc0RpYWdub3N0aWNzU3VtbWFyeSd9PntlbnRyeS5zdW1tYXJ5fTwvZGl2PlxyXG4gICAgICAgICAgICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICAgICAgICAgICkpfVxyXG4gICAgICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICAgICAgKX1cclxuICAgICAgICAgICAgPC9kaXY+XHJcblxyXG4gICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT17J3NldHRpbmdzRGlhZ25vc3RpY3NMaXN0J30+XHJcbiAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9eydzZXR0aW5nc0RpYWdub3N0aWNzUm93J30+XHJcbiAgICAgICAgICAgICAgICA8ZGl2PlxyXG4gICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT17J3NldHRpbmdzRGVidWdMYWJlbCd9PkVycm9yczwvZGl2PlxyXG4gICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT17J3NldHRpbmdzRGlhZ25vc3RpY3NNZXRhJ30+XHJcbiAgICAgICAgICAgICAgICAgICAgU2hvd2luZyB7TWF0aC5taW4oMTAsIGVycm9yRW50cmllcy5sZW5ndGgpfSBvZiB7ZXJyb3JFbnRyaWVzLmxlbmd0aH0gZXJyb3JzXHJcbiAgICAgICAgICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT17J3NldHRpbmdzRGlhZ25vc3RpY3NBY3Rpb25zJ30+XHJcbiAgICAgICAgICAgICAgICAgIDxidXR0b25cclxuICAgICAgICAgICAgICAgICAgICBjbGFzc05hbWU9eydidXR0b24tc3RhbmRhcmQgc2V0dGluZ3NTY3JlZW5EZWJ1Z0J1dHRvbiBzZXR0aW5nc1NjcmVlbkRlYnVnQnV0dG9uU2Vjb25kYXJ5J31cclxuICAgICAgICAgICAgICAgICAgICBvbkNsaWNrPXtjbGVhckVycm9yc31cclxuICAgICAgICAgICAgICAgICAgICBkaXNhYmxlZD17ZXJyb3JFbnRyaWVzLmxlbmd0aCA9PT0gMH1cclxuICAgICAgICAgICAgICAgICAgPlxyXG4gICAgICAgICAgICAgICAgICAgIENsZWFyIEVycm9yc1xyXG4gICAgICAgICAgICAgICAgICA8L2J1dHRvbj5cclxuICAgICAgICAgICAgICAgICAgPGJ1dHRvblxyXG4gICAgICAgICAgICAgICAgICAgIGNsYXNzTmFtZT17J2J1dHRvbi1zdGFuZGFyZCBzZXR0aW5nc1NjcmVlbkRlYnVnQnV0dG9uIHNldHRpbmdzU2NyZWVuRGVidWdCdXR0b25TZWNvbmRhcnknfVxyXG4gICAgICAgICAgICAgICAgICAgIG9uQ2xpY2s9e2hhbmRsZUNvcHlFcnJvcnN9XHJcbiAgICAgICAgICAgICAgICAgICAgZGlzYWJsZWQ9e2Vycm9yRW50cmllcy5sZW5ndGggPT09IDB9XHJcbiAgICAgICAgICAgICAgICAgID5cclxuICAgICAgICAgICAgICAgICAgICBDb3B5IEVycm9ycyAoSlNPTilcclxuICAgICAgICAgICAgICAgICAgPC9idXR0b24+XHJcbiAgICAgICAgICAgICAgICA8L2Rpdj5cclxuICAgICAgICAgICAgICA8L2Rpdj5cclxuXHJcbiAgICAgICAgICAgICAge2Vycm9yRW50cmllcy5sZW5ndGggPT09IDAgPyAoXHJcbiAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT17J3NldHRpbmdzRGlhZ25vc3RpY3NFbXB0eSd9Pk5vIGNhcHR1cmVkIGVycm9ycy48L2Rpdj5cclxuICAgICAgICAgICAgICApIDogKFxyXG4gICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9eydzZXR0aW5nc0RpYWdub3N0aWNzRW50cmllcyd9PlxyXG4gICAgICAgICAgICAgICAgICB7ZXJyb3JFbnRyaWVzLnNsaWNlKDAsIDEwKS5tYXAoKGVudHJ5KSA9PiAoXHJcbiAgICAgICAgICAgICAgICAgICAgPGRpdiBrZXk9e2VudHJ5LmlkfSBjbGFzc05hbWU9eydzZXR0aW5nc0RpYWdub3N0aWNzRW50cnknfT5cclxuICAgICAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXsnc2V0dGluZ3NEaWFnbm9zdGljc1Jvdyd9PlxyXG4gICAgICAgICAgICAgICAgICAgICAgICA8ZGl2PlxyXG4gICAgICAgICAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXsnc2V0dGluZ3NEZWJ1Z0xhYmVsJ30+e2VudHJ5LmtpbmR9PC9kaXY+XHJcbiAgICAgICAgICAgICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9eydzZXR0aW5nc0RpYWdub3N0aWNzTWV0YSd9PlxyXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAge25ldyBEYXRlKGVudHJ5LnRzKS50b0xvY2FsZVRpbWVTdHJpbmcoKX1cclxuICAgICAgICAgICAgICAgICAgICAgICAgICA8L2Rpdj5cclxuICAgICAgICAgICAgICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXsnc2V0dGluZ3NEaWFnbm9zdGljc1N1bW1hcnknfT57ZW50cnkubWVzc2FnZX08L2Rpdj5cclxuICAgICAgICAgICAgICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgICAgICAgICAgICAge2VudHJ5LnN0YWNrID8gKFxyXG4gICAgICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT17J3NldHRpbmdzRGlhZ25vc3RpY3NDb2RlJ30+XHJcbiAgICAgICAgICAgICAgICAgICAgICAgICAge2VudHJ5LnN0YWNrLnNwbGl0KCdcXG4nKS5zbGljZSgwLCAyKS5qb2luKCdcXG4nKX1cclxuICAgICAgICAgICAgICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICAgICAgICAgICAgICApIDogbnVsbH1cclxuICAgICAgICAgICAgICAgICAgICAgIHtlbnRyeS5zb3VyY2UgPyAoXHJcbiAgICAgICAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXsnc2V0dGluZ3NEaWFnbm9zdGljc01ldGEnfT5Tb3VyY2U6IHtlbnRyeS5zb3VyY2V9PC9kaXY+XHJcbiAgICAgICAgICAgICAgICAgICAgICApIDogbnVsbH1cclxuICAgICAgICAgICAgICAgICAgICA8L2Rpdj5cclxuICAgICAgICAgICAgICAgICAgKSl9XHJcbiAgICAgICAgICAgICAgICA8L2Rpdj5cclxuICAgICAgICAgICAgICApfVxyXG4gICAgICAgICAgICA8L2Rpdj5cclxuXHJcbiAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXsnc2V0dGluZ3NEaWFnbm9zdGljc0FjdGlvbnMnfT5cclxuICAgICAgICAgICAgICA8YnV0dG9uIGNsYXNzTmFtZT17J2J1dHRvbi1zdGFuZGFyZCBzZXR0aW5nc1NjcmVlbkRlYnVnQnV0dG9uJ30gb25DbGljaz17aGFuZGxlR2VuZXJhdGVUZXN0RXJyb3J9PlxyXG4gICAgICAgICAgICAgICAgR2VuZXJhdGUgVGVzdCBFcnJvclxyXG4gICAgICAgICAgICAgIDwvYnV0dG9uPlxyXG4gICAgICAgICAgICA8L2Rpdj5cclxuICAgICAgICAgIDwvZGl2PlxyXG5cclxuICAgICAgICAgIHtpc0RldiA/IChcclxuICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9e2AkeydzZXR0aW5nc1NjcmVlblBhbmVsJ30gJHsnc2V0dGluZ3NTY3JlZW5QYW5lbERlZmF1bHQnfWB9PlxyXG4gICAgICAgICAgICAgIDxoMiBjbGFzc05hbWU9eydzZXR0aW5nc1NjcmVlblBhbmVsVGl0bGUnfT5BdWRpbyBEZWJ1ZyAoRGV2KTwvaDI+XHJcbiAgICAgICAgICAgICAgPHAgY2xhc3NOYW1lPXsnc2V0dGluZ3NTY3JlZW5QYW5lbFN1YnRpdGxlJ30+XHJcbiAgICAgICAgICAgICAgICBUcmlnZ2VyIHNvdW5kIHBsYXliYWNrIGZvciBhbnkgcmVnaXN0ZXJlZCBTb3VuZElkLlxyXG4gICAgICAgICAgICAgIDwvcD5cclxuICAgICAgICAgICAgICA8QXVkaW9EZWJ1Z1BhbmVsIC8+XHJcbiAgICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgKSA6IG51bGx9XHJcblxyXG4gICAgICAgICAgPGRpdiBjbGFzc05hbWU9e2AkeydzZXR0aW5nc1NjcmVlblBhbmVsJ30gJHsnc2V0dGluZ3NTY3JlZW5QYW5lbERhbmdlcid9YH0+XHJcbiAgICAgICAgICAgIDxoMiBjbGFzc05hbWU9eydzZXR0aW5nc1NjcmVlblBhbmVsVGl0bGUnfT5TYXZlIE1hbmFnZW1lbnQ8L2gyPlxyXG4gICAgICAgICAgICA8cCBjbGFzc05hbWU9eydzZXR0aW5nc1NjcmVlblBhbmVsU3VidGl0bGUnfT5cclxuICAgICAgICAgICAgICBEZWxldGUgYWxsIHByb2dyZXNzIGFuZCByZXN0YXJ0IGFzIGlmIHRoZSBnYW1lIHdhcyBmcmVzaGx5IGluc3RhbGxlZC5cclxuICAgICAgICAgICAgPC9wPlxyXG4gICAgICAgICAgICA8YnV0dG9uXHJcbiAgICAgICAgICAgICAgb25DbGljaz17KCkgPT4gc2V0U2hvd0RlbGV0ZU1vZGFsKHRydWUpfVxyXG4gICAgICAgICAgICAgIGNsYXNzTmFtZT17J2J1dHRvbi1zdGFuZGFyZCBzZXR0aW5nc1NjcmVlbkRhbmdlckJ1dHRvbid9XHJcbiAgICAgICAgICAgID5cclxuICAgICAgICAgICAgICBEZWxldGUgU2F2ZSAmYW1wOyBIYXJkIFJlc2V0XHJcbiAgICAgICAgICAgIDwvYnV0dG9uPlxyXG4gICAgICAgICAgICA8cCBjbGFzc05hbWU9eydzZXR0aW5nc1NjcmVlbkRhbmdlck5vdGUnfT5cclxuICAgICAgICAgICAgICBUaGlzIHdpbGwgcmVtb3ZlIGFsbCBzYXZlcywgQXNjZW5zaW9uIFBvaW50cywgdXBncmFkZXMsIHNwaXJpdCByb290cywgYXVyYXMsIGFuZCBpdGVtcy4gVGhpcyBhY3Rpb25cclxuICAgICAgICAgICAgICBjYW5ub3QgYmUgdW5kb25lLlxyXG4gICAgICAgICAgICA8L3A+XHJcbiAgICAgICAgICA8L2Rpdj5cclxuXHJcbiAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT17YCR7J3NldHRpbmdzU2NyZWVuUGFuZWwnfSAkeydzZXR0aW5nc1NjcmVlblBhbmVsRGVmYXVsdCd9YH0+XHJcbiAgICAgICAgICAgIDxoMiBjbGFzc05hbWU9eydzZXR0aW5nc1NjcmVlblBhbmVsVGl0bGUnfT5Db250ZW50IERlYnVnPC9oMj5cclxuICAgICAgICAgICAgPHAgY2xhc3NOYW1lPXsnc2V0dGluZ3NTY3JlZW5QYW5lbFN1YnRpdGxlJ30+XHJcbiAgICAgICAgICAgICAgSW5zcGVjdCBsb2FkZWQgY29udGVudCBwYWNrIGNvdW50cyBhbmQgcGF2aWxpb24gcG9vbHMgKENpdGllcyAxLTUpLlxyXG4gICAgICAgICAgICA8L3A+XHJcblxyXG4gICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT17J3NldHRpbmdzRGVidWdSb3cnfT5cclxuICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT17J3NldHRpbmdzRGVidWdMYWJlbCd9PkJhc2UgVVJMPC9kaXY+XHJcbiAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9eydzZXR0aW5nc0RlYnVnVmFsdWUnfT57Z2V0Q29udGVudEJhc2VVcmwoKX08L2Rpdj5cclxuICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXsnc2V0dGluZ3NEZWJ1Z1Jvdyd9PlxyXG4gICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXsnc2V0dGluZ3NEZWJ1Z0xhYmVsJ30+TG9hZGVkPC9kaXY+XHJcbiAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9eydzZXR0aW5nc0RlYnVnVmFsdWUnfT5cclxuICAgICAgICAgICAgICAgIHtjb250ZW50SXNMb2FkZWQgPyAnWWVzJyA6IGNvbnRlbnRJc0xvYWRpbmcgPyAnTG9hZGluZ+KApicgOiAnTm8nfVxyXG4gICAgICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgICA8L2Rpdj5cclxuICAgICAgICAgICAge2NvbnRlbnRFcnJvciAmJiA8ZGl2IGNsYXNzTmFtZT17J3NldHRpbmdzRGVidWdFcnJvcid9PkVycm9yOiB7Y29udGVudEVycm9yfTwvZGl2Pn1cclxuXHJcbiAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXsnc2V0dGluZ3NEZWJ1Z0dyaWQnfT5cclxuICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT17J3NldHRpbmdzRGVidWdJdGVtJ30+XHJcbiAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT17J3NldHRpbmdzRGVidWdMYWJlbCd9PkNpdGllczwvZGl2PlxyXG4gICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9eydzZXR0aW5nc0RlYnVnVmFsdWUnfT57Y2l0aWVzLmxlbmd0aH08L2Rpdj5cclxuICAgICAgICAgICAgICA8L2Rpdj5cclxuICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT17J3NldHRpbmdzRGVidWdJdGVtJ30+XHJcbiAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT17J3NldHRpbmdzRGVidWdMYWJlbCd9Pkl0ZW1zPC9kaXY+XHJcbiAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT17J3NldHRpbmdzRGVidWdWYWx1ZSd9PntpdGVtc0NvdW50fTwvZGl2PlxyXG4gICAgICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXsnc2V0dGluZ3NEZWJ1Z0l0ZW0nfT5cclxuICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXsnc2V0dGluZ3NEZWJ1Z0xhYmVsJ30+VGVjaG5pcXVlczwvZGl2PlxyXG4gICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9eydzZXR0aW5nc0RlYnVnVmFsdWUnfT57dGVjaG5pcXVlc0NvdW50fTwvZGl2PlxyXG4gICAgICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXsnc2V0dGluZ3NEZWJ1Z0l0ZW0nfT5cclxuICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXsnc2V0dGluZ3NEZWJ1Z0xhYmVsJ30+SGVhdmVuIFBhdGg8L2Rpdj5cclxuICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXsnc2V0dGluZ3NEZWJ1Z1ZhbHVlJ30+e3RlY2huaXF1ZXNCeVBhdGguaGVhdmVuLmxlbmd0aH08L2Rpdj5cclxuICAgICAgICAgICAgICA8L2Rpdj5cclxuICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT17J3NldHRpbmdzRGVidWdJdGVtJ30+XHJcbiAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT17J3NldHRpbmdzRGVidWdMYWJlbCd9PkVhcnRoIFBhdGg8L2Rpdj5cclxuICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXsnc2V0dGluZ3NEZWJ1Z1ZhbHVlJ30+e3RlY2huaXF1ZXNCeVBhdGguZWFydGgubGVuZ3RofTwvZGl2PlxyXG4gICAgICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXsnc2V0dGluZ3NEZWJ1Z0l0ZW0nfT5cclxuICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXsnc2V0dGluZ3NEZWJ1Z0xhYmVsJ30+TWFydGlhbCBQYXRoPC9kaXY+XHJcbiAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT17J3NldHRpbmdzRGVidWdWYWx1ZSd9Pnt0ZWNobmlxdWVzQnlQYXRoLm1hcnRpYWwubGVuZ3RofTwvZGl2PlxyXG4gICAgICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXsnc2V0dGluZ3NEZWJ1Z0l0ZW0nfT5cclxuICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXsnc2V0dGluZ3NEZWJ1Z0xhYmVsJ30+UGF2aWxpb25zPC9kaXY+XHJcbiAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT17J3NldHRpbmdzRGVidWdWYWx1ZSd9PntwYXZpbGlvbnNDb3VudH08L2Rpdj5cclxuICAgICAgICAgICAgICA8L2Rpdj5cclxuICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT17J3NldHRpbmdzRGVidWdJdGVtJ30+XHJcbiAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT17J3NldHRpbmdzRGVidWdMYWJlbCd9Pk91dHNraXJ0czwvZGl2PlxyXG4gICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9eydzZXR0aW5nc0RlYnVnVmFsdWUnfT57b3V0c2tpcnRzQ291bnR9PC9kaXY+XHJcbiAgICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9eydzZXR0aW5nc0RlYnVnSXRlbSd9PlxyXG4gICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9eydzZXR0aW5nc0RlYnVnTGFiZWwnfT5FbmVtaWVzPC9kaXY+XHJcbiAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT17J3NldHRpbmdzRGVidWdWYWx1ZSd9PntlbmVtaWVzQ291bnR9PC9kaXY+XHJcbiAgICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9eydzZXR0aW5nc0RlYnVnSXRlbSd9PlxyXG4gICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9eydzZXR0aW5nc0RlYnVnTGFiZWwnfT5UcmlhbHM8L2Rpdj5cclxuICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXsnc2V0dGluZ3NEZWJ1Z1ZhbHVlJ30+e3RyaWFsc0NvdW50fTwvZGl2PlxyXG4gICAgICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXsnc2V0dGluZ3NEZWJ1Z0l0ZW0nfT5cclxuICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXsnc2V0dGluZ3NEZWJ1Z0xhYmVsJ30+UnVpbnM8L2Rpdj5cclxuICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXsnc2V0dGluZ3NEZWJ1Z1ZhbHVlJ30+e3J1aW5zQ291bnR9PC9kaXY+XHJcbiAgICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICAgIDwvZGl2PlxyXG5cclxuICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9eydzZXR0aW5nc0RlYnVnUG9vbHMnfT5cclxuICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT17J3NldHRpbmdzRGVidWdMYWJlbCd9PlBhdmlsaW9uIFBvb2xzIChDaXRpZXMgMS01KTwvZGl2PlxyXG4gICAgICAgICAgICAgIHtjaXRpZXNcclxuICAgICAgICAgICAgICAgIC5maWx0ZXIoKGNpdHkpID0+IGNpdHkuaW5kZXggPD0gNClcclxuICAgICAgICAgICAgICAgIC5tYXAoKGNpdHkpID0+IHtcclxuICAgICAgICAgICAgICAgICAgY29uc3QgcGF2aWxpb24gPSBwYXZpbGlvbnNCeUlkW2NpdHkucmVmcy5wYXZpbGlvbklkXTtcclxuICAgICAgICAgICAgICAgICAgY29uc3QgcG9vbHMgPSBwYXZpbGlvbj8ucG9vbEJ5UGF0aCA/PyB7IGhlYXZlbjogW10sIGVhcnRoOiBbXSwgbWFydGlhbDogW10gfTtcclxuICAgICAgICAgICAgICAgICAgcmV0dXJuIChcclxuICAgICAgICAgICAgICAgICAgICA8ZGl2IGtleT17Y2l0eS5pZH0gY2xhc3NOYW1lPXsnc2V0dGluZ3NEZWJ1Z1Bvb2xSb3cnfT5cclxuICAgICAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPXsnc2V0dGluZ3NEZWJ1Z1Bvb2xDaXR5J30+XHJcbiAgICAgICAgICAgICAgICAgICAgICAgIENpdHkge2NpdHkuaW5kZXggKyAxfToge2NpdHkubmFtZX1cclxuICAgICAgICAgICAgICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9eydzZXR0aW5nc0RlYnVnUG9vbENvdW50cyd9PlxyXG4gICAgICAgICAgICAgICAgICAgICAgICA8c3Bhbj5IOiB7cG9vbHMuaGVhdmVuPy5sZW5ndGggPz8gMH08L3NwYW4+XHJcbiAgICAgICAgICAgICAgICAgICAgICAgIDxzcGFuPkU6IHtwb29scy5lYXJ0aD8ubGVuZ3RoID8/IDB9PC9zcGFuPlxyXG4gICAgICAgICAgICAgICAgICAgICAgICA8c3Bhbj5NOiB7cG9vbHMubWFydGlhbD8ubGVuZ3RoID8/IDB9PC9zcGFuPlxyXG4gICAgICAgICAgICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICAgICAgICAgICk7XHJcbiAgICAgICAgICAgICAgICB9KX1cclxuICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICA8L2Rpdj5cclxuXHJcbiAgICAgICAgPC9kaXY+XHJcbiAgICAgIDwvZGl2PlxyXG5cclxuICAgICAge3Nob3dEZWxldGVNb2RhbCAmJiAoXHJcbiAgICAgICAgPGRpdiBjbGFzc05hbWU9eydzZXR0aW5nc1NjcmVlbk1vZGFsT3ZlcmxheSd9PlxyXG4gICAgICAgICAgPGRpdiBjbGFzc05hbWU9eydzZXR0aW5nc1NjcmVlbk1vZGFsQ2FyZCd9PlxyXG4gICAgICAgICAgICA8aDMgY2xhc3NOYW1lPXsnc2V0dGluZ3NTY3JlZW5Nb2RhbFRpdGxlJ30+RGVsZXRlIEFsbCBTYXZlIERhdGE/PC9oMz5cclxuICAgICAgICAgICAgPHAgY2xhc3NOYW1lPXsnc2V0dGluZ3NTY3JlZW5Nb2RhbFRleHQnfT5cclxuICAgICAgICAgICAgICBUaGlzIHdpbGwgZGVsZXRlIGFsbCBzYXZlIGRhdGEsIGluY2x1ZGluZyBBUCwgdXBncmFkZXMsIGF1cmFzLCBpdGVtcywgYW5kIHByb2dyZXNzLiBUaGlzIGNhbm5vdCBiZSB1bmRvbmUuXHJcbiAgICAgICAgICAgIDwvcD5cclxuICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9eydzZXR0aW5nc1NjcmVlbk1vZGFsQWN0aW9ucyd9PlxyXG4gICAgICAgICAgICAgIDxidXR0b25cclxuICAgICAgICAgICAgICAgIG9uQ2xpY2s9eygpID0+IHNldFNob3dEZWxldGVNb2RhbChmYWxzZSl9XHJcbiAgICAgICAgICAgICAgICBjbGFzc05hbWU9e2AkeydidXR0b24tc3RhbmRhcmQnfSAkeydzZXR0aW5nc1NjcmVlbk1vZGFsQnV0dG9uJ30gJHsnc2V0dGluZ3NTY3JlZW5Nb2RhbENhbmNlbCd9YH1cclxuICAgICAgICAgICAgICA+XHJcbiAgICAgICAgICAgICAgICBDYW5jZWxcclxuICAgICAgICAgICAgICA8L2J1dHRvbj5cclxuICAgICAgICAgICAgICA8YnV0dG9uXHJcbiAgICAgICAgICAgICAgICBvbkNsaWNrPXtoYW5kbGVEZWxldGVTYXZlfVxyXG4gICAgICAgICAgICAgICAgY2xhc3NOYW1lPXtgJHsnYnV0dG9uLXN0YW5kYXJkJ30gJHsnc2V0dGluZ3NTY3JlZW5Nb2RhbEJ1dHRvbid9ICR7J3NldHRpbmdzU2NyZWVuTW9kYWxDb25maXJtJ31gfVxyXG4gICAgICAgICAgICAgID5cclxuICAgICAgICAgICAgICAgIERlbGV0ZSAmYW1wOyBSZXN0YXJ0XHJcbiAgICAgICAgICAgICAgPC9idXR0b24+XHJcbiAgICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgPC9kaXY+XHJcbiAgICAgICl9XHJcbiAgICA8L2Rpdj5cclxuICApO1xyXG59XHJcbiJdLCJmaWxlIjoiQzovVXNlcnMvYWJkdWwvRGVza3RvcC9jdWx0aXZhdGlvbi1pZGxlL3NyYy9jb21wb25lbnRzL3NjcmVlbnMvU2V0dGluZ3NTY3JlZW4udHN4In0=

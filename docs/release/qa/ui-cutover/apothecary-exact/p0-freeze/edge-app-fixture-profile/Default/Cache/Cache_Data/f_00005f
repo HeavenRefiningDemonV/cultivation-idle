@@ -1,0 +1,435 @@
+import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/components/modals/TechniqueFilterDrawer.tsx");import __vite__cjsImport0_react_jsxDevRuntime from "/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=c0e4e3e4"; const jsxDEV = __vite__cjsImport0_react_jsxDevRuntime["jsxDEV"];
+var _s = $RefreshSig$();
+import __vite__cjsImport1_react from "/node_modules/.vite/deps/react.js?v=c0e4e3e4"; const useEffect = __vite__cjsImport1_react["useEffect"]; const useId = __vite__cjsImport1_react["useId"]; const useRef = __vite__cjsImport1_react["useRef"];
+import "/src/components/modals/TechniqueFilterDrawer.scss";
+const getFocusableElements = (container) => {
+  if (!container) return [];
+  const focusableSelectors = [
+    "a[href]",
+    "button:not([disabled])",
+    "textarea:not([disabled])",
+    "input:not([disabled])",
+    "select:not([disabled])",
+    '[tabindex]:not([tabindex="-1"])'
+  ];
+  return Array.from(container.querySelectorAll(focusableSelectors.join(","))).filter(
+    (element) => !element.hasAttribute("disabled") && !element.getAttribute("aria-hidden")
+  );
+};
+export function TechniqueFilterDrawer({
+  open,
+  sortKey,
+  typeFilter,
+  pathFilter,
+  roleFilter,
+  gradeFilter,
+  favoritesOnly,
+  uniquePaths,
+  uniqueRoles,
+  onSortChange,
+  onTypeFilterChange,
+  onPathFilterChange,
+  onRoleFilterChange,
+  onGradeFilterChange,
+  onFavoritesChange,
+  onReset,
+  onClose,
+  triggerRef
+}) {
+  _s();
+  const titleId = useId();
+  const panelRef = useRef(null);
+  const lastFocusedRef = useRef(null);
+  useEffect(() => {
+    if (!open) return void 0;
+    lastFocusedRef.current = triggerRef?.current ?? document.activeElement;
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    const previousOverflow = document.body.style.overflow;
+    const previousPadding = document.body.style.paddingRight;
+    document.body.style.overflow = "hidden";
+    if (scrollbarWidth > 0) {
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+    }
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.body.style.paddingRight = previousPadding;
+      lastFocusedRef.current?.focus();
+    };
+  }, [open, triggerRef]);
+  useEffect(() => {
+    if (!open) return;
+    const focusables = getFocusableElements(panelRef.current);
+    const target = focusables[0] ?? panelRef.current;
+    requestAnimationFrame(() => {
+      target?.focus();
+    });
+  }, [open]);
+  useEffect(() => {
+    if (!open) return void 0;
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onClose();
+        return;
+      }
+      if (event.key !== "Tab") return;
+      const focusables = getFocusableElements(panelRef.current);
+      if (focusables.length === 0) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      const active = document.activeElement;
+      if (event.shiftKey) {
+        if (active === first || active === panelRef.current) {
+          event.preventDefault();
+          last.focus();
+        }
+      } else if (active === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose, open]);
+  if (!open) return null;
+  return /* @__PURE__ */ jsxDEV("div", { className: "techniqueFilterDrawerOverlay", onClick: onClose, children: /* @__PURE__ */ jsxDEV(
+    "div",
+    {
+      className: "techniqueFilterDrawerPanel",
+      role: "dialog",
+      "aria-modal": "true",
+      "aria-labelledby": titleId,
+      ref: panelRef,
+      tabIndex: -1,
+      onClick: (event) => event.stopPropagation(),
+      children: [
+        /* @__PURE__ */ jsxDEV("div", { className: "techniqueFilterDrawerHeader", children: [
+          /* @__PURE__ */ jsxDEV("div", { children: [
+            /* @__PURE__ */ jsxDEV("h2", { id: titleId, className: "techniqueFilterDrawerTitle", children: "Sort & Filters" }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+              lineNumber: 138,
+              columnNumber: 13
+            }, this),
+            /* @__PURE__ */ jsxDEV("p", { className: "techniqueFilterDrawerSubtitle", children: "Refine the library without leaving the altar." }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+              lineNumber: 141,
+              columnNumber: 13
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+            lineNumber: 137,
+            columnNumber: 11
+          }, this),
+          /* @__PURE__ */ jsxDEV("button", { type: "button", className: "techniqueFilterDrawerClose", onClick: onClose, "aria-label": "Close filters", children: "Close" }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+            lineNumber: 143,
+            columnNumber: 11
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+          lineNumber: 136,
+          columnNumber: 9
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { className: "techniqueFilterDrawerSection", children: [
+          /* @__PURE__ */ jsxDEV("div", { className: "techniqueFilterDrawerSectionTitle", children: "Sort" }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+            lineNumber: 149,
+            columnNumber: 11
+          }, this),
+          /* @__PURE__ */ jsxDEV("label", { className: "techniqueFilterDrawerField", htmlFor: "drawerSort", children: [
+            /* @__PURE__ */ jsxDEV("span", { children: "Sort by" }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+              lineNumber: 151,
+              columnNumber: 13
+            }, this),
+            /* @__PURE__ */ jsxDEV("select", { id: "drawerSort", value: sortKey, onChange: (e) => onSortChange(e.target.value), children: [
+              /* @__PURE__ */ jsxDEV("option", { value: "power", children: "Power" }, void 0, false, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+                lineNumber: 153,
+                columnNumber: 15
+              }, this),
+              /* @__PURE__ */ jsxDEV("option", { value: "recent", children: "Recently Learned" }, void 0, false, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+                lineNumber: 154,
+                columnNumber: 15
+              }, this),
+              /* @__PURE__ */ jsxDEV("option", { value: "used", children: "Most Used" }, void 0, false, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+                lineNumber: 155,
+                columnNumber: 15
+              }, this),
+              /* @__PURE__ */ jsxDEV("option", { value: "rarity", children: "Rarity" }, void 0, false, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+                lineNumber: 156,
+                columnNumber: 15
+              }, this)
+            ] }, void 0, true, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+              lineNumber: 152,
+              columnNumber: 13
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+            lineNumber: 150,
+            columnNumber: 11
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+          lineNumber: 148,
+          columnNumber: 9
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { className: "techniqueFilterDrawerSection", children: [
+          /* @__PURE__ */ jsxDEV("div", { className: "techniqueFilterDrawerSectionTitle", children: "Filters" }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+            lineNumber: 162,
+            columnNumber: 11
+          }, this),
+          /* @__PURE__ */ jsxDEV("div", { className: "techniqueFilterDrawerGrid", children: [
+            /* @__PURE__ */ jsxDEV("label", { className: "techniqueFilterDrawerField", htmlFor: "drawerType", children: [
+              /* @__PURE__ */ jsxDEV("span", { children: "Type" }, void 0, false, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+                lineNumber: 165,
+                columnNumber: 15
+              }, this),
+              /* @__PURE__ */ jsxDEV("select", { id: "drawerType", value: typeFilter, onChange: (e) => onTypeFilterChange(e.target.value), children: [
+                /* @__PURE__ */ jsxDEV("option", { value: "all", children: "All" }, void 0, false, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+                  lineNumber: 167,
+                  columnNumber: 17
+                }, this),
+                /* @__PURE__ */ jsxDEV("option", { value: "active", children: "Active" }, void 0, false, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+                  lineNumber: 168,
+                  columnNumber: 17
+                }, this),
+                /* @__PURE__ */ jsxDEV("option", { value: "passive", children: "Passive" }, void 0, false, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+                  lineNumber: 169,
+                  columnNumber: 17
+                }, this),
+                /* @__PURE__ */ jsxDEV("option", { value: "ultimate", children: "Ultimate" }, void 0, false, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+                  lineNumber: 170,
+                  columnNumber: 17
+                }, this)
+              ] }, void 0, true, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+                lineNumber: 166,
+                columnNumber: 15
+              }, this)
+            ] }, void 0, true, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+              lineNumber: 164,
+              columnNumber: 13
+            }, this),
+            /* @__PURE__ */ jsxDEV("label", { className: "techniqueFilterDrawerField", htmlFor: "drawerPath", children: [
+              /* @__PURE__ */ jsxDEV("span", { children: "Path" }, void 0, false, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+                lineNumber: 174,
+                columnNumber: 15
+              }, this),
+              /* @__PURE__ */ jsxDEV("select", { id: "drawerPath", value: pathFilter, onChange: (e) => onPathFilterChange(e.target.value), children: [
+                /* @__PURE__ */ jsxDEV("option", { value: "all", children: "All" }, void 0, false, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+                  lineNumber: 176,
+                  columnNumber: 17
+                }, this),
+                uniquePaths.map(
+                  (path) => /* @__PURE__ */ jsxDEV("option", { value: path, children: path }, path, false, {
+                    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+                    lineNumber: 178,
+                    columnNumber: 17
+                  }, this)
+                )
+              ] }, void 0, true, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+                lineNumber: 175,
+                columnNumber: 15
+              }, this)
+            ] }, void 0, true, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+              lineNumber: 173,
+              columnNumber: 13
+            }, this),
+            /* @__PURE__ */ jsxDEV("label", { className: "techniqueFilterDrawerField", htmlFor: "drawerRole", children: [
+              /* @__PURE__ */ jsxDEV("span", { children: "Role" }, void 0, false, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+                lineNumber: 185,
+                columnNumber: 15
+              }, this),
+              /* @__PURE__ */ jsxDEV("select", { id: "drawerRole", value: roleFilter, onChange: (e) => onRoleFilterChange(e.target.value), children: [
+                /* @__PURE__ */ jsxDEV("option", { value: "all", children: "All" }, void 0, false, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+                  lineNumber: 187,
+                  columnNumber: 17
+                }, this),
+                uniqueRoles.map(
+                  (role) => /* @__PURE__ */ jsxDEV("option", { value: role, children: role }, role, false, {
+                    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+                    lineNumber: 189,
+                    columnNumber: 17
+                  }, this)
+                )
+              ] }, void 0, true, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+                lineNumber: 186,
+                columnNumber: 15
+              }, this)
+            ] }, void 0, true, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+              lineNumber: 184,
+              columnNumber: 13
+            }, this),
+            /* @__PURE__ */ jsxDEV("label", { className: "techniqueFilterDrawerField", htmlFor: "drawerGrade", children: [
+              /* @__PURE__ */ jsxDEV("span", { children: "Grade" }, void 0, false, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+                lineNumber: 196,
+                columnNumber: 15
+              }, this),
+              /* @__PURE__ */ jsxDEV("select", { id: "drawerGrade", value: gradeFilter, onChange: (e) => onGradeFilterChange(e.target.value), children: [
+                /* @__PURE__ */ jsxDEV("option", { value: "all", children: "All" }, void 0, false, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+                  lineNumber: 198,
+                  columnNumber: 17
+                }, this),
+                /* @__PURE__ */ jsxDEV("option", { value: "mortal", children: "Mortal" }, void 0, false, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+                  lineNumber: 199,
+                  columnNumber: 17
+                }, this),
+                /* @__PURE__ */ jsxDEV("option", { value: "earth", children: "Earth" }, void 0, false, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+                  lineNumber: 200,
+                  columnNumber: 17
+                }, this),
+                /* @__PURE__ */ jsxDEV("option", { value: "heaven", children: "Heaven" }, void 0, false, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+                  lineNumber: 201,
+                  columnNumber: 17
+                }, this),
+                /* @__PURE__ */ jsxDEV("option", { value: "mystic", children: "Mystic" }, void 0, false, {
+                  fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+                  lineNumber: 202,
+                  columnNumber: 17
+                }, this)
+              ] }, void 0, true, {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+                lineNumber: 197,
+                columnNumber: 15
+              }, this)
+            ] }, void 0, true, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+              lineNumber: 195,
+              columnNumber: 13
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+            lineNumber: 163,
+            columnNumber: 11
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+          lineNumber: 161,
+          columnNumber: 9
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { className: "techniqueFilterDrawerSection", children: [
+          /* @__PURE__ */ jsxDEV("div", { className: "techniqueFilterDrawerSectionTitle", children: "Quick toggles" }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+            lineNumber: 209,
+            columnNumber: 11
+          }, this),
+          /* @__PURE__ */ jsxDEV("label", { className: "techniqueFilterDrawerToggle", htmlFor: "drawerFavorites", children: [
+            /* @__PURE__ */ jsxDEV(
+              "input",
+              {
+                id: "drawerFavorites",
+                type: "checkbox",
+                checked: favoritesOnly,
+                onChange: (e) => onFavoritesChange(e.target.checked)
+              },
+              void 0,
+              false,
+              {
+                fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+                lineNumber: 211,
+                columnNumber: 13
+              },
+              this
+            ),
+            /* @__PURE__ */ jsxDEV("span", { children: "Favorites only" }, void 0, false, {
+              fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+              lineNumber: 217,
+              columnNumber: 13
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+            lineNumber: 210,
+            columnNumber: 11
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+          lineNumber: 208,
+          columnNumber: 9
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { className: "techniqueFilterDrawerActions", children: [
+          /* @__PURE__ */ jsxDEV("button", { type: "button", className: "techniqueFilterDrawerReset", onClick: onReset, children: "Reset filters" }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+            lineNumber: 222,
+            columnNumber: 11
+          }, this),
+          /* @__PURE__ */ jsxDEV("button", { type: "button", className: "techniqueFilterDrawerApply", onClick: onClose, children: "Done" }, void 0, false, {
+            fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+            lineNumber: 225,
+            columnNumber: 11
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+          lineNumber: 221,
+          columnNumber: 9
+        }, this)
+      ]
+    },
+    void 0,
+    true,
+    {
+      fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+      lineNumber: 127,
+      columnNumber: 7
+    },
+    this
+  ) }, void 0, false, {
+    fileName: "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx",
+    lineNumber: 126,
+    columnNumber: 5
+  }, this);
+}
+_s(TechniqueFilterDrawer, "c+BY3qXxPmyp0K+lELGsabveBiQ=");
+_c = TechniqueFilterDrawer;
+export default TechniqueFilterDrawer;
+var _c;
+$RefreshReg$(_c, "TechniqueFilterDrawer");
+import * as RefreshRuntime from "/@react-refresh";
+const inWebWorker = typeof WorkerGlobalScope !== "undefined" && self instanceof WorkerGlobalScope;
+if (import.meta.hot && !inWebWorker) {
+  if (!window.$RefreshReg$) {
+    throw new Error(
+      "@vitejs/plugin-react can't detect preamble. Something is wrong."
+    );
+  }
+  RefreshRuntime.__hmr_import(import.meta.url).then((currentExports) => {
+    RefreshRuntime.registerExportsForReactRefresh("C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx", currentExports);
+    import.meta.hot.accept((nextExports) => {
+      if (!nextExports) return;
+      const invalidateMessage = RefreshRuntime.validateRefreshBoundaryAndEnqueueUpdate("C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx", currentExports, nextExports);
+      if (invalidateMessage) import.meta.hot.invalidate(invalidateMessage);
+    });
+  });
+}
+function $RefreshReg$(type, id) {
+  return RefreshRuntime.register(type, "C:/Users/abdul/Desktop/cultivation-idle/src/components/modals/TechniqueFilterDrawer.tsx " + id);
+}
+function $RefreshSig$() {
+  return RefreshRuntime.createSignatureFunctionForTransform();
+}
+
+//# sourceMappingURL=data:application/json;base64,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ckI1RDtBQTZMaEIsZUFBZUE7QUFBc0IsSUFBQTREO0FBQUFDLGFBQUFELElBQUEiLCJuYW1lcyI6WyJ1c2VFZmZlY3QiLCJ1c2VJZCIsInVzZVJlZiIsImdldEZvY3VzYWJsZUVsZW1lbnRzIiwiY29udGFpbmVyIiwiZm9jdXNhYmxlU2VsZWN0b3JzIiwiQXJyYXkiLCJmcm9tIiwicXVlcnlTZWxlY3RvckFsbCIsImpvaW4iLCJmaWx0ZXIiLCJlbGVtZW50IiwiaGFzQXR0cmlidXRlIiwiZ2V0QXR0cmlidXRlIiwiVGVjaG5pcXVlRmlsdGVyRHJhd2VyIiwib3BlbiIsInNvcnRLZXkiLCJ0eXBlRmlsdGVyIiwicGF0aEZpbHRlciIsInJvbGVGaWx0ZXIiLCJncmFkZUZpbHRlciIsImZhdm9yaXRlc09ubHkiLCJ1bmlxdWVQYXRocyIsInVuaXF1ZVJvbGVzIiwib25Tb3J0Q2hhbmdlIiwib25UeXBlRmlsdGVyQ2hhbmdlIiwib25QYXRoRmlsdGVyQ2hhbmdlIiwib25Sb2xlRmlsdGVyQ2hhbmdlIiwib25HcmFkZUZpbHRlckNoYW5nZSIsIm9uRmF2b3JpdGVzQ2hhbmdlIiwib25SZXNldCIsIm9uQ2xvc2UiLCJ0cmlnZ2VyUmVmIiwiX3MiLCJ0aXRsZUlkIiwicGFuZWxSZWYiLCJsYXN0Rm9jdXNlZFJlZiIsInVuZGVmaW5lZCIsImN1cnJlbnQiLCJkb2N1bWVudCIsImFjdGl2ZUVsZW1lbnQiLCJzY3JvbGxiYXJXaWR0aCIsIndpbmRvdyIsImlubmVyV2lkdGgiLCJkb2N1bWVudEVsZW1lbnQiLCJjbGllbnRXaWR0aCIsInByZXZpb3VzT3ZlcmZsb3ciLCJib2R5Iiwic3R5bGUiLCJvdmVyZmxvdyIsInByZXZpb3VzUGFkZGluZyIsInBhZGRpbmdSaWdodCIsImZvY3VzIiwiZm9jdXNhYmxlcyIsInRhcmdldCIsInJlcXVlc3RBbmltYXRpb25GcmFtZSIsImhhbmRsZUtleURvd24iLCJldmVudCIsImtleSIsInByZXZlbnREZWZhdWx0IiwibGVuZ3RoIiwiZmlyc3QiLCJsYXN0IiwiYWN0aXZlIiwic2hpZnRLZXkiLCJhZGRFdmVudExpc3RlbmVyIiwicmVtb3ZlRXZlbnRMaXN0ZW5lciIsInN0b3BQcm9wYWdhdGlvbiIsImUiLCJ2YWx1ZSIsIm1hcCIsInBhdGgiLCJyb2xlIiwiY2hlY2tlZCIsIl9jIiwiJFJlZnJlc2hSZWckIl0sImlnbm9yZUxpc3QiOltdLCJzb3VyY2VzIjpbIlRlY2huaXF1ZUZpbHRlckRyYXdlci50c3giXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgdXNlRWZmZWN0LCB1c2VJZCwgdXNlUmVmIH0gZnJvbSAncmVhY3QnO1xyXG5pbXBvcnQgdHlwZSB7IFJlZk9iamVjdCB9IGZyb20gJ3JlYWN0JztcclxuaW1wb3J0ICcuL1RlY2huaXF1ZUZpbHRlckRyYXdlci5zY3NzJztcclxuXHJcbmV4cG9ydCB0eXBlIFNvcnRLZXkgPSAncG93ZXInIHwgJ3JlY2VudCcgfCAndXNlZCcgfCAncmFyaXR5JztcclxuZXhwb3J0IHR5cGUgVHlwZUZpbHRlciA9ICdhbGwnIHwgJ2FjdGl2ZScgfCAncGFzc2l2ZScgfCAndWx0aW1hdGUnO1xyXG5leHBvcnQgdHlwZSBHcmFkZUZpbHRlciA9ICdhbGwnIHwgJ21vcnRhbCcgfCAnZWFydGgnIHwgJ2hlYXZlbicgfCAnbXlzdGljJztcclxuXHJcbnR5cGUgRmlsdGVyRHJhd2VyUHJvcHMgPSB7XHJcbiAgb3BlbjogYm9vbGVhbjtcclxuICBzb3J0S2V5OiBTb3J0S2V5O1xyXG4gIHR5cGVGaWx0ZXI6IFR5cGVGaWx0ZXI7XHJcbiAgcGF0aEZpbHRlcjogc3RyaW5nO1xyXG4gIHJvbGVGaWx0ZXI6IHN0cmluZztcclxuICBncmFkZUZpbHRlcjogR3JhZGVGaWx0ZXI7XHJcbiAgZmF2b3JpdGVzT25seTogYm9vbGVhbjtcclxuICB1bmlxdWVQYXRoczogc3RyaW5nW107XHJcbiAgdW5pcXVlUm9sZXM6IHN0cmluZ1tdO1xyXG4gIG9uU29ydENoYW5nZTogKHZhbHVlOiBTb3J0S2V5KSA9PiB2b2lkO1xyXG4gIG9uVHlwZUZpbHRlckNoYW5nZTogKHZhbHVlOiBUeXBlRmlsdGVyKSA9PiB2b2lkO1xyXG4gIG9uUGF0aEZpbHRlckNoYW5nZTogKHZhbHVlOiBzdHJpbmcpID0+IHZvaWQ7XHJcbiAgb25Sb2xlRmlsdGVyQ2hhbmdlOiAodmFsdWU6IHN0cmluZykgPT4gdm9pZDtcclxuICBvbkdyYWRlRmlsdGVyQ2hhbmdlOiAodmFsdWU6IEdyYWRlRmlsdGVyKSA9PiB2b2lkO1xyXG4gIG9uRmF2b3JpdGVzQ2hhbmdlOiAodmFsdWU6IGJvb2xlYW4pID0+IHZvaWQ7XHJcbiAgb25SZXNldDogKCkgPT4gdm9pZDtcclxuICBvbkNsb3NlOiAoKSA9PiB2b2lkO1xyXG4gIHRyaWdnZXJSZWY/OiBSZWZPYmplY3Q8SFRNTEVsZW1lbnQ+O1xyXG59O1xyXG5cclxuY29uc3QgZ2V0Rm9jdXNhYmxlRWxlbWVudHMgPSAoY29udGFpbmVyOiBIVE1MRWxlbWVudCB8IG51bGwpID0+IHtcclxuICBpZiAoIWNvbnRhaW5lcikgcmV0dXJuIFtdIGFzIEhUTUxFbGVtZW50W107XHJcbiAgY29uc3QgZm9jdXNhYmxlU2VsZWN0b3JzID0gW1xyXG4gICAgJ2FbaHJlZl0nLFxyXG4gICAgJ2J1dHRvbjpub3QoW2Rpc2FibGVkXSknLFxyXG4gICAgJ3RleHRhcmVhOm5vdChbZGlzYWJsZWRdKScsXHJcbiAgICAnaW5wdXQ6bm90KFtkaXNhYmxlZF0pJyxcclxuICAgICdzZWxlY3Q6bm90KFtkaXNhYmxlZF0pJyxcclxuICAgICdbdGFiaW5kZXhdOm5vdChbdGFiaW5kZXg9XCItMVwiXSknLFxyXG4gIF07XHJcbiAgcmV0dXJuIEFycmF5LmZyb20oY29udGFpbmVyLnF1ZXJ5U2VsZWN0b3JBbGw8SFRNTEVsZW1lbnQ+KGZvY3VzYWJsZVNlbGVjdG9ycy5qb2luKCcsJykpKS5maWx0ZXIoXHJcbiAgICAoZWxlbWVudCkgPT4gIWVsZW1lbnQuaGFzQXR0cmlidXRlKCdkaXNhYmxlZCcpICYmICFlbGVtZW50LmdldEF0dHJpYnV0ZSgnYXJpYS1oaWRkZW4nKSxcclxuICApO1xyXG59O1xyXG5cclxuZXhwb3J0IGZ1bmN0aW9uIFRlY2huaXF1ZUZpbHRlckRyYXdlcih7XHJcbiAgb3BlbixcclxuICBzb3J0S2V5LFxyXG4gIHR5cGVGaWx0ZXIsXHJcbiAgcGF0aEZpbHRlcixcclxuICByb2xlRmlsdGVyLFxyXG4gIGdyYWRlRmlsdGVyLFxyXG4gIGZhdm9yaXRlc09ubHksXHJcbiAgdW5pcXVlUGF0aHMsXHJcbiAgdW5pcXVlUm9sZXMsXHJcbiAgb25Tb3J0Q2hhbmdlLFxyXG4gIG9uVHlwZUZpbHRlckNoYW5nZSxcclxuICBvblBhdGhGaWx0ZXJDaGFuZ2UsXHJcbiAgb25Sb2xlRmlsdGVyQ2hhbmdlLFxyXG4gIG9uR3JhZGVGaWx0ZXJDaGFuZ2UsXHJcbiAgb25GYXZvcml0ZXNDaGFuZ2UsXHJcbiAgb25SZXNldCxcclxuICBvbkNsb3NlLFxyXG4gIHRyaWdnZXJSZWYsXHJcbn06IEZpbHRlckRyYXdlclByb3BzKSB7XHJcbiAgY29uc3QgdGl0bGVJZCA9IHVzZUlkKCk7XHJcbiAgY29uc3QgcGFuZWxSZWYgPSB1c2VSZWY8SFRNTERpdkVsZW1lbnQgfCBudWxsPihudWxsKTtcclxuICBjb25zdCBsYXN0Rm9jdXNlZFJlZiA9IHVzZVJlZjxIVE1MRWxlbWVudCB8IG51bGw+KG51bGwpO1xyXG5cclxuICB1c2VFZmZlY3QoKCkgPT4ge1xyXG4gICAgaWYgKCFvcGVuKSByZXR1cm4gdW5kZWZpbmVkO1xyXG4gICAgbGFzdEZvY3VzZWRSZWYuY3VycmVudCA9ICh0cmlnZ2VyUmVmPy5jdXJyZW50ID8/IGRvY3VtZW50LmFjdGl2ZUVsZW1lbnQpIGFzIEhUTUxFbGVtZW50IHwgbnVsbDtcclxuICAgIGNvbnN0IHNjcm9sbGJhcldpZHRoID0gd2luZG93LmlubmVyV2lkdGggLSBkb2N1bWVudC5kb2N1bWVudEVsZW1lbnQuY2xpZW50V2lkdGg7XHJcbiAgICBjb25zdCBwcmV2aW91c092ZXJmbG93ID0gZG9jdW1lbnQuYm9keS5zdHlsZS5vdmVyZmxvdztcclxuICAgIGNvbnN0IHByZXZpb3VzUGFkZGluZyA9IGRvY3VtZW50LmJvZHkuc3R5bGUucGFkZGluZ1JpZ2h0O1xyXG4gICAgZG9jdW1lbnQuYm9keS5zdHlsZS5vdmVyZmxvdyA9ICdoaWRkZW4nO1xyXG4gICAgaWYgKHNjcm9sbGJhcldpZHRoID4gMCkge1xyXG4gICAgICBkb2N1bWVudC5ib2R5LnN0eWxlLnBhZGRpbmdSaWdodCA9IGAke3Njcm9sbGJhcldpZHRofXB4YDtcclxuICAgIH1cclxuICAgIHJldHVybiAoKSA9PiB7XHJcbiAgICAgIGRvY3VtZW50LmJvZHkuc3R5bGUub3ZlcmZsb3cgPSBwcmV2aW91c092ZXJmbG93O1xyXG4gICAgICBkb2N1bWVudC5ib2R5LnN0eWxlLnBhZGRpbmdSaWdodCA9IHByZXZpb3VzUGFkZGluZztcclxuICAgICAgbGFzdEZvY3VzZWRSZWYuY3VycmVudD8uZm9jdXMoKTtcclxuICAgIH07XHJcbiAgfSwgW29wZW4sIHRyaWdnZXJSZWZdKTtcclxuXHJcbiAgdXNlRWZmZWN0KCgpID0+IHtcclxuICAgIGlmICghb3BlbikgcmV0dXJuO1xyXG4gICAgY29uc3QgZm9jdXNhYmxlcyA9IGdldEZvY3VzYWJsZUVsZW1lbnRzKHBhbmVsUmVmLmN1cnJlbnQpO1xyXG4gICAgY29uc3QgdGFyZ2V0ID0gZm9jdXNhYmxlc1swXSA/PyBwYW5lbFJlZi5jdXJyZW50O1xyXG4gICAgcmVxdWVzdEFuaW1hdGlvbkZyYW1lKCgpID0+IHtcclxuICAgICAgdGFyZ2V0Py5mb2N1cygpO1xyXG4gICAgfSk7XHJcbiAgfSwgW29wZW5dKTtcclxuXHJcbiAgdXNlRWZmZWN0KCgpID0+IHtcclxuICAgIGlmICghb3BlbikgcmV0dXJuIHVuZGVmaW5lZDtcclxuICAgIGNvbnN0IGhhbmRsZUtleURvd24gPSAoZXZlbnQ6IEtleWJvYXJkRXZlbnQpID0+IHtcclxuICAgICAgaWYgKGV2ZW50LmtleSA9PT0gJ0VzY2FwZScpIHtcclxuICAgICAgICBldmVudC5wcmV2ZW50RGVmYXVsdCgpO1xyXG4gICAgICAgIG9uQ2xvc2UoKTtcclxuICAgICAgICByZXR1cm47XHJcbiAgICAgIH1cclxuICAgICAgaWYgKGV2ZW50LmtleSAhPT0gJ1RhYicpIHJldHVybjtcclxuICAgICAgY29uc3QgZm9jdXNhYmxlcyA9IGdldEZvY3VzYWJsZUVsZW1lbnRzKHBhbmVsUmVmLmN1cnJlbnQpO1xyXG4gICAgICBpZiAoZm9jdXNhYmxlcy5sZW5ndGggPT09IDApIHJldHVybjtcclxuICAgICAgY29uc3QgZmlyc3QgPSBmb2N1c2FibGVzWzBdO1xyXG4gICAgICBjb25zdCBsYXN0ID0gZm9jdXNhYmxlc1tmb2N1c2FibGVzLmxlbmd0aCAtIDFdO1xyXG4gICAgICBjb25zdCBhY3RpdmUgPSBkb2N1bWVudC5hY3RpdmVFbGVtZW50IGFzIEhUTUxFbGVtZW50IHwgbnVsbDtcclxuICAgICAgaWYgKGV2ZW50LnNoaWZ0S2V5KSB7XHJcbiAgICAgICAgaWYgKGFjdGl2ZSA9PT0gZmlyc3QgfHwgYWN0aXZlID09PSBwYW5lbFJlZi5jdXJyZW50KSB7XHJcbiAgICAgICAgICBldmVudC5wcmV2ZW50RGVmYXVsdCgpO1xyXG4gICAgICAgICAgbGFzdC5mb2N1cygpO1xyXG4gICAgICAgIH1cclxuICAgICAgfSBlbHNlIGlmIChhY3RpdmUgPT09IGxhc3QpIHtcclxuICAgICAgICBldmVudC5wcmV2ZW50RGVmYXVsdCgpO1xyXG4gICAgICAgIGZpcnN0LmZvY3VzKCk7XHJcbiAgICAgIH1cclxuICAgIH07XHJcbiAgICB3aW5kb3cuYWRkRXZlbnRMaXN0ZW5lcigna2V5ZG93bicsIGhhbmRsZUtleURvd24pO1xyXG4gICAgcmV0dXJuICgpID0+IHdpbmRvdy5yZW1vdmVFdmVudExpc3RlbmVyKCdrZXlkb3duJywgaGFuZGxlS2V5RG93bik7XHJcbiAgfSwgW29uQ2xvc2UsIG9wZW5dKTtcclxuXHJcbiAgaWYgKCFvcGVuKSByZXR1cm4gbnVsbDtcclxuXHJcbiAgcmV0dXJuIChcclxuICAgIDxkaXYgY2xhc3NOYW1lPVwidGVjaG5pcXVlRmlsdGVyRHJhd2VyT3ZlcmxheVwiIG9uQ2xpY2s9e29uQ2xvc2V9PlxyXG4gICAgICA8ZGl2XHJcbiAgICAgICAgY2xhc3NOYW1lPVwidGVjaG5pcXVlRmlsdGVyRHJhd2VyUGFuZWxcIlxyXG4gICAgICAgIHJvbGU9XCJkaWFsb2dcIlxyXG4gICAgICAgIGFyaWEtbW9kYWw9XCJ0cnVlXCJcclxuICAgICAgICBhcmlhLWxhYmVsbGVkYnk9e3RpdGxlSWR9XHJcbiAgICAgICAgcmVmPXtwYW5lbFJlZn1cclxuICAgICAgICB0YWJJbmRleD17LTF9XHJcbiAgICAgICAgb25DbGljaz17KGV2ZW50KSA9PiBldmVudC5zdG9wUHJvcGFnYXRpb24oKX1cclxuICAgICAgPlxyXG4gICAgICAgIDxkaXYgY2xhc3NOYW1lPVwidGVjaG5pcXVlRmlsdGVyRHJhd2VySGVhZGVyXCI+XHJcbiAgICAgICAgICA8ZGl2PlxyXG4gICAgICAgICAgICA8aDIgaWQ9e3RpdGxlSWR9IGNsYXNzTmFtZT1cInRlY2huaXF1ZUZpbHRlckRyYXdlclRpdGxlXCI+XHJcbiAgICAgICAgICAgICAgU29ydCAmIEZpbHRlcnNcclxuICAgICAgICAgICAgPC9oMj5cclxuICAgICAgICAgICAgPHAgY2xhc3NOYW1lPVwidGVjaG5pcXVlRmlsdGVyRHJhd2VyU3VidGl0bGVcIj5SZWZpbmUgdGhlIGxpYnJhcnkgd2l0aG91dCBsZWF2aW5nIHRoZSBhbHRhci48L3A+XHJcbiAgICAgICAgICA8L2Rpdj5cclxuICAgICAgICAgIDxidXR0b24gdHlwZT1cImJ1dHRvblwiIGNsYXNzTmFtZT1cInRlY2huaXF1ZUZpbHRlckRyYXdlckNsb3NlXCIgb25DbGljaz17b25DbG9zZX0gYXJpYS1sYWJlbD1cIkNsb3NlIGZpbHRlcnNcIj5cclxuICAgICAgICAgICAgQ2xvc2VcclxuICAgICAgICAgIDwvYnV0dG9uPlxyXG4gICAgICAgIDwvZGl2PlxyXG5cclxuICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInRlY2huaXF1ZUZpbHRlckRyYXdlclNlY3Rpb25cIj5cclxuICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwidGVjaG5pcXVlRmlsdGVyRHJhd2VyU2VjdGlvblRpdGxlXCI+U29ydDwvZGl2PlxyXG4gICAgICAgICAgPGxhYmVsIGNsYXNzTmFtZT1cInRlY2huaXF1ZUZpbHRlckRyYXdlckZpZWxkXCIgaHRtbEZvcj1cImRyYXdlclNvcnRcIj5cclxuICAgICAgICAgICAgPHNwYW4+U29ydCBieTwvc3Bhbj5cclxuICAgICAgICAgICAgPHNlbGVjdCBpZD1cImRyYXdlclNvcnRcIiB2YWx1ZT17c29ydEtleX0gb25DaGFuZ2U9eyhlKSA9PiBvblNvcnRDaGFuZ2UoZS50YXJnZXQudmFsdWUgYXMgU29ydEtleSl9PlxyXG4gICAgICAgICAgICAgIDxvcHRpb24gdmFsdWU9XCJwb3dlclwiPlBvd2VyPC9vcHRpb24+XHJcbiAgICAgICAgICAgICAgPG9wdGlvbiB2YWx1ZT1cInJlY2VudFwiPlJlY2VudGx5IExlYXJuZWQ8L29wdGlvbj5cclxuICAgICAgICAgICAgICA8b3B0aW9uIHZhbHVlPVwidXNlZFwiPk1vc3QgVXNlZDwvb3B0aW9uPlxyXG4gICAgICAgICAgICAgIDxvcHRpb24gdmFsdWU9XCJyYXJpdHlcIj5SYXJpdHk8L29wdGlvbj5cclxuICAgICAgICAgICAgPC9zZWxlY3Q+XHJcbiAgICAgICAgICA8L2xhYmVsPlxyXG4gICAgICAgIDwvZGl2PlxyXG5cclxuICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInRlY2huaXF1ZUZpbHRlckRyYXdlclNlY3Rpb25cIj5cclxuICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwidGVjaG5pcXVlRmlsdGVyRHJhd2VyU2VjdGlvblRpdGxlXCI+RmlsdGVyczwvZGl2PlxyXG4gICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJ0ZWNobmlxdWVGaWx0ZXJEcmF3ZXJHcmlkXCI+XHJcbiAgICAgICAgICAgIDxsYWJlbCBjbGFzc05hbWU9XCJ0ZWNobmlxdWVGaWx0ZXJEcmF3ZXJGaWVsZFwiIGh0bWxGb3I9XCJkcmF3ZXJUeXBlXCI+XHJcbiAgICAgICAgICAgICAgPHNwYW4+VHlwZTwvc3Bhbj5cclxuICAgICAgICAgICAgICA8c2VsZWN0IGlkPVwiZHJhd2VyVHlwZVwiIHZhbHVlPXt0eXBlRmlsdGVyfSBvbkNoYW5nZT17KGUpID0+IG9uVHlwZUZpbHRlckNoYW5nZShlLnRhcmdldC52YWx1ZSBhcyBUeXBlRmlsdGVyKX0+XHJcbiAgICAgICAgICAgICAgICA8b3B0aW9uIHZhbHVlPVwiYWxsXCI+QWxsPC9vcHRpb24+XHJcbiAgICAgICAgICAgICAgICA8b3B0aW9uIHZhbHVlPVwiYWN0aXZlXCI+QWN0aXZlPC9vcHRpb24+XHJcbiAgICAgICAgICAgICAgICA8b3B0aW9uIHZhbHVlPVwicGFzc2l2ZVwiPlBhc3NpdmU8L29wdGlvbj5cclxuICAgICAgICAgICAgICAgIDxvcHRpb24gdmFsdWU9XCJ1bHRpbWF0ZVwiPlVsdGltYXRlPC9vcHRpb24+XHJcbiAgICAgICAgICAgICAgPC9zZWxlY3Q+XHJcbiAgICAgICAgICAgIDwvbGFiZWw+XHJcbiAgICAgICAgICAgIDxsYWJlbCBjbGFzc05hbWU9XCJ0ZWNobmlxdWVGaWx0ZXJEcmF3ZXJGaWVsZFwiIGh0bWxGb3I9XCJkcmF3ZXJQYXRoXCI+XHJcbiAgICAgICAgICAgICAgPHNwYW4+UGF0aDwvc3Bhbj5cclxuICAgICAgICAgICAgICA8c2VsZWN0IGlkPVwiZHJhd2VyUGF0aFwiIHZhbHVlPXtwYXRoRmlsdGVyfSBvbkNoYW5nZT17KGUpID0+IG9uUGF0aEZpbHRlckNoYW5nZShlLnRhcmdldC52YWx1ZSl9PlxyXG4gICAgICAgICAgICAgICAgPG9wdGlvbiB2YWx1ZT1cImFsbFwiPkFsbDwvb3B0aW9uPlxyXG4gICAgICAgICAgICAgICAge3VuaXF1ZVBhdGhzLm1hcCgocGF0aCkgPT4gKFxyXG4gICAgICAgICAgICAgICAgICA8b3B0aW9uIGtleT17cGF0aH0gdmFsdWU9e3BhdGh9PlxyXG4gICAgICAgICAgICAgICAgICAgIHtwYXRofVxyXG4gICAgICAgICAgICAgICAgICA8L29wdGlvbj5cclxuICAgICAgICAgICAgICAgICkpfVxyXG4gICAgICAgICAgICAgIDwvc2VsZWN0PlxyXG4gICAgICAgICAgICA8L2xhYmVsPlxyXG4gICAgICAgICAgICA8bGFiZWwgY2xhc3NOYW1lPVwidGVjaG5pcXVlRmlsdGVyRHJhd2VyRmllbGRcIiBodG1sRm9yPVwiZHJhd2VyUm9sZVwiPlxyXG4gICAgICAgICAgICAgIDxzcGFuPlJvbGU8L3NwYW4+XHJcbiAgICAgICAgICAgICAgPHNlbGVjdCBpZD1cImRyYXdlclJvbGVcIiB2YWx1ZT17cm9sZUZpbHRlcn0gb25DaGFuZ2U9eyhlKSA9PiBvblJvbGVGaWx0ZXJDaGFuZ2UoZS50YXJnZXQudmFsdWUpfT5cclxuICAgICAgICAgICAgICAgIDxvcHRpb24gdmFsdWU9XCJhbGxcIj5BbGw8L29wdGlvbj5cclxuICAgICAgICAgICAgICAgIHt1bmlxdWVSb2xlcy5tYXAoKHJvbGUpID0+IChcclxuICAgICAgICAgICAgICAgICAgPG9wdGlvbiBrZXk9e3JvbGV9IHZhbHVlPXtyb2xlfT5cclxuICAgICAgICAgICAgICAgICAgICB7cm9sZX1cclxuICAgICAgICAgICAgICAgICAgPC9vcHRpb24+XHJcbiAgICAgICAgICAgICAgICApKX1cclxuICAgICAgICAgICAgICA8L3NlbGVjdD5cclxuICAgICAgICAgICAgPC9sYWJlbD5cclxuICAgICAgICAgICAgPGxhYmVsIGNsYXNzTmFtZT1cInRlY2huaXF1ZUZpbHRlckRyYXdlckZpZWxkXCIgaHRtbEZvcj1cImRyYXdlckdyYWRlXCI+XHJcbiAgICAgICAgICAgICAgPHNwYW4+R3JhZGU8L3NwYW4+XHJcbiAgICAgICAgICAgICAgPHNlbGVjdCBpZD1cImRyYXdlckdyYWRlXCIgdmFsdWU9e2dyYWRlRmlsdGVyfSBvbkNoYW5nZT17KGUpID0+IG9uR3JhZGVGaWx0ZXJDaGFuZ2UoZS50YXJnZXQudmFsdWUgYXMgR3JhZGVGaWx0ZXIpfT5cclxuICAgICAgICAgICAgICAgIDxvcHRpb24gdmFsdWU9XCJhbGxcIj5BbGw8L29wdGlvbj5cclxuICAgICAgICAgICAgICAgIDxvcHRpb24gdmFsdWU9XCJtb3J0YWxcIj5Nb3J0YWw8L29wdGlvbj5cclxuICAgICAgICAgICAgICAgIDxvcHRpb24gdmFsdWU9XCJlYXJ0aFwiPkVhcnRoPC9vcHRpb24+XHJcbiAgICAgICAgICAgICAgICA8b3B0aW9uIHZhbHVlPVwiaGVhdmVuXCI+SGVhdmVuPC9vcHRpb24+XHJcbiAgICAgICAgICAgICAgICA8b3B0aW9uIHZhbHVlPVwibXlzdGljXCI+TXlzdGljPC9vcHRpb24+XHJcbiAgICAgICAgICAgICAgPC9zZWxlY3Q+XHJcbiAgICAgICAgICAgIDwvbGFiZWw+XHJcbiAgICAgICAgICA8L2Rpdj5cclxuICAgICAgICA8L2Rpdj5cclxuXHJcbiAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJ0ZWNobmlxdWVGaWx0ZXJEcmF3ZXJTZWN0aW9uXCI+XHJcbiAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInRlY2huaXF1ZUZpbHRlckRyYXdlclNlY3Rpb25UaXRsZVwiPlF1aWNrIHRvZ2dsZXM8L2Rpdj5cclxuICAgICAgICAgIDxsYWJlbCBjbGFzc05hbWU9XCJ0ZWNobmlxdWVGaWx0ZXJEcmF3ZXJUb2dnbGVcIiBodG1sRm9yPVwiZHJhd2VyRmF2b3JpdGVzXCI+XHJcbiAgICAgICAgICAgIDxpbnB1dFxyXG4gICAgICAgICAgICAgIGlkPVwiZHJhd2VyRmF2b3JpdGVzXCJcclxuICAgICAgICAgICAgICB0eXBlPVwiY2hlY2tib3hcIlxyXG4gICAgICAgICAgICAgIGNoZWNrZWQ9e2Zhdm9yaXRlc09ubHl9XHJcbiAgICAgICAgICAgICAgb25DaGFuZ2U9eyhlKSA9PiBvbkZhdm9yaXRlc0NoYW5nZShlLnRhcmdldC5jaGVja2VkKX1cclxuICAgICAgICAgICAgLz5cclxuICAgICAgICAgICAgPHNwYW4+RmF2b3JpdGVzIG9ubHk8L3NwYW4+XHJcbiAgICAgICAgICA8L2xhYmVsPlxyXG4gICAgICAgIDwvZGl2PlxyXG5cclxuICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInRlY2huaXF1ZUZpbHRlckRyYXdlckFjdGlvbnNcIj5cclxuICAgICAgICAgIDxidXR0b24gdHlwZT1cImJ1dHRvblwiIGNsYXNzTmFtZT1cInRlY2huaXF1ZUZpbHRlckRyYXdlclJlc2V0XCIgb25DbGljaz17b25SZXNldH0+XHJcbiAgICAgICAgICAgIFJlc2V0IGZpbHRlcnNcclxuICAgICAgICAgIDwvYnV0dG9uPlxyXG4gICAgICAgICAgPGJ1dHRvbiB0eXBlPVwiYnV0dG9uXCIgY2xhc3NOYW1lPVwidGVjaG5pcXVlRmlsdGVyRHJhd2VyQXBwbHlcIiBvbkNsaWNrPXtvbkNsb3NlfT5cclxuICAgICAgICAgICAgRG9uZVxyXG4gICAgICAgICAgPC9idXR0b24+XHJcbiAgICAgICAgPC9kaXY+XHJcbiAgICAgIDwvZGl2PlxyXG4gICAgPC9kaXY+XHJcbiAgKTtcclxufVxyXG5cclxuZXhwb3J0IGRlZmF1bHQgVGVjaG5pcXVlRmlsdGVyRHJhd2VyO1xyXG4iXSwiZmlsZSI6IkM6L1VzZXJzL2FiZHVsL0Rlc2t0b3AvY3VsdGl2YXRpb24taWRsZS9zcmMvY29tcG9uZW50cy9tb2RhbHMvVGVjaG5pcXVlRmlsdGVyRHJhd2VyLnRzeCJ9
