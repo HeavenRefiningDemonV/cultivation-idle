@@ -1,0 +1,2188 @@
+{
+  "manifestVersion": 1,
+  "packetId": "APX-00",
+  "generatedAt": "2026-05-07T00:41:22.015Z",
+  "sourceArchive": {
+    "filename": "Apothecary.zip",
+    "path": "src/assets/Apothecary.zip",
+    "sha256": "5dc900f6206c5b61c854f46188155b941e53309863f86cb188d21e2f892b8237",
+    "entryCount": 50,
+    "notes": [
+      "Archive entries were listed before extraction.",
+      "Only expected APX-00 image entries were extracted from the archive.",
+      "Raw files preserve source bytes; normalized files are byte-identical role copies."
+    ]
+  },
+  "mockupReference": {
+    "filename": "apothecary mockup.png",
+    "sourceDimensions": {
+      "width": 1672,
+      "height": 941
+    },
+    "canonicalPlane": {
+      "width": 2048,
+      "height": 1152
+    },
+    "runtimeUseAllowed": false,
+    "notes": [
+      "Mockup is reference only; not a runtime asset."
+    ]
+  },
+  "assets": [
+    {
+      "assetId": "room.scenicPlate",
+      "sourceFilename": "Apothecary room scenic plate.png",
+      "sourceArchiveEntry": "Apothecary/Apothecary room scenic plate.png",
+      "rawPath": "src/assets/apothecaryExact/raw/Apothecary room scenic plate.png",
+      "normalizedPath": "src/assets/apothecaryExact/room/apothecary_room_scenic_plate.png",
+      "role": "full scenic background plate",
+      "targetRegion": "full exact plane / room base",
+      "runtimeIntent": "Layer 1 room plate for APX-05+; no runtime import in APX-00.",
+      "dimensions": {
+        "width": 1672,
+        "height": 941
+      },
+      "colorMode": "RGB",
+      "bitDepth": 8,
+      "hasAlpha": false,
+      "alphaMode": "none",
+      "cropBboxThreshold1": null,
+      "cropBboxThreshold16": null,
+      "cropBboxThreshold64": null,
+      "alphaFillRatio": null,
+      "sha256": "a90d0dcfc1a7e9792879461b2cdd33726bd895201b9fecc2a2135b18783f1903",
+      "fileSizeBytes": 2456259,
+      "status": "ready",
+      "allowedAsRuntimeAsset": true,
+      "allowedAsFlattenedMockupSubstitute": false,
+      "visualHarmonyNotes": "Warm apothecary room base; must not contain baked UI text.",
+      "warnings": []
+    },
+    {
+      "assetId": "frames.prescription",
+      "sourceFilename": "Prescription parchment frame-Photoroom.png",
+      "sourceArchiveEntry": "Apothecary/Prescription parchment frame-Photoroom.png",
+      "rawPath": "src/assets/apothecaryExact/raw/Prescription parchment frame-Photoroom.png",
+      "normalizedPath": "src/assets/apothecaryExact/frames/prescription_parchment_frame.png",
+      "role": "central prescription paper frame",
+      "targetRegion": "Region D",
+      "runtimeIntent": "Stable normalized asset for future APX packets; no runtime import in APX-00.",
+      "dimensions": {
+        "width": 1672,
+        "height": 941
+      },
+      "colorMode": "RGBA",
+      "bitDepth": 8,
+      "hasAlpha": true,
+      "alphaMode": "straight-alpha-channel",
+      "cropBboxThreshold1": [
+        0,
+        0,
+        1672,
+        941
+      ],
+      "cropBboxThreshold16": [
+        58,
+        91,
+        1630,
+        866
+      ],
+      "cropBboxThreshold64": [
+        58,
+        92,
+        1629,
+        865
+      ],
+      "alphaFillRatio": 0.757527,
+      "sha256": "fcb40a5565f99618aa414be191c930f5918021016f5fb57fad0ebcff4d97e462",
+      "fileSizeBytes": 2510452,
+      "status": "ready",
+      "allowedAsRuntimeAsset": true,
+      "allowedAsFlattenedMockupSubstitute": false,
+      "visualHarmonyNotes": "Central parchment frame for live prescription text; must not include baked dynamic rows.",
+      "warnings": []
+    },
+    {
+      "assetId": "objects.medicinePouch",
+      "sourceFilename": "Medicine pouch object sprite.png",
+      "sourceArchiveEntry": "Apothecary/Medicine pouch object sprite.png",
+      "rawPath": "src/assets/apothecaryExact/raw/Medicine pouch object sprite.png",
+      "normalizedPath": "src/assets/apothecaryExact/objects/medicine_pouch_object.png",
+      "role": "large right pouch object",
+      "targetRegion": "Region I",
+      "runtimeIntent": "Stable normalized asset for future APX packets; no runtime import in APX-00.",
+      "dimensions": {
+        "width": 1254,
+        "height": 1254
+      },
+      "colorMode": "RGBA",
+      "bitDepth": 8,
+      "hasAlpha": true,
+      "alphaMode": "straight-alpha-channel",
+      "cropBboxThreshold1": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cropBboxThreshold16": [
+        188,
+        129,
+        1066,
+        1100
+      ],
+      "cropBboxThreshold64": [
+        188,
+        129,
+        1066,
+        1099
+      ],
+      "alphaFillRatio": 0.401778,
+      "sha256": "217ab6035415a16de5c6441080b96400a5a71dbdded6401c8b52ac8d87ca49de",
+      "fileSizeBytes": 1701846,
+      "status": "ready",
+      "allowedAsRuntimeAsset": true,
+      "allowedAsFlattenedMockupSubstitute": false,
+      "visualHarmonyNotes": "Large blue-gray embroidered pouch object for right-side placement.",
+      "warnings": []
+    },
+    {
+      "assetId": "frames.primaryCta",
+      "sourceFilename": "Gold CTA plaque-Photoroom (1).png",
+      "sourceArchiveEntry": "Apothecary/Gold CTA plaque-Photoroom (1).png",
+      "rawPath": "src/assets/apothecaryExact/raw/Gold CTA plaque-Photoroom (1).png",
+      "normalizedPath": "src/assets/apothecaryExact/frames/gold_cta_plaque.png",
+      "role": "primary CTA plaque",
+      "targetRegion": "Region K",
+      "runtimeIntent": "Stable normalized asset for future APX packets; no runtime import in APX-00.",
+      "dimensions": {
+        "width": 2172,
+        "height": 724
+      },
+      "colorMode": "RGBA",
+      "bitDepth": 8,
+      "hasAlpha": true,
+      "alphaMode": "straight-alpha-channel",
+      "cropBboxThreshold1": [
+        44,
+        119,
+        2131,
+        608
+      ],
+      "cropBboxThreshold16": [
+        44,
+        119,
+        2131,
+        607
+      ],
+      "cropBboxThreshold64": [
+        45,
+        120,
+        2130,
+        607
+      ],
+      "alphaFillRatio": 0.57931,
+      "sha256": "07a56026970ff3deaeed9e3daa4ffc6afeaeaab771a442443e66d210e9fee349",
+      "fileSizeBytes": 2162553,
+      "status": "ready",
+      "allowedAsRuntimeAsset": true,
+      "allowedAsFlattenedMockupSubstitute": false,
+      "visualHarmonyNotes": "Gold CTA plate for later live label overlay; must not include baked button text.",
+      "warnings": []
+    },
+    {
+      "assetId": "frames.laneDefault",
+      "sourceFilename": "lane_card_frame_01_warm_gold.png",
+      "sourceArchiveEntry": "Apothecary/lane_card_frame_01_warm_gold.png",
+      "rawPath": "src/assets/apothecaryExact/raw/lane_card_frame_01_warm_gold.png",
+      "normalizedPath": "src/assets/apothecaryExact/frames/lane_card_default.png",
+      "role": "default lane/row frame",
+      "targetRegion": "top cells + rows",
+      "runtimeIntent": "Stable normalized asset for future APX packets; no runtime import in APX-00.",
+      "dimensions": {
+        "width": 1400,
+        "height": 150
+      },
+      "colorMode": "RGBA",
+      "bitDepth": 8,
+      "hasAlpha": true,
+      "alphaMode": "straight-alpha-channel",
+      "cropBboxThreshold1": [
+        5,
+        5,
+        1393,
+        146
+      ],
+      "cropBboxThreshold16": [
+        5,
+        6,
+        1393,
+        145
+      ],
+      "cropBboxThreshold64": [
+        6,
+        6,
+        1392,
+        145
+      ],
+      "alphaFillRatio": 0.91749,
+      "sha256": "2e233e77817c956f4ec9439ce3125246bdd461c78de89861c5409bfb2c178405",
+      "fileSizeBytes": 381492,
+      "status": "ready",
+      "allowedAsRuntimeAsset": true,
+      "allowedAsFlattenedMockupSubstitute": false,
+      "visualHarmonyNotes": "Horizontal row/cell frame for top cells and row states; not a full-height panel.",
+      "warnings": []
+    },
+    {
+      "assetId": "frames.laneSelected",
+      "sourceFilename": "lane_card_frame_02_jade_green.png",
+      "sourceArchiveEntry": "Apothecary/lane_card_frame_02_jade_green.png",
+      "rawPath": "src/assets/apothecaryExact/raw/lane_card_frame_02_jade_green.png",
+      "normalizedPath": "src/assets/apothecaryExact/frames/lane_card_selected.png",
+      "role": "selected/jade lane frame",
+      "targetRegion": "selected states",
+      "runtimeIntent": "Stable normalized asset for future APX packets; no runtime import in APX-00.",
+      "dimensions": {
+        "width": 1400,
+        "height": 150
+      },
+      "colorMode": "RGBA",
+      "bitDepth": 8,
+      "hasAlpha": true,
+      "alphaMode": "straight-alpha-channel",
+      "cropBboxThreshold1": [
+        5,
+        5,
+        1393,
+        144
+      ],
+      "cropBboxThreshold16": [
+        6,
+        6,
+        1393,
+        144
+      ],
+      "cropBboxThreshold64": [
+        6,
+        6,
+        1392,
+        143
+      ],
+      "alphaFillRatio": 0.9133,
+      "sha256": "5943c301bb372f4fe6149827c01558aa000ba67c11ca83a588c92c9dbdae2e86",
+      "fileSizeBytes": 370557,
+      "status": "ready",
+      "allowedAsRuntimeAsset": true,
+      "allowedAsFlattenedMockupSubstitute": false,
+      "visualHarmonyNotes": "Horizontal row/cell frame for top cells and row states; not a full-height panel.",
+      "warnings": []
+    },
+    {
+      "assetId": "frames.laneRecommended",
+      "sourceFilename": "lane_card_frame_03_gold_red_seal.png",
+      "sourceArchiveEntry": "Apothecary/lane_card_frame_03_gold_red_seal.png",
+      "rawPath": "src/assets/apothecaryExact/raw/lane_card_frame_03_gold_red_seal.png",
+      "normalizedPath": "src/assets/apothecaryExact/frames/lane_card_recommended.png",
+      "role": "recommended/cinnabar lane frame",
+      "targetRegion": "recommendations",
+      "runtimeIntent": "Stable normalized asset for future APX packets; no runtime import in APX-00.",
+      "dimensions": {
+        "width": 1400,
+        "height": 150
+      },
+      "colorMode": "RGBA",
+      "bitDepth": 8,
+      "hasAlpha": true,
+      "alphaMode": "straight-alpha-channel",
+      "cropBboxThreshold1": [
+        5,
+        5,
+        1393,
+        145
+      ],
+      "cropBboxThreshold16": [
+        6,
+        6,
+        1393,
+        145
+      ],
+      "cropBboxThreshold64": [
+        6,
+        6,
+        1392,
+        144
+      ],
+      "alphaFillRatio": 0.917667,
+      "sha256": "584b281ad510d0dc5e19bc8db35b4cf0d0f4352a5e759cd309a558950ea97d11",
+      "fileSizeBytes": 374593,
+      "status": "ready",
+      "allowedAsRuntimeAsset": true,
+      "allowedAsFlattenedMockupSubstitute": false,
+      "visualHarmonyNotes": "Horizontal row/cell frame for top cells and row states; not a full-height panel.",
+      "warnings": []
+    },
+    {
+      "assetId": "frames.laneReady",
+      "sourceFilename": "lane_card_frame_04_jade_check.png",
+      "sourceArchiveEntry": "Apothecary/lane_card_frame_04_jade_check.png",
+      "rawPath": "src/assets/apothecaryExact/raw/lane_card_frame_04_jade_check.png",
+      "normalizedPath": "src/assets/apothecaryExact/frames/lane_card_ready.png",
+      "role": "ready/completed lane frame",
+      "targetRegion": "ready rows",
+      "runtimeIntent": "Stable normalized asset for future APX packets; no runtime import in APX-00.",
+      "dimensions": {
+        "width": 1400,
+        "height": 150
+      },
+      "colorMode": "RGBA",
+      "bitDepth": 8,
+      "hasAlpha": true,
+      "alphaMode": "straight-alpha-channel",
+      "cropBboxThreshold1": [
+        5,
+        5,
+        1393,
+        145
+      ],
+      "cropBboxThreshold16": [
+        5,
+        6,
+        1393,
+        145
+      ],
+      "cropBboxThreshold64": [
+        6,
+        6,
+        1392,
+        144
+      ],
+      "alphaFillRatio": 0.9156,
+      "sha256": "53d529088ad9be4d2f6812ea93b75e074c5228822c76e39889d5cb8d2b63dc6f",
+      "fileSizeBytes": 366837,
+      "status": "ready",
+      "allowedAsRuntimeAsset": true,
+      "allowedAsFlattenedMockupSubstitute": false,
+      "visualHarmonyNotes": "Horizontal row/cell frame for top cells and row states; not a full-height panel.",
+      "warnings": []
+    },
+    {
+      "assetId": "frames.laneWarning",
+      "sourceFilename": "lane_card_frame_05_cinnabar_red.png",
+      "sourceArchiveEntry": "Apothecary/lane_card_frame_05_cinnabar_red.png",
+      "rawPath": "src/assets/apothecaryExact/raw/lane_card_frame_05_cinnabar_red.png",
+      "normalizedPath": "src/assets/apothecaryExact/frames/lane_card_warning.png",
+      "role": "warning/missing lane frame",
+      "targetRegion": "warning rows",
+      "runtimeIntent": "Stable normalized asset for future APX packets; no runtime import in APX-00.",
+      "dimensions": {
+        "width": 1400,
+        "height": 150
+      },
+      "colorMode": "RGBA",
+      "bitDepth": 8,
+      "hasAlpha": true,
+      "alphaMode": "straight-alpha-channel",
+      "cropBboxThreshold1": [
+        5,
+        5,
+        1393,
+        144
+      ],
+      "cropBboxThreshold16": [
+        6,
+        5,
+        1393,
+        143
+      ],
+      "cropBboxThreshold64": [
+        6,
+        6,
+        1392,
+        143
+      ],
+      "alphaFillRatio": 0.910124,
+      "sha256": "bb4a7aa506175c99712002ce391ca089bd196cde662b8b427f0f5bcd92f79438",
+      "fileSizeBytes": 358485,
+      "status": "ready",
+      "allowedAsRuntimeAsset": true,
+      "allowedAsFlattenedMockupSubstitute": false,
+      "visualHarmonyNotes": "Horizontal row/cell frame for top cells and row states; not a full-height panel.",
+      "warnings": []
+    },
+    {
+      "assetId": "frames.laneDisabled",
+      "sourceFilename": "lane_card_frame_06_disabled_gray.png",
+      "sourceArchiveEntry": "Apothecary/lane_card_frame_06_disabled_gray.png",
+      "rawPath": "src/assets/apothecaryExact/raw/lane_card_frame_06_disabled_gray.png",
+      "normalizedPath": "src/assets/apothecaryExact/frames/lane_card_disabled.png",
+      "role": "disabled/unavailable lane frame",
+      "targetRegion": "disabled rows",
+      "runtimeIntent": "Stable normalized asset for future APX packets; no runtime import in APX-00.",
+      "dimensions": {
+        "width": 1400,
+        "height": 150
+      },
+      "colorMode": "RGBA",
+      "bitDepth": 8,
+      "hasAlpha": true,
+      "alphaMode": "straight-alpha-channel",
+      "cropBboxThreshold1": [
+        5,
+        5,
+        1393,
+        141
+      ],
+      "cropBboxThreshold16": [
+        5,
+        6,
+        1393,
+        140
+      ],
+      "cropBboxThreshold64": [
+        6,
+        6,
+        1392,
+        140
+      ],
+      "alphaFillRatio": 0.884052,
+      "sha256": "b264cecf2fbfc64ee6fb65d5edf2603e817974ea9dcbe7dcd2a1a3148ae54f43",
+      "fileSizeBytes": 309146,
+      "status": "ready",
+      "allowedAsRuntimeAsset": true,
+      "allowedAsFlattenedMockupSubstitute": false,
+      "visualHarmonyNotes": "Horizontal row/cell frame for top cells and row states; not a full-height panel.",
+      "warnings": []
+    },
+    {
+      "assetId": "remedies.healingPellet",
+      "sourceFilename": "remedy_01_green_berries_bowl.png",
+      "sourceArchiveEntry": "Apothecary/remedy_01_green_berries_bowl.png",
+      "rawPath": "src/assets/apothecaryExact/raw/remedy_01_green_berries_bowl.png",
+      "normalizedPath": "src/assets/apothecaryExact/remedies/healing_pellet.png",
+      "role": "Healing Pellet fixture icon",
+      "targetRegion": "prescription/buy/brew rows",
+      "runtimeIntent": "Stable normalized asset for future APX packets; no runtime import in APX-00.",
+      "dimensions": {
+        "width": 333,
+        "height": 284
+      },
+      "colorMode": "RGBA",
+      "bitDepth": 8,
+      "hasAlpha": true,
+      "alphaMode": "straight-alpha-channel",
+      "cropBboxThreshold1": [
+        28,
+        28,
+        305,
+        256
+      ],
+      "cropBboxThreshold16": [
+        28,
+        28,
+        305,
+        256
+      ],
+      "cropBboxThreshold64": [
+        29,
+        29,
+        304,
+        255
+      ],
+      "alphaFillRatio": 0.464207,
+      "sha256": "57453ccf1bb2355f8f16eb1821b75dbcce577ffb48008d9d1e0c45db9e53515a",
+      "fileSizeBytes": 106211,
+      "status": "ready",
+      "allowedAsRuntimeAsset": true,
+      "allowedAsFlattenedMockupSubstitute": false,
+      "visualHarmonyNotes": "Individual remedy or ingredient sprite for future dynamic rows.",
+      "warnings": []
+    },
+    {
+      "assetId": "remedies.wardSalt",
+      "sourceFilename": "remedy_02_white_crystals_bowl.png",
+      "sourceArchiveEntry": "Apothecary/remedy_02_white_crystals_bowl.png",
+      "rawPath": "src/assets/apothecaryExact/raw/remedy_02_white_crystals_bowl.png",
+      "normalizedPath": "src/assets/apothecaryExact/remedies/ward_salt.png",
+      "role": "Ward Salt fixture icon",
+      "targetRegion": "prescription/buy/brew rows",
+      "runtimeIntent": "Stable normalized asset for future APX packets; no runtime import in APX-00.",
+      "dimensions": {
+        "width": 332,
+        "height": 268
+      },
+      "colorMode": "RGBA",
+      "bitDepth": 8,
+      "hasAlpha": true,
+      "alphaMode": "straight-alpha-channel",
+      "cropBboxThreshold1": [
+        28,
+        28,
+        304,
+        241
+      ],
+      "cropBboxThreshold16": [
+        28,
+        29,
+        304,
+        240
+      ],
+      "cropBboxThreshold64": [
+        28,
+        29,
+        303,
+        240
+      ],
+      "alphaFillRatio": 0.434769,
+      "sha256": "0592aade85d259104172373b7f0ac9986b538ad11becc0cb6e220d5a87190bfc",
+      "fileSizeBytes": 98717,
+      "status": "ready",
+      "allowedAsRuntimeAsset": true,
+      "allowedAsFlattenedMockupSubstitute": false,
+      "visualHarmonyNotes": "Individual remedy or ingredient sprite for future dynamic rows.",
+      "warnings": []
+    },
+    {
+      "assetId": "remedies.focusDew",
+      "sourceFilename": "remedy_03_jade_potion_bottle.png",
+      "sourceArchiveEntry": "Apothecary/remedy_03_jade_potion_bottle.png",
+      "rawPath": "src/assets/apothecaryExact/raw/remedy_03_jade_potion_bottle.png",
+      "normalizedPath": "src/assets/apothecaryExact/remedies/focus_dew.png",
+      "role": "Focus Dew fixture icon",
+      "targetRegion": "prescription/buy/brew rows",
+      "runtimeIntent": "Stable normalized asset for future APX packets; no runtime import in APX-00.",
+      "dimensions": {
+        "width": 195,
+        "height": 339
+      },
+      "colorMode": "RGBA",
+      "bitDepth": 8,
+      "hasAlpha": true,
+      "alphaMode": "straight-alpha-channel",
+      "cropBboxThreshold1": [
+        28,
+        28,
+        167,
+        311
+      ],
+      "cropBboxThreshold16": [
+        29,
+        28,
+        167,
+        311
+      ],
+      "cropBboxThreshold64": [
+        29,
+        28,
+        166,
+        311
+      ],
+      "alphaFillRatio": 0.410937,
+      "sha256": "9ec7eb6b9818807a1fcb35734f6ad2398f69c9bd812c6247ea3ffa368f03872e",
+      "fileSizeBytes": 69401,
+      "status": "ready",
+      "allowedAsRuntimeAsset": true,
+      "allowedAsFlattenedMockupSubstitute": false,
+      "visualHarmonyNotes": "Individual remedy or ingredient sprite for future dynamic rows.",
+      "warnings": []
+    },
+    {
+      "assetId": "remedies.meridianTea",
+      "sourceFilename": "remedy_04_tea_bowl.png",
+      "sourceArchiveEntry": "Apothecary/remedy_04_tea_bowl.png",
+      "rawPath": "src/assets/apothecaryExact/raw/remedy_04_tea_bowl.png",
+      "normalizedPath": "src/assets/apothecaryExact/remedies/meridian_tea.png",
+      "role": "Meridian Tea fixture icon",
+      "targetRegion": "prescription optional row",
+      "runtimeIntent": "Stable normalized asset for future APX packets; no runtime import in APX-00.",
+      "dimensions": {
+        "width": 297,
+        "height": 256
+      },
+      "colorMode": "RGBA",
+      "bitDepth": 8,
+      "hasAlpha": true,
+      "alphaMode": "straight-alpha-channel",
+      "cropBboxThreshold1": [
+        28,
+        28,
+        269,
+        228
+      ],
+      "cropBboxThreshold16": [
+        29,
+        28,
+        269,
+        228
+      ],
+      "cropBboxThreshold64": [
+        29,
+        29,
+        269,
+        227
+      ],
+      "alphaFillRatio": 0.49925,
+      "sha256": "88260d1e1290c4431577c354bbf647dceb69913ef92565ff867ac43f88ac15df",
+      "fileSizeBytes": 89830,
+      "status": "ready",
+      "allowedAsRuntimeAsset": true,
+      "allowedAsFlattenedMockupSubstitute": false,
+      "visualHarmonyNotes": "Individual remedy or ingredient sprite for future dynamic rows.",
+      "warnings": []
+    },
+    {
+      "assetId": "remedies.ironbloodPellet",
+      "sourceFilename": "remedy_05_brown_pills_bowl.png",
+      "sourceArchiveEntry": "Apothecary/remedy_05_brown_pills_bowl.png",
+      "rawPath": "src/assets/apothecaryExact/raw/remedy_05_brown_pills_bowl.png",
+      "normalizedPath": "src/assets/apothecaryExact/remedies/ironblood_pellet.png",
+      "role": "live fallback remedy",
+      "targetRegion": "live current package fallback",
+      "runtimeIntent": "Stable normalized asset for future APX packets; no runtime import in APX-00.",
+      "dimensions": {
+        "width": 329,
+        "height": 284
+      },
+      "colorMode": "RGBA",
+      "bitDepth": 8,
+      "hasAlpha": true,
+      "alphaMode": "straight-alpha-channel",
+      "cropBboxThreshold1": [
+        28,
+        28,
+        301,
+        256
+      ],
+      "cropBboxThreshold16": [
+        28,
+        28,
+        300,
+        255
+      ],
+      "cropBboxThreshold64": [
+        29,
+        29,
+        300,
+        255
+      ],
+      "alphaFillRatio": 0.471167,
+      "sha256": "3bb3234545d24215af126e07f9742b9e93fa118f8e686225123c8be0ca0e6228",
+      "fileSizeBytes": 96069,
+      "status": "ready",
+      "allowedAsRuntimeAsset": true,
+      "allowedAsFlattenedMockupSubstitute": false,
+      "visualHarmonyNotes": "Individual remedy or ingredient sprite for future dynamic rows.",
+      "warnings": []
+    },
+    {
+      "assetId": "remedies.qiElixir",
+      "sourceFilename": "remedy_06_round_jade_flask.png",
+      "sourceArchiveEntry": "Apothecary/remedy_06_round_jade_flask.png",
+      "rawPath": "src/assets/apothecaryExact/raw/remedy_06_round_jade_flask.png",
+      "normalizedPath": "src/assets/apothecaryExact/remedies/qi_elixir.png",
+      "role": "live fallback remedy",
+      "targetRegion": "live current package fallback",
+      "runtimeIntent": "Stable normalized asset for future APX packets; no runtime import in APX-00.",
+      "dimensions": {
+        "width": 251,
+        "height": 351
+      },
+      "colorMode": "RGBA",
+      "bitDepth": 8,
+      "hasAlpha": true,
+      "alphaMode": "straight-alpha-channel",
+      "cropBboxThreshold1": [
+        28,
+        28,
+        223,
+        323
+      ],
+      "cropBboxThreshold16": [
+        29,
+        29,
+        223,
+        323
+      ],
+      "cropBboxThreshold64": [
+        29,
+        29,
+        222,
+        323
+      ],
+      "alphaFillRatio": 0.433173,
+      "sha256": "e7415199fa2d31ae51d887f32fb96684db9bd257addb6e0557cd1fd233785207",
+      "fileSizeBytes": 95316,
+      "status": "ready",
+      "allowedAsRuntimeAsset": true,
+      "allowedAsFlattenedMockupSubstitute": false,
+      "visualHarmonyNotes": "Individual remedy or ingredient sprite for future dynamic rows.",
+      "warnings": []
+    },
+    {
+      "assetId": "remedies.ceramicJar",
+      "sourceFilename": "remedy_07_ceramic_medicine_jar.png",
+      "sourceArchiveEntry": "Apothecary/remedy_07_ceramic_medicine_jar.png",
+      "rawPath": "src/assets/apothecaryExact/raw/remedy_07_ceramic_medicine_jar.png",
+      "normalizedPath": "src/assets/apothecaryExact/remedies/remedy_07_ceramic_medicine_jar.png",
+      "role": "extra remedy",
+      "targetRegion": "fallback",
+      "runtimeIntent": "Stable normalized asset for future APX packets; no runtime import in APX-00.",
+      "dimensions": {
+        "width": 316,
+        "height": 309
+      },
+      "colorMode": "RGBA",
+      "bitDepth": 8,
+      "hasAlpha": true,
+      "alphaMode": "straight-alpha-channel",
+      "cropBboxThreshold1": [
+        28,
+        28,
+        288,
+        281
+      ],
+      "cropBboxThreshold16": [
+        28,
+        28,
+        288,
+        281
+      ],
+      "cropBboxThreshold64": [
+        29,
+        28,
+        287,
+        281
+      ],
+      "alphaFillRatio": 0.501557,
+      "sha256": "66e7e48f1c2fae0efb9684161095bd3eac658f5fedecd07e51eefb5de3789168",
+      "fileSizeBytes": 123323,
+      "status": "ready",
+      "allowedAsRuntimeAsset": true,
+      "allowedAsFlattenedMockupSubstitute": false,
+      "visualHarmonyNotes": "Individual remedy or ingredient sprite for future dynamic rows.",
+      "warnings": []
+    },
+    {
+      "assetId": "remedies.spiritLeaf",
+      "sourceFilename": "remedy_08_leaf_bundle.png",
+      "sourceArchiveEntry": "Apothecary/remedy_08_leaf_bundle.png",
+      "rawPath": "src/assets/apothecaryExact/raw/remedy_08_leaf_bundle.png",
+      "normalizedPath": "src/assets/apothecaryExact/remedies/spirit_leaf.png",
+      "role": "Spirit Leaf ingredient",
+      "targetRegion": "brew lane input",
+      "runtimeIntent": "Stable normalized asset for future APX packets; no runtime import in APX-00.",
+      "dimensions": {
+        "width": 350,
+        "height": 317
+      },
+      "colorMode": "RGBA",
+      "bitDepth": 8,
+      "hasAlpha": true,
+      "alphaMode": "straight-alpha-channel",
+      "cropBboxThreshold1": [
+        28,
+        28,
+        322,
+        289
+      ],
+      "cropBboxThreshold16": [
+        28,
+        28,
+        322,
+        289
+      ],
+      "cropBboxThreshold64": [
+        29,
+        29,
+        321,
+        288
+      ],
+      "alphaFillRatio": 0.351825,
+      "sha256": "e0cba791faa95fedbe1a400a0e28dab25548256e602206208a18494047112110",
+      "fileSizeBytes": 104444,
+      "status": "ready",
+      "allowedAsRuntimeAsset": true,
+      "allowedAsFlattenedMockupSubstitute": false,
+      "visualHarmonyNotes": "Individual remedy or ingredient sprite for future dynamic rows.",
+      "warnings": []
+    },
+    {
+      "assetId": "remedies.powderPacket",
+      "sourceFilename": "remedy_09_paper_powder_packet.png",
+      "sourceArchiveEntry": "Apothecary/remedy_09_paper_powder_packet.png",
+      "rawPath": "src/assets/apothecaryExact/raw/remedy_09_paper_powder_packet.png",
+      "normalizedPath": "src/assets/apothecaryExact/remedies/powder_packet.png",
+      "role": "powder/material fallback",
+      "targetRegion": "fallback",
+      "runtimeIntent": "Stable normalized asset for future APX packets; no runtime import in APX-00.",
+      "dimensions": {
+        "width": 353,
+        "height": 304
+      },
+      "colorMode": "RGBA",
+      "bitDepth": 8,
+      "hasAlpha": true,
+      "alphaMode": "straight-alpha-channel",
+      "cropBboxThreshold1": [
+        28,
+        28,
+        325,
+        276
+      ],
+      "cropBboxThreshold16": [
+        28,
+        28,
+        325,
+        276
+      ],
+      "cropBboxThreshold64": [
+        28,
+        29,
+        325,
+        275
+      ],
+      "alphaFillRatio": 0.400906,
+      "sha256": "03355a7cdaa0a4487437bac89b9a82101971acb5f87a7370dc6674b69622359c",
+      "fileSizeBytes": 109758,
+      "status": "ready",
+      "allowedAsRuntimeAsset": true,
+      "allowedAsFlattenedMockupSubstitute": false,
+      "visualHarmonyNotes": "Individual remedy or ingredient sprite for future dynamic rows.",
+      "warnings": []
+    },
+    {
+      "assetId": "remedies.stickBundle",
+      "sourceFilename": "remedy_10_stick_bundle.png",
+      "sourceArchiveEntry": "Apothecary/remedy_10_stick_bundle.png",
+      "rawPath": "src/assets/apothecaryExact/raw/remedy_10_stick_bundle.png",
+      "normalizedPath": "src/assets/apothecaryExact/remedies/stick_bundle.png",
+      "role": "extra ingredient",
+      "targetRegion": "fallback",
+      "runtimeIntent": "Stable normalized asset for future APX packets; no runtime import in APX-00.",
+      "dimensions": {
+        "width": 348,
+        "height": 309
+      },
+      "colorMode": "RGBA",
+      "bitDepth": 8,
+      "hasAlpha": true,
+      "alphaMode": "straight-alpha-channel",
+      "cropBboxThreshold1": [
+        28,
+        28,
+        320,
+        281
+      ],
+      "cropBboxThreshold16": [
+        28,
+        28,
+        319,
+        281
+      ],
+      "cropBboxThreshold64": [
+        29,
+        28,
+        319,
+        280
+      ],
+      "alphaFillRatio": 0.30058,
+      "sha256": "23973ec41a791c5f45872902992936613a5bc1b02992cc9cfe4e8b37252b6b0f",
+      "fileSizeBytes": 90490,
+      "status": "ready",
+      "allowedAsRuntimeAsset": true,
+      "allowedAsFlattenedMockupSubstitute": false,
+      "visualHarmonyNotes": "Individual remedy or ingredient sprite for future dynamic rows.",
+      "warnings": []
+    },
+    {
+      "assetId": "remedies.ointmentPot",
+      "sourceFilename": "remedy_11_ointment_pot.png",
+      "sourceArchiveEntry": "Apothecary/remedy_11_ointment_pot.png",
+      "rawPath": "src/assets/apothecaryExact/raw/remedy_11_ointment_pot.png",
+      "normalizedPath": "src/assets/apothecaryExact/remedies/ointment_pot.png",
+      "role": "extra remedy",
+      "targetRegion": "fallback",
+      "runtimeIntent": "Stable normalized asset for future APX packets; no runtime import in APX-00.",
+      "dimensions": {
+        "width": 297,
+        "height": 300
+      },
+      "colorMode": "RGBA",
+      "bitDepth": 8,
+      "hasAlpha": true,
+      "alphaMode": "straight-alpha-channel",
+      "cropBboxThreshold1": [
+        28,
+        28,
+        269,
+        272
+      ],
+      "cropBboxThreshold16": [
+        28,
+        28,
+        269,
+        272
+      ],
+      "cropBboxThreshold64": [
+        29,
+        29,
+        268,
+        272
+      ],
+      "alphaFillRatio": 0.514141,
+      "sha256": "3892677d8433d4d95e33e1143dc641a2a9df0bf96433f9bf0c044650981503a3",
+      "fileSizeBytes": 104588,
+      "status": "ready",
+      "allowedAsRuntimeAsset": true,
+      "allowedAsFlattenedMockupSubstitute": false,
+      "visualHarmonyNotes": "Individual remedy or ingredient sprite for future dynamic rows.",
+      "warnings": []
+    },
+    {
+      "assetId": "remedies.bluePotionBottle",
+      "sourceFilename": "remedy_12_blue_potion_bottle.png",
+      "sourceArchiveEntry": "Apothecary/remedy_12_blue_potion_bottle.png",
+      "rawPath": "src/assets/apothecaryExact/raw/remedy_12_blue_potion_bottle.png",
+      "normalizedPath": "src/assets/apothecaryExact/remedies/blue_potion_bottle.png",
+      "role": "focus/clarity backup icon",
+      "targetRegion": "fallback",
+      "runtimeIntent": "Stable normalized asset for future APX packets; no runtime import in APX-00.",
+      "dimensions": {
+        "width": 236,
+        "height": 346
+      },
+      "colorMode": "RGBA",
+      "bitDepth": 8,
+      "hasAlpha": true,
+      "alphaMode": "straight-alpha-channel",
+      "cropBboxThreshold1": [
+        28,
+        28,
+        208,
+        318
+      ],
+      "cropBboxThreshold16": [
+        28,
+        28,
+        207,
+        318
+      ],
+      "cropBboxThreshold64": [
+        29,
+        28,
+        207,
+        318
+      ],
+      "alphaFillRatio": 0.401942,
+      "sha256": "691a306fae85443f27487d122537b67e9dd0884f7ee68fd65fa3639e0a3e8ae3",
+      "fileSizeBytes": 83500,
+      "status": "ready",
+      "allowedAsRuntimeAsset": true,
+      "allowedAsFlattenedMockupSubstitute": false,
+      "visualHarmonyNotes": "Individual remedy or ingredient sprite for future dynamic rows.",
+      "warnings": []
+    },
+    {
+      "assetId": "sources.cityMarket",
+      "sourceFilename": "source_01_market_stall.png",
+      "sourceArchiveEntry": "Apothecary/source_01_market_stall.png",
+      "rawPath": "src/assets/apothecaryExact/raw/source_01_market_stall.png",
+      "normalizedPath": "src/assets/apothecaryExact/sources/source_city_market.png",
+      "role": "market/buy source",
+      "targetRegion": "source buttons",
+      "runtimeIntent": "Stable normalized asset for future APX packets; no runtime import in APX-00.",
+      "dimensions": {
+        "width": 307,
+        "height": 278
+      },
+      "colorMode": "RGBA",
+      "bitDepth": 8,
+      "hasAlpha": true,
+      "alphaMode": "straight-alpha-channel",
+      "cropBboxThreshold1": [
+        28,
+        28,
+        279,
+        250
+      ],
+      "cropBboxThreshold16": [
+        29,
+        28,
+        278,
+        250
+      ],
+      "cropBboxThreshold64": [
+        29,
+        29,
+        278,
+        249
+      ],
+      "alphaFillRatio": 0.463361,
+      "sha256": "33ca648a170f04b19fdd2cd26e547ce8bf58e6745a226aae6fb4f550bc8cd0b0",
+      "fileSizeBytes": 110809,
+      "status": "ready",
+      "allowedAsRuntimeAsset": true,
+      "allowedAsFlattenedMockupSubstitute": false,
+      "visualHarmonyNotes": "Separate source/provenance sprite for future chips and route help.",
+      "warnings": []
+    },
+    {
+      "assetId": "sources.apothecaryShelf",
+      "sourceFilename": "source_02_apothecary_shelf.png",
+      "sourceArchiveEntry": "Apothecary/source_02_apothecary_shelf.png",
+      "rawPath": "src/assets/apothecaryExact/raw/source_02_apothecary_shelf.png",
+      "normalizedPath": "src/assets/apothecaryExact/sources/source_apothecary_shelf.png",
+      "role": "apothecary shelf source",
+      "targetRegion": "source buttons",
+      "runtimeIntent": "Stable normalized asset for future APX packets; no runtime import in APX-00.",
+      "dimensions": {
+        "width": 265,
+        "height": 272
+      },
+      "colorMode": "RGBA",
+      "bitDepth": 8,
+      "hasAlpha": true,
+      "alphaMode": "straight-alpha-channel",
+      "cropBboxThreshold1": [
+        28,
+        28,
+        237,
+        244
+      ],
+      "cropBboxThreshold16": [
+        28,
+        28,
+        236,
+        244
+      ],
+      "cropBboxThreshold64": [
+        29,
+        29,
+        236,
+        244
+      ],
+      "alphaFillRatio": 0.52765,
+      "sha256": "5e5546dc445617addb5e573e907e7d040dfb414ef224b88a929775e3b32443b1",
+      "fileSizeBytes": 93976,
+      "status": "ready",
+      "allowedAsRuntimeAsset": true,
+      "allowedAsFlattenedMockupSubstitute": false,
+      "visualHarmonyNotes": "Separate source/provenance sprite for future chips and route help.",
+      "warnings": []
+    },
+    {
+      "assetId": "sources.brewCauldron",
+      "sourceFilename": "source_03_alchemy_cauldron.png",
+      "sourceArchiveEntry": "Apothecary/source_03_alchemy_cauldron.png",
+      "rawPath": "src/assets/apothecaryExact/raw/source_03_alchemy_cauldron.png",
+      "normalizedPath": "src/assets/apothecaryExact/sources/source_brew_cauldron.png",
+      "role": "brew/alchemy source",
+      "targetRegion": "brew/source chips",
+      "runtimeIntent": "Stable normalized asset for future APX packets; no runtime import in APX-00.",
+      "dimensions": {
+        "width": 266,
+        "height": 322
+      },
+      "colorMode": "RGBA",
+      "bitDepth": 8,
+      "hasAlpha": true,
+      "alphaMode": "straight-alpha-channel",
+      "cropBboxThreshold1": [
+        28,
+        28,
+        238,
+        294
+      ],
+      "cropBboxThreshold16": [
+        28,
+        28,
+        238,
+        294
+      ],
+      "cropBboxThreshold64": [
+        29,
+        29,
+        238,
+        294
+      ],
+      "alphaFillRatio": 0.387008,
+      "sha256": "801d06791a430be5a40180a3cf6ea96ade10cd485c13ff869c710f3731696cec",
+      "fileSizeBytes": 91823,
+      "status": "ready",
+      "allowedAsRuntimeAsset": true,
+      "allowedAsFlattenedMockupSubstitute": false,
+      "visualHarmonyNotes": "Separate source/provenance sprite for future chips and route help.",
+      "warnings": []
+    },
+    {
+      "assetId": "sources.herbGrove",
+      "sourceFilename": "source_04_herb_basket.png",
+      "sourceArchiveEntry": "Apothecary/source_04_herb_basket.png",
+      "rawPath": "src/assets/apothecaryExact/raw/source_04_herb_basket.png",
+      "normalizedPath": "src/assets/apothecaryExact/sources/source_herb_grove.png",
+      "role": "herb source",
+      "targetRegion": "ingredient routing",
+      "runtimeIntent": "Stable normalized asset for future APX packets; no runtime import in APX-00.",
+      "dimensions": {
+        "width": 325,
+        "height": 286
+      },
+      "colorMode": "RGBA",
+      "bitDepth": 8,
+      "hasAlpha": true,
+      "alphaMode": "straight-alpha-channel",
+      "cropBboxThreshold1": [
+        28,
+        28,
+        297,
+        258
+      ],
+      "cropBboxThreshold16": [
+        29,
+        28,
+        297,
+        258
+      ],
+      "cropBboxThreshold64": [
+        29,
+        29,
+        296,
+        258
+      ],
+      "alphaFillRatio": 0.347273,
+      "sha256": "e3ed02c572e2d0c3182b7b12841b053747f653b423bff78219783b0bfab3e1a9",
+      "fileSizeBytes": 98804,
+      "status": "ready",
+      "allowedAsRuntimeAsset": true,
+      "allowedAsFlattenedMockupSubstitute": false,
+      "visualHarmonyNotes": "Separate source/provenance sprite for future chips and route help.",
+      "warnings": []
+    },
+    {
+      "assetId": "sources.outskirts",
+      "sourceFilename": "source_05_outskirts_path_sign.png",
+      "sourceArchiveEntry": "Apothecary/source_05_outskirts_path_sign.png",
+      "rawPath": "src/assets/apothecaryExact/raw/source_05_outskirts_path_sign.png",
+      "normalizedPath": "src/assets/apothecaryExact/sources/source_outskirts.png",
+      "role": "outskirts route",
+      "targetRegion": "route hints",
+      "runtimeIntent": "Stable normalized asset for future APX packets; no runtime import in APX-00.",
+      "dimensions": {
+        "width": 325,
+        "height": 281
+      },
+      "colorMode": "RGBA",
+      "bitDepth": 8,
+      "hasAlpha": true,
+      "alphaMode": "straight-alpha-channel",
+      "cropBboxThreshold1": [
+        28,
+        28,
+        297,
+        253
+      ],
+      "cropBboxThreshold16": [
+        28,
+        28,
+        297,
+        253
+      ],
+      "cropBboxThreshold64": [
+        29,
+        29,
+        297,
+        252
+      ],
+      "alphaFillRatio": 0.380246,
+      "sha256": "e4d0bd87c789986163212649ca4c317ff642e835c3c1ac907b2c274303bbb521",
+      "fileSizeBytes": 104315,
+      "status": "ready",
+      "allowedAsRuntimeAsset": true,
+      "allowedAsFlattenedMockupSubstitute": false,
+      "visualHarmonyNotes": "Separate source/provenance sprite for future chips and route help.",
+      "warnings": []
+    },
+    {
+      "assetId": "sources.ruins",
+      "sourceFilename": "source_06_ruin_cache.png",
+      "sourceArchiveEntry": "Apothecary/source_06_ruin_cache.png",
+      "rawPath": "src/assets/apothecaryExact/raw/source_06_ruin_cache.png",
+      "normalizedPath": "src/assets/apothecaryExact/sources/source_ruins.png",
+      "role": "ruins source",
+      "targetRegion": "route hints",
+      "runtimeIntent": "Stable normalized asset for future APX packets; no runtime import in APX-00.",
+      "dimensions": {
+        "width": 319,
+        "height": 307
+      },
+      "colorMode": "RGBA",
+      "bitDepth": 8,
+      "hasAlpha": true,
+      "alphaMode": "straight-alpha-channel",
+      "cropBboxThreshold1": [
+        28,
+        28,
+        291,
+        279
+      ],
+      "cropBboxThreshold16": [
+        28,
+        28,
+        291,
+        279
+      ],
+      "cropBboxThreshold64": [
+        28,
+        28,
+        291,
+        278
+      ],
+      "alphaFillRatio": 0.458191,
+      "sha256": "d5e547da17759f82b51febf2f7aa5bc77622efa0d16c76d47301feb9ff3661cd",
+      "fileSizeBytes": 131573,
+      "status": "ready",
+      "allowedAsRuntimeAsset": true,
+      "allowedAsFlattenedMockupSubstitute": false,
+      "visualHarmonyNotes": "Separate source/provenance sprite for future chips and route help.",
+      "warnings": []
+    },
+    {
+      "assetId": "sources.expedition",
+      "sourceFilename": "source_07_route_map.png",
+      "sourceArchiveEntry": "Apothecary/source_07_route_map.png",
+      "rawPath": "src/assets/apothecaryExact/raw/source_07_route_map.png",
+      "normalizedPath": "src/assets/apothecaryExact/sources/source_expedition.png",
+      "role": "expedition source",
+      "targetRegion": "route hints",
+      "runtimeIntent": "Stable normalized asset for future APX packets; no runtime import in APX-00.",
+      "dimensions": {
+        "width": 305,
+        "height": 287
+      },
+      "colorMode": "RGBA",
+      "bitDepth": 8,
+      "hasAlpha": true,
+      "alphaMode": "straight-alpha-channel",
+      "cropBboxThreshold1": [
+        28,
+        28,
+        277,
+        259
+      ],
+      "cropBboxThreshold16": [
+        29,
+        28,
+        277,
+        259
+      ],
+      "cropBboxThreshold64": [
+        29,
+        29,
+        276,
+        259
+      ],
+      "alphaFillRatio": 0.482573,
+      "sha256": "26cfaa1485ecd58c917b922b43ab0b6a676bbb3b91383086079630e829589d70",
+      "fileSizeBytes": 115761,
+      "status": "ready",
+      "allowedAsRuntimeAsset": true,
+      "allowedAsFlattenedMockupSubstitute": false,
+      "visualHarmonyNotes": "Separate source/provenance sprite for future chips and route help.",
+      "warnings": []
+    },
+    {
+      "assetId": "sources.bounty",
+      "sourceFilename": "source_08_bounty_board.png",
+      "sourceArchiveEntry": "Apothecary/source_08_bounty_board.png",
+      "rawPath": "src/assets/apothecaryExact/raw/source_08_bounty_board.png",
+      "normalizedPath": "src/assets/apothecaryExact/sources/source_bounty.png",
+      "role": "bounty source",
+      "targetRegion": "route hints",
+      "runtimeIntent": "Stable normalized asset for future APX packets; no runtime import in APX-00.",
+      "dimensions": {
+        "width": 263,
+        "height": 303
+      },
+      "colorMode": "RGBA",
+      "bitDepth": 8,
+      "hasAlpha": true,
+      "alphaMode": "straight-alpha-channel",
+      "cropBboxThreshold1": [
+        28,
+        27,
+        235,
+        275
+      ],
+      "cropBboxThreshold16": [
+        28,
+        28,
+        235,
+        275
+      ],
+      "cropBboxThreshold64": [
+        29,
+        28,
+        234,
+        274
+      ],
+      "alphaFillRatio": 0.526083,
+      "sha256": "83e7c637ef9cb4527042a66bcf1916d54c60bb16240213e01dcbffe75253e4a9",
+      "fileSizeBytes": 105009,
+      "status": "ready",
+      "allowedAsRuntimeAsset": true,
+      "allowedAsFlattenedMockupSubstitute": false,
+      "visualHarmonyNotes": "Separate source/provenance sprite for future chips and route help.",
+      "warnings": []
+    },
+    {
+      "assetId": "sources.forge",
+      "sourceFilename": "source_09_forge_anvil.png",
+      "sourceArchiveEntry": "Apothecary/source_09_forge_anvil.png",
+      "rawPath": "src/assets/apothecaryExact/raw/source_09_forge_anvil.png",
+      "normalizedPath": "src/assets/apothecaryExact/sources/source_forge.png",
+      "role": "forge source",
+      "targetRegion": "route hints",
+      "runtimeIntent": "Stable normalized asset for future APX packets; no runtime import in APX-00.",
+      "dimensions": {
+        "width": 311,
+        "height": 240
+      },
+      "colorMode": "RGBA",
+      "bitDepth": 8,
+      "hasAlpha": true,
+      "alphaMode": "straight-alpha-channel",
+      "cropBboxThreshold1": [
+        28,
+        28,
+        283,
+        212
+      ],
+      "cropBboxThreshold16": [
+        28,
+        28,
+        283,
+        212
+      ],
+      "cropBboxThreshold64": [
+        29,
+        28,
+        282,
+        212
+      ],
+      "alphaFillRatio": 0.395686,
+      "sha256": "e70bc48f9d0ad057dda0eac5722e6ecf04592353e4907720b35aeb99bfd8271e",
+      "fileSizeBytes": 79723,
+      "status": "ready",
+      "allowedAsRuntimeAsset": true,
+      "allowedAsFlattenedMockupSubstitute": false,
+      "visualHarmonyNotes": "Separate source/provenance sprite for future chips and route help.",
+      "warnings": []
+    },
+    {
+      "assetId": "sources.ore",
+      "sourceFilename": "source_10_mining_ore.png",
+      "sourceArchiveEntry": "Apothecary/source_10_mining_ore.png",
+      "rawPath": "src/assets/apothecaryExact/raw/source_10_mining_ore.png",
+      "normalizedPath": "src/assets/apothecaryExact/sources/source_ore.png",
+      "role": "ore source",
+      "targetRegion": "route hints",
+      "runtimeIntent": "Stable normalized asset for future APX packets; no runtime import in APX-00.",
+      "dimensions": {
+        "width": 275,
+        "height": 265
+      },
+      "colorMode": "RGBA",
+      "bitDepth": 8,
+      "hasAlpha": true,
+      "alphaMode": "straight-alpha-channel",
+      "cropBboxThreshold1": [
+        28,
+        28,
+        248,
+        237
+      ],
+      "cropBboxThreshold16": [
+        29,
+        29,
+        247,
+        237
+      ],
+      "cropBboxThreshold64": [
+        29,
+        29,
+        247,
+        236
+      ],
+      "alphaFillRatio": 0.423945,
+      "sha256": "caa1cf483bf1581ff984b1d535227059246dbcd9cd26631ec487da9ab39b2354",
+      "fileSizeBytes": 89802,
+      "status": "ready",
+      "allowedAsRuntimeAsset": true,
+      "allowedAsFlattenedMockupSubstitute": false,
+      "visualHarmonyNotes": "Separate source/provenance sprite for future chips and route help.",
+      "warnings": []
+    },
+    {
+      "assetId": "sources.manualPavilion",
+      "sourceFilename": "source_11_manual_book.png",
+      "sourceArchiveEntry": "Apothecary/source_11_manual_book.png",
+      "rawPath": "src/assets/apothecaryExact/raw/source_11_manual_book.png",
+      "normalizedPath": "src/assets/apothecaryExact/sources/source_manual_pavilion.png",
+      "role": "manual pavilion source",
+      "targetRegion": "route hints",
+      "runtimeIntent": "Stable normalized asset for future APX packets; no runtime import in APX-00.",
+      "dimensions": {
+        "width": 262,
+        "height": 286
+      },
+      "colorMode": "RGBA",
+      "bitDepth": 8,
+      "hasAlpha": true,
+      "alphaMode": "straight-alpha-channel",
+      "cropBboxThreshold1": [
+        28,
+        28,
+        234,
+        258
+      ],
+      "cropBboxThreshold16": [
+        28,
+        28,
+        234,
+        258
+      ],
+      "cropBboxThreshold64": [
+        29,
+        28,
+        234,
+        258
+      ],
+      "alphaFillRatio": 0.466343,
+      "sha256": "2bf4aec02270b28931c7dd859393c19e2e698de27bba61be9451507d4fb6abf5",
+      "fileSizeBytes": 91792,
+      "status": "ready",
+      "allowedAsRuntimeAsset": true,
+      "allowedAsFlattenedMockupSubstitute": false,
+      "visualHarmonyNotes": "Separate source/provenance sprite for future chips and route help.",
+      "warnings": []
+    },
+    {
+      "assetId": "sources.gateTrial",
+      "sourceFilename": "source_12_gate_shrine.png",
+      "sourceArchiveEntry": "Apothecary/source_12_gate_shrine.png",
+      "rawPath": "src/assets/apothecaryExact/raw/source_12_gate_shrine.png",
+      "normalizedPath": "src/assets/apothecaryExact/sources/source_gate_trial.png",
+      "role": "gate trial source",
+      "targetRegion": "route hints",
+      "runtimeIntent": "Stable normalized asset for future APX packets; no runtime import in APX-00.",
+      "dimensions": {
+        "width": 298,
+        "height": 288
+      },
+      "colorMode": "RGBA",
+      "bitDepth": 8,
+      "hasAlpha": true,
+      "alphaMode": "straight-alpha-channel",
+      "cropBboxThreshold1": [
+        28,
+        28,
+        271,
+        260
+      ],
+      "cropBboxThreshold16": [
+        29,
+        28,
+        270,
+        260
+      ],
+      "cropBboxThreshold64": [
+        29,
+        29,
+        270,
+        260
+      ],
+      "alphaFillRatio": 0.407637,
+      "sha256": "e2fccd93766c4d72d80c314ae2b716d3dbec869f2a6160d89047068a206c78b2",
+      "fileSizeBytes": 101997,
+      "status": "ready",
+      "allowedAsRuntimeAsset": true,
+      "allowedAsFlattenedMockupSubstitute": false,
+      "visualHarmonyNotes": "Separate source/provenance sprite for future chips and route help.",
+      "warnings": []
+    },
+    {
+      "assetId": "sources.inventoryCache",
+      "sourceFilename": "source_13_reward_jar.png",
+      "sourceArchiveEntry": "Apothecary/source_13_reward_jar.png",
+      "rawPath": "src/assets/apothecaryExact/raw/source_13_reward_jar.png",
+      "normalizedPath": "src/assets/apothecaryExact/sources/source_inventory_cache.png",
+      "role": "cache/inventory source",
+      "targetRegion": "route hints",
+      "runtimeIntent": "Stable normalized asset for future APX packets; no runtime import in APX-00.",
+      "dimensions": {
+        "width": 270,
+        "height": 285
+      },
+      "colorMode": "RGBA",
+      "bitDepth": 8,
+      "hasAlpha": true,
+      "alphaMode": "straight-alpha-channel",
+      "cropBboxThreshold1": [
+        28,
+        28,
+        243,
+        257
+      ],
+      "cropBboxThreshold16": [
+        28,
+        28,
+        242,
+        256
+      ],
+      "cropBboxThreshold64": [
+        29,
+        28,
+        242,
+        256
+      ],
+      "alphaFillRatio": 0.473021,
+      "sha256": "ebaca2175019c4e0992a4451846325c48aec6a0591dd4719bd7dd2d4c388ee21",
+      "fileSizeBytes": 101432,
+      "status": "ready",
+      "allowedAsRuntimeAsset": true,
+      "allowedAsFlattenedMockupSubstitute": false,
+      "visualHarmonyNotes": "Separate source/provenance sprite for future chips and route help.",
+      "warnings": []
+    },
+    {
+      "assetId": "sources.meritExchange",
+      "sourceFilename": "source_14_jade_token.png",
+      "sourceArchiveEntry": "Apothecary/source_14_jade_token.png",
+      "rawPath": "src/assets/apothecaryExact/raw/source_14_jade_token.png",
+      "normalizedPath": "src/assets/apothecaryExact/sources/source_merit_exchange.png",
+      "role": "merit exchange source",
+      "targetRegion": "route hints",
+      "runtimeIntent": "Stable normalized asset for future APX packets; no runtime import in APX-00.",
+      "dimensions": {
+        "width": 267,
+        "height": 283
+      },
+      "colorMode": "RGBA",
+      "bitDepth": 8,
+      "hasAlpha": true,
+      "alphaMode": "straight-alpha-channel",
+      "cropBboxThreshold1": [
+        28,
+        28,
+        239,
+        255
+      ],
+      "cropBboxThreshold16": [
+        28,
+        28,
+        238,
+        255
+      ],
+      "cropBboxThreshold64": [
+        29,
+        29,
+        238,
+        254
+      ],
+      "alphaFillRatio": 0.342028,
+      "sha256": "731c246f72d13f5b700167e209b391107e407960b0f973bf1e3b7f2ae2b912b7",
+      "fileSizeBytes": 75540,
+      "status": "ready",
+      "allowedAsRuntimeAsset": true,
+      "allowedAsFlattenedMockupSubstitute": false,
+      "visualHarmonyNotes": "Separate source/provenance sprite for future chips and route help.",
+      "warnings": []
+    },
+    {
+      "assetId": "sources.citySpecialty",
+      "sourceFilename": "source_15_sealed_parcel.png",
+      "sourceArchiveEntry": "Apothecary/source_15_sealed_parcel.png",
+      "rawPath": "src/assets/apothecaryExact/raw/source_15_sealed_parcel.png",
+      "normalizedPath": "src/assets/apothecaryExact/sources/source_city_specialty.png",
+      "role": "city specialty source",
+      "targetRegion": "specialty stock",
+      "runtimeIntent": "Stable normalized asset for future APX packets; no runtime import in APX-00.",
+      "dimensions": {
+        "width": 281,
+        "height": 265
+      },
+      "colorMode": "RGBA",
+      "bitDepth": 8,
+      "hasAlpha": true,
+      "alphaMode": "straight-alpha-channel",
+      "cropBboxThreshold1": [
+        28,
+        28,
+        253,
+        237
+      ],
+      "cropBboxThreshold16": [
+        28,
+        28,
+        253,
+        237
+      ],
+      "cropBboxThreshold64": [
+        28,
+        28,
+        253,
+        236
+      ],
+      "alphaFillRatio": 0.453797,
+      "sha256": "37f539ab8f2e3c1c0da834301fd57e79a111d69d63859bc5bb713c2d5f82409f",
+      "fileSizeBytes": 96303,
+      "status": "ready",
+      "allowedAsRuntimeAsset": true,
+      "allowedAsFlattenedMockupSubstitute": false,
+      "visualHarmonyNotes": "Separate source/provenance sprite for future chips and route help.",
+      "warnings": []
+    },
+    {
+      "assetId": "sources.lockedUnknown",
+      "sourceFilename": "source_16_locked_sign.png",
+      "sourceArchiveEntry": "Apothecary/source_16_locked_sign.png",
+      "rawPath": "src/assets/apothecaryExact/raw/source_16_locked_sign.png",
+      "normalizedPath": "src/assets/apothecaryExact/sources/source_locked_unknown.png",
+      "role": "locked/unknown source",
+      "targetRegion": "locked source help",
+      "runtimeIntent": "Stable normalized asset for future APX packets; no runtime import in APX-00.",
+      "dimensions": {
+        "width": 235,
+        "height": 297
+      },
+      "colorMode": "RGBA",
+      "bitDepth": 8,
+      "hasAlpha": true,
+      "alphaMode": "straight-alpha-channel",
+      "cropBboxThreshold1": [
+        9,
+        28,
+        207,
+        269
+      ],
+      "cropBboxThreshold16": [
+        9,
+        28,
+        207,
+        269
+      ],
+      "cropBboxThreshold64": [
+        11,
+        28,
+        206,
+        268
+      ],
+      "alphaFillRatio": 0.297514,
+      "sha256": "cfa18c757c41f1c0641a1422b5f093b010fa6f99f07021c6df0d6955c234b039",
+      "fileSizeBytes": 64691,
+      "status": "ready",
+      "allowedAsRuntimeAsset": true,
+      "allowedAsFlattenedMockupSubstitute": false,
+      "visualHarmonyNotes": "Separate source/provenance sprite for future chips and route help.",
+      "warnings": []
+    },
+    {
+      "assetId": "warnings.unknown",
+      "sourceFilename": "warning_01_unknown_question_seal.png",
+      "sourceArchiveEntry": "Apothecary/warning_01_unknown_question_seal.png",
+      "rawPath": "src/assets/apothecaryExact/raw/warning_01_unknown_question_seal.png",
+      "normalizedPath": "src/assets/apothecaryExact/warnings/warning_unknown_problem.png",
+      "role": "generic problem warning",
+      "targetRegion": "fallback warning",
+      "runtimeIntent": "Stable normalized asset for future APX packets; no runtime import in APX-00.",
+      "dimensions": {
+        "width": 363,
+        "height": 366
+      },
+      "colorMode": "RGBA",
+      "bitDepth": 8,
+      "hasAlpha": true,
+      "alphaMode": "straight-alpha-channel",
+      "cropBboxThreshold1": [
+        28,
+        28,
+        335,
+        338
+      ],
+      "cropBboxThreshold16": [
+        28,
+        28,
+        335,
+        338
+      ],
+      "cropBboxThreshold64": [
+        29,
+        28,
+        335,
+        338
+      ],
+      "alphaFillRatio": 0.563263,
+      "sha256": "b6dd96c241f28bbaf98730f52e62af8e90f6920c744d957b78281b684f1e806f",
+      "fileSizeBytes": 174893,
+      "status": "ready",
+      "allowedAsRuntimeAsset": true,
+      "allowedAsFlattenedMockupSubstitute": false,
+      "visualHarmonyNotes": "Cinnabar/gold warning stamp object; semantic warning text remains live UI later.",
+      "warnings": []
+    },
+    {
+      "assetId": "warnings.pouchRequirement",
+      "sourceFilename": "warning_02_bag_requirement_stamp.png",
+      "sourceArchiveEntry": "Apothecary/warning_02_bag_requirement_stamp.png",
+      "rawPath": "src/assets/apothecaryExact/raw/warning_02_bag_requirement_stamp.png",
+      "normalizedPath": "src/assets/apothecaryExact/warnings/warning_pouch_requirement.png",
+      "role": "pouch requirement warning",
+      "targetRegion": "warning strip/pouch",
+      "runtimeIntent": "Stable normalized asset for future APX packets; no runtime import in APX-00.",
+      "dimensions": {
+        "width": 335,
+        "height": 347
+      },
+      "colorMode": "RGBA",
+      "bitDepth": 8,
+      "hasAlpha": true,
+      "alphaMode": "straight-alpha-channel",
+      "cropBboxThreshold1": [
+        28,
+        27,
+        307,
+        319
+      ],
+      "cropBboxThreshold16": [
+        29,
+        28,
+        307,
+        319
+      ],
+      "cropBboxThreshold64": [
+        29,
+        28,
+        306,
+        318
+      ],
+      "alphaFillRatio": 0.685217,
+      "sha256": "dac90ff8defa893289079c3ee2a76c86ee10fa9570c94bf5fcea43ac7c3cea32",
+      "fileSizeBytes": 184618,
+      "status": "ready",
+      "allowedAsRuntimeAsset": true,
+      "allowedAsFlattenedMockupSubstitute": false,
+      "visualHarmonyNotes": "Cinnabar/gold warning stamp object; semantic warning text remains live UI later.",
+      "warnings": []
+    },
+    {
+      "assetId": "warnings.healingBelowFloor",
+      "sourceFilename": "warning_03_bowl_drop_seal.png",
+      "sourceArchiveEntry": "Apothecary/warning_03_bowl_drop_seal.png",
+      "rawPath": "src/assets/apothecaryExact/raw/warning_03_bowl_drop_seal.png",
+      "normalizedPath": "src/assets/apothecaryExact/warnings/warning_healing_below_floor.png",
+      "role": "healing below floor warning",
+      "targetRegion": "warning strip",
+      "runtimeIntent": "Stable normalized asset for future APX packets; no runtime import in APX-00.",
+      "dimensions": {
+        "width": 368,
+        "height": 370
+      },
+      "colorMode": "RGBA",
+      "bitDepth": 8,
+      "hasAlpha": true,
+      "alphaMode": "straight-alpha-channel",
+      "cropBboxThreshold1": [
+        28,
+        28,
+        341,
+        342
+      ],
+      "cropBboxThreshold16": [
+        28,
+        29,
+        340,
+        342
+      ],
+      "cropBboxThreshold64": [
+        28,
+        29,
+        340,
+        342
+      ],
+      "alphaFillRatio": 0.564982,
+      "sha256": "5329dd7fa11323032c04a5162d57c28e093e9574bcaf69fde888b682a943d225",
+      "fileSizeBytes": 180996,
+      "status": "ready",
+      "allowedAsRuntimeAsset": true,
+      "allowedAsFlattenedMockupSubstitute": false,
+      "visualHarmonyNotes": "Cinnabar/gold warning stamp object; semantic warning text remains live UI later.",
+      "warnings": []
+    },
+    {
+      "assetId": "warnings.citySpecialtyMissing",
+      "sourceFilename": "warning_04_disc_warning_stamp.png",
+      "sourceArchiveEntry": "Apothecary/warning_04_disc_warning_stamp.png",
+      "rawPath": "src/assets/apothecaryExact/raw/warning_04_disc_warning_stamp.png",
+      "normalizedPath": "src/assets/apothecaryExact/warnings/warning_city_specialty_missing.png",
+      "role": "no city specialty stock warning",
+      "targetRegion": "warning strip",
+      "runtimeIntent": "Stable normalized asset for future APX packets; no runtime import in APX-00.",
+      "dimensions": {
+        "width": 344,
+        "height": 354
+      },
+      "colorMode": "RGBA",
+      "bitDepth": 8,
+      "hasAlpha": true,
+      "alphaMode": "straight-alpha-channel",
+      "cropBboxThreshold1": [
+        28,
+        28,
+        316,
+        326
+      ],
+      "cropBboxThreshold16": [
+        28,
+        28,
+        316,
+        326
+      ],
+      "cropBboxThreshold64": [
+        29,
+        28,
+        316,
+        325
+      ],
+      "alphaFillRatio": 0.6948,
+      "sha256": "2711993fb0c436d1d6f5b87749f851f02f54edabe4a7fe615d737c7284a7ad29",
+      "fileSizeBytes": 188669,
+      "status": "ready",
+      "allowedAsRuntimeAsset": true,
+      "allowedAsFlattenedMockupSubstitute": false,
+      "visualHarmonyNotes": "Cinnabar/gold warning stamp object; semantic warning text remains live UI later.",
+      "warnings": []
+    },
+    {
+      "assetId": "warnings.pavilionSourceTag",
+      "sourceFilename": "warning_05_pavilion_source_tag.png",
+      "sourceArchiveEntry": "Apothecary/warning_05_pavilion_source_tag.png",
+      "rawPath": "src/assets/apothecaryExact/raw/warning_05_pavilion_source_tag.png",
+      "normalizedPath": "src/assets/apothecaryExact/warnings/warning_pavilion_source_tag.png",
+      "role": "pavilion/source warning variant",
+      "targetRegion": "fallback",
+      "runtimeIntent": "Stable normalized asset for future APX packets; no runtime import in APX-00.",
+      "dimensions": {
+        "width": 286,
+        "height": 452
+      },
+      "colorMode": "RGBA",
+      "bitDepth": 8,
+      "hasAlpha": true,
+      "alphaMode": "straight-alpha-channel",
+      "cropBboxThreshold1": [
+        28,
+        28,
+        258,
+        424
+      ],
+      "cropBboxThreshold16": [
+        28,
+        28,
+        258,
+        424
+      ],
+      "cropBboxThreshold64": [
+        28,
+        29,
+        258,
+        424
+      ],
+      "alphaFillRatio": 0.687999,
+      "sha256": "6d58b1f939b1907050931dca045deddb936e3c9ebc0a68c97f4a8a73ffdf313f",
+      "fileSizeBytes": 206529,
+      "status": "ready",
+      "allowedAsRuntimeAsset": true,
+      "allowedAsFlattenedMockupSubstitute": false,
+      "visualHarmonyNotes": "Cinnabar/gold warning stamp object; semantic warning text remains live UI later.",
+      "warnings": []
+    },
+    {
+      "assetId": "warnings.crackedPath",
+      "sourceFilename": "warning_06_cracked_path_seal.png",
+      "sourceArchiveEntry": "Apothecary/warning_06_cracked_path_seal.png",
+      "rawPath": "src/assets/apothecaryExact/raw/warning_06_cracked_path_seal.png",
+      "normalizedPath": "src/assets/apothecaryExact/warnings/warning_cracked_path.png",
+      "role": "route/path warning variant",
+      "targetRegion": "fallback",
+      "runtimeIntent": "Stable normalized asset for future APX packets; no runtime import in APX-00.",
+      "dimensions": {
+        "width": 396,
+        "height": 416
+      },
+      "colorMode": "RGBA",
+      "bitDepth": 8,
+      "hasAlpha": true,
+      "alphaMode": "straight-alpha-channel",
+      "cropBboxThreshold1": [
+        28,
+        28,
+        368,
+        388
+      ],
+      "cropBboxThreshold16": [
+        28,
+        28,
+        367,
+        387
+      ],
+      "cropBboxThreshold64": [
+        29,
+        29,
+        367,
+        387
+      ],
+      "alphaFillRatio": 0.56508,
+      "sha256": "372a7633a9412acfc928b6bd0a96004072b8cd8ce78b3281bbb4224855d77f84",
+      "fileSizeBytes": 224132,
+      "status": "ready",
+      "allowedAsRuntimeAsset": true,
+      "allowedAsFlattenedMockupSubstitute": false,
+      "visualHarmonyNotes": "Cinnabar/gold warning stamp object; semantic warning text remains live UI later.",
+      "warnings": []
+    },
+    {
+      "assetId": "warnings.attentionRibbon",
+      "sourceFilename": "warning_07_attention_ribbon_tag.png",
+      "sourceArchiveEntry": "Apothecary/warning_07_attention_ribbon_tag.png",
+      "rawPath": "src/assets/apothecaryExact/raw/warning_07_attention_ribbon_tag.png",
+      "normalizedPath": "src/assets/apothecaryExact/warnings/warning_attention_ribbon.png",
+      "role": "attention ribbon tag",
+      "targetRegion": "fallback",
+      "runtimeIntent": "Stable normalized asset for future APX packets; no runtime import in APX-00.",
+      "dimensions": {
+        "width": 229,
+        "height": 456
+      },
+      "colorMode": "RGBA",
+      "bitDepth": 8,
+      "hasAlpha": true,
+      "alphaMode": "straight-alpha-channel",
+      "cropBboxThreshold1": [
+        28,
+        28,
+        201,
+        428
+      ],
+      "cropBboxThreshold16": [
+        28,
+        28,
+        201,
+        428
+      ],
+      "cropBboxThreshold64": [
+        28,
+        29,
+        201,
+        427
+      ],
+      "alphaFillRatio": 0.633963,
+      "sha256": "abe040708c1f9b54ebd9a482d9dd1de07cc2cbc4f116e46d1c288599d09d2d0b",
+      "fileSizeBytes": 159851,
+      "status": "ready",
+      "allowedAsRuntimeAsset": true,
+      "allowedAsFlattenedMockupSubstitute": false,
+      "visualHarmonyNotes": "Cinnabar/gold warning stamp object; semantic warning text remains live UI later.",
+      "warnings": []
+    },
+    {
+      "assetId": "warnings.locked",
+      "sourceFilename": "warning_08_locked_seal.png",
+      "sourceArchiveEntry": "Apothecary/warning_08_locked_seal.png",
+      "rawPath": "src/assets/apothecaryExact/raw/warning_08_locked_seal.png",
+      "normalizedPath": "src/assets/apothecaryExact/warnings/warning_locked.png",
+      "role": "locked/blocked seal",
+      "targetRegion": "locked warning",
+      "runtimeIntent": "Stable normalized asset for future APX packets; no runtime import in APX-00.",
+      "dimensions": {
+        "width": 393,
+        "height": 397
+      },
+      "colorMode": "RGBA",
+      "bitDepth": 8,
+      "hasAlpha": true,
+      "alphaMode": "straight-alpha-channel",
+      "cropBboxThreshold1": [
+        28,
+        28,
+        366,
+        369
+      ],
+      "cropBboxThreshold16": [
+        28,
+        29,
+        365,
+        369
+      ],
+      "cropBboxThreshold64": [
+        28,
+        29,
+        365,
+        369
+      ],
+      "alphaFillRatio": 0.618878,
+      "sha256": "a1b0126934c1613a2ab64827289f24f74d2b07ee9612160837f3240ebd7df874",
+      "fileSizeBytes": 232293,
+      "status": "ready",
+      "allowedAsRuntimeAsset": true,
+      "allowedAsFlattenedMockupSubstitute": false,
+      "visualHarmonyNotes": "Cinnabar/gold warning stamp object; semantic warning text remains live UI later.",
+      "warnings": []
+    },
+    {
+      "assetId": "atlases.remedyIconSet",
+      "sourceFilename": "Remedy icon set-Photoroom.png",
+      "sourceArchiveEntry": "Apothecary/Remedy icon set-Photoroom.png",
+      "rawPath": "src/assets/apothecaryExact/raw/Remedy icon set-Photoroom.png",
+      "normalizedPath": "src/assets/apothecaryExact/atlases/remedy_icon_set_reference.png",
+      "role": "reference atlas only",
+      "targetRegion": "no runtime slicing",
+      "runtimeIntent": "Reference-only review asset for APX-01/APX-05; no runtime slicing or import in APX-00.",
+      "dimensions": {
+        "width": 1448,
+        "height": 1086
+      },
+      "colorMode": "RGBA",
+      "bitDepth": 8,
+      "hasAlpha": true,
+      "alphaMode": "straight-alpha-channel",
+      "cropBboxThreshold1": [
+        0,
+        0,
+        1448,
+        1086
+      ],
+      "cropBboxThreshold16": [
+        86,
+        51,
+        1369,
+        993
+      ],
+      "cropBboxThreshold64": [
+        86,
+        51,
+        1368,
+        993
+      ],
+      "alphaFillRatio": 0.302124,
+      "sha256": "60cc5b57246d5c1c0ea61f4416c6249bdaafb95b118a0e06d7cc4657c5b6c193",
+      "fileSizeBytes": 1408828,
+      "status": "ready",
+      "allowedAsRuntimeAsset": false,
+      "allowedAsFlattenedMockupSubstitute": false,
+      "visualHarmonyNotes": "Reference atlas only; individual sprites exist and should be used instead of runtime slicing.",
+      "warnings": []
+    },
+    {
+      "assetId": "atlases.sourceRouteIcons",
+      "sourceFilename": "Source route icons-Photoroom.png",
+      "sourceArchiveEntry": "Apothecary/Source route icons-Photoroom.png",
+      "rawPath": "src/assets/apothecaryExact/raw/Source route icons-Photoroom.png",
+      "normalizedPath": "src/assets/apothecaryExact/atlases/source_route_icons_reference.png",
+      "role": "reference atlas only",
+      "targetRegion": "no runtime slicing",
+      "runtimeIntent": "Reference-only review asset for APX-01/APX-05; no runtime slicing or import in APX-00.",
+      "dimensions": {
+        "width": 1254,
+        "height": 1254
+      },
+      "colorMode": "RGBA",
+      "bitDepth": 8,
+      "hasAlpha": true,
+      "alphaMode": "straight-alpha-channel",
+      "cropBboxThreshold1": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "cropBboxThreshold16": [
+        40,
+        45,
+        1207,
+        1189
+      ],
+      "cropBboxThreshold64": [
+        41,
+        46,
+        1206,
+        1188
+      ],
+      "alphaFillRatio": 0.355954,
+      "sha256": "c8b8b8b045af176bb2d31d9372db4f0993c1473b62d66fef103364d6fe76dc7c",
+      "fileSizeBytes": 1772784,
+      "status": "ready",
+      "allowedAsRuntimeAsset": false,
+      "allowedAsFlattenedMockupSubstitute": false,
+      "visualHarmonyNotes": "Reference atlas only; individual sprites exist and should be used instead of runtime slicing.",
+      "warnings": []
+    },
+    {
+      "assetId": "atlases.warningSeals",
+      "sourceFilename": "Warning seals.stamps-Photoroom.png",
+      "sourceArchiveEntry": "Apothecary/Warning seals.stamps-Photoroom.png",
+      "rawPath": "src/assets/apothecaryExact/raw/Warning seals.stamps-Photoroom.png",
+      "normalizedPath": "src/assets/apothecaryExact/atlases/warning_seals_stamps_reference.png",
+      "role": "reference atlas only",
+      "targetRegion": "no runtime slicing",
+      "runtimeIntent": "Reference-only review asset for APX-01/APX-05; no runtime slicing or import in APX-00.",
+      "dimensions": {
+        "width": 1536,
+        "height": 1024
+      },
+      "colorMode": "RGBA",
+      "bitDepth": 8,
+      "hasAlpha": true,
+      "alphaMode": "straight-alpha-channel",
+      "cropBboxThreshold1": [
+        0,
+        0,
+        1536,
+        1024
+      ],
+      "cropBboxThreshold16": [
+        69,
+        109,
+        1454,
+        903
+      ],
+      "cropBboxThreshold64": [
+        70,
+        109,
+        1454,
+        902
+      ],
+      "alphaFillRatio": 0.421391,
+      "sha256": "643038997cfadb592856fb4ad553541fb8d5329560a1616f3c4cd5aa62b8de23",
+      "fileSizeBytes": 1836717,
+      "status": "ready",
+      "allowedAsRuntimeAsset": false,
+      "allowedAsFlattenedMockupSubstitute": false,
+      "visualHarmonyNotes": "Reference atlas only; individual sprites exist and should be used instead of runtime slicing.",
+      "warnings": []
+    }
+  ],
+  "ignoredEntries": [
+    {
+      "entry": "Apothecary/",
+      "reason": "directory entry"
+    }
+  ],
+  "missingExpectedAssets": [],
+  "dimensionWarnings": [],
+  "alphaWarnings": [],
+  "humanReviewRequired": [],
+  "reviewArtifacts": [
+    "docs/release/qa/ui-cutover/apothecary-exact/p0-asset-intake/apothecaryExactAssetContactSheet.png",
+    "docs/release/qa/ui-cutover/apothecary-exact/p0-asset-intake/apothecaryExactAssetContactSheetOrder.md"
+  ]
+}
