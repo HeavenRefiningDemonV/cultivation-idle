@@ -48,14 +48,20 @@ test('packet 3.5B mounted live Forge surface keeps semester tabs and semester-cl
   assert.equal(catalog.entriesById.forge_temper_weapon_t1?.status, 'visible_live');
 });
 
-test('packet 3.5B world modal and legacy ForgePanel both resolve to the semester-safe ForgeWorkshop path', async () => {
-  const [modalSource, workshopSource, legacyPanelSource] = await Promise.all([
+test('packet 3.5B world modal defaults to Forge Exact while preserving the semester-safe legacy ForgeWorkshop fallback', async () => {
+  const [modalSource, workshopSource, legacyPanelSource, entrySurfaceSource] = await Promise.all([
     readRepoFile('src/components/modals/WorldBuildingModal.tsx'),
     readRepoFile('src/features/professions/forge/ForgeWorkshop.tsx'),
     readRepoFile('src/components/screens/ForgePanel.tsx'),
+    readRepoFile('src/systems/ui/world/worldBuildingModalEntrySurface.ts'),
   ]);
 
-  assert.match(modalSource, /case 'forge':\s+content = <ForgeWorkshop cityId=\{storeCityId\} \/>;/);
+  assert.match(modalSource, /case 'forge':/);
+  assert.match(modalSource, /forgeExactMode === 'legacy'/);
+  assert.match(modalSource, /<ForgeExactScreenOwner/);
+  assert.match(modalSource, /<ForgeWorkshop cityId=\{storeCityId\} \/>/);
+  assert.match(entrySurfaceSource, /backgroundVariant = 'forge-exact'/);
+  assert.match(entrySurfaceSource, /shellFamily = 'forge-scenic'/);
   assert.match(workshopSource, /buildForgeSurfaceModel/);
   assert.match(workshopSource, /surfaceModel\.headline/);
   assert.match(workshopSource, /type LiveForgeSurfaceTab/);

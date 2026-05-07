@@ -1,6 +1,6 @@
-import type { SVGProps } from 'react';
+import type { ReactElement, SVGProps } from 'react';
 
-export type IconComponent = (props: SVGProps<SVGSVGElement> & { title?: string }) => JSX.Element;
+export type IconComponent = (props: SVGProps<SVGSVGElement> & { title?: string }) => ReactElement;
 
 type InkIconProps = SVGProps<SVGSVGElement> & { title?: string };
 

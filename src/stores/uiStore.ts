@@ -63,6 +63,7 @@ export type WorldBuildingModalIntent = null | {
   apothecarySurface?: 'buy' | 'brew' | 'pouch';
   apothecaryExactMode?: 'live' | 'fixture';
   apothecaryFocus?: 'prescription' | 'buy' | 'brew' | 'pouch' | 'source';
+  forgeExactMode?: 'live' | 'fixture' | 'legacy';
   ruinsExactMode?: 'live' | 'fixture';
   gateTrialExactMode?: 'live' | 'fixture';
 };
@@ -80,6 +81,7 @@ const getWorldBuildingIntentKey = (intent: WorldBuildingModalIntent): string => 
   apothecarySurface: intent?.apothecarySurface ?? null,
   apothecaryExactMode: intent?.apothecaryExactMode ?? null,
   apothecaryFocus: intent?.apothecaryFocus ?? null,
+  forgeExactMode: intent?.forgeExactMode ?? null,
   ruinsExactMode: intent?.ruinsExactMode ?? null,
   gateTrialExactMode: intent?.gateTrialExactMode ?? null,
 });

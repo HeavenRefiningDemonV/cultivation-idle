@@ -1,6 +1,6 @@
 import { useEffect, useMemo, type ReactNode } from 'react';
 import { useContentStore } from '../../stores/contentStore.js';
-import { useUIStore, type WorldBuildingKey, type WorldBuildingModalIntent } from '../../stores/uiStore.js';
+import { useUIStore, type WorldBuildingKey } from '../../stores/uiStore.js';
 import { resolveModuleRef } from '../screens/world/worldUtils.js';
 import { ManualPavilionPanel } from '../screens/ManualPavilionPanel.js';
 import { ForgeWorkshop } from '../../features/professions/forge/ForgeWorkshop.js';
@@ -19,6 +19,7 @@ import { inspectWorldFacingModuleTarget } from '../../systems/world/liveWorldLea
 import { resolveWorldModalEntrySurface } from '../../systems/ui/world/worldBuildingModalEntrySurface.js';
 import { GateTrialScreenOwner } from '../../features/world/gateTrialExact/index.js';
 import { ApothecaryExactScreenOwner } from '../../features/apothecary/exact/index.js';
+import { ForgeExactScreenOwner } from '../../features/professions/forgeExact/index.js';
 
 export interface WorldBuildingModalProps {
   open?: boolean;
@@ -121,7 +122,14 @@ export function WorldBuildingModal({
         );
         break;
       case 'forge':
-        content = <ForgeWorkshop cityId={storeCityId} />;
+        content = storeModalIntent?.forgeExactMode === 'legacy'
+          ? <ForgeWorkshop cityId={storeCityId} />
+          : (
+            <ForgeExactScreenOwner
+              cityId={storeCityId}
+              forceFixture={storeModalIntent?.forgeExactMode === 'fixture'}
+            />
+          );
         break;
       case 'bounties':
         content = <BountyBoardPanel />;

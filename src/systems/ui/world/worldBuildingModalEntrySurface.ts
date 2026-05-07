@@ -1,8 +1,8 @@
 import type { WorldBuildingKey, WorldBuildingModalIntent } from '../../../stores/uiStore.js';
 import { formatWorldModuleLabel } from '../../../ui/text/playerFacingFormatters.js';
 
-export type BackgroundVariant = 'manual-pavilion' | 'apothecary' | 'apothecary-exact' | 'bounty-board' | 'inside-dungeon' | 'forge' | 'outskirts-exact' | 'ruins-exact' | 'gate-trial-exact';
-export type WorldModalShellFamily = 'prep-room' | 'apothecary-scenic' | 'support-board' | 'combat-path' | 'outskirts-scenic' | 'ruins-scenic' | 'gate-trial-scenic';
+export type BackgroundVariant = 'manual-pavilion' | 'apothecary' | 'apothecary-exact' | 'bounty-board' | 'inside-dungeon' | 'forge' | 'forge-exact' | 'outskirts-exact' | 'ruins-exact' | 'gate-trial-exact';
+export type WorldModalShellFamily = 'prep-room' | 'apothecary-scenic' | 'support-board' | 'combat-path' | 'forge-scenic' | 'outskirts-scenic' | 'ruins-scenic' | 'gate-trial-scenic';
 export type WorldModalShellMode = 'context-strip' | 'close-only' | 'screen-owned';
 
 export type WorldModalEntrySurface = {
@@ -70,7 +70,14 @@ export function resolveWorldModalEntrySurface(args: {
       shellFamily = 'support-board';
       break;
     case 'forge':
-      backgroundVariant = 'forge';
+      if (intent?.forgeExactMode === 'legacy') {
+        backgroundVariant = 'forge';
+        break;
+      }
+      backgroundVariant = 'forge-exact';
+      shellFamily = 'forge-scenic';
+      shellMode = 'screen-owned';
+      showShellClose = false;
       break;
     case 'outskirts':
       backgroundVariant = 'outskirts-exact';

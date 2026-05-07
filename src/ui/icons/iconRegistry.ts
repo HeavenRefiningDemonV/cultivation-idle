@@ -100,4 +100,4 @@ export const ICONS = {
 
 export type IconId = keyof typeof ICONS;
 
-export const getIconMeta = (id: IconId) => ICONS[id];
+export const getIconMeta = (id: IconId): IconMeta => ICONS[id];

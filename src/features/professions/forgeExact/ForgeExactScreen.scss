@@ -1,0 +1,1154 @@
+.forgeExactPage {
+  --plane-w: 2048px;
+  --plane-h: 1152px;
+  --forge-ink: #2b2116;
+  --forge-ink-soft: #66523b;
+  --forge-paper: #eadcc4;
+  --forge-paper-light: #f5ead6;
+  --forge-paper-dark: #d6c09a;
+  --forge-bronze: #9b6b35;
+  --forge-gold: #c99a42;
+  --forge-jade: #537d61;
+  --forge-cinnabar: #8f2f23;
+  --forge-soot: #30271f;
+  --forge-ember: #c46b2b;
+  --forge-line: rgba(70, 48, 27, 0.42);
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  overflow: hidden;
+  color: var(--forge-ink);
+  font-family: Georgia, "Times New Roman", serif;
+  letter-spacing: 0;
+  background: #e8dfd0;
+}
+
+.forgeExactPage h1,
+.forgeExactPage h2,
+.forgeExactPage h3,
+.forgeExactPage p,
+.forgeExactPage span,
+.forgeExactPage strong,
+.forgeExactPage button {
+  font-family: Georgia, "Times New Roman", serif !important;
+  letter-spacing: 0;
+}
+
+.forgeExactPage *,
+.forgeExactPage *::before,
+.forgeExactPage *::after {
+  box-sizing: border-box;
+}
+
+.forgeExactScreenOwner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.forgeExactPlane {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--plane-w);
+  height: var(--plane-h);
+  transform: translate(-50%, -50%) scale(var(--forge-exact-scale, 1));
+  transform-origin: center center;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(246, 237, 219, 0.9) 0%, rgba(229, 215, 190, 0.86) 70%, rgba(218, 201, 172, 0.92) 100%),
+    var(--forge-exact-paper-background);
+  background-size: cover;
+  background-position: center;
+}
+
+.forgeExactPlane::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(80% 44% at 50% 59%, rgba(196, 107, 43, 0.13), transparent 58%),
+    radial-gradient(70% 60% at 14% 90%, rgba(39, 34, 24, 0.18), transparent 46%),
+    radial-gradient(70% 60% at 88% 91%, rgba(39, 34, 24, 0.14), transparent 46%),
+    linear-gradient(90deg, rgba(78, 58, 35, 0.12), transparent 20%, transparent 80%, rgba(78, 58, 35, 0.12));
+  z-index: 0;
+}
+
+.forgeExactPlane::after {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  pointer-events: none;
+  border: 2px solid rgba(70, 48, 27, 0.2);
+  box-shadow:
+    inset 0 0 0 2px rgba(251, 241, 219, 0.45),
+    inset 0 0 52px rgba(58, 41, 25, 0.22);
+  z-index: 30;
+}
+
+.forgeExactTitleBlock {
+  position: absolute;
+  left: 52px;
+  top: 24px;
+  width: 320px;
+  height: 64px;
+  z-index: 10;
+}
+
+.forgeExactTitleBlock__row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.forgeExactTitleBlock h1 {
+  margin: 0;
+  font-size: 36px;
+  line-height: 0.95;
+  color: #1c130c;
+  text-shadow: 0 1px 0 rgba(255, 247, 229, 0.82);
+}
+
+.forgeExactTitleBlock p {
+  margin: 8px 0 0;
+  font-size: 18px;
+  line-height: 1;
+  color: var(--forge-ink-soft);
+}
+
+.forgeExactCinnabarSeal {
+  display: inline-block;
+  width: 22px;
+  height: 28px;
+  border: 2px solid var(--forge-cinnabar);
+  background:
+    linear-gradient(90deg, transparent 44%, rgba(143, 47, 35, 0.32) 45% 55%, transparent 56%),
+    linear-gradient(0deg, transparent 44%, rgba(143, 47, 35, 0.32) 45% 55%, transparent 56%),
+    rgba(239, 219, 187, 0.72);
+  box-shadow: inset 0 0 0 2px rgba(143, 47, 35, 0.12);
+}
+
+.forgeExactCinnabarSeal--small {
+  width: 28px;
+  height: 38px;
+}
+
+.forgeExactTopStrip {
+  position: absolute;
+  left: 44px;
+  top: 100px;
+  width: 1960px;
+  height: 64px;
+  z-index: 12;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.forgeExactTruthCell {
+  position: relative;
+  min-width: 0;
+  height: 64px;
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  padding: 7px 13px 7px 10px;
+  overflow: hidden;
+  color: var(--forge-ink);
+  background:
+    linear-gradient(90deg, rgba(255, 249, 235, 0.76), rgba(232, 214, 183, 0.75)),
+    linear-gradient(180deg, rgba(247, 236, 214, 0.96), rgba(218, 196, 160, 0.92));
+  border: 1px solid rgba(92, 65, 37, 0.38);
+  border-radius: 7px;
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 248, 232, 0.34),
+    0 5px 10px rgba(60, 42, 25, 0.16);
+}
+
+.forgeExactTruthCell::after {
+  content: "";
+  position: absolute;
+  right: -7px;
+  top: 7px;
+  width: 36px;
+  height: 50px;
+  border-right: 4px solid rgba(126, 94, 55, 0.16);
+  border-top: 4px solid rgba(126, 94, 55, 0.12);
+  transform: skewX(-22deg);
+}
+
+.forgeExactTruthCell__icon {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  opacity: 0.76;
+  filter: sepia(0.25) saturate(0.82);
+}
+
+.forgeExactTruthCell__icon .gameIcon,
+.forgeExactTabButton__icon .gameIcon,
+.forgeExactToolRow__icon .gameIcon,
+.forgeExactMaterialRow__icon .gameIcon,
+.forgeExactOutputPreview__icon .gameIcon,
+.forgeExactSourceButton .gameIcon,
+.forgeExactFloorNode__medallion .gameIcon {
+  display: grid;
+  place-items: center;
+}
+
+.forgeExactTruthCell__copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  text-align: center;
+}
+
+.forgeExactTruthCell__copy span {
+  max-width: 100%;
+  font-size: 14px;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #352719;
+}
+
+.forgeExactTruthCell__copy strong {
+  max-width: 100%;
+  font-size: 17px;
+  line-height: 1.04;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #17100a;
+}
+
+.forgeExactCard {
+  position: relative;
+  background:
+    linear-gradient(180deg, rgba(246, 235, 214, 0.93), rgba(225, 205, 171, 0.9)),
+    repeating-linear-gradient(0deg, rgba(90, 62, 34, 0.035) 0 1px, transparent 1px 7px);
+  border: 2px solid rgba(92, 65, 37, 0.48);
+  border-radius: 6px;
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 248, 232, 0.36),
+    0 12px 18px rgba(53, 35, 18, 0.14);
+}
+
+.forgeExactCard::before,
+.forgeExactCard::after {
+  content: "";
+  position: absolute;
+  width: 27px;
+  height: 27px;
+  opacity: 0.38;
+  pointer-events: none;
+}
+
+.forgeExactCard::before {
+  left: 9px;
+  top: 9px;
+  border-left: 2px solid rgba(92, 65, 37, 0.5);
+  border-top: 2px solid rgba(92, 65, 37, 0.5);
+}
+
+.forgeExactCard::after {
+  right: 9px;
+  bottom: 9px;
+  border-right: 2px solid rgba(92, 65, 37, 0.5);
+  border-bottom: 2px solid rgba(92, 65, 37, 0.5);
+}
+
+.forgeExactLeftRail {
+  position: absolute;
+  left: 48px;
+  top: 193px;
+  width: 283px;
+  height: 736px;
+  z-index: 10;
+  padding: 19px 15px 17px;
+}
+
+.forgeExactLeftRail h2,
+.forgeExactRightInspector h2 {
+  margin: 0 0 18px;
+  text-align: center;
+  font-size: 24px;
+  line-height: 1;
+  color: #23170e;
+}
+
+.forgeExactTabList {
+  display: grid;
+  gap: 8px;
+}
+
+.forgeExactTabButton {
+  appearance: none;
+  position: relative;
+  width: 100%;
+  height: 65px;
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  align-items: center;
+  gap: 11px;
+  padding: 0 17px 0 8px;
+  border: 1px solid rgba(102, 75, 45, 0.34);
+  border-radius: 5px;
+  background: rgba(242, 228, 202, 0.82);
+  color: var(--forge-ink);
+  cursor: pointer;
+  text-align: left;
+  font-size: 26px;
+  font-weight: 700;
+  overflow: hidden;
+}
+
+.forgeExactTabButton > span:last-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.forgeExactTabButton:disabled {
+  cursor: default;
+  opacity: 0.62;
+}
+
+.forgeExactTabButton--selected {
+  color: #fff0c9;
+  background:
+    linear-gradient(180deg, rgba(179, 92, 43, 0.96), rgba(128, 57, 29, 0.96)),
+    linear-gradient(90deg, rgba(228, 173, 81, 0.36), transparent);
+  border-color: rgba(92, 39, 20, 0.72);
+  box-shadow: inset 0 0 0 2px rgba(245, 184, 86, 0.28), 0 5px 9px rgba(58, 34, 15, 0.24);
+  text-shadow: 0 1px 1px rgba(54, 24, 12, 0.7);
+}
+
+.forgeExactTabButton--selected::after {
+  content: "";
+  position: absolute;
+  right: -2px;
+  top: 20px;
+  width: 18px;
+  height: 18px;
+  background: rgba(226, 181, 83, 0.84);
+  border: 1px solid rgba(85, 46, 20, 0.52);
+  transform: rotate(45deg);
+}
+
+.forgeExactTabButton__icon {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 3px;
+  background: rgba(255, 244, 222, 0.26);
+  filter: sepia(0.1) saturate(0.92);
+}
+
+.forgeExactModePanel,
+.forgeExactTools {
+  margin-top: 28px;
+}
+
+.forgeExactModePanel h3,
+.forgeExactTools h3,
+.forgeExactInspectorSection h3,
+.forgeExactRecommendation h3 {
+  margin: 0 0 10px;
+  font-size: 17px;
+  line-height: 1;
+  color: #2a1d12;
+}
+
+.forgeExactModeRows,
+.forgeExactToolRows,
+.forgeExactMaterialRows,
+.forgeExactPreviewRows {
+  display: grid;
+  gap: 8px;
+}
+
+.forgeExactModeRow {
+  appearance: none;
+  width: 100%;
+  height: 46px;
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  border: 1px solid rgba(113, 82, 47, 0.26);
+  border-radius: 7px;
+  background: rgba(244, 231, 205, 0.66);
+  color: var(--forge-ink);
+  cursor: pointer;
+  text-align: left;
+  font-size: 16px;
+}
+
+.forgeExactModeRow:disabled {
+  cursor: default;
+  opacity: 0.52;
+}
+
+.forgeExactModeRow__radio {
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  border: 1px solid rgba(126, 91, 52, 0.55);
+  background: rgba(255, 249, 235, 0.76);
+  box-shadow: inset 0 0 0 4px rgba(234, 220, 195, 0.8);
+}
+
+.forgeExactModeRow--selected .forgeExactModeRow__radio {
+  background: var(--forge-bronze);
+  box-shadow: inset 0 0 0 4px rgba(244, 229, 196, 0.9);
+}
+
+.forgeExactModeRow__label,
+.forgeExactModeRow__badge,
+.forgeExactModeRow__note {
+  white-space: nowrap;
+}
+
+.forgeExactModeRow__badge,
+.forgeExactModeRow__note {
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  background: rgba(218, 225, 199, 0.78);
+  border: 1px solid rgba(83, 125, 97, 0.28);
+  color: #435d45;
+}
+
+.forgeExactModeRow__note {
+  background: rgba(232, 219, 195, 0.72);
+  border-color: rgba(99, 76, 48, 0.22);
+  color: var(--forge-ink-soft);
+}
+
+.forgeExactToolRow {
+  height: 53px;
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) 64px;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  border: 1px solid rgba(113, 82, 47, 0.24);
+  border-radius: 7px;
+  background: rgba(244, 231, 205, 0.64);
+  font-size: 16px;
+}
+
+.forgeExactToolRow__icon {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 6px;
+  background: rgba(222, 205, 177, 0.6);
+}
+
+.forgeExactToolRow strong {
+  text-align: right;
+  font-size: 15px;
+}
+
+.forgeExactCenterHeader {
+  position: absolute;
+  left: 763px;
+  top: 184px;
+  width: 521px;
+  height: 96px;
+  z-index: 14;
+  text-align: center;
+  color: #f4e4c2;
+  pointer-events: none;
+}
+
+.forgeExactCenterHeader__plaque {
+  position: relative;
+  height: 49px;
+  display: grid;
+  place-items: center;
+  background:
+    linear-gradient(180deg, rgba(54, 45, 35, 0.98), rgba(31, 26, 22, 0.98));
+  border: 2px solid rgba(163, 121, 62, 0.65);
+  border-radius: 9px;
+  box-shadow:
+    inset 0 0 0 2px rgba(15, 12, 10, 0.6),
+    0 6px 9px rgba(38, 24, 12, 0.32);
+}
+
+.forgeExactCenterHeader__plaque::before,
+.forgeExactCenterHeader__plaque::after {
+  content: "";
+  position: absolute;
+  top: 16px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--forge-gold);
+}
+
+.forgeExactCenterHeader__plaque::before {
+  left: 108px;
+}
+
+.forgeExactCenterHeader__plaque::after {
+  right: 108px;
+}
+
+.forgeExactCenterHeader h2 {
+  margin: 0;
+  font-size: 29px;
+  line-height: 1;
+  color: #f5e3bf;
+}
+
+.forgeExactCenterHeader p {
+  margin: 12px 0 9px;
+  font-size: 17px;
+  color: #ead7b4;
+  text-shadow: 0 1px 1px rgba(18, 12, 8, 0.62);
+}
+
+.forgeExactChipRow {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.forgeExactChip {
+  width: 158px;
+  min-width: 0;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(86, 62, 36, 0.4);
+  background: linear-gradient(180deg, rgba(246, 236, 214, 0.93), rgba(211, 187, 150, 0.92));
+  color: #2a1d12;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.forgeExactChip.forgeExactStatus--met {
+  background: linear-gradient(180deg, rgba(230, 237, 216, 0.95), rgba(181, 197, 165, 0.95));
+}
+
+.forgeExactCenterStage {
+  position: absolute;
+  left: 340px;
+  top: 190px;
+  width: 1265px;
+  height: 605px;
+  z-index: 7;
+}
+
+.forgeExactStagePlate {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 3px;
+  background: rgba(42, 35, 27, 0.74);
+  box-shadow:
+    inset 0 0 70px rgba(255, 230, 176, 0.12),
+    inset 0 0 0 1px rgba(81, 60, 34, 0.34);
+}
+
+.forgeExactStageImage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.82;
+  filter: sepia(0.22) saturate(0.9) contrast(0.98) brightness(0.84);
+}
+
+.forgeExactStagePlate::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    radial-gradient(26% 23% at 56% 70%, rgba(240, 142, 55, 0.45), transparent 64%),
+    linear-gradient(90deg, rgba(232, 220, 197, 0.42), transparent 16%, transparent 82%, rgba(232, 220, 197, 0.3)),
+    linear-gradient(180deg, rgba(231, 219, 198, 0.2), transparent 26%, rgba(231, 219, 198, 0.32));
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+.forgeExactStagePlate::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    radial-gradient(70% 64% at 50% 50%, transparent 40%, rgba(43, 31, 20, 0.42) 100%),
+    linear-gradient(180deg, rgba(242, 226, 199, 0.06), rgba(31, 25, 20, 0.12));
+}
+
+.forgeExactStageSmoke {
+  position: absolute;
+  z-index: 3;
+  width: 250px;
+  height: 190px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(239, 235, 221, 0.2), rgba(239, 235, 221, 0) 66%);
+  filter: blur(8px);
+  pointer-events: none;
+}
+
+.forgeExactStageSmoke--one {
+  left: 132px;
+  bottom: 56px;
+}
+
+.forgeExactStageSmoke--two {
+  right: 242px;
+  top: 180px;
+}
+
+.forgeExactReadinessSeal {
+  position: absolute;
+  left: 515px;
+  top: 151px;
+  width: 212px;
+  height: 189px;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 28px 28px 18px;
+  color: #f8e9c7;
+  background:
+    radial-gradient(circle at 50% 47%, rgba(54, 45, 35, 0.98), rgba(26, 23, 20, 0.98) 70%),
+    linear-gradient(180deg, rgba(54, 45, 35, 0.98), rgba(25, 21, 18, 0.98));
+  border: 3px double rgba(199, 151, 68, 0.86);
+  border-radius: 50%;
+  box-shadow:
+    inset 0 0 0 5px rgba(19, 16, 13, 0.64),
+    0 10px 18px rgba(21, 13, 7, 0.32);
+}
+
+.forgeExactReadinessSeal::before,
+.forgeExactReadinessSeal::after {
+  content: "";
+  position: absolute;
+  inset: -11px;
+  border: 2px solid rgba(199, 151, 68, 0.55);
+  border-radius: 43%;
+  pointer-events: none;
+}
+
+.forgeExactReadinessSeal::after {
+  transform: rotate(45deg);
+}
+
+.forgeExactReadinessSeal__check {
+  position: absolute;
+  top: -20px;
+  width: 49px;
+  height: 49px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: #e8f1d4;
+  background: radial-gradient(circle, #5f8061, #344836 72%);
+  border: 2px solid rgba(232, 209, 154, 0.82);
+}
+
+.forgeExactReadinessSeal strong {
+  font-size: 20px;
+  line-height: 1.02;
+  color: #f8e9c7;
+  text-shadow: 0 1px 1px rgba(5, 4, 3, 0.92);
+}
+
+.forgeExactReadinessSeal span:not(.forgeExactReadinessSeal__check) {
+  margin-top: 9px;
+  font-size: 17px;
+  font-weight: 700;
+  color: #f6dfad;
+  text-shadow: 0 1px 1px rgba(5, 4, 3, 0.9);
+}
+
+.forgeExactReadinessSeal p {
+  margin: 10px 0 0;
+  font-size: 13px;
+  line-height: 1.18;
+  color: #f3dfb6;
+}
+
+.forgeExactWorkpieceLabel {
+  position: absolute;
+  left: 491px;
+  bottom: 37px;
+  z-index: 6;
+  min-width: 275px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  padding: 0 28px;
+  color: #f5e7c8;
+  font-size: 18px;
+  font-weight: 700;
+  background:
+    linear-gradient(90deg, transparent, rgba(43, 33, 23, 0.96) 11% 89%, transparent);
+  text-shadow: 0 1px 1px rgba(20, 12, 7, 0.9);
+}
+
+.forgeExactWorkpieceLabel::before,
+.forgeExactWorkpieceLabel::after {
+  content: "";
+  position: absolute;
+  top: 12px;
+  width: 20px;
+  height: 12px;
+  border: 2px solid rgba(194, 145, 70, 0.72);
+  transform: rotate(45deg);
+}
+
+.forgeExactWorkpieceLabel::before {
+  left: 8px;
+}
+
+.forgeExactWorkpieceLabel::after {
+  right: 8px;
+}
+
+.forgeExactResultOverlay,
+.forgeExactHandsOnHost {
+  position: absolute;
+  inset: 34px;
+  z-index: 20;
+  overflow: hidden;
+  border: 2px solid rgba(205, 167, 94, 0.62);
+  background: rgba(240, 229, 207, 0.92);
+  color: var(--forge-ink);
+  box-shadow: 0 16px 28px rgba(20, 12, 7, 0.35);
+}
+
+.forgeExactResultOverlay {
+  inset: auto 360px 126px;
+  min-height: 116px;
+  padding: 17px 22px;
+  text-align: center;
+}
+
+.forgeExactResultOverlay h3 {
+  margin: 0 0 8px;
+  font-size: 25px;
+}
+
+.forgeExactResultOverlay p {
+  margin: 4px 0;
+  font-size: 17px;
+}
+
+.forgeExactHandsOnHost {
+  overflow: auto;
+  padding: 12px;
+}
+
+.forgeExactRightInspector {
+  position: absolute;
+  left: 1617px;
+  top: 193px;
+  width: 361px;
+  height: 736px;
+  z-index: 10;
+  padding: 20px 17px 17px;
+}
+
+.forgeExactInspectorSection {
+  padding: 0 0 14px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid rgba(93, 66, 39, 0.24);
+}
+
+.forgeExactMaterialRow {
+  height: 48px;
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) 72px;
+  align-items: center;
+  gap: 8px;
+  padding: 0 8px;
+  border: 1px solid rgba(112, 82, 48, 0.22);
+  border-radius: 6px;
+  background: rgba(247, 235, 212, 0.6);
+}
+
+.forgeExactMaterialRow__icon {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 6px;
+  background: rgba(224, 208, 181, 0.62);
+}
+
+.forgeExactMaterialRow span {
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 16px;
+}
+
+.forgeExactMaterialRow strong {
+  text-align: right;
+  font-size: 16px;
+  white-space: nowrap;
+}
+
+.forgeExactOutputPreview__item {
+  height: 78px;
+  display: grid;
+  grid-template-columns: 77px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  padding: 6px 10px;
+  border: 1px solid rgba(112, 82, 48, 0.25);
+  border-radius: 7px;
+  background: rgba(247, 235, 212, 0.58);
+}
+
+.forgeExactOutputPreview__icon {
+  width: 68px;
+  height: 62px;
+  display: grid;
+  place-items: center;
+  background: rgba(234, 219, 191, 0.74);
+  border: 1px solid rgba(102, 75, 45, 0.22);
+}
+
+.forgeExactOutputPreview__item strong,
+.forgeExactOutputPreview__item span {
+  display: block;
+  font-size: 18px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.forgeExactOutputPreview__item > div > span {
+  margin-top: 6px;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.forgeExactPreviewRow {
+  min-height: 32px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 62px 18px 62px;
+  align-items: center;
+  gap: 5px;
+  font-size: 15px;
+}
+
+.forgeExactPreviewRow > span:first-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.forgeExactPreviewRow > span:nth-child(2),
+.forgeExactPreviewRow > strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.forgeExactPreviewRow__arrow {
+  color: rgba(108, 77, 42, 0.58);
+  text-align: center;
+}
+
+.forgeExactSourceButtons {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.forgeExactSourceButton {
+  appearance: none;
+  min-width: 0;
+  height: 49px;
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  align-items: center;
+  gap: 6px;
+  padding: 0 6px;
+  border: 1px solid rgba(107, 77, 44, 0.34);
+  border-radius: 6px;
+  background: linear-gradient(180deg, rgba(248, 238, 218, 0.96), rgba(219, 197, 163, 0.94));
+  color: var(--forge-ink);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.forgeExactSourceButton span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.forgeExactSourceButton:disabled {
+  cursor: default;
+  opacity: 0.58;
+}
+
+.forgeExactRecommendation {
+  position: relative;
+  min-height: 77px;
+  padding: 12px 45px 10px 12px;
+  border: 1px solid rgba(112, 82, 48, 0.25);
+  border-radius: 7px;
+  background: rgba(247, 235, 212, 0.6);
+}
+
+.forgeExactRecommendation p {
+  margin: 4px 0;
+  font-size: 15px;
+  line-height: 1.18;
+}
+
+.forgeExactRecommendation .forgeExactCinnabarSeal {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+}
+
+.forgeExactFloorRail {
+  position: absolute;
+  left: 441px;
+  top: 802px;
+  width: 1103px;
+  height: 192px;
+  z-index: 12;
+  text-align: center;
+  padding: 9px 30px 0;
+  background:
+    linear-gradient(180deg, rgba(245, 234, 214, 0.94), rgba(221, 201, 169, 0.92));
+  border: 2px solid rgba(104, 75, 44, 0.42);
+  border-radius: 7px;
+  box-shadow: inset 0 0 0 2px rgba(255, 248, 232, 0.35), 0 7px 12px rgba(54, 36, 20, 0.12);
+}
+
+.forgeExactFloorRail h2 {
+  margin: 0;
+  font-size: 22px;
+  line-height: 1;
+}
+
+.forgeExactFloorRail__track {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0;
+  align-items: start;
+  margin-top: 15px;
+  height: 104px;
+}
+
+.forgeExactFloorRail__track::before {
+  content: "";
+  position: absolute;
+  left: 70px;
+  right: 70px;
+  top: 30px;
+  height: 3px;
+  background:
+    linear-gradient(90deg, rgba(153, 110, 55, 0.28), rgba(153, 110, 55, 0.72), rgba(153, 110, 55, 0.28));
+}
+
+.forgeExactFloorNode {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  font-size: 15px;
+  color: var(--forge-ink-soft);
+}
+
+.forgeExactFloorNode__medallion {
+  width: 60px;
+  height: 60px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 2px solid rgba(113, 82, 48, 0.36);
+  background: linear-gradient(180deg, #eee0c9, #cdb58c);
+  box-shadow: inset 0 0 0 4px rgba(255, 248, 232, 0.32);
+}
+
+.forgeExactFloorNode.forgeExactStatus--recommended .forgeExactFloorNode__medallion {
+  background: radial-gradient(circle, #e2bc65 0 52%, #b27a36 72%);
+  border-color: rgba(120, 76, 30, 0.7);
+  box-shadow:
+    inset 0 0 0 4px rgba(255, 242, 190, 0.3),
+    0 0 14px rgba(201, 154, 66, 0.52);
+}
+
+.forgeExactFloorNode strong {
+  max-width: 154px;
+  font-size: 15px;
+  line-height: 1.05;
+  color: #26190f;
+  text-wrap: balance;
+}
+
+.forgeExactFloorNode span:last-child {
+  font-size: 15px;
+  white-space: nowrap;
+  max-width: 154px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.forgeExactFloorRail p {
+  margin: 0;
+  padding-top: 9px;
+  border-top: 1px solid rgba(104, 75, 44, 0.24);
+  font-size: 17px;
+  line-height: 1.12;
+}
+
+.forgeExactActions {
+  position: absolute;
+  left: 755px;
+  top: 1006px;
+  width: 743px;
+  height: 70px;
+  z-index: 14;
+  display: grid;
+  grid-template-columns: 520px 207px;
+  gap: 16px;
+  align-items: center;
+}
+
+.forgeExactButton {
+  appearance: none;
+  position: relative;
+  border: 0;
+  border-radius: 5px;
+  color: var(--forge-ink);
+  cursor: pointer;
+  font-weight: 700;
+  overflow: visible;
+}
+
+.forgeExactButton:disabled {
+  cursor: default;
+  opacity: 0.68;
+}
+
+.forgeExactCta {
+  height: 62px;
+  display: grid;
+  place-items: center;
+}
+
+.forgeExactCta--primary {
+  font-size: 29px;
+  color: #1c130b;
+  text-shadow: 0 1px 0 rgba(255, 240, 188, 0.65);
+  background:
+    radial-gradient(80% 110% at 50% -10%, rgba(255, 238, 177, 0.88), transparent 42%),
+    linear-gradient(180deg, #e3b65b 0%, #c6913c 50%, #a1692e 100%);
+  border: 2px solid rgba(93, 56, 22, 0.7);
+  box-shadow:
+    inset 0 0 0 3px rgba(255, 237, 185, 0.35),
+    0 9px 15px rgba(70, 43, 16, 0.32);
+}
+
+.forgeExactCta--primary::before,
+.forgeExactCta--primary::after {
+  content: "";
+  position: absolute;
+  top: 14px;
+  width: 38px;
+  height: 36px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 50%, var(--forge-jade) 0 38%, #b78338 40% 58%, transparent 59%);
+  border: 1px solid rgba(68, 72, 42, 0.5);
+}
+
+.forgeExactCta--primary::before {
+  left: -26px;
+}
+
+.forgeExactCta--primary::after {
+  right: -26px;
+}
+
+.forgeExactCta--secondary {
+  height: 47px;
+  font-size: 17px;
+  background: linear-gradient(180deg, rgba(248, 238, 218, 0.97), rgba(220, 198, 163, 0.95));
+  border: 1px solid rgba(107, 77, 44, 0.44);
+  box-shadow: inset 0 0 0 2px rgba(255, 248, 232, 0.34);
+}
+
+.forgeExactStatus--met strong,
+.forgeExactStatus--met .forgeExactMaterialRow strong,
+.forgeExactStatus--met .forgeExactPreviewRow strong,
+.forgeExactMaterialRow.forgeExactStatus--met strong,
+.forgeExactPreviewRow.forgeExactStatus--met strong {
+  color: var(--forge-jade);
+}
+
+.forgeExactStatus--missing,
+.forgeExactPreviewRow.forgeExactStatus--missing span:nth-child(2) {
+  color: #8a3427;
+}
+
+.forgeExactStatus--warning {
+  color: #714d24;
+}
+
+.forgeExactStatus--locked {
+  color: rgba(72, 58, 42, 0.62);
+}
+
+.forgeExactStatus--recommended {
+  color: #2b2116;
+}
+
+.forgeExactReadinessSeal.forgeExactStatus--recommended,
+.forgeExactReadinessSeal.forgeExactStatus--met,
+.forgeExactReadinessSeal.forgeExactStatus--warning,
+.forgeExactReadinessSeal.forgeExactStatus--neutral {
+  color: #f8e9c7;
+}

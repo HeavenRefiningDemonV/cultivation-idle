@@ -53,6 +53,14 @@
   padding: 0;
 }
 
+.worldBuildingOverlay--forge-scenic {
+  align-items: stretch;
+  justify-content: stretch;
+  padding: 0;
+  backdrop-filter: none;
+  background: #e8dfd0;
+}
+
 .worldBuildingModal {
   position: relative;
   background-image: url('../../assets/background/manualpavilion.png');
@@ -168,7 +176,23 @@
   mix-blend-mode: normal;
 }
 
+.worldBuildingModal--forge-exact {
+  width: 100vw;
+  height: 100vh;
+  max-width: none;
+  max-height: none;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+  color: #2b2116;
+}
+
 .worldBuildingModal--apothecary-scenic::after {
+  opacity: 0;
+  mix-blend-mode: normal;
+}
+
+.worldBuildingModal--forge-scenic::after {
   opacity: 0;
   mix-blend-mode: normal;
 }
@@ -185,6 +209,17 @@
 .worldBuildingModal--apothecary-exact.worldBuildingModal--screen-owned {
   border-radius: 0;
   box-shadow: none;
+}
+
+.worldBuildingModal--forge-exact.worldBuildingModal--screen-owned {
+  width: 100vw;
+  height: 100vh;
+  max-width: none;
+  max-height: none;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+  overflow: hidden;
 }
 
 .worldBuildingModal--forge {
@@ -273,13 +308,22 @@
 .worldBuildingBody--ruins-scenic,
 .worldBuildingBody--apothecary-exact,
 .worldBuildingBody--apothecary-scenic,
+.worldBuildingBody--forge-exact,
+.worldBuildingBody--forge-scenic,
 .worldBuildingBody--gate-trial-exact,
 .worldBuildingBody--gate-trial-scenic,
 .worldBuildingBody--screen-owned {
   width: 100%;
   height: 100%;
+}
+
+.worldBuildingBody--forge-exact.worldBuildingBody--screen-owned {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
   min-height: 0;
   overflow: hidden;
+  padding: 0;
 }
 
 .worldBuildingPlaceholder {
