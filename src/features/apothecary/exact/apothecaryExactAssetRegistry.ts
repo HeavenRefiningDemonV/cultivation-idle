@@ -63,14 +63,14 @@ function asset(
 }
 
 export const APOTHECARY_EXACT_ASSETS: ApothecaryExactAssetMap = {
-  'room.scenicPlate': asset('room.scenicPlate', roomScenicPlate, 'full 2048x1152 apothecary room plate', 'src/assets/apothecaryExact/room/apothecary_room_scenic_plate.png', true),
-  'frames.prescription': asset('frames.prescription', prescriptionFrame, 'cropped central prescription parchment frame', 'src/assets/apothecaryExact/frames/prescription_parchment_frame_cropped.png', true),
+  'room.scenicPlate': asset('room.scenicPlate', roomScenicPlate, 'historical full 2048x1152 apothecary room plate, no longer rendered by exact screen', 'src/assets/apothecaryExact/room/apothecary_room_scenic_plate.png'),
+  'frames.prescription': asset('frames.prescription', prescriptionFrame, 'historical central prescription parchment frame, replaced by CSS parchment', 'src/assets/apothecaryExact/frames/prescription_parchment_frame_cropped.png'),
   'objects.medicinePouch': asset('objects.medicinePouch', medicinePouchObject, 'cropped large right medicine pouch object', 'src/assets/apothecaryExact/objects/medicine_pouch_object_cropped.png', true),
-  'frames.primaryCta': asset('frames.primaryCta', goldCtaPlaque, 'cropped gold Prepare Foundation Package CTA plaque', 'src/assets/apothecaryExact/frames/gold_cta_plaque_cropped.png', true),
-  'frames.laneDefault': asset('frames.laneDefault', laneCardDefault, 'warm lane row frame', 'src/assets/apothecaryExact/frames/lane_card_default.png', true),
-  'frames.laneReady': asset('frames.laneReady', laneCardReady, 'jade ready lane row frame', 'src/assets/apothecaryExact/frames/lane_card_ready.png', true),
-  'frames.laneWarning': asset('frames.laneWarning', laneCardWarning, 'cinnabar warning lane row frame', 'src/assets/apothecaryExact/frames/lane_card_warning.png', true),
-  'frames.laneDisabled': asset('frames.laneDisabled', laneCardDisabled, 'disabled lane row frame', 'src/assets/apothecaryExact/frames/lane_card_disabled.png', true),
+  'frames.primaryCta': asset('frames.primaryCta', goldCtaPlaque, 'historical gold Prepare Foundation Package CTA plaque, replaced by CSS plaque', 'src/assets/apothecaryExact/frames/gold_cta_plaque_cropped.png'),
+  'frames.laneDefault': asset('frames.laneDefault', laneCardDefault, 'historical warm lane row frame, replaced by CSS lane rows', 'src/assets/apothecaryExact/frames/lane_card_default.png'),
+  'frames.laneReady': asset('frames.laneReady', laneCardReady, 'historical jade ready lane row frame, replaced by CSS lane rows', 'src/assets/apothecaryExact/frames/lane_card_ready.png'),
+  'frames.laneWarning': asset('frames.laneWarning', laneCardWarning, 'historical cinnabar warning lane row frame, replaced by CSS lane rows', 'src/assets/apothecaryExact/frames/lane_card_warning.png'),
+  'frames.laneDisabled': asset('frames.laneDisabled', laneCardDisabled, 'historical disabled lane row frame, replaced by CSS lane rows', 'src/assets/apothecaryExact/frames/lane_card_disabled.png'),
   'frames.laneSelected': asset('frames.laneSelected', laneCardSelected, 'selected jade lane row frame', 'src/assets/apothecaryExact/frames/lane_card_selected.png'),
   'frames.laneRecommended': asset('frames.laneRecommended', laneCardRecommended, 'recommended lane row frame', 'src/assets/apothecaryExact/frames/lane_card_recommended.png'),
   'remedies.healingPellet': asset('remedies.healingPellet', healingPellet, 'Healing Pellet icon', 'src/assets/apothecaryExact/remedies/healing_pellet.png', true),

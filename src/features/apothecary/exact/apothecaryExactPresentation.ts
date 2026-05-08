@@ -69,14 +69,7 @@ export const APOTHECARY_EXACT_FIXTURE_PREP_CELLS = [
 export const APOTHECARY_EXACT_DEFAULT_FOCUS: ApothecaryExactFocus = 'prescription';
 
 export const APOTHECARY_EXACT_REQUIRED_ASSET_KEYS: readonly ApothecaryExactAssetKey[] = [
-  'room.scenicPlate',
-  'frames.prescription',
   'objects.medicinePouch',
-  'frames.primaryCta',
-  'frames.laneDefault',
-  'frames.laneReady',
-  'frames.laneWarning',
-  'frames.laneDisabled',
   'remedies.healingPellet',
   'remedies.wardSalt',
   'remedies.focusDew',

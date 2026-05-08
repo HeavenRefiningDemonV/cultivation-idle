@@ -22,6 +22,22 @@ void test('Apothecary Exact asset registry resolves every required approved asse
   }
 });
 
+void test('Apothecary Exact heavy raster backplates are optional historical assets', () => {
+  for (const key of [
+    'room.scenicPlate',
+    'frames.prescription',
+    'frames.primaryCta',
+    'frames.laneDefault',
+    'frames.laneReady',
+    'frames.laneWarning',
+    'frames.laneDisabled',
+  ] as const) {
+    assert.equal(APOTHECARY_EXACT_REQUIRED_ASSET_KEYS.includes(key), false, `${key} should no longer be required`);
+    assert.equal(APOTHECARY_EXACT_ASSETS[key]?.required, false, `${key} should be optional after CSS declutter`);
+    assert.equal(APOTHECARY_EXACT_ASSETS[key]?.status, 'ready', `${key} can stay registered for history/compatibility`);
+  }
+});
+
 void test('Apothecary Exact registry is the only screen asset import surface', () => {
   const screen = readFileSync('src/features/apothecary/exact/ApothecaryExactScreen.tsx', 'utf8');
   const owner = readFileSync('src/features/apothecary/exact/ApothecaryExactScreenOwner.tsx', 'utf8');

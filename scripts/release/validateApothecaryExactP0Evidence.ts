@@ -91,6 +91,26 @@ export function auditApothecaryExactP0Evidence(rootDir = process.cwd()): AuditRe
         message: 'Fixture HTML references the flattened apothecary mockup screenshot.',
       });
     }
+    for (const token of [
+      'apothecaryExactRoomPlate',
+      'apothecaryExactPrescription__frame',
+      'frames.primaryCta',
+      'apothecary_room_scenic_plate',
+      'prescription_parchment_frame_cropped',
+      'gold_cta_plaque_cropped',
+      'lane_card_default',
+      'lane_card_ready',
+      'lane_card_warning',
+      'lane_card_disabled',
+    ]) {
+      if (html.includes(token)) {
+        findings.push({
+          severity: 'error',
+          code: 'heavy_raster_backplate_present',
+          message: `Fixture HTML must not render heavy Apothecary raster backplate: ${token}`,
+        });
+      }
+    }
   }
 
   if (!fs.existsSync(domAuditPath)) {
@@ -202,6 +222,18 @@ export function auditApothecaryExactP0Evidence(rootDir = process.cwd()): AuditRe
         severity: 'error',
         code: 'flattened_mockup_used',
         message: 'Fixture DOM references the flattened apothecary mockup screenshot.',
+      });
+    }
+    if (
+      audit?.heavyRasterBackplates?.roomPlateImg ||
+      audit?.heavyRasterBackplates?.prescriptionFrameImg ||
+      audit?.heavyRasterBackplates?.primaryCtaImg ||
+      audit?.heavyRasterBackplates?.laneRowsWithInlineBackground > 0
+    ) {
+      findings.push({
+        severity: 'error',
+        code: 'heavy_raster_backplate_present',
+        message: `Fixture DOM renders old Apothecary raster backplates: ${JSON.stringify(audit?.heavyRasterBackplates ?? {})}`,
       });
     }
     if ((audit?.assetWarnings ?? []).length > 0) {

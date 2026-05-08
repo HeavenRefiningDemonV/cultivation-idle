@@ -89,12 +89,6 @@ function assetSrc(surface: ApothecaryExactSurfaceV1, key: ApothecaryExactAssetKe
   return surface.assets[key]?.src ?? '';
 }
 
-function laneFrameKey(tone: string): ApothecaryExactAssetKey {
-  if (tone === 'ready') return 'frames.laneReady';
-  if (tone === 'muted') return 'frames.laneDisabled';
-  return 'frames.laneDefault';
-}
-
 function icon(surface: ApothecaryExactSurfaceV1, key: ApothecaryExactAssetKey, extraClass = ''): string {
   return `<span class="apothecaryExactIcon ${extraClass}" aria-hidden="true"><img src="${escapeHtml(assetSrc(surface, key))}" alt="" /></span>`;
 }
@@ -216,6 +210,12 @@ function buildDomAuditExpression(): string {
           return source ? source.getClientRects().length : 0;
         })(),
       },
+      heavyRasterBackplates: {
+        roomPlateImg: Boolean(document.querySelector('.apothecaryExactRoomPlate')),
+        prescriptionFrameImg: Boolean(document.querySelector('.apothecaryExactPrescription__frame')),
+        primaryCtaImg: Boolean(document.querySelector('.apothecaryExactButton--primary img')),
+        laneRowsWithInlineBackground: Array.from(document.querySelectorAll('.apothecaryExactLaneRow')).filter((el) => (el.getAttribute('style') || '').includes('background-image')).length,
+      },
       forbiddenOverlayText: ['FPS', 'GPU', 'CPU', 'LAT', 'To exit full screen'].filter((token) => bodyText.includes(token)),
       forbiddenRuntimeMockup: Array.from(document.querySelectorAll('img')).some((img) => (img.getAttribute('src') || '').includes('apothecary mockup')),
       assetWarnings: [],
@@ -245,7 +245,7 @@ function renderHtml(surface: ApothecaryExactSurfaceV1, css: string): string {
     </div>`).join('');
 
   const buyRows = surface.buyLane.rows.map((row) => `
-    <div class="apothecaryExactLaneRow apothecaryExactTone--${row.tone}" style="background-image:url('${escapeHtml(assetSrc(surface, laneFrameKey(row.tone)))}')">
+    <div class="apothecaryExactLaneRow apothecaryExactTone--${row.tone}">
       ${icon(surface, row.iconKey)}
       <div class="apothecaryExactLaneRow__copy"><strong>${escapeHtml(row.itemName)}</strong><span><span class="apothecaryExactCoin" aria-hidden="true"></span>${escapeHtml(row.priceLabel)}</span></div>
       <span class="apothecaryExactLaneRow__meta">${escapeHtml(row.stockLabel)}</span>
@@ -253,7 +253,7 @@ function renderHtml(surface: ApothecaryExactSurfaceV1, css: string): string {
     </div>`).join('');
 
   const brewRows = surface.brewLane.rows.map((row) => `
-    <div class="apothecaryExactLaneRow apothecaryExactLaneRow--brew apothecaryExactTone--${row.tone}" style="background-image:url('${escapeHtml(assetSrc(surface, laneFrameKey(row.tone)))}')">
+    <div class="apothecaryExactLaneRow apothecaryExactLaneRow--brew apothecaryExactTone--${row.tone}">
       ${icon(surface, row.iconKey)}
       <div class="apothecaryExactLaneRow__copy"><strong>${escapeHtml(row.outputLabel)}</strong><span>${escapeHtml(row.ingredientLabel)}</span></div>
       <span class="apothecaryExactLaneRow__meta">${row.ingredientCountLabel ? `${icon(surface, row.ingredientIconKey, 'apothecaryExactIcon--tiny')}${escapeHtml(row.ingredientCountLabel)}` : ''}</span>
@@ -267,7 +267,7 @@ function renderHtml(surface: ApothecaryExactSurfaceV1, css: string): string {
     </div>`).join('');
 
   const bottomActions = surface.bottomActions.map((action) => button(action, 'apothecaryExactButton--secondary')).join('');
-  const ctaInner = `<img src="${escapeHtml(assetSrc(surface, 'frames.primaryCta'))}" alt="" aria-hidden="true" /><span>${escapeHtml(surface.primaryAction.label)}</span>`;
+  const ctaInner = `<span>${escapeHtml(surface.primaryAction.label)}</span>`;
 
   return `<!doctype html>
 <html lang="en">
@@ -276,7 +276,7 @@ function renderHtml(surface: ApothecaryExactSurfaceV1, css: string): string {
   <meta name="viewport" content="width=2048,height=1152,initial-scale=1" />
   <title>Apothecary Exact P0 Fixture Capture</title>
   <style>
-    html, body { margin: 0; width: 2048px; height: 1152px; overflow: hidden; background: #1e170f; }
+    html, body { margin: 0; width: 2048px; height: 1152px; overflow: hidden; background: #e8dfd0; }
     * { box-sizing: border-box; }
     ${css}
     .apothecaryExactPage { width: 2048px !important; height: 1152px !important; min-height: 1152px !important; }
@@ -286,7 +286,6 @@ function renderHtml(surface: ApothecaryExactSurfaceV1, css: string): string {
 <body>
   <div class="apothecaryExactPage" data-testid="${surface.meta.rootTestId}" data-mode="${surface.meta.mode}" data-source="${surface.meta.source}" data-focus="${surface.meta.focus}" style="--apoth-exact-scale:1">
     <div class="apothecaryExactPlane" data-testid="apothecary-exact-plane">
-      <img class="apothecaryExactRoomPlate" src="${escapeHtml(assetSrc(surface, 'room.scenicPlate'))}" alt="" aria-hidden="true" />
       <header class="apothecaryExactHeader" data-testid="apothecary-exact-header">
         <div class="apothecaryExactHeader__titleRow"><h1>${escapeHtml(surface.pageHeader.title)}</h1><span class="apothecaryExactHeader__seal" aria-hidden="true"></span></div>
         <p>${escapeHtml(surface.pageHeader.purpose)}</p>
@@ -294,7 +293,6 @@ function renderHtml(surface: ApothecaryExactSurfaceV1, css: string): string {
       <div class="apothecaryExactCityChip" data-testid="apothecary-exact-city-chip">${escapeHtml(surface.pageHeader.cityStatus)}</div>
       <section class="apothecaryExactPrepStrip" data-testid="apothecary-exact-prep-strip">${prep}</section>
       <section class="apothecaryExactPrescription" data-testid="apothecary-exact-prescription">
-        <img class="apothecaryExactPrescription__frame" src="${escapeHtml(assetSrc(surface, 'frames.prescription'))}" alt="" aria-hidden="true" />
         <span class="apothecaryExactPrescription__leftScript" aria-hidden="true"></span>
         <span class="apothecaryExactPrescription__seal" aria-hidden="true"></span>
         <header class="apothecaryExactPrescription__header"><h2>${escapeHtml(surface.prescription.title)}</h2><p>${escapeHtml(surface.prescription.subtitle)}</p></header>

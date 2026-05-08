@@ -72,6 +72,28 @@ void test('Apothecary Exact pure screen source has no store reads, reward calls,
   }
 });
 
+void test('Apothecary Exact pure screen does not render heavy raster backplates', () => {
+  const source = readFileSync('src/features/apothecary/exact/ApothecaryExactScreen.tsx', 'utf8');
+
+  for (const forbidden of [
+    'room.scenicPlate',
+    'frames.prescription',
+    'frames.primaryCta',
+    'frames.laneDefault',
+    'frames.laneReady',
+    'frames.laneWarning',
+    'frames.laneDisabled',
+    'imageStyle',
+    'laneFrameKey',
+    'backgroundImage',
+    'apothecaryExactRoomPlate',
+    'apothecaryExactPrescription__frame',
+    'apothecaryExactButton--primary img',
+  ]) {
+    assert.equal(source.includes(forbidden), false, `Apothecary exact screen must not render heavy raster backplate ${forbidden}`);
+  }
+});
+
 void test('Apothecary Exact SCSS locks the canonical 2048 by 1152 plane and region selectors', () => {
   const scss = readFileSync('src/features/apothecary/exact/ApothecaryExactScreen.scss', 'utf8');
 
@@ -79,12 +101,16 @@ void test('Apothecary Exact SCSS locks the canonical 2048 by 1152 plane and regi
     '.apothecaryExactPage',
     '--plane-w: 2048px',
     '--plane-h: 1152px',
+    '--apoth-herb-wash',
+    '--apoth-herb-line',
+    '--apoth-herb-accent',
     '.apothecaryExactPlane',
-    '.apothecaryExactRoomPlate',
+    '.apothecaryExactPlane::before',
     '.apothecaryExactHeader',
     '.apothecaryExactCityChip',
     '.apothecaryExactPrepStrip',
     '.apothecaryExactPrescription',
+    '.apothecaryExactPrescription::before',
     '.apothecaryExactWarnings',
     '.apothecaryExactBuyLane',
     '.apothecaryExactBrewLane',
@@ -101,4 +127,15 @@ void test('Apothecary Exact SCSS locks the canonical 2048 by 1152 plane and regi
   assert.match(scss, /\.apothecaryExactPrescription\s*\{[\s\S]*left:\s*486px;[\s\S]*top:\s*225px;[\s\S]*width:\s*1014px;[\s\S]*height:\s*318px;/);
   assert.match(scss, /\.apothecaryExactPrimaryCta\s*\{[\s\S]*left:\s*724px;[\s\S]*top:\s*977px;[\s\S]*width:\s*530px;[\s\S]*height:\s*121px;/);
   assert.match(scss, /\.apothecaryExactPage\s*\{[\s\S]*overflow:\s*hidden;/);
+
+  for (const forbidden of [
+    '.apothecaryExactPrescription__frame',
+    '.apothecaryExactButton--primary img',
+    'lane_card_',
+    'gold_cta_plaque',
+    'prescription_parchment_frame',
+    'apothecary_room_scenic_plate',
+  ]) {
+    assert.equal(scss.includes(forbidden), false, `SCSS must not rely on raster backplate ${forbidden}`);
+  }
 });

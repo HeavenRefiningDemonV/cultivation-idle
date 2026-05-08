@@ -15,16 +15,6 @@ function assetSrc(surface: ApothecaryExactSurfaceV1, key: ApothecaryExactAssetKe
   return surface.assets[key]?.src ?? '';
 }
 
-function imageStyle(surface: ApothecaryExactSurfaceV1, key: ApothecaryExactAssetKey) {
-  return { backgroundImage: `url("${assetSrc(surface, key)}")` };
-}
-
-function laneFrameKey(tone: string): ApothecaryExactAssetKey {
-  if (tone === 'ready') return 'frames.laneReady';
-  if (tone === 'muted') return 'frames.laneDisabled';
-  return 'frames.laneDefault';
-}
-
 function Icon(props: { surface: ApothecaryExactSurfaceV1; iconKey: ApothecaryExactAssetKey; className?: string }) {
   return (
     <span className={`apothecaryExactIcon ${props.className ?? ''}`} aria-hidden="true">
@@ -88,7 +78,6 @@ function Prescription(props: ApothecaryExactScreenProps) {
       data-testid="apothecary-exact-prescription"
       aria-labelledby="apothecary-exact-prescription-title"
     >
-      <img className="apothecaryExactPrescription__frame" src={assetSrc(surface, 'frames.prescription')} alt="" aria-hidden="true" />
       <span className="apothecaryExactPrescription__leftScript" aria-hidden="true"> </span>
       <span className="apothecaryExactPrescription__seal" aria-hidden="true"> </span>
       <header className="apothecaryExactPrescription__header">
@@ -151,7 +140,7 @@ function BuyLane(props: ApothecaryExactScreenProps) {
       </header>
       <div className="apothecaryExactLaneRows">
         {surface.buyLane.rows.map((row) => (
-          <div key={row.id} className={`apothecaryExactLaneRow apothecaryExactTone--${row.tone}`} style={imageStyle(surface, laneFrameKey(row.tone))}>
+          <div key={row.id} className={`apothecaryExactLaneRow apothecaryExactTone--${row.tone}`}>
             <Icon surface={surface} iconKey={row.iconKey} />
             <div className="apothecaryExactLaneRow__copy">
               <strong>{row.itemName}</strong>
@@ -176,7 +165,7 @@ function BrewLane(props: ApothecaryExactScreenProps) {
       </header>
       <div className="apothecaryExactLaneRows">
         {surface.brewLane.rows.map((row) => (
-          <div key={row.id} className={`apothecaryExactLaneRow apothecaryExactLaneRow--brew apothecaryExactTone--${row.tone}`} style={imageStyle(surface, laneFrameKey(row.tone))}>
+          <div key={row.id} className={`apothecaryExactLaneRow apothecaryExactLaneRow--brew apothecaryExactTone--${row.tone}`}>
             <Icon surface={surface} iconKey={row.iconKey} />
             <div className="apothecaryExactLaneRow__copy">
               <strong>{row.outputLabel}</strong>
@@ -249,7 +238,6 @@ function BottomRail(props: ApothecaryExactScreenProps) {
       </section>
       <section className="apothecaryExactPrimaryCta" data-testid="apothecary-exact-primary-cta">
         <ExactButton surface={surface} action={surface.primaryAction} className="apothecaryExactButton--primary" onAction={onAction}>
-          <img src={assetSrc(surface, 'frames.primaryCta')} alt="" aria-hidden="true" />
           <span>{surface.primaryAction.label}</span>
         </ExactButton>
       </section>
@@ -280,7 +268,6 @@ export function ApothecaryExactScreen({ surface, scale = 1, onAction }: Apotheca
       style={{ '--apoth-exact-scale': String(scale) } as React.CSSProperties}
     >
       <div className="apothecaryExactPlane" data-testid="apothecary-exact-plane">
-        <img className="apothecaryExactRoomPlate" src={assetSrc(surface, 'room.scenicPlate')} alt="" aria-hidden="true" />
         <header className="apothecaryExactHeader" data-testid="apothecary-exact-header">
           <div className="apothecaryExactHeader__titleRow">
             <h1>{surface.pageHeader.title}</h1>
