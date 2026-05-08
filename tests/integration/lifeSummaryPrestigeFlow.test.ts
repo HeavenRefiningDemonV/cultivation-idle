@@ -64,10 +64,17 @@ test('ui store supports opening and closing current and last-completed life summ
 
 test('current chapter exhausted and prestige entry points include life summary actions', async () => {
   const exhaustedSource = await fs.readFile(path.join(process.cwd(), 'src/components/modals/CurrentChapterExhaustedModal.tsx'), 'utf8');
-  const prestigeSource = await fs.readFile(path.join(process.cwd(), 'src/components/screens/PrestigeScreen.tsx'), 'utf8');
+  const prestigeOwnerSource = await fs.readFile(
+    path.join(process.cwd(), 'src/features/prestige/prestigeLedgerExact/PrestigeLedgerScreenOwner.tsx'),
+    'utf8',
+  );
+  const prestigeSurfaceSource = await fs.readFile(
+    path.join(process.cwd(), 'src/features/prestige/prestigeLedgerExact/buildPrestigeLedgerExactSurface.ts'),
+    'utf8',
+  );
 
   assert.equal(exhaustedSource.includes('View Life Summary'), true);
   assert.equal(exhaustedSource.includes("openLifeSummaryModal('current')"), true);
-  assert.equal(prestigeSource.includes('View Current Life Summary'), true);
-  assert.equal(prestigeSource.includes('View Last Life Summary'), true);
+  assert.equal(prestigeSurfaceSource.includes('View Life Summary'), true);
+  assert.equal(prestigeOwnerSource.includes("openLifeSummaryModal('current')"), true);
 });

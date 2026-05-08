@@ -98,7 +98,7 @@ export function GameLayout() {
   const fixtureCityId = useContentStore((state) => (
     state.maps.citiesById.city_pinewind_hamlet ? 'city_pinewind_hamlet' : state.citiesSorted[0]?.id ?? null
   ));
-  const isScrollable = activeTab === 'status' || activeTab === 'prestige';
+  const isScrollable = activeTab === 'status';
   const lastPrestigeCountRef = useRef(prestigeCount);
   const fixtureRouteOpenedRef = useRef(false);
   const apothecaryExactFixtureRouteEnabled = isApothecaryExactFixtureRouteEnabled();
