@@ -1664,7 +1664,9 @@
   min-height: 100%;
   overflow: hidden;
   isolation: isolate;
-  background: radial-gradient(140% 88% at 50% 66%, rgba(65, 62, 52, 0.2), rgba(38, 28, 20, 0.35));
+  background:
+    radial-gradient(96% 64% at 50% 58%, rgba(247, 241, 222, 0.26), rgba(247, 241, 222, 0) 64%),
+    radial-gradient(140% 88% at 50% 66%, rgba(72, 78, 61, 0.28), rgba(42, 31, 22, 0.34));
 }
 
 .outskirtsScenePlane__base {
@@ -1673,7 +1675,7 @@
   background-size: cover;
   background-repeat: no-repeat;
   transform: scale(1.01);
-  filter: saturate(0.92) contrast(1.02);
+  filter: saturate(0.98) contrast(1.1) brightness(0.96);
 }
 
 .outskirtsScenePlane__encounter {
@@ -1693,8 +1695,9 @@
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(95% 58% at 50% 78%, rgba(242, 235, 218, 0.28), rgba(242, 235, 218, 0) 72%),
-    linear-gradient(180deg, rgba(245, 238, 221, 0.08), rgba(34, 24, 17, 0.18));
+    radial-gradient(76% 48% at 50% 54%, rgba(255, 251, 239, 0), rgba(255, 251, 239, 0.2) 74%),
+    radial-gradient(95% 58% at 50% 78%, rgba(239, 229, 205, 0.18), rgba(239, 229, 205, 0) 74%),
+    linear-gradient(180deg, rgba(245, 238, 221, 0.04), rgba(34, 24, 17, 0.12));
   pointer-events: none;
 }
 
@@ -1703,14 +1706,14 @@
   inset-inline: 0;
   top: 64%;
   bottom: -1px;
-  background: linear-gradient(180deg, rgba(241, 234, 217, 0), rgba(241, 234, 217, 0.8) 70%, rgba(241, 234, 217, 0.94));
+  background: linear-gradient(180deg, rgba(241, 234, 217, 0), rgba(241, 234, 217, 0.58) 70%, rgba(241, 234, 217, 0.78));
   pointer-events: none;
 }
 
 .outskirtsScenePlane__edgeFade {
   position: absolute;
   inset: 0;
-  background: radial-gradient(130% 84% at 50% 62%, rgba(255, 249, 236, 0) 58%, rgba(255, 249, 236, 0.64));
+  background: radial-gradient(130% 84% at 50% 62%, rgba(255, 249, 236, 0) 58%, rgba(255, 249, 236, 0.46));
   pointer-events: none;
 }
 
@@ -1750,12 +1753,12 @@
   padding: 0.14rem 1rem;
   border-radius: 999px;
   background:
-    linear-gradient(180deg, rgba(249, 243, 226, 0.7), rgba(241, 233, 213, 0.88)),
+    linear-gradient(180deg, rgba(249, 243, 226, 0.88), rgba(241, 233, 213, 0.96)),
     url('../../../assets/menus/bar_long.png') center / cover no-repeat;
-  border: 1px solid rgba(133, 113, 86, 0.36);
+  border: 1px solid rgba(124, 98, 67, 0.5);
   box-shadow:
-    inset 0 0 0 1px rgba(255, 248, 231, 0.35),
-    0 2px 8px rgba(74, 55, 41, 0.14);
+    inset 0 0 0 1px rgba(255, 248, 231, 0.58),
+    0 3px 10px rgba(74, 55, 41, 0.2);
 }
 
 .outskirtsEncounterIdentityRow__name {
@@ -2141,7 +2144,7 @@
 }
 
 .outskirtsStartHuntCta:focus-visible .outskirtsStartHuntCta__plate {
-  outline: 2px solid rgba(92, 129, 179, 0.7);
+  outline: 2px solid rgba(94, 126, 91, 0.82);
   outline-offset: 2px;
 }
 
@@ -2154,13 +2157,13 @@
   gap: 0.28rem;
   padding: 0.4rem 0.52rem 0.5rem;
   border-radius: 0.72rem;
-  border: 1px solid rgba(106, 80, 59, 0.34);
+  border: 1px solid rgba(104, 78, 54, 0.46);
   background:
-    linear-gradient(180deg, rgba(249, 242, 224, 0.95), rgba(233, 219, 189, 0.93)),
+    linear-gradient(180deg, rgba(250, 244, 227, 0.98), rgba(234, 219, 188, 0.96)),
     url('../../../assets/Generated assets/frame_light_square_default.png') center / cover no-repeat;
   box-shadow:
-    inset 0 0 0 1px rgba(255, 247, 227, 0.4),
-    0 1px 5px rgba(69, 53, 40, 0.1);
+    inset 0 0 0 1px rgba(255, 247, 227, 0.58),
+    0 3px 9px rgba(69, 53, 40, 0.16);
   box-sizing: border-box;
 }
 

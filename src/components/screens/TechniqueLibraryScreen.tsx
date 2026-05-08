@@ -742,20 +742,21 @@ export function TechniqueLibraryScreen() {
                   data-active={hasActiveFilters ? 'true' : 'false'}
                   onClick={() => setFilterDrawerOpen(true)}
                 >
-                  ⌁ Filters
+                  <span className="techniqueLibraryFilterSeal" aria-hidden="true" />
+                  Filters
                 </button>
               </div>
               <div className="techShelfWall">
                 {isContentLoading ? (
                   <PaperCard className="techniqueLibraryEmptyState" variant="tray">
-                    <div className="techniqueLibraryEmptyStateIcon" aria-hidden="true">
+                    <div className="techniqueLibraryEmptyStateIcon techniqueLibraryEmptyStateSeal" aria-hidden="true">
                       <GameIcon icon="hourglassProgress" size={24} decorative />
                     </div>
                     Loading techniques...
                   </PaperCard>
                 ) : ownedTechniques.length === 0 ? (
                   <PaperCard className="techniqueLibraryEmptyState" variant="tray">
-                    <div className="techniqueLibraryEmptyStateIcon" aria-hidden="true">
+                    <div className="techniqueLibraryEmptyStateIcon techniqueLibraryEmptyStateSeal" aria-hidden="true">
                       <GameIcon icon="bookHeaven" size={24} decorative />
                     </div>
                     <p>
@@ -768,7 +769,7 @@ export function TechniqueLibraryScreen() {
                   </PaperCard>
                 ) : filteredTechniques.length === 0 ? (
                   <PaperCard className="techniqueLibraryEmptyState" variant="tray">
-                    <div className="techniqueLibraryEmptyStateIcon" aria-hidden="true">
+                    <div className="techniqueLibraryEmptyStateIcon techniqueLibraryEmptyStateSeal" aria-hidden="true">
                       <GameIcon icon="inkX" size={24} decorative />
                     </div>
                     No techniques match the current filters.

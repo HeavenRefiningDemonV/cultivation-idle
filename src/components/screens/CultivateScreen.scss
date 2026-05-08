@@ -26,7 +26,7 @@
   --cultHudMaxW: 980px;
   --cultHudSidePad: 80px;
   --cultHudW: min(var(--cultHudMaxW), calc(100% - var(--cultHudSidePad)));
-  --cultCommandDeckTop: calc(env(safe-area-inset-top, 0px) + 132px);
+  --cultCommandDeckTop: calc(env(safe-area-inset-top, 0px) + 126px);
   --cultCommandDeckW: min(980px, calc(100% - 112px));
 }
 
@@ -143,7 +143,7 @@
   inset: -8px -12px -6px;
   z-index: -1;
   border-radius: 22px;
-  background: linear-gradient(180deg, rgba(18, 24, 35, 0.12), rgba(18, 24, 35, 0.04) 42%, rgba(18, 24, 35, 0));
+  background: linear-gradient(180deg, rgba(43, 33, 22, 0.12), rgba(43, 33, 22, 0.04) 42%, rgba(43, 33, 22, 0));
   pointer-events: none;
 }
 
@@ -162,7 +162,7 @@
 
 .cultivationSideRail {
   position: absolute;
-  width: clamp(280px, 24vw, 420px);
+  width: clamp(276px, 22vw, 392px);
   pointer-events: auto;
 }
 
@@ -171,7 +171,7 @@
 }
 
 .cultivationSideRail--right {
-  width: clamp(280px, 21vw, 352px);
+  width: clamp(276px, 20vw, 344px);
   right: clamp(14px, 2.8vw, 44px);
 }
 
@@ -243,7 +243,7 @@
 }
 
 .cultivationRunCompass {
-  max-height: min(66vh, 620px);
+  max-height: min(61vh, 590px);
   overflow-y: auto;
   padding-right: 2px;
 }
@@ -854,10 +854,10 @@
   border-radius: 12px;
   font-size: 16px;
   font-weight: 700;
-  color: #0b1020;
-  background: rgba(208, 208, 208, 0.92);
-  border: 2px solid rgba(15, 23, 42, 0.28);
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.28);
+  color: rgba(43, 33, 22, 0.96);
+  background: linear-gradient(180deg, rgba(246, 238, 221, 0.96), rgba(214, 197, 165, 0.92));
+  border: 2px solid rgba(120, 72, 33, 0.28);
+  box-shadow: 0 8px 18px rgba(43, 31, 18, 0.24);
   transition:
     box-shadow var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease),
     border-color var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease),
@@ -868,7 +868,7 @@
 
 .cultivationActionButton:hover,
 .cultivationActionButton:focus-visible {
-  box-shadow: 0 11px 22px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 11px 22px rgba(43, 31, 18, 0.3);
   border-color: rgba(120, 72, 33, 0.42);
   background: rgba(224, 216, 199, 0.98);
   outline: 2px solid rgba(120, 72, 33, 0.32);
@@ -878,7 +878,7 @@
 .cultivationActionButton:disabled {
   opacity: 0.6;
   cursor: not-allowed;
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 6px 14px rgba(43, 31, 18, 0.16);
 }
 
 .cultivationActionButton--secondary {
@@ -894,7 +894,7 @@
   min-height: 18px;
   font-size: 12px;
   font-weight: 600;
-  color: rgba(11, 16, 32, 0.7);
+  color: rgba(43, 33, 22, 0.72);
   text-align: center;
   width: min(86%, 460px);
 }
@@ -912,7 +912,7 @@
 }
 
 .cultivationActionButton--tone-cap {
-  background: linear-gradient(180deg, rgba(203, 213, 225, 0.95), rgba(148, 163, 184, 0.9));
+  background: linear-gradient(180deg, rgba(233, 223, 202, 0.95), rgba(189, 172, 142, 0.9));
 }
 
 .cultivationActionButton--tone-prepare {

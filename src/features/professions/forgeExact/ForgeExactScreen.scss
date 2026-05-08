@@ -324,6 +324,14 @@
   opacity: 0.62;
 }
 
+.forgeExactTabButton:focus-visible,
+.forgeExactModeRow:focus-visible,
+.forgeExactSourceButton:focus-visible,
+.forgeExactButton:focus-visible {
+  outline: 2px solid rgba(83, 125, 97, 0.82);
+  outline-offset: 2px;
+}
+
 .forgeExactTabButton--selected {
   color: #fff0c9;
   background:

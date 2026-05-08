@@ -152,9 +152,31 @@ export function StatusScreen() {
             onRunCompassAction={performRunCompassAction}
             combatStrip={troubleshooting.combatStrip}
           />
+          <section className="statusActionStrip statusScreenCardBase statusScreenCardBase--subordinate" aria-label="Status primary next fix">
+            <div className="statusActionStrip__main">
+              <div className="statusActionStrip__title">Best Next Action</div>
+              <div className="statusActionStrip__reason">{troubleshooting.shortfall.headline}</div>
+            </div>
+            <div className="statusActionStrip__ctaLane">
+              {primaryStatusAction ? (
+                <button
+                  type="button"
+                  className="statusActionStrip__cta uiNoShift"
+                  onClick={() => performRunCompassAction(primaryStatusAction)}
+                  disabled={primaryStatusAction.blocked}
+                  title={primaryStatusAction.blockedReason ?? primaryStatusAction.why}
+                >
+                  {primaryStatusAction.label}
+                </button>
+              ) : (
+                <span className="statusActionStrip__quiet">No stronger action is surfaced right now.</span>
+              )}
+            </div>
+          </section>
           <RunCompass
             surface={runCompass.full}
             tone="paper"
+            density="dense"
             className="statusScreenRunCompass statusScreenCardBase"
             onAction={performRunCompassAction}
           />
@@ -245,28 +267,6 @@ export function StatusScreen() {
                 <StatusLine label="Affordability" value={troubleshooting.safetyNet.affordability} />
                 <StatusLine label="Context" value={troubleshooting.safetyNet.blockedReason} />
               </StatusMiniCard>
-            </div>
-          </section>
-
-          <section className="statusActionStrip statusScreenCardBase statusScreenCardBase--subordinate" aria-label="Status primary next fix">
-            <div className="statusActionStrip__main">
-              <div className="statusActionStrip__title">Best Next Action</div>
-              <div className="statusActionStrip__reason">{troubleshooting.shortfall.headline}</div>
-            </div>
-            <div className="statusActionStrip__ctaLane">
-              {primaryStatusAction ? (
-                <button
-                  type="button"
-                  className="statusActionStrip__cta uiNoShift"
-                  onClick={() => performRunCompassAction(primaryStatusAction)}
-                  disabled={primaryStatusAction.blocked}
-                  title={primaryStatusAction.blockedReason ?? primaryStatusAction.why}
-                >
-                  {primaryStatusAction.label}
-                </button>
-              ) : (
-                <span className="statusActionStrip__quiet">No stronger action is surfaced right now.</span>
-              )}
             </div>
           </section>
 

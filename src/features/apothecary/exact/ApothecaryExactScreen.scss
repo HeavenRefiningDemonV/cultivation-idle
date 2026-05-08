@@ -602,6 +602,12 @@
   display: block;
 }
 
+.apothecaryExactPouchObject:focus-visible,
+.apothecaryExactButton:focus-visible {
+  outline: 2px solid rgba(64, 111, 85, 0.82);
+  outline-offset: 3px;
+}
+
 .apothecaryExactBottomActions {
   position: absolute;
   left: 68px;

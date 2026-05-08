@@ -7,16 +7,16 @@
   overflow: hidden;
   --inv-slot: 84px;
   --inv-slot-gap: 10px;
-  --inv-paper: rgba(208, 208, 208, 0.92);
-  --inv-paper-inset: rgba(255, 255, 255, 0.45);
-  --inv-ink: rgba(12, 18, 34, 0.92);
-  --inv-ink-muted: rgba(12, 18, 34, 0.62);
+  --inv-paper: rgba(243, 232, 207, 0.94);
+  --inv-paper-inset: rgba(255, 248, 232, 0.66);
+  --inv-ink: rgba(43, 33, 22, 0.94);
+  --inv-ink-muted: rgba(87, 64, 41, 0.72);
   --inv-qi: rgba(120, 72, 33, 0.82);
   --inv-gold: rgba(245, 158, 11, 0.9);
-  --inv-void-0: rgba(2, 6, 23, 0.75);
-  --inv-void-1: rgba(2, 6, 23, 0.92);
-  --inv-metal-0: rgba(226, 232, 240, 0.18);
-  --inv-metal-1: rgba(148, 163, 184, 0.18);
+  --inv-pocket-ink-0: rgba(48, 44, 35, 0.72);
+  --inv-pocket-ink-1: rgba(22, 28, 24, 0.88);
+  --inv-metal-0: rgba(238, 224, 192, 0.22);
+  --inv-metal-1: rgba(124, 104, 73, 0.16);
   --inv-metal-2: rgba(245, 158, 11, 0.16);
   --invTabIconSize: clamp(20px, 2.2vw, 28px);
   --invTileIconSize: clamp(20px, 2vw, 26px);
@@ -24,12 +24,15 @@
 }
 
 .inventoryPanelBase {
-  background: var(--inv-paper);
+  background:
+    radial-gradient(140% 80% at 50% 0%, rgba(255, 252, 240, 0.48), rgba(255, 252, 240, 0) 58%),
+    linear-gradient(180deg, rgba(246, 237, 218, 0.94), rgba(224, 211, 187, 0.9));
   border: 5px solid transparent;
   border-image: url("../../assets/menus/buttoncorners.png") 60 / 5px / 1px;
   border-radius: 0;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
-  backdrop-filter: blur(6px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 250, 236, 0.52),
+    0 8px 18px rgba(43, 31, 18, 0.22);
 }
 
 .inventoryScreenHeader {
@@ -70,12 +73,12 @@
   padding: 6px 10px;
   border-radius: 12px;
   background: var(--inv-paper-inset);
-  border: 1px solid rgba(12, 18, 34, 0.14);
+  border: 1px solid rgba(101, 74, 43, 0.2);
   font-size: 12px;
 }
 
 .inventoryCurrencyLabel {
-  color: rgba(12, 18, 34, 0.7);
+  color: var(--inv-ink-muted);
 }
 
 .inventoryCurrencyValue {
@@ -102,7 +105,7 @@
   padding: 6px 10px;
   border-radius: 12px;
   background: var(--inv-paper-inset);
-  border: 1px solid rgba(12, 18, 34, 0.14);
+  border: 1px solid rgba(101, 74, 43, 0.2);
   font-size: 12px;
 }
 
@@ -119,7 +122,7 @@
   width: 80px;
   height: 6px;
   border-radius: 999px;
-  background: rgba(12, 18, 34, 0.14);
+  background: rgba(87, 64, 41, 0.14);
   overflow: hidden;
 }
 
@@ -188,7 +191,7 @@
   height: 18px;
   border-radius: 999px;
   background: rgba(120, 72, 33, 0.9);
-  color: #0c1222;
+  color: #fff4d7;
   font-size: 11px;
   font-weight: 800;
   display: grid;
@@ -200,7 +203,7 @@
   flex: 1;
   min-height: 0;
   display: grid;
-  grid-template-columns: 220px 1fr 320px;
+  grid-template-columns: 190px minmax(0, 1fr) 300px;
   gap: 12px;
   overflow: hidden;
 }
@@ -218,7 +221,7 @@
   align-items: baseline;
   justify-content: space-between;
   padding-bottom: 8px;
-  border-bottom: 1px solid rgba(12, 18, 34, 0.14);
+  border-bottom: 1px solid rgba(101, 74, 43, 0.18);
 }
 
 .inventoryPocketRailTitle {
@@ -249,8 +252,8 @@
   gap: 10px;
   position: relative;
   padding: 10px 10px 10px 14px;
-  background: rgba(255, 255, 255, 0.55);
-  border: 1px solid rgba(12, 18, 34, 0.14);
+  background: linear-gradient(180deg, rgba(255, 249, 234, 0.78), rgba(232, 216, 188, 0.62));
+  border: 1px solid rgba(101, 74, 43, 0.2);
   border-image: none;
   border-radius: 14px;
   cursor: pointer;
@@ -266,7 +269,7 @@
   top: -4px;
   width: 2px;
   height: 12px;
-  background: rgba(12, 18, 34, 0.2);
+  background: rgba(101, 74, 43, 0.24);
   border-radius: 999px;
   opacity: 0.6;
 }
@@ -279,14 +282,14 @@
   height: 10px;
   transform: translateY(-50%);
   border-radius: 50%;
-  background: rgba(12, 18, 34, 0.14);
+  background: rgba(87, 64, 41, 0.16);
   box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.35);
   opacity: 0.85;
 }
 
 .inventoryPocketButton:hover {
   transform: translateY(-1px);
-  box-shadow: 0 10px 16px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 10px 16px rgba(43, 31, 18, 0.16);
 }
 
 .inventoryPocketIcon {
@@ -300,17 +303,19 @@
 .inventoryPocketLabel {
   flex: 1;
   font-weight: 800;
-  color: rgba(12, 18, 34, 0.9);
+  color: var(--inv-ink);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .inventoryPocketButton--active {
-  background: linear-gradient(135deg, rgba(181, 133, 43, 0.62), rgba(120, 72, 33, 0.62));
-  border-color: rgba(245, 158, 11, 0.35);
-  box-shadow: 0 0 0 3px rgba(181, 133, 43, 0.14), 0 14px 22px rgba(0, 0, 0, 0.2);
-  color: #0c1222;
+  background:
+    linear-gradient(90deg, rgba(174, 96, 56, 0.3), rgba(174, 96, 56, 0) 36%),
+    linear-gradient(180deg, rgba(226, 194, 126, 0.82), rgba(188, 137, 64, 0.64));
+  border-color: rgba(120, 72, 33, 0.48);
+  box-shadow: 0 0 0 3px rgba(181, 133, 43, 0.12), 0 14px 22px rgba(43, 31, 18, 0.18);
+  color: var(--inv-ink);
 }
 
 .inventoryPocketButton--disabled {
@@ -390,18 +395,18 @@
   }
 }
 
-@keyframes invVoidDrift {
+@keyframes invPocketBreath {
   0% {
     transform: translate3d(0, 0, 0) scale(1);
-    opacity: 0.16;
+    opacity: 0.18;
   }
   50% {
     transform: translate3d(-12px, 10px, 0) scale(1.03);
-    opacity: 0.2;
+    opacity: 0.24;
   }
   100% {
     transform: translate3d(0, 0, 0) scale(1);
-    opacity: 0.16;
+    opacity: 0.18;
   }
 }
 
@@ -444,11 +449,38 @@
 }
 
 .inventoryRingPanel {
+  position: relative;
   min-height: 0;
   display: flex;
   flex-direction: column;
   gap: 8px;
   padding: 8px;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.inventoryRingPanel::after {
+  content: "spatial-ring-seal";
+  position: absolute;
+  left: 50%;
+  bottom: clamp(28px, 5vh, 64px);
+  width: clamp(170px, 16vw, 260px);
+  height: clamp(170px, 16vw, 260px);
+  transform: translateX(-50%) rotate(-8deg);
+  border: 2px double rgba(120, 72, 33, 0.12);
+  border-radius: 50%;
+  color: transparent;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(120, 72, 33, 0.04) 0 24%, transparent 25% 34%, rgba(47, 143, 102, 0.06) 35% 48%, transparent 49%),
+    conic-gradient(from -12deg, transparent 0 18deg, rgba(139, 48, 40, 0.08) 18deg 25deg, transparent 25deg 60deg);
+  opacity: 0.85;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.inventoryRingPanel > * {
+  position: relative;
+  z-index: 1;
 }
 
 .inventoryRingSubheader {
@@ -458,7 +490,7 @@
   gap: 12px;
   padding: 10px 12px;
   background: var(--inv-paper-inset);
-  border: 1px solid rgba(12, 18, 34, 0.14);
+  border: 1px solid rgba(101, 74, 43, 0.18);
   border-radius: 12px;
 }
 
@@ -471,12 +503,12 @@
 
 .inventoryRingPocketTitle {
   font-weight: 900;
-  color: rgba(12, 18, 34, 0.92);
+  color: var(--inv-ink);
 }
 
 .inventoryRingPocketMeta {
   font-size: 12px;
-  color: rgba(12, 18, 34, 0.7);
+  color: var(--inv-ink-muted);
 }
 
 .inventoryFilterChip {
@@ -488,7 +520,7 @@
   background: rgba(120, 72, 33, 0.12);
   font-weight: 900;
   font-size: 12px;
-  color: rgba(12, 18, 34, 0.88);
+  color: var(--inv-ink);
   margin-top: 6px;
 }
 
@@ -505,7 +537,7 @@
   align-items: center;
   gap: 8px;
   background: var(--inv-paper-inset);
-  border: 1px solid rgba(12, 18, 34, 0.14);
+  border: 1px solid rgba(101, 74, 43, 0.18);
   border-radius: 999px;
   padding: 6px 10px;
   min-width: 220px;
@@ -529,11 +561,11 @@
   background: transparent;
   outline: none;
   font-weight: 600;
-  color: rgba(12, 18, 34, 0.92);
+  color: var(--inv-ink);
 }
 
 .inventorySearchInput::placeholder {
-  color: rgba(12, 18, 34, 0.5);
+  color: rgba(87, 64, 41, 0.52);
 }
 
 .inventorySearch:focus-within {
@@ -542,8 +574,8 @@
 
 .inventorySearchClear {
   border: none;
-  background: rgba(0, 0, 0, 0.55);
-  color: rgba(255, 255, 255, 0.92);
+  background: rgba(87, 64, 41, 0.78);
+  color: #fff4d7;
   width: 22px;
   height: 22px;
   border-radius: 999px;
@@ -562,16 +594,16 @@
 .inventorySortLabel {
   font-size: 12px;
   font-weight: 800;
-  color: rgba(12, 18, 34, 0.7);
+  color: var(--inv-ink-muted);
 }
 
 .inventorySortSelect {
   padding: 7px 10px;
   border-radius: 999px;
-  border: 1px solid rgba(12, 18, 34, 0.14);
+  border: 1px solid rgba(101, 74, 43, 0.18);
   background: var(--inv-paper-inset);
   font-weight: 700;
-  color: rgba(12, 18, 34, 0.92);
+  color: var(--inv-ink);
 }
 
 .inventoryToolsReset {
@@ -579,7 +611,7 @@
   border-radius: 999px;
   border: 1px solid rgba(239, 68, 68, 0.35);
   background: rgba(239, 68, 68, 0.12);
-  color: rgba(12, 18, 34, 0.92);
+  color: var(--inv-ink);
   font-weight: 900;
   cursor: pointer;
 }
@@ -596,13 +628,15 @@
 .inventoryRingFrame {
   position: relative;
   padding: 14px;
-  border-radius: 22px;
+  border-radius: 18px;
   background:
-    linear-gradient(135deg, rgba(245, 158, 11, 0.12), transparent 55%),
-    linear-gradient(135deg, rgba(148, 163, 184, 0.2), rgba(2, 6, 23, 0.1)),
-    radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.14), transparent 55%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 18px 30px rgba(0, 0, 0, 0.35);
+    linear-gradient(135deg, rgba(197, 154, 66, 0.15), transparent 55%),
+    linear-gradient(180deg, rgba(245, 235, 211, 0.82), rgba(205, 184, 147, 0.58)),
+    radial-gradient(circle at 30% 20%, rgba(255, 252, 239, 0.22), transparent 55%);
+  border: 1px solid rgba(103, 75, 42, 0.24);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 249, 232, 0.36),
+    0 16px 28px rgba(43, 31, 18, 0.2);
 }
 
 .inventoryRingFrame::before {
@@ -611,10 +645,10 @@
   inset: 8px;
   border-radius: 18px;
   pointer-events: none;
-  opacity: 0.2;
+  opacity: 0.24;
   background: repeating-linear-gradient(
     90deg,
-    rgba(255, 255, 255, 0.1) 0 2px,
+    rgba(104, 76, 44, 0.16) 0 2px,
     transparent 2px 12px
   );
   mask-image: radial-gradient(circle, transparent 0 58%, black 58% 100%);
@@ -626,8 +660,10 @@
   z-index: 1;
   border-radius: 18px;
   padding: 10px;
-  background: radial-gradient(circle at 30% 20%, var(--inv-void-0), var(--inv-void-1));
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background:
+    radial-gradient(circle at 28% 16%, rgba(255, 248, 224, 0.12), rgba(255, 248, 224, 0) 34%),
+    radial-gradient(circle at 30% 20%, var(--inv-pocket-ink-0), var(--inv-pocket-ink-1));
+  border: 1px solid rgba(232, 214, 174, 0.16);
   overflow: hidden;
 }
 
@@ -640,9 +676,9 @@
   opacity: 0.1;
   background: conic-gradient(
     from 0deg,
-    rgba(181, 133, 43, 0.14) 0 20deg,
+    rgba(181, 133, 43, 0.18) 0 20deg,
     transparent 20deg 60deg,
-    rgba(245, 158, 11, 0.12) 60deg 72deg,
+    rgba(245, 158, 11, 0.14) 60deg 72deg,
     transparent 72deg 120deg
   );
   filter: blur(0.2px);
@@ -656,12 +692,12 @@
   pointer-events: none;
   opacity: 0.18;
   background:
-    radial-gradient(circle at 12% 18%, rgba(120, 72, 33, 0.3), transparent 35%),
-    radial-gradient(circle at 70% 22%, rgba(245, 158, 11, 0.22), transparent 40%),
-    radial-gradient(circle at 32% 78%, rgba(255, 255, 255, 0.16), transparent 45%),
-    radial-gradient(circle at 88% 72%, rgba(99, 102, 241, 0.18), transparent 42%);
+    radial-gradient(circle at 12% 18%, rgba(120, 72, 33, 0.32), transparent 35%),
+    radial-gradient(circle at 70% 22%, rgba(197, 154, 66, 0.2), transparent 40%),
+    radial-gradient(circle at 32% 78%, rgba(255, 248, 224, 0.12), transparent 45%),
+    radial-gradient(circle at 88% 72%, rgba(47, 143, 102, 0.14), transparent 42%);
   filter: blur(10px);
-  animation: invVoidDrift 18s ease-in-out infinite;
+  animation: invPocketBreath 18s ease-in-out infinite;
 }
 
 .inventoryRingInner > * {
@@ -690,9 +726,11 @@
   width: var(--inv-slot);
   height: var(--inv-slot);
   padding: 0;
-  border-radius: 14px;
-  border: 2px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  border: 2px solid rgba(232, 214, 174, 0.18);
+  background:
+    radial-gradient(circle at 34% 22%, rgba(255, 250, 232, 0.18), transparent 44%),
+    linear-gradient(180deg, rgba(238, 222, 190, 0.16), rgba(36, 39, 32, 0.34));
   border-image: none;
   cursor: pointer;
   display: grid;
@@ -706,7 +744,7 @@
 
 .inventorySlotTile:hover {
   transform: translateY(-1px);
-  box-shadow: var(--inv-rarity-shadow), 0 10px 16px rgba(0, 0, 0, 0.22);
+  box-shadow: var(--inv-rarity-shadow), 0 10px 16px rgba(23, 19, 14, 0.22);
 }
 
 .inventorySlotTile:focus-visible {
@@ -716,9 +754,11 @@
 
 .inventorySlotTileEmpty {
   cursor: default;
-  opacity: 0.65;
-  background: rgba(255, 255, 255, 0.04);
-  border: 2px dashed rgba(255, 255, 255, 0.1);
+  opacity: 0.72;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(255, 248, 225, 0.05), transparent 60%),
+    rgba(255, 248, 225, 0.035);
+  border: 2px dashed rgba(232, 214, 174, 0.16);
   box-shadow: none;
   pointer-events: none;
 }
@@ -729,12 +769,14 @@
 }
 
 .inventorySlotTileOccupied {
-  background: rgba(255, 255, 255, 0.08);
+  background:
+    radial-gradient(circle at 38% 28%, rgba(255, 250, 232, 0.3), transparent 46%),
+    linear-gradient(180deg, rgba(235, 219, 188, 0.26), rgba(47, 51, 42, 0.42));
 }
 
 .inventorySlotTileSelected {
   border-color: rgba(47, 143, 102, 0.72);
-  box-shadow: var(--inv-rarity-shadow), 0 0 0 3px rgba(120, 72, 33, 0.16), 0 14px 22px rgba(0, 0, 0, 0.28);
+  box-shadow: var(--inv-rarity-shadow), 0 0 0 3px rgba(120, 72, 33, 0.16), 0 14px 22px rgba(43, 31, 18, 0.28);
 }
 
 .inventorySlotTileSelected::after {
@@ -764,9 +806,9 @@
   bottom: 6px;
   padding: 2px 6px;
   border-radius: 999px;
-  background: rgba(0, 0, 0, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: rgba(255, 255, 255, 0.92);
+  background: rgba(43, 31, 18, 0.78);
+  border: 1px solid rgba(255, 242, 205, 0.18);
+  color: #fff4d7;
   font-size: 12px;
   font-weight: 800;
   line-height: 1;
@@ -778,7 +820,7 @@
   right: 8px;
   bottom: 4px;
   height: 4px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 242, 205, 0.12);
   border-radius: 999px;
   overflow: hidden;
 }
@@ -806,13 +848,13 @@
 }
 
 .inventorySlotRarityCommon {
-  border-color: rgba(156, 163, 175, 0.7);
+  border-color: rgba(157, 141, 109, 0.7);
   --inv-rarity-shadow: none;
 }
 
 .inventorySlotRarityUncommon {
-  border-color: rgba(34, 197, 94, 0.75);
-  --inv-rarity-shadow: 0 0 10px rgba(34, 197, 94, 0.18);
+  border-color: rgba(73, 142, 93, 0.74);
+  --inv-rarity-shadow: 0 0 10px rgba(73, 142, 93, 0.18);
 }
 
 .inventorySlotRarityRare {
@@ -843,8 +885,8 @@
 }
 
 .inventorySlotRarityEpic {
-  border-color: rgba(168, 85, 247, 0.85);
-  --inv-rarity-shadow: 0 0 14px rgba(168, 85, 247, 0.22);
+  border-color: rgba(111, 84, 142, 0.82);
+  --inv-rarity-shadow: 0 0 14px rgba(111, 84, 142, 0.2);
 }
 
 .inventorySlotRarityLegendary {
@@ -885,23 +927,42 @@
   flex: 1;
   min-height: 0;
   overflow: auto;
-  background: rgba(255, 255, 255, 0.4);
-  border: 1px solid rgba(12, 18, 34, 0.14);
+  background:
+    radial-gradient(circle at 52% 12%, rgba(255, 251, 238, 0.38), rgba(255, 251, 238, 0) 38%),
+    rgba(255, 248, 232, 0.5);
+  border: 1px solid rgba(101, 74, 43, 0.18);
   border-radius: 14px;
   padding: 12px;
 }
 
 .inventoryInspectorEmpty {
+  position: relative;
   text-align: center;
-  padding: 24px 12px;
-  color: rgba(12, 18, 34, 0.7);
+  padding: 92px 12px 24px;
+  color: var(--inv-ink-muted);
+}
+
+.inventoryInspectorEmpty::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 24px;
+  width: 52px;
+  height: 52px;
+  transform: translateX(-50%) rotate(-8deg);
+  border: 2px double rgba(139, 48, 40, 0.32);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(139, 48, 40, 0.08) 0 33%, transparent 34%),
+    conic-gradient(from 0deg, transparent 0 18deg, rgba(47, 143, 102, 0.14) 18deg 28deg, transparent 28deg 70deg);
+  box-shadow: inset 0 0 0 6px rgba(139, 48, 40, 0.04);
 }
 
 .inventoryInspectorPulseNote {
   margin-top: 10px;
   font-size: 12px;
   font-weight: 700;
-  color: rgba(12, 18, 34, 0.8);
+  color: var(--inv-ink);
 }
 
 .inventoryInspectorTitle {
@@ -932,8 +993,8 @@
 }
 
 .inventoryCategoryBadge {
-  background: rgba(255, 255, 255, 0.7);
-  border: 1px solid rgba(12, 18, 34, 0.14);
+  background: rgba(255, 248, 232, 0.72);
+  border: 1px solid rgba(101, 74, 43, 0.18);
   border-radius: 999px;
   padding: 2px 8px;
   font-size: 11px;
@@ -947,7 +1008,7 @@
 
 .inventoryInspectorNote {
   font-size: 12px;
-  color: rgba(12, 18, 34, 0.65);
+  color: var(--inv-ink-muted);
 }
 
 .inventoryInspectorDetails {
@@ -961,7 +1022,7 @@
   display: flex;
   justify-content: space-between;
   gap: 8px;
-  border-bottom: 1px solid rgba(12, 18, 34, 0.12);
+  border-bottom: 1px solid rgba(101, 74, 43, 0.16);
   padding-bottom: 6px;
 }
 
@@ -982,7 +1043,7 @@
 
 .inventoryInspectorEmptyAction {
   font-size: 12px;
-  color: rgba(12, 18, 34, 0.6);
+  color: rgba(87, 64, 41, 0.68);
 }
 
 

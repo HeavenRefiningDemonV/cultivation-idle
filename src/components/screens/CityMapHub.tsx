@@ -69,6 +69,9 @@ export interface CityMapHubProps {
 export function CityMapHub({
   modules,
   activeModuleKey,
+  moduleCueByKey = {},
+  glintModuleKey = null,
+  recommendedModuleKey = null,
   getModuleLabel,
   onOpenModule,
   atmosphereQuality = 'medium',
@@ -112,12 +115,21 @@ export function CityMapHub({
           const position = MODULE_POSITIONS[moduleKey];
           if (!position) return null;
           const isActive = activeModuleKey === moduleKey;
+          const cueKind = moduleCueByKey[moduleKey] ?? null;
+          const isRecommended = recommendedModuleKey === moduleKey;
+          const isGlinting = glintModuleKey === moduleKey;
 
           return (
             <button
               key={moduleKey}
               type="button"
-              className={`cityMapHubHotspot ${isActive ? 'cityMapHubHotspot--active' : ''}`}
+              className={[
+                'cityMapHubHotspot',
+                isActive ? 'cityMapHubHotspot--active' : '',
+                isRecommended ? 'cityMapHubHotspot--recommended' : '',
+                isGlinting ? 'cityMapHubHotspot--glint' : '',
+              ].filter(Boolean).join(' ')}
+              data-cue-kind={cueKind ?? undefined}
               style={{ left: `${position.leftPct}%`, top: `${position.topPct}%` }}
               onClick={() => handleOpen(moduleKey)}
               onMouseEnter={() => handleHover(moduleKey)}
