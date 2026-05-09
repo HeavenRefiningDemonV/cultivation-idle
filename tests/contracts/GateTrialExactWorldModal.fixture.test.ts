@@ -3,7 +3,7 @@ import test from 'node:test';
 import { readFileSync } from 'node:fs';
 import { resolveWorldModalEntrySurface } from '../../src/systems/ui/world/worldBuildingModalEntrySurface.js';
 
-void test('Gate Trial default world modal resolver remains legacy until final cutover', () => {
+void test('Gate Trial default world modal resolver uses live exact scenic host', () => {
   const surface = resolveWorldModalEntrySurface({
     buildingKey: 'gateTrial',
     cityName: 'Pinewind Hamlet',
@@ -11,9 +11,9 @@ void test('Gate Trial default world modal resolver remains legacy until final cu
     isStoreMode: true,
   });
 
-  assert.equal(surface.backgroundVariant, 'inside-dungeon');
-  assert.equal(surface.shellFamily, 'combat-path');
-  assert.equal(surface.shellMode, 'close-only');
+  assert.equal(surface.backgroundVariant, 'gate-trial-exact');
+  assert.equal(surface.shellFamily, 'gate-trial-scenic');
+  assert.equal(surface.shellMode, 'screen-owned');
   assert.equal(surface.showContextStrip, false);
   assert.equal(surface.showShellClose, false);
 });
@@ -33,7 +33,7 @@ void test('Gate Trial exact fixture intent resolves to screen-owned scenic host'
   assert.equal(surface.showShellClose, false);
 });
 
-void test('Gate Trial live exact intent is reserved and does not cut over before live packets', () => {
+void test('Gate Trial live exact intent resolves to screen-owned scenic host', () => {
   const surface = resolveWorldModalEntrySurface({
     buildingKey: 'gateTrial',
     cityName: 'Pinewind Hamlet',
@@ -41,9 +41,9 @@ void test('Gate Trial live exact intent is reserved and does not cut over before
     isStoreMode: true,
   });
 
-  assert.equal(surface.backgroundVariant, 'inside-dungeon');
-  assert.equal(surface.shellFamily, 'combat-path');
-  assert.equal(surface.shellMode, 'close-only');
+  assert.equal(surface.backgroundVariant, 'gate-trial-exact');
+  assert.equal(surface.shellFamily, 'gate-trial-scenic');
+  assert.equal(surface.shellMode, 'screen-owned');
 });
 
 void test('Gate Trial exact intent is part of the modal dedupe key', () => {
@@ -55,13 +55,12 @@ void test('Gate Trial exact intent is part of the modal dedupe key', () => {
   assert.equal(uiStoreSource.includes('apothecarySurface: intent?.apothecarySurface ?? null'), true);
 });
 
-void test('WorldBuildingModal preserves legacy Gate Trial while adding fixture owner override', () => {
+void test('WorldBuildingModal mounts Gate Trial exact owner and keeps fixture mode explicit', () => {
   const modalSource = readFileSync('src/components/modals/WorldBuildingModal.tsx', 'utf8');
 
   assert.equal(modalSource.includes("import { GateTrialScreenOwner } from '../../features/world/gateTrialExact/index.js';"), true);
-  assert.match(modalSource, /case 'gateTrial':\s*content = <GateTrialBuildingPanel cityId=\{storeCityId\} \/>/);
   assert.equal(modalSource.includes("storeModalIntent?.gateTrialExactMode === 'fixture'"), true);
-  assert.match(modalSource, /<GateTrialScreenOwner\s+cityId=\{storeCityId\}\s+trialId=\{moduleRefId \?\? null\}\s+forceFixture\s*\/>/s);
+  assert.match(modalSource, /case 'gateTrial':[\s\S]*<GateTrialScreenOwner[\s\S]*cityId=\{storeCityId\}[\s\S]*trialId=\{moduleRefId \?\? null\}[\s\S]*forceFixture=\{storeModalIntent\?\.gateTrialExactMode === 'fixture'\}/);
 
   for (const forbidden of [
     'startCombatFromPreview',
@@ -103,7 +102,7 @@ void test('Gate Trial exact host keeps distinct modal semantics', () => {
 
   assert.equal(surfaceSource.includes("'gate-trial-exact'"), true);
   assert.equal(surfaceSource.includes("'gate-trial-scenic'"), true);
-  assert.match(surfaceSource, /intent\?\.gateTrialExactMode === 'fixture'[\s\S]*backgroundVariant\s*=\s*'gate-trial-exact';[\s\S]*shellFamily\s*=\s*'gate-trial-scenic';[\s\S]*shellMode\s*=\s*'screen-owned';/);
+  assert.match(surfaceSource, /case 'gateTrial':[\s\S]*backgroundVariant\s*=\s*'gate-trial-exact';[\s\S]*shellFamily\s*=\s*'gate-trial-scenic';[\s\S]*shellMode\s*=\s*'screen-owned';/);
   assert.match(surfaceSource, /case 'outskirts':[\s\S]*backgroundVariant\s*=\s*'outskirts-exact';[\s\S]*shellFamily\s*=\s*'outskirts-scenic';[\s\S]*shellMode\s*=\s*'screen-owned';/);
   assert.match(surfaceSource, /case 'ruins':[\s\S]*backgroundVariant\s*=\s*'ruins-exact';[\s\S]*shellFamily\s*=\s*'ruins-scenic';[\s\S]*shellMode\s*=\s*'screen-owned';/);
 

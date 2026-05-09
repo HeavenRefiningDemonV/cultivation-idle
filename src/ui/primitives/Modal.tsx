@@ -1,4 +1,4 @@
-import { useEffect, useRef, type CSSProperties, type KeyboardEvent, type MouseEvent, type ReactNode } from 'react';
+import { useEffect, useRef, type CSSProperties, type KeyboardEvent as ReactKeyboardEvent, type MouseEvent, type ReactNode } from 'react';
 
 type ModalPanelAttrs = {
   id?: string;
@@ -31,29 +31,74 @@ export function Modal({
   ariaLabelledby,
   panelAttrs,
 }: ModalProps) {
+  const overlayRef = useRef<HTMLDivElement | null>(null);
+  const panelRef = useRef<HTMLDivElement | null>(null);
   const previousActiveElementRef = useRef<HTMLElement | null>(null);
   const previousBodyOverflowRef = useRef<string>('');
 
   useEffect(() => {
     if (!open) return undefined;
 
+    const handleDocumentKeyDown = (event: globalThis.KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+
     previousActiveElementRef.current = document.activeElement as HTMLElement | null;
     previousBodyOverflowRef.current = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
+    document.addEventListener('keydown', handleDocumentKeyDown);
+
+    const focusFrame = window.requestAnimationFrame(() => {
+      overlayRef.current?.focus({ preventScroll: true });
+    });
 
     return () => {
+      window.cancelAnimationFrame(focusFrame);
+      document.removeEventListener('keydown', handleDocumentKeyDown);
       document.body.style.overflow = previousBodyOverflowRef.current;
       const previousActiveElement = previousActiveElementRef.current;
       if (previousActiveElement && typeof previousActiveElement.focus === 'function') {
         previousActiveElement.focus();
       }
     };
-  }, [open]);
+  }, [onClose, open]);
 
-  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+  const handleKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
     if (event.key === 'Escape') {
       event.stopPropagation();
       onClose();
+      return;
+    }
+
+    if (event.key !== 'Tab') return;
+
+    const focusableElements = Array.from(
+      panelRef.current?.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      ) ?? [],
+    ).filter((element) => !element.hasAttribute('disabled') && element.getAttribute('aria-hidden') !== 'true');
+
+    if (focusableElements.length === 0) {
+      event.preventDefault();
+      overlayRef.current?.focus({ preventScroll: true });
+      return;
+    }
+
+    const first = focusableElements[0];
+    const last = focusableElements[focusableElements.length - 1];
+    const activeElement = document.activeElement;
+
+    if (event.shiftKey && activeElement === first) {
+      event.preventDefault();
+      last.focus();
+      return;
+    }
+
+    if (!event.shiftKey && activeElement === last) {
+      event.preventDefault();
+      first.focus();
     }
   };
 
@@ -71,15 +116,17 @@ export function Modal({
 
   return (
     <div
+      ref={overlayRef}
       className={overlayClassName}
       role="dialog"
       aria-modal="true"
       aria-label={ariaLabel}
       aria-labelledby={ariaLabelledby}
+      tabIndex={-1}
       onKeyDown={handleKeyDown}
       onMouseDown={handleOverlayMouseDown}
     >
-      <div className={panelClassName} onMouseDown={stopPropagation} onClick={stopPropagation} {...panelAttrs}>
+      <div ref={panelRef} className={panelClassName} onMouseDown={stopPropagation} onClick={stopPropagation} {...panelAttrs}>
         {children}
       </div>
     </div>

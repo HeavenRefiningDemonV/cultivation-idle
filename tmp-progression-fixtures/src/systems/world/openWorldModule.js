@@ -54,7 +54,7 @@ export function openWorldModule({ cityId, moduleKey, open = true, intent }) {
         return;
     }
     const resolvedIntent = normalizedModuleKey === 'gateTrial' && intent === undefined
-        ? { gateTrialExactMode: 'fixture' }
+        ? { gateTrialExactMode: 'live' }
         : intent ?? null;
     uiStore.openWorldBuildingModal({
         cityId,

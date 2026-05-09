@@ -306,6 +306,8 @@ export function getItemDef(itemId) {
     return maps?.itemsById?.[itemId] ?? null;
 }
 export function formatPrice(price) {
+    if (!price)
+        return '';
     const parts = [];
     if (price.gold)
         parts.push(`${price.gold} Gold`);

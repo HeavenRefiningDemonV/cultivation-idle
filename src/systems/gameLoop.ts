@@ -250,7 +250,6 @@ export function initializeGame(): boolean {
     setCombatStoreGetter(() => useCombatStore.getState());
     setGameInventoryStoreGetter(() => useInventoryStore.getState());
     setPrestigeInventoryStoreGetter(() => useInventoryStore.getState());
-    SaveService.initializeSubscriptions();
     console.log('[GameLoop] Store dependencies wired');
 
     // Initialize prestige store upgrades
@@ -265,24 +264,6 @@ export function initializeGame(): boolean {
     if (!prestigeStore.spiritRoot) {
       prestigeStore.generateSpiritRoot();
       console.log('[GameLoop] Generated initial spirit root');
-    }
-
-    // Add starter items for testing (only if inventory is empty)
-    const inventoryStore = useInventoryStore.getState();
-    if (Object.keys(inventoryStore.items).length === 0) {
-      RewardService.grantRewards(
-        {
-          currencies: { gold: '1000' },
-          items: [
-            { itemId: 'rusty_sword', qty: 1 },
-            { itemId: 'worn_talisman', qty: 1 },
-            { itemId: 'health_pill', qty: 5 },
-            { itemId: 'spirit_stone', qty: 10 },
-          ],
-        },
-        'Game start: starter pack',
-      );
-      console.log('[GameLoop] Added starter items to inventory');
     }
 
     // Check if save exists
@@ -322,7 +303,28 @@ export function initializeGame(): boolean {
       }
     } else {
       console.log('[GameLoop] No save found, starting new game');
+
+      // Add starter items for fresh runs only. Save subscriptions are wired after
+      // bootstrap so this grant cannot create a half-initialized no-path save.
+      const inventoryStore = useInventoryStore.getState();
+      if (Object.keys(inventoryStore.items).length === 0) {
+        RewardService.grantRewards(
+          {
+            currencies: { gold: '1000' },
+            items: [
+              { itemId: 'rusty_sword', qty: 1 },
+              { itemId: 'worn_talisman', qty: 1 },
+              { itemId: 'health_pill', qty: 5 },
+              { itemId: 'spirit_stone', qty: 10 },
+            ],
+          },
+          'Game start: starter pack',
+        );
+        console.log('[GameLoop] Added starter items to inventory');
+      }
     }
+
+    SaveService.initializeSubscriptions();
 
     // Start the game loop
     gameLoop.start();

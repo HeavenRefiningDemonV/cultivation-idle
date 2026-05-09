@@ -43,6 +43,8 @@
     "release:build-audit:json": "npm run release:build-audit -- --json",
     "release:runtime-diagnostics": "tsc --project tsconfig.tests.json && NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node tmp-tests/scripts/release/runRuntimeDiagnostics.js",
     "release:runtime-diagnostics:json": "npm run release:runtime-diagnostics -- --json",
+    "release:menu-interactions-audit": "node --experimental-strip-types scripts/release/auditMenuInteractions.ts",
+    "test:e2e": "playwright test",
     "release:vocab-audit": "NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node --experimental-strip-types scripts/release/auditVocabulary.ts",
     "release:vocab-audit:json": "npm run release:vocab-audit -- --json",
     "release:section-c-evidence-audit": "NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node --experimental-strip-types scripts/release/validateSectionCEvidence.ts",
@@ -96,6 +98,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",
+    "@playwright/test": "^1.59.1",
     "@types/crypto-js": "^4.2.2",
     "@types/node": "^24.6.0",
     "@types/react": "^19.1.16",

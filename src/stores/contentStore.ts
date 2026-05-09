@@ -456,7 +456,8 @@ export function getItemDef(itemId: string): ItemDef | null {
   return maps?.itemsById?.[itemId] ?? null;
 }
 
-export function formatPrice(price: Partial<Record<'gold' | 'spiritStones' | 'merit', string>>): string {
+export function formatPrice(price?: Partial<Record<'gold' | 'spiritStones' | 'merit', string>> | null): string {
+  if (!price) return '';
   const parts: string[] = [];
   if (price.gold) parts.push(`${price.gold} Gold`);
   if (price.spiritStones) parts.push(`${price.spiritStones} Spirit Stones`);

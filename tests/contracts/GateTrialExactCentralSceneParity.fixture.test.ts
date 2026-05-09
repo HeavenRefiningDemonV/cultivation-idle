@@ -227,7 +227,8 @@ void test('Gate Trial Exact G5 preserves route activation and G4 side rail contr
   const screenSource = readFileSync('src/features/world/gateTrialExact/GateTrialExactScreen.ts', 'utf8');
 
   assert.equal(openWorldModule.includes("normalizedModuleKey === 'gateTrial'"), true);
-  assert.equal(openWorldModule.includes("gateTrialExactMode: 'fixture'"), true);
+  assert.equal(openWorldModule.includes("gateTrialExactMode: 'live'"), true);
+  assert.equal(openWorldModule.includes("gateTrialExactMode: 'fixture'"), false);
 
   for (const token of [
     'gate-trial-exact-left-rail',

@@ -19,6 +19,8 @@ import { GameClock } from '../time/GameClock.js';
 import { useUIStore } from '../../stores/uiStore.js';
 import { shouldShowOfflineProgressModal } from '../../systems/balance/offlineTargets.js';
 
+let subscriptionsInitialized = false;
+
 function recordLastSave(timestamp: number) {
   try {
     useUIStore.getState().setLastSaveAt(timestamp);
@@ -64,6 +66,8 @@ function recordOfflineSummary(now: number): boolean {
 
 export const SaveService = {
   initializeSubscriptions() {
+    if (subscriptionsInitialized) return;
+    subscriptionsInitialized = true;
     GameEvents.on('rewards/granted', () => this.save());
     GameEvents.on('activity/changed', () => this.save());
     GameEvents.on('manuals/purchased', () => this.save());

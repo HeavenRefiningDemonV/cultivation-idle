@@ -301,15 +301,16 @@ void test('Gate Trial Exact G4 preserves route activation and modal fixture cont
   const modal = readFileSync('src/components/modals/WorldBuildingModal.tsx', 'utf8');
 
   assert.equal(openWorldModule.includes("normalizedModuleKey === 'gateTrial'"), true);
-  assert.equal(openWorldModule.includes("gateTrialExactMode: 'fixture'"), true);
+  assert.equal(openWorldModule.includes("gateTrialExactMode: 'live'"), true);
+  assert.equal(openWorldModule.includes("gateTrialExactMode: 'fixture'"), false);
   assert.equal(openWorldModule.includes('intent === undefined'), true);
 
   assert.equal(entrySurface.includes("'gate-trial-exact'"), true);
   assert.equal(entrySurface.includes("'gate-trial-scenic'"), true);
-  assert.equal(entrySurface.includes("intent?.gateTrialExactMode === 'fixture'"), true);
+  assert.match(entrySurface, /case 'gateTrial':[\s\S]*shellMode = 'screen-owned'/);
   assert.equal(entrySurface.includes("shellMode = 'screen-owned'"), true);
 
   assert.equal(modal.includes('GateTrialScreenOwner'), true);
   assert.equal(modal.includes("storeModalIntent?.gateTrialExactMode === 'fixture'"), true);
-  assert.equal(modal.includes('GateTrialBuildingPanel'), true);
+  assert.equal(modal.includes('GateTrialBuildingPanel'), false);
 });

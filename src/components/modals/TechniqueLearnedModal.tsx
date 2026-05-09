@@ -271,7 +271,12 @@ export function TechniqueLearnedModal() {
               {equipBlockedNote && <div className={'techniqueLearnedNote'}>{equipBlockedNote}</div>}
 
               <div className={'techniqueEquipConfirm'}>
-                <button className={'techniqueLearnedButton'} onClick={handleEquip} disabled={!hasUnlockedCompatibleSlot}>
+                <button
+                  className={'techniqueLearnedButton'}
+                  onClick={handleEquip}
+                  disabled={!hasUnlockedCompatibleSlot}
+                  title={!hasUnlockedCompatibleSlot ? (equipBlockedNote ?? 'No compatible technique slot is unlocked.') : undefined}
+                >
                   Equip Technique
                 </button>
               </div>

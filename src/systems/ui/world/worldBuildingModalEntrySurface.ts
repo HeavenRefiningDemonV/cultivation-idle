@@ -103,17 +103,9 @@ export function resolveWorldModalEntrySurface(args: {
       showShellClose = false;
       break;
     case 'gateTrial':
-      if (intent?.gateTrialExactMode === 'fixture') {
-        backgroundVariant = 'gate-trial-exact';
-        shellFamily = 'gate-trial-scenic';
-        shellMode = 'screen-owned';
-        showShellClose = false;
-        break;
-      }
-
-      backgroundVariant = 'inside-dungeon';
-      shellFamily = 'combat-path';
-      shellMode = 'close-only';
+      backgroundVariant = 'gate-trial-exact';
+      shellFamily = 'gate-trial-scenic';
+      shellMode = 'screen-owned';
       showShellClose = false;
       break;
     case 'ruins':

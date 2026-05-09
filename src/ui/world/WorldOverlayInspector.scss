@@ -8,7 +8,7 @@
   box-shadow: 0 16px 34px rgba(20, 14, 9, 0.28);
   padding: 14px 14px 12px;
   color: rgba(34, 24, 16, 0.95);
-  pointer-events: auto;
+  pointer-events: none;
 }
 
 .worldOverlayInspector__header {
@@ -67,4 +67,5 @@
   width: 100%;
   font-size: 14px;
   padding: 10px 12px;
+  pointer-events: auto;
 }

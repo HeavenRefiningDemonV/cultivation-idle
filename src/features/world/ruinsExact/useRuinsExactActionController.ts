@@ -28,8 +28,8 @@ export function useRuinsExactActionController({ cityId, ruinId, surface }: { cit
     onOpenTacticalCell: (cellId: RuinsExactSurfaceV1['tacticalStrip']['cells'][number]['id']) => {
       if (cellId === 'loadout' || cellId === 'aiProfile') { setActiveTab('techniques'); closeModal(); return; }
       if (cellId === 'healing') { openModal({ cityId, buildingKey: 'apothecary', intent: { apothecarySurface: 'pouch' } }); return; }
-      if (cellId === 'bounty') { setActiveTab('bounties'); closeModal(); return; }
-      if (cellId === 'expedition') { setActiveTab('expeditions'); closeModal(); }
+      if (cellId === 'bounty') { openModal({ cityId, buildingKey: 'bounties' }); return; }
+      if (cellId === 'expedition') { openModal({ cityId, buildingKey: 'expeditions' }); }
     },
     onOpenSettings: undefined,
     onOpenAreaSelector: undefined,

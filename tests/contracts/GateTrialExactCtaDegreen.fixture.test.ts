@@ -119,7 +119,7 @@ void test('Gate Trial Exact T2 CTA SCSS slice contains no green blob palette', (
   }
 });
 
-void test('Gate Trial Exact T2 does not alter gameplay or route ownership files', () => {
+void test('Gate Trial Exact T2 preserves gameplay actions while live route ownership is exact', () => {
   const screen = readFileSync('src/features/world/gateTrialExact/GateTrialExactScreen.ts', 'utf8');
   const actionController = readFileSync('src/features/world/gateTrialExact/useGateTrialExactActionController.ts', 'utf8');
   const openWorldModule = readFileSync('src/systems/world/openWorldModule.ts', 'utf8');
@@ -127,8 +127,8 @@ void test('Gate Trial Exact T2 does not alter gameplay or route ownership files'
   assert.equal(screen.includes('onPrimaryAction?.()'), true, 'CTA must still call provided primary action handler');
   assert.equal(actionController.includes('attempt-gate'), true, 'G8 action controller must remain present');
   assert.equal(actionController.includes('stop-attempt'), true, 'G8 stop action must remain present');
-  assert.equal(openWorldModule.includes("gateTrialExactMode: 'fixture'"), true, 'normal World route must remain fixture mode');
-  assert.equal(openWorldModule.includes("gateTrialExactMode: 'live'"), false, 'T2 must not cut normal route to live');
+  assert.equal(openWorldModule.includes("gateTrialExactMode: 'fixture'"), false, 'normal World route must not default to fixture mode');
+  assert.equal(openWorldModule.includes("gateTrialExactMode: 'live'"), true, 'normal World route must open the live exact Gate Trial');
 });
 
 void test('Gate Trial Exact T2 preserves T1 layout refit tokens', () => {

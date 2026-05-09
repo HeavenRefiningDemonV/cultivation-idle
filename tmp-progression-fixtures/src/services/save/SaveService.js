@@ -4,6 +4,7 @@ import { apply as applyOfflineCatchup } from '../time/OfflineCatchup.js';
 import { GameClock } from '../time/GameClock.js';
 import { useUIStore } from '../../stores/uiStore.js';
 import { shouldShowOfflineProgressModal } from '../../systems/balance/offlineTargets.js';
+let subscriptionsInitialized = false;
 function recordLastSave(timestamp) {
     try {
         useUIStore.getState().setLastSaveAt(timestamp);
@@ -50,6 +51,9 @@ function recordOfflineSummary(now) {
 }
 export const SaveService = {
     initializeSubscriptions() {
+        if (subscriptionsInitialized)
+            return;
+        subscriptionsInitialized = true;
         GameEvents.on('rewards/granted', () => this.save());
         GameEvents.on('activity/changed', () => this.save());
         GameEvents.on('manuals/purchased', () => this.save());

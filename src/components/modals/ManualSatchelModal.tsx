@@ -279,7 +279,12 @@ export function ManualSatchelModal() {
               />
             </div>
             <div className={'manualSatchelFocusActions'}>
-              <button className={'manualSatchelButton manualSatchelButtonSecondary'} onClick={cancelFocus} disabled={focusRunning}>
+              <button
+                className={'manualSatchelButton manualSatchelButtonSecondary'}
+                onClick={cancelFocus}
+                disabled={focusRunning}
+                title={focusRunning ? 'Focused study is resolving; wait for the result.' : undefined}
+              >
                 Cancel
               </button>
             </div>

@@ -8,7 +8,7 @@ interface OnboardingCalloutCardProps {
 
 export function OnboardingCalloutCard({ prompt, onPrimaryAction, onSecondaryAction }: OnboardingCalloutCardProps) {
   return (
-    <div className="onboardingCalloutCard" role="status" aria-live="polite">
+    <div className="onboardingCalloutCard" role="status" aria-live="polite" data-testid="onboarding-callout-card">
       {prompt.eyebrow ? <div className="onboardingCalloutCard__eyebrow">{prompt.eyebrow}</div> : null}
       <div className="onboardingCalloutCard__title">{prompt.title}</div>
       {prompt.badgeLabel ? <div className="onboardingCalloutCard__badge">{prompt.badgeLabel}</div> : null}

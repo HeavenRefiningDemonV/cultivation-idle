@@ -224,7 +224,7 @@ export function OutskirtsProgress({ outskirtsId: overrideOutskirtsId }: Outskirt
           )}
         </div>
         <div className="outskirts-progress__controls">
-          <button className="button-standard" onClick={handleStart} disabled={!outskirtsDef}>
+          <button className="button-standard" onClick={handleStart}>
             Start
           </button>
           <button className="button-standard" onClick={handleStop}>

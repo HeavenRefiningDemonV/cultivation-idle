@@ -335,16 +335,16 @@ void test('Gate Trial Exact G9 SCSS contains active theater selectors and avoids
   }
 });
 
-void test('Gate Trial Exact G9 does not cut normal World route over to live mode', () => {
+void test('Gate Trial Exact G9 keeps normal World route in live exact mode', () => {
   const openWorldModule = readFileSync('src/systems/world/openWorldModule.ts', 'utf8');
   const modal = readFileSync('src/components/modals/WorldBuildingModal.tsx', 'utf8');
   const entrySurface = readFileSync('src/systems/ui/world/worldBuildingModalEntrySurface.ts', 'utf8');
 
-  assert.equal(openWorldModule.includes("gateTrialExactMode: 'fixture'"), true);
-  assert.equal(openWorldModule.includes("gateTrialExactMode: 'live'"), false);
+  assert.equal(openWorldModule.includes("gateTrialExactMode: 'fixture'"), false);
+  assert.equal(openWorldModule.includes("gateTrialExactMode: 'live'"), true);
 
   assert.equal(modal.includes("storeModalIntent?.gateTrialExactMode === 'fixture'"), true);
   assert.equal(modal.includes("storeModalIntent?.gateTrialExactMode === 'live'"), false);
 
-  assert.equal(entrySurface.includes("intent?.gateTrialExactMode === 'fixture'"), true);
+  assert.match(entrySurface, /case 'gateTrial':[\s\S]*backgroundVariant\s*=\s*'gate-trial-exact';[\s\S]*shellFamily\s*=\s*'gate-trial-scenic';[\s\S]*shellMode\s*=\s*'screen-owned';/);
 });

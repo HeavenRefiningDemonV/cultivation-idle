@@ -11,7 +11,6 @@ import { GameIcon } from '../../ui/icons/index.js';
 import hammer from '../../assets/onscreen/hammer.png';
 import './WorldBuildingModal.scss';
 import { OutskirtsBuildingPanel } from '../screens/world/buildings/OutskirtsBuildingPanel.js';
-import { GateTrialBuildingPanel } from '../screens/world/buildings/GateTrialBuildingPanel.js';
 import { RuinsBuildingPanel } from '../screens/world/buildings/RuinsBuildingPanel.js';
 import { Modal } from '../../ui/primitives/Modal.js';
 import { formatWorldModuleLabel } from '../../ui/text/playerFacingFormatters.js';
@@ -157,10 +156,13 @@ export function WorldBuildingModal({
         content = <OutskirtsBuildingPanel cityId={storeCityId} />;
         break;
       case 'gateTrial':
-        content = <GateTrialBuildingPanel cityId={storeCityId} />;
-        if (storeModalIntent?.gateTrialExactMode === 'fixture') {
-          content = <GateTrialScreenOwner cityId={storeCityId} trialId={moduleRefId ?? null} forceFixture />;
-        }
+        content = (
+          <GateTrialScreenOwner
+            cityId={storeCityId}
+            trialId={moduleRefId ?? null}
+            forceFixture={storeModalIntent?.gateTrialExactMode === 'fixture'}
+          />
+        );
         break;
       case 'ruins':
         content = <RuinsBuildingPanel cityId={storeCityId} />;

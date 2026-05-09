@@ -32,14 +32,28 @@ export function GateTrialAttemptCluster(props: {
       style={style}
       aria-label="Gate Trial attempt controls"
     >
-      <button className={`button-standard gateTrialAttemptCluster__primary gateTrialAttemptCluster__primary--${presentation.tone}`} type="button" onClick={onPrimary} disabled={presentation.primaryDisabled}>
+      <button
+        className={`button-standard gateTrialAttemptCluster__primary gateTrialAttemptCluster__primary--${presentation.tone}`}
+        type="button"
+        onClick={onPrimary}
+        disabled={presentation.primaryDisabled}
+        title={presentation.primaryDisabled ? presentation.detail : undefined}
+      >
         {presentation.primaryLabel}
       </button>
       <div className="gateTrialAttemptCluster__detail">{presentation.detail}</div>
       <div className="gateTrialAttemptCluster__actions">
         {showStop ? <button className="button-standard button-standard--ghost" type="button" onClick={onStop}>Stop</button> : null}
         {presentation.showBuySafetyNet ? (
-          <button className="button-standard" type="button" onClick={onBuySafetyNet} disabled={!presentation.buySafetyNetEnabled}>Buy Safety Net</button>
+          <button
+            className="button-standard"
+            type="button"
+            onClick={onBuySafetyNet}
+            disabled={!presentation.buySafetyNetEnabled}
+            title={!presentation.buySafetyNetEnabled ? presentation.detail : undefined}
+          >
+            Buy Safety Net
+          </button>
         ) : null}
       </div>
     </section>
