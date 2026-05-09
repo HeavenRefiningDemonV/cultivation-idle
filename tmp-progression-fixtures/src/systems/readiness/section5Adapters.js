@@ -373,6 +373,9 @@ export function buildGateTrialReadinessSurface(trialId) {
     ];
     const minimumMetCount = minimumChecklist.filter((entry) => entry.state === 'met').length;
     const recommendedMetCount = recommendedChecklist.filter((entry) => entry.state === 'met').length;
+    const minimumRatio = minimumChecklist.length > 0 ? minimumMetCount / minimumChecklist.length : 0;
+    const recommendedRatio = recommendedChecklist.length > 0 ? recommendedMetCount / recommendedChecklist.length : 0;
+    const readinessScore = Math.round((minimumRatio * 0.6 + recommendedRatio * 0.4) * 100);
     let readinessLabel = 'Preparing';
     let readinessDetail = lifecycle.reason;
     if (lifecycle.reasonCode === 'not_final_substage' || lifecycle.reasonCode === 'insufficient_qi') {
@@ -403,6 +406,7 @@ export function buildGateTrialReadinessSurface(trialId) {
         requiredItemLabel,
         readinessLabel,
         readinessDetail,
+        readinessScore,
         minimumMetCount,
         minimumTotalCount: minimumChecklist.length,
         recommendedMetCount,
@@ -428,6 +432,17 @@ export function buildGateTrialAttemptPresentation(surface) {
         };
     }
     if (!surface.lifecycle.canStart) {
+        if (surface.lifecycle.failSafe.canPurchase && surface.lifecycle.failSafe.status !== 'resolved') {
+            return {
+                state: 'buy_safety_net',
+                primaryLabel: 'Buy Safety Net',
+                primaryDisabled: false,
+                detail: 'Readiness is blocked. Safety Net is available as a fail-safe path.',
+                tone: 'warning',
+                showBuySafetyNet: false,
+                buySafetyNetEnabled: true,
+            };
+        }
         return {
             state: 'not_ready',
             primaryLabel: 'Not Ready',

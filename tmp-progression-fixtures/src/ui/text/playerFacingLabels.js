@@ -42,7 +42,7 @@ export const PRESTIGE_RECOMMENDATION_LABELS = {
 };
 export const GATE_SUPPORT_LABELS = {
     support: 'Safety Net',
-    eligibleDefeats: 'Eligible Defeats',
+    eligibleFailures: 'Eligible Failures',
 };
 function toTitleCase(key) {
     return key
@@ -56,6 +56,10 @@ export function getShellTabLabel(tab) {
     return SHELL_TAB_LABELS[tab];
 }
 export function getWorldModuleLabel(moduleKey) {
+    if (moduleKey === 'alchemy')
+        return WORLD_MODULE_LABELS.apothecary;
+    if (moduleKey === 'talismanStudio')
+        return 'Unavailable Module';
     return isLiveWorldModule(moduleKey) ? WORLD_MODULE_LABELS[moduleKey] : toTitleCase(moduleKey);
 }
 export function getOpenWorldModuleLabel(moduleKey) {

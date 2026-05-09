@@ -5,6 +5,20 @@ export const CITY_ARRIVAL_LESSON_BY_ID = {
     city_lotusford: 'Survival prep and reagents matter.',
     city_ironpeak_bastion: 'Final convergence city.',
 };
+export const CITY_PHASE_ROLE_BY_ID = {
+    city_pinewind_hamlet: 'Teaches the full loop once.',
+    city_stonecrag_town: 'Forge and ore matter.',
+    city_spirit_cavern_city: 'Build correction and fragment economy matter.',
+    city_lotusford: 'Higher-tier reagents and survival prep matter.',
+    city_ironpeak_bastion: 'Final convergence: forge, ruins, expeditions, and doctrine.',
+};
+export const CITY_EXPEDITION_EMPHASIS_BY_ID = {
+    city_pinewind_hamlet: 'Keep one route running for city support.',
+    city_stonecrag_town: 'Keep one ore route running for forge support.',
+    city_spirit_cavern_city: 'Keep one fragment route running for build correction support.',
+    city_lotusford: 'Keep one reagent route running for survival prep.',
+    city_ironpeak_bastion: 'Keep one high-yield route running through final convergence.',
+};
 export const CITY_ARRIVAL_QUICK_OPEN_ORDER = ['outskirts', 'ruins', 'gateTrial'];
 export const CITY_ARRIVAL_QUICK_OPEN_LABELS = {
     outskirts: 'Open Outskirts',
@@ -13,6 +27,28 @@ export const CITY_ARRIVAL_QUICK_OPEN_LABELS = {
 };
 export function getCityArrivalLesson(cityId) {
     return CITY_ARRIVAL_LESSON_BY_ID[cityId] ?? null;
+}
+export function getCityPhaseRoleStatement(cityId) {
+    return CITY_PHASE_ROLE_BY_ID[cityId] ?? null;
+}
+export function getCityExpeditionEmphasis(cityId) {
+    return CITY_EXPEDITION_EMPHASIS_BY_ID[cityId] ?? null;
+}
+export function buildCityPhaseTeachingSurface(input) {
+    const ruinName = input.ruinName ?? null;
+    const gateTrialName = input.gateTrialName ?? null;
+    return {
+        cityName: input.cityName,
+        lessonShort: getCityArrivalLesson(input.cityId),
+        roleStatement: getCityPhaseRoleStatement(input.cityId),
+        expeditionEmphasis: getCityExpeditionEmphasis(input.cityId),
+        ruinName,
+        gateTrialName,
+        leadRuinLabel: ruinName ?? 'Available now',
+        gateTrialLabel: gateTrialName ?? 'Current city trial',
+        supportIdentityLabel: input.supportIdentityLabel ?? null,
+        quickOpenModules: getCityArrivalQuickOpenModules(input.modules),
+    };
 }
 export function getCityArrivalQuickOpenModules(modules) {
     if (!Array.isArray(modules) || modules.length === 0)

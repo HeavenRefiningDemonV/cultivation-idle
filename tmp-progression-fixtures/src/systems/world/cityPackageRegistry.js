@@ -1,5 +1,5 @@
 import { SEMESTER_SLICE_CONTRACT } from '../progression/contract/semesterSlice.js';
-import { CITY_ARRIVAL_QUICK_OPEN_ORDER, getCityArrivalLesson, } from './cityArrivalContract.js';
+import { CITY_ARRIVAL_QUICK_OPEN_ORDER, getCityExpeditionEmphasis, getCityArrivalLesson, getCityPhaseRoleStatement, } from './cityArrivalContract.js';
 import { LIVE_CITY_MODULE_ORDER } from './liveWorldSchema.js';
 export const LIVE_CITY_PACKAGE_REF_SPECS = [
     { refKey: 'outskirtsId', label: 'outskirts' },
@@ -21,6 +21,8 @@ const createRegistryEntry = (spec) => ({
     defaultQuickOpenOrder: [...CITY_ARRIVAL_QUICK_OPEN_ORDER],
     mustExposeModules: [...LIVE_CITY_MODULE_ORDER],
     lesson: getCityArrivalLesson(spec.cityId) ?? '',
+    phaseRole: getCityPhaseRoleStatement(spec.cityId) ?? '',
+    expeditionEmphasis: getCityExpeditionEmphasis(spec.cityId) ?? '',
 });
 export const CITY_PACKAGE_REGISTRY = [
     createRegistryEntry({

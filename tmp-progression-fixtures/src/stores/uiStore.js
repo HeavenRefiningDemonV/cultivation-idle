@@ -13,6 +13,16 @@ import { pickEnemyFromPool } from '../components/screens/world/worldUtils.js';
 import { GameEvents } from '../services/events/GameEvents.js';
 import { applyNotificationPolicy, DEFAULT_NOTIFICATION_DURATION_MS, isNotificationOverlayBlocked, promotePendingNotifications, } from '../systems/ui/notificationPolicy.js';
 const normalizeWorldBuildingKey = (buildingKey) => buildingKey === 'alchemy' ? 'apothecary' : buildingKey;
+export const getWorldBuildingIntentKey = (intent) => JSON.stringify({
+    apothecarySurface: intent?.apothecarySurface ?? null,
+    apothecaryExactMode: intent?.apothecaryExactMode ?? null,
+    apothecaryFocus: intent?.apothecaryFocus ?? null,
+    forgeExactMode: intent?.forgeExactMode ?? null,
+    bountiesExactMode: intent?.bountiesExactMode ?? null,
+    expeditionsExactMode: intent?.expeditionsExactMode ?? null,
+    ruinsExactMode: intent?.ruinsExactMode ?? null,
+    gateTrialExactMode: intent?.gateTrialExactMode ?? null,
+});
 const INITIAL_UI_STATE = {
     activeTab: 'cultivation',
     headerTitle: '',
@@ -539,17 +549,18 @@ export const useUIStore = create()(immer((set, get) => ({
     openWorldBuildingModal: ({ cityId, buildingKey, intent }) => {
         const normalizedBuildingKey = normalizeWorldBuildingKey(buildingKey);
         const snapshot = get();
+        const incomingIntent = intent ?? null;
         if (snapshot.showWorldBuildingModal
             && snapshot.worldBuildingModalCityId === cityId
             && snapshot.worldBuildingModalKey === normalizedBuildingKey
-            && (snapshot.worldBuildingModalIntent?.apothecarySurface ?? null) === ((intent ?? null)?.apothecarySurface ?? null)) {
+            && getWorldBuildingIntentKey(snapshot.worldBuildingModalIntent) === getWorldBuildingIntentKey(incomingIntent)) {
             return;
         }
         set((state) => {
             state.showWorldBuildingModal = true;
             state.worldBuildingModalCityId = cityId;
             state.worldBuildingModalKey = normalizedBuildingKey;
-            state.worldBuildingModalIntent = intent ?? null;
+            state.worldBuildingModalIntent = incomingIntent;
         });
         if (normalizedBuildingKey === 'manualPavilion') {
             GameEvents.emit({ type: 'pavilion/opened', payload: { buildingKey: normalizedBuildingKey, cityId } });

@@ -65,7 +65,7 @@ export function resolveStatusShortfallReason(code, capReached) {
     }
 }
 function toShortfallHeadline(diagnosisLabel, reason) {
-    return `${diagnosisLabel}: ${reason}`;
+    return `Biggest Shortfall: ${diagnosisLabel} — ${reason}`;
 }
 function toEconomicTopFixLabel(actionKind, destinationModuleKey) {
     switch (actionKind) {
@@ -107,6 +107,7 @@ export function buildStatusTroubleshootingSurface() {
         ? content?.heart_laws.find((entry) => entry.id === cultivation.selectedHeartLawId) ?? null
         : null;
     const capReached = currentGateTrialId == null;
+    const canPrestigeNow = usePrestigeStore.getState().canPrestige();
     const requiredItemSatisfied = !gateTrial?.requiredItemId || inventory.getItemCount(gateTrial.requiredItemId) > 0;
     const lifecycle = getTrialLifecycleSnapshot({
         content,
@@ -131,9 +132,11 @@ export function buildStatusTroubleshootingSurface() {
         }
     }
     const diagnosisCode = diagnosis?.primary ?? (lifecycle.failSafe.canPurchase ? 'bypassAvailable' : null);
-    const diagnosisLabel = diagnosisCode ? getDiagnosisLabel(diagnosisCode) : 'None';
-    const reason = resolveStatusShortfallReason(diagnosisCode, capReached);
-    const headline = toShortfallHeadline(diagnosisLabel, reason);
+    const diagnosisLabel = capReached
+        ? 'Current Chapter Exhausted'
+        : diagnosisCode
+            ? getDiagnosisLabel(diagnosisCode)
+            : 'Viable';
     const economic = buildLiveEconomicRecommendationEngine();
     const forgeFloor = economic.snapshot.forgeFloor;
     const gateTarget = forgeFloor.nextGateRecommendation;
@@ -170,6 +173,61 @@ export function buildStatusTroubleshootingSurface() {
             blockedReason: mappedTopFailureFix.blockedReason,
         }
         : economicTopFix;
+    const topFixFallbackByDiagnosis = capReached
+        ? {
+            label: 'Open Reincarnation for permanent progress',
+            destinationLabel: 'Prestige',
+            blockedReason: canPrestigeNow ? null : 'Too Early',
+        }
+        : diagnosisCode === 'undercultivated'
+            ? {
+                label: 'Keep cultivating toward the next breakthrough',
+                destinationLabel: 'Cultivation',
+                blockedReason: null,
+            }
+            : diagnosisCode === 'underforged'
+                ? {
+                    label: 'Refine your weapon toward the next gate floor',
+                    destinationLabel: getWorldModuleLabel('forge'),
+                    blockedReason: null,
+                }
+                : diagnosisCode === 'underprepared'
+                    ? {
+                        label: 'Open Apothecary and restore your prep package',
+                        destinationLabel: getWorldModuleLabel('apothecary'),
+                        blockedReason: null,
+                    }
+                    : diagnosisCode === 'underbuilt'
+                        ? {
+                            label: 'Open Techniques and close your top build gap',
+                            destinationLabel: 'Techniques',
+                            blockedReason: null,
+                        }
+                        : diagnosisCode === 'close'
+                            ? {
+                                label: 'Open the Gate Trial and test a cleaner attempt',
+                                destinationLabel: getWorldModuleLabel('gateTrial'),
+                                blockedReason: null,
+                            }
+                            : diagnosisCode === 'bypassAvailable'
+                                ? {
+                                    label: 'Use Safety Net to resolve this gate',
+                                    destinationLabel: getWorldModuleLabel('gateTrial'),
+                                    blockedReason: null,
+                                }
+                                : {
+                                    label: 'Follow the best next action from Run Compass',
+                                    destinationLabel: 'Run Compass',
+                                    blockedReason: null,
+                                };
+    const resolvedTopFixDetail = topFixDetail ?? topFixFallbackByDiagnosis;
+    const headline = toShortfallHeadline(diagnosisLabel, resolvedTopFixDetail.label);
+    const readinessReasons = [
+        ...diagnosis?.reasons.slice(0, 2) ?? [],
+        ...(readiness?.warnings ?? []).slice(0, 2),
+    ]
+        .filter((line, index, all) => line && all.indexOf(line) === index)
+        .slice(0, 4);
     return {
         realmName: realm.name,
         stageText: `Stage ${game.realm.substage}/${realm.substages}`,
@@ -179,10 +237,10 @@ export function buildStatusTroubleshootingSurface() {
         shortfall: {
             diagnosisCode,
             diagnosisLabel,
-            reason,
+            reason: resolvedTopFixDetail.label,
             headline,
-            topFix: topFixDetail ? `${topFixDetail.label} (${topFixDetail.destinationLabel})` : null,
-            topFixDetail,
+            topFix: `${resolvedTopFixDetail.label} (${resolvedTopFixDetail.destinationLabel})`,
+            topFixDetail: resolvedTopFixDetail,
         },
         combatStrip: [
             { label: 'HP', value: formatNumber(game.stats.hp), tone: 'hp' },
@@ -209,8 +267,9 @@ export function buildStatusTroubleshootingSurface() {
             readinessLabel: readiness?.overallBand ? getReadinessBandLabel(readiness.overallBand) : capReached ? 'Cap Reached' : 'Preparing',
             gateTrialName: gateTrial?.name ?? 'No active gate trial',
             diagnosisLabel,
+            reasons: readinessReasons,
             warnings: (readiness?.warnings ?? []).slice(0, 2),
-            shortfallLine: `${diagnosisLabel} — ${reason}`,
+            shortfallLine: `${diagnosisLabel} — ${resolvedTopFixDetail.label}`,
         },
         permanentFloor: {
             weaponRefine: forgeFloor.weaponRefineFloor,
@@ -242,20 +301,36 @@ export function buildStatusTroubleshootingSurface() {
             topGap: build.gaps[0]?.reason ?? 'No top build gap surfaced.',
         },
         safetyNet: {
-            state: lifecycle.failSafe.canPurchase
-                ? 'Bypass Available'
+            state: capReached
+                ? 'Current Chapter Exhausted'
+                : lifecycle.failSafe.canPurchase
+                    ? 'Bypass Available'
+                    : lifecycle.failSafe.status === 'resolved'
+                        ? 'Gate already resolved'
+                        : canPrestigeNow
+                            ? 'Prestige Viable'
+                            : 'Too Early',
+            progress: capReached
+                ? 'No further live gate in the current chapter.'
+                : `Safety Net progress: ${lifecycle.failSafe.eligibleFailures} / ${lifecycle.failSafe.threshold} eligible defeats`,
+            threshold: capReached ? 'Threshold: n/a at chapter cap' : `Threshold: ${lifecycle.failSafe.threshold}`,
+            cost: capReached
+                ? 'Cost: Reincarnation now drives permanent progress.'
+                : lifecycle.failSafe.cost
+                    ? `Cost: ${lifecycle.failSafe.cost.merit ?? '0'} Merit / ${lifecycle.failSafe.cost.spiritStones ?? '0'} Spirit Stones`
+                    : 'Cost unavailable',
+            affordability: capReached
+                ? (canPrestigeNow ? 'Recommended' : 'Too Early')
+                : lifecycle.failSafe.canPurchase
+                    ? 'Affordable now'
+                    : canPrestigeNow
+                        ? 'Viable'
+                        : 'Too Early',
+            blockedReason: capReached
+                ? (canPrestigeNow ? 'Current Chapter Exhausted — Open Reincarnation.' : 'Current Chapter Exhausted — Too Early for Reincarnation.')
                 : lifecycle.failSafe.status === 'resolved'
-                    ? 'Resolved with current gate'
-                    : 'Locked',
-            progress: `Safety Net progress: ${lifecycle.failSafe.eligibleFailures} / ${lifecycle.failSafe.threshold} eligible defeats`,
-            threshold: `Threshold: ${lifecycle.failSafe.threshold}`,
-            cost: lifecycle.failSafe.cost
-                ? `Cost: ${lifecycle.failSafe.cost.merit ?? '0'} Merit / ${lifecycle.failSafe.cost.spiritStones ?? '0'} Spirit Stones`
-                : 'Cost unavailable',
-            affordability: lifecycle.failSafe.canPurchase ? 'Affordable now' : 'Need more Merit / Spirit Stones',
-            blockedReason: lifecycle.failSafe.status === 'resolved'
-                ? 'Resolved with current gate'
-                : lifecycle.failSafe.blockedReason ?? (capReached ? 'Not applicable at current chapter cap' : 'Not available yet'),
+                    ? 'Gate already resolved'
+                    : lifecycle.failSafe.blockedReason ?? 'Not available yet',
         },
         urgentCardId: resolveStatusUrgentCard(diagnosisCode),
     };

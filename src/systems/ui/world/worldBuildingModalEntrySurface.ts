@@ -1,8 +1,8 @@
 import type { WorldBuildingKey, WorldBuildingModalIntent } from '../../../stores/uiStore.js';
 import { formatWorldModuleLabel } from '../../../ui/text/playerFacingFormatters.js';
 
-export type BackgroundVariant = 'manual-pavilion' | 'apothecary' | 'apothecary-exact' | 'bounty-board' | 'inside-dungeon' | 'forge' | 'forge-exact' | 'outskirts-exact' | 'ruins-exact' | 'gate-trial-exact';
-export type WorldModalShellFamily = 'prep-room' | 'apothecary-scenic' | 'support-board' | 'combat-path' | 'forge-scenic' | 'outskirts-scenic' | 'ruins-scenic' | 'gate-trial-scenic';
+export type BackgroundVariant = 'manual-pavilion' | 'apothecary' | 'apothecary-exact' | 'bounty-board' | 'bounties-exact' | 'expeditions-exact' | 'inside-dungeon' | 'forge' | 'forge-exact' | 'outskirts-exact' | 'ruins-exact' | 'gate-trial-exact';
+export type WorldModalShellFamily = 'prep-room' | 'apothecary-scenic' | 'support-board' | 'bounties-scenic' | 'expeditions-scenic' | 'combat-path' | 'forge-scenic' | 'outskirts-scenic' | 'ruins-scenic' | 'gate-trial-scenic';
 export type WorldModalShellMode = 'context-strip' | 'close-only' | 'screen-owned';
 
 export type WorldModalEntrySurface = {
@@ -65,9 +65,26 @@ export function resolveWorldModalEntrySurface(args: {
       showShellClose = false;
       break;
     case 'bounties':
+      if (intent?.bountiesExactMode === 'legacy') {
+        backgroundVariant = 'bounty-board';
+        shellFamily = 'support-board';
+        break;
+      }
+      backgroundVariant = 'bounties-exact';
+      shellFamily = 'bounties-scenic';
+      shellMode = 'screen-owned';
+      showShellClose = false;
+      break;
     case 'expeditions':
-      backgroundVariant = 'bounty-board';
-      shellFamily = 'support-board';
+      if (intent?.expeditionsExactMode === 'legacy') {
+        backgroundVariant = 'bounty-board';
+        shellFamily = 'support-board';
+        break;
+      }
+      backgroundVariant = 'expeditions-exact';
+      shellFamily = 'expeditions-scenic';
+      shellMode = 'screen-owned';
+      showShellClose = false;
       break;
     case 'forge':
       if (intent?.forgeExactMode === 'legacy') {

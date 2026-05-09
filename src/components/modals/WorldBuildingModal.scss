@@ -61,6 +61,15 @@
   background: #e8dfd0;
 }
 
+.worldBuildingOverlay--bounties-scenic,
+.worldBuildingOverlay--expeditions-scenic {
+  background: #e9dfcf;
+  backdrop-filter: none;
+  align-items: stretch;
+  justify-content: stretch;
+  padding: 0;
+}
+
 .worldBuildingModal {
   position: relative;
   background-image: url('../../assets/background/manualpavilion.png');
@@ -115,6 +124,19 @@
 
 .worldBuildingModal--bounty-board {
   background-image: url('../../assets/background/bountyboard.png');
+}
+
+.worldBuildingModal--bounties-exact,
+.worldBuildingModal--expeditions-exact {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  border-radius: 0;
+  box-shadow: none;
+  color: #2b2116;
+  background: #e9dfcf;
+  overflow: hidden;
 }
 
 .worldBuildingModal--support-board::after {
@@ -197,6 +219,12 @@
   mix-blend-mode: normal;
 }
 
+.worldBuildingModal--bounties-scenic::after,
+.worldBuildingModal--expeditions-scenic::after {
+  opacity: 0;
+  mix-blend-mode: normal;
+}
+
 .worldBuildingModal--screen-owned {
   border-radius: 18px;
 }
@@ -219,6 +247,17 @@
   border-radius: 0;
   box-shadow: none;
   background: transparent;
+  overflow: hidden;
+}
+
+.worldBuildingModal--bounties-exact.worldBuildingModal--screen-owned,
+.worldBuildingModal--expeditions-exact.worldBuildingModal--screen-owned {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  border-radius: 0;
+  box-shadow: none;
   overflow: hidden;
 }
 
@@ -310,6 +349,10 @@
 .worldBuildingBody--apothecary-scenic,
 .worldBuildingBody--forge-exact,
 .worldBuildingBody--forge-scenic,
+.worldBuildingBody--bounties-exact,
+.worldBuildingBody--bounties-scenic,
+.worldBuildingBody--expeditions-exact,
+.worldBuildingBody--expeditions-scenic,
 .worldBuildingBody--gate-trial-exact,
 .worldBuildingBody--gate-trial-scenic,
 .worldBuildingBody--screen-owned {
@@ -317,7 +360,9 @@
   height: 100%;
 }
 
-.worldBuildingBody--forge-exact.worldBuildingBody--screen-owned {
+.worldBuildingBody--forge-exact.worldBuildingBody--screen-owned,
+.worldBuildingBody--bounties-exact.worldBuildingBody--screen-owned,
+.worldBuildingBody--expeditions-exact.worldBuildingBody--screen-owned {
   width: 100%;
   height: 100%;
   min-width: 0;

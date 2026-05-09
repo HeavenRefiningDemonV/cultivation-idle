@@ -64,6 +64,8 @@ export type WorldBuildingModalIntent = null | {
   apothecaryExactMode?: 'live' | 'fixture';
   apothecaryFocus?: 'prescription' | 'buy' | 'brew' | 'pouch' | 'source';
   forgeExactMode?: 'live' | 'fixture' | 'legacy';
+  bountiesExactMode?: 'live' | 'fixture' | 'legacy';
+  expeditionsExactMode?: 'live' | 'fixture' | 'legacy';
   ruinsExactMode?: 'live' | 'fixture';
   gateTrialExactMode?: 'live' | 'fixture';
 };
@@ -77,11 +79,13 @@ export type MigrationIssueModalPayload = {
 const normalizeWorldBuildingKey = (buildingKey: WorldBuildingKey): WorldBuildingKey =>
   buildingKey === 'alchemy' ? 'apothecary' : buildingKey;
 
-const getWorldBuildingIntentKey = (intent: WorldBuildingModalIntent): string => JSON.stringify({
+export const getWorldBuildingIntentKey = (intent: WorldBuildingModalIntent): string => JSON.stringify({
   apothecarySurface: intent?.apothecarySurface ?? null,
   apothecaryExactMode: intent?.apothecaryExactMode ?? null,
   apothecaryFocus: intent?.apothecaryFocus ?? null,
   forgeExactMode: intent?.forgeExactMode ?? null,
+  bountiesExactMode: intent?.bountiesExactMode ?? null,
+  expeditionsExactMode: intent?.expeditionsExactMode ?? null,
   ruinsExactMode: intent?.ruinsExactMode ?? null,
   gateTrialExactMode: intent?.gateTrialExactMode ?? null,
 });

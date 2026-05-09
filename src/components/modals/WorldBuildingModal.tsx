@@ -20,6 +20,8 @@ import { resolveWorldModalEntrySurface } from '../../systems/ui/world/worldBuild
 import { GateTrialScreenOwner } from '../../features/world/gateTrialExact/index.js';
 import { ApothecaryExactScreenOwner } from '../../features/apothecary/exact/index.js';
 import { ForgeExactScreenOwner } from '../../features/professions/forgeExact/index.js';
+import { BountiesExactScreenOwner } from '../../features/world/bountiesExact/index.js';
+import { ExpeditionsExactScreenOwner } from '../../features/world/expeditionsExact/index.js';
 
 export interface WorldBuildingModalProps {
   open?: boolean;
@@ -132,10 +134,24 @@ export function WorldBuildingModal({
           );
         break;
       case 'bounties':
-        content = <BountyBoardPanel />;
+        content = storeModalIntent?.bountiesExactMode === 'legacy'
+          ? <BountyBoardPanel />
+          : (
+            <BountiesExactScreenOwner
+              cityId={storeCityId}
+              forceFixture={storeModalIntent?.bountiesExactMode === 'fixture'}
+            />
+          );
         break;
       case 'expeditions':
-        content = <ExpeditionBoardPanel />;
+        content = storeModalIntent?.expeditionsExactMode === 'legacy'
+          ? <ExpeditionBoardPanel />
+          : (
+            <ExpeditionsExactScreenOwner
+              cityId={storeCityId}
+              forceFixture={storeModalIntent?.expeditionsExactMode === 'fixture'}
+            />
+          );
         break;
       case 'outskirts':
         content = <OutskirtsBuildingPanel cityId={storeCityId} />;
