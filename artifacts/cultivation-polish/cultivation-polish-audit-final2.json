@@ -1,0 +1,70 @@
+[
+  {
+    "name": "desktop",
+    "screenshotPath": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\cultivation-polish\\cultivation-desktop-2048x1152-final2.png",
+    "qiRail": {
+      "y": 849,
+      "h": 98,
+      "bottom": 947
+    },
+    "primaryButton": {
+      "y": 961,
+      "h": 77,
+      "bottom": 1038
+    },
+    "secondaryButton": {
+      "y": 1039,
+      "h": 39,
+      "bottom": 1078
+    },
+    "bottomDock": {
+      "y": 1081,
+      "h": 71,
+      "bottom": 1152
+    },
+    "supportDisplay": "block",
+    "navOverflow": {
+      "scrollWidth": 1081,
+      "clientWidth": 1081,
+      "overflowX": "visible",
+      "background": "rgba(0, 0, 0, 0)",
+      "boxShadow": "none"
+    },
+    "lifeCycleVisible": 0,
+    "yellowActionOrnaments": 0
+  },
+  {
+    "name": "compact",
+    "screenshotPath": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\cultivation-polish\\cultivation-compact-1280x720-final2.png",
+    "qiRail": {
+      "y": 363,
+      "h": 52,
+      "bottom": 415
+    },
+    "primaryButton": {
+      "y": 420,
+      "h": 54,
+      "bottom": 474
+    },
+    "secondaryButton": {
+      "y": 460,
+      "h": 32,
+      "bottom": 492
+    },
+    "bottomDock": {
+      "y": 658,
+      "h": 62,
+      "bottom": 720
+    },
+    "supportDisplay": "none",
+    "navOverflow": {
+      "scrollWidth": 1058,
+      "clientWidth": 1058,
+      "overflowX": "visible",
+      "background": "rgba(0, 0, 0, 0)",
+      "boxShadow": "none"
+    },
+    "lifeCycleVisible": 0,
+    "yellowActionOrnaments": 0
+  }
+]

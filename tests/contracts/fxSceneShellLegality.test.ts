@@ -29,20 +29,16 @@ test('stub scenes remain legal no-asset null-return placeholders', async () => {
   assert.match(selectionScene, /return null;/);
 });
 
-test('proof surfaces continue using ScreenFxStage + FxStagePortal contract path', async () => {
-  const cultivation = await readSource('src/components/screens/CultivateScreen.tsx');
+test('proof surfaces continue using their screen-owned exact shell contract paths', async () => {
+  const cultivation = await readSource('src/features/cultivation/exact/CultivationExactScreenOwner.tsx');
   const status = await readSource('src/components/screens/StatusScreen.tsx');
-  const ruinsPanel = await readSource('src/components/screens/world/buildings/RuinsBuildingPanel.tsx');
-  const gateTrialPanel = await readSource('src/components/screens/world/buildings/GateTrialBuildingPanel.tsx');
+  const ruinsPanel = await readSource('src/features/world/ruinsExact/RuinsScreenOwner.tsx');
+  const gateTrialPanel = await readSource('src/features/world/gateTrialExact/GateTrialScreenOwner.tsx');
 
   assert.match(cultivation, /ScreenFxStage/);
   assert.match(cultivation, /FxStagePortal/);
   assert.match(status, /ScreenFxStage/);
   assert.match(status, /FxStagePortal/);
-  assert.match(ruinsPanel, /ScreenFxStage/);
-  assert.match(ruinsPanel, /FxStagePortal/);
-  assert.match(ruinsPanel, /RuinsFxScene/);
-  assert.match(gateTrialPanel, /ScreenFxStage/);
-  assert.match(gateTrialPanel, /FxStagePortal/);
-  assert.match(gateTrialPanel, /GateTrialFxScene/);
+  assert.match(ruinsPanel, /RuinsExactMockupScreen/);
+  assert.match(gateTrialPanel, /GateTrialExactScreen/);
 });

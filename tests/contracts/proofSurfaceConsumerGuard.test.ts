@@ -36,7 +36,7 @@ void test('visual diagnostics include primary proof-surface style files for norm
 
   [
     'src/components/BottomTabBar.scss',
-    'src/components/screens/CultivateScreen.scss',
+    'src/features/cultivation/exact/CultivationExactScreen.scss',
     'src/components/screens/StatusScreen.scss',
     'src/components/screens/WorldScreen.scss',
     'src/components/screens/PrestigeScreen.scss',

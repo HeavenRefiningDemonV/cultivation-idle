@@ -8,11 +8,11 @@ async function readRepoFile(relativePath: string) {
 }
 
 test('cultivate screen derives a centralized primary intent object for action-lane state hierarchy', async () => {
-  const source = await readRepoFile('src/components/screens/CultivateScreen.tsx');
+  const source = await readRepoFile('src/features/cultivation/exact/buildCultivationExactSurface.ts');
 
-  assert.match(source, /const primaryIntent = useMemo/);
-  assert.match(source, /breakthroughMilestoneState === 'content_cap'/);
-  assert.match(source, /breakthroughMilestoneState === 'cultivation_edge'/);
-  assert.match(source, /breakthroughMilestoneState === 'gate_trial'/);
-  assert.match(source, /kind: 'breakthrough_pending'/);
+  assert.match(source, /function resolveCommandDeck/);
+  assert.match(source, /activityState === 'content_cap'/);
+  assert.match(source, /activityState === 'gate_blocked'/);
+  assert.match(source, /activityState === 'breakthrough_ready'/);
+  assert.match(source, /cultivateToggleButton\(snapshot\)/);
 });

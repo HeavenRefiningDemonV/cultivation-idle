@@ -16,7 +16,7 @@ test('critical live detail modals do not use ◎ placeholder fallback glyphs', a
 });
 
 test('critical cultivation controls keep no-shift hover interaction', async () => {
-  const cultivateStyles = await readRepoFile('src/components/screens/CultivateScreen.scss');
+  const cultivateStyles = await readRepoFile('src/features/cultivation/exact/CultivationExactScreen.scss');
   assert.equal(
     cultivateStyles.includes('.daoHeartSealButton:hover,\n.daoHeartSealButton:focus-visible {\n  transform: translateY(-1px);'),
     false,

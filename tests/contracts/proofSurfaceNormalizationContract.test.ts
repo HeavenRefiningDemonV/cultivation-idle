@@ -31,29 +31,31 @@ void test('primary proof surfaces remain explicit and frozen to the P2-13 set', 
 
 void test('world, cultivate, status, prestige remain legally wired to frozen shell/fx truth', () => {
   const world = read('src/components/screens/WorldScreen.tsx');
-  const cultivate = read('src/components/screens/CultivateScreen.tsx');
+  const cultivate = read('src/features/cultivation/exact/CultivationExactScreenOwner.tsx');
+  const cultivateScreen = read('src/features/cultivation/exact/CultivationExactScreen.tsx');
   const status = read('src/components/screens/StatusScreen.tsx');
   const prestige = read('src/components/screens/PrestigeScreen.tsx');
+  const prestigeOwner = read('src/features/prestige/prestigeLedgerExact/PrestigeLedgerScreenOwner.tsx');
 
-  assert.match(world, /<TopRibbon/);
-  assert.match(world, /<InspectorPanel/);
+  assert.match(world, /<WorldOverlayRibbon/);
+  assert.match(world, /<WorldOverlayInspector/);
   assert.match(world, /<InspectorDrawer/);
-  assert.match(world, /<RunCompass/);
+  assert.match(world, /buildWorldModuleRoutingSurface/);
   assert.match(world, /CityMapHub/);
 
   assert.match(cultivate, /<ScreenFxStage/);
   assert.match(cultivate, /<FxStagePortal/);
-  assert.match(cultivate, /<RunCompassCompact/);
+  assert.match(cultivateScreen, /data-region="left-milestone-seals"/);
+  assert.match(cultivateScreen, /data-region="right-doctrine-rail"/);
 
   assert.match(status, /<ScreenFxStage/);
   assert.match(status, /<FxStagePortal/);
   assert.match(status, /<RunCompass/);
   assert.match(status, /<StatusSummaryHeader/);
 
-  assert.match(prestige, /<TopRibbon/);
-  assert.match(prestige, /<PaperStamp/);
-  assert.match(prestige, /<RunCompassCompact/);
-  assert.match(prestige, /<PrestigeRitualModal/);
+  assert.match(prestige, /<PrestigeLedgerScreenOwner/);
+  assert.match(prestigeOwner, /PrestigeLedgerExactScreen/);
+  assert.match(prestigeOwner, /<PrestigeRitualModal/);
 });
 
 void test('ritual proof surfaces and dock wrapper remain on frozen contracts', () => {

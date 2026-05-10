@@ -33,7 +33,7 @@ function summarizeNormalizedEffects(heartLawId: string | null, verse: number): s
     .slice(0, 3)
     .map((effect) => {
       const label = EFFECT_LABELS[effect.normalizedKey] ?? effect.normalizedKey.replace(/_/g, ' ');
-      const value = Math.round(effect.value * 100);
+      const value = Math.round(Number(effect.value) * 100);
       return `${label} ${value >= 0 ? '+' : ''}${value}%`;
     });
 

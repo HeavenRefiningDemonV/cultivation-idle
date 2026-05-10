@@ -33,7 +33,7 @@ export const LIVE_SURFACE_VISUAL_MANIFEST: LiveSurfaceVisualManifest = {
     'src/ui/shell/InspectorDrawer.scss',
     'src/ui/shell/ScenicLabel.scss',
     'src/components/screens/WorldScreen.scss',
-    'src/components/screens/CultivateScreen.scss',
+    'src/features/cultivation/exact/CultivationExactScreen.scss',
     'src/components/screens/StatusScreen.scss',
     'src/components/screens/PrestigeScreen.scss',
     'src/components/screens/CityMapHub.scss',
@@ -86,7 +86,7 @@ export const LIVE_SURFACE_VISUAL_MANIFEST: LiveSurfaceVisualManifest = {
   ],
   narrowExceptions: [
     {
-      file: 'src/components/screens/CultivateScreen.scss',
+      file: 'src/features/cultivation/exact/CultivationExactScreen.scss',
       pattern: /rgba\(\s*15\s*,\s*23\s*,\s*42\s*,\s*0\.28\s*\)/i,
       reason: 'Cultivation action button base border keeps a subtle neutral ink edge, not dashboard-blue chrome.',
     },

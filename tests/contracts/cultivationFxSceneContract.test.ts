@@ -16,7 +16,7 @@ test('CultivationFxScene stays scoped to one halo, one mist family, one mote fam
 });
 
 test('Cultivation screen mounts only one cultivation scene owner via ScreenFxStage + FxStagePortal', async () => {
-  const source = await readRepoFile('src/components/screens/CultivateScreen.tsx');
+  const source = await readRepoFile('src/features/cultivation/exact/CultivationExactScreenOwner.tsx');
 
   assert.match(source, /<ScreenFxStage[\s\S]*stageId=\{FX_STAGE_IDS\.cultivation\}/);
   assert.equal((source.match(/<CultivationFxScene/g) ?? []).length, 1);

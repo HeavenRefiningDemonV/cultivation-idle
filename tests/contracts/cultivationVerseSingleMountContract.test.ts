@@ -8,11 +8,12 @@ async function readRepoFile(relativePath: string) {
 }
 
 test('verse surface is doctrine-owned and no longer mounted as a center hud slot under qi bar', async () => {
-  const source = await readRepoFile('src/components/screens/CultivateScreen.tsx');
-  const styles = await readRepoFile('src/components/screens/CultivateScreen.scss');
+  const source = await readRepoFile('src/features/cultivation/exact/CultivationExactScreen.tsx');
+  const styles = await readRepoFile('src/features/cultivation/exact/CultivationExactScreen.scss');
 
   assert.doesNotMatch(source, /className="cultivationVerseSlot"/);
   assert.doesNotMatch(source, /cultivationVerseSlot__bar/);
-  assert.match(source, /verseSlot=\{doctrineVerseSlotCompact\}/);
+  assert.match(source, /drawer\.verse/);
+  assert.match(source, /<VerseMiniBar/);
   assert.doesNotMatch(styles, /\.cultivationVerseSlot\s*\{/);
 });

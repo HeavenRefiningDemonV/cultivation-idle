@@ -1,0 +1,11 @@
+{
+  "rootTestId": "cultivation-exact-page",
+  "state": "cultivating",
+  "mode": "fixture",
+  "reducedMotionAttr": "true",
+  "systemOverlayVisible": false,
+  "scroll": {
+    "width": 2048,
+    "height": 1152
+  }
+}

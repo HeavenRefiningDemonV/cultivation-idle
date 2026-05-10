@@ -7,7 +7,7 @@ const readRepoFile = (relativePath: string) => fs.readFile(path.resolve(process.
 
 test('hero-screen interaction states avoid no-shift geometry mutations in touched style surfaces', async () => {
   const [cultivateStyles, statusStyles, runCompassStyles, cultivationRibbonStyles, statusRibbonStyles] = await Promise.all([
-    readRepoFile('src/components/screens/CultivateScreen.scss'),
+    readRepoFile('src/features/cultivation/exact/CultivationExactScreen.scss'),
     readRepoFile('src/components/screens/StatusScreen.scss'),
     readRepoFile('src/ui/status/RunCompass.scss'),
     readRepoFile('src/ui/cultivation/CultivationHeaderRibbon.scss'),

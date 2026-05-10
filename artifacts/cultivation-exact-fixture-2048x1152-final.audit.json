@@ -1,0 +1,78 @@
+{
+  "mode": "fixture",
+  "state": "cultivating",
+  "regions": {
+    "top": {
+      "x": 0,
+      "y": 0,
+      "width": 2048,
+      "height": 126,
+      "bottom": 126,
+      "right": 2048
+    },
+    "left": {
+      "x": 61,
+      "y": 209,
+      "width": 344,
+      "height": 435,
+      "bottom": 644,
+      "right": 406
+    },
+    "right": {
+      "x": 1669,
+      "y": 209,
+      "width": 318,
+      "height": 553,
+      "bottom": 761,
+      "right": 1987
+    },
+    "qi": {
+      "x": 512,
+      "y": 776,
+      "width": 1050,
+      "height": 98,
+      "bottom": 874,
+      "right": 1562
+    },
+    "command": {
+      "x": 777,
+      "y": 896,
+      "width": 520,
+      "height": 152,
+      "bottom": 1048,
+      "right": 1297
+    },
+    "life": {
+      "x": 1837,
+      "y": 956,
+      "width": 150,
+      "height": 101,
+      "bottom": 1057,
+      "right": 1987
+    }
+  },
+  "counts": {
+    "topCells": 5,
+    "leftSeals": 3,
+    "rightSeals": 5,
+    "daoSeals": 1,
+    "runCompass": 0,
+    "legacyBreakthrough": 0,
+    "legacyDoctrine": 0
+  },
+  "textChecks": {
+    "continueFull": true,
+    "heartLawFull": true,
+    "qiLabel": true,
+    "primary": true,
+    "secondary": true,
+    "gpuDebug": false,
+    "placeholderNa": false
+  },
+  "scroll": {
+    "x": 2048,
+    "y": 1152,
+    "innerWidth": 2048,
+    "innerHeight": 1152
+  }
+}

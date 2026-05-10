@@ -5,6 +5,8 @@ import './CultivationFxScene.scss';
 export interface CultivationFxSceneProps extends FxSceneContract {
   isCultivating: boolean;
   isReady: boolean;
+  anchorX?: number;
+  anchorY?: number;
 }
 
 function glintCountForBudget(props: CultivationFxSceneProps) {
@@ -45,9 +47,11 @@ export function CultivationFxScene({
   shortestSide,
   isCultivating,
   isReady,
+  anchorX,
+  anchorY,
   ...scene
 }: CultivationFxSceneProps) {
-  const props: CultivationFxSceneProps = { centerX, centerY, shortestSide, isCultivating, isReady, ...scene };
+  const props: CultivationFxSceneProps = { centerX, centerY, shortestSide, isCultivating, isReady, anchorX, anchorY, ...scene };
   const activityTone = isReady ? 'ready' : isCultivating ? 'active' : 'idle';
   const auraRadius = Math.max(118, Math.round(shortestSide * 0.17));
   const glintCount = glintCountForBudget(props);
@@ -56,10 +60,12 @@ export function CultivationFxScene({
   const animateHeroPulse = shouldAnimateHeroPulse(props);
   const showRing = shouldRenderRing(props);
   const haloOpacity = resolveAuraOpacity(props);
+  const resolvedCenterX = Math.round(anchorX ?? centerX);
+  const resolvedCenterY = Math.round(anchorY ?? centerY);
 
   const style = {
-    '--cultivation-fx-center-x': `${centerX}px`,
-    '--cultivation-fx-center-y': `${Math.round(centerY + shortestSide * 0.12)}px`,
+    '--cultivation-fx-center-x': `${resolvedCenterX}px`,
+    '--cultivation-fx-center-y': `${resolvedCenterY}px`,
     '--cultivation-fx-radius': `${auraRadius}px`,
     '--cultivation-fx-halo-opacity': `${haloOpacity}`,
   } as CSSProperties;

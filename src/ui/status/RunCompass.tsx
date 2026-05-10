@@ -57,7 +57,7 @@ export function RunCompass({ surface, tone = 'paper', density = 'regular', class
         <div className="runCompassReadinessDetail">{surface.readiness.detail}</div>
         <div className="runCompassInfoList runCompassInfoList--fixed3">
           {surface.readiness.rows.map((row) => (
-            <div key={row.id} className={classNames('runCompassInfoRow', { 'is-placeholder': row.placeholder })}>
+            <div key={row.id} className={classNames('runCompassInfoRow', { 'is-placeholder': Boolean(row.placeholder) })}>
               <div className="runCompassInfoRow__main">
                 <div className="runCompassInfoRow__label">{row.label}</div>
                 <div className="runCompassInfoRow__detail">{row.detail}</div>
@@ -71,7 +71,7 @@ export function RunCompass({ surface, tone = 'paper', density = 'regular', class
       <RunCompassSection title="Missing Requirements">
         <div className="runCompassInfoList runCompassInfoList--fixed3">
           {surface.missingRequirements.map((row) => (
-            <div key={row.id} className={classNames('runCompassInfoRow', { 'is-placeholder': row.placeholder })}>
+            <div key={row.id} className={classNames('runCompassInfoRow', { 'is-placeholder': Boolean(row.placeholder) })}>
               <div className="runCompassInfoRow__main">
                 <div className="runCompassInfoRow__label">{row.label}</div>
                 <div className="runCompassInfoRow__detail">{row.detail}</div>

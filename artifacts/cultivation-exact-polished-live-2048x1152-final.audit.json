@@ -1,0 +1,15 @@
+{
+  "rootTestId": "cultivation-exact-page",
+  "state": "breakthrough_ready",
+  "mode": "live",
+  "primary": "Break Through",
+  "secondary": "Start Cultivation",
+  "leftAction": "Break Through",
+  "qi": "Qi 215.38 / 100",
+  "fullRunCompassVisible": false,
+  "systemOverlayVisible": false,
+  "scroll": {
+    "width": 2048,
+    "height": 1152
+  }
+}

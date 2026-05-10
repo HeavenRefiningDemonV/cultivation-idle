@@ -1,0 +1,12 @@
+{
+  "mode": "fixture",
+  "reducedMotion": "true",
+  "fxQuality": "off",
+  "animationNames": [],
+  "scroll": {
+    "x": 2048,
+    "y": 1152,
+    "innerWidth": 2048,
+    "innerHeight": 1152
+  }
+}

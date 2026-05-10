@@ -1,0 +1,76 @@
+{
+  "rootTestId": "cultivation-exact-page",
+  "state": "cultivating",
+  "mode": "fixture",
+  "reducedMotionAttr": "false",
+  "primary": "Stop Cultivation",
+  "secondary": "Break Through",
+  "leftAction": "Continue Cultivation",
+  "topCells": 5,
+  "leftSeals": 3,
+  "doctrineSeals": 5,
+  "fullRunCompassVisible": false,
+  "systemOverlayVisible": false,
+  "scroll": {
+    "width": 2048,
+    "height": 1152
+  },
+  "regions": [
+    {
+      "region": "top-ribbon",
+      "x": 0,
+      "y": 0,
+      "w": 2048,
+      "h": 126
+    },
+    {
+      "region": "left-milestone-seals",
+      "x": 61,
+      "y": 225,
+      "w": 344,
+      "h": 412
+    },
+    {
+      "region": "center-altar",
+      "x": 438,
+      "y": 126,
+      "w": 1198,
+      "h": 617
+    },
+    {
+      "region": "right-doctrine-rail",
+      "x": 1669,
+      "y": 225,
+      "w": 318,
+      "h": 518
+    },
+    {
+      "region": "breakthrough-seal",
+      "x": 922,
+      "y": 703,
+      "w": 205,
+      "h": 32
+    },
+    {
+      "region": "qi-rail",
+      "x": 512,
+      "y": 778,
+      "w": 1050,
+      "h": 98
+    },
+    {
+      "region": "command-deck",
+      "x": 777,
+      "y": 897,
+      "w": 520,
+      "h": 152
+    },
+    {
+      "region": "life-cycle-whisper",
+      "x": 1837,
+      "y": 963,
+      "w": 150,
+      "h": 106
+    }
+  ]
+}

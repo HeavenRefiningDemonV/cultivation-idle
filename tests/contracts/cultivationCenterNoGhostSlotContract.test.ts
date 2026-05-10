@@ -8,11 +8,13 @@ async function readRepoFile(relativePath: string) {
 }
 
 test('center hud removes verse dead-space compensation and empty buff slab mount', async () => {
-  const source = await readRepoFile('src/components/screens/CultivateScreen.tsx');
-  const styles = await readRepoFile('src/components/screens/CultivateScreen.scss');
+  const source = await readRepoFile('src/features/cultivation/exact/CultivationExactScreen.tsx');
+  const styles = await readRepoFile('src/features/cultivation/exact/CultivationExactScreen.scss');
 
-  assert.match(styles, /\.cultivationHudStack > \.progress-bar\s*\{[\s\S]*margin-bottom:\s*0/);
-  assert.match(source, /\{activeCultivationBuffs\.length > 0 \? \(/);
+  assert.match(source, /cultivationExactRitualStack/);
+  assert.match(styles, /\.cultivationExactRitualStack\s*\{[\s\S]*top:\s*var\(--cult-exact-ritual-top\)/);
+  assert.doesNotMatch(styles, /\.cultivationExactQiRail\s*\{[\s\S]*grid-area:\s*qi/);
+  assert.match(source, /drawer\.rows\.map/);
   assert.doesNotMatch(source, /No active tonics\. Families overwrite weaker effects in the same lane\./);
   assert.doesNotMatch(source, /cultivationInfoRow__centerSpacer/);
 });

@@ -1,5 +1,6 @@
 import type { AriaRole, CSSProperties, ReactNode } from 'react';
 import classNames from 'classnames';
+import { GameIcon, type IconId } from '../icons/index.js';
 import './BottomNavDock.scss';
 
 export type BottomNavDockIndicator = 'none' | 'recommended' | 'attention';
@@ -18,6 +19,7 @@ export type BottomNavDockHostAttrs = {
 export interface BottomNavDockItem {
   id: string;
   label: ReactNode;
+  icon?: IconId;
   ariaLabel?: string;
   active: boolean;
   disabled?: boolean;
@@ -64,6 +66,11 @@ export function BottomNavDock({ items, className, itemClassName, preserveLegacyH
                 aria-label={item.ariaLabel}
                 disabled={item.disabled}
               >
+                {item.icon ? (
+                  <span className="bottomNavDock__icon" aria-hidden="true">
+                    <GameIcon icon={item.icon} size={20} decorative />
+                  </span>
+                ) : null}
                 <span className="bottomNavDock__label">{item.label}</span>
                 <span className="bottomNavDock__indicatorSlot" aria-hidden="true">
                   {indicator === 'none' ? null : <span className={classNames('bottomNavDock__indicator', `bottomNavDock__indicator--${indicator}`)} />}

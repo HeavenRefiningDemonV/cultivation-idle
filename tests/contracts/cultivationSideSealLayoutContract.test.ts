@@ -8,11 +8,13 @@ async function readRepoFile(relativePath: string) {
 }
 
 test('cultivation mounts breakthrough and doctrine into explicit left/right side rails', async () => {
-  const source = await readRepoFile('src/components/screens/CultivateScreen.tsx');
-  const styles = await readRepoFile('src/components/screens/CultivateScreen.scss');
+  const source = await readRepoFile('src/features/cultivation/exact/CultivationExactScreen.tsx');
+  const styles = await readRepoFile('src/features/cultivation/exact/CultivationExactScreen.scss');
 
-  assert.match(source, /<div className="cultivationSideRails"[\s\S]*cultivationSideRail--left[\s\S]*<CultivationBreakthroughPanel[\s\S]*cultivationSideRail--right[\s\S]*<CultivationDoctrineSummary/);
+  assert.match(source, /className="cultivationExactMilestoneRail"[\s\S]*data-region="left-milestone-seals"/);
+  assert.match(source, /className="cultivationExactDoctrineRail"[\s\S]*data-region="right-doctrine-rail"/);
+  assert.match(source, /cultivationExactDaoSeal/);
   assert.doesNotMatch(source, /className="cultivationInfoRow"/);
-  assert.match(styles, /\.cultivationSideRail--left\s*\{[\s\S]*left:/);
-  assert.match(styles, /\.cultivationSideRail--right\s*\{[\s\S]*right:/);
+  assert.match(styles, /\.cultivationExactMilestoneRail\s*\{[\s\S]*grid-area:\s*left/);
+  assert.match(styles, /\.cultivationExactDoctrineRail\s*\{[\s\S]*grid-area:\s*right/);
 });

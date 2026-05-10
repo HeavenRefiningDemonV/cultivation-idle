@@ -8,19 +8,25 @@ async function readRepoFile(relativePath: string) {
 }
 
 test('dantian orb is body-locked to a cultivator figure anchor instead of qi-bar alignment', async () => {
-  const screenSource = await readRepoFile('src/components/screens/CultivateScreen.tsx');
-  const screenStyles = await readRepoFile('src/components/screens/CultivateScreen.scss');
+  const screenSource = await readRepoFile('src/features/cultivation/exact/CultivationExactScreen.tsx');
+  const screenStyles = await readRepoFile('src/features/cultivation/exact/CultivationExactScreen.scss');
   const orbStyles = await readRepoFile('src/ui/cultivation/DantianOrb.scss');
 
-  assert.match(screenSource, /data-testid="cultivation-hero-figure"/);
   assert.match(screenSource, /data-testid="cultivation-dantian-anchor"/);
   assert.match(screenSource, /data-testid="cultivation-qi-lane"/);
-  assert.match(screenSource, /className="cultivationHeroFigure"[\s\S]*className="cultivationHeroAbdomenAnchor"[\s\S]*<DantianOrb/);
-  assert.match(screenStyles, /\.cultivationHeroFigure\s*\{[\s\S]*--dantian-anchor-x:\s*50%[\s\S]*--dantian-anchor-y:\s*60%/);
-  assert.match(screenStyles, /\.cultivationHeroAbdomenAnchor\s*\{[\s\S]*left:\s*var\(--dantian-anchor-x\)[\s\S]*top:\s*var\(--dantian-anchor-y\)/);
-  assert.match(screenStyles, /\.cultivationQiLane\s*\{[\s\S]*z-index:\s*6/);
+  assert.match(screenSource, /cultivationExactAuraAnchor/);
+  assert.match(screenSource, /onDantianAnchorChange/);
+  assert.match(screenSource, /className="cultivationExactDantianAnchor"[\s\S]*<DantianOrb/);
+  assert.match(screenStyles, /--dantian-anchor-x:\s*55\.75%/);
+  assert.match(screenStyles, /--dantian-anchor-y:\s*50\.9%/);
+  assert.match(screenStyles, /\.cultivationExactAuraAnchor\s*\{[\s\S]*left:\s*var\(--dantian-anchor-x\)[\s\S]*top:\s*var\(--dantian-anchor-y\)/);
+  assert.match(screenStyles, /\.cultivationExactDantianAnchor\s*\{[\s\S]*left:\s*var\(--dantian-anchor-x\)[\s\S]*top:\s*var\(--dantian-anchor-y\)/);
+  assert.match(screenStyles, /\.cultivationExactQiRail\s*\{[\s\S]*z-index:\s*24/);
   assert.doesNotMatch(screenStyles, /\.cultivationSceneLayer \.dantianOrb\s*\{[\s\S]*top:\s*var\(--cultivation-anchor-y\)/);
-  assert.match(orbStyles, /width:\s*clamp\(72px,\s*4\.8vw,\s*96px\)/);
-  assert.match(orbStyles, /height:\s*clamp\(72px,\s*4\.8vw,\s*96px\)/);
+  assert.match(screenStyles, /width:\s*clamp\(72px,\s*5\.2vw,\s*108px\)/);
+  assert.match(screenStyles, /height:\s*clamp\(72px,\s*5\.2vw,\s*108px\)/);
+  assert.match(screenStyles, /transform:\s*translate\(-50%,\s*-50%\)\s*scale/);
+  assert.match(orbStyles, /width:\s*100%/);
+  assert.match(orbStyles, /height:\s*100%/);
   assert.doesNotMatch(orbStyles, /top:\s*56%/);
 });

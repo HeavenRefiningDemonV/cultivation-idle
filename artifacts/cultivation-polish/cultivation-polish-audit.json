@@ -1,0 +1,338 @@
+[
+  {
+    "viewport": {
+      "width": 2048,
+      "height": 1152
+    },
+    "screenshotPath": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\cultivation-polish\\cultivation-desktop-2048x1152.png",
+    "root": {
+      "x": 0,
+      "y": 0,
+      "w": 2048,
+      "h": 1152,
+      "cx": 1024,
+      "cy": 576
+    },
+    "dantianAnchor": {
+      "x": 1029,
+      "y": 515,
+      "w": 106,
+      "h": 106,
+      "cx": 1082,
+      "cy": 568
+    },
+    "dantianOrb": {
+      "x": 1029,
+      "y": 515,
+      "w": 106,
+      "h": 106,
+      "cx": 1082,
+      "cy": 568
+    },
+    "dantianImage": {
+      "x": 1008,
+      "y": 493,
+      "w": 149,
+      "h": 149,
+      "cx": 1082,
+      "cy": 568
+    },
+    "auraAnchor": {
+      "x": 1082,
+      "y": 568,
+      "w": 0,
+      "h": 0,
+      "cx": 1082,
+      "cy": 568
+    },
+    "localHalo": {
+      "x": 802,
+      "y": 224,
+      "w": 560,
+      "h": 560,
+      "cx": 1082,
+      "cy": 504
+    },
+    "fxHalo": {
+      "x": 858,
+      "y": 417,
+      "w": 447,
+      "h": 302,
+      "cx": 1082,
+      "cy": 568
+    },
+    "qiRail": {
+      "x": 512,
+      "y": 868,
+      "w": 1050,
+      "h": 98,
+      "cx": 1037,
+      "cy": 916
+    },
+    "qiTrack": {
+      "x": 606,
+      "y": 909,
+      "w": 852,
+      "h": 16,
+      "cx": 1032,
+      "cy": 916
+    },
+    "qiFill": {
+      "x": 607,
+      "y": 910,
+      "w": 298,
+      "h": 14,
+      "cx": 756,
+      "cy": 916
+    },
+    "qiLotus": {
+      "x": 500,
+      "y": 879,
+      "w": 74,
+      "h": 74,
+      "cx": 537,
+      "cy": 916
+    },
+    "primaryButton": {
+      "x": 777,
+      "y": 987,
+      "w": 520,
+      "h": 77,
+      "cx": 1037,
+      "cy": 1026
+    },
+    "secondaryButton": {
+      "x": 857,
+      "y": 1095,
+      "w": 360,
+      "h": 44,
+      "cx": 1037,
+      "cy": 1117
+    },
+    "leftRailTab": {
+      "x": 386,
+      "y": 392,
+      "w": 42,
+      "h": 78,
+      "cx": 407,
+      "cy": 431
+    },
+    "leftRail": {
+      "x": 61,
+      "y": 225,
+      "w": 344,
+      "h": 412,
+      "cx": 233,
+      "cy": 431
+    },
+    "rightRailTab": {
+      "x": 1647,
+      "y": 445,
+      "w": 42,
+      "h": 78,
+      "cx": 1668,
+      "cy": 484
+    },
+    "rightRail": {
+      "x": 1669,
+      "y": 225,
+      "w": 318,
+      "h": 518,
+      "cx": 1828,
+      "cy": 484
+    },
+    "bottomRail": {
+      "x": 484,
+      "y": 1087,
+      "w": 1081,
+      "h": 57,
+      "cx": 1024,
+      "cy": 1116
+    },
+    "bottomDock": {
+      "x": 0,
+      "y": 1081,
+      "w": 2048,
+      "h": 71,
+      "cx": 1024,
+      "cy": 1116
+    },
+    "navOverflow": {
+      "scrollWidth": 1081,
+      "clientWidth": 1081,
+      "overflowX": "visible",
+      "background": "rgba(0, 0, 0, 0)",
+      "boxShadow": "none"
+    },
+    "lifeCycleVisible": 0,
+    "yellowActionOrnaments": 0
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "screenshotPath": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\cultivation-polish\\cultivation-compact-1280x720.png",
+    "root": {
+      "x": 0,
+      "y": 0,
+      "w": 1280,
+      "h": 720,
+      "cx": 640,
+      "cy": 360
+    },
+    "dantianAnchor": {
+      "x": 633,
+      "y": 310,
+      "w": 72,
+      "h": 72,
+      "cx": 669,
+      "cy": 346
+    },
+    "dantianOrb": {
+      "x": 633,
+      "y": 310,
+      "w": 72,
+      "h": 72,
+      "cx": 669,
+      "cy": 346
+    },
+    "dantianImage": {
+      "x": 619,
+      "y": 296,
+      "w": 101,
+      "h": 101,
+      "cx": 669,
+      "cy": 346
+    },
+    "auraAnchor": {
+      "x": 669,
+      "y": 346,
+      "w": 0,
+      "h": 0,
+      "cx": 669,
+      "cy": 346
+    },
+    "localHalo": {
+      "x": 471,
+      "y": 94,
+      "w": 397,
+      "h": 397,
+      "cx": 669,
+      "cy": 292
+    },
+    "fxHalo": {
+      "x": 531,
+      "y": 253,
+      "w": 276,
+      "h": 186,
+      "cx": 669,
+      "cy": 346
+    },
+    "qiRail": {
+      "x": 218,
+      "y": 363,
+      "w": 850,
+      "h": 52,
+      "cx": 643,
+      "cy": 389
+    },
+    "qiTrack": {
+      "x": 312,
+      "y": 383,
+      "w": 652,
+      "h": 12,
+      "cx": 638,
+      "cy": 389
+    },
+    "qiFill": {
+      "x": 313,
+      "y": 384,
+      "w": 228,
+      "h": 10,
+      "cx": 427,
+      "cy": 389
+    },
+    "qiLotus": {
+      "x": 210,
+      "y": 362,
+      "w": 54,
+      "h": 54,
+      "cx": 237,
+      "cy": 389
+    },
+    "primaryButton": {
+      "x": 463,
+      "y": 362,
+      "w": 360,
+      "h": 54,
+      "cx": 643,
+      "cy": 389
+    },
+    "secondaryButton": {
+      "x": 513,
+      "y": 435,
+      "w": 259,
+      "h": 32,
+      "cx": 643,
+      "cy": 451
+    },
+    "leftRailTab": {
+      "x": 238,
+      "y": 264,
+      "w": 42,
+      "h": 78,
+      "cx": 259,
+      "cy": 303
+    },
+    "leftRail": {
+      "x": 20,
+      "y": 133,
+      "w": 238,
+      "h": 340,
+      "cx": 139,
+      "cy": 303
+    },
+    "rightRailTab": {
+      "x": 1006,
+      "y": 305,
+      "w": 42,
+      "h": 78,
+      "cx": 1027,
+      "cy": 344
+    },
+    "rightRail": {
+      "x": 1028,
+      "y": 133,
+      "w": 232,
+      "h": 422,
+      "cx": 1144,
+      "cy": 344
+    },
+    "bottomRail": {
+      "x": 111,
+      "y": 665,
+      "w": 1058,
+      "h": 47,
+      "cx": 640,
+      "cy": 688
+    },
+    "bottomDock": {
+      "x": 0,
+      "y": 658,
+      "w": 1280,
+      "h": 62,
+      "cx": 640,
+      "cy": 689
+    },
+    "navOverflow": {
+      "scrollWidth": 1058,
+      "clientWidth": 1058,
+      "overflowX": "visible",
+      "background": "rgba(0, 0, 0, 0)",
+      "boxShadow": "none"
+    },
+    "lifeCycleVisible": 0,
+    "yellowActionOrnaments": 0
+  }
+]

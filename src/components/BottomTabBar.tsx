@@ -1,5 +1,6 @@
 import type { GameTab } from '../stores/uiStore.js';
 import { useUIStore } from '../stores/uiStore.js';
+import type { IconId } from '../ui/icons/index.js';
 import { BottomNavDock, type BottomNavDockItem } from '../ui/shell/BottomNavDock.js';
 import './BottomTabBar.scss';
 import { getShellTabLabel } from '../ui/text/playerFacingLabels.js';
@@ -22,6 +23,16 @@ const TABS: TabDefinition[] = BOTTOM_TAB_BAR_ORDER.map((id) => ({
   id,
 }));
 
+const TAB_ICONS = {
+  status: 'placeholderRingSmall',
+  cultivation: 'inkSwirl',
+  adventure: 'placeholderRingLarge',
+  inventory: 'artifactBundle',
+  techniques: 'bookHeaven',
+  prestige: 'spiritGrass',
+  settings: 'inkWip',
+} as const satisfies Record<GameTab, IconId>;
+
 function buildDockItemLabel(tab: GameTab): string {
   return getShellTabLabel(tab);
 }
@@ -30,6 +41,7 @@ function buildDockItem(tab: TabDefinition, activeTab: GameTab, setActiveTab: (ta
   return {
     id: tab.id,
     label: buildDockItemLabel(tab.id),
+    icon: TAB_ICONS[tab.id],
     active: activeTab === tab.id,
     onSelect: () => setActiveTab(tab.id),
   };
@@ -60,7 +72,13 @@ export function BottomTabBar() {
   return (
     <BottomNavDock
       items={items}
-      className={activeTab === 'adventure' ? 'bottomNavDock--world' : undefined}
+      className={
+        activeTab === 'adventure'
+          ? 'bottomNavDock--world'
+          : activeTab === 'cultivation'
+            ? 'bottomNavDock--cultivationBare'
+            : undefined
+      }
       itemClassName={BOTTOM_TAB_BAR_COMPAT_POLICY.itemClassName}
       preserveLegacyHooks={BOTTOM_TAB_BAR_COMPAT_POLICY.preserveLegacyHooks}
       hostAttrs={BOTTOM_TAB_BAR_COMPAT_POLICY.hostAttrs}

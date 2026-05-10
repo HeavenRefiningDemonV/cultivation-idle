@@ -8,10 +8,10 @@ async function readRepoFile(relativePath: string) {
 }
 
 test('cultivation action lane reserves stable slots for chips, support copy, and button widths', async () => {
-  const styles = await readRepoFile('src/components/screens/CultivateScreen.scss');
+  const styles = await readRepoFile('src/features/cultivation/exact/CultivationExactScreen.scss');
 
-  assert.match(styles, /cultivationActionStateChips/);
-  assert.match(styles, /\.cultivationActionButton\s*\{[\s\S]*min-inline-size:/);
-  assert.match(styles, /\.cultivationBreakthroughHint\s*\{[\s\S]*min-height:/);
-  assert.match(styles, /\.cultivationActionStack\s*\{[\s\S]*min-height:/);
+  assert.match(styles, /\.cultivationExactCommandDeck\s*\{[\s\S]*width:\s*var\(--cult-exact-command-w\)/);
+  assert.match(styles, /\.cultivationExactCommandButton--primary\s*\{[\s\S]*min-height:/);
+  assert.match(styles, /\.cultivationExactCommandDeck__support\s*\{/);
+  assert.match(styles, /\.cultivationExactCommandButton__label\s*\{[\s\S]*white-space:\s*nowrap/);
 });

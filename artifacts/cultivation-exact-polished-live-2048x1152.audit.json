@@ -1,0 +1,23 @@
+{
+  "rootTestId": "cultivation-exact-page",
+  "state": "breakthrough_ready",
+  "mode": "live",
+  "primary": "Break Through",
+  "secondary": "Start Cultivation",
+  "topCells": 5,
+  "leftSeals": 3,
+  "doctrineSeals": 5,
+  "fullRunCompassVisible": false,
+  "systemOverlayVisible": false,
+  "scroll": {
+    "width": 2048,
+    "height": 1152
+  },
+  "ribbonText": [
+    "RealmQi CondensationStage 1",
+    "Qi106.39",
+    "Cultivation Rate38.93 / s",
+    "Stability0%",
+    "ForegroundIdle"
+  ]
+}

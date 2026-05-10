@@ -44,8 +44,8 @@
 }
 
 .qiLotusIcon[data-fixed="1"] {
-  width: 20px;
-  height: 20px;
+  width: var(--qi-lotus-size, 36px);
+  height: var(--qi-lotus-size, 36px);
 }
 
 .qiLotusIcon[data-fixed="1"] .qiLotusIcon__img {

@@ -1,0 +1,13 @@
+{
+  "state": "breakthrough_ready",
+  "mode": "live",
+  "primary": "Break Through",
+  "secondary": "Start Cultivation",
+  "qi": "Qi 240.23 / 100",
+  "breakthrough": "BreakthroughReady",
+  "systemOverlayVisible": false,
+  "scroll": {
+    "width": 2048,
+    "height": 1152
+  }
+}

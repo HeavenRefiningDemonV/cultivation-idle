@@ -71,7 +71,7 @@ export function PaperStamp({
     return 0;
   }, [text, tilt]);
 
-  const style: CSSProperties = rotation ? { transform: `rotate(${rotation}deg)` } : undefined;
+  const style: CSSProperties | undefined = rotation ? { transform: `rotate(${rotation}deg)` } : undefined;
   const compatClass = variantCompatibilityClass(variant);
 
   return (

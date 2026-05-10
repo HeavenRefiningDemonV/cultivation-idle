@@ -20,6 +20,7 @@ import { CityArrivalBanner } from './system/CityArrivalBanner.js';
 import { BottomTabBar } from './BottomTabBar.js';
 import { WorldBuildingModal } from './modals/WorldBuildingModal.js';
 import { isApothecaryExactFixtureRouteEnabled } from '../features/apothecary/exact/index.js';
+import { isCultivationExactQueryModeEnabled } from '../features/cultivation/exact/cultivationExactPresentation.js';
 import { AudioBindings } from '../app/AudioBindings.js';
 import { GameIcon } from '../ui/icons/index.js';
 import { buildLiveEconomicRecommendationEngine } from '../systems/economy/economicRecommendationEngine.js';
@@ -104,6 +105,8 @@ export function GameLayout() {
   const apothecaryExactFixtureRouteEnabled = isApothecaryExactFixtureRouteEnabled();
   const apothecaryExactModalOpen = showWorldBuildingModal && (worldBuildingModalKey === 'apothecary' || worldBuildingModalKey === 'alchemy');
   const suppressApothecaryExactFixtureChrome = apothecaryExactFixtureRouteEnabled && apothecaryExactModalOpen;
+  const suppressCultivationExactQueryChrome = activeTab === 'cultivation' && isCultivationExactQueryModeEnabled();
+  const suppressExactCaptureChrome = suppressApothecaryExactFixtureChrome || suppressCultivationExactQueryChrome;
 
   useEffect(() => {
     if (prestigeCount > lastPrestigeCountRef.current) {
@@ -188,6 +191,7 @@ export function GameLayout() {
 
   const rootClassNames = [
     'gameLayoutRoot',
+    activeTab === 'cultivation' ? 'gameLayoutRoot--cultivation' : '',
     activeTab === 'adventure' ? 'gameLayoutRoot--world' : '',
     activeTab === 'techniques' ? 'gameLayoutRoot--techniques' : '',
   ]
@@ -225,20 +229,20 @@ export function GameLayout() {
 
         {!apothecaryExactFixtureRouteEnabled && <BottomTabBar />}
 
-        {showOfflineProgressModal && showOfflineModalSetting && !suppressApothecaryExactFixtureChrome && <OfflineProgressModal />}
-        {showManualSatchelModal && !suppressApothecaryExactFixtureChrome && <ManualSatchelModal />}
-        {showTechniqueLearnedModal && !suppressApothecaryExactFixtureChrome && <TechniqueLearnedModal />}
+        {showOfflineProgressModal && showOfflineModalSetting && !suppressExactCaptureChrome && <OfflineProgressModal />}
+        {showManualSatchelModal && !suppressExactCaptureChrome && <ManualSatchelModal />}
+        {showTechniqueLearnedModal && !suppressExactCaptureChrome && <TechniqueLearnedModal />}
         {showWorldBuildingModal && <WorldBuildingModal />}
-        {showCurrentChapterExhaustedModal && !suppressApothecaryExactFixtureChrome && <CurrentChapterExhaustedModal />}
-        {showLifeSummaryModal && !suppressApothecaryExactFixtureChrome && <LifeSummaryModal />}
-        {showMigrationIssuesModal && !suppressApothecaryExactFixtureChrome && <MigrationIssuesModal />}
-        {showSystemStatusOverlay && !apothecaryExactModalOpen && <SystemStatusPanelOverlay />}
+        {showCurrentChapterExhaustedModal && !suppressExactCaptureChrome && <CurrentChapterExhaustedModal />}
+        {showLifeSummaryModal && !suppressExactCaptureChrome && <LifeSummaryModal />}
+        {showMigrationIssuesModal && !suppressExactCaptureChrome && <MigrationIssuesModal />}
+        {showSystemStatusOverlay && activeTab !== 'cultivation' && !apothecaryExactModalOpen && !suppressExactCaptureChrome && <SystemStatusPanelOverlay />}
         <CombatPresentationHost />
-        {!suppressApothecaryExactFixtureChrome && <OnboardingPromptRuntime />}
-        {!suppressApothecaryExactFixtureChrome && <LifeStartWizardModal />}
-        {!suppressApothecaryExactFixtureChrome && <CityArrivalBanner />}
-        {!suppressApothecaryExactFixtureChrome && <OnboardingPromptHost />}
-        {!suppressApothecaryExactFixtureChrome && <NotificationToasts />}
+        {!suppressExactCaptureChrome && <OnboardingPromptRuntime />}
+        {!suppressExactCaptureChrome && <LifeStartWizardModal />}
+        {!suppressExactCaptureChrome && <CityArrivalBanner />}
+        {!suppressExactCaptureChrome && <OnboardingPromptHost />}
+        {!suppressExactCaptureChrome && <NotificationToasts />}
         {showSectionCAuditHarness ? <SectionCAuditHarness /> : null}
         {showPhase0CoreAuditHarness ? <Phase0CoreAuditHarness /> : null}
         {showPhase6CombatAuditHarness ? <Phase6CombatAuditHarness /> : null}

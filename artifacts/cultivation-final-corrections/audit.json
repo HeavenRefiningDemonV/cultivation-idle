@@ -1,0 +1,248 @@
+[
+  {
+    "name": "desktop",
+    "viewport": {
+      "width": 2048,
+      "height": 1152
+    },
+    "screenshotPath": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\cultivation-final-corrections\\cultivation-desktop-2048x1152.png",
+    "page": {
+      "x": 0,
+      "y": 0,
+      "w": 2048,
+      "h": 1152,
+      "cx": 1024,
+      "cy": 576,
+      "bottom": 1152
+    },
+    "altar": {
+      "x": 438,
+      "y": 126,
+      "w": 1198,
+      "h": 707,
+      "cx": 1037,
+      "cy": 479,
+      "bottom": 833
+    },
+    "hero": {
+      "x": 327,
+      "y": 70,
+      "w": 1249,
+      "h": 978,
+      "cx": 952,
+      "cy": 559,
+      "bottom": 1048
+    },
+    "dantian": {
+      "x": 971,
+      "y": 515,
+      "w": 106,
+      "h": 106,
+      "cx": 1024,
+      "cy": 568,
+      "bottom": 621
+    },
+    "aura": {
+      "x": 1024,
+      "y": 568,
+      "w": 0,
+      "h": 0,
+      "cx": 1024,
+      "cy": 568,
+      "bottom": 568
+    },
+    "fxHalo": {
+      "x": 801,
+      "y": 418,
+      "w": 445,
+      "h": 301,
+      "cx": 1024,
+      "cy": 568,
+      "bottom": 718
+    },
+    "seal": {
+      "x": 922,
+      "y": 703,
+      "w": 205,
+      "h": 32,
+      "cx": 1024,
+      "cy": 719,
+      "bottom": 735
+    },
+    "qi": {
+      "x": 499,
+      "y": 748,
+      "w": 1050,
+      "h": 98,
+      "cx": 1024,
+      "cy": 797,
+      "bottom": 846
+    },
+    "command": {
+      "x": 764,
+      "y": 859,
+      "w": 520,
+      "h": 117,
+      "cx": 1024,
+      "cy": 918,
+      "bottom": 976
+    },
+    "primary": {
+      "x": 764,
+      "y": 859,
+      "w": 520,
+      "h": 77,
+      "cx": 1024,
+      "cy": 898,
+      "bottom": 937
+    },
+    "secondary": {
+      "x": 844,
+      "y": 937,
+      "w": 360,
+      "h": 39,
+      "cx": 1024,
+      "cy": 957,
+      "bottom": 976
+    },
+    "nav": {
+      "x": 0,
+      "y": 1081,
+      "w": 2048,
+      "h": 71,
+      "cx": 1024,
+      "cy": 1116,
+      "bottom": 1152
+    },
+    "navOverflow": {
+      "scrollWidth": 1081,
+      "clientWidth": 1081,
+      "overflowX": "visible",
+      "background": "rgba(0, 0, 0, 0)",
+      "boxShadow": "none"
+    }
+  },
+  {
+    "name": "compact",
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "screenshotPath": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\cultivation-final-corrections\\cultivation-compact-1280x720.png",
+    "page": {
+      "x": 0,
+      "y": 0,
+      "w": 1280,
+      "h": 720,
+      "cx": 640,
+      "cy": 360,
+      "bottom": 720
+    },
+    "altar": {
+      "x": 270,
+      "y": 88,
+      "w": 746,
+      "h": 269,
+      "cx": 643,
+      "cy": 223,
+      "bottom": 357
+    },
+    "hero": {
+      "x": 219,
+      "y": 51,
+      "w": 742,
+      "h": 581,
+      "cx": 590,
+      "cy": 341,
+      "bottom": 632
+    },
+    "dantian": {
+      "x": 597,
+      "y": 310,
+      "w": 72,
+      "h": 72,
+      "cx": 633,
+      "cy": 346,
+      "bottom": 382
+    },
+    "aura": {
+      "x": 633,
+      "y": 346,
+      "w": 0,
+      "h": 0,
+      "cx": 633,
+      "cy": 346,
+      "bottom": 346
+    },
+    "fxHalo": {
+      "x": 494,
+      "y": 252,
+      "w": 278,
+      "h": 188,
+      "cx": 633,
+      "cy": 346,
+      "bottom": 440
+    },
+    "seal": {
+      "x": 552,
+      "y": 470,
+      "w": 175,
+      "h": 32,
+      "cx": 640,
+      "cy": 486,
+      "bottom": 502
+    },
+    "qi": {
+      "x": 215,
+      "y": 363,
+      "w": 850,
+      "h": 52,
+      "cx": 640,
+      "cy": 389,
+      "bottom": 415
+    },
+    "command": {
+      "x": 460,
+      "y": 420,
+      "w": 360,
+      "h": 94,
+      "cx": 640,
+      "cy": 467,
+      "bottom": 514
+    },
+    "primary": {
+      "x": 460,
+      "y": 420,
+      "w": 360,
+      "h": 54,
+      "cx": 640,
+      "cy": 447,
+      "bottom": 474
+    },
+    "secondary": {
+      "x": 510,
+      "y": 482,
+      "w": 259,
+      "h": 32,
+      "cx": 640,
+      "cy": 498,
+      "bottom": 514
+    },
+    "nav": {
+      "x": 0,
+      "y": 658,
+      "w": 1280,
+      "h": 62,
+      "cx": 640,
+      "cy": 689,
+      "bottom": 720
+    },
+    "navOverflow": {
+      "scrollWidth": 1058,
+      "clientWidth": 1058,
+      "overflowX": "visible",
+      "background": "rgba(0, 0, 0, 0)",
+      "boxShadow": "none"
+    }
+  }
+]
