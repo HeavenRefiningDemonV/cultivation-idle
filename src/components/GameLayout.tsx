@@ -21,6 +21,7 @@ import { BottomTabBar } from './BottomTabBar.js';
 import { WorldBuildingModal } from './modals/WorldBuildingModal.js';
 import { isApothecaryExactFixtureRouteEnabled } from '../features/apothecary/exact/index.js';
 import { isCultivationExactQueryModeEnabled } from '../features/cultivation/exact/cultivationExactPresentation.js';
+import { PavilionScreenOwner, isPavilionExactFixtureRouteEnabled } from '../features/pavilion/index.js';
 import { AudioBindings } from '../app/AudioBindings.js';
 import { GameIcon } from '../ui/icons/index.js';
 import { buildLiveEconomicRecommendationEngine } from '../systems/economy/economicRecommendationEngine.js';
@@ -106,7 +107,9 @@ export function GameLayout() {
   const apothecaryExactModalOpen = showWorldBuildingModal && (worldBuildingModalKey === 'apothecary' || worldBuildingModalKey === 'alchemy');
   const suppressApothecaryExactFixtureChrome = apothecaryExactFixtureRouteEnabled && apothecaryExactModalOpen;
   const suppressCultivationExactQueryChrome = activeTab === 'cultivation' && isCultivationExactQueryModeEnabled();
-  const suppressExactCaptureChrome = suppressApothecaryExactFixtureChrome || suppressCultivationExactQueryChrome;
+  const pavilionExactFixtureRouteEnabled = isPavilionExactFixtureRouteEnabled();
+  const suppressPavilionChrome = activeTab === 'records';
+  const suppressExactCaptureChrome = suppressApothecaryExactFixtureChrome || suppressCultivationExactQueryChrome || suppressPavilionChrome;
 
   useEffect(() => {
     if (prestigeCount > lastPrestigeCountRef.current) {
@@ -125,6 +128,11 @@ export function GameLayout() {
       intent: { apothecaryExactMode: 'fixture', apothecaryFocus: 'prescription' },
     });
   }, [apothecaryExactFixtureRouteEnabled, fixtureCityId, openWorldBuildingModal, setActiveTab]);
+
+  useEffect(() => {
+    if (!pavilionExactFixtureRouteEnabled || activeTab === 'records') return;
+    setActiveTab('records');
+  }, [activeTab, pavilionExactFixtureRouteEnabled, setActiveTab]);
 
   useEffect(() => {
     let atAuthoredCap = false;
@@ -179,7 +187,8 @@ export function GameLayout() {
         return <InventoryScreen />;
       case 'techniques':
         return <TechniquesTab />;
-
+      case 'records':
+        return <PavilionScreenOwner />;
       case 'prestige':
         return <PrestigeScreen />;
       case 'settings':
@@ -194,6 +203,7 @@ export function GameLayout() {
     activeTab === 'cultivation' ? 'gameLayoutRoot--cultivation' : '',
     activeTab === 'adventure' ? 'gameLayoutRoot--world' : '',
     activeTab === 'techniques' ? 'gameLayoutRoot--techniques' : '',
+    activeTab === 'records' ? 'gameLayoutRoot--records gameLayoutRoot--pavilion' : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -227,7 +237,7 @@ export function GameLayout() {
           {renderContent()}
         </div>
 
-        {!apothecaryExactFixtureRouteEnabled && <BottomTabBar />}
+        {!apothecaryExactFixtureRouteEnabled && !suppressPavilionChrome && <BottomTabBar />}
 
         {showOfflineProgressModal && showOfflineModalSetting && !suppressExactCaptureChrome && <OfflineProgressModal />}
         {showManualSatchelModal && !suppressExactCaptureChrome && <ManualSatchelModal />}

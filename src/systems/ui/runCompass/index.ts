@@ -11,9 +11,11 @@ import type { GameTab } from '../../../stores/uiStore.js';
 import type { LiveWorldModuleKey } from '../../../content/index.js';
 import { formatNumber } from '../../../utils/numbers.js';
 
+export type RunCompassTabTarget = Exclude<GameTab, 'records'>;
+
 export interface RunCompassActionTargetTab {
   kind: 'tab';
-  tab: GameTab;
+  tab: RunCompassTabTarget;
 }
 
 export interface RunCompassActionTargetWorldModule {
@@ -224,7 +226,7 @@ export function buildLiveRunCompassSurface(): RunCompassSurface | null {
         destinationLabel: canPrestigeNow ? getShellTabLabel('prestige') : 'Current focus',
         blocked: !canPrestigeNow,
         blockedReason: canPrestigeNow ? null : 'Reincarnation is not unlocked yet.',
-        target: canPrestigeNow ? { kind: 'tab', tab: 'prestige' as GameTab } : null,
+        target: canPrestigeNow ? { kind: 'tab', tab: 'prestige' as RunCompassTabTarget } : null,
       });
     } else if (breakthroughPending) {
       actionLines.push({
@@ -234,7 +236,7 @@ export function buildLiveRunCompassSurface(): RunCompassSurface | null {
         destinationLabel: getShellTabLabel('cultivation'),
         blocked: false,
         blockedReason: null,
-        target: { kind: 'tab', tab: 'cultivation' as GameTab },
+        target: { kind: 'tab', tab: 'cultivation' as RunCompassTabTarget },
       });
     }
 
@@ -242,7 +244,7 @@ export function buildLiveRunCompassSurface(): RunCompassSurface | null {
       const target: RunCompassActionTarget | null = candidate.destinationCityId
         ? { kind: 'world_module' as const, cityId: candidate.destinationCityId, moduleKey: candidate.destinationModuleKey }
         : candidate.actionKind === 'hold_and_cultivate'
-          ? { kind: 'tab' as const, tab: 'cultivation' as GameTab }
+          ? { kind: 'tab' as const, tab: 'cultivation' as RunCompassTabTarget }
           : null;
       return {
         id: `${candidate.problemKind}-${index}`,

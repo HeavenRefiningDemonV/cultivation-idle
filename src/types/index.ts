@@ -1,5 +1,6 @@
 import type { CraftSessionSaveState } from "../systems/crafting/craftingTypes.js";
 import type { RewardBundle } from "../services/rewards/index.js";
+import type { PavilionSaveState } from "../features/pavilion/pavilionTypes.js";
 
 /**
  * Cultivation path types
@@ -527,6 +528,8 @@ export interface SaveData {
   };
 
   heartLawState?: SaveHeartLawState;
+
+  pavilionState?: PavilionSaveState;
 
   // Technique progression
   techniqueState: {

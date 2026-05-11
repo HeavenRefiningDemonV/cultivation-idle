@@ -23,6 +23,7 @@ import type {
   PrestigeCostCurve,
   PrestigePrereq,
   PrestigeStoreConfig,
+  PavilionRecordsConfig,
   PrestigeUpgradeDef,
   PrestigeUpgradeTier,
   RunesConfig,
@@ -33,6 +34,7 @@ import type {
   TrialsConfig,
 } from './types.js';
 import type { LoadedContentRaw } from './loaders.js';
+import { validatePavilionRecordsManifest } from '../features/pavilion/pavilionContentTypes.js';
 import { normalizeTrialFailSafeDefinition } from './trialFailSafe.js';
 import { validateForgeBlueprintStepScript } from './validation/validateForgeBlueprints.js';
 import {
@@ -120,6 +122,7 @@ export interface ValidatedContent {
   heart_laws: HeartLawsConfig['heartLaws'];
   heart_law_affinity_rules: HeartLawAffinityRules | null;
   prestige_store: PrestigeStoreConfig;
+  pavilion_records: PavilionRecordsConfig;
 }
 
 type ErrorCollector = {
@@ -1415,6 +1418,7 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
   const apothecaryShops = validateApothecary(raw.apothecary_shops, addErr);
   const expeditions = validateExpeditions(raw.expeditions);
   const bountyConfig = validateBounties(raw.bounties);
+  const pavilionRecords = validatePavilionRecordsManifest(raw.pavilion_records);
   const normalizedTrials = trials.map((trial) => normalizeTrialFailSafeDefinition(trial, raw.economy));
 
   // Build maps for cross references
@@ -1487,6 +1491,7 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
       heart_laws: heartLaws,
       heart_law_affinity_rules: heartLawAffinityRules,
       prestige_store: prestige,
+      pavilion_records: pavilionRecords,
     },
     addErr,
   });
@@ -1513,6 +1518,7 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
       heart_laws: heartLaws,
       heart_law_affinity_rules: heartLawAffinityRules,
       prestige_store: prestige,
+      pavilion_records: pavilionRecords,
     },
     addErr,
   });
@@ -1538,6 +1544,7 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
       heart_laws: heartLaws,
       heart_law_affinity_rules: heartLawAffinityRules,
       prestige_store: prestige,
+      pavilion_records: pavilionRecords,
     },
     addErr,
   });
@@ -1563,6 +1570,7 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
       heart_laws: heartLaws,
       heart_law_affinity_rules: heartLawAffinityRules,
       prestige_store: prestige,
+      pavilion_records: pavilionRecords,
     },
     addErr,
   });
@@ -1894,6 +1902,7 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
     heart_laws: heartLaws,
     heart_law_affinity_rules: heartLawAffinityRules,
     prestige_store: prestige,
+    pavilion_records: pavilionRecords,
   });
   const targetedMaterialAudit = buildTargetedMaterialSinkAudit({
     raw,
@@ -1916,6 +1925,7 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
     heart_laws: heartLaws,
     heart_law_affinity_rules: heartLawAffinityRules,
     prestige_store: prestige,
+    pavilion_records: pavilionRecords,
   });
 
   const expectedBlockerIds = listKnownLiveEconomyBlockers().map((entry) => entry.id).sort();
@@ -2081,5 +2091,6 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
     heart_laws: heartLaws,
     heart_law_affinity_rules: heartLawAffinityRules,
     prestige_store: prestige,
+    pavilion_records: pavilionRecords,
   };
 }

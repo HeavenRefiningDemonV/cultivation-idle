@@ -1,0 +1,40 @@
+[
+  {
+    "viewport": "2048x1152",
+    "screenshotPath": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\pavilion\\pavilion-live-2048x1152.png",
+    "recordListHasEntries": true,
+    "footerVisible": true
+  },
+  {
+    "viewport": "1672x941",
+    "screenshotPath": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\pavilion\\pavilion-live-1672x941.png",
+    "recordListHasEntries": true,
+    "footerVisible": true
+  },
+  {
+    "viewport": "1440x900",
+    "screenshotPath": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\pavilion\\pavilion-live-1440x900.png",
+    "recordListHasEntries": true,
+    "footerVisible": true
+  },
+  {
+    "viewport": "1100x800",
+    "screenshotPath": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\pavilion\\pavilion-live-1100x800.png",
+    "recordListHasEntries": true,
+    "footerVisible": true
+  },
+  {
+    "viewport": "1440x900 interactions",
+    "screenshotPath": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\pavilion\\pavilion-live-search-generated-1440x900.png",
+    "searchFoundGeneratedItem": true,
+    "selectedGeneratedTitle": "Healing Pellet",
+    "rightRailHasSourceUse": true,
+    "categorySelectionChangedRecordList": true,
+    "routeToApothecaryEnabled": true
+  },
+  {
+    "viewport": "1440x900 reduced-motion",
+    "screenshotPath": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\pavilion\\pavilion-live-reduced-motion-1440x900.png",
+    "reducedMotionFlag": true
+  }
+]

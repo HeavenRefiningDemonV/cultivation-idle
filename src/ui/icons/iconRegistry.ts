@@ -64,6 +64,7 @@ export const ICONS = {
   beastBlood: { kind: 'png', src: beastBloodPng, scale: 1 },
   bookEarth: { kind: 'png', src: bookEarthPng, scale: 1 },
   bookHeaven: { kind: 'png', src: bookHeavenPng, scale: 1 },
+  recordSlip: { kind: 'png', src: bookHeavenPng, scale: 1 },
   bookMartial: { kind: 'png', src: bookMartialPng, scale: 1 },
   dustBlue: { kind: 'png', src: dustBluePng, scale: 1.55, translateY: -8 },
   dustBrown: { kind: 'png', src: dustBrownPng, scale: 1.55, translateY: -8 },

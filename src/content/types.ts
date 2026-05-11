@@ -1,5 +1,6 @@
 import type { RewardBundle } from '../services/rewards/types.js';
 import type { ForgeHandsOnBonus, ForgeStepDef, PromptDef } from '../systems/crafting/craftingTypes.js';
+import type { PavilionRecordsManifest } from '../features/pavilion/pavilionContentTypes.js';
 
 export type PathId = 'heaven' | 'earth' | 'martial';
 export type MajorRealmId = string;
@@ -493,6 +494,8 @@ export interface PrestigeStoreConfig {
   currency?: string;
   upgrades: PrestigeUpgradeDef[];
 }
+
+export type PavilionRecordsConfig = PavilionRecordsManifest;
 
 export interface PrestigePrereq {
   upgradeId: string;

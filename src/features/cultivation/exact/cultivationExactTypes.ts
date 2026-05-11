@@ -1,5 +1,6 @@
 import type {
   RunCompassActionLine,
+  RunCompassTabTarget,
   RunCompassSurface,
 } from '../../../systems/ui/runCompass/index.js';
 import type { SpiritRootElement } from '../../../types/index.js';
@@ -25,7 +26,7 @@ export type CultivationExactDrawerId =
 export type CultivationExactFxQuality = 'off' | 'low' | 'medium' | 'high';
 
 export type CultivationRouteTarget =
-  | { kind: 'tab'; tab: 'cultivation' | 'status' | 'adventure' | 'inventory' | 'techniques' | 'prestige' | 'settings' }
+  | { kind: 'tab'; tab: RunCompassTabTarget }
   | { kind: 'world_module'; cityId: string; moduleKey: string };
 
 export interface CultivationRibbonCellSurface {
@@ -261,4 +262,3 @@ export interface BuildCultivationExactSurfaceOptions {
   runCompassFull?: RunCompassSurface | null;
   nowMs?: number;
 }
-

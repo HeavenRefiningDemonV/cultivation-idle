@@ -9,6 +9,7 @@ import type {
   OutskirtsDef,
   PavilionDef,
   PrestigeUpgradeDef,
+  PavilionRecordsConfig,
   RuinDef,
   TechniqueDef,
   TrialDef,
@@ -105,6 +106,7 @@ interface ContentStoreState {
   getSpendOrderPolicies: () => ReturnType<typeof getAllSpendOrderPolicies>;
   getEconomicModuleRoles: () => ReturnType<typeof getEconomicModuleRoleEntries>;
   getBestSourceIndex: () => ReturnType<typeof import('../systems/economy/index.js').buildBestSourceIndex>;
+  getPavilionRecordsManifest: () => PavilionRecordsConfig;
 }
 
 const emptyMaps: ContentMaps = {
@@ -448,6 +450,14 @@ export const useContentStore = create<ContentStoreState>((set, get) => ({
       throw new Error('[ContentStore] Content not loaded');
     }
     return buildBestSourceIndex(raw);
+  },
+
+  getPavilionRecordsManifest: () => {
+    const { isLoaded, raw } = get();
+    if (!isLoaded || !raw?.pavilion_records) {
+      throw new Error('[ContentStore] Pavilion records not loaded');
+    }
+    return raw.pavilion_records;
   },
 }));
 

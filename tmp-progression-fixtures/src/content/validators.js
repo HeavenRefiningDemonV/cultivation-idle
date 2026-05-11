@@ -1,4 +1,5 @@
 import { getLiveExpeditionRoutePurpose } from '../systems/world/expeditionRouteContract.js';
+import { validatePavilionRecordsManifest } from '../features/pavilion/pavilionContentTypes.js';
 import { normalizeTrialFailSafeDefinition } from './trialFailSafe.js';
 import { validateForgeBlueprintStepScript } from './validation/validateForgeBlueprints.js';
 import { inspectLiveCitySchema, LIVE_CITY_MODULE_ORDER, REQUIRED_CITY_REFS_FOR_LIVE_SLICE, } from '../systems/world/liveWorldSchema.js';
@@ -1077,6 +1078,7 @@ export function validateLoadedContent(raw) {
     const apothecaryShops = validateApothecary(raw.apothecary_shops, addErr);
     const expeditions = validateExpeditions(raw.expeditions);
     const bountyConfig = validateBounties(raw.bounties);
+    const pavilionRecords = validatePavilionRecordsManifest(raw.pavilion_records);
     const normalizedTrials = trials.map((trial) => normalizeTrialFailSafeDefinition(trial, raw.economy));
     // Build maps for cross references
     const cityMap = buildIdMap(cities);
@@ -1144,6 +1146,7 @@ export function validateLoadedContent(raw) {
             heart_laws: heartLaws,
             heart_law_affinity_rules: heartLawAffinityRules,
             prestige_store: prestige,
+            pavilion_records: pavilionRecords,
         },
         addErr,
     });
@@ -1169,6 +1172,7 @@ export function validateLoadedContent(raw) {
             heart_laws: heartLaws,
             heart_law_affinity_rules: heartLawAffinityRules,
             prestige_store: prestige,
+            pavilion_records: pavilionRecords,
         },
         addErr,
     });
@@ -1194,6 +1198,7 @@ export function validateLoadedContent(raw) {
             heart_laws: heartLaws,
             heart_law_affinity_rules: heartLawAffinityRules,
             prestige_store: prestige,
+            pavilion_records: pavilionRecords,
         },
         addErr,
     });
@@ -1219,6 +1224,7 @@ export function validateLoadedContent(raw) {
             heart_laws: heartLaws,
             heart_law_affinity_rules: heartLawAffinityRules,
             prestige_store: prestige,
+            pavilion_records: pavilionRecords,
         },
         addErr,
     });
@@ -1499,6 +1505,7 @@ export function validateLoadedContent(raw) {
         heart_laws: heartLaws,
         heart_law_affinity_rules: heartLawAffinityRules,
         prestige_store: prestige,
+        pavilion_records: pavilionRecords,
     });
     const targetedMaterialAudit = buildTargetedMaterialSinkAudit({
         raw,
@@ -1521,6 +1528,7 @@ export function validateLoadedContent(raw) {
         heart_laws: heartLaws,
         heart_law_affinity_rules: heartLawAffinityRules,
         prestige_store: prestige,
+        pavilion_records: pavilionRecords,
     });
     const expectedBlockerIds = listKnownLiveEconomyBlockers().map((entry) => entry.id).sort();
     const actualBlockerIds = liveEconomyReport.activeBlockerIds.slice().sort();
@@ -1669,5 +1677,6 @@ export function validateLoadedContent(raw) {
         heart_laws: heartLaws,
         heart_law_affinity_rules: heartLawAffinityRules,
         prestige_store: prestige,
+        pavilion_records: pavilionRecords,
     };
 }

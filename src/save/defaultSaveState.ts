@@ -34,6 +34,8 @@ import { createDefaultCraftSessionState, useCraftSessionStore } from '../stores/
 import { createDefaultRecipeMasteryState, useRecipeMasteryStore } from '../stores/recipeMasteryStore.js';
 import { useContentStore } from '../stores/contentStore.js';
 import { useUIStore } from '../stores/uiStore.js';
+import { usePavilionStore } from '../stores/pavilionStore.js';
+import { sanitizePavilionSaveState } from '../features/pavilion/pavilionUnlocks.js';
 import type { EquipmentSlot, ForgeToolTiers, TemperAffix } from '../stores/equipmentStore.js';
 
 import { CURRENT_SAVE_VERSION, migrateIncomingSaveForHydration } from './migrations/index.js';
@@ -60,6 +62,7 @@ const REQUIRED_SAVE_KEYS = [
   'craftSessionState',
   'medicinePouchState',
   'recipeMasteryState',
+  'pavilionState',
 ];
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
@@ -154,6 +157,7 @@ export function buildDefaultSaveState(): SaveData {
   const craftSessionState = useCraftSessionStore.getState();
   const medicinePouchState = useMedicinePouchStore.getState();
   const recipeMasteryState = useRecipeMasteryStore.getState();
+  const pavilionState = usePavilionStore.getState();
   const uiState = useUIStore.getState();
 
   return {
@@ -197,6 +201,7 @@ export function buildDefaultSaveState(): SaveData {
     craftSessionState: craftSessionState.toSaveState(),
     medicinePouchState: medicinePouchState.toSaveState(),
     recipeMasteryState: recipeMasteryState.toSaveState(),
+    pavilionState: pavilionState.toSaveState(),
     combatSettings: {
       autoAttack: combatState.autoAttack,
       autoCombatAI: combatState.autoCombatAI,
@@ -1176,6 +1181,7 @@ export function mergeWithDefaults(partialSave: unknown): SaveData {
       isValidHeartLawState,
       'heartLawState',
     ),
+    pavilionState: sanitizePavilionSaveState(record.pavilionState ?? defaults.pavilionState),
     manualPavilionState: mergeSlice(
       record.manualPavilionState,
       defaults.manualPavilionState,

@@ -25,6 +25,7 @@ const FILES: Record<keyof LoadedContentRaw, string> = {
   bounties: 'bounties.json',
   heart_laws: 'heart_laws.json',
   prestige_store: 'prestige_store.json',
+  pavilion_records: 'pavilion_records.json',
 };
 
 async function readJson<T>(fileName: string): Promise<T> {

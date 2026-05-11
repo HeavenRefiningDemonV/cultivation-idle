@@ -79,6 +79,7 @@ export async function loadAllContent() {
         bounties: 'bounties.json',
         heart_laws: 'heart_laws.json',
         prestige_store: 'prestige_store.json',
+        pavilion_records: 'pavilion_records.json',
     };
     const entries = await Promise.all(Object.entries(files).map(async ([key, fileName]) => {
         const data = await loadFile(fileName);

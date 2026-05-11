@@ -300,6 +300,13 @@ export const useContentStore = create((set, get) => ({
         }
         return buildBestSourceIndex(raw);
     },
+    getPavilionRecordsManifest: () => {
+        const { isLoaded, raw } = get();
+        if (!isLoaded || !raw?.pavilion_records) {
+            throw new Error('[ContentStore] Pavilion records not loaded');
+        }
+        return raw.pavilion_records;
+    },
 }));
 export function getItemDef(itemId) {
     const maps = useContentStore.getState().maps;

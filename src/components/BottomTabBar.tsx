@@ -15,6 +15,7 @@ export const BOTTOM_TAB_BAR_ORDER = [
   'adventure',
   'inventory',
   'techniques',
+  'records',
   'prestige',
   'settings',
 ] as const satisfies readonly GameTab[];
@@ -29,6 +30,7 @@ const TAB_ICONS = {
   adventure: 'placeholderRingLarge',
   inventory: 'artifactBundle',
   techniques: 'bookHeaven',
+  records: 'recordSlip',
   prestige: 'spiritGrass',
   settings: 'inkWip',
 } as const satisfies Record<GameTab, IconId>;

@@ -11,6 +11,7 @@ export const SHELL_TAB_LABELS = {
   adventure: 'World',
   inventory: 'Inventory',
   techniques: 'Techniques',
+  records: 'Records',
   prestige: 'Prestige',
   settings: 'Settings',
 } as const satisfies Record<GameTab, string>;

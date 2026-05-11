@@ -24,6 +24,8 @@ import { createDefaultCraftSessionState, useCraftSessionStore } from '../stores/
 import { createDefaultRecipeMasteryState, useRecipeMasteryStore } from '../stores/recipeMasteryStore.js';
 import { useContentStore } from '../stores/contentStore.js';
 import { useUIStore } from '../stores/uiStore.js';
+import { usePavilionStore } from '../stores/pavilionStore.js';
+import { sanitizePavilionSaveState } from '../features/pavilion/pavilionUnlocks.js';
 import { CURRENT_SAVE_VERSION, migrateIncomingSaveForHydration } from './migrations/index.js';
 import { normalizeCitySaveState } from './cityStateNormalization.js';
 export const SAVE_VERSION = CURRENT_SAVE_VERSION;
@@ -46,6 +48,7 @@ const REQUIRED_SAVE_KEYS = [
     'craftSessionState',
     'medicinePouchState',
     'recipeMasteryState',
+    'pavilionState',
 ];
 const isRecord = (value) => !!value && typeof value === 'object' && !Array.isArray(value);
 const isStringArray = (value) => Array.isArray(value) && value.every((entry) => typeof entry === 'string');
@@ -144,6 +147,7 @@ export function buildDefaultSaveState() {
     const craftSessionState = useCraftSessionStore.getState();
     const medicinePouchState = useMedicinePouchStore.getState();
     const recipeMasteryState = useRecipeMasteryStore.getState();
+    const pavilionState = usePavilionStore.getState();
     const uiState = useUIStore.getState();
     return {
         version: SAVE_VERSION,
@@ -186,6 +190,7 @@ export function buildDefaultSaveState() {
         craftSessionState: craftSessionState.toSaveState(),
         medicinePouchState: medicinePouchState.toSaveState(),
         recipeMasteryState: recipeMasteryState.toSaveState(),
+        pavilionState: pavilionState.toSaveState(),
         combatSettings: {
             autoAttack: combatState.autoAttack,
             autoCombatAI: combatState.autoCombatAI,
@@ -1191,6 +1196,7 @@ export function mergeWithDefaults(partialSave) {
         bountyState: mergeSlice(record.bountyState, defaults.bountyState, isValidBountyState, 'bountyState'),
         expeditionState: mergeSlice(record.expeditionState, defaults.expeditionState, isValidExpeditionState, 'expeditionState'),
         heartLawState: mergeSlice(record.heartLawState, defaults.heartLawState, isValidHeartLawState, 'heartLawState'),
+        pavilionState: sanitizePavilionSaveState(record.pavilionState ?? defaults.pavilionState),
         manualPavilionState: mergeSlice(record.manualPavilionState, defaults.manualPavilionState, isValidManualPavilionState, 'manualPavilionState'),
         manualSatchelState: mergeSlice(record.manualSatchelState, defaults.manualSatchelState, isValidManualSatchelState, 'manualSatchelState'),
     };

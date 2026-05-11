@@ -44,6 +44,7 @@ export type GameTab =
   | 'adventure'
   | 'inventory'
   | 'techniques'
+  | 'records'
   | 'prestige'
   | 'settings';
 

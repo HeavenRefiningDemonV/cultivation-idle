@@ -12,6 +12,7 @@ import type {
   OutskirtsConfig,
   PavilionsConfig,
   PrestigeStoreConfig,
+  PavilionRecordsConfig,
   RunesConfig,
   RuinsConfig,
   TalismanRecipesConfig,
@@ -57,6 +58,7 @@ export interface LoadedContentRaw {
   bounties: BountiesConfig;
   heart_laws: HeartLawsConfig;
   prestige_store: PrestigeStoreConfig;
+  pavilion_records: PavilionRecordsConfig;
 }
 
 export async function fetchJson<T>(url: string): Promise<T> {
@@ -127,6 +129,7 @@ export async function loadAllContent(): Promise<LoadedContentRaw> {
     bounties: 'bounties.json',
     heart_laws: 'heart_laws.json',
     prestige_store: 'prestige_store.json',
+    pavilion_records: 'pavilion_records.json',
   } as const;
 
   const entries = await Promise.all(
