@@ -1,303 +1,550 @@
-import { useMemo } from 'react';
-import { useGameStore } from '../../stores/gameStore.js';
-import { useInventoryStore } from '../../stores/inventoryStore.js';
-import { useCombatStore } from '../../stores/combatStore.js';
-import { useZoneStore } from '../../stores/zoneStore.js';
-import { useCultivationStore } from '../../stores/cultivationStore.js';
-import { usePrestigeStore } from '../../stores/prestigeStore.js';
-import { useMedicinePouchStore } from '../../stores/medicinePouchStore.js';
-import { useTrialStore } from '../../stores/trialStore.js';
+import type { ReactNode } from 'react';
+import {
+  BadgeCheck,
+  ChevronRight,
+  Compass,
+  Flame,
+  Gauge,
+  PackageCheck,
+  ShieldCheck,
+  Sparkles,
+  Target,
+} from 'lucide-react';
 import { useUIStore } from '../../stores/uiStore.js';
-import { useContentStore } from '../../stores/contentStore.js';
-import { formatNumber, formatPercentFromValue } from '../../utils/numbers.js';
-import { StatusSummaryHeader } from '../../ui/status/StatusSummaryHeader.js';
-import { CombatStatTile } from '../../ui/status/CombatStatTile.js';
-import { RunCompass } from '../../ui/status/RunCompass.js';
-import { useRunCompassSurface } from '../../ui/status/useRunCompassSurface.js';
-import { StatusMiniCard } from '../../ui/status/StatusMiniCard.js';
-import { SpiritRootDisplay } from '../SpiritRootDisplay.js';
-import { buildStatusTroubleshootingSurface } from '../../systems/ui/status/statusTroubleshootingSurface.js';
-import { Crosshair, Droplets, Footprints, Heart, Shield, Sparkles, Sword } from 'lucide-react';
-import { ScreenFxStage } from '../../ui/fx/ScreenFxStage.js';
-import { FX_STAGE_IDS } from '../../ui/fx/constants.js';
-import { FxStagePortal } from '../../ui/fx/FxStagePortal.js';
-import { useFxQuality, useFxStageSnapshot } from '../../ui/fx/FxQualityProvider.js';
-import { buildFxSceneContract } from '../../ui/fx/runtime.js';
-import { StatusFxScene } from '../../ui/fx/scenes/StatusFxScene.js';
-import { performRunCompassAction } from '../../systems/ui/runCompass/performRunCompassAction.js';
-import { useShallow } from 'zustand/shallow';
+import { openWorldModule } from '../../systems/world/openWorldModule.js';
+import type {
+  StatusActionSurface,
+  StatusDashboardSurfaceV1,
+  StatusFactRow,
+  StatusMilestoneNode,
+  StatusRouteTarget,
+  StatusTone,
+} from '../../systems/ui/status/statusDashboardSurface.js';
+import { GameIcon, ICONS, type IconId } from '../../ui/icons/index.js';
+import { getStatusDashboardActionState } from '../../ui/status/statusDashboardModel.js';
+import { useStatusDashboardSurface } from '../../ui/status/useStatusDashboardSurface.js';
+import { getShellTabLabel, getWorldModuleLabel } from '../../ui/text/playerFacingLabels.js';
 import './StatusScreen.scss';
-import '../../ui/status/StatusSummaryHeader.scss';
-import '../../ui/status/CombatStatTile.scss';
-import '../../ui/status/StatusMiniCard.scss';
 
-function StatusLine({ label, value }: { label: string; value: string }) {
+type DashboardPanelProps = {
+  title: string;
+  icon: ReactNode;
+  children: ReactNode;
+  className?: string;
+  ariaLabel?: string;
+};
+
+type WorkRow = StatusFactRow & {
+  action: StatusActionSurface | null;
+};
+
+function DashboardPanel({ title, icon, children, className = '', ariaLabel }: DashboardPanelProps) {
   return (
-    <div className="statusTroubleshootingLine">
-      <span className="statusTroubleshootingLineLabel">{label}</span>
-      <span className="statusTroubleshootingLineValue">{value}</span>
+    <section className={`statusDashboardPanel ${className}`.trim()} aria-label={ariaLabel ?? title}>
+      <div className="statusDashboardPanel__heading">
+        <span className="statusDashboardPanel__icon" aria-hidden>{icon}</span>
+        <h2>{title}</h2>
+      </div>
+      {children}
+    </section>
+  );
+}
+
+function destinationLabelForTarget(target: StatusRouteTarget): string {
+  if (target.kind === 'tab') return getShellTabLabel(target.tab);
+  if (target.kind === 'world_module') return getWorldModuleLabel(target.moduleKey);
+  return 'Unavailable';
+}
+
+function performStatusDashboardAction(action: StatusActionSurface): void {
+  if (action.disabled || action.target.kind === 'none') return;
+
+  if (action.target.kind === 'tab') {
+    useUIStore.getState().setActiveTab(action.target.tab);
+    return;
+  }
+
+  openWorldModule({
+    cityId: action.target.cityId,
+    moduleKey: action.target.moduleKey,
+    source: 'status-dashboard',
+  });
+}
+
+function actionFromTarget(args: {
+  id: string;
+  label: string;
+  detail: string;
+  target: StatusRouteTarget | null;
+  tone?: StatusTone;
+}): StatusActionSurface | null {
+  if (!args.target) return null;
+  const disabled = args.target.kind === 'none';
+  return {
+    id: args.id,
+    label: args.label,
+    detail: args.detail,
+    destinationLabel: destinationLabelForTarget(args.target),
+    target: args.target,
+    disabled,
+    disabledReason: disabled ? args.target.reason : null,
+    tone: args.tone ?? 'info',
+    source: 'activity',
+  };
+}
+
+function RouteButton({
+  action,
+  label,
+  disabledLabel,
+  className = '',
+}: {
+  action: StatusActionSurface | null | undefined;
+  label?: string;
+  disabledLabel?: string;
+  className?: string;
+}) {
+  if (!action) {
+    return (
+      <button type="button" className={`statusDashboardButton statusDashboardButton--settled ${className}`.trim()} disabled>
+        {disabledLabel ?? label ?? 'View'}
+      </button>
+    );
+  }
+
+  const state = getStatusDashboardActionState(action);
+  const buttonLabel = state.disabled ? disabledLabel ?? state.label : label ?? state.label;
+
+  return (
+    <button
+      type="button"
+      className={`statusDashboardButton statusDashboardButton--${state.tone} ${className}`.trim()}
+      onClick={() => {
+        if (!state.disabled) {
+          performStatusDashboardAction(action);
+        }
+      }}
+      disabled={state.disabled}
+      title={action.disabledReason ?? action.detail}
+    >
+      {buttonLabel}
+    </button>
+  );
+}
+
+function SurfaceIcon({ icon, size = 22 }: { icon: IconId; size?: number }) {
+  const safeIcon: IconId = Object.hasOwn(ICONS, icon) ? icon : 'inkWarning';
+  return <GameIcon icon={safeIcon} size={size} />;
+}
+
+function DetailLine({ row, urgent }: { row: Pick<StatusFactRow, 'label' | 'value' | 'detail' | 'tone'>; urgent?: boolean }) {
+  const isUrgent = urgent ?? (row.tone === 'danger' || row.tone === 'warning');
+  return (
+    <div className={`statusDashboardDetailLine ${isUrgent ? 'statusDashboardDetailLine--urgent' : ''}`}>
+      <span>{row.label}</span>
+      <strong>{row.value ?? row.detail}</strong>
     </div>
   );
 }
 
-export function StatusScreen() {
-  const runCompass = useRunCompassSurface();
-  const { realm, qi, qiPerSecond, focusMode, selectedPath, stats } = useGameStore(
-    useShallow((state) => ({
-      realm: state.realm,
-      qi: state.qi,
-      qiPerSecond: state.qiPerSecond,
-      focusMode: state.focusMode,
-      selectedPath: state.selectedPath,
-      stats: state.stats,
-    })),
+function StatusChip({ row }: { row: StatusFactRow }) {
+  return (
+    <div className={`statusDashboardChip statusDashboardChip--${row.tone}`}>
+      <span className="statusDashboardChip__icon" aria-hidden>
+        <SurfaceIcon icon={row.icon} size={20} />
+      </span>
+      <span className="statusDashboardChip__label">{row.label}</span>
+      <strong>{row.value ?? row.detail}</strong>
+    </div>
   );
-  const playerLuck = useGameStore((state) => state.playerLuck);
-  const { currencies, items, gold } = useInventoryStore(
-    useShallow((state) => ({
-      currencies: state.currencies,
-      items: state.items,
-      gold: state.gold,
-    })),
-  );
-  const { selectedHeartLawId, chapter, breathMode } = useCultivationStore(
-    useShallow((state) => ({
-      selectedHeartLawId: state.selectedHeartLawId,
-      chapter: state.chapter,
-      breathMode: state.breathMode,
-    })),
-  );
-  const spiritRoot = usePrestigeStore((state) => state.spiritRoot);
-  const pouchSlots = useMedicinePouchStore((state) => state.slots);
-  const progressByTrialId = useTrialStore((state) => state.progressByTrialId);
-  const autoStartCombat = useUIStore((state) => state.autoStartCombat);
-  const contentRaw = useContentStore((state) => state.raw);
-  const combatLog = useCombatStore((state) => state.combatLog);
-  const getTotalEnemiesDefeated = useZoneStore((state) => state.getTotalEnemiesDefeated);
-  const fxStageSnapshot = useFxStageSnapshot(FX_STAGE_IDS.status);
-  const { requestedQuality, effectiveQuality, prefersReducedMotion } = useFxQuality();
+}
 
-  const troubleshooting = useMemo(
-    () => buildStatusTroubleshootingSurface(),
-    [
-      autoStartCombat,
-      chapter,
-      contentRaw,
-      currencies,
-      focusMode,
-      gold,
-      items,
-      pouchSlots,
-      progressByTrialId,
-      qi,
-      qiPerSecond,
-      realm,
-      selectedHeartLawId,
-      selectedPath,
-      spiritRoot,
-      stats,
-      breathMode,
-    ],
+function EmptyState({ row }: { row: StatusFactRow }) {
+  return (
+    <article className={`statusDashboardEmptyState statusDashboardEmptyState--${row.tone}`}>
+      <span aria-hidden><SurfaceIcon icon={row.icon} size={22} /></span>
+      <div>
+        <h3>{row.label}</h3>
+        <p>{row.detail}</p>
+      </div>
+    </article>
   );
+}
 
-  const totalEnemiesDefeated = getTotalEnemiesDefeated('all');
-  const statusFxScene = useMemo(() => {
-    if (!fxStageSnapshot) return null;
-    return buildFxSceneContract({
-      stageId: FX_STAGE_IDS.status,
-      sceneKind: 'status',
-      snapshot: fxStageSnapshot,
-      requestedQuality,
-      effectiveQuality,
-      prefersReducedMotion,
-      documentHidden: typeof document !== 'undefined' ? document.hidden : false,
+function pillTone(tone: StatusTone): 'ready' | 'blocked' | 'preparing' {
+  if (tone === 'success') return 'ready';
+  if (tone === 'danger' || tone === 'warning') return 'blocked';
+  return 'preparing';
+}
+
+function nodeClass(node: StatusMilestoneNode): string {
+  return [
+    'statusDashboardProgressNode',
+    `statusDashboardProgressNode--${node.state}`,
+    node.state === 'current' || node.state === 'warning' ? 'is-current' : '',
+  ].filter(Boolean).join(' ');
+}
+
+function buildCurrentWorkRows(surface: StatusDashboardSurfaceV1): WorkRow[] {
+  const foreground = surface.currentWork.foregroundActivity;
+  const rows: WorkRow[] = [
+    {
+      id: 'foreground-activity',
+      label: foreground.label,
+      value: 'Foreground',
+      detail: foreground.detail,
+      tone: foreground.tone,
+      icon: foreground.icon,
+      source: 'activityStore',
+      action: actionFromTarget({
+        id: 'open-current-work',
+        label: 'Open current work',
+        detail: foreground.detail,
+        target: foreground.target,
+        tone: foreground.tone,
+      }),
+    },
+  ];
+
+  if (surface.currentWork.activeCombat) {
+    rows.push({
+      ...surface.currentWork.activeCombat,
+      action: actionFromTarget({
+        id: 'open-active-combat',
+        label: 'Open combat',
+        detail: surface.currentWork.activeCombat.detail,
+        target: foreground.target,
+        tone: surface.currentWork.activeCombat.tone,
+      }),
     });
-  }, [effectiveQuality, fxStageSnapshot, prefersReducedMotion, requestedQuality]);
+  }
 
-  const primaryStatusAction = useMemo(
-    () => runCompass.full?.bestNextActions.find((action) => !action.blocked && Boolean(action.target)) ?? null,
-    [runCompass.full?.bestNextActions],
-  );
+  if (surface.currentWork.trackedBounty) {
+    rows.push({
+      ...surface.currentWork.trackedBounty,
+      action: actionFromTarget({
+        id: 'open-bounty',
+        label: 'Open World',
+        detail: surface.currentWork.trackedBounty.detail,
+        target: { kind: 'tab', tab: 'adventure' },
+        tone: surface.currentWork.trackedBounty.tone,
+      }),
+    });
+  }
+
+  if (surface.currentWork.expeditions) {
+    rows.push({
+      ...surface.currentWork.expeditions,
+      action: actionFromTarget({
+        id: 'open-expeditions',
+        label: 'Open World',
+        detail: surface.currentWork.expeditions.detail,
+        target: { kind: 'tab', tab: 'adventure' },
+        tone: surface.currentWork.expeditions.tone,
+      }),
+    });
+  }
+
+  surface.currentWork.queues.slice(0, 2).forEach((row) => {
+    rows.push({
+      ...row,
+      action: actionFromTarget({
+        id: `open-${row.id}`,
+        label: 'Open World',
+        detail: row.detail,
+        target: { kind: 'tab', tab: 'adventure' },
+        tone: row.tone,
+      }),
+    });
+  });
+
+  return rows.slice(0, 5);
+}
+
+export function StatusScreen() {
+  const surface = useStatusDashboardSurface();
+  const primaryAction = surface.hero.primaryAction ?? surface.bestNextActions.find((action) => !action.disabled) ?? null;
+  const milestoneTone = pillTone(surface.milestone.tone);
+  const currentWorkRows = buildCurrentWorkRows(surface);
+  const elementKey = surface.identity.spiritRootTone;
+  const readinessRows = surface.readiness.rows.slice(0, 3);
 
   return (
-    <ScreenFxStage
-      stageId={FX_STAGE_IDS.status}
-      className="statusScreenFxStage"
-      stageClassName="statusScreenFxStage__layer"
-      contentClassName="statusScreenFxStage__content"
-      stageZIndex={0}
-      contentZIndex={1}
-    >
-      {statusFxScene ? (
-        <FxStagePortal stageId={FX_STAGE_IDS.status}>
-          <StatusFxScene
-            {...statusFxScene}
-            urgency={troubleshooting.urgentCardId}
-            resonance={troubleshooting.identity.resonanceLabel}
-          />
-        </FxStagePortal>
-      ) : null}
-      <div className="statusScreenRoot">
-        <div className="statusScreenContent">
-          <StatusSummaryHeader
-            realmName={troubleshooting.realmName}
-            stageText={troubleshooting.stageText}
-            pathLabel={troubleshooting.pathLabel}
-            spiritRootLine={`${troubleshooting.identity.spiritRootSummary.element} • ${troubleshooting.identity.spiritRootSummary.grade}`}
-            archetypeLabel={troubleshooting.archetypeLabel}
-            archetypeSummary={troubleshooting.archetypeSummary}
-            biggestShortfallLine={troubleshooting.shortfall.headline}
-            topFixLine={troubleshooting.shortfall.topFix}
-            topFixAction={primaryStatusAction}
-            onRunCompassAction={performRunCompassAction}
-            combatStrip={troubleshooting.combatStrip}
-          />
-          <section className="statusActionStrip statusScreenCardBase statusScreenCardBase--subordinate" aria-label="Status primary next fix">
-            <div className="statusActionStrip__main">
-              <div className="statusActionStrip__title">Best Next Action</div>
-              <div className="statusActionStrip__reason">{troubleshooting.shortfall.headline}</div>
+    <div className="statusDashboardRoot" data-testid={surface.meta.rootTestId}>
+      <div className="statusDashboardCanvas">
+        <header className="statusDashboardHero" aria-label="Status summary">
+          <div className="statusDashboardRealm">
+            <div className="statusDashboardRealm__crest" aria-hidden>
+              <Compass />
             </div>
-            <div className="statusActionStrip__ctaLane">
-              {primaryStatusAction ? (
-                <button
-                  type="button"
-                  className="statusActionStrip__cta uiNoShift"
-                  onClick={() => performRunCompassAction(primaryStatusAction)}
-                  disabled={primaryStatusAction.blocked}
-                  title={primaryStatusAction.blockedReason ?? primaryStatusAction.why}
-                >
-                  {primaryStatusAction.label}
-                </button>
-              ) : (
-                <span className="statusActionStrip__quiet">No stronger action is surfaced right now.</span>
-              )}
-            </div>
-          </section>
-          <RunCompass
-            surface={runCompass.full}
-            tone="paper"
-            density="dense"
-            className="statusScreenRunCompass statusScreenCardBase"
-            onAction={performRunCompassAction}
-          />
-
-          <section className="statusChamberLayout" aria-label="Status troubleshooting chamber">
-            <div className="statusChamberRail statusChamberRail--left">
-              <StatusMiniCard title="Identity" urgent={troubleshooting.urgentCardId === 'identity'} className="statusTroubleshootingCard--identity">
-                <div className="statusIdentityRootAura">
-                  <SpiritRootDisplay variant="status" />
-                </div>
-                <StatusLine label="Path" value={troubleshooting.pathLabel} />
-                <StatusLine label="Archetype" value={troubleshooting.archetypeLabel} />
-                <StatusLine label="Heart Law" value={`${troubleshooting.identity.heartLawName} • ${troubleshooting.identity.heartLawVerse}`} />
-                <StatusLine label="Resonance" value={troubleshooting.identity.resonanceLabel} />
-                <StatusLine label="Summary" value={troubleshooting.archetypeSummary} />
-                <StatusLine label="Focus" value={troubleshooting.identity.focusMode} />
-                <StatusLine label="Breath" value={troubleshooting.identity.breathMode} />
-              </StatusMiniCard>
-
-              <StatusMiniCard title="Permanent Floor" urgent={troubleshooting.urgentCardId === 'permanent_floor'}>
-                <StatusLine label="Weapon Refine" value={`${troubleshooting.permanentFloor.weaponRefine}`} />
-                <StatusLine label="Accessory Refine" value={`${troubleshooting.permanentFloor.accessoryRefine}`} />
-                <StatusLine label="Temper Successes" value={`${troubleshooting.permanentFloor.temperSuccesses}`} />
-                <StatusLine label="Runes" value={troubleshooting.permanentFloor.runeSummary} />
-                <StatusLine label="Next Target" value={troubleshooting.permanentFloor.gateTargetLine} />
-                <StatusLine label="Judgment" value={troubleshooting.permanentFloor.floorJudgment} />
-              </StatusMiniCard>
-            </div>
-
-            <div className="statusChamberCoreStack">
-              <StatusMiniCard
-                title="Readiness"
-                urgent={troubleshooting.urgentCardId === 'readiness'}
-                className="statusTroubleshootingCard--readiness statusTroubleshootingCard--crown"
-              >
-                <StatusLine label="State" value={troubleshooting.readiness.readinessLabel} />
-                <StatusLine label="Gate" value={troubleshooting.readiness.gateTrialName} />
-                <StatusLine label="Diagnosis" value={troubleshooting.readiness.diagnosisLabel} />
-                {troubleshooting.readiness.reasons.map((reason, index) => (
-                  <StatusLine key={`${reason}-${index}`} label={`Reason ${index + 1}`} value={reason} />
-                ))}
-                {troubleshooting.readiness.warnings.map((warning) => <StatusLine key={warning} label="Warning" value={warning} />)}
-                <StatusLine label="Biggest Shortfall" value={troubleshooting.readiness.shortfallLine} />
-              </StatusMiniCard>
-              <div className="statusChamberCore" aria-hidden>
-                <div className="statusChamberCorePlate">
-                  <div className="statusChamberCoreOrb">
-                    <div className="statusChamberCoreReadinessValue">{troubleshooting.readiness.readinessLabel}</div>
-                    <div className="statusChamberCoreReadinessSub">{troubleshooting.readiness.diagnosisLabel}</div>
-                  </div>
-                  <div className="statusChamberCoreSeal">Diagnostic Chamber</div>
-                </div>
-              </div>
-            </div>
-
-            <div className="statusChamberRail statusChamberRail--right">
-              <StatusMiniCard title="Preparation" urgent={troubleshooting.urgentCardId === 'preparation'}>
-                <StatusLine label="Merit" value={troubleshooting.preparation.meritReserve} />
-                <StatusLine label="Spirit Stones" value={troubleshooting.preparation.spiritStoneReserve} />
-                <StatusLine label="Pouch" value={troubleshooting.preparation.pouchSummary} />
-                <StatusLine label="Pouch Fit" value={troubleshooting.preparation.pouchFit} />
-                <StatusLine label="Top Warning" value={troubleshooting.preparation.topWarning} />
-                {troubleshooting.preparation.gateTokenLine ? <StatusLine label="Gate Token" value={troubleshooting.preparation.gateTokenLine} /> : null}
-              </StatusMiniCard>
-
-              <StatusMiniCard title="Build" urgent={troubleshooting.urgentCardId === 'build'}>
-                <StatusLine label="Path Alignment" value={troubleshooting.build.alignment} />
-                <StatusLine label="Empty Slots" value={troubleshooting.build.emptySlots} />
-                <StatusLine label="Mastery Floor" value={troubleshooting.build.mastery} />
-                <StatusLine label="Rank Floor" value={troubleshooting.build.rank} />
-                <StatusLine label="Rune Floor" value={troubleshooting.build.runes} />
-                <StatusLine label="Policy Fit" value={troubleshooting.build.policyFit} />
-                <StatusLine label="Top Gap" value={troubleshooting.build.topGap} />
-              </StatusMiniCard>
-            </div>
-
-            <div className="statusChamberSupport">
-              <StatusMiniCard
-                title="Safety Net"
-                urgent={troubleshooting.urgentCardId === 'safety_net'}
-                positive={troubleshooting.urgentCardId === 'safety_net'}
-                className="statusTroubleshootingCard--support"
-              >
-                <StatusLine label="State" value={troubleshooting.safetyNet.state} />
-                <StatusLine label="Progress" value={troubleshooting.safetyNet.progress} />
-                <StatusLine label="Threshold" value={troubleshooting.safetyNet.threshold} />
-                <StatusLine label="Cost" value={troubleshooting.safetyNet.cost} />
-                <StatusLine label="Affordability" value={troubleshooting.safetyNet.affordability} />
-                <StatusLine label="Context" value={troubleshooting.safetyNet.blockedReason} />
-              </StatusMiniCard>
-            </div>
-          </section>
-
-          <div className="statusScreenGrid statusScreenRawSection">
-            <div className="statusScreenColumn">
-              <div className="statusScreenStatCard statusScreenCardBase statusScreenCardBase--subordinate">
-                <h3 className="statusScreenStatCardTitle">Combat Statistics</h3>
-                <div className="combatStatTilesGrid">
-                  <CombatStatTile label="Max HP" value={formatNumber(stats.hp)} icon={<Heart size={16} />} tone="hp" pulseKey={stats.hp} />
-                  <CombatStatTile label="Attack Power" value={formatNumber(stats.atk)} icon={<Sword size={16} />} tone="offense" pulseKey={stats.atk} />
-                  <CombatStatTile label="Defense" value={formatNumber(stats.def)} icon={<Shield size={16} />} tone="defense" pulseKey={stats.def} />
-                  <CombatStatTile label="HP Regen/s" value={formatNumber(stats.regen)} icon={<Droplets size={16} />} tone="recovery" />
-                  <CombatStatTile label="Critical Rate" value={formatPercentFromValue(stats.crit)} icon={<Crosshair size={16} />} tone="crit" />
-                  <CombatStatTile label="Critical Damage" value={formatPercentFromValue(stats.critDmg, 0)} icon={<Sparkles size={16} />} tone="crit" />
-                  <CombatStatTile label="Dodge Chance" value={formatPercentFromValue(stats.dodge)} icon={<Footprints size={16} />} tone="evasion" />
-                  <CombatStatTile label="Total Enemies Defeated" value={formatNumber(totalEnemiesDefeated)} icon={<Sword size={16} />} tone="neutral" />
-                </div>
-              </div>
-            </div>
-            <div className="statusScreenColumn">
-              <div className="statusScreenStatCard statusScreenCardBase statusScreenCardBase--subordinate">
-                <h3 className="statusScreenStatCardTitle">Resources</h3>
-                <StatusLine label="Gold" value={formatNumber(gold)} />
-                <StatusLine label="Inventory Items" value={`${Object.keys(items).length}`} />
-                <StatusLine label="Combat Logs" value={`${combatLog.length}`} />
-                <StatusLine label="Player Luck" value={formatNumber(playerLuck || 0)} />
-              </div>
+            <div>
+              <div className="statusDashboardMeta">Realm</div>
+              <h1>{surface.hero.realmName}</h1>
+              <p>{surface.hero.stageText}</p>
             </div>
           </div>
-        </div>
+
+          <div className="statusDashboardPath">
+            <div className="statusDashboardPath__seal" aria-hidden>
+              <Target />
+            </div>
+            <div>
+              <div className="statusDashboardMeta">Path</div>
+              <h2>{surface.hero.pathLabel}</h2>
+              <p>Heart Law: {surface.hero.heartLawLabel}</p>
+              <p>Spirit Root: {surface.hero.spiritRootLabel}</p>
+              <p>Build archetype: {surface.hero.archetypeLabel}</p>
+            </div>
+          </div>
+
+          <div className="statusDashboardGoal">
+            <div className="statusDashboardMeta">Next Major Goal</div>
+            <h2>{surface.hero.nextMajorGoalLabel}</h2>
+            <p>{surface.hero.biggestShortfallLabel}</p>
+            <p>{surface.hero.nextMajorGoalDetail}</p>
+            <div className="statusDashboardGoal__action">
+              <RouteButton action={primaryAction} label="Open best fix" disabledLabel="Blocked" />
+            </div>
+          </div>
+          <div className="statusDashboardHero__art" aria-hidden />
+        </header>
+
+        <section className="statusDashboardMetricStrip" aria-label="Combat statistics">
+          {surface.metrics.map((metric) => (
+            <div key={metric.id} className={`statusDashboardMetric statusDashboardMetric--${metric.tone}`}>
+              <span className="statusDashboardMetric__icon" aria-hidden>
+                <SurfaceIcon icon={metric.icon} size={25} />
+              </span>
+              <span className="statusDashboardMetric__label">{metric.label}</span>
+              <strong>{metric.value}</strong>
+            </div>
+          ))}
+        </section>
+
+        <main className="statusDashboardGrid">
+          <div className="statusDashboardColumn">
+            <DashboardPanel title="Milestone" icon={<BadgeCheck />} className="statusDashboardPanel--milestone">
+              <div className="statusDashboardMilestone">
+                <div>
+                  <h3>{surface.milestone.title}</h3>
+                  <p>{surface.milestone.detail}</p>
+                </div>
+                <span className={`statusDashboardReadinessPill statusDashboardReadinessPill--${milestoneTone}`}>
+                  {surface.milestone.readinessLabel}
+                </span>
+              </div>
+              <div className="statusDashboardProgressRail" aria-label="Milestone progress">
+                {surface.milestone.nodes.map((node) => (
+                  <div key={node.id} className={nodeClass(node)} title={node.detail}>
+                    <span><SurfaceIcon icon={node.icon} size={15} /></span>
+                    <strong>{node.label}</strong>
+                  </div>
+                ))}
+              </div>
+            </DashboardPanel>
+
+            <DashboardPanel title="Best Next Actions" icon={<Sparkles />} className="statusDashboardPanel--actions">
+              {surface.bestNextActions.length > 0 ? (
+                <div className="statusDashboardActionList">
+                  {surface.bestNextActions.map((action) => (
+                    <article key={action.id} className={`statusDashboardActionRow statusDashboardActionRow--${action.tone}`}>
+                      <div>
+                        <h3>{action.label}</h3>
+                        <p>{action.detail}</p>
+                      </div>
+                      <span>{action.destinationLabel}</span>
+                      <RouteButton action={action} />
+                    </article>
+                  ))}
+                </div>
+              ) : (
+                <EmptyState
+                  row={{
+                    id: 'actions-empty',
+                    label: 'No routeable action surfaced',
+                    detail: 'The live status systems did not return a stronger next action.',
+                    tone: 'muted',
+                    icon: 'hourglassEmpty',
+                    source: 'statusDashboardSurface.actions',
+                  }}
+                />
+              )}
+            </DashboardPanel>
+
+            <DashboardPanel title="Identity & Attributes" icon={<Compass />} className="statusDashboardPanel--identity">
+              <div className="statusDashboardIdentityTop">
+                <div className="statusDashboardSpiritCrest" data-element={elementKey} aria-hidden>
+                  <Flame />
+                </div>
+                <div className="statusDashboardSpiritText">
+                  <div className="statusDashboardMeta">Spirit Root Crest</div>
+                  <h3>{surface.identity.spiritRootElement}</h3>
+                  <p>Element</p>
+                </div>
+                {surface.identity.rows.slice(2, 4).map((row) => (
+                  <div key={row.id} className="statusDashboardIdentityStat">
+                    <span>{row.label}</span>
+                    <strong>{row.value ?? row.detail}</strong>
+                    <small>{row.detail}</small>
+                  </div>
+                ))}
+              </div>
+              <div className="statusDashboardIdentityDetails">
+                {surface.identity.rows.map((row) => (
+                  <DetailLine key={row.id} row={row} urgent={false} />
+                ))}
+              </div>
+            </DashboardPanel>
+          </div>
+
+          <div className="statusDashboardColumn">
+            <DashboardPanel title={surface.readiness.title} icon={<Gauge />} className="statusDashboardPanel--readiness">
+              <p className="statusDashboardPanelLead">{surface.readiness.postureLabel}</p>
+              <div className="statusDashboardReadinessRows">
+                {readinessRows.map((row) => (
+                  <button
+                    key={row.id}
+                    type="button"
+                    className={`statusDashboardChevronRow statusDashboardChevronRow--${row.tone}`}
+                    onClick={() => primaryAction && performStatusDashboardAction(primaryAction)}
+                    disabled={!primaryAction}
+                  >
+                    <span>
+                      <strong>{row.label}</strong>
+                      <small>{row.value ? `${row.value}: ${row.detail}` : row.detail}</small>
+                    </span>
+                    <ChevronRight aria-hidden />
+                  </button>
+                ))}
+              </div>
+            </DashboardPanel>
+
+            <DashboardPanel title={surface.safetyNet.title} icon={<ShieldCheck />} className="statusDashboardPanel--safety">
+              <h3>{surface.safetyNet.stateLabel}</h3>
+              <p>{surface.safetyNet.progressLabel}</p>
+              <div className="statusDashboardSafetyTiles">
+                {surface.safetyNet.rows.map((row) => (
+                  <StatusChip key={row.id} row={row} />
+                ))}
+                <StatusChip
+                  row={{
+                    id: 'safety-route',
+                    label: 'Route',
+                    value: surface.safetyNet.action?.destinationLabel ?? 'Unavailable',
+                    detail: surface.safetyNet.action?.detail ?? 'No safety-net route is available.',
+                    tone: surface.safetyNet.action && !surface.safetyNet.action.disabled ? 'info' : 'muted',
+                    icon: 'artifactBundle',
+                    source: 'statusDashboardSurface.safetyNet',
+                  }}
+                />
+              </div>
+              <div className="statusDashboardReserveNote">
+                <span>{surface.safetyNet.rows[0]?.detail ?? surface.safetyNet.progressLabel}</span>
+                <RouteButton action={surface.safetyNet.action} label="View" disabledLabel="View" />
+              </div>
+            </DashboardPanel>
+
+            <DashboardPanel title="Current Work" icon={<PackageCheck />} className="statusDashboardPanel--overview">
+              <div className="statusDashboardStatusChips">
+                <StatusChip
+                  row={{
+                    id: 'work-state-chip',
+                    label: 'State',
+                    value: surface.currentWork.foregroundActivity.label,
+                    detail: surface.currentWork.foregroundActivity.detail,
+                    tone: surface.currentWork.foregroundActivity.tone,
+                    icon: surface.currentWork.foregroundActivity.icon,
+                    source: 'activityStore',
+                  }}
+                />
+                <StatusChip
+                  row={{
+                    id: 'combat-chip',
+                    label: 'Combat',
+                    value: surface.currentWork.activeCombat?.value ?? 'Idle',
+                    detail: surface.currentWork.activeCombat?.detail ?? 'No live combat is running.',
+                    tone: surface.currentWork.activeCombat?.tone ?? 'muted',
+                    icon: surface.currentWork.activeCombat?.icon ?? 'hourglassEmpty',
+                    source: 'combatStore',
+                  }}
+                />
+                <StatusChip
+                  row={{
+                    id: 'bounty-chip',
+                    label: 'Bounty',
+                    value: surface.currentWork.trackedBounty?.value ?? 'None tracked',
+                    detail: surface.currentWork.trackedBounty?.detail ?? 'No tracked bounty for the current city.',
+                    tone: surface.currentWork.trackedBounty?.tone ?? 'muted',
+                    icon: surface.currentWork.trackedBounty?.icon ?? 'recordSlip',
+                    source: 'bountyStore',
+                  }}
+                />
+                <StatusChip
+                  row={{
+                    id: 'expedition-chip',
+                    label: 'Expeditions',
+                    value: surface.currentWork.expeditions?.value ?? 'Unavailable',
+                    detail: surface.currentWork.expeditions?.detail ?? 'No expedition slots are unlocked yet.',
+                    tone: surface.currentWork.expeditions?.tone ?? 'muted',
+                    icon: surface.currentWork.expeditions?.icon ?? 'hourglassEmpty',
+                    source: 'expeditionStore',
+                  }}
+                />
+              </div>
+              <div className="statusDashboardIssueList">
+                {currentWorkRows.map((row) => (
+                  <article key={row.id} className={`statusDashboardIssue statusDashboardIssue--${row.tone}`}>
+                    <span className="statusDashboardIssue__icon" aria-hidden>
+                      <SurfaceIcon icon={row.icon} size={20} />
+                    </span>
+                    <div>
+                      <span>{row.label}</span>
+                      <p>{row.value ? `${row.value}: ${row.detail}` : row.detail}</p>
+                    </div>
+                    <RouteButton action={row.action} label="View" disabledLabel="View" />
+                  </article>
+                ))}
+              </div>
+            </DashboardPanel>
+          </div>
+
+          <div className="statusDashboardColumn">
+            <DashboardPanel title={surface.requirements.title} icon={<ShieldCheck />} className="statusDashboardPanel--requirements">
+              <div className="statusDashboardRequirementList">
+                {surface.requirements.rows.length > 0 ? surface.requirements.rows.map((row) => (
+                  <article key={row.id} className={`statusDashboardRequirement statusDashboardRequirement--${row.tone}`}>
+                    <span className="statusDashboardRequirement__icon" aria-hidden>
+                      <SurfaceIcon icon={row.icon} size={22} />
+                    </span>
+                    <div>
+                      <h3>{row.label}</h3>
+                      <p>{[row.gapLabel, row.priorityLabel].filter(Boolean).join(' - ') || row.detail}</p>
+                    </div>
+                    <RouteButton action={row.action} label="View" disabledLabel={row.disabledReason ? 'Blocked' : 'View'} />
+                  </article>
+                )) : surface.requirements.emptyState ? (
+                  <EmptyState row={surface.requirements.emptyState} />
+                ) : null}
+              </div>
+            </DashboardPanel>
+
+            <DashboardPanel title="Preparation Summary" icon={<ShieldCheck />} className="statusDashboardPanel--preparation">
+              <div className="statusDashboardPreparationBlock">
+                {surface.preparation.rows.map((row) => (
+                  <DetailLine key={row.id} row={row} />
+                ))}
+              </div>
+
+              <div className="statusDashboardPreparationBlock">
+                <h3>Build</h3>
+                {surface.preparation.buildRows.map((row) => (
+                  <DetailLine key={row.id} row={row} />
+                ))}
+              </div>
+            </DashboardPanel>
+          </div>
+        </main>
       </div>
-    </ScreenFxStage>
+    </div>
   );
 }

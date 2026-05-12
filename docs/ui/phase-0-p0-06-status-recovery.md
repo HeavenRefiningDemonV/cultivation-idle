@@ -87,3 +87,37 @@ Commands run:
 - No Phase 4 full completion work included.
 - No shared-shell expansion packet work.
 - No cross-screen broad redesign work included.
+
+## 2026-05-12 status dashboard truth pass
+
+This pass promotes Status from a mockup-shaped troubleshooting page into a live dashboard surface.
+
+Changes:
+- Added `StatusDashboardSurfaceV1` as the single read model for Status dashboard content.
+- Added `useStatusDashboardSurface()` so the screen updates from live store slices without assembling rows in JSX.
+- Replaced hardcoded milestone rail labels with live milestone nodes.
+- Replaced index-based requirement icons/actions with row-owned typed icon and route action fields.
+- Added a Current Work region sourced from `ActivityStore`, combat, bounty, expedition, and queue state.
+- Removed visible placeholder actions and filler rows from the Status dashboard path.
+- Refit the Status dashboard layout so the canvas fills the available shell height above the bottom nav on desktop.
+- Promoted the Status bottom nav treatment into the canonical `bottomNavDock--inkPlaque` variant for all primary tabs, including Records.
+
+Evidence:
+- `output/playwright/status-dashboard-1366x768.png`
+- `output/playwright/status-dashboard-1536x864.png`
+- `output/playwright/status-dashboard-1920x1080.png`
+- `output/playwright/status-dashboard-2048x1152.png`
+- `output/playwright/status-dashboard-2560x1440.png`
+- `output/playwright/status-dashboard-viewport-audit.json`
+
+Viewport audit summary:
+- 1536x864, 1920x1080, 2048x1152, and 2560x1440 have no page scroll and a panel-to-nav gap of about 22-28px.
+- 1366x768 uses controlled shell scrolling, with the canvas still ending 10.5px above the nav.
+- All audited tab switches kept `bottomNavDock--inkPlaque`, exactly one `aria-current="page"`, and stable nav dimensions.
+
+Focused verification:
+- `npm run typecheck`
+- `npm run check:icons`
+- `npm run build`
+- `npx eslint` on touched implementation and contract files
+- `node --test tmp-tests/tests/contracts/statusDashboardSurface.test.js tmp-tests/tests/contracts/CultivationExactVisualAlignment.contract.test.js`

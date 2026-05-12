@@ -237,7 +237,7 @@ export function GameLayout() {
           {renderContent()}
         </div>
 
-        {!apothecaryExactFixtureRouteEnabled && !suppressPavilionChrome && <BottomTabBar />}
+        {!apothecaryExactFixtureRouteEnabled && <BottomTabBar />}
 
         {showOfflineProgressModal && showOfflineModalSetting && !suppressExactCaptureChrome && <OfflineProgressModal />}
         {showManualSatchelModal && !suppressExactCaptureChrome && <ManualSatchelModal />}

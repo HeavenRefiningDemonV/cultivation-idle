@@ -9,7 +9,7 @@ interface TabDefinition {
   id: GameTab;
 }
 
-export const BOTTOM_TAB_BAR_ORDER = [
+const BOTTOM_TAB_BAR_ORDER = [
   'status',
   'cultivation',
   'adventure',
@@ -50,13 +50,14 @@ function buildDockItem(tab: TabDefinition, activeTab: GameTab, setActiveTab: (ta
 }
 
 const BOTTOM_TAB_BAR_ITEM_CLASS = 'button-standard uiNoShift bottomTabBarButton';
+const BOTTOM_TAB_BAR_DOCK_CLASS = 'bottomNavDock--inkPlaque';
 
 const BOTTOM_TAB_BAR_HOST_ATTRS = Object.freeze({
   'data-shell-role': 'bottom-tab-compat-wrapper',
   'data-shell-owner': 'BottomTabBar',
 }) as const;
 
-export const BOTTOM_TAB_BAR_COMPAT_POLICY = Object.freeze({
+const BOTTOM_TAB_BAR_COMPAT_POLICY = Object.freeze({
   preserveLegacyHooks: true,
   itemClassName: BOTTOM_TAB_BAR_ITEM_CLASS,
   hostAttrs: BOTTOM_TAB_BAR_HOST_ATTRS,
@@ -74,13 +75,7 @@ export function BottomTabBar() {
   return (
     <BottomNavDock
       items={items}
-      className={
-        activeTab === 'adventure'
-          ? 'bottomNavDock--world'
-          : activeTab === 'cultivation'
-            ? 'bottomNavDock--cultivationBare'
-            : undefined
-      }
+      className={BOTTOM_TAB_BAR_DOCK_CLASS}
       itemClassName={BOTTOM_TAB_BAR_COMPAT_POLICY.itemClassName}
       preserveLegacyHooks={BOTTOM_TAB_BAR_COMPAT_POLICY.preserveLegacyHooks}
       hostAttrs={BOTTOM_TAB_BAR_COMPAT_POLICY.hostAttrs}

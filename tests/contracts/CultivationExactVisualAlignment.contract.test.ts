@@ -56,7 +56,7 @@ void test('Cultivation exact visual repair keeps dantian FX and qi rail on expli
   assert.doesNotMatch(fxScene, /shortestSide\s*\*\s*0\.12/);
 });
 
-void test('Cultivation exact shell removes bottom rail chrome and tiny lotus fixed size', () => {
+void test('Cultivation exact shell uses unified bottom nav and keeps tiny lotus fixed size repaired', () => {
   const bottomTabBar = read('src/components/BottomTabBar.tsx');
   const bottomNav = read('src/ui/shell/BottomNavDock.scss');
   const gameLayout = read('src/components/GameLayout.scss');
@@ -64,10 +64,10 @@ void test('Cultivation exact shell removes bottom rail chrome and tiny lotus fix
   const verse = read('src/ui/cultivation/VerseMiniBar.scss');
   const surface = read('src/features/cultivation/exact/buildCultivationExactSurface.ts');
 
-  assert.match(bottomTabBar, /bottomNavDock--cultivationBare/);
-  assert.match(bottomNav, /\.bottomNavDock--cultivationBare\s*\{[\s\S]*bottom:\s*clamp\(28px,\s*3\.3vh,\s*42px\)[\s\S]*padding:\s*0/);
-  assert.match(bottomNav, /\.bottomNavDock--cultivationBare \.bottomNavDock__rail\s*\{[\s\S]*overflow:\s*visible[\s\S]*background:\s*transparent[\s\S]*box-shadow:\s*none/);
-  assert.doesNotMatch(bottomNav, /\.bottomNavDock--cultivationBare[\s\S]*overflow-x:\s*auto/);
+  assert.match(bottomTabBar, /bottomNavDock--inkPlaque/);
+  assert.match(bottomNav, /\.bottomNavDock--inkPlaque/);
+  assert.match(bottomNav, /\.bottomNavDock--inkPlaque \.bottomNavDock__rail[\s\S]*background:\s*transparent[\s\S]*box-shadow:\s*none/);
+  assert.doesNotMatch(bottomTabBar, /activeTab === 'cultivation'/);
   assert.match(gameLayout, /\.gameLayoutRoot--cultivation \.gameLayoutContent\s*\{[\s\S]*height:\s*100vh/);
 
   assert.match(lotus, /\.qiLotusIcon\[data-fixed="1"\]\s*\{[\s\S]*width:\s*var\(--qi-lotus-size,\s*36px\)/);
