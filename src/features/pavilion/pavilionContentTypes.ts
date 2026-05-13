@@ -16,6 +16,15 @@ export interface PavilionManifestEntryRaw {
   route: string[];
   unlock?: string;
   jade?: string;
+  quick_rule?: string;
+  when_to_read?: string;
+  player_question?: string;
+  action_steps?: string[];
+  readiness_checks?: string[];
+  best_sources?: string[];
+  fallback_sources?: string[];
+  numbers_to_watch?: string[];
+  diagnosis?: string[];
   elder?: string | null;
   prior?: string | null;
   labels?: Record<string, string>;
@@ -228,6 +237,15 @@ function buildSearchText(entry: PavilionManifestEntryRaw, categoryLabel: string)
     entry.how,
     entry.used,
     entry.jade,
+    entry.quick_rule,
+    entry.when_to_read,
+    entry.player_question,
+    ...(entry.action_steps ?? []),
+    ...(entry.readiness_checks ?? []),
+    ...(entry.best_sources ?? []),
+    ...(entry.fallback_sources ?? []),
+    ...(entry.numbers_to_watch ?? []),
+    ...(entry.diagnosis ?? []),
     ...(entry.mistakes ?? []),
     ...entry.related,
     ...entry.tags,
@@ -259,6 +277,15 @@ export function normalizePavilionManifestEntries(manifest: PavilionRecordsManife
       route: [...entry.route],
       unlock: entry.unlock,
       jade: entry.jade ?? entry.plain,
+      quickRule: entry.quick_rule,
+      whenToRead: entry.when_to_read,
+      playerQuestion: entry.player_question,
+      actionSteps: entry.action_steps ? [...entry.action_steps] : [],
+      readinessChecks: entry.readiness_checks ? [...entry.readiness_checks] : [],
+      bestSources: entry.best_sources ? [...entry.best_sources] : [],
+      fallbackSources: entry.fallback_sources ? [...entry.fallback_sources] : [],
+      numbersToWatch: entry.numbers_to_watch ? [...entry.numbers_to_watch] : [],
+      diagnosis: entry.diagnosis ? [...entry.diagnosis] : [],
       elder: entry.elder ?? null,
       prior: entry.prior ?? null,
       implementation: entry.implementation,

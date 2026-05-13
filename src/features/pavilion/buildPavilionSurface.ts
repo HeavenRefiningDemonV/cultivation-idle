@@ -143,6 +143,22 @@ function pushSection(
   sections.push({ ...section, number: sections.length + 1 });
 }
 
+function buildGuidanceRows(
+  values: readonly string[] | undefined,
+  idPrefix: string,
+  status: 'complete' | 'warning' | 'open' | 'sealed' = 'open',
+): PavilionEntrySurface['sections'][number]['rows'] {
+  return (values ?? [])
+    .filter((value) => value.trim().length > 0)
+    .slice(0, 8)
+    .map((value, index) => ({
+      id: `${idPrefix}-${index}`,
+      label: value,
+      status,
+    }));
+}
+
+
 function buildSourceUse(record: PavilionRecord, mode: 'fixture' | 'live'): PavilionEntrySurface['sourceUseBlocks'] {
   if (mode === 'fixture' && record.id === PAVILION_DEFAULT_ENTRY_ID) {
     return [
@@ -203,6 +219,32 @@ function buildAdaptiveSections(args: {
     tone: currentRelevance?.tone === 'warning' ? 'warning' : currentRelevance?.tone === 'positive' ? 'positive' : 'plain',
   });
   pushSection(sections, {
+    id: 'player-question',
+    title: 'Player Question',
+    body: record.playerQuestion,
+  });
+  pushSection(sections, {
+    id: 'quick-rule',
+    title: 'Quick Rule',
+    body: record.quickRule,
+    tone: 'positive',
+  });
+  pushSection(sections, {
+    id: 'when-to-read',
+    title: 'When To Read',
+    body: record.whenToRead,
+  });
+  pushSection(sections, {
+    id: 'what-to-do-next',
+    title: 'What To Do Next',
+    rows: buildGuidanceRows(record.actionSteps, 'action-step', 'open'),
+  });
+  pushSection(sections, {
+    id: 'readiness-checks',
+    title: 'Readiness Checks',
+    rows: buildGuidanceRows(record.readinessChecks, 'readiness-check', 'complete'),
+  });
+  pushSection(sections, {
     id: 'how-to-get',
     title: 'How to Get / Where to Act',
     body: record.how,
@@ -232,34 +274,66 @@ function buildAdaptiveSections(args: {
     rows: sourceRows,
   });
 
-  const bestSourceRows = sourceUseBlocks
-    .filter((block) => block.label.toLowerCase().includes('source') || block.kind === 'source')
-    .map((block) => ({
-      id: `best-${block.id}`,
-      label: block.value,
-      value: block.routeLabel,
-      status: block.kind === 'debug' ? 'warning' as const : 'complete' as const,
-      routeLabel: block.routeLabel,
-    }));
+  const bestSourceRows = [
+    ...buildGuidanceRows(record.bestSources, 'authored-best-source', 'complete'),
+    ...sourceUseBlocks
+      .filter((block) => block.label.toLowerCase().includes('source') || block.kind === 'source')
+      .map((block) => ({
+        id: `best-${block.id}`,
+        label: block.value,
+        value: block.routeLabel,
+        status: block.kind === 'debug' ? 'warning' as const : 'complete' as const,
+        routeLabel: block.routeLabel,
+      })),
+  ];
   pushSection(sections, {
     id: 'best-source',
     title: 'Best Source',
     rows: bestSourceRows,
   });
 
-  const fallbackRows = sourceUseBlocks
-    .filter((block) => block.label.toLowerCase().includes('fallback'))
-    .map((block) => ({
-      id: `fallback-${block.id}`,
-      label: block.value,
-      value: block.routeLabel,
-      status: 'open' as const,
-      routeLabel: block.routeLabel,
-    }));
+  pushSection(sections, {
+    id: 'numbers-to-watch',
+    title: 'Numbers To Watch',
+    rows: buildGuidanceRows(record.numbersToWatch, 'number-to-watch', 'open'),
+  });
+
+  const fallbackRows = [
+    ...buildGuidanceRows(record.fallbackSources, 'authored-fallback-source', 'open'),
+    ...sourceUseBlocks
+      .filter((block) => block.label.toLowerCase().includes('fallback'))
+      .map((block) => ({
+        id: `fallback-${block.id}`,
+        label: block.value,
+        value: block.routeLabel,
+        status: 'open' as const,
+        routeLabel: block.routeLabel,
+      })),
+  ];
   pushSection(sections, {
     id: 'fallback-source',
     title: 'Fallback Source',
     rows: fallbackRows,
+  });
+
+  pushSection(sections, {
+    id: 'failure-diagnosis',
+    title: 'Failure Diagnosis',
+    rows: buildGuidanceRows(record.diagnosis, 'diagnosis', 'warning'),
+    tone: 'warning',
+  });
+
+  pushSection(sections, {
+    id: 'elder-note',
+    title: 'Elder Note',
+    body: record.elder ?? undefined,
+  });
+
+  pushSection(sections, {
+    id: 'prior-life-note',
+    title: 'Prior-Life Note',
+    body: record.prior ?? undefined,
+    tone: 'muted',
   });
 
   if ((record.mistakes ?? []).length > 0) {

@@ -55,6 +55,15 @@ export interface PavilionRecord {
   route: string[];
   unlock?: string;
   jade: string;
+  quickRule?: string;
+  whenToRead?: string;
+  playerQuestion?: string;
+  actionSteps?: string[];
+  readinessChecks?: string[];
+  bestSources?: string[];
+  fallbackSources?: string[];
+  numbersToWatch?: string[];
+  diagnosis?: string[];
   elder?: string | null;
   prior?: string | null;
   aliases?: string[];

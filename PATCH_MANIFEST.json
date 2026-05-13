@@ -1,0 +1,25 @@
+{
+  "name": "Cultivation Idle Pavilion Information Upgrade",
+  "version": "v1.1-actionable-guidance",
+  "created": "2026-05-13",
+  "purpose": "Replace shallow Pavilion definitions with actionable player guidance and render new guidance sections in the Records/Pavilion UI.",
+  "drop_in_files": [
+    "public/cultivation_idle_content_bible_v1_config/pavilion_records.json",
+    "docs/Pavilion/Pavilion_of_Ten_Thousand_Records_Content_Manifest.json",
+    "docs/Pavilion/Pavilion_Info_Upgrade_Handoff.md",
+    "docs/Pavilion/Pavilion_Records_Content_Model_v1_1.md",
+    "src/features/pavilion/pavilionTypes.ts",
+    "src/features/pavilion/pavilionContentTypes.ts",
+    "src/features/pavilion/buildPavilionSurface.ts",
+    "src/features/pavilion/buildGeneratedPavilionRecords.ts",
+    "src/features/pavilion/pavilionPresentation.ts"
+  ],
+  "validation_performed": [
+    "python -m json.tool public/cultivation_idle_content_bible_v1_config/pavilion_records.json",
+    "python -m json.tool docs/Pavilion/Pavilion_of_Ten_Thousand_Records_Content_Manifest.json",
+    "tsc --noEmit --pretty false"
+  ],
+  "validation_not_performed": [
+    "npm run validate:content could not run in this extracted environment because node_modules was absent and decimal.js could not be resolved. Run after npm install in the project repo."
+  ]
+}

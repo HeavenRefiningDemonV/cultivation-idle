@@ -40,10 +40,20 @@ function makeRecord(args: {
   sourceId: string;
   searchExtra?: string[];
   unresolved?: string[];
+  quickRule?: string;
+  whenToRead?: string;
+  playerQuestion?: string;
+  actionSteps?: string[];
+  readinessChecks?: string[];
+  bestSources?: string[];
+  fallbackSources?: string[];
+  numbersToWatch?: string[];
+  diagnosis?: string[];
 }): PavilionRecord {
   const tags = args.tags ?? [];
   const related = args.related ?? [];
   const route = args.route ?? [];
+  const guidance = buildGeneratedRecordGuidance({ ...args, tags, route });
   return {
     id: args.id,
     title: args.title,
@@ -59,6 +69,15 @@ function makeRecord(args: {
     mistakes: args.mistakes ?? [],
     unlock: args.unlock,
     jade: args.jade ?? args.plain,
+    quickRule: args.quickRule ?? guidance.quickRule,
+    whenToRead: args.whenToRead ?? guidance.whenToRead,
+    playerQuestion: args.playerQuestion ?? guidance.playerQuestion,
+    actionSteps: args.actionSteps ?? guidance.actionSteps,
+    readinessChecks: args.readinessChecks ?? guidance.readinessChecks,
+    bestSources: args.bestSources ?? guidance.bestSources,
+    fallbackSources: args.fallbackSources ?? guidance.fallbackSources,
+    numbersToWatch: args.numbersToWatch ?? guidance.numbersToWatch,
+    diagnosis: args.diagnosis ?? guidance.diagnosis,
     related,
     route,
     implementation: 'Generated',
@@ -74,6 +93,15 @@ function makeRecord(args: {
       args.how,
       args.used,
       args.unlock,
+      args.quickRule ?? guidance.quickRule,
+      args.whenToRead ?? guidance.whenToRead,
+      args.playerQuestion ?? guidance.playerQuestion,
+      ...(args.actionSteps ?? guidance.actionSteps),
+      ...(args.readinessChecks ?? guidance.readinessChecks),
+      ...(args.bestSources ?? guidance.bestSources),
+      ...(args.fallbackSources ?? guidance.fallbackSources),
+      ...(args.numbersToWatch ?? guidance.numbersToWatch),
+      ...(args.diagnosis ?? guidance.diagnosis),
       ...(args.mistakes ?? []),
       ...tags,
       ...related,
@@ -92,6 +120,147 @@ function makeRecord(args: {
 
 function pushCount(counts: Record<string, number>, family: string): void {
   counts[family] = (counts[family] ?? 0) + 1;
+}
+
+
+function routeActionText(route: readonly string[] | undefined): string {
+  return route && route.length > 0 ? route.join(' or ') : 'use Pavilion search and related records';
+}
+
+function sourceUseText(sourceUse: PavilionRecord['sourceUse'] | undefined): string {
+  return (sourceUse ?? [])
+    .map((block) => `${block.label}: ${block.value}`)
+    .filter(Boolean)
+    .join('; ');
+}
+
+function buildGeneratedRecordGuidance(args: {
+  title: string;
+  categoryLabel: string;
+  plain: string;
+  how?: string;
+  used?: string;
+  route?: string[];
+  sourceUse?: PavilionRecord['sourceUse'];
+  sourceFamily: string;
+  sourceId: string;
+  tags?: string[];
+}) {
+  const routeText = routeActionText(args.route);
+  const sourceText = sourceUseText(args.sourceUse);
+  const base = {
+    whenToRead: `Read this when ${args.title} appears in a requirement, reward, source list, shop, recipe, loadout, or milestone and you need the next action instead of a name.`,
+    playerQuestion: `Where does ${args.title} come from, what uses it, and what should I do with it right now?`,
+    actionSteps: [
+      `Read the Source / Use Ledger before spending, selling, equipping, crafting, or farming for ${args.title}.`,
+      `Follow ${routeText} if this record is relevant to the current milestone.`,
+      `Check related records for the upstream source and downstream sink before committing resources.`,
+      `Return to the current milestone and verify that the missing row, shortage, or build gap actually changed.`,
+    ],
+    readinessChecks: [
+      'Best source is known or the record marks the source as unresolved.',
+      'Used-for sink is known before the player sells, spends, or ignores the object.',
+      'Route is available in the current city or clearly sealed/future.',
+    ],
+    bestSources: sourceText ? [sourceText] : [`Generated from ${args.sourceFamily}.${args.sourceId}.`],
+    fallbackSources: [
+      'If the best source is sealed, search the item, city, activity, or recipe name and follow the next available relation.',
+      'If no source/use is resolved, keep a reserve and treat the record as content-audit debt rather than player error.',
+    ],
+    numbersToWatch: ['Owned count', 'Required count', 'Route availability', 'Current milestone relevance'],
+    diagnosis: [
+      'If the player cannot tell where this comes from, source resolution is insufficient.',
+      'If the player cannot tell what consumes it, use/sink resolution is insufficient.',
+    ],
+  };
+
+  switch (args.sourceFamily) {
+    case 'items':
+      return {
+        ...base,
+        quickRule: 'Item rule: source first, use second, sell safety last. Do not spend or sell until the record shows whether the next milestone needs it.',
+        numbersToWatch: ['Owned count', 'Needed soon', 'Recipe input count', 'Gate/craft usage', 'Sell value'],
+      };
+    case 'techniques':
+      return {
+        ...base,
+        quickRule: 'Technique rule: it only changes combat after it is learned, equipped, and selected by an AI profile that can use it.',
+        actionSteps: [
+          `Check whether ${args.title} is active, passive, or ultimate and what role it fills.`,
+          'Equip it into the active loadout or it will not affect combat.',
+          'Match the AI profile to the technique role so it fires at the right time.',
+          'Use mastery, rank, traits, and runes only on techniques that solve a real fight problem.',
+        ],
+        numbersToWatch: ['Slot type', 'Cooldown', 'Resource cost', 'Mastery XP', 'Rank', 'Trait/rune sockets'],
+      };
+    case 'trials':
+      return {
+        ...base,
+        quickRule: 'Trial rule: verify eligibility, prepare, attempt once seriously, then clear or safety-net into the breakthrough catalyst.',
+        actionSteps: [
+          'Check final substage and Qi cap before pressing Attempt Gate.',
+          'Read the reward item and make sure it matches the breakthrough catalyst.',
+          'Fix medicine, weapon floor, loadout, or technique gaps before repeat attempts.',
+          'After clear or bypass, route to Cultivation for the breakthrough handoff.',
+        ],
+        numbersToWatch: ['Readiness score', 'Eligible failures', 'Fail-safe cost', 'Gate reward item', 'Guardian level'],
+      };
+    case 'cities':
+      return {
+        ...base,
+        quickRule: 'City rule: a city is the toolkit for a realm tier; its modules should point to the gate, materials, manuals, medicine, forge, bounties, and expeditions for that tier.',
+        numbersToWatch: ['Unlock realm', 'City index', 'Module list', 'Gate trial', 'Ruin', 'Pavilion pool'],
+      };
+    case 'ruins':
+      return {
+        ...base,
+        quickRule: 'Ruins rule: use this route for targeted relief and chest rewards when broad Outskirts farming is not solving the shortage.',
+        numbersToWatch: ['Room count', 'Final chest guarantees', 'Drop pool', 'Run completion', 'Material shortage'],
+      };
+    case 'outskirts':
+      return {
+        ...base,
+        quickRule: 'Outskirts rule: broad gold and common-material income, plus safe build testing; switch to targeted routes when one item blocks progress.',
+        numbersToWatch: ['Kills to boss', 'Gold income', 'Common material pool', 'Rare material pool', 'Tracked bounty overlap'],
+      };
+    case 'alchemy_recipes':
+    case 'apothecaries':
+      return {
+        ...base,
+        quickRule: 'Apothecary rule: medicine only matters if it is bought or crafted, loaded into the pouch, and configured before the fight.',
+        numbersToWatch: ['Input count', 'Output quantity', 'Gold cost', 'Daily limit', 'Pouch count', 'Craft time'],
+      };
+    case 'forge_blueprints':
+    case 'runes':
+      return {
+        ...base,
+        quickRule: 'Forge rule: use ore and materials only when the result raises a visible weapon, armor, refine, temper, rune, or gear-floor need.',
+        numbersToWatch: ['Input count', 'Gold cost', 'Refine cap', 'Temper chance', 'Output gear/tool', 'Craft time'],
+      };
+    case 'manual_pavilions':
+      return {
+        ...base,
+        quickRule: 'Manual pool rule: buy for slot and role fit, then study and equip; the pool is useful only when it closes a build gap.',
+        numbersToWatch: ['Visible stock', 'Path pool', 'Manual grade', 'Refresh cost', 'Duplicate conversion', 'Slot need'],
+      };
+    case 'enemies':
+      return {
+        ...base,
+        quickRule: 'Enemy rule: use the record to learn where it appears, what it drops, and what kind of prep counters its threat.',
+        numbersToWatch: ['Enemy level', 'Threat tags', 'Defeated count', 'Drop source', 'Damage taken'],
+      };
+    case 'prestige':
+      return {
+        ...base,
+        quickRule: 'Prestige rule: a node is only player-trustworthy if its reset/retention effect is explicit and live in runtime.',
+        numbersToWatch: ['AP cost', 'Purchased level', 'Effect per level', 'Runtime-applied status', 'Next-life impact'],
+      };
+    default:
+      return {
+        ...base,
+        quickRule: 'Generated record rule: use this slip to connect source, use, route, and current milestone relevance.',
+      };
+  }
 }
 
 function itemName(content: any, itemId: string): string {

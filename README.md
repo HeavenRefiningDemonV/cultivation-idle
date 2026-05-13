@@ -1,25 +1,28 @@
-# Cultivation Idle
+# Cultivation Idle — Pavilion Information Upgrade
 
-Idle-first cultivation and auto-combat prototype with a unified city hub. Players manage cultivation, professions, expeditions, and gear while automated encounters resolve from build decisions.
+This is a drop-in patch bundle for the Pavilion / Records guidance problem.
 
-## Getting started
+## What it does
 
-1. Install dependencies:
-   - `npm install`
-2. Start the development server:
-   - `npm run dev`
+- Replaces the shallow `pavilion_records.json` with v1.1 actionable guidance.
+- Adds new player guidance fields: quick rule, when to read, action steps, readiness checks, best sources, fallback sources, numbers to watch, and diagnosis.
+- Updates Pavilion normalization/types/rendering so the new fields appear in the record scroll.
+- Updates generated runtime records so items, techniques, cities, trials, ruins, recipes, blueprints, bounties, expeditions, prestige upgrades, etc. no longer read like debug labels.
+- Adds docs explaining the new content model and the files that house Pavilion information.
 
-## Core quality checks
+## Apply
 
-- Typecheck: `npm run typecheck`
-- Lint: `npm run lint`
-- Build: `npm run build`
-- Preview build: `npm run preview`
+From the root of your actual repo:
 
-## Architecture guardrails
+```bash
+/path/to/this/bundle/apply_pavilion_info_upgrade.sh .
+npm install
+npm run validate:content
+npm run typecheck
+npm run check:icons
+npm run build
+```
 
-- Only one foreground activity runs at a time through the `ActivityStore` gate.
-- Combat simulation and resolution live in `CombatStore`.
-- Rewards are granted through `RewardService.grantRewards(bundle, reason)`.
-- Offline progress applies to cultivation, queued actions, and expeditions, but not combat.
-- Content packs are the source of truth and cross-references should be validated.
+## Files changed
+
+See `PATCH_MANIFEST.json` and `docs/Pavilion/Pavilion_Info_Upgrade_Handoff.md`.
