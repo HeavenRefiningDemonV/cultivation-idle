@@ -11,7 +11,7 @@
     "check:icons": "node --experimental-strip-types scripts/checkNoEmojiIcons.ts",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "npm run ensure:vendor-links && tsc --project tsconfig.tests.json && npm run build:progression-fixtures && NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node --test tmp-tests/tests/**/*.js",
+    "test": "npm run ensure:vendor-links && tsc --project tsconfig.tests.json && npm run build:progression-fixtures && node --loader=./scripts/relativeJsLoader.mjs --test tmp-tests/tests/**/*.js tmp-tests/src/features/story/__tests__/**/*.js",
     "audio:audit": "node --experimental-strip-types scripts/audio/auditAudioAssets.ts",
     "validate:content": "NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node --experimental-strip-types scripts/validateContent.ts",
     "preview": "vite preview",

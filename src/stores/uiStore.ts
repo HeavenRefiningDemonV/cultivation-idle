@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import type { OfflineCatchupResult } from '../services/time/OfflineCatchup.js';
+import type { StoryMotionMode } from '../features/story/storyTypes.js';
 import { useActivityStore } from './activityStore.js';
 import { useCombatStore } from './combatStore.js';
 import { useOutskirtsStore } from './outskirtsStore.js';
@@ -105,6 +106,7 @@ export interface UISettingsState {
   autoRetryOnDeath: boolean;
   useConsumablesInCombat: boolean;
   preferredTarget: 'trash' | 'elite' | 'boss';
+  storyMotionMode: StoryMotionMode;
 }
 
 export type CombatPresentationMode = 'hidden' | 'preview' | 'active' | 'docked';
@@ -324,6 +326,7 @@ const INITIAL_UI_STATE: UIStateBase = {
     autoRetryOnDeath: false,
     useConsumablesInCombat: false,
     preferredTarget: 'boss',
+    storyMotionMode: 'full',
   },
   lastSaveAt: null,
   lastOfflineSummary: null,

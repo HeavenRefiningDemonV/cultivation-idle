@@ -1,6 +1,7 @@
 import type { CraftSessionSaveState } from "../systems/crafting/craftingTypes.js";
 import type { RewardBundle } from "../services/rewards/index.js";
 import type { PavilionSaveState } from "../features/pavilion/pavilionTypes.js";
+import type { StoryMotionMode, StorySaveState } from "../features/story/storyTypes.js";
 
 /**
  * Cultivation path types
@@ -476,6 +477,10 @@ export interface SaveData {
     autoCombatAI: boolean;
   };
 
+  uiSettings?: {
+    storyMotionMode?: StoryMotionMode;
+  };
+
   // Zone progression
   zoneState: {
     unlockedZones: string[];
@@ -510,6 +515,7 @@ export interface SaveData {
 
   manualPavilionState: ManualPavilionSaveState;
   manualSatchelState: SaveManualSatchelState;
+  storyState?: StorySaveState;
 
   activityState?: SaveActivityState;
 

@@ -91,6 +91,16 @@
   height: 16px;
 }
 
+.settingsScreenSelect {
+  min-width: 152px;
+  min-height: 34px;
+  border: 1px solid rgba(91, 70, 43, 0.44);
+  border-radius: 8px;
+  background: rgba(255, 252, 245, 0.86);
+  color: #1f1710;
+  padding: 5px 8px;
+}
+
 .settingsScreenOptionLabel {
   color: #000000;
   font-weight: 600;

@@ -17,6 +17,7 @@
   },
   "include": [
     "tests/**/*.ts",
+    "src/features/story/__tests__/**/*.ts",
     "scripts/progressionContractReport.ts",
     "scripts/generateProgressionContractDoc.ts",
     "src/systems/progression/**/*.ts",

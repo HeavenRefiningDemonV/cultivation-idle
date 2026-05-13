@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import type { CSSProperties } from 'react';
 import './LifeStartWizardModal.scss';
 import heavenArt from '../../assets/menus/path_heaven 1.png';
 import earthArt from '../../assets/menus/path_earth 1.png';
@@ -9,6 +10,8 @@ import { useGameStore } from '../../stores/gameStore.js';
 import { useHeartLawStore } from '../../stores/heartLawStore.js';
 import { usePrestigeStore } from '../../stores/prestigeStore.js';
 import { useUIStore } from '../../stores/uiStore.js';
+import { resolveStoryImageAsset } from '../../features/story/storyAssets.js';
+import { useStoryStore } from '../../features/story/storyStore.js';
 import { getBreathModeSemantics } from '../../systems/doctrine/breathSemantics.js';
 import { getPathDoctrineProfile, getPathDoctrineSummary } from '../../systems/doctrine/pathDoctrineRegistry.js';
 import { getPathDoctrinePresentation } from '../../systems/doctrine/pathDoctrinePresentation.js';
@@ -30,6 +33,12 @@ const LIFE_PATHS: { id: CultivationPath; title: string; art: string; alt: string
 ];
 
 const BREATH_MODE_IDS: readonly BreathMode[] = ['balanced', 'safe', 'fast'];
+const RETURNING_PAGE_PATHS_URL = resolveStoryImageAsset('story/s00/s00_05_returning_page_paths.webp').src;
+const PATH_STORY_LINES: Record<CultivationPath, string> = {
+  heaven: 'Understand the pattern before it devours you.',
+  earth: 'Endure until the world admits you exist.',
+  martial: 'Cut a road where the Gate left none.',
+};
 
 interface LifeStartWizardModalProps {
   debugForceOpen?: boolean;
@@ -56,6 +65,7 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
   const addNotification = useUIStore((state) => state.addNotification);
   const lifeStartWizardContext = useUIStore((state) => state.lifeStartWizardContext);
   const clearLifeStartWizardContext = useUIStore((state) => state.clearLifeStartWizardContext);
+  const storyIntroSeen = useStoryStore((state) => Boolean(state.seenFlags.story_intro_seen));
 
   const contentLoaded = useContentStore((state) => state.isLoaded);
   const listHeartLaws = useContentStore((state) => state.listHeartLaws);
@@ -239,6 +249,9 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
   const showAutoPick = prestigeCount > 0 && Boolean(lifeStartWizardContext.lastHeartLawId);
   const activePresentationPath: CultivationPath = hoveredPath ?? committingPath ?? selectedPath ?? 'heaven';
   const activePresentation = getPathDoctrinePresentation(activePresentationPath);
+  const pathHandoffStyle = {
+    '--life-path-story-bg': `url(${RETURNING_PAGE_PATHS_URL})`,
+  } as CSSProperties;
 
   if (!shouldShow) return null;
 
@@ -251,13 +264,15 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
             data-ui="life-path-fullscreen"
             data-fx-quality={effectiveQuality}
             data-reduced-motion={prefersReducedMotion ? 'true' : 'false'}
+            data-story-handoff={storyIntroSeen ? 'true' : 'false'}
+            style={pathHandoffStyle}
           >
             <div className="lifePathHero">
               <div className="lifePathHeroBackdrop" aria-hidden />
               <header className="lifePathHeroHeader">
-                <p className="lifePathHeroEyebrow">New Life Ritual</p>
-                <h2 className="lifePathHeroTitle">Choose Your Path</h2>
-                <p className="lifePathHeroSubline">Select the doctrine that will shape this life.</p>
+                <p className="lifePathHeroEyebrow">Returning Page</p>
+                <h2 className="lifePathHeroTitle">Choose the first stroke of your Dao.</h2>
+                <p className="lifePathHeroSubline">The page opens, but it does not choose.</p>
                 <div className="lifePathHeroDividerBar" aria-hidden />
               </header>
 
@@ -291,13 +306,14 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
                   const isDimmed = hoveredPath !== null && hoveredPath !== path.id;
                   const isCommitting = committingPath === path.id;
                   const presentation = getPathDoctrinePresentation(path.id);
-                  const roleCue = presentation?.practicalRoleLine ?? 'Choose this path to shape your life.';
+                  const roleCue = PATH_STORY_LINES[path.id] ?? presentation?.practicalRoleLine ?? 'Choose this path to shape your life.';
                   const roleId = `lifePath-role-${path.id}`;
                   const plaqueId = 'lifePath-active-plaque';
                   return (
                     <div
                       key={path.id}
                       className={`lifePathPanel lifePathPanel--${path.id}${isActivePresentation ? ' lifePathPanel--previewed' : ''}${isDimmed ? ' lifePathPanel--receded' : ''}${isCommitting ? ' lifePathPanel--commit' : ''}`}
+                      data-testid={`life-path-card-${path.id}`}
                     >
                       <div className="lifePathPanel__frame" aria-hidden />
                       <div className="lifePathPanel__veil" aria-hidden />
@@ -378,8 +394,8 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
               data-ui="life-start-heart-law-selection-region"
             >
               <div className="lifeStartHeartLawShell__choicesHeader">
-                <h3>Choose Your Heart Law (Xinfa)</h3>
-                <p>Select the scripture that governs your verses, resonance, and cultivation cadence.</p>
+                <h3>Choose the sentence your soul will repeat when the Gate presses down.</h3>
+                <p>A path points forward. A Heart Law keeps the breath from scattering.</p>
               </div>
 
               <div className="lifeStartHeartLawChoicesGrid">

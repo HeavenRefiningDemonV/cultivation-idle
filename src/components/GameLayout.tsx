@@ -38,6 +38,9 @@ import { SectionCAuditHarness, isSectionCAuditQueryEnabled } from '../dev/sectio
 import { Phase0CoreAuditHarness, isPhase0CoreAuditQueryEnabled } from '../dev/phase0CoreAudit/Phase0CoreAuditHarness.js';
 import { Phase6CombatAuditHarness, isPhase6CombatAuditQueryEnabled } from '../dev/phase6CombatAudit/Phase6CombatAuditHarness.js';
 import { isLifeStartWizardRequired } from '../systems/ui/lifeStart/lifeStartWizardContract.js';
+import { StoryCutsceneOverlay } from '../features/story/StoryCutsceneOverlay.js';
+import { useStoryStore } from '../features/story/storyStore.js';
+import { useStoryTriggers } from '../features/story/useStoryTriggers.js';
 import './GameLayout.scss';
 
 /**
@@ -74,6 +77,7 @@ function TechniquesTab() {
  * Main game layout component
  */
 export function GameLayout() {
+  useStoryTriggers();
   const activeTab = useUIStore((state) => state.activeTab);
   const showOfflineProgressModal = useUIStore((state) => state.showOfflineProgressModal);
   const showOfflineModalSetting = useUIStore((state) => state.settings.showOfflineModal);
@@ -92,6 +96,8 @@ export function GameLayout() {
   const clearCurrentChapterExhaustedAcknowledgement = useUIStore((state) => state.clearCurrentChapterExhaustedAcknowledgement);
   const setLifeStartWizardOpenForNotifications = useUIStore((state) => state.setLifeStartWizardOpenForNotifications);
   const selectedPath = useGameStore((state) => state.selectedPath);
+  const storyIntroSeen = useStoryStore((state) => Boolean(state.seenFlags.story_intro_seen));
+  const activeStoryCutsceneId = useStoryStore((state) => state.activeCutsceneId);
   const selectedHeartLawId = useHeartLawStore((state) => state.selectedHeartLawId);
   const realmIndex = useGameStore((state) => state.realm.index);
   const prestigeCount = usePrestigeStore((state) => state.prestigeCount);
@@ -110,6 +116,11 @@ export function GameLayout() {
   const pavilionExactFixtureRouteEnabled = isPavilionExactFixtureRouteEnabled();
   const suppressPavilionChrome = activeTab === 'records';
   const suppressExactCaptureChrome = suppressApothecaryExactFixtureChrome || suppressCultivationExactQueryChrome || suppressPavilionChrome;
+  const lifeStartWizardOpen = isLifeStartWizardRequired({
+    selectedPath,
+    selectedHeartLawId,
+  });
+  const shouldDelayLifeStartForStory = selectedPath === null && !storyIntroSeen;
 
   useEffect(() => {
     if (prestigeCount > lastPrestigeCountRef.current) {
@@ -170,6 +181,7 @@ export function GameLayout() {
     showOfflineProgressModal,
     showTechniqueLearnedModal,
     showWorldBuildingModal,
+    lifeStartWizardOpen,
     showLifeSummaryModal,
     showMigrationIssuesModal,
   ]);
@@ -209,10 +221,6 @@ export function GameLayout() {
     .join(' ');
 
   const showLayoutBackgroundOverlay = activeTab === 'adventure' && !!layoutBackgroundOverride;
-  const lifeStartWizardOpen = isLifeStartWizardRequired({
-    selectedPath,
-    selectedHeartLawId,
-  });
   const showSectionCAuditHarness = isSectionCAuditQueryEnabled();
   const showPhase0CoreAuditHarness = isPhase0CoreAuditQueryEnabled();
   const showPhase6CombatAuditHarness = isPhase6CombatAuditQueryEnabled();
@@ -249,7 +257,8 @@ export function GameLayout() {
         {showSystemStatusOverlay && activeTab !== 'cultivation' && !apothecaryExactModalOpen && !suppressExactCaptureChrome && <SystemStatusPanelOverlay />}
         <CombatPresentationHost />
         {!suppressExactCaptureChrome && <OnboardingPromptRuntime />}
-        {!suppressExactCaptureChrome && <LifeStartWizardModal />}
+        {!suppressExactCaptureChrome && !shouldDelayLifeStartForStory && <LifeStartWizardModal />}
+        {!suppressExactCaptureChrome && activeStoryCutsceneId && <StoryCutsceneOverlay />}
         {!suppressExactCaptureChrome && <CityArrivalBanner />}
         {!suppressExactCaptureChrome && <OnboardingPromptHost />}
         {!suppressExactCaptureChrome && <NotificationToasts />}

@@ -35,6 +35,7 @@ import { createDefaultRecipeMasteryState, useRecipeMasteryStore } from '../store
 import { useContentStore } from '../stores/contentStore.js';
 import { useUIStore } from '../stores/uiStore.js';
 import { usePavilionStore } from '../stores/pavilionStore.js';
+import { useStoryStore } from '../features/story/storyStore.js';
 import { sanitizePavilionSaveState } from '../features/pavilion/pavilionUnlocks.js';
 import type { EquipmentSlot, ForgeToolTiers, TemperAffix } from '../stores/equipmentStore.js';
 
@@ -63,6 +64,7 @@ const REQUIRED_SAVE_KEYS = [
   'medicinePouchState',
   'recipeMasteryState',
   'pavilionState',
+  'storyState',
 ];
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
@@ -74,6 +76,7 @@ const isStringArray = (value: unknown): value is string[] =>
 type SaveRuinsState = NonNullable<SaveData['ruinsState']>;
 type SaveRuinsRunSummary = NonNullable<SaveRuinsState['runHistory']>[number];
 type SaveRecipeMasteryState = NonNullable<SaveData['recipeMasteryState']>;
+type SaveUiSettingsState = NonNullable<SaveData['uiSettings']>;
 type EquipmentStateSlice = NonNullable<SaveData['equipmentState']>;
 
 const CURRENCY_KEYS = ['gold', 'spiritStones', 'merit'] as const;
@@ -158,6 +161,7 @@ export function buildDefaultSaveState(): SaveData {
   const medicinePouchState = useMedicinePouchStore.getState();
   const recipeMasteryState = useRecipeMasteryStore.getState();
   const pavilionState = usePavilionStore.getState();
+  const storyState = useStoryStore.getState();
   const uiState = useUIStore.getState();
 
   return {
@@ -202,9 +206,13 @@ export function buildDefaultSaveState(): SaveData {
     medicinePouchState: medicinePouchState.toSaveState(),
     recipeMasteryState: recipeMasteryState.toSaveState(),
     pavilionState: pavilionState.toSaveState(),
+    storyState: storyState.toSaveState(),
     combatSettings: {
       autoAttack: combatState.autoAttack,
       autoCombatAI: combatState.autoCombatAI,
+    },
+    uiSettings: {
+      storyMotionMode: uiState.settings.storyMotionMode,
     },
     zoneState: {
       unlockedZones: zoneState.unlockedZones,
@@ -627,6 +635,32 @@ function isValidCraftSessionState(value: unknown): value is SaveData['craftSessi
 function isValidRecipeMasteryState(value: unknown): value is SaveData['recipeMasteryState'] {
   if (!isRecord(value)) return false;
   if ('alchemy' in value && value.alchemy !== undefined && value.alchemy !== null && !isRecord(value.alchemy)) return false;
+  return true;
+}
+
+function isValidStoryState(value: unknown): value is SaveData['storyState'] {
+  if (!isRecord(value)) return false;
+  if (!isRecord(value.seenFlags)) return false;
+  if (!Array.isArray(value.storyLog)) return false;
+  return value.storyLog.every((entry) => (
+    isRecord(entry)
+    && typeof entry.id === 'string'
+    && typeof entry.firstSeenAt === 'number'
+    && typeof entry.completed === 'boolean'
+  ));
+}
+
+function isValidUiSettingsState(value: unknown): value is SaveUiSettingsState {
+  if (!isRecord(value)) return false;
+  if (
+    'storyMotionMode' in value
+    && value.storyMotionMode !== undefined
+    && value.storyMotionMode !== 'full'
+    && value.storyMotionMode !== 'reduced'
+    && value.storyMotionMode !== 'off'
+  ) {
+    return false;
+  }
   return true;
 }
 
@@ -1086,6 +1120,8 @@ export function mergeWithDefaults(partialSave: unknown): SaveData {
   const baseMedicinePouchState = defaults.medicinePouchState ?? createDefaultMedicinePouchState();
   const baseCraftSessionState = defaults.craftSessionState ?? createDefaultCraftSessionState();
   const baseRecipeMasteryState = defaults.recipeMasteryState ?? createDefaultRecipeMasteryState();
+  const baseStoryState = defaults.storyState ?? { seenFlags: {}, storyLog: [] };
+  const baseUiSettings: SaveUiSettingsState = defaults.uiSettings ?? { storyMotionMode: 'full' };
 
   const merged: SaveData & Record<string, unknown> = {
     ...defaults,
@@ -1111,6 +1147,12 @@ export function mergeWithDefaults(partialSave: unknown): SaveData {
     combatSettings: isRecord(record.combatSettings)
       ? { ...defaults.combatSettings, ...record.combatSettings }
       : defaults.combatSettings,
+    uiSettings: mergeSlice(
+      record.uiSettings,
+      baseUiSettings,
+      isValidUiSettingsState,
+      'uiSettings',
+    ),
     zoneState: isRecord(record.zoneState) ? { ...defaults.zoneState, ...record.zoneState } : defaults.zoneState,
     cityState: normalizeCitySaveState({
       content: useContentStore.getState().raw,
@@ -1182,6 +1224,7 @@ export function mergeWithDefaults(partialSave: unknown): SaveData {
       'heartLawState',
     ),
     pavilionState: sanitizePavilionSaveState(record.pavilionState ?? defaults.pavilionState),
+    storyState: mergeSlice(record.storyState, baseStoryState, isValidStoryState, 'storyState'),
     manualPavilionState: mergeSlice(
       record.manualPavilionState,
       defaults.manualPavilionState,

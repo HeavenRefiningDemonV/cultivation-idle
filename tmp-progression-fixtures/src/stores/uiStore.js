@@ -74,6 +74,7 @@ const INITIAL_UI_STATE = {
         autoRetryOnDeath: false,
         useConsumablesInCombat: false,
         preferredTarget: 'boss',
+        storyMotionMode: 'full',
     },
     lastSaveAt: null,
     lastOfflineSummary: null,

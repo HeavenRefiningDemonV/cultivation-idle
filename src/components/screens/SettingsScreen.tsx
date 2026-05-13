@@ -11,6 +11,7 @@ import { SystemStatusPanel } from '../SystemStatusPanel.js';
 import { useTelemetryStore } from '../../stores/telemetryStore.js';
 import { useErrorLogStore } from '../../stores/errorLogStore.js';
 import { AudioDebugPanel } from '../../ui/debug/AudioDebugPanel.js';
+import { StoryLogPanel } from '../../features/story/StoryLogPanel.js';
 import { buildDiagnosticsBundle, type DiagnosticsBundleV1 } from '../../services/diagnostics/buildDiagnosticsBundle.js';
 import {
   buildBalanceTelemetryCsvFiles,
@@ -81,6 +82,7 @@ export function SettingsScreen() {
   const combatMinibarExpanded = useUIStore((state) => state.settings.combatMinibarExpanded);
   const requirePrestigeConfirm = useUIStore((state) => state.settings.requirePrestigeConfirm);
   const showSystemStatusPanel = useUIStore((state) => state.settings.showSystemStatusPanel);
+  const storyMotionMode = useUIStore((state) => state.settings.storyMotionMode);
   const setSettings = useUIStore((state) => state.setSettings);
   const setHeaderTitles = useUIStore((state) => state.setHeaderTitles);
   const addNotification = useUIStore((state) => state.addNotification);
@@ -128,6 +130,7 @@ export function SettingsScreen() {
   const togglePrestigeConfirm = () =>
     setSettings({ requirePrestigeConfirm: !requirePrestigeConfirm });
   const toggleSystemStatus = () => setSettings({ showSystemStatusPanel: !showSystemStatusPanel });
+  const setStoryMotionMode = (mode: typeof storyMotionMode) => setSettings({ storyMotionMode: mode });
 
   const handleDeleteSave = () => {
     setShowDeleteModal(false);
@@ -387,7 +390,29 @@ export function SettingsScreen() {
                   </p>
                 </div>
               </label>
+
+              <label className={'settingsScreenOptionRow'}>
+                <select
+                  value={storyMotionMode}
+                  onChange={(event) => setStoryMotionMode(event.target.value as typeof storyMotionMode)}
+                  className={'settingsScreenSelect'}
+                >
+                  <option value="full">Story motion: full</option>
+                  <option value="reduced">Story motion: reduced</option>
+                  <option value="off">Story motion: off</option>
+                </select>
+                <div>
+                  <div className={'settingsScreenOptionLabel'}>Story motion</div>
+                  <p className={'settingsScreenOptionDescription'}>
+                    Control parallax, shake, and moving particles in milestone story scenes.
+                  </p>
+                </div>
+              </label>
             </div>
+          </div>
+
+          <div className={`${'settingsScreenPanel'} ${'settingsScreenPanelDefault'}`}>
+            <StoryLogPanel />
           </div>
 
           <div className={`${'settingsScreenPanel'} ${'settingsScreenPanelDefault'}`}>

@@ -27,6 +27,7 @@ import { useMedicinePouchStore } from '../stores/medicinePouchStore.js';
 import { useCraftSessionStore } from '../stores/craftSessionStore.js';
 import { useRecipeMasteryStore } from '../stores/recipeMasteryStore.js';
 import { usePavilionStore } from '../stores/pavilionStore.js';
+import { useStoryStore } from '../features/story/storyStore.js';
 import { useContentStore } from '../stores/contentStore.js';
 import { recomputeAndApplyPrestigeUnlocks } from '../systems/prestige/applyPrestigeEffects.js';
 import { assertRequiredSaveKeys, buildDefaultSaveState, migrateSave, SAVE_VERSION } from '../save/defaultSaveState.js';
@@ -177,8 +178,10 @@ function gatherGameState(): SaveData {
   const craftSessionState = useCraftSessionStore.getState();
   const recipeMasteryState = useRecipeMasteryStore.getState();
   const pavilionState = usePavilionStore.getState();
+  const storyState = useStoryStore.getState();
   const activityState = useActivityStore.getState();
   const outskirtsState = useOutskirtsStore.getState();
+  const uiState = useUIStore.getState();
   const content = useContentStore.getState().raw;
 
   const saveData: SaveData = {
@@ -227,10 +230,14 @@ function gatherGameState(): SaveData {
     medicinePouchState: medicinePouchState.toSaveState(),
     recipeMasteryState: recipeMasteryState.toSaveState(),
     pavilionState: pavilionState.toSaveState(),
+    storyState: storyState.toSaveState(),
 
     combatSettings: {
       autoAttack: combatState.autoAttack,
       autoCombatAI: combatState.autoCombatAI,
+    },
+    uiSettings: {
+      storyMotionMode: uiState.settings.storyMotionMode,
     },
 
     zoneState: {
@@ -1032,6 +1039,7 @@ function applySaveData(saveData: SaveData): void {
     saveData.craftSessionState ?? defaults.craftSessionState ?? { modeByStation: {}, activeSession: null };
   const recipeMasteryState = saveData.recipeMasteryState ?? defaults.recipeMasteryState ?? { alchemy: {} };
   const pavilionState = saveData.pavilionState ?? defaults.pavilionState;
+  const storyState = saveData.storyState ?? defaults.storyState;
 
     // Restore spirit root (fallback to reroll for old saves)
     const spiritRoot = saveData.prestigeState?.spiritRoot ?? saveData.gameState.spiritRoot;
@@ -1148,12 +1156,22 @@ function applySaveData(saveData: SaveData): void {
     useMedicinePouchStore.getState().hydrate(saveData.medicinePouchState ?? defaults.medicinePouchState);
     useRecipeMasteryStore.getState().hydrate(recipeMasteryState);
     usePavilionStore.getState().hydrateFromSaveState(pavilionState);
+    useStoryStore.getState().hydrateFromSave(storyState);
 
     // Apply combat settings
     useCombatStore.setState({
       autoAttack: saveData.combatSettings.autoAttack,
       autoCombatAI: saveData.combatSettings.autoCombatAI,
     });
+
+    const savedStoryMotionMode = saveData.uiSettings?.storyMotionMode;
+    if (
+      savedStoryMotionMode === 'full'
+      || savedStoryMotionMode === 'reduced'
+      || savedStoryMotionMode === 'off'
+    ) {
+      useUIStore.getState().setSettings({ storyMotionMode: savedStoryMotionMode });
+    }
 
     // Apply zone state (if exists)
     useZoneStore.setState({
@@ -1496,6 +1514,7 @@ export function deleteSave(): boolean {
     useMedicinePouchStore.getState().hardReset();
     useRecipeMasteryStore.getState().hardReset();
     usePavilionStore.getState().hardResetPavilionUiOnly();
+    useStoryStore.getState().hydrateFromSave();
 
     useCombatStore.setState({
       autoAttack: false,
@@ -1589,6 +1608,12 @@ export function deleteSaveAndHardReset(): void {
     usePavilionStore.getState().hardResetPavilionUiOnly();
   } catch (error) {
     console.warn('[deleteSaveAndHardReset] Failed to reset Pavilion state', error);
+  }
+
+  try {
+    useStoryStore.getState().hydrateFromSave();
+  } catch (error) {
+    console.warn('[deleteSaveAndHardReset] Failed to reset story state', error);
   }
 
   try {

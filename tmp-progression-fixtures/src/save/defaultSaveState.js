@@ -25,6 +25,7 @@ import { createDefaultRecipeMasteryState, useRecipeMasteryStore } from '../store
 import { useContentStore } from '../stores/contentStore.js';
 import { useUIStore } from '../stores/uiStore.js';
 import { usePavilionStore } from '../stores/pavilionStore.js';
+import { useStoryStore } from '../features/story/storyStore.js';
 import { sanitizePavilionSaveState } from '../features/pavilion/pavilionUnlocks.js';
 import { CURRENT_SAVE_VERSION, migrateIncomingSaveForHydration } from './migrations/index.js';
 import { normalizeCitySaveState } from './cityStateNormalization.js';
@@ -49,6 +50,7 @@ const REQUIRED_SAVE_KEYS = [
     'medicinePouchState',
     'recipeMasteryState',
     'pavilionState',
+    'storyState',
 ];
 const isRecord = (value) => !!value && typeof value === 'object' && !Array.isArray(value);
 const isStringArray = (value) => Array.isArray(value) && value.every((entry) => typeof entry === 'string');
@@ -148,6 +150,7 @@ export function buildDefaultSaveState() {
     const medicinePouchState = useMedicinePouchStore.getState();
     const recipeMasteryState = useRecipeMasteryStore.getState();
     const pavilionState = usePavilionStore.getState();
+    const storyState = useStoryStore.getState();
     const uiState = useUIStore.getState();
     return {
         version: SAVE_VERSION,
@@ -191,9 +194,13 @@ export function buildDefaultSaveState() {
         medicinePouchState: medicinePouchState.toSaveState(),
         recipeMasteryState: recipeMasteryState.toSaveState(),
         pavilionState: pavilionState.toSaveState(),
+        storyState: storyState.toSaveState(),
         combatSettings: {
             autoAttack: combatState.autoAttack,
             autoCombatAI: combatState.autoCombatAI,
+        },
+        uiSettings: {
+            storyMotionMode: uiState.settings.storyMotionMode,
         },
         zoneState: {
             unlockedZones: zoneState.unlockedZones,
@@ -681,6 +688,30 @@ function isValidRecipeMasteryState(value) {
         return false;
     return true;
 }
+function isValidStoryState(value) {
+    if (!isRecord(value))
+        return false;
+    if (!isRecord(value.seenFlags))
+        return false;
+    if (!Array.isArray(value.storyLog))
+        return false;
+    return value.storyLog.every((entry) => (isRecord(entry)
+        && typeof entry.id === 'string'
+        && typeof entry.firstSeenAt === 'number'
+        && typeof entry.completed === 'boolean'));
+}
+function isValidUiSettingsState(value) {
+    if (!isRecord(value))
+        return false;
+    if ('storyMotionMode' in value
+        && value.storyMotionMode !== undefined
+        && value.storyMotionMode !== 'full'
+        && value.storyMotionMode !== 'reduced'
+        && value.storyMotionMode !== 'off') {
+        return false;
+    }
+    return true;
+}
 function isValidHeartLawState(value) {
     if (!isRecord(value))
         return false;
@@ -1128,6 +1159,8 @@ export function mergeWithDefaults(partialSave) {
     const baseMedicinePouchState = defaults.medicinePouchState ?? createDefaultMedicinePouchState();
     const baseCraftSessionState = defaults.craftSessionState ?? createDefaultCraftSessionState();
     const baseRecipeMasteryState = defaults.recipeMasteryState ?? createDefaultRecipeMasteryState();
+    const baseStoryState = defaults.storyState ?? { seenFlags: {}, storyLog: [] };
+    const baseUiSettings = defaults.uiSettings ?? { storyMotionMode: 'full' };
     const merged = {
         ...defaults,
         ...record,
@@ -1151,6 +1184,7 @@ export function mergeWithDefaults(partialSave) {
         combatSettings: isRecord(record.combatSettings)
             ? { ...defaults.combatSettings, ...record.combatSettings }
             : defaults.combatSettings,
+        uiSettings: mergeSlice(record.uiSettings, baseUiSettings, isValidUiSettingsState, 'uiSettings'),
         zoneState: isRecord(record.zoneState) ? { ...defaults.zoneState, ...record.zoneState } : defaults.zoneState,
         cityState: normalizeCitySaveState({
             content: useContentStore.getState().raw,
@@ -1197,6 +1231,7 @@ export function mergeWithDefaults(partialSave) {
         expeditionState: mergeSlice(record.expeditionState, defaults.expeditionState, isValidExpeditionState, 'expeditionState'),
         heartLawState: mergeSlice(record.heartLawState, defaults.heartLawState, isValidHeartLawState, 'heartLawState'),
         pavilionState: sanitizePavilionSaveState(record.pavilionState ?? defaults.pavilionState),
+        storyState: mergeSlice(record.storyState, baseStoryState, isValidStoryState, 'storyState'),
         manualPavilionState: mergeSlice(record.manualPavilionState, defaults.manualPavilionState, isValidManualPavilionState, 'manualPavilionState'),
         manualSatchelState: mergeSlice(record.manualSatchelState, defaults.manualSatchelState, isValidManualSatchelState, 'manualSatchelState'),
     };

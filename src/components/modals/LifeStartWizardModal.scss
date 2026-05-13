@@ -12,7 +12,7 @@
   align-items: stretch;
   justify-content: stretch;
   padding: 0;
-  background: rgba(0, 0, 0, 0.45);
+  background: #070604;
 }
 
 .lifeStartWizardModal {
@@ -190,6 +190,16 @@
     linear-gradient(180deg, rgba(32, 28, 24, 0.42), rgba(24, 20, 16, 0.52));
 }
 
+.lifePathFullscreen[data-story-handoff='true'] {
+  background:
+    linear-gradient(180deg, rgba(9, 8, 6, 0.02), rgba(9, 8, 6, 0.32)),
+    radial-gradient(circle at 50% 84%, rgba(255, 238, 184, 0.2), rgba(255, 238, 184, 0) 36%),
+    var(--life-path-story-bg),
+    linear-gradient(180deg, rgba(32, 28, 24, 0.42), rgba(24, 20, 16, 0.52));
+  background-size: auto, auto, cover, auto;
+  background-position: center, center, center, center;
+}
+
 .lifePathHero {
   position: relative;
   width: min(1560px, 96vw);
@@ -203,14 +213,23 @@
 .lifePathHeroBackdrop {
   position: absolute;
   inset: 8px;
-  border: 1px solid rgba(255, 241, 215, 0.2);
+  border: 1px solid rgba(255, 241, 215, 0.14);
   border-radius: 18px;
   background:
-    linear-gradient(180deg, rgba(255, 252, 245, 0.12), rgba(247, 237, 220, 0.08)),
-    url('../../assets/texture_overlay.png');
-  background-size: auto, 440px 440px;
-  opacity: 0.72;
+    radial-gradient(circle at 50% 36%, rgba(255, 248, 226, 0.08), transparent 54%),
+    radial-gradient(circle at 50% 100%, rgba(0, 0, 0, 0.18), transparent 48%);
+  opacity: 0.36;
   pointer-events: none;
+}
+
+.lifePathFullscreen[data-story-handoff='true'] .lifePathHeroBackdrop {
+  inset: 0;
+  border: none;
+  border-radius: 0;
+  background:
+    linear-gradient(180deg, rgba(11, 9, 7, 0.04), rgba(11, 9, 7, 0.1)),
+    radial-gradient(circle at 50% 88%, rgba(255, 232, 171, 0.08), rgba(255, 232, 171, 0) 42%);
+  opacity: 0.24;
 }
 
 .lifePathHeroHeader {
@@ -225,7 +244,7 @@
 
 .lifePathHeroEyebrow {
   margin: 0;
-  letter-spacing: 0.22em;
+  letter-spacing: 0;
   text-transform: uppercase;
   font-size: 11px;
   color: rgba(251, 242, 225, 0.88);
@@ -271,7 +290,7 @@
 
 .lifePathPreviewPlaque__label {
   font-size: 12px;
-  letter-spacing: 0.18em;
+  letter-spacing: 0;
   text-transform: uppercase;
 }
 
@@ -324,6 +343,7 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: clamp(10px, 1.3vw, 20px);
+  min-height: min(62vh, 650px);
   --active-lane-center: 16.66%;
 }
 
@@ -351,15 +371,26 @@
 .lifePathTriptychFrame {
   position: relative;
   height: 100%;
-  width: 100%;
+  width: min(78vw, 1260px);
+  margin: 0 auto;
   padding: clamp(10px, 1vw, 14px);
-  border: 1px solid rgba(254, 243, 214, 0.24);
+  border: 1px solid rgba(254, 243, 214, 0.16);
   border-radius: 16px;
-  background: linear-gradient(180deg, rgba(248, 238, 220, 0.18), rgba(243, 225, 194, 0.1));
+  background: linear-gradient(180deg, rgba(18, 13, 9, 0.04), rgba(12, 9, 7, 0.12));
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
   gap: 10px;
-  box-shadow: inset 0 0 0 1px rgba(25, 21, 16, 0.4);
+  box-shadow: inset 0 0 0 1px rgba(255, 241, 214, 0.04);
+}
+
+.lifePathFullscreen[data-story-handoff='true'] .lifePathTriptychFrame {
+  border-color: rgba(254, 243, 214, 0.2);
+  background:
+    linear-gradient(180deg, rgba(21, 16, 10, 0.1), rgba(19, 14, 10, 0.08));
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 241, 214, 0.08),
+    0 22px 54px rgba(0, 0, 0, 0.18);
+  backdrop-filter: none;
 }
 
 .lifePathTriptychRail {
@@ -420,20 +451,25 @@
   display: grid;
   grid-template-rows: 1fr;
   align-items: stretch;
-  border: 1px solid rgba(255, 233, 195, 0.24);
+  border: 1px solid rgba(255, 233, 195, 0.38);
   border-radius: 12px;
   isolation: isolate;
-  transition: filter 180ms ease-out, opacity 180ms ease-out, box-shadow 180ms ease-out;
+  background: rgba(9, 7, 5, 0.46);
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.24);
+  transition: border-color 180ms ease-out, box-shadow 180ms ease-out;
 }
 
 .lifePathPanel--previewed {
-  filter: brightness(1.04) saturate(1.05);
-  box-shadow: inset 0 0 0 1px rgba(255, 225, 170, 0.25);
+  border-color: rgba(255, 226, 174, 0.72);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 225, 170, 0.25),
+    0 20px 48px rgba(0, 0, 0, 0.32),
+    0 0 32px rgba(255, 214, 150, 0.12);
 }
 
 .lifePathPanel--receded {
-  opacity: 0.72;
-  filter: saturate(0.78) brightness(0.86);
+  border-color: rgba(255, 233, 195, 0.26);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.2);
 }
 
 .lifePathPanel--previewed::before,
@@ -445,25 +481,16 @@
 }
 
 .lifePathPanel--previewed::before {
-  inset: -20%;
-  background-image: url('../../assets/texture_overlay.png');
-  background-size: 420px 420px;
-  opacity: 0.09;
-  mix-blend-mode: multiply;
-  animation: lifePathMistDrift 8.4s ease-in-out infinite;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 18%, rgba(255, 244, 218, 0.16), transparent 30%),
+    linear-gradient(180deg, rgba(255, 236, 200, 0.08), transparent 44%);
+  opacity: 0.56;
 }
 
 .lifePathPanel--previewed::after {
-  top: -20%;
-  bottom: -20%;
-  left: -50%;
-  width: 45%;
-  background-image: url('../../assets/texture_overlay.png');
-  background-size: 160px 160px;
-  opacity: 0.15;
-  mix-blend-mode: multiply;
-  transform: skewX(-18deg);
-  animation: lifePathStrokeSweep 6.4s ease-in-out infinite;
+  content: none;
+  display: none;
 }
 
 .lifePathPanel__frame {
@@ -479,8 +506,8 @@
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(180deg, rgba(18, 18, 22, 0.22) 0%, rgba(18, 18, 22, 0) 20%, rgba(18, 18, 22, 0) 58%, rgba(18, 18, 22, 0.72) 100%),
-    radial-gradient(circle at 50% 86%, rgba(15, 14, 12, 0.42), rgba(15, 14, 12, 0) 48%);
+    linear-gradient(180deg, rgba(10, 10, 12, 0.08) 0%, rgba(10, 10, 12, 0) 22%, rgba(10, 10, 12, 0) 58%, rgba(10, 9, 8, 0.58) 100%),
+    radial-gradient(circle at 50% 88%, rgba(12, 10, 8, 0.34), rgba(12, 10, 8, 0) 50%);
   z-index: 1;
   pointer-events: none;
 }
@@ -558,6 +585,14 @@
   pointer-events: none;
   user-select: none;
   z-index: 0;
+  opacity: 1;
+  filter: none;
+}
+
+.lifePathFullscreen[data-story-handoff='true'] .lifePathPanel__veil {
+  background:
+    linear-gradient(180deg, rgba(10, 10, 12, 0.04) 0%, rgba(10, 10, 12, 0) 22%, rgba(10, 10, 12, 0) 58%, rgba(10, 9, 8, 0.52) 100%),
+    radial-gradient(circle at 50% 88%, rgba(12, 10, 8, 0.3), rgba(12, 10, 8, 0) 50%);
 }
 
 .lifePathPanel--heaven .lifePathPanel__art {
@@ -579,7 +614,7 @@
   right: 0;
   text-align: center;
   font-size: clamp(30px, 2.5vw, 42px);
-  letter-spacing: 2px;
+  letter-spacing: 0;
   color: rgba(252, 247, 235, 0.96);
   font-family: var(--ink-title-font, inherit);
   font-weight: 800;
@@ -744,7 +779,7 @@
 }
 
 .lifePathFullscreen[data-fx-quality='high'] .lifePathTriptych::before {
-  animation: lifePathLaneBreath 7.2s ease-in-out infinite;
+  animation: none;
   opacity: 0.9;
 }
 
@@ -1119,7 +1154,7 @@ body.lifePathMode .notificationToasts {
 
 .lifeStartHeartLawChoice__stamp {
   font-size: 11px;
-  letter-spacing: 0.08em;
+  letter-spacing: 0;
   text-transform: uppercase;
   color: rgba(114, 69, 34, 0.86);
   min-height: 18px;
@@ -1257,7 +1292,7 @@ body.lifePathMode .notificationToasts {
 .lifeStartHeartLawDetail__eyebrow {
   margin: 0;
   font-size: 11px;
-  letter-spacing: 0.14em;
+  letter-spacing: 0;
   text-transform: uppercase;
   color: rgba(119, 71, 37, 0.84);
 }
@@ -1344,7 +1379,7 @@ body.lifePathMode .notificationToasts {
 
 .lifeStartHeartLawDetail__anchorLabel {
   font-size: 11px;
-  letter-spacing: 0.12em;
+  letter-spacing: 0;
   text-transform: uppercase;
   color: rgba(116, 71, 35, 0.78);
 }
@@ -1399,7 +1434,7 @@ body.lifePathMode .notificationToasts {
 .lifeStartHeartLawDetail__signatureTitle {
   margin: 0;
   font-size: 11px;
-  letter-spacing: 0.1em;
+  letter-spacing: 0;
   text-transform: uppercase;
   color: rgba(98, 60, 31, 0.82);
 }
@@ -1549,7 +1584,7 @@ body.lifePathMode .notificationToasts {
 
 .lifeStartBreathChoice__stamp {
   font-size: 11px;
-  letter-spacing: 0.08em;
+  letter-spacing: 0;
   text-transform: uppercase;
   color: rgba(111, 69, 35, 0.84);
 }
@@ -1598,7 +1633,7 @@ body.lifePathMode .notificationToasts {
 .lifeStartBreathDetail__eyebrow {
   margin: 0;
   font-size: 11px;
-  letter-spacing: 0.14em;
+  letter-spacing: 0;
   text-transform: uppercase;
   color: rgba(119, 71, 37, 0.84);
 }
@@ -1647,7 +1682,7 @@ body.lifePathMode .notificationToasts {
 .lifeStartBreathDetail__blockLabel {
   margin: 0;
   font-size: 11px;
-  letter-spacing: 0.1em;
+  letter-spacing: 0;
   text-transform: uppercase;
   color: rgba(98, 60, 31, 0.82);
 }
