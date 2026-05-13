@@ -127,6 +127,18 @@ test('story source does not create audio primitives or animate full-screen textu
   assert.equal(/animation:/.test(cssBlock(css, '.storySlide__image')), false, 'base image must not be animated during slide hold');
 });
 
+test('story VFX are visible and do not restart their particle loop on transition pulses', () => {
+  const source = readFileSync('src/features/story/StoryVfxLayer.tsx', 'utf8');
+  const css = readFileSync('src/features/story/StoryCutscene.scss', 'utf8');
+
+  assert.match(source, /high:\s*240/, 'high quality VFX budget should be visibly above the old timid ash layer without overloading transitions');
+  assert.match(source, /initial \? rng\(\) \* particle\.life/, 'initial particles should start across their visible lifetime');
+  assert.match(source, /transitionActiveRef/, 'transition intensity should not reset the particle system');
+  assert.equal(/\}, \[movingParticles, preset, quality, transitionActive\]\)/.test(source), false, 'transition state must not recreate the RAF particle loop');
+  assert.match(css, /\.storyVfxLayer--nameAshfall::before/, 'ashfall preset needs a visible atmospheric layer in addition to particles');
+  assert.match(css, /storyTransitionBreath/, 'transitions should carry a soft VFX veil instead of a hard image swap');
+});
+
 test('Path Selection keeps portrait art full-strength and exposes stable card test ids', () => {
   const css = readFileSync('src/components/modals/LifeStartWizardModal.scss', 'utf8');
   const source = readFileSync('src/components/modals/LifeStartWizardModal.tsx', 'utf8');

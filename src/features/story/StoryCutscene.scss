@@ -32,6 +32,7 @@
   z-index: 1;
   overflow: hidden;
   background: #090806;
+  transform: translateZ(0);
 }
 
 .storySlideStack::after {
@@ -47,14 +48,14 @@
   background:
     radial-gradient(ellipse at 50% 48%, rgba(54, 43, 29, 0.2), transparent 58%),
     linear-gradient(90deg, transparent, rgba(235, 221, 194, 0.16), transparent);
-  animation: storyTransitionVeil 850ms ease-in-out forwards;
+  animation: storyTransitionVeil var(--story-transition-ms, 1120ms) cubic-bezier(0.35, 0, 0.18, 1) forwards;
 }
 
 .storySlideStack--ashCrossfade::after {
   background:
     radial-gradient(ellipse at 52% 22%, rgba(255, 251, 236, 0.18), transparent 44%),
     linear-gradient(125deg, transparent 0 18%, rgba(243, 238, 222, 0.2) 45%, transparent 72%);
-  animation: storyTransitionAshVeil 850ms ease-in-out forwards;
+  animation: storyTransitionAshVeil var(--story-transition-ms, 1120ms) cubic-bezier(0.35, 0, 0.18, 1) forwards;
 }
 
 .storySlideStack--pageTurnSoft::after,
@@ -62,33 +63,35 @@
   background:
     linear-gradient(100deg, transparent 0 32%, rgba(246, 235, 210, 0.2) 48%, transparent 66%),
     radial-gradient(ellipse at 50% 72%, rgba(242, 230, 204, 0.16), transparent 54%);
-  animation: storyTransitionPageVeil 900ms ease-in-out forwards;
+  animation: storyTransitionPageVeil var(--story-transition-ms, 1180ms) cubic-bezier(0.35, 0, 0.18, 1) forwards;
 }
 
 .storySlide {
   overflow: hidden;
   background: #130f0a;
   opacity: 1;
+  contain: paint;
+  will-change: opacity;
 }
 
 .storySlide--incoming {
   opacity: 0;
-  animation: storySlideFadeIn 850ms ease-in-out forwards;
+  animation: storySlideFadeIn var(--story-transition-ms, 1120ms) cubic-bezier(0.35, 0, 0.18, 1) forwards;
 }
 
 .storySlide--outgoing {
   opacity: 1;
-  animation: storySlideFadeOut 850ms ease-in-out forwards;
+  animation: storySlideFadeOut var(--story-transition-ms, 1120ms) cubic-bezier(0.35, 0, 0.18, 1) forwards;
 }
 
 .storySlide--transition-pageTurnSoft.storySlide--incoming,
 .storySlide--transition-gateMistDissolve.storySlide--incoming {
-  animation-duration: 900ms;
+  animation-duration: var(--story-transition-ms, 1180ms);
 }
 
 .storySlide--transition-pageTurnSoft.storySlide--outgoing,
 .storySlide--transition-gateMistDissolve.storySlide--outgoing {
-  animation-duration: 900ms;
+  animation-duration: var(--story-transition-ms, 1180ms);
 }
 
 .storySlide__image {
@@ -157,6 +160,8 @@
   z-index: 5;
   pointer-events: none;
   overflow: hidden;
+  mix-blend-mode: screen;
+  contain: paint;
 }
 
 .storyVfxLayer__canvas {
@@ -165,6 +170,62 @@
   width: 100%;
   height: 100%;
   pointer-events: none;
+  opacity: 1;
+}
+
+.storyVfxLayer::before,
+.storyVfxLayer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.storyVfxLayer--pinewindMist::before {
+  opacity: 0.34;
+  background:
+    radial-gradient(ellipse at 24% 78%, rgba(232, 221, 196, 0.16), transparent 34%),
+    radial-gradient(ellipse at 72% 82%, rgba(232, 221, 196, 0.12), transparent 38%);
+}
+
+.storyVfxLayer--gateCensusMotes::before {
+  opacity: 0.52;
+  background:
+    radial-gradient(ellipse at 53% 22%, rgba(212, 239, 226, 0.18), transparent 28%),
+    linear-gradient(180deg, rgba(235, 245, 232, 0.12), transparent 34%);
+}
+
+.storyVfxLayer--nameAshfall::before {
+  opacity: 0.72;
+  background:
+    radial-gradient(ellipse at 59% 20%, rgba(255, 253, 236, 0.26), rgba(255, 253, 236, 0.08) 24%, transparent 48%),
+    linear-gradient(112deg, transparent 10%, rgba(255, 253, 236, 0.12) 42%, transparent 68%);
+}
+
+.storyVfxLayer--returningPageGlow::before {
+  opacity: 0.78;
+  background:
+    radial-gradient(circle at 52% 58%, rgba(241, 247, 210, 0.26), rgba(190, 228, 194, 0.12) 16%, transparent 34%),
+    radial-gradient(ellipse at 50% 68%, rgba(238, 220, 165, 0.14), transparent 42%);
+}
+
+.storyVfxLayer--pathBannerMist::before,
+.storyVfxLayer--daoSelectionReveal::before {
+  opacity: 0.7;
+  background:
+    radial-gradient(ellipse at 25% 35%, rgba(204, 236, 250, 0.2), transparent 28%),
+    radial-gradient(ellipse at 50% 38%, rgba(235, 184, 92, 0.18), transparent 30%),
+    radial-gradient(ellipse at 75% 38%, rgba(188, 62, 58, 0.17), transparent 30%),
+    radial-gradient(ellipse at 50% 78%, rgba(250, 239, 205, 0.16), transparent 42%);
+}
+
+.storyVfxLayer--transition::after {
+  opacity: 0.82;
+  background:
+    radial-gradient(ellipse at 50% 54%, rgba(255, 250, 232, 0.18), transparent 46%),
+    linear-gradient(105deg, transparent 20%, rgba(255, 246, 220, 0.18) 49%, transparent 74%);
+  animation: storyTransitionBreath var(--story-transition-ms, 1120ms) cubic-bezier(0.35, 0, 0.18, 1) forwards;
 }
 
 .storyVfxLayer__glow {
@@ -414,6 +475,11 @@
   45%, 62% { opacity: 1; transform: translate3d(3%, 0, 0); }
 }
 
+@keyframes storyTransitionBreath {
+  0%, 100% { opacity: 0; transform: translate3d(-2%, 0, 0); }
+  38%, 66% { opacity: 0.82; transform: translate3d(1.5%, 0, 0); }
+}
+
 @keyframes storyLocalPageGlow {
   0%, 100% { transform: translateX(-50%) scale(0.98); opacity: 0.72; }
   50% { transform: translateX(-50%) scale(1.03); opacity: 1; }
@@ -449,6 +515,7 @@
   }
 
   .storySlideStack::after,
+  .storyVfxLayer::after,
   .storyVfxLayer__canvas {
     display: none;
   }
@@ -468,7 +535,15 @@
 }
 
 .storyCutsceneOverlay--reducedMotion .storySlideStack::after,
+.storyCutsceneOverlay--reducedMotion .storyVfxLayer::after,
 .storyCutsceneOverlay--reducedMotion .storyVfxLayer__canvas {
+  display: none;
+}
+
+.storyCutsceneOverlay[data-story-motion='off'] .storyVfxLayer::before,
+.storyCutsceneOverlay[data-story-motion='off'] .storyVfxLayer::after,
+.storyCutsceneOverlay[data-story-motion='off'] .storyVfxLayer__glow,
+.storyCutsceneOverlay[data-story-motion='off'] .storyVfxLayer__canvas {
   display: none;
 }
 

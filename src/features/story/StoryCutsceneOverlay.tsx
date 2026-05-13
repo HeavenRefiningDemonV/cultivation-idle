@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { SaveService } from '../../services/save/SaveService.js';
 import { useUIStore } from '../../stores/uiStore.js';
-import { preloadStoryImages } from './storyAssets.js';
+import { preloadStoryImages, preloadPathSelectionImages } from './storyAssets.js';
 import { StoryCaption } from './StoryCaption.js';
 import { StoryControls } from './StoryControls.js';
 import { StorySlideRenderer } from './StorySlideRenderer.js';
@@ -33,6 +33,7 @@ export function StoryCutsceneOverlay() {
   const previousSlideRef = useRef<StorySlide | null>(null);
   const [canSkip, setCanSkip] = useState(false);
   const [canAdvance, setCanAdvance] = useState(false);
+  const [isAdvancing, setIsAdvancing] = useState(false);
   const [isCompleting, setIsCompleting] = useState(false);
   const [systemReducedMotion, setSystemReducedMotion] = useState(getSystemReducedMotion);
   const [transition, setTransition] = useState<{
@@ -66,7 +67,16 @@ export function StoryCutsceneOverlay() {
 
   useEffect(() => {
     if (!activeCutscene) return undefined;
-    void preloadStoryImages(activeCutscene.slides.map((entry) => entry.imageAssetId));
+    void preloadStoryImages(
+      activeCutscene.slides.slice(0, 2).map((entry) => entry.imageAssetId),
+      { decode: false },
+    );
+    const lazyPreloadTimer = window.setTimeout(() => {
+      void preloadStoryImages(
+        activeCutscene.slides.slice(2).map((entry) => entry.imageAssetId),
+        { decode: false },
+      );
+    }, 600);
     previousSlideRef.current = null;
     setTransition(null);
 
@@ -75,6 +85,7 @@ export function StoryCutsceneOverlay() {
     });
 
     return () => {
+      window.clearTimeout(lazyPreloadTimer);
       previousSlideRef.current = null;
       setTransition(null);
     };
@@ -101,7 +112,7 @@ export function StoryCutsceneOverlay() {
 
     const transitionTimer = window.setTimeout(() => {
       setTransition(null);
-    }, Math.max(250, previousSlide.transitionOutMs));
+    }, Math.max(250, previousSlide.transitionOutMs + 80));
 
     return () => window.clearTimeout(transitionTimer);
   }, [slide]);
@@ -111,6 +122,7 @@ export function StoryCutsceneOverlay() {
     setCanSkip(false);
     setCanAdvance(false);
     setIsCompleting(false);
+    setIsAdvancing(false);
 
     const timers: number[] = [];
     timers.push(window.setTimeout(() => setCanSkip(true), 500));
@@ -119,6 +131,8 @@ export function StoryCutsceneOverlay() {
     if (!isFinalSlide && slide.autoAdvanceMs) {
       timers.push(window.setTimeout(() => {
         if (document.hidden) return;
+        const targetSlide = activeCutscene?.slides[slideIndex + 1];
+        void preloadStoryImages(targetSlide ? [targetSlide.imageAssetId] : [], { decode: false });
         advanceSlide();
       }, slide.autoAdvanceMs));
     }
@@ -126,7 +140,12 @@ export function StoryCutsceneOverlay() {
     return () => {
       timers.forEach((timer) => window.clearTimeout(timer));
     };
-  }, [advanceSlide, isFinalSlide, slide]);
+  }, [activeCutscene?.slides, advanceSlide, isFinalSlide, slide, slideIndex]);
+
+  useEffect(() => {
+    if (!activeCutscene || slideIndex < activeCutscene.slides.length - 2) return;
+    void preloadPathSelectionImages();
+  }, [activeCutscene, slideIndex]);
 
   const routeToPathSelection = useCallback((fromReplay: boolean) => {
     if (!fromReplay) {
@@ -143,18 +162,24 @@ export function StoryCutsceneOverlay() {
   }, [canSkip, isReplay, routeToPathSelection, skipCutscene]);
 
   const handleNext = useCallback(() => {
-    if (!canAdvance || isFinalSlide) return;
-    advanceSlide();
-  }, [advanceSlide, canAdvance, isFinalSlide]);
+    if (!canAdvance || isFinalSlide || isAdvancing) return;
+    const targetSlide = activeCutscene?.slides[slideIndex + 1];
+    setIsAdvancing(true);
+    void preloadStoryImages(targetSlide ? [targetSlide.imageAssetId] : [], { decode: false });
+    window.requestAnimationFrame(() => {
+      advanceSlide();
+    });
+  }, [activeCutscene?.slides, advanceSlide, canAdvance, isAdvancing, isFinalSlide, slideIndex]);
 
   const handleFinalObjective = useCallback(() => {
     if (!canAdvance || !activeCutscene) return;
     const replay = isReplay;
     setIsCompleting(true);
+    void preloadPathSelectionImages();
     window.setTimeout(() => {
       completeCutscene();
       routeToPathSelection(replay);
-    }, 350);
+    }, 520);
   }, [activeCutscene, canAdvance, completeCutscene, isReplay, routeToPathSelection]);
 
   useEffect(() => {
@@ -205,6 +230,10 @@ export function StoryCutsceneOverlay() {
 
   if (!activeCutscene || !slide) return null;
 
+  const transitionStyle = {
+    '--story-transition-ms': `${transition?.fromSlide.transitionOutMs ?? slide.transitionOutMs}ms`,
+  } as CSSProperties;
+
   return (
     <div
       ref={rootRef}
@@ -217,7 +246,10 @@ export function StoryCutsceneOverlay() {
       data-slide-id={slide.id}
       data-story-motion={storyMotionMode}
     >
-      <div className={`storySlideStack${transition ? ` storySlideStack--${transition.preset}` : ''}`}>
+      <div
+        className={`storySlideStack${transition ? ` storySlideStack--${transition.preset}` : ''}`}
+        style={transitionStyle}
+      >
         {transition ? (
           <StorySlideRenderer
             slide={transition.fromSlide}
@@ -240,7 +272,7 @@ export function StoryCutsceneOverlay() {
       <StoryCaption caption={slide.captionDefault} hidden={isCompleting} />
       <StoryControls
         canSkip={canSkip}
-        canAdvance={canAdvance}
+        canAdvance={canAdvance && !isAdvancing}
         isFinalSlide={isFinalSlide}
         finalLabel={activeCutscene.finalObjective.label}
         onNext={handleNext}
