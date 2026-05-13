@@ -983,21 +983,23 @@ Every compact Jade Slip should render only: Title, one-line meaning, current rel
 
 **Tags:** path, earth  
 
-**Jade Slip copy:** Earth Path favors body, defense, and survival floors. It should feel patient, grounded, and resilient.
+**Jade Slip copy:** Treat path, Heart Law, spirit root, and focus as one life profile. Earth asks whether this life can keep breathing when the gate stops being polite.
 
-**Sect Note:** Earth survives the strike and learns its weight.
+**Sect Note:** Earth survives the strike, studies its weight, and answers with a steadier root.
 
-**Plain Meaning:** Earth Path favors body, defense, and survival floors. It should feel patient, grounded, and resilient.
+**Plain Meaning:** {path|Earth Path} is the defensive cultivation route. It turns long fights into a preparation check, so your first fixes are usually {stat|HP}, {stat|Defense}, {item|armor floor}, healing, and a survival-friendly loadout.
 
-**Why It Matters:** It gives the player a defensive doctrine that values gear, medicine, and sustained fights.
+**Why It Matters:** Earth wins by staying alive long enough for preparation to matter. If a gate feels safe but slow, improve technique rank or weapon floor before abandoning the doctrine.
 
-**How to Get / Where to Act:** Chosen at life start; recommendations should favor durability, armor floor, Survivor AI, and body-support Heart Laws.
+**How to Get / Where to Act:** Chosen at life start. When Earth is your doctrine, favor durability, armor floor, Survivor AI, and body-support Heart Laws; use Forge when gear floor is the obvious bottleneck.
 
-**Used For:** Path recommendations, gate prep, gear floors, and defensive build templates.
+**Used For:** Path recommendations, gate prep, gear floors, defensive build templates, and survival diagnosis.
 
 **Common Mistakes:**
 - Over-investing in defense until damage becomes too low.
 - Ignoring technique rank because survival feels safe.
+- Do not ignore medicine or weapon floor just because survival looks stable.
+- Do not abandon Earth Path over a mild resonance mismatch; route around the weak stat first.
 
 **Route Buttons:** Filter Path: Earth, Route to Forge
 

@@ -1,13 +1,18 @@
 import type { RefObject } from 'react';
 import { GameIcon } from '../../ui/icons/index.js';
 import type {
+  PavilionActionChipSurface,
   PavilionCategorySurface,
-  PavilionEntrySectionSurface,
+  PavilionGuidanceGroupSurface,
+  PavilionInfoChipSurface,
   PavilionRecordListItemSurface,
   PavilionRelatedEntrySurface,
   PavilionRouteButtonSurface,
+  PavilionSectionRowSurface,
   PavilionSurfaceV1,
 } from './pavilionTypes.js';
+import { PavilionRichText } from './PavilionRichTextRenderer.js';
+import type { IconId } from '../../ui/icons/index.js';
 
 export interface PavilionExactScreenProps {
   surface: PavilionSurfaceV1;
@@ -24,6 +29,40 @@ export interface PavilionExactScreenProps {
 function stateGlyphClass(kind: string): string {
   return `pavilionStateGlyph--${kind}`;
 }
+
+function statusLabel(status: PavilionSectionRowSurface['status'] | undefined): string {
+  if (status === 'complete') return 'Ready';
+  if (status === 'warning') return 'Watch';
+  if (status === 'sealed') return 'Sealed';
+  return 'Open';
+}
+
+const PAVILION_SECTION_ICON_BY_TYPE: Record<PavilionGuidanceGroupSurface['type'], IconId> = {
+  answer: 'recordSlip',
+  why: 'inkSparkles',
+  'do-next': 'inkBolt',
+  requirements: 'taskComplete',
+  sources: 'placeholderRingSmall',
+  'used-for': 'inkRefresh',
+  numbers: 'hourglassProgress',
+  mistakes: 'inkWarning',
+  lore: 'prayerBeads',
+  relations: 'inkSwirl',
+  debug: 'inkWip',
+};
+
+const PAVILION_BRIEF_ICON_BY_TONE: Record<PavilionActionChipSurface['tone'] | PavilionInfoChipSurface['tone'], IconId> = {
+  action: 'inkBolt',
+  route: 'inkChevronUp',
+  warning: 'inkWarning',
+  success: 'inkCheck',
+  muted: 'placeholderRingSmall',
+  term: 'recordSlip',
+  item: 'foundationPill',
+  stat: 'hourglassProgress',
+  path: 'bookEarth',
+  realm: 'inkSparkles',
+};
 
 function renderCategory(category: PavilionCategorySurface, props: PavilionExactScreenProps) {
   return (
@@ -52,6 +91,13 @@ function renderRecordListItem(record: PavilionRecordListItemSurface, props: Pavi
       : record.signals.includes('future')
         ? 'future'
         : null;
+  const signalLabel = signal === 'recommended'
+    ? 'Needed Now'
+    : signal === 'warning'
+      ? 'Warning'
+      : signal === 'future'
+        ? 'Future'
+        : null;
   return (
     <li key={record.id}>
       <button
@@ -64,12 +110,15 @@ function renderRecordListItem(record: PavilionRecordListItemSurface, props: Pavi
         <span className="pavilionExact__recordListText">
           <span className="pavilionExact__recordListTitle">{record.title}</span>
           <span className="pavilionExact__recordListMeta">
-            {record.summary}{record.generated ? ' / Generated' : ''}
+            {record.summary}
           </span>
         </span>
+        {record.generated ? (
+          <span className="pavilionExact__recordListGenerated">Archive</span>
+        ) : null}
         {signal ? (
           <span className={`pavilionExact__recordListSignal pavilionExact__recordListSignal--${signal}`}>
-            {signal}
+            {signalLabel}
           </span>
         ) : null}
       </button>
@@ -84,19 +133,35 @@ function renderRecordListItem(record: PavilionRecordListItemSurface, props: Pavi
   );
 }
 
-function renderRows(section: PavilionEntrySectionSurface, props: PavilionExactScreenProps) {
-  if (!section.rows?.length) return null;
+function renderStatusSeal(status: PavilionSectionRowSurface['status'] | undefined) {
+  const resolved = status ?? 'open';
   return (
-    <div className={`pavilionExact__sectionRows pavilionExact__sectionRows--${section.id}`}>
-      {section.rows.map((row) => {
+    <span className={`pavilionStatusSeal pavilionStatusSeal--${resolved}`}>
+      <span className="pavilionStatusSeal__mark" aria-hidden="true" />
+      <span className="pavilionStatusSeal__label">{statusLabel(resolved)}</span>
+    </span>
+  );
+}
+
+function renderRows(
+  rows: readonly PavilionSectionRowSurface[] | undefined,
+  groupId: string,
+  props: PavilionExactScreenProps,
+) {
+  if (!rows?.length) return null;
+  return (
+    <div className={`pavilionExact__sectionRows pavilionExact__sectionRows--${groupId}`}>
+      {rows.map((row) => {
         const routeButton = row.routeLabel
           ? props.surface.selectedEntry.routeButtons.find((button) => button.label === row.routeLabel)
           : null;
         const content = (
           <>
-            <span className={`pavilionExact__rowSeal pavilionExact__rowSeal--${row.status ?? 'open'}`} aria-hidden="true" />
-            <span className="pavilionExact__rowLabel">{row.label}</span>
-            {row.value ? <span className="pavilionExact__rowValue">{row.value}</span> : null}
+            {renderStatusSeal(row.status)}
+            <span className="pavilionExact__rowCopy">
+              <span className="pavilionExact__rowLabel"><PavilionRichText text={row.label} /></span>
+              {row.value ? <span className="pavilionExact__rowValue"><PavilionRichText text={row.value} /></span> : null}
+            </span>
             {routeButton ? <span className="pavilionExact__rowArrow" aria-hidden="true">&gt;</span> : null}
           </>
         );
@@ -124,16 +189,150 @@ function renderRows(section: PavilionEntrySectionSurface, props: PavilionExactSc
   );
 }
 
-function renderSection(section: PavilionEntrySectionSurface, props: PavilionExactScreenProps) {
+function renderGuidanceCard(group: PavilionGuidanceGroupSurface, props: PavilionExactScreenProps) {
+  const icon = PAVILION_SECTION_ICON_BY_TYPE[group.type];
   return (
-    <section key={section.id} className={`pavilionExact__recordSection pavilionExact__recordSection--${section.tone ?? 'plain'}`}>
+    <section
+      key={group.id}
+      className={`pavilionExact__recordSection pavilionExact__recordSection--${group.tone} pavilionExact__recordSection--type-${group.type}`}
+    >
       <div className="pavilionExact__sectionTitleRow">
-        <span className="pavilionExact__sectionNumber">{section.number}</span>
-        <h3>{section.title}</h3>
+        <span className="pavilionExact__sectionIcon" aria-hidden="true">
+          <GameIcon icon={icon} size={20} decorative />
+        </span>
+        <h3>{group.title}</h3>
       </div>
-      {section.body ? <p>{section.body}</p> : null}
-      {renderRows(section, props)}
+      {group.body ? (
+        <p>
+          <PavilionRichText text={group.body} />
+        </p>
+      ) : null}
+      {renderRows(group.rows, group.id, props)}
     </section>
+  );
+}
+
+function renderBriefAction(chip: PavilionActionChipSurface, props: PavilionExactScreenProps) {
+  const icon = PAVILION_BRIEF_ICON_BY_TONE[chip.tone];
+  const routeButton = chip.routeLabel
+    ? props.surface.selectedEntry.routeButtons.find((button) => button.label === chip.routeLabel)
+    : null;
+  const className = `pavilionRecordBrief__chip pavilionRecordBrief__chip--${chip.tone}`;
+  const content = (
+    <>
+      <GameIcon icon={icon} size={16} decorative />
+      <PavilionRichText text={chip.label} />
+    </>
+  );
+
+  if (routeButton) {
+    return (
+      <button
+        key={chip.id}
+        type="button"
+        className={className}
+        disabled={!routeButton.enabled}
+        title={routeButton.disabledReason}
+        onClick={() => props.onRoute?.(routeButton)}
+      >
+        {content}
+      </button>
+    );
+  }
+
+  return (
+    <span key={chip.id} className={className}>
+      {content}
+    </span>
+  );
+}
+
+function renderBriefInfo(chip: PavilionInfoChipSurface) {
+  const icon = PAVILION_BRIEF_ICON_BY_TONE[chip.tone];
+  return (
+    <span key={chip.id} className={`pavilionRecordBrief__chip pavilionRecordBrief__chip--${chip.tone}`}>
+      <GameIcon icon={icon} size={16} decorative />
+      <span>
+        <PavilionRichText text={chip.label} />
+        {chip.value ? <small><PavilionRichText text={chip.value} /></small> : null}
+      </span>
+    </span>
+  );
+}
+
+function renderRecordBrief(props: PavilionExactScreenProps) {
+  const brief = props.surface.selectedEntry.recordBrief;
+  const primaryRoutes = brief.routeLabels
+    .map((label) => props.surface.selectedEntry.routeButtons.find((button) => button.label === label))
+    .filter((button): button is PavilionRouteButtonSurface => Boolean(button))
+    .slice(0, 2);
+
+  return (
+    <section className="pavilionRecordBrief" aria-label="Record brief">
+      <div className="pavilionRecordBrief__answer">
+        <GameIcon icon="recordSlip" size={28} decorative />
+        <div>
+          <span className="pavilionRecordBrief__eyebrow">Quick Answer</span>
+          <p><PavilionRichText text={brief.quickAnswer} /></p>
+          {brief.currentUse ? <small><PavilionRichText text={brief.currentUse} /></small> : null}
+        </div>
+      </div>
+      {brief.doNext.length > 0 ? (
+        <div className="pavilionRecordBrief__lane pavilionRecordBrief__lane--actions">
+          <span className="pavilionRecordBrief__laneLabel">Do Next</span>
+          <div className="pavilionRecordBrief__chips">{brief.doNext.map((chip) => renderBriefAction(chip, props))}</div>
+        </div>
+      ) : null}
+      {brief.watch.length > 0 ? (
+        <div className="pavilionRecordBrief__lane">
+          <span className="pavilionRecordBrief__laneLabel">Watch</span>
+          <div className="pavilionRecordBrief__chips">{brief.watch.map(renderBriefInfo)}</div>
+        </div>
+      ) : null}
+      {brief.warnings.length > 0 ? (
+        <div className="pavilionRecordBrief__lane pavilionRecordBrief__lane--warnings">
+          <span className="pavilionRecordBrief__laneLabel">Warnings</span>
+          <div className="pavilionRecordBrief__chips">{brief.warnings.map(renderBriefInfo)}</div>
+        </div>
+      ) : null}
+      {primaryRoutes.length > 0 ? (
+        <div className="pavilionRecordBrief__routeLane" aria-label="Primary record routes">
+          {primaryRoutes.map((button) => (
+            <button
+              key={button.id}
+              type="button"
+              disabled={!button.enabled}
+              title={button.disabledReason}
+              onClick={() => props.onRoute?.(button)}
+            >
+              <GameIcon icon="inkChevronUp" size={16} decorative />
+              {button.label}
+            </button>
+          ))}
+        </div>
+      ) : null}
+    </section>
+  );
+}
+
+function renderRouteActionRail(selected: PavilionSurfaceV1['selectedEntry'], props: PavilionExactScreenProps) {
+  if (selected.routeButtons.length === 0) return null;
+  return (
+    <div className="pavilionExact__routeButtons" aria-label="Record routes">
+      <span className="pavilionExact__routeButtonsLabel">Routes</span>
+      {selected.routeButtons.map((button) => (
+        <button
+          key={button.id}
+          type="button"
+          disabled={!button.enabled}
+          title={button.disabledReason}
+          onClick={() => props.onRoute?.(button)}
+        >
+          <GameIcon icon={button.enabled ? 'inkChevronUp' : 'inkLock'} size={15} decorative />
+          {button.label}
+        </button>
+      ))}
+    </div>
   );
 }
 
@@ -246,41 +445,47 @@ export function PavilionExactScreen(props: PavilionExactScreenProps) {
           <div>
             <h2>{selected.title}</h2>
             <div className="pavilionExact__tagRow">
-              <span className="pavilionExact__stateStamp">{selected.stateLabel}</span>
+              <span className={`pavilionExact__stateStamp pavilionExact__stateStamp--${selected.stateKind}`}>
+                <span className={`pavilionExact__stateStampGlyph ${stateGlyphClass(selected.stateKind)}`} aria-hidden="true" />
+                {selected.stateLabel}
+              </span>
               {selected.tags.map((tag) => (
                 <span key={tag.id} className={`pavilionExact__tag pavilionExact__tag--${tag.tone}`}>{tag.label}</span>
               ))}
             </div>
           </div>
         </header>
-        <div className="pavilionExact__sections">
-          {selected.sections.map((section) => renderSection(section, props))}
+        <div className="pavilionExact__recordViewport" data-testid="pavilion-record-viewport">
+          {renderRecordBrief(props)}
+          <div className="pavilionGuidanceGrid">
+            <div className="pavilionGuidanceGrid__main">
+              {selected.guidanceGroups
+                .filter((group) => group.column === 'main')
+                .map((group) => renderGuidanceCard(group, props))}
+            </div>
+            <div className="pavilionGuidanceGrid__side">
+              {selected.guidanceGroups
+                .filter((group) => group.column === 'side')
+                .map((group) => renderGuidanceCard(group, props))}
+            </div>
+          </div>
         </div>
-        <div className="pavilionExact__routeButtons">
-          {selected.routeButtons.map((button) => (
-            <button
-              key={button.id}
-              type="button"
-              disabled={!button.enabled}
-              title={button.disabledReason}
-              onClick={() => props.onRoute?.(button)}
-            >
-              {button.label}
-            </button>
-          ))}
-        </div>
+        {renderRouteActionRail(selected, props)}
       </main>
 
       <aside className="pavilionExact__threads" data-testid="pavilion-threads-rail">
         {surface.elderNote ? (
           <section className="pavilionExact__elderNote" data-testid="pavilion-elder-note">
-            <h2>{surface.elderNote.title}</h2>
-            <p>{surface.elderNote.body}</p>
+            <h2>
+              <GameIcon icon="prayerBeads" size={22} decorative />
+              {surface.elderNote.title}
+            </h2>
+            <p><PavilionRichText text={surface.elderNote.body} /></p>
             <ul>
               {surface.elderNote.checklist.map((item) => (
                 <li key={item.id} className={`pavilionExact__elderCheck pavilionExact__elderCheck--${item.status}`}>
-                  <span aria-hidden="true" />
-                  {item.label}
+                  {renderStatusSeal(item.status)}
+                  <span><PavilionRichText text={item.label} /></span>
                 </li>
               ))}
             </ul>

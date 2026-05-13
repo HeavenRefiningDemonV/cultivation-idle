@@ -83,6 +83,37 @@ test('non-Foundation authored entries render adaptive full anatomy sections', ()
   assert.ok(sectionTitles.includes('Related Records'));
 });
 
+test('Earth Path exposes a mentor-style brief and ordered guidance groups', () => {
+  const manifest = validatePavilionRecordsManifest(loadPavilionManifestFixture());
+  const surface = buildPavilionSurface({
+    mode: 'live',
+    manifest,
+    pavilionState: { selectedEntryId: 'current_life_and_doctrine.earth_path' },
+    runtime: {
+      path: 'Earth Path',
+      heartLaw: 'Quiet Breath Method',
+      milestone: 'Prepare Foundation Gate',
+      medicineWeak: true,
+      weaponFloorClose: false,
+      loadoutComplete: true,
+    },
+    nowMs: 123,
+  });
+
+  const selected = surface.selectedEntry;
+  assert.equal(selected.id, 'current_life_and_doctrine.earth_path');
+  assert.match(selected.recordBrief.quickAnswer, /Earth Path/);
+  assert.ok(selected.recordBrief.doNext.length >= 1);
+  assert.ok(selected.recordBrief.watch.some((chip) => /Path|HP|Defense|Armor|Medicine|Loadout/i.test(chip.label)));
+  assert.deepEqual(
+    selected.guidanceGroups.slice(0, 4).map((group) => group.type),
+    ['answer', 'why', 'do-next', 'requirements'],
+  );
+  assert.ok(selected.guidanceGroups.some((group) => group.type === 'sources'));
+  assert.ok(selected.guidanceGroups.some((group) => group.type === 'mistakes'));
+  assert.ok(selected.guidanceGroups.some((group) => group.type === 'relations'));
+});
+
 test('generated records render source/use/current relevance sections in the central scroll', () => {
   const manifest = validatePavilionRecordsManifest(loadPavilionManifestFixture());
   const generated = buildGeneratedPavilionRecords({ content: createPavilionGeneratedContentFixture() });
@@ -105,6 +136,27 @@ test('generated records render source/use/current relevance sections in the cent
   assert.ok(sectionTitles.includes('Route Buttons'));
   assert.ok(surface.rightRail.blocks.some((block) => block.title === 'Best Source'));
   assert.ok(surface.rightRail.blocks.some((block) => block.title === 'Used For'));
+});
+
+test('generated item records expose guide-like brief, source, and use groups', () => {
+  const manifest = validatePavilionRecordsManifest(loadPavilionManifestFixture());
+  const generated = buildGeneratedPavilionRecords({ content: createPavilionGeneratedContentFixture() });
+  const surface = buildPavilionSurface({
+    mode: 'live',
+    manifest,
+    generatedRecords: generated.records,
+    generatedCounts: generated.generatedCounts,
+    generatedUnresolvedLinks: generated.unresolvedLinks,
+    pavilionState: { selectedEntryId: 'item.gate_foundation_pill' },
+    nowMs: 123,
+  });
+
+  const selected = surface.selectedEntry;
+  assert.equal(selected.id, 'item.gate_foundation_pill');
+  assert.match(selected.recordBrief.quickAnswer, /Gate Foundation Pill/);
+  assert.ok(selected.recordBrief.doNext.some((chip) => /Gate|Cultivation|source|milestone/i.test(chip.label)));
+  assert.ok(selected.guidanceGroups.some((group) => group.type === 'sources'));
+  assert.ok(selected.guidanceGroups.some((group) => group.type === 'used-for'));
 });
 
 test('PavilionExactScreen renders a record navigation list from surface.recordList', () => {

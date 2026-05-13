@@ -326,26 +326,31 @@ export function buildGeneratedPavilionRecords(args: { content: any | null | unde
 
   asArray(content.items).forEach((item: any) => {
     const id = String(item.id);
+    const itemTitle = item.name ?? titleCaseId(id);
     const uses = collectItemUses(content, id);
     const bestSource = collectBestSource(content, id);
+    const useLine = uses.join(', ') || 'No live sink recorded';
+    const itemRoute = bestSource.includes('Apothecary') ? ['Route to Apothecary'] : bestSource.includes('Forge') ? ['Route to Forge'] : [];
     records.push(makeRecord({
       id: `item.${id}`,
-      title: item.name ?? titleCaseId(id),
+      title: itemTitle,
       categoryLabel: 'Items',
-      plain: `${item.name ?? titleCaseId(id)} is a live item record from current content.`,
+      plain: uses.length > 0
+        ? `{item|${itemTitle}} is used by ${useLine}. Confirm its {term|Best Source} before spending, selling, or farming for it.`
+        : `{item|${itemTitle}} has no live sink recorded yet. Keep a reserve if the source is unclear, then treat extra copies as lower priority.`,
       why: uses.length > 0
-        ? `The archive found live sinks for this item: ${uses.join(', ')}.`
-        : 'No live sink is currently recorded; this may be safe to sell unless another system marks it needed.',
+        ? `This item matters because a live system consumes or awards it: ${useLine}.`
+        : 'No live sink is currently recorded; the archive will not claim a requirement it cannot prove.',
       how: bestSource === 'Unresolved source'
         ? 'No authoritative source was resolved from live content.'
-        : `Best source: ${bestSource}.`,
-      used: uses.join(', ') || 'No live sink recorded.',
+        : `{term|Best Source}: ${bestSource}.`,
+      used: useLine,
       tags: ['item', item.category ?? 'unknown', uses.length === 0 ? 'safe to sell' : 'do not sell'],
       related: uses,
-      route: bestSource.includes('Apothecary') ? ['Route to Apothecary'] : bestSource.includes('Forge') ? ['Route to Forge'] : [],
+      route: itemRoute,
       sourceUse: [
-        { id: `item-${id}-best-source`, label: 'Best Source', value: bestSource, kind: bestSource === 'Unresolved source' ? 'debug' : 'source', routeLabel: bestSource.includes('Apothecary') ? 'Route to Apothecary' : bestSource.includes('Forge') ? 'Route to Forge' : undefined },
-        { id: `item-${id}-used-for`, label: 'Used For', value: uses.join(', ') || 'No live sink recorded', kind: uses.length > 0 ? 'usedFor' : 'debug' },
+        { id: `item-${id}-best-source`, label: 'Best Source', value: bestSource, kind: bestSource === 'Unresolved source' ? 'debug' : 'source', routeLabel: itemRoute[0] },
+        { id: `item-${id}-used-for`, label: 'Used For', value: useLine, kind: uses.length > 0 ? 'usedFor' : 'debug' },
       ],
       sourceFamily: 'items',
       sourceId: id,
@@ -357,14 +362,17 @@ export function buildGeneratedPavilionRecords(args: { content: any | null | unde
 
   asArray(content.techniques).forEach((tech: any) => {
     const id = String(tech.id);
+    const techniqueTitle = tech.name ?? titleCaseId(id);
+    const pathLabel = tech.path ? titleCaseId(tech.path) : 'unknown';
+    const typeLabel = tech.type ?? 'technique';
     records.push(makeRecord({
       id: `technique.${id}`,
-      title: tech.name ?? titleCaseId(id),
+      title: techniqueTitle,
       categoryLabel: 'Manuals',
-      plain: `${tech.name ?? titleCaseId(id)} is a ${tech.path ?? 'unknown'} path technique used in buildcraft and combat loadouts.`,
-      why: 'Technique records expose ownership, path fit, and buildcraft routing where runtime data is available.',
-      how: 'Known source route: Manual Pavilion when a pool or manual source is available.',
-      used: `${tech.type ?? 'Technique'} slot support for combat loadouts.`,
+      plain: `{term|${techniqueTitle}} is a ${pathLabel} path ${typeLabel}. It helps only after you learn it, equip it, and let the AI profile use its role.`,
+      why: 'Technique records matter when a fight problem is really a loadout, mastery, cooldown, or AI-profile problem.',
+      how: '{term|Best Source}: Manual Pavilion when a pool or manual source is available.',
+      used: `${typeLabel} slot support for combat loadouts.`,
       tags: ['technique', `path ${tech.path ?? 'unknown'}`, tech.type ?? 'technique'],
       related: ['Manual Pavilion', 'Loadout'],
       route: ['Route to Techniques', 'Route to Manual Pavilion'],

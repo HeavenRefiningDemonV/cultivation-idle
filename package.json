@@ -44,6 +44,7 @@
     "release:runtime-diagnostics": "tsc --project tsconfig.tests.json && NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node tmp-tests/scripts/release/runRuntimeDiagnostics.js",
     "release:runtime-diagnostics:json": "npm run release:runtime-diagnostics -- --json",
     "release:menu-interactions-audit": "node --experimental-strip-types scripts/release/auditMenuInteractions.ts",
+    "release:pavilion-overflow-audit": "playwright test tests/e2e/pavilion-overflow.spec.ts",
     "test:e2e": "playwright test",
     "release:vocab-audit": "NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node --experimental-strip-types scripts/release/auditVocabulary.ts",
     "release:vocab-audit:json": "npm run release:vocab-audit -- --json",

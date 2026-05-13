@@ -16,6 +16,12 @@ export function isPavilionExactFixtureRouteEnabled(): boolean {
   return params.get('pavilionExact') === 'fixture' || params.get('recordsExact') === 'fixture';
 }
 
+export function getPavilionExactFixtureEntryId(): string | null {
+  if (typeof window === 'undefined') return null;
+  const params = new URLSearchParams(window.location.search);
+  return params.get('pavilionEntry') || params.get('recordsEntry');
+}
+
 export const PAVILION_FIXTURE_RIBBON = {
   realm: 'Qi Condensation',
   path: 'Heaven Path',

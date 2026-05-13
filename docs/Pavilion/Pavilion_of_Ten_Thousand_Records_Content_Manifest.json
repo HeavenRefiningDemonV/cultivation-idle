@@ -1198,16 +1198,16 @@
       "category": "Current Life and Doctrine",
       "title": "Earth Path",
       "id": "current_life_and_doctrine.earth_path",
-      "plain": "Earth Path is a current life and doctrine record that should answer a player question, not just define a term. Earth Path favors body, defense, and survival floors. It should feel patient, grounded, and resilient. Use it to decide what this concept changes, which screen owns it, and what to do next when it appears in a blocker, reward, recipe, or milestone.",
-      "why": "It gives the player a defensive doctrine that values gear, medicine, and sustained fights. The practical value is reducing guesswork: this record should make the source, use, readiness impact, and next route visible so the player does not have to remember hidden systems.",
-      "sect": "The archive keeps this slip so a disciple can turn 'Earth Path' from a name into a route, a check, and a decision.",
-      "how": "Chosen at life start; recommendations should favor durability, armor floor, Survivor AI, and body-support Heart Laws. Start with the route buttons and the Source / Use Ledger. If this record is relevant to the current milestone, follow the first enabled route, then return here to confirm the blocker changed.",
-      "used": "Path recommendations, gate prep, gear floors, and defensive build templates. Use this record to decide whether to cultivate, prepare, fight, study, craft, route to a city building, or postpone the topic as sealed/future content.",
+      "plain": "{path|Earth Path} is the defensive cultivation route. It turns long fights into a preparation check, so your first fixes are usually {stat|HP}, {stat|Defense}, {item|armor floor}, healing, and a survival-friendly loadout.",
+      "why": "Earth wins by staying alive long enough for preparation to matter. If a gate feels safe but slow, improve technique rank or weapon floor before abandoning the doctrine.",
+      "sect": "Earth survives the strike, studies its weight, and answers with a steadier root.",
+      "how": "Chosen at life start. When Earth is your doctrine, favor durability, armor floor, Survivor AI, and body-support Heart Laws; use Forge when gear floor is the obvious bottleneck.",
+      "used": "Path recommendations, gate prep, gear floors, defensive build templates, and survival diagnosis.",
       "mistakes": [
         "Over-investing in defense until damage becomes too low.",
         "Ignoring technique rank because survival feels safe.",
-        "A strong doctrine can still lose if medicine, weapon floor, or loadout slots are neglected.",
-        "A mismatch is a warning to route around weakness, not necessarily a hard failure."
+        "Do not ignore medicine or weapon floor just because survival looks stable.",
+        "Do not abandon Earth Path over a mild resonance mismatch; route around the weak stat first."
       ],
       "related": [
         "Iron Bastion",
@@ -1226,24 +1226,24 @@
         "Route to Forge"
       ],
       "unlock": "Always visible or becomes Recorded when first encountered.",
-      "jade": "Treat path, Heart Law, spirit root, and focus as one life profile. The right question is not whether a bonus is large, but whether it supports the way this life wins gates.",
-      "elder": "Elder note: if 'Earth Path' does not point to a route, a readiness row, or a source/use decision, treat it as background knowledge rather than your next action.",
+      "jade": "Treat path, Heart Law, spirit root, and focus as one life profile. Earth asks whether this life can keep breathing when the gate stops being polite.",
+      "elder": "Elder note: if Earth feels slow, check damage floor and technique rank before changing doctrine.",
       "prior": "Prior-life note: when this topic caused delay in a previous life, pin the record and solve its source/use chain earlier in the next run.",
       "labels": {},
       "implementation": "Hand-authored",
-      "quick_rule": "Treat path, Heart Law, spirit root, and focus as one life profile. The right question is not whether a bonus is large, but whether it supports the way this life wins gates.",
+      "quick_rule": "Choose {path|Earth Path} when your run needs to survive longer fights and convert preparation into stable gate clears.",
       "when_to_read": "Read this after choosing a path, changing Heart Law, or comparing why one life feels faster, safer, or more fragile than another.",
       "player_question": "What should I do with Earth Path, and how does it change the current run?",
       "action_steps": [
-        "Check the life profile before buying manuals or changing loadouts.",
-        "Favor manuals and prep that support your path identity.",
-        "Use mismatch warnings as light steering, not as a reason to abandon a run.",
-        "Recheck doctrine after a breakthrough because slot needs and prep floors change."
+        "{action|Check your life profile}: keep Heart Law, focus, and loadout pointed at survival.",
+        "{action|Route to Forge}: raise weapon or armor floor before the next Gate Trial.",
+        "{action|Stock Medicine}: configure healing before testing a dangerous gate.",
+        "{action|Recheck doctrine}: after breakthrough, slot needs and prep floors change."
       ],
       "readiness_checks": [
-        "Path is selected and mechanically active.",
-        "Heart Law has a clear role in cultivation, survival, or combat support.",
-        "Focus mode matches the current bottleneck."
+        "{success|Path selected} and mechanically active.",
+        "Heart Law has a clear cultivation, survival, or combat-support role.",
+        "Loadout and AI profile support sustained fights."
       ],
       "best_sources": [
         "Forge for weapon/armor floor, refine, temper, and gear services."
@@ -1252,15 +1252,15 @@
         "If ore is missing, run ore-focused expedition or the current city material route before forging."
       ],
       "numbers_to_watch": [
-        "Path modifiers",
-        "Heart Law chapter/comprehension",
-        "Focus mode effects",
-        "Loadout slot fill",
-        "Gate readiness"
+        "{stat|HP / Defense}",
+        "{stat|Armor floor}",
+        "{stat|Medicine count}",
+        "{stat|Loadout slot fill}",
+        "{stat|Gate readiness}"
       ],
       "diagnosis": [
-        "A strong doctrine can still lose if medicine, weapon floor, or loadout slots are neglected.",
-        "A mismatch is a warning to route around weakness, not necessarily a hard failure."
+        "{warning|A strong doctrine can still lose} if medicine, weapon floor, or loadout slots are neglected.",
+        "A mismatch is a steering note, not always a reason to abandon the run."
       ]
     },
     {

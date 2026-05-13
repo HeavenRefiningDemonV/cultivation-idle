@@ -10,7 +10,7 @@ import { useTechniqueStore } from '../../stores/techniqueStore.js';
 import { useUIStore } from '../../stores/uiStore.js';
 import { usePavilionStore } from '../../stores/pavilionStore.js';
 import { buildPavilionSurface } from './buildPavilionSurface.js';
-import { isPavilionExactFixtureRouteEnabled, PAVILION_DEFAULT_ENTRY_ID } from './pavilionPresentation.js';
+import { getPavilionExactFixtureEntryId, isPavilionExactFixtureRouteEnabled, PAVILION_DEFAULT_ENTRY_ID } from './pavilionPresentation.js';
 import { PavilionExactScreen } from './PavilionExactScreen.js';
 import { executePavilionRouteAction } from './pavilionRouteActions.js';
 import type { PavilionRouteButtonSurface, PavilionRuntimeSnapshot, PavilionSaveState } from './pavilionTypes.js';
@@ -74,9 +74,10 @@ export function PavilionScreenOwner() {
   const openWorldBuildingModal = useUIStore((state) => state.openWorldBuildingModal);
   const addNotification = useUIStore((state) => state.addNotification);
   const mode = isPavilionExactFixtureRouteEnabled() ? 'fixture' : 'live';
+  const fixtureEntryId = mode === 'fixture' ? getPavilionExactFixtureEntryId() : null;
 
   const pavilionSave = useMemo<PavilionSaveState>(() => ({
-    selectedEntryId,
+    selectedEntryId: fixtureEntryId ?? selectedEntryId,
     selectedCategoryId,
     searchQuery,
     activeFilters,
@@ -94,6 +95,7 @@ export function PavilionScreenOwner() {
     activeFilters,
     dismissedGuidanceIds,
     entryUnlockVersion,
+    fixtureEntryId,
     masteredEntryIds,
     pinnedEntryIds,
     priorLifeAnnotations,

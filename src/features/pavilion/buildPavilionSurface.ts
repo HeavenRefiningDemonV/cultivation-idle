@@ -1,6 +1,10 @@
 import type {
+  PavilionActionChipSurface,
   PavilionCategorySurface,
   PavilionEntrySurface,
+  PavilionGuidanceGroupSurface,
+  PavilionInfoChipSurface,
+  PavilionSectionRowSurface,
   PavilionRecord,
   PavilionRecordListSurface,
   PavilionRecordState,
@@ -79,7 +83,7 @@ function pickSelectedEntry(args: {
   const { records, saveState, runtime, mode } = args;
   const byId = new Map(records.map((record) => [record.id, record]));
   const preferredIds = mode === 'fixture'
-    ? [PAVILION_DEFAULT_ENTRY_ID]
+    ? [saveState.selectedEntryId, PAVILION_DEFAULT_ENTRY_ID]
     : [
         saveState.selectedEntryId,
         runtime.recommendedEntryIds[0],
@@ -147,7 +151,7 @@ function buildGuidanceRows(
   values: readonly string[] | undefined,
   idPrefix: string,
   status: 'complete' | 'warning' | 'open' | 'sealed' = 'open',
-): PavilionEntrySurface['sections'][number]['rows'] {
+): PavilionSectionRowSurface[] {
   return (values ?? [])
     .filter((value) => value.trim().length > 0)
     .slice(0, 8)
@@ -170,6 +174,373 @@ function buildSourceUse(record: PavilionRecord, mode: 'fixture' | 'live'): Pavil
   return [
     { id: 'source', label: 'Known From', value: record.implementation, kind: record.debug.generated ? 'source' : 'debug' },
   ];
+}
+
+function richToken(kind: 'term' | 'item' | 'stat' | 'route' | 'warning' | 'success' | 'action' | 'path' | 'realm', text: string): string {
+  return `{${kind}|${text}}`;
+}
+
+function uniqueNonEmpty(values: readonly (string | undefined | null)[]): string[] {
+  const seen = new Set<string>();
+  const result: string[] = [];
+  values.forEach((value) => {
+    const trimmed = value?.trim();
+    if (!trimmed || seen.has(trimmed)) return;
+    seen.add(trimmed);
+    result.push(trimmed);
+  });
+  return result;
+}
+
+function rowFromText(
+  text: string,
+  idPrefix: string,
+  index: number,
+  status: PavilionSectionRowSurface['status'] = 'open',
+): PavilionSectionRowSurface {
+  return {
+    id: `${idPrefix}-${index}`,
+    label: text,
+    status,
+  };
+}
+
+function rowsFromValues(
+  values: readonly string[] | undefined,
+  idPrefix: string,
+  status: PavilionSectionRowSurface['status'] = 'open',
+  limit = 8,
+): PavilionSectionRowSurface[] {
+  return uniqueNonEmpty(values ?? [])
+    .slice(0, limit)
+    .map((value, index) => rowFromText(value, idPrefix, index, status));
+}
+
+function pathQuickAnswer(record: PavilionRecord): string | null {
+  const normalizedTitle = record.title.toLowerCase();
+  if (!record.tags.some((tag) => tag.toLowerCase() === 'path') && !normalizedTitle.endsWith(' path')) {
+    return null;
+  }
+
+  if (normalizedTitle.includes('earth')) {
+    return `${richToken('path', record.title)} is the defensive cultivation route. It rewards ${richToken('stat', 'HP')}, ${richToken('stat', 'Defense')}, ${richToken('item', 'armor floor')}, and ${richToken('action', 'survival AI')} more than raw burst damage.`;
+  }
+
+  if (normalizedTitle.includes('heaven')) {
+    return `${richToken('path', record.title)} is the clarity and resonance route. It rewards clean doctrine fit, cultivation rhythm, and technique choices that keep the life profile coherent.`;
+  }
+
+  if (normalizedTitle.includes('martial')) {
+    return `${richToken('path', record.title)} is the combat pressure route. It rewards weapon floor, offensive technique timing, and loadouts that end dangerous fights before attrition wins.`;
+  }
+
+  return `${richToken('path', record.title)} defines this life profile. Read it as a route and build check, not just a doctrine label.`;
+}
+
+function buildQuickAnswer(record: PavilionRecord): string {
+  const pathAnswer = pathQuickAnswer(record);
+  if (pathAnswer) return pathAnswer;
+
+  if (record.id === PAVILION_DEFAULT_ENTRY_ID || record.id.startsWith('trial.')) {
+    return `${richToken('term', record.title)} is the threshold check where cultivation progress must become prepared power. Clear it, use the safety net if eligible, then return to ${richToken('route', 'Cultivation')} for the breakthrough handoff.`;
+  }
+
+  if (record.debug.generated && record.categoryId === 'items') {
+    return `${richToken('item', record.title)} is a live item record. Check ${richToken('term', 'Best Source')} and ${richToken('term', 'Used For')} before spending, selling, or farming for it.`;
+  }
+
+  if (record.debug.generated && record.id.startsWith('technique.')) {
+    return `${richToken('term', record.title)} only changes combat after it is learned, equipped, and selected by an AI profile that can use its role.`;
+  }
+
+  if (record.quickRule?.trim()) return record.quickRule;
+  return record.plain;
+}
+
+function buildBriefActions(record: PavilionRecord, routeButtons: PavilionEntrySurface['routeButtons']): PavilionActionChipSurface[] {
+  const routeActions = routeButtons
+    .filter((button) => button.enabled)
+    .slice(0, 2)
+    .map<PavilionActionChipSurface>((button) => ({
+      id: `route-${button.id}`,
+      label: button.label,
+      tone: 'route',
+      routeLabel: button.label,
+      status: 'open',
+    }));
+
+  const authoredActions = uniqueNonEmpty(record.actionSteps ?? [])
+    .slice(0, Math.max(1, 3 - routeActions.length))
+    .map<PavilionActionChipSurface>((label, index) => ({
+      id: `action-${index}`,
+      label,
+      tone: label.toLowerCase().includes('warning') ? 'warning' : 'action',
+      status: 'open',
+    }));
+
+  const fallbackActions: PavilionActionChipSurface[] = routeActions.length || authoredActions.length
+    ? []
+    : [{
+        id: 'action-read-ledger',
+        label: 'Read source and use ledger',
+        tone: 'action',
+        status: 'open',
+      }];
+
+  return [...routeActions, ...authoredActions, ...fallbackActions].slice(0, 4);
+}
+
+function buildBriefWatch(record: PavilionRecord, runtime: PavilionRuntimeSnapshot): PavilionInfoChipSurface[] {
+  const pathWatch = record.id === 'current_life_and_doctrine.earth_path'
+    ? ['HP / Defense', 'Armor floor', 'Medicine count', 'Survival AI']
+    : [];
+  const runtimeWatch = [
+    runtime.path !== 'No Path Selected' && record.tags.includes('path') ? `Current path: ${runtime.path}` : null,
+    runtime.medicineWeak ? 'Medicine weak' : null,
+    runtime.loadoutComplete ? 'Loadout complete' : null,
+  ];
+  return uniqueNonEmpty([
+    ...pathWatch,
+    ...runtimeWatch,
+    ...(record.numbersToWatch ?? []),
+  ])
+    .slice(0, 6)
+    .map<PavilionInfoChipSurface>((label, index) => ({
+      id: `watch-${index}`,
+      label,
+      tone: label.toLowerCase().includes('medicine weak') ? 'warning' : label.toLowerCase().includes('path') ? 'path' : 'stat',
+      status: label.toLowerCase().includes('weak') ? 'warning' : 'open',
+    }));
+}
+
+function buildBriefWarnings(
+  record: PavilionRecord,
+  currentRelevance: PavilionEntrySurface['currentRelevance'],
+): PavilionInfoChipSurface[] {
+  return uniqueNonEmpty([
+    currentRelevance?.tone === 'warning' ? `${currentRelevance.label}: ${currentRelevance.body}` : null,
+    ...(record.diagnosis ?? []),
+    ...(record.mistakes ?? []),
+  ])
+    .slice(0, 3)
+    .map<PavilionInfoChipSurface>((label, index) => ({
+      id: `warning-${index}`,
+      label,
+      tone: 'warning',
+      status: 'warning',
+    }));
+}
+
+function buildRecordBrief(args: {
+  record: PavilionRecord;
+  routeButtons: PavilionEntrySurface['routeButtons'];
+  currentRelevance: PavilionEntrySurface['currentRelevance'];
+  runtime: PavilionRuntimeSnapshot;
+}): PavilionEntrySurface['recordBrief'] {
+  const routeLabels = args.routeButtons
+    .filter((button) => button.enabled)
+    .map((button) => button.label);
+
+  return {
+    quickAnswer: buildQuickAnswer(args.record),
+    currentUse: args.currentRelevance
+      ? `${args.currentRelevance.label}: ${args.currentRelevance.body}`
+      : undefined,
+    doNext: buildBriefActions(args.record, args.routeButtons),
+    watch: buildBriefWatch(args.record, args.runtime),
+    warnings: buildBriefWarnings(args.record, args.currentRelevance),
+    routeLabels,
+  };
+}
+
+function buildSourceRows(
+  record: PavilionRecord,
+  sourceUseBlocks: PavilionEntrySurface['sourceUseBlocks'],
+): PavilionSectionRowSurface[] {
+  return [
+    ...rowsFromValues(record.bestSources, 'best-source', 'complete'),
+    ...sourceUseBlocks
+      .filter((block) => block.kind === 'source' || block.label.toLowerCase().includes('source') || block.label.toLowerCase().includes('route'))
+      .map<PavilionSectionRowSurface>((block) => ({
+        id: `source-${block.id}`,
+        label: block.label,
+        value: block.value,
+        status: block.kind === 'debug' ? 'warning' : 'complete',
+        routeLabel: block.routeLabel,
+      })),
+    ...rowsFromValues(record.fallbackSources, 'fallback-source', 'open'),
+  ];
+}
+
+function buildUsedForRows(
+  sourceUseBlocks: PavilionEntrySurface['sourceUseBlocks'],
+): PavilionSectionRowSurface[] {
+  return sourceUseBlocks
+    .filter((block) => block.kind === 'usedFor' || block.kind === 'requirement' || /used|consumed|unlock|found/i.test(block.label))
+    .map((block) => ({
+      id: `use-${block.id}`,
+      label: block.label,
+      value: block.value,
+      status: block.kind === 'requirement' ? 'open' as const : 'complete' as const,
+      routeLabel: block.routeLabel,
+    }));
+}
+
+function pushGuidanceGroup(
+  groups: PavilionGuidanceGroupSurface[],
+  group: PavilionGuidanceGroupSurface,
+): void {
+  const hasBody = typeof group.body === 'string' && group.body.trim().length > 0;
+  const hasRows = Boolean(group.rows?.length);
+  if (!hasBody && !hasRows) return;
+  groups.push(group);
+}
+
+function buildGuidanceGroups(args: {
+  record: PavilionRecord;
+  sourceUseBlocks: PavilionEntrySurface['sourceUseBlocks'];
+  routeButtons: PavilionEntrySurface['routeButtons'];
+  relatedEntries: PavilionEntrySurface['relatedEntries'];
+  currentRelevance: PavilionEntrySurface['currentRelevance'];
+}): PavilionGuidanceGroupSurface[] {
+  const { record, sourceUseBlocks, routeButtons, relatedEntries, currentRelevance } = args;
+  const groups: PavilionGuidanceGroupSurface[] = [];
+  const requirementRows = [
+    ...rowsFromValues(record.readinessChecks, 'readiness', 'open'),
+    ...(record.unlock ? [rowFromText(record.unlock, 'unlock', 0, record.state === 'sealed' ? 'sealed' : 'open')] : []),
+  ];
+  const routeRows = routeButtons.map<PavilionSectionRowSurface>((button) => ({
+    id: button.id,
+    label: button.label,
+    value: button.enabled ? undefined : button.disabledReason,
+    status: button.enabled ? 'open' : 'sealed',
+    routeLabel: button.label,
+  }));
+  const sourceRows = buildSourceRows(record, sourceUseBlocks);
+  const usedForRows = buildUsedForRows(sourceUseBlocks);
+  const mistakeRows = [
+    ...rowsFromValues(record.mistakes, 'mistake', 'warning', 5),
+    ...rowsFromValues(record.diagnosis, 'diagnosis', 'warning', 5),
+  ];
+
+  pushGuidanceGroup(groups, {
+    id: 'answer',
+    type: 'answer',
+    title: 'What It Means',
+    column: 'main',
+    tone: 'positive',
+    body: record.plain,
+  });
+  pushGuidanceGroup(groups, {
+    id: 'why',
+    type: 'why',
+    title: 'Why It Matters Now',
+    column: 'main',
+    tone: currentRelevance?.tone === 'warning' ? 'warning' : 'plain',
+    body: uniqueNonEmpty([
+      currentRelevance ? `${currentRelevance.label}: ${currentRelevance.body}` : null,
+      record.why,
+      record.whenToRead,
+    ]).join(' '),
+  });
+  pushGuidanceGroup(groups, {
+    id: 'do-next',
+    type: 'do-next',
+    title: 'What To Do Next',
+    column: 'main',
+    tone: 'action',
+    rows: [
+      ...rowsFromValues(record.actionSteps, 'action', 'open', 5),
+      ...routeRows,
+    ],
+  });
+  pushGuidanceGroup(groups, {
+    id: 'requirements',
+    type: 'requirements',
+    title: 'Requirements',
+    column: 'side',
+    tone: record.state === 'sealed' ? 'warning' : 'plain',
+    rows: requirementRows,
+  });
+  pushGuidanceGroup(groups, {
+    id: 'sources',
+    type: 'sources',
+    title: 'Best Source',
+    column: 'side',
+    tone: 'source',
+    body: record.how,
+    rows: sourceRows,
+  });
+  pushGuidanceGroup(groups, {
+    id: 'used-for',
+    type: 'used-for',
+    title: 'What Uses This',
+    column: 'side',
+    tone: 'plain',
+    body: record.used,
+    rows: usedForRows,
+  });
+  pushGuidanceGroup(groups, {
+    id: 'numbers',
+    type: 'numbers',
+    title: 'Numbers To Watch',
+    column: 'side',
+    tone: 'muted',
+    rows: rowsFromValues(record.numbersToWatch, 'number', 'open', 8),
+  });
+  pushGuidanceGroup(groups, {
+    id: 'mistakes',
+    type: 'mistakes',
+    title: 'Common Mistakes',
+    column: 'main',
+    tone: 'warning',
+    rows: mistakeRows,
+  });
+  pushGuidanceGroup(groups, {
+    id: 'lore',
+    type: 'lore',
+    title: 'Jade Slip',
+    column: 'main',
+    tone: 'lore',
+    body: uniqueNonEmpty([record.jade, record.sect, record.elder ?? undefined, record.prior ?? undefined]).join(' '),
+  });
+  pushGuidanceGroup(groups, {
+    id: 'relations',
+    type: 'relations',
+    title: 'Related Records',
+    column: 'main',
+    tone: 'muted',
+    rows: relatedEntries.slice(0, 12).map((entry) => ({
+      id: entry.id,
+      label: entry.label,
+      value: entry.unresolved ? 'Missing Relation' : undefined,
+      status: entry.unresolved ? 'warning' : 'open',
+    })),
+  });
+  pushGuidanceGroup(groups, {
+    id: 'debug',
+    type: 'debug',
+    title: 'Archive Metadata',
+    column: 'side',
+    tone: 'muted',
+    rows: [
+      ...(record.debug.generated
+        ? [{
+            id: 'debug-source',
+            label: 'Generated from',
+            value: `${record.debug.sourceFamily ?? 'runtime content'}${record.debug.sourceId ? ` / ${record.debug.sourceId}` : ''}`,
+            status: 'open' as const,
+          }]
+        : []),
+      ...record.debug.unresolvedRelations.map<PavilionSectionRowSurface>((relation, index) => ({
+        id: `debug-unresolved-${index}`,
+        label: relation,
+        status: 'warning' as const,
+      })),
+    ],
+  });
+
+  return groups;
 }
 
 function buildRouteButtons(
@@ -416,6 +787,19 @@ function buildEntrySurface(
         relatedEntries,
         currentRelevance,
       });
+  const recordBrief = buildRecordBrief({
+    record,
+    routeButtons,
+    currentRelevance,
+    runtime,
+  });
+  const guidanceGroups = buildGuidanceGroups({
+    record,
+    sourceUseBlocks,
+    routeButtons,
+    relatedEntries,
+    currentRelevance,
+  });
   return {
     id: record.id,
     title: record.title,
@@ -426,6 +810,8 @@ function buildEntrySurface(
     signals: record.signals ?? (isFixtureFoundation ? ['recommendedNow', 'warning'] : []),
     tags: buildTags(record),
     sections,
+    recordBrief,
+    guidanceGroups,
     requirements: sections.find((section) => section.id === 'hard-requirements')?.rows?.map((row) => ({
       id: row.id,
       label: row.label,
@@ -604,8 +990,12 @@ export function buildPavilionSurface(args: BuildPavilionSurfaceArgs): PavilionSu
     runtime,
     mode: args.mode,
   });
+  const fixtureRecordOverride = args.mode === 'fixture'
+    && Boolean(saveState.selectedEntryId)
+    && selectedRecord.id === saveState.selectedEntryId
+    && selectedRecord.id !== PAVILION_DEFAULT_ENTRY_ID;
   const selectedCategoryId = args.mode === 'fixture'
-    ? 'gate-trials'
+    ? fixtureRecordOverride ? selectedRecord.categoryId : 'gate-trials'
     : saveState.selectedCategoryId ?? selectedRecord.categoryId;
   const selectedCategoryLabel = args.manifest.global_labels.navigation_tabs.find((label) => (
     normalizePavilionCategoryId(label) === selectedCategoryId

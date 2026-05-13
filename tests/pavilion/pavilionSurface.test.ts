@@ -29,15 +29,11 @@ test('fixture surface locks the Foundation Gate mockup contract', () => {
     'Your foundation is close. Stock healing pills before challenging the gate.',
   );
 
-  const sectionTitles = surface.selectedEntry.sections.map((section) => section.title);
-  assert.deepEqual(sectionTitles, [
-    'Plain Meaning',
-    'Current Relevance',
-    'Hard Requirements',
-    'How to Prepare',
-    'Used For',
-    'Common Mistake',
-  ]);
+  assert.equal(surface.selectedEntry.recordBrief.quickAnswer.includes('Foundation Gate'), true);
+  assert.ok(surface.selectedEntry.recordBrief.doNext.length >= 2);
+  assert.ok(surface.selectedEntry.recordBrief.watch.some((chip) => chip.label.includes('Medicine')));
+  assert.ok(surface.selectedEntry.guidanceGroups.some((group) => group.type === 'requirements'));
+  assert.ok(surface.selectedEntry.guidanceGroups.some((group) => group.type === 'mistakes'));
 
   assert.equal(surface.rightRail.title, 'Threads of Karma');
   assert.ok(surface.rightRail.blocks.some((block) => block.title === 'Best Source' && block.items[0]?.label === 'Apothecary'));
@@ -50,4 +46,18 @@ test('fixture surface locks the Foundation Gate mockup contract', () => {
     'Gate Trials',
     'Foundation Gate',
   ]);
+});
+
+test('fixture surface can target a specific record for readability capture', () => {
+  const manifest = validatePavilionRecordsManifest(loadPavilionManifestFixture());
+  const surface = buildPavilionSurface({
+    mode: 'fixture',
+    manifest,
+    pavilionState: { selectedEntryId: 'current_life_and_doctrine.earth_path' },
+    nowMs: 123,
+  });
+
+  assert.equal(surface.meta.selectedEntryId, 'current_life_and_doctrine.earth_path');
+  assert.equal(surface.selectedEntry.title, 'Earth Path');
+  assert.equal(surface.meta.selectedCategoryId, 'current-life');
 });

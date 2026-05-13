@@ -133,6 +133,54 @@ export interface PavilionSectionRowSurface {
   routeAction?: PavilionRouteActionKind;
 }
 
+export interface PavilionActionChipSurface {
+  id: string;
+  label: string;
+  tone: 'action' | 'route' | 'warning' | 'success' | 'muted';
+  routeLabel?: string;
+  status?: PavilionSectionRowSurface['status'];
+}
+
+export interface PavilionInfoChipSurface {
+  id: string;
+  label: string;
+  value?: string;
+  tone: 'term' | 'item' | 'stat' | 'warning' | 'success' | 'path' | 'realm' | 'muted';
+  status?: PavilionSectionRowSurface['status'];
+}
+
+export interface PavilionRecordBriefSurface {
+  quickAnswer: string;
+  currentUse?: string;
+  doNext: PavilionActionChipSurface[];
+  watch: PavilionInfoChipSurface[];
+  warnings: PavilionInfoChipSurface[];
+  routeLabels: string[];
+}
+
+export type PavilionGuidanceGroupType =
+  | 'answer'
+  | 'why'
+  | 'do-next'
+  | 'requirements'
+  | 'sources'
+  | 'used-for'
+  | 'numbers'
+  | 'mistakes'
+  | 'lore'
+  | 'relations'
+  | 'debug';
+
+export interface PavilionGuidanceGroupSurface {
+  id: string;
+  type: PavilionGuidanceGroupType;
+  title: string;
+  column: 'main' | 'side';
+  tone: 'plain' | 'warning' | 'positive' | 'muted' | 'lore' | 'source' | 'action';
+  body?: string;
+  rows?: PavilionSectionRowSurface[];
+}
+
 export interface PavilionRequirementSurface {
   id: string;
   label: string;
@@ -202,6 +250,8 @@ export interface PavilionEntrySurface {
   signals: PavilionRecordSignal[];
   tags: PavilionTagSurface[];
   sections: PavilionEntrySectionSurface[];
+  recordBrief: PavilionRecordBriefSurface;
+  guidanceGroups: PavilionGuidanceGroupSurface[];
   requirements: PavilionRequirementSurface[];
   sourceUseBlocks: PavilionSourceUseSurface[];
   routeButtons: PavilionRouteButtonSurface[];
