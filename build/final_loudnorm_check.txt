@@ -1,0 +1,30 @@
+[aist#0:0/pcm_s16le @ 0000022b6cb3d8c0] Guessed Channel Layout: stereo
+Input #0, wav, from 'C:\Users\abdul\Desktop\cultivation-idle\dist\Cultivation_Idle_Story_Edit_v1.wav':
+  Metadata:
+    encoder         : Lavf61.7.100
+  Duration: 00:00:26.92, bitrate: 1536 kb/s
+  Stream #0:0: Audio: pcm_s16le ([1][0][0][0] / 0x0001), 48000 Hz, stereo, s16, 1536 kb/s
+Stream mapping:
+  Stream #0:0 -> #0:0 (pcm_s16le (native) -> pcm_s16le (native))
+Press [q] to stop, [?] for help
+Output #0, null, to 'pipe:':
+  Metadata:
+    encoder         : Lavf61.7.100
+  Stream #0:0: Audio: pcm_s16le, 192000 Hz, stereo, s16, 6144 kb/s
+      Metadata:
+        encoder         : Lavc61.19.100 pcm_s16le
+[Parsed_loudnorm_0 @ 0000022b6ca0aa80] 
+{
+	"input_i" : "-15.94",
+	"input_tp" : "-1.08",
+	"input_lra" : "4.10",
+	"input_thresh" : "-26.01",
+	"output_i" : "-16.47",
+	"output_tp" : "-2.13",
+	"output_lra" : "4.00",
+	"output_thresh" : "-26.53",
+	"normalization_type" : "dynamic",
+	"target_offset" : "0.47"
+}
+[out#0/null @ 0000022b6cb3da80] video:0KiB audio:20189KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: unknown
+size=N/A time=00:00:27.00 bitrate=N/A speed=54.5x    

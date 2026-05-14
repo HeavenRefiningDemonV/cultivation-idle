@@ -1,0 +1,26 @@
+[aist#0:0/pcm_s16le @ 000002472f4cd8c0] Guessed Channel Layout: stereo
+Input #0, wav, from 'C:\Users\abdul\Desktop\cultivation-idle\dist\Cultivation_Idle_Story_Edit_v1.wav':
+  Metadata:
+    encoder         : Lavf61.7.100
+  Duration: 00:00:26.92, bitrate: 1536 kb/s
+  Stream #0:0: Audio: pcm_s16le ([1][0][0][0] / 0x0001), 48000 Hz, stereo, s16, 1536 kb/s
+[Parsed_volumedetect_0 @ 000002472f4d13c0] n_samples: 0
+Stream mapping:
+  Stream #0:0 -> #0:0 (pcm_s16le (native) -> pcm_s16le (native))
+Press [q] to stop, [?] for help
+Output #0, null, to 'pipe:':
+  Metadata:
+    encoder         : Lavf61.7.100
+  Stream #0:0: Audio: pcm_s16le, 48000 Hz, stereo, s16, 1536 kb/s
+      Metadata:
+        encoder         : Lavc61.19.100 pcm_s16le
+[Parsed_volumedetect_0 @ 000002472db88440] n_samples: 2584224
+[Parsed_volumedetect_0 @ 000002472db88440] mean_volume: -17.4 dB
+[Parsed_volumedetect_0 @ 000002472db88440] max_volume: -1.3 dB
+[Parsed_volumedetect_0 @ 000002472db88440] histogram_1db: 17
+[Parsed_volumedetect_0 @ 000002472db88440] histogram_2db: 129
+[Parsed_volumedetect_0 @ 000002472db88440] histogram_3db: 429
+[Parsed_volumedetect_0 @ 000002472db88440] histogram_4db: 908
+[Parsed_volumedetect_0 @ 000002472db88440] histogram_5db: 2138
+[out#0/null @ 000002472f4cda80] video:0KiB audio:5047KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: unknown
+size=N/A time=00:00:26.91 bitrate=N/A speed=5.24e+03x    

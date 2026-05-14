@@ -1,0 +1,38 @@
+Input #0, mov,mp4,m4a,3gp,3g2,mj2, from 'C:\Users\abdul\Desktop\cultivation-idle\Vids\Cultivation Idle Story.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+    encoder         : https://clipchamp.com
+    comment         : Create videos with https://clipchamp.com/en/video-editor - free online video editor, video compressor, video converter.
+  Duration: 00:00:26.90, start: 0.000000, bitrate: 17027 kb/s
+  Stream #0:0[0x1](und): Video: h264 (Main) (avc1 / 0x31637661), yuv420p(progressive), 1920x1080 [SAR 1:1 DAR 16:9], 16829 kb/s, 30 fps, 30 tbr, 15360 tbn (default)
+      Metadata:
+        handler_name    : VideoHandler
+        vendor_id       : [0][0][0][0]
+  Stream #0:1[0x2](und): Audio: aac (LC) (mp4a / 0x6134706D), 48000 Hz, stereo, fltp, 192 kb/s (default)
+      Metadata:
+        handler_name    : SoundHandler
+        vendor_id       : [0][0][0][0]
+[Parsed_volumedetect_0 @ 0000024296250500] n_samples: 0
+Stream mapping:
+  Stream #0:1 -> #0:0 (aac (native) -> pcm_s16le (native))
+Press [q] to stop, [?] for help
+Output #0, null, to 'pipe:':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+    comment         : Create videos with https://clipchamp.com/en/video-editor - free online video editor, video compressor, video converter.
+    encoder         : Lavf61.7.100
+  Stream #0:0(und): Audio: pcm_s16le, 48000 Hz, stereo, s16, 1536 kb/s (default)
+      Metadata:
+        handler_name    : SoundHandler
+        vendor_id       : [0][0][0][0]
+        encoder         : Lavc61.19.100 pcm_s16le
+[Parsed_volumedetect_0 @ 0000024295fd19c0] n_samples: 2580480
+[Parsed_volumedetect_0 @ 0000024295fd19c0] mean_volume: -91.0 dB
+[Parsed_volumedetect_0 @ 0000024295fd19c0] max_volume: -91.0 dB
+[Parsed_volumedetect_0 @ 0000024295fd19c0] histogram_91db: 2580480
+[out#0/null @ 0000024295fae300] video:0KiB audio:5040KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: unknown
+size=N/A time=00:00:26.88 bitrate=N/A speed=2.13e+03x    
