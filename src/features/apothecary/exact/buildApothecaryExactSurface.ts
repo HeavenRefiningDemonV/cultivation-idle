@@ -379,7 +379,7 @@ function buildLivePrescriptionRows(args: {
   const packageDef = getGatePrepPackageForCity(args.cityId);
   const packageLines = packageDef?.directCore ?? [];
   if (packageLines.length > 0) {
-    return packageLines.map((line) => createLivePrescriptionRow({ ...args, line }));
+    return packageLines.map((line) => createLivePrescriptionRow({ ...args, line })).slice(0, 4);
   }
 
   return (args.shop?.stock ?? []).slice(0, 3).map((entry) =>

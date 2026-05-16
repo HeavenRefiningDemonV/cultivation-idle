@@ -63,7 +63,7 @@ function asset(
 }
 
 export const APOTHECARY_EXACT_ASSETS: ApothecaryExactAssetMap = {
-  'room.scenicPlate': asset('room.scenicPlate', roomScenicPlate, 'historical full 2048x1152 apothecary room plate, no longer rendered by exact screen', 'src/assets/apothecaryExact/room/apothecary_room_scenic_plate.png'),
+  'room.scenicPlate': asset('room.scenicPlate', roomScenicPlate, 'low-opacity Apothecary room atmosphere layer behind exact-screen chrome', 'src/assets/apothecaryExact/room/apothecary_room_scenic_plate.png'),
   'frames.prescription': asset('frames.prescription', prescriptionFrame, 'historical central prescription parchment frame, replaced by CSS parchment', 'src/assets/apothecaryExact/frames/prescription_parchment_frame_cropped.png'),
   'objects.medicinePouch': asset('objects.medicinePouch', medicinePouchObject, 'cropped large right medicine pouch object', 'src/assets/apothecaryExact/objects/medicine_pouch_object_cropped.png', true),
   'frames.primaryCta': asset('frames.primaryCta', goldCtaPlaque, 'historical gold Prepare Foundation Package CTA plaque, replaced by CSS plaque', 'src/assets/apothecaryExact/frames/gold_cta_plaque_cropped.png'),

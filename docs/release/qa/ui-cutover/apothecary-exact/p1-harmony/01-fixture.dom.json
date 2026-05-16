@@ -1,0 +1,459 @@
+{
+  "schemaVersion": "apothecary-exact-harmony-dom-audit.v1",
+  "generatedAt": "2026-05-15T15:54:04.906Z",
+  "viewport": {
+    "width": 2048,
+    "height": 1152
+  },
+  "rootTestId": "apothecary-exact-page",
+  "rootExists": true,
+  "rootMode": "fixture",
+  "found": {
+    "header": true,
+    "cityChip": true,
+    "prepStrip": true,
+    "prescription": true,
+    "warnings": true,
+    "buyLane": true,
+    "brewLane": true,
+    "pouchCard": true,
+    "pouchObject": true,
+    "bottomActions": true,
+    "primaryCta": true,
+    "returnGate": true,
+    "attemptFit": true
+  },
+  "regions": {
+    "header": {
+      "testId": "apothecary-exact-header",
+      "exists": true,
+      "rect": {
+        "x": 74,
+        "y": 26,
+        "w": 440,
+        "h": 74
+      },
+      "target": {
+        "id": "A",
+        "className": "apothecaryExactHeader",
+        "x": 74,
+        "y": 26,
+        "w": 440,
+        "h": 74
+      },
+      "tolerance": 6,
+      "withinTolerance": true,
+      "overflow": {
+        "x": false,
+        "y": false,
+        "scrollWidth": 440,
+        "clientWidth": 440,
+        "scrollHeight": 74,
+        "clientHeight": 74
+      }
+    },
+    "cityChip": {
+      "testId": "apothecary-exact-city-chip",
+      "exists": true,
+      "rect": {
+        "x": 1328,
+        "y": 28,
+        "w": 593,
+        "h": 50
+      },
+      "target": {
+        "id": "B",
+        "className": "apothecaryExactCityChip",
+        "x": 1328,
+        "y": 28,
+        "w": 593,
+        "h": 50
+      },
+      "tolerance": 6,
+      "withinTolerance": true,
+      "overflow": {
+        "x": false,
+        "y": false,
+        "scrollWidth": 591,
+        "clientWidth": 591,
+        "scrollHeight": 48,
+        "clientHeight": 48
+      }
+    },
+    "prepStrip": {
+      "testId": "apothecary-exact-prep-strip",
+      "exists": true,
+      "rect": {
+        "x": 74,
+        "y": 114,
+        "w": 1902,
+        "h": 84
+      },
+      "target": {
+        "id": "C",
+        "className": "apothecaryExactPrepStrip",
+        "x": 74,
+        "y": 114,
+        "w": 1902,
+        "h": 84
+      },
+      "tolerance": 6,
+      "withinTolerance": true,
+      "overflow": {
+        "x": false,
+        "y": false,
+        "scrollWidth": 1902,
+        "clientWidth": 1902,
+        "scrollHeight": 84,
+        "clientHeight": 84
+      }
+    },
+    "prescription": {
+      "testId": "apothecary-exact-prescription",
+      "exists": true,
+      "rect": {
+        "x": 506,
+        "y": 210,
+        "w": 988,
+        "h": 306
+      },
+      "target": {
+        "id": "D",
+        "className": "apothecaryExactPrescription",
+        "x": 506,
+        "y": 210,
+        "w": 988,
+        "h": 306
+      },
+      "tolerance": 6,
+      "withinTolerance": true,
+      "overflow": {
+        "x": false,
+        "y": false,
+        "scrollWidth": 986,
+        "clientWidth": 986,
+        "scrollHeight": 304,
+        "clientHeight": 304
+      }
+    },
+    "warnings": {
+      "testId": "apothecary-exact-warnings",
+      "exists": true,
+      "rect": {
+        "x": 520,
+        "y": 536,
+        "w": 968,
+        "h": 40
+      },
+      "target": {
+        "id": "E",
+        "className": "apothecaryExactWarnings",
+        "x": 520,
+        "y": 536,
+        "w": 968,
+        "h": 40
+      },
+      "tolerance": 6,
+      "withinTolerance": true,
+      "overflow": {
+        "x": false,
+        "y": false,
+        "scrollWidth": 968,
+        "clientWidth": 968,
+        "scrollHeight": 40,
+        "clientHeight": 40
+      }
+    },
+    "buyLane": {
+      "testId": "apothecary-exact-buy-lane",
+      "exists": true,
+      "rect": {
+        "x": 54,
+        "y": 618,
+        "w": 510,
+        "h": 330
+      },
+      "target": {
+        "id": "F",
+        "className": "apothecaryExactBuyLane",
+        "x": 54,
+        "y": 618,
+        "w": 510,
+        "h": 330
+      },
+      "tolerance": 6,
+      "withinTolerance": true,
+      "overflow": {
+        "x": false,
+        "y": false,
+        "scrollWidth": 508,
+        "clientWidth": 508,
+        "scrollHeight": 328,
+        "clientHeight": 328
+      }
+    },
+    "brewLane": {
+      "testId": "apothecary-exact-brew-lane",
+      "exists": true,
+      "rect": {
+        "x": 670,
+        "y": 618,
+        "w": 550,
+        "h": 330
+      },
+      "target": {
+        "id": "G",
+        "className": "apothecaryExactBrewLane",
+        "x": 670,
+        "y": 618,
+        "w": 550,
+        "h": 330
+      },
+      "tolerance": 6,
+      "withinTolerance": true,
+      "overflow": {
+        "x": false,
+        "y": false,
+        "scrollWidth": 548,
+        "clientWidth": 548,
+        "scrollHeight": 328,
+        "clientHeight": 328
+      }
+    },
+    "pouchCard": {
+      "testId": "apothecary-exact-pouch-card",
+      "exists": true,
+      "rect": {
+        "x": 1348,
+        "y": 618,
+        "w": 386,
+        "h": 330
+      },
+      "target": {
+        "id": "H",
+        "className": "apothecaryExactPouchCard",
+        "x": 1348,
+        "y": 618,
+        "w": 386,
+        "h": 330
+      },
+      "tolerance": 6,
+      "withinTolerance": true,
+      "overflow": {
+        "x": false,
+        "y": false,
+        "scrollWidth": 384,
+        "clientWidth": 384,
+        "scrollHeight": 328,
+        "clientHeight": 328
+      }
+    },
+    "pouchObject": {
+      "testId": "apothecary-exact-pouch-object",
+      "exists": true,
+      "rect": {
+        "x": 1745,
+        "y": 650,
+        "w": 222,
+        "h": 244
+      },
+      "target": {
+        "id": "I",
+        "className": "apothecaryExactPouchObject",
+        "x": 1745,
+        "y": 650,
+        "w": 222,
+        "h": 244
+      },
+      "tolerance": 6,
+      "withinTolerance": true,
+      "overflow": {
+        "x": false,
+        "y": false,
+        "scrollWidth": 222,
+        "clientWidth": 222,
+        "scrollHeight": 244,
+        "clientHeight": 244
+      }
+    },
+    "bottomActions": {
+      "testId": "apothecary-exact-bottom-actions",
+      "exists": true,
+      "rect": {
+        "x": 68,
+        "y": 1004,
+        "w": 590,
+        "h": 66
+      },
+      "target": {
+        "id": "J",
+        "className": "apothecaryExactBottomActions",
+        "x": 68,
+        "y": 1004,
+        "w": 590,
+        "h": 66
+      },
+      "tolerance": 6,
+      "withinTolerance": true,
+      "overflow": {
+        "x": false,
+        "y": false,
+        "scrollWidth": 590,
+        "clientWidth": 590,
+        "scrollHeight": 66,
+        "clientHeight": 66
+      }
+    },
+    "primaryCta": {
+      "testId": "apothecary-exact-primary-cta",
+      "exists": true,
+      "rect": {
+        "x": 720,
+        "y": 992,
+        "w": 520,
+        "h": 86
+      },
+      "target": {
+        "id": "K",
+        "className": "apothecaryExactPrimaryCta",
+        "x": 720,
+        "y": 992,
+        "w": 520,
+        "h": 86
+      },
+      "tolerance": 6,
+      "withinTolerance": true,
+      "overflow": {
+        "x": false,
+        "y": false,
+        "scrollWidth": 520,
+        "clientWidth": 520,
+        "scrollHeight": 86,
+        "clientHeight": 86
+      }
+    },
+    "returnGate": {
+      "testId": "apothecary-exact-return-gate",
+      "exists": true,
+      "rect": {
+        "x": 1285,
+        "y": 1004,
+        "w": 166,
+        "h": 66
+      },
+      "target": {
+        "id": "L",
+        "className": "apothecaryExactReturnGate",
+        "x": 1285,
+        "y": 1004,
+        "w": 166,
+        "h": 66
+      },
+      "tolerance": 6,
+      "withinTolerance": true,
+      "overflow": {
+        "x": false,
+        "y": false,
+        "scrollWidth": 166,
+        "clientWidth": 166,
+        "scrollHeight": 66,
+        "clientHeight": 66
+      }
+    },
+    "attemptFit": {
+      "testId": "apothecary-exact-attempt-fit",
+      "exists": true,
+      "rect": {
+        "x": 1468,
+        "y": 988,
+        "w": 500,
+        "h": 104
+      },
+      "target": {
+        "id": "M",
+        "className": "apothecaryExactAttemptFit",
+        "x": 1468,
+        "y": 988,
+        "w": 500,
+        "h": 104
+      },
+      "tolerance": 6,
+      "withinTolerance": true,
+      "overflow": {
+        "x": false,
+        "y": false,
+        "scrollWidth": 498,
+        "clientWidth": 498,
+        "scrollHeight": 102,
+        "clientHeight": 102
+      }
+    }
+  },
+  "rows": {
+    "prepCells": 7,
+    "prescriptionRows": 4,
+    "warningChips": 3,
+    "buyRows": 3,
+    "brewRows": 3
+  },
+  "textMarkers": {
+    "title": true,
+    "cityChip": true,
+    "prescription": true,
+    "cta": true,
+    "noLegacyTabs": true,
+    "noContextStrip": true
+  },
+  "warningLabels": [
+    "Healing below floor",
+    "No city specialty stock",
+    "Medicine pouch underfilled"
+  ],
+  "atmosphere": {
+    "exists": true,
+    "opacity": 0.14,
+    "pointerEvents": "none",
+    "zIndex": 1,
+    "backgroundUsesRoomPlate": true,
+    "zIndexBelowPanels": true
+  },
+  "collisions": {
+    "prepPrescription": false,
+    "prescriptionWarnings": false,
+    "warningsLowerPanels": false,
+    "buyBottomActions": false,
+    "brewPrimaryCta": false,
+    "pouchObjectPouchText": false,
+    "primaryCtaAttemptFit": false,
+    "primaryCtaReturnGate": false,
+    "laneIconCopy": 0,
+    "laneCopyButton": 0
+  },
+  "clipping": {
+    "prescriptionY": false,
+    "buyLaneY": false,
+    "brewLaneY": false,
+    "pouchCardY": false,
+    "attemptFitY": false,
+    "primaryCtaTextOutside": false
+  },
+  "typography": {
+    "ctaLineCount": 1,
+    "ctaText": "Prepare Foundation Package",
+    "sourceIngredientsLineCount": 1,
+    "maxLaneStrongLineCount": 1
+  },
+  "buttons": {
+    "disabledStateMismatches": [],
+    "actionableMissingAriaLabels": []
+  },
+  "forbidden": {
+    "flattenedMockup": false,
+    "heavyRoomPlateElement": false,
+    "oldPrescriptionFrame": false,
+    "oldPrimaryCtaImage": false,
+    "laneInlineRasterBackgrounds": 0,
+    "debugOverlayText": [],
+    "emojiIconText": false
+  }
+}

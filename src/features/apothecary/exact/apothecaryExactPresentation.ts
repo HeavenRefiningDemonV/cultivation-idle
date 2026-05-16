@@ -14,19 +14,19 @@ export const APOTHECARY_EXACT_PLANE = {
 } as const;
 
 export const APOTHECARY_EXACT_REGIONS = {
-  header: { id: 'A', className: 'apothecaryExactHeader', x: 74, y: 27, w: 420, h: 80 },
-  cityChip: { id: 'B', className: 'apothecaryExactCityChip', x: 1328, y: 28, w: 593, h: 55 },
-  prepStrip: { id: 'C', className: 'apothecaryExactPrepStrip', x: 74, y: 120, w: 1902, h: 100 },
-  prescription: { id: 'D', className: 'apothecaryExactPrescription', x: 486, y: 225, w: 1014, h: 318 },
-  warnings: { id: 'E', className: 'apothecaryExactWarnings', x: 500, y: 554, w: 1009, h: 45 },
-  buyLane: { id: 'F', className: 'apothecaryExactBuyLane', x: 51, y: 629, w: 481, h: 346 },
-  brewLane: { id: 'G', className: 'apothecaryExactBrewLane', x: 680, y: 629, w: 518, h: 346 },
-  pouchCard: { id: 'H', className: 'apothecaryExactPouchCard', x: 1341, y: 629, w: 380, h: 346 },
-  pouchObject: { id: 'I', className: 'apothecaryExactPouchObject', x: 1709, y: 643, w: 294, h: 306 },
-  bottomActions: { id: 'J', className: 'apothecaryExactBottomActions', x: 68, y: 997, w: 636, h: 88 },
-  primaryCta: { id: 'K', className: 'apothecaryExactPrimaryCta', x: 724, y: 977, w: 530, h: 121 },
-  returnGate: { id: 'L', className: 'apothecaryExactReturnGate', x: 1284, y: 997, w: 176, h: 88 },
-  attemptFit: { id: 'M', className: 'apothecaryExactAttemptFit', x: 1472, y: 987, w: 528, h: 125 },
+  header: { id: 'A', className: 'apothecaryExactHeader', x: 74, y: 26, w: 440, h: 74 },
+  cityChip: { id: 'B', className: 'apothecaryExactCityChip', x: 1328, y: 28, w: 593, h: 50 },
+  prepStrip: { id: 'C', className: 'apothecaryExactPrepStrip', x: 74, y: 114, w: 1902, h: 84 },
+  prescription: { id: 'D', className: 'apothecaryExactPrescription', x: 506, y: 210, w: 988, h: 306 },
+  warnings: { id: 'E', className: 'apothecaryExactWarnings', x: 520, y: 536, w: 968, h: 40 },
+  buyLane: { id: 'F', className: 'apothecaryExactBuyLane', x: 54, y: 618, w: 510, h: 330 },
+  brewLane: { id: 'G', className: 'apothecaryExactBrewLane', x: 670, y: 618, w: 550, h: 330 },
+  pouchCard: { id: 'H', className: 'apothecaryExactPouchCard', x: 1348, y: 618, w: 386, h: 330 },
+  pouchObject: { id: 'I', className: 'apothecaryExactPouchObject', x: 1745, y: 650, w: 222, h: 244 },
+  bottomActions: { id: 'J', className: 'apothecaryExactBottomActions', x: 68, y: 1004, w: 590, h: 66 },
+  primaryCta: { id: 'K', className: 'apothecaryExactPrimaryCta', x: 720, y: 992, w: 520, h: 86 },
+  returnGate: { id: 'L', className: 'apothecaryExactReturnGate', x: 1285, y: 1004, w: 166, h: 66 },
+  attemptFit: { id: 'M', className: 'apothecaryExactAttemptFit', x: 1468, y: 988, w: 500, h: 104 },
 } as const;
 
 export const APOTHECARY_EXACT_REGION_ORDER = [

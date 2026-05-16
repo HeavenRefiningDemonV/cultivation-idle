@@ -23,6 +23,17 @@ function Icon(props: { surface: ApothecaryExactSurfaceV1; iconKey: ApothecaryExa
   );
 }
 
+function RoomAtmosphere(props: Pick<ApothecaryExactScreenProps, 'surface'>) {
+  return (
+    <div
+      className="apothecaryExactRoomAtmosphere"
+      data-testid="apothecary-exact-room-atmosphere"
+      aria-hidden="true"
+      style={{ '--apoth-room-plate': `url(${assetSrc(props.surface, 'room.scenicPlate')})` } as React.CSSProperties}
+    />
+  );
+}
+
 function ExactButton(props: {
   surface: ApothecaryExactSurfaceV1;
   action: ApothecaryExactButtonSurface;
@@ -213,17 +224,15 @@ function PouchCard(props: ApothecaryExactScreenProps) {
 }
 
 function PouchObject(props: ApothecaryExactScreenProps) {
-  const { surface, onAction } = props;
+  const { surface } = props;
   return (
-    <button
-      type="button"
+    <div
       className="apothecaryExactPouchObject"
       data-testid="apothecary-exact-pouch-object"
-      aria-label={surface.pouchObject.action.ariaLabel}
-      onClick={() => onAction?.(surface.pouchObject.action)}
+      aria-hidden="true"
     >
       <img src={assetSrc(surface, 'objects.medicinePouch')} alt={surface.pouchObject.alt} />
-    </button>
+    </div>
   );
 }
 
@@ -268,6 +277,7 @@ export function ApothecaryExactScreen({ surface, scale = 1, onAction }: Apotheca
       style={{ '--apoth-exact-scale': String(scale) } as React.CSSProperties}
     >
       <div className="apothecaryExactPlane" data-testid="apothecary-exact-plane">
+        <RoomAtmosphere surface={surface} />
         <header className="apothecaryExactHeader" data-testid="apothecary-exact-header">
           <div className="apothecaryExactHeader__titleRow">
             <h1>{surface.pageHeader.title}</h1>
