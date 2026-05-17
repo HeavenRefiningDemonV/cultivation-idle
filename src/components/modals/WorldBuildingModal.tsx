@@ -21,6 +21,7 @@ import { ApothecaryExactScreenOwner } from '../../features/apothecary/exact/inde
 import { ForgeExactScreenOwner } from '../../features/professions/forgeExact/index.js';
 import { BountiesExactScreenOwner } from '../../features/world/bountiesExact/index.js';
 import { ExpeditionsExactScreenOwner } from '../../features/world/expeditionsExact/index.js';
+import { ManualPavilionScreenOwner } from '../../features/world/manualPavilionExact/index.js';
 
 export interface WorldBuildingModalProps {
   open?: boolean;
@@ -100,7 +101,15 @@ export function WorldBuildingModal({
   if (isStoreMode) {
     switch (buildingKey) {
       case 'manualPavilion':
-        content = <ManualPavilionPanel pavilionId={moduleRefId ?? null} />;
+        content = storeModalIntent?.manualPavilionExactMode === 'legacy'
+          ? <ManualPavilionPanel pavilionId={moduleRefId ?? null} />
+          : (
+            <ManualPavilionScreenOwner
+              cityId={storeCityId}
+              pavilionId={moduleRefId ?? null}
+              forceFixture={storeModalIntent?.manualPavilionExactMode === 'fixture'}
+            />
+          );
         break;
       case 'apothecary':
         content = (

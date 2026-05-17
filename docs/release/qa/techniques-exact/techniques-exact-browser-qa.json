@@ -1,0 +1,92 @@
+{
+  "url": "http://127.0.0.1:5173/?techniquesExactMode=fixture",
+  "errors": [],
+  "initialQa": {
+    "exactVisible": true,
+    "bottomNavVisible": true,
+    "worldModalVisible": false,
+    "oldTechniquePanelVisible": false,
+    "medicineVisible": true,
+    "runeSocketsVisible": true
+  },
+  "fixture": {
+    "screenshot": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\docs\\release\\qa\\techniques-exact\\techniques-exact-fixture-2048x1152.png",
+    "interactedScreenshot": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\docs\\release\\qa\\techniques-exact\\techniques-exact-fixture-interacted-2048x1152.png",
+    "beforeBoxes": [
+      {
+        "slot": "active-0",
+        "w": 178,
+        "h": 115
+      },
+      {
+        "slot": "active-1",
+        "w": 178,
+        "h": 115
+      },
+      {
+        "slot": "passive-0",
+        "w": 178,
+        "h": 115
+      },
+      {
+        "slot": "passive-1",
+        "w": 178,
+        "h": 115
+      },
+      {
+        "slot": "support-0",
+        "w": 178,
+        "h": 115
+      },
+      {
+        "slot": "ultimate-0",
+        "w": 178,
+        "h": 115
+      }
+    ],
+    "afterBoxes": [
+      {
+        "slot": "active-0",
+        "w": 178,
+        "h": 115
+      },
+      {
+        "slot": "active-1",
+        "w": 178,
+        "h": 115
+      },
+      {
+        "slot": "passive-0",
+        "w": 178,
+        "h": 115
+      },
+      {
+        "slot": "passive-1",
+        "w": 178,
+        "h": 115
+      },
+      {
+        "slot": "support-0",
+        "w": 178,
+        "h": 115
+      },
+      {
+        "slot": "ultimate-0",
+        "w": 178,
+        "h": 115
+      }
+    ],
+    "slotGeometryStable": true,
+    "details": {
+      "rootMounted": true,
+      "panelVisible": true,
+      "dialogCount": 1
+    }
+  },
+  "routeAfterManualPavilionClick": {
+    "bottomNavVisible": true,
+    "techniquesExactStillVisible": true,
+    "worldModalVisible": true,
+    "manualPavilionTextVisible": true
+  }
+}

@@ -5,7 +5,7 @@ import path from 'node:path';
 const evidenceDir = path.resolve('docs/release/menu-function-evidence');
 
 const liveModules = [
-  { label: 'Manual Pavilion', root: null },
+  { label: 'Manual Pavilion', root: 'manual-pavilion-exact-page' },
   { label: 'Apothecary', root: 'apothecary-exact-screen-owner' },
   { label: 'Forge', root: 'forge-exact-screen-owner' },
   { label: 'Bounties', root: 'bounties-exact-screen-owner' },

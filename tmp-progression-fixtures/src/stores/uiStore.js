@@ -18,6 +18,7 @@ export const getWorldBuildingIntentKey = (intent) => JSON.stringify({
     apothecaryExactMode: intent?.apothecaryExactMode ?? null,
     apothecaryFocus: intent?.apothecaryFocus ?? null,
     forgeExactMode: intent?.forgeExactMode ?? null,
+    manualPavilionExactMode: intent?.manualPavilionExactMode ?? null,
     bountiesExactMode: intent?.bountiesExactMode ?? null,
     expeditionsExactMode: intent?.expeditionsExactMode ?? null,
     ruinsExactMode: intent?.ruinsExactMode ?? null,

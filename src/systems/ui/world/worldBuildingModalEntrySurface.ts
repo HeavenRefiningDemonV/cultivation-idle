@@ -1,8 +1,8 @@
 import type { WorldBuildingKey, WorldBuildingModalIntent } from '../../../stores/uiStore.js';
 import { formatWorldModuleLabel } from '../../../ui/text/playerFacingFormatters.js';
 
-export type BackgroundVariant = 'manual-pavilion' | 'apothecary' | 'apothecary-exact' | 'bounty-board' | 'bounties-exact' | 'expeditions-exact' | 'inside-dungeon' | 'forge' | 'forge-exact' | 'outskirts-exact' | 'ruins-exact' | 'gate-trial-exact';
-export type WorldModalShellFamily = 'prep-room' | 'apothecary-scenic' | 'support-board' | 'bounties-scenic' | 'expeditions-scenic' | 'combat-path' | 'forge-scenic' | 'outskirts-scenic' | 'ruins-scenic' | 'gate-trial-scenic';
+export type BackgroundVariant = 'manual-pavilion' | 'manual-pavilion-exact' | 'apothecary' | 'apothecary-exact' | 'bounty-board' | 'bounties-exact' | 'expeditions-exact' | 'inside-dungeon' | 'forge' | 'forge-exact' | 'outskirts-exact' | 'ruins-exact' | 'gate-trial-exact';
+export type WorldModalShellFamily = 'prep-room' | 'manual-pavilion-scenic' | 'apothecary-scenic' | 'support-board' | 'bounties-scenic' | 'expeditions-scenic' | 'combat-path' | 'forge-scenic' | 'outskirts-scenic' | 'ruins-scenic' | 'gate-trial-scenic';
 export type WorldModalShellMode = 'context-strip' | 'close-only' | 'screen-owned';
 
 export type WorldModalEntrySurface = {
@@ -115,6 +115,18 @@ export function resolveWorldModalEntrySurface(args: {
       showShellClose = false;
       break;
     case 'manualPavilion':
+      if (intent?.manualPavilionExactMode === 'legacy') {
+        backgroundVariant = 'manual-pavilion';
+        shellFamily = 'prep-room';
+        shellMode = 'context-strip';
+        showShellClose = true;
+        break;
+      }
+      backgroundVariant = 'manual-pavilion-exact';
+      shellFamily = 'manual-pavilion-scenic';
+      shellMode = 'screen-owned';
+      showShellClose = false;
+      break;
     default:
       backgroundVariant = 'manual-pavilion';
       break;

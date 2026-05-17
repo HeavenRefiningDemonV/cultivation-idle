@@ -18,10 +18,15 @@ import { NotificationToasts } from './NotificationToasts.js';
 import { FxQualityProvider } from '../ui/fx/FxQualityProvider.js';
 import { CityArrivalBanner } from './system/CityArrivalBanner.js';
 import { BottomTabBar } from './BottomTabBar.js';
-import { WorldBuildingModal } from './modals/WorldBuildingModal.js';
 import { isApothecaryExactFixtureRouteEnabled } from '../features/apothecary/exact/index.js';
 import { isCultivationExactQueryModeEnabled } from '../features/cultivation/exact/cultivationExactPresentation.js';
 import { PavilionScreenOwner, isPavilionExactFixtureRouteEnabled } from '../features/pavilion/index.js';
+import {
+  TechniquesScreenOwner,
+  getTechniquesExactQueryMode,
+  isTechniquesExactQueryModeEnabled,
+} from '../features/techniquesExact/index.js';
+import { BuildingModalHost } from './modals/WorldBuildingOverlayEntry.js';
 import { AudioBindings } from '../app/AudioBindings.js';
 import { GameIcon } from '../ui/icons/index.js';
 import { buildLiveEconomicRecommendationEngine } from '../systems/economy/economicRecommendationEngine.js';
@@ -65,12 +70,17 @@ function PlaceholderContent({ tabName }: { tabName: string }) {
  */
 function TechniquesTab() {
   const setHeaderTitles = useUIStore((state) => state.setHeaderTitles);
+  const techniquesExactMode = getTechniquesExactQueryMode();
 
   useEffect(() => {
-    setHeaderTitles('Technique Library', 'Equip techniques, view mastery, and manage loadouts');
+    setHeaderTitles('Techniques', 'Inner Palace Combat Form');
   }, [setHeaderTitles]);
 
-  return <TechniqueLibraryScreen />;
+  if (techniquesExactMode === 'legacy') {
+    return <TechniqueLibraryScreen />;
+  }
+
+  return <TechniquesScreenOwner forceFixture={techniquesExactMode === 'fixture'} />;
 }
 
 /**
@@ -114,8 +124,14 @@ export function GameLayout() {
   const suppressApothecaryExactFixtureChrome = apothecaryExactFixtureRouteEnabled && apothecaryExactModalOpen;
   const suppressCultivationExactQueryChrome = activeTab === 'cultivation' && isCultivationExactQueryModeEnabled();
   const pavilionExactFixtureRouteEnabled = isPavilionExactFixtureRouteEnabled();
+  const techniquesExactModeEnabled = isTechniquesExactQueryModeEnabled();
   const suppressPavilionChrome = activeTab === 'records';
-  const suppressExactCaptureChrome = suppressApothecaryExactFixtureChrome || suppressCultivationExactQueryChrome || suppressPavilionChrome;
+  const suppressTechniquesExactChrome = activeTab === 'techniques' && techniquesExactModeEnabled;
+  const suppressExactCaptureChrome =
+    suppressApothecaryExactFixtureChrome ||
+    suppressCultivationExactQueryChrome ||
+    suppressPavilionChrome ||
+    suppressTechniquesExactChrome;
   const lifeStartWizardOpen = isLifeStartWizardRequired({
     selectedPath,
     selectedHeartLawId,
@@ -144,6 +160,11 @@ export function GameLayout() {
     if (!pavilionExactFixtureRouteEnabled || activeTab === 'records') return;
     setActiveTab('records');
   }, [activeTab, pavilionExactFixtureRouteEnabled, setActiveTab]);
+
+  useEffect(() => {
+    if (!techniquesExactModeEnabled || activeTab === 'techniques') return;
+    setActiveTab('techniques');
+  }, [activeTab, setActiveTab, techniquesExactModeEnabled]);
 
   useEffect(() => {
     let atAuthoredCap = false;
@@ -250,7 +271,7 @@ export function GameLayout() {
         {showOfflineProgressModal && showOfflineModalSetting && !suppressExactCaptureChrome && <OfflineProgressModal />}
         {showManualSatchelModal && !suppressExactCaptureChrome && <ManualSatchelModal />}
         {showTechniqueLearnedModal && !suppressExactCaptureChrome && <TechniqueLearnedModal />}
-        {showWorldBuildingModal && <WorldBuildingModal />}
+        {showWorldBuildingModal && <BuildingModalHost />}
         {showCurrentChapterExhaustedModal && !suppressExactCaptureChrome && <CurrentChapterExhaustedModal />}
         {showLifeSummaryModal && !suppressExactCaptureChrome && <LifeSummaryModal />}
         {showMigrationIssuesModal && !suppressExactCaptureChrome && <MigrationIssuesModal />}

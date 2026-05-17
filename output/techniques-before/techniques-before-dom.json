@@ -1,0 +1,32 @@
+{
+  "info": {
+    "url": "http://127.0.0.1:5173/?uiAudit=phase-0&surface=techniques&controls=0",
+    "title": "cultivation-idle-temp",
+    "rootClass": "gameLayoutRoot gameLayoutRoot--techniques",
+    "contentClass": "gameLayoutContent ",
+    "techniquesClass": "techniquesPanel techniquesPanel--v2",
+    "altarPresent": true,
+    "bottomNavPresent": true,
+    "worldModalPresent": false,
+    "text": "Techniques\nEquipped now: 0/3 • Active: 0/2 • Passive: 0/1\nLoadout\nLoadout 1\nLoadout 2\nLoadout 3\nPrepare for Novice's Clearing\nBlocked\nHealing floor below target: Gap 20 • priority 1\nRestock supplies → Apothecary\nIDENTITY\nPath: Heaven\nArchetype: Unshaped Build\nNo stable archetype profile detected yet.\nPath Alignment: 0%\nFLOOR STATUS\nMastery: On Floor\nRank: On Floor\nRunes: On Floor\nEmpty unlocked slots: 3\nCOMBAT POSTURE\nAI Profile: balanced — risky\nCasting Policy: balanced — good\nBalanced AI is under-supported: the current loadout lacks both survival and boss-pressure tools.\nNext Fix: Fill an empty unlocked slot.\nLOADOUTS\nLoadout 1\nCasting: Balanced\nLoadout 2\nCasting: Defensive\nLoadout 3\nCasting: Aggressive\nCasting Policy\nAggressive\nBalanced\nDefensive\nConserve resources; prefer debuffs.\nOWNED TECHNIQUES\nFilters\n\nNo techniques learned yet. Buy a Manual in the Manual Pavilion, then Study it to learn the Technique.\n\nGo to Manual Pavilion\nInner Palace Equip Altar\nSeat your techniques around the core.\nActive I\nActive II\nActive III\nLocked\nActive IV\nLocked\nPassive I\nPassive II\nLocked\nPassive III\nLocked\nUltimate\nLocked\nSELECTED TECHNIQUE\nSelect a technique to view details.\nStatus\nCultivation\nWorld\nInventory\nTechniques\nRecords\nPrestige\nSettings\nBegin Your New Life\n\nChoose your path, scripture, and initial breath focus before cultivation begins.\n\n1 · Life Path\n2 · Heart Law\n3 · Breath Focus\nLocked Path: Heaven\n\nFast cultivation and technique-led pressure. Heaven converts qi tempo into precise offensive windows, but its survival floor is thinner and greed is punished.\n\nprecision_pressure\nBreath: Balanced\nChoose the sentence your soul will repeat when the Gate presses down.\n\nA path points forward. A Heart Law keeps the breath from scattering.\n\nCHOSEN FOR THIS LIFE\nEmber Thread Sutra\nBurst\nStrong (+12%)\nRole: Decisive windows and pressure spikes.\nFire\nFlame\nStarter\nChosen for This Life\nChosen for this life.\nAVAILABLE\nIron Intent Scripture\nBurst\nWeak (minor penalty)\nRole: Decisive windows and pressure spikes.\nMetal\nWeapon\nStarter\nAvailable\nStarter scripture available immediately.\nAVAILABLE\nQuiet Breath Method\nCirculation\nNeutral\nRole: Smooth cadence and flow control.\nNeutral\nBreath\nStarter\nAvailable\nStarter scripture available immediately.\nAVAILABLE\nRiver Mirror Art\nEndurance\nWeak (minor penalty)\nRole: Long-fight composure and sustain.\nWater\nMirror\nStarter\nAvailable\nStarter"
+  },
+  "logs": [
+    "warning: [GameLoop] Already running",
+    "warning: [ContentValidation] Technique counts by path: Heaven=20, Earth=20, Martial=20",
+    "warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=heaven: 6",
+    "warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=earth: 6",
+    "warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=martial: 6",
+    "warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=heaven: 7",
+    "warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=earth: 9",
+    "warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=martial: 8",
+    "warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=heaven: 9",
+    "warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=earth: 9",
+    "warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=martial: 10",
+    "warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=heaven: 10",
+    "warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=earth: 10",
+    "warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=martial: 10",
+    "warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=heaven: 10",
+    "warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=earth: 10",
+    "warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=martial: 10"
+  ]
+}

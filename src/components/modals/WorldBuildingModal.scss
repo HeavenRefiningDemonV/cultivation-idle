@@ -61,6 +61,14 @@
   background: #e8dfd0;
 }
 
+.worldBuildingOverlay--manual-pavilion-scenic {
+  background: rgba(16, 10, 6, 0.32);
+  backdrop-filter: none;
+  align-items: stretch;
+  justify-content: stretch;
+  padding: 0;
+}
+
 .worldBuildingOverlay--bounties-scenic,
 .worldBuildingOverlay--expeditions-scenic {
   background: #e9dfcf;
@@ -105,6 +113,22 @@
 
 .worldBuildingModal--manual-pavilion {
   background-image: url('../../assets/background/manualpavilion.png');
+}
+
+.worldBuildingModal--manual-pavilion-exact {
+  background-image:
+    radial-gradient(120% 76% at 50% 12%, rgba(255, 239, 190, 0.12), rgba(255, 239, 190, 0) 60%),
+    url('../../assets/background/manualpavilion.png');
+  background-size: cover;
+  background-position: center;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  border-radius: 0;
+  box-shadow: none;
+  color: #2f2419;
+  overflow: hidden;
 }
 
 .worldBuildingModal--apothecary {
@@ -219,6 +243,11 @@
   mix-blend-mode: normal;
 }
 
+.worldBuildingModal--manual-pavilion-scenic::after {
+  opacity: 0.16;
+  mix-blend-mode: soft-light;
+}
+
 .worldBuildingModal--bounties-scenic::after,
 .worldBuildingModal--expeditions-scenic::after {
   opacity: 0;
@@ -237,6 +266,16 @@
 .worldBuildingModal--apothecary-exact.worldBuildingModal--screen-owned {
   border-radius: 0;
   box-shadow: none;
+}
+
+.worldBuildingModal--manual-pavilion-exact.worldBuildingModal--screen-owned {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: hidden;
 }
 
 .worldBuildingModal--forge-exact.worldBuildingModal--screen-owned {
@@ -345,6 +384,8 @@
 .worldBuildingBody--outskirts-scenic,
 .worldBuildingBody--ruins-exact,
 .worldBuildingBody--ruins-scenic,
+.worldBuildingBody--manual-pavilion-exact,
+.worldBuildingBody--manual-pavilion-scenic,
 .worldBuildingBody--apothecary-exact,
 .worldBuildingBody--apothecary-scenic,
 .worldBuildingBody--forge-exact,
@@ -361,6 +402,8 @@
 }
 
 .worldBuildingBody--forge-exact.worldBuildingBody--screen-owned,
+.worldBuildingBody--manual-pavilion-exact.worldBuildingBody--screen-owned,
+.worldBuildingBody--manual-pavilion-scenic.worldBuildingBody--screen-owned,
 .worldBuildingBody--bounties-exact.worldBuildingBody--screen-owned,
 .worldBuildingBody--expeditions-exact.worldBuildingBody--screen-owned {
   width: 100%;

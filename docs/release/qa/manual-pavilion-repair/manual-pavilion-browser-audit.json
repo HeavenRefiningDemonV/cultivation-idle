@@ -1,0 +1,191 @@
+{
+  "capturedAt": "2026-05-16T18:48:42.887Z",
+  "audits": {
+    "2048x1152": {
+      "containsBadCopy": false,
+      "bottomNavInside": false,
+      "spineCount": 6,
+      "shifts": [
+        {
+          "id": "manual-spine-3",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        },
+        {
+          "id": "manual-spine-5",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        },
+        {
+          "id": "manual-spine-7",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        },
+        {
+          "id": "manual-spine-8",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        },
+        {
+          "id": "manual-spine-9",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        },
+        {
+          "id": "manual-spine-10",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        }
+      ],
+      "maxAbsShift": 0,
+      "fontSizes": {
+        "spineTitle": 27,
+        "spineReason": 19,
+        "spineState": 15,
+        "inspectorBody": 18
+      },
+      "actionLabels": [
+        {
+          "id": "manual-pavilion-inspector-primary-action",
+          "actionKind": "none",
+          "label": "Need 1,500 Gold / 1 Spirit Stones",
+          "disabled": true,
+          "title": "Insufficient currency reserves.",
+          "bottom": 829,
+          "visibleInViewport": true
+        },
+        {
+          "id": "manual-pavilion-inspector-secondary-action",
+          "actionKind": "preview_technique",
+          "label": "Preview Technique",
+          "disabled": false,
+          "title": "Preview Technique",
+          "bottom": 886,
+          "visibleInViewport": true
+        },
+        {
+          "id": "manual-pavilion-inspector-tertiary-action",
+          "actionKind": "open_satchel",
+          "label": "Open Satchel",
+          "disabled": false,
+          "title": "Open Satchel",
+          "bottom": 943,
+          "visibleInViewport": true
+        }
+      ],
+      "refreshLabel": "Refresh Locked",
+      "refreshState": "Free refresh ready in 05:59:59",
+      "pityEpic": "Epic pity: 1 / 10",
+      "pityLegendary": "Legendary pity: 1 / 30",
+      "shelfLabel": "Recommended ShelfShowing 6 of 10",
+      "returnToWorldClosed": true,
+      "consoleFailures": [],
+      "screenshotPath": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\docs\\release\\qa\\manual-pavilion-repair\\manual-pavilion-2048x1152.png"
+    },
+    "1600x900": {
+      "containsBadCopy": false,
+      "bottomNavInside": false,
+      "spineCount": 6,
+      "shifts": [
+        {
+          "id": "manual-spine-1",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        },
+        {
+          "id": "manual-spine-2",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        },
+        {
+          "id": "manual-spine-5",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        },
+        {
+          "id": "manual-spine-7",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        },
+        {
+          "id": "manual-spine-9",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        },
+        {
+          "id": "manual-spine-10",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        }
+      ],
+      "maxAbsShift": 0,
+      "fontSizes": {
+        "spineTitle": 27,
+        "spineReason": 19,
+        "spineState": 15,
+        "inspectorBody": 18
+      },
+      "actionLabels": [
+        {
+          "id": "manual-pavilion-inspector-primary-action",
+          "actionKind": "none",
+          "label": "Need 1,500 Gold / 1 Spirit Stones",
+          "disabled": true,
+          "title": "Insufficient currency reserves.",
+          "bottom": 647.65625,
+          "visibleInViewport": true
+        },
+        {
+          "id": "manual-pavilion-inspector-secondary-action",
+          "actionKind": "preview_technique",
+          "label": "Preview Technique",
+          "disabled": false,
+          "title": "Preview Technique",
+          "bottom": 692.1875,
+          "visibleInViewport": true
+        },
+        {
+          "id": "manual-pavilion-inspector-tertiary-action",
+          "actionKind": "open_satchel",
+          "label": "Open Satchel",
+          "disabled": false,
+          "title": "Open Satchel",
+          "bottom": 736.71875,
+          "visibleInViewport": true
+        }
+      ],
+      "refreshLabel": "Refresh Locked",
+      "refreshState": "Free refresh ready in 05:59:59",
+      "pityEpic": "Epic pity: 1 / 10",
+      "pityLegendary": "Legendary pity: 1 / 30",
+      "shelfLabel": "Recommended ShelfShowing 6 of 10",
+      "returnToWorldClosed": true,
+      "consoleFailures": [],
+      "screenshotPath": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\docs\\release\\qa\\manual-pavilion-repair\\manual-pavilion-1600x900.png"
+    }
+  }
+}

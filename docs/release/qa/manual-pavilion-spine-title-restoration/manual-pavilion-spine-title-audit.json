@@ -1,0 +1,457 @@
+{
+  "capturedAt": "2026-05-16T22:12:20.490Z",
+  "results": [
+    {
+      "viewport": {
+        "width": 2048,
+        "height": 1152
+      },
+      "screenshotPath": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\docs\\release\\qa\\manual-pavilion-spine-title-restoration\\manual-pavilion-spine-title-2048x1152.png",
+      "audit": {
+        "url": "http://127.0.0.1:5173/",
+        "rootVisible": true,
+        "spineCount": 6,
+        "badCopy": {
+          "paintedSpineShelf": false,
+          "notConfigured": false,
+          "studyLater": false
+        },
+        "bottomNavVisible": false,
+        "titleEntries": [
+          {
+            "id": "manual-spine-1",
+            "className": "manualPavilionSpine manualPavilionSpine--recommended manualPavilionSpine--titleShort",
+            "fullTitle": "Cloudbind",
+            "displayTitle": "Cloudbind",
+            "titleBackground": "rgba(0, 0, 0, 0)",
+            "titleBackgroundAlpha": 0,
+            "titleBoxShadow": "none",
+            "titleBorderRadius": "0px",
+            "titleOverflowWrap": "normal",
+            "titleWordBreak": "normal",
+            "textWhiteSpace": "nowrap",
+            "textTransform": "matrix(0, 1, -1, 0, 0, 0)",
+            "textStroke": "0.65px",
+            "textShadow": "rgba(0, 0, 0, 0.88) 0px 1px 1px, rgba(45, 27, 12, 0.78) 1px 0px 0px, rgba(45, 27, 12, 0.78) -1px 0px 0px, rgba(45, 27, 12, 0.7) 0px -1px 0px, rgba(0, 0, 0, 0.38) 0px 0px 4px",
+            "fontSize": "34px",
+            "metaVisibility": "hidden",
+            "textRect": {
+              "left": 443.0078125,
+              "top": 506.1171875,
+              "right": 477.0078125,
+              "bottom": 693.8828125,
+              "width": 34,
+              "height": 187.765625
+            },
+            "overlapsReservedZones": false
+          },
+          {
+            "id": "manual-spine-3",
+            "className": "manualPavilionSpine manualPavilionSpine--selected manualPavilionSpine--recommended manualPavilionSpine--titleMedium",
+            "fullTitle": "Astral Needle",
+            "displayTitle": "Astral Needle",
+            "titleBackground": "rgba(0, 0, 0, 0)",
+            "titleBackgroundAlpha": 0,
+            "titleBoxShadow": "none",
+            "titleBorderRadius": "0px",
+            "titleOverflowWrap": "normal",
+            "titleWordBreak": "normal",
+            "textWhiteSpace": "nowrap",
+            "textTransform": "matrix(0, 1, -1, 0, 0, 0)",
+            "textStroke": "0.65px",
+            "textShadow": "rgba(0, 0, 0, 0.9) 0px 1px 1px, rgba(45, 27, 12, 0.82) 1px 0px 0px, rgba(45, 27, 12, 0.82) -1px 0px 0px, rgba(45, 27, 12, 0.74) 0px -1px 0px, rgba(211, 175, 103, 0.34) 0px 0px 8px",
+            "fontSize": "30px",
+            "metaVisibility": "hidden",
+            "textRect": {
+              "left": 599,
+              "top": 492.90625,
+              "right": 629,
+              "bottom": 707.09375,
+              "width": 30,
+              "height": 214.1875
+            },
+            "overlapsReservedZones": false
+          },
+          {
+            "id": "manual-spine-4",
+            "className": "manualPavilionSpine manualPavilionSpine--recommended manualPavilionSpine--titleMedium",
+            "fullTitle": "Heaven's Pulse",
+            "displayTitle": "Heaven's Pulse",
+            "titleBackground": "rgba(0, 0, 0, 0)",
+            "titleBackgroundAlpha": 0,
+            "titleBoxShadow": "none",
+            "titleBorderRadius": "0px",
+            "titleOverflowWrap": "normal",
+            "titleWordBreak": "normal",
+            "textWhiteSpace": "nowrap",
+            "textTransform": "matrix(0, 1, -1, 0, 0, 0)",
+            "textStroke": "0.65px",
+            "textShadow": "rgba(0, 0, 0, 0.88) 0px 1px 1px, rgba(45, 27, 12, 0.78) 1px 0px 0px, rgba(45, 27, 12, 0.78) -1px 0px 0px, rgba(45, 27, 12, 0.7) 0px -1px 0px, rgba(0, 0, 0, 0.38) 0px 0px 4px",
+            "fontSize": "30px",
+            "metaVisibility": "hidden",
+            "textRect": {
+              "left": 753.0078125,
+              "top": 480.5703125,
+              "right": 783.0078125,
+              "bottom": 719.4296875,
+              "width": 30,
+              "height": 238.859375
+            },
+            "overlapsReservedZones": false
+          },
+          {
+            "id": "manual-spine-6",
+            "className": "manualPavilionSpine manualPavilionSpine--recommended manualPavilionSpine--titleMedium",
+            "fullTitle": "Starfire Bolt",
+            "displayTitle": "Starfire Bolt",
+            "titleBackground": "rgba(0, 0, 0, 0)",
+            "titleBackgroundAlpha": 0,
+            "titleBoxShadow": "none",
+            "titleBorderRadius": "0px",
+            "titleOverflowWrap": "normal",
+            "titleWordBreak": "normal",
+            "textWhiteSpace": "nowrap",
+            "textTransform": "matrix(0, 1, -1, 0, 0, 0)",
+            "textStroke": "0.65px",
+            "textShadow": "rgba(0, 0, 0, 0.88) 0px 1px 1px, rgba(45, 27, 12, 0.78) 1px 0px 0px, rgba(45, 27, 12, 0.78) -1px 0px 0px, rgba(45, 27, 12, 0.7) 0px -1px 0px, rgba(0, 0, 0, 0.38) 0px 0px 4px",
+            "fontSize": "30px",
+            "metaVisibility": "hidden",
+            "textRect": {
+              "left": 907,
+              "top": 501.234375,
+              "right": 937,
+              "bottom": 698.765625,
+              "width": 30,
+              "height": 197.53125
+            },
+            "overlapsReservedZones": false
+          },
+          {
+            "id": "manual-spine-7",
+            "className": "manualPavilionSpine manualPavilionSpine--recommended manualPavilionSpine--titleMedium",
+            "fullTitle": "Killing Rhythm",
+            "displayTitle": "Killing Rhythm",
+            "titleBackground": "rgba(0, 0, 0, 0)",
+            "titleBackgroundAlpha": 0,
+            "titleBoxShadow": "none",
+            "titleBorderRadius": "0px",
+            "titleOverflowWrap": "normal",
+            "titleWordBreak": "normal",
+            "textWhiteSpace": "nowrap",
+            "textTransform": "matrix(0, 1, -1, 0, 0, 0)",
+            "textStroke": "0.65px",
+            "textShadow": "rgba(0, 0, 0, 0.88) 0px 1px 1px, rgba(45, 27, 12, 0.78) 1px 0px 0px, rgba(45, 27, 12, 0.78) -1px 0px 0px, rgba(45, 27, 12, 0.7) 0px -1px 0px, rgba(0, 0, 0, 0.38) 0px 0px 4px",
+            "fontSize": "30px",
+            "metaVisibility": "hidden",
+            "textRect": {
+              "left": 1061,
+              "top": 478.875,
+              "right": 1091,
+              "bottom": 721.125,
+              "width": 30,
+              "height": 242.25
+            },
+            "overlapsReservedZones": false
+          },
+          {
+            "id": "manual-spine-10",
+            "className": "manualPavilionSpine manualPavilionSpine--recommended manualPavilionSpine--titleShort",
+            "fullTitle": "Iron Body",
+            "displayTitle": "Iron Body",
+            "titleBackground": "rgba(0, 0, 0, 0)",
+            "titleBackgroundAlpha": 0,
+            "titleBoxShadow": "none",
+            "titleBorderRadius": "0px",
+            "titleOverflowWrap": "normal",
+            "titleWordBreak": "normal",
+            "textWhiteSpace": "nowrap",
+            "textTransform": "matrix(0, 1, -1, 0, 0, 0)",
+            "textStroke": "0.65px",
+            "textShadow": "rgba(0, 0, 0, 0.88) 0px 1px 1px, rgba(45, 27, 12, 0.78) 1px 0px 0px, rgba(45, 27, 12, 0.78) -1px 0px 0px, rgba(45, 27, 12, 0.7) 0px -1px 0px, rgba(0, 0, 0, 0.38) 0px 0px 4px",
+            "fontSize": "34px",
+            "metaVisibility": "hidden",
+            "textRect": {
+              "left": 1213,
+              "top": 509.921875,
+              "right": 1247,
+              "bottom": 690.078125,
+              "width": 34,
+              "height": 180.15625
+            },
+            "overlapsReservedZones": false
+          }
+        ]
+      },
+      "geometryShift": [
+        {
+          "id": "manual-spine-1",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        },
+        {
+          "id": "manual-spine-3",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        },
+        {
+          "id": "manual-spine-4",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        },
+        {
+          "id": "manual-spine-6",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        },
+        {
+          "id": "manual-spine-7",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        },
+        {
+          "id": "manual-spine-10",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        }
+      ]
+    },
+    {
+      "viewport": {
+        "width": 1600,
+        "height": 900
+      },
+      "screenshotPath": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\docs\\release\\qa\\manual-pavilion-spine-title-restoration\\manual-pavilion-spine-title-1600x900.png",
+      "audit": {
+        "url": "http://127.0.0.1:5173/",
+        "rootVisible": true,
+        "spineCount": 6,
+        "badCopy": {
+          "paintedSpineShelf": false,
+          "notConfigured": false,
+          "studyLater": false
+        },
+        "bottomNavVisible": false,
+        "titleEntries": [
+          {
+            "id": "manual-spine-4",
+            "className": "manualPavilionSpine manualPavilionSpine--recommended manualPavilionSpine--titleMedium",
+            "fullTitle": "Astral Needle",
+            "displayTitle": "Astral Needle",
+            "titleBackground": "rgba(0, 0, 0, 0)",
+            "titleBackgroundAlpha": 0,
+            "titleBoxShadow": "none",
+            "titleBorderRadius": "0px",
+            "titleOverflowWrap": "normal",
+            "titleWordBreak": "normal",
+            "textWhiteSpace": "nowrap",
+            "textTransform": "matrix(0, 1, -1, 0, 0, 0)",
+            "textStroke": "0.65px",
+            "textShadow": "rgba(0, 0, 0, 0.88) 0px 1px 1px, rgba(45, 27, 12, 0.78) 1px 0px 0px, rgba(45, 27, 12, 0.78) -1px 0px 0px, rgba(45, 27, 12, 0.7) 0px -1px 0px, rgba(0, 0, 0, 0.38) 0px 0px 4px",
+            "fontSize": "30px",
+            "metaVisibility": "hidden",
+            "textRect": {
+              "left": 347.65625,
+              "top": 385.0830078125,
+              "right": 371.09375,
+              "bottom": 552.4169921875,
+              "width": 23.4375,
+              "height": 167.333984375
+            },
+            "overlapsReservedZones": false
+          },
+          {
+            "id": "manual-spine-5",
+            "className": "manualPavilionSpine manualPavilionSpine--selected manualPavilionSpine--recommended manualPavilionSpine--titleMedium",
+            "fullTitle": "Guarding Stance",
+            "displayTitle": "Guarding Stance",
+            "titleBackground": "rgba(0, 0, 0, 0)",
+            "titleBackgroundAlpha": 0,
+            "titleBoxShadow": "none",
+            "titleBorderRadius": "0px",
+            "titleOverflowWrap": "normal",
+            "titleWordBreak": "normal",
+            "textWhiteSpace": "nowrap",
+            "textTransform": "matrix(0, 1, -1, 0, 0, 0)",
+            "textStroke": "0.65px",
+            "textShadow": "rgba(0, 0, 0, 0.9) 0px 1px 1px, rgba(45, 27, 12, 0.82) 1px 0px 0px, rgba(45, 27, 12, 0.82) -1px 0px 0px, rgba(45, 27, 12, 0.74) 0px -1px 0px, rgba(211, 175, 103, 0.34) 0px 0px 8px",
+            "fontSize": "30px",
+            "metaVisibility": "hidden",
+            "textRect": {
+              "left": 467.96875,
+              "top": 365.66162109375,
+              "right": 491.40625,
+              "bottom": 571.83837890625,
+              "width": 23.4375,
+              "height": 206.1767578125
+            },
+            "overlapsReservedZones": false
+          },
+          {
+            "id": "manual-spine-6",
+            "className": "manualPavilionSpine manualPavilionSpine--recommended manualPavilionSpine--titleMedium",
+            "fullTitle": "Mountain Stance",
+            "displayTitle": "Mountain Stance",
+            "titleBackground": "rgba(0, 0, 0, 0)",
+            "titleBackgroundAlpha": 0,
+            "titleBoxShadow": "none",
+            "titleBorderRadius": "0px",
+            "titleOverflowWrap": "normal",
+            "titleWordBreak": "normal",
+            "textWhiteSpace": "nowrap",
+            "textTransform": "matrix(0, 1, -1, 0, 0, 0)",
+            "textStroke": "0.65px",
+            "textShadow": "rgba(0, 0, 0, 0.88) 0px 1px 1px, rgba(45, 27, 12, 0.78) 1px 0px 0px, rgba(45, 27, 12, 0.78) -1px 0px 0px, rgba(45, 27, 12, 0.7) 0px -1px 0px, rgba(0, 0, 0, 0.38) 0px 0px 4px",
+            "fontSize": "30px",
+            "metaVisibility": "hidden",
+            "textRect": {
+              "left": 588.287353515625,
+              "top": 363.555908203125,
+              "right": 611.724853515625,
+              "bottom": 573.944091796875,
+              "width": 23.4375,
+              "height": 210.38818359375
+            },
+            "overlapsReservedZones": false
+          },
+          {
+            "id": "manual-spine-8",
+            "className": "manualPavilionSpine manualPavilionSpine--recommended manualPavilionSpine--titleMedium",
+            "fullTitle": "Heaven's Pulse",
+            "displayTitle": "Heaven's Pulse",
+            "titleBackground": "rgba(0, 0, 0, 0)",
+            "titleBackgroundAlpha": 0,
+            "titleBoxShadow": "none",
+            "titleBorderRadius": "0px",
+            "titleOverflowWrap": "normal",
+            "titleWordBreak": "normal",
+            "textWhiteSpace": "nowrap",
+            "textTransform": "matrix(0, 1, -1, 0, 0, 0)",
+            "textStroke": "0.65px",
+            "textShadow": "rgba(0, 0, 0, 0.88) 0px 1px 1px, rgba(45, 27, 12, 0.78) 1px 0px 0px, rgba(45, 27, 12, 0.78) -1px 0px 0px, rgba(45, 27, 12, 0.7) 0px -1px 0px, rgba(0, 0, 0, 0.38) 0px 0px 4px",
+            "fontSize": "30px",
+            "metaVisibility": "hidden",
+            "textRect": {
+              "left": 708.599853515625,
+              "top": 375.445556640625,
+              "right": 732.037353515625,
+              "bottom": 562.054443359375,
+              "width": 23.4375,
+              "height": 186.60888671875
+            },
+            "overlapsReservedZones": false
+          },
+          {
+            "id": "manual-spine-9",
+            "className": "manualPavilionSpine manualPavilionSpine--recommended manualPavilionSpine--titleMedium",
+            "fullTitle": "Rooted Breath",
+            "displayTitle": "Rooted Breath",
+            "titleBackground": "rgba(0, 0, 0, 0)",
+            "titleBackgroundAlpha": 0,
+            "titleBoxShadow": "none",
+            "titleBorderRadius": "0px",
+            "titleOverflowWrap": "normal",
+            "titleWordBreak": "normal",
+            "textWhiteSpace": "nowrap",
+            "textTransform": "matrix(0, 1, -1, 0, 0, 0)",
+            "textStroke": "0.65px",
+            "textShadow": "rgba(0, 0, 0, 0.88) 0px 1px 1px, rgba(45, 27, 12, 0.78) 1px 0px 0px, rgba(45, 27, 12, 0.78) -1px 0px 0px, rgba(45, 27, 12, 0.7) 0px -1px 0px, rgba(0, 0, 0, 0.38) 0px 0px 4px",
+            "fontSize": "30px",
+            "metaVisibility": "hidden",
+            "textRect": {
+              "left": 828.912353515625,
+              "top": 378.839111328125,
+              "right": 852.349853515625,
+              "bottom": 558.660888671875,
+              "width": 23.4375,
+              "height": 179.82177734375
+            },
+            "overlapsReservedZones": false
+          },
+          {
+            "id": "manual-spine-10",
+            "className": "manualPavilionSpine manualPavilionSpine--recommended manualPavilionSpine--titleShort",
+            "fullTitle": "Iron Body",
+            "displayTitle": "Iron Body",
+            "titleBackground": "rgba(0, 0, 0, 0)",
+            "titleBackgroundAlpha": 0,
+            "titleBoxShadow": "none",
+            "titleBorderRadius": "0px",
+            "titleOverflowWrap": "normal",
+            "titleWordBreak": "normal",
+            "textWhiteSpace": "nowrap",
+            "textTransform": "matrix(0, 1, -1, 0, 0, 0)",
+            "textStroke": "0.65px",
+            "textShadow": "rgba(0, 0, 0, 0.88) 0px 1px 1px, rgba(45, 27, 12, 0.78) 1px 0px 0px, rgba(45, 27, 12, 0.78) -1px 0px 0px, rgba(45, 27, 12, 0.7) 0px -1px 0px, rgba(0, 0, 0, 0.38) 0px 0px 4px",
+            "fontSize": "34px",
+            "metaVisibility": "hidden",
+            "textRect": {
+              "left": 947.65625,
+              "top": 398.37646484375,
+              "right": 974.21875,
+              "bottom": 539.12353515625,
+              "width": 26.5625,
+              "height": 140.7470703125
+            },
+            "overlapsReservedZones": false
+          }
+        ]
+      },
+      "geometryShift": [
+        {
+          "id": "manual-spine-4",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        },
+        {
+          "id": "manual-spine-5",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        },
+        {
+          "id": "manual-spine-6",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        },
+        {
+          "id": "manual-spine-8",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        },
+        {
+          "id": "manual-spine-9",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        },
+        {
+          "id": "manual-spine-10",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        }
+      ]
+    }
+  ]
+}

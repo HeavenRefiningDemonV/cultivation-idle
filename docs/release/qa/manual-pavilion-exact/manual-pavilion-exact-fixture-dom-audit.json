@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "manual-pavilion-exact-dom-audit.v1",
+  "viewport": {
+    "width": 2048,
+    "height": 1152
+  },
+  "rootExists": true,
+  "rootMode": "fixture",
+  "rect": {
+    "x": 0,
+    "y": 0,
+    "width": 2048,
+    "height": 1152
+  },
+  "found": {
+    "topRibbon": true,
+    "buildGap": true,
+    "ledger": true,
+    "shelf": true,
+    "inspector": true,
+    "bottomStrip": true
+  },
+  "counts": {
+    "spines": 6
+  },
+  "shell": {
+    "hasGenericClose": false,
+    "hasContextStrip": false,
+    "bottomHitInsideExact": true,
+    "bottomHitInsideNav": false
+  },
+  "textMarkers": {
+    "title": true,
+    "buildGap": true,
+    "buyManual": true,
+    "studyLater": true,
+    "viewTechniques": true,
+    "manualSatchel": true
+  }
+}

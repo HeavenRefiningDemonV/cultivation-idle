@@ -66,6 +66,7 @@ export type WorldBuildingModalIntent = null | {
   apothecaryExactMode?: 'live' | 'fixture';
   apothecaryFocus?: 'prescription' | 'buy' | 'brew' | 'pouch' | 'source';
   forgeExactMode?: 'live' | 'fixture' | 'legacy';
+  manualPavilionExactMode?: 'live' | 'fixture' | 'legacy';
   bountiesExactMode?: 'live' | 'fixture' | 'legacy';
   expeditionsExactMode?: 'live' | 'fixture' | 'legacy';
   ruinsExactMode?: 'live' | 'fixture';
@@ -86,6 +87,7 @@ export const getWorldBuildingIntentKey = (intent: WorldBuildingModalIntent): str
   apothecaryExactMode: intent?.apothecaryExactMode ?? null,
   apothecaryFocus: intent?.apothecaryFocus ?? null,
   forgeExactMode: intent?.forgeExactMode ?? null,
+  manualPavilionExactMode: intent?.manualPavilionExactMode ?? null,
   bountiesExactMode: intent?.bountiesExactMode ?? null,
   expeditionsExactMode: intent?.expeditionsExactMode ?? null,
   ruinsExactMode: intent?.ruinsExactMode ?? null,
