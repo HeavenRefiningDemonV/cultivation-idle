@@ -1,0 +1,169 @@
+{
+  "schemaVersion": "implementation-baseline-v1",
+  "generatedAt": "2026-05-17T18:01:34.623Z",
+  "cwd": "C:\\Users\\abdul\\Desktop\\cultivation-idle",
+  "packageName": "cultivation-idle",
+  "packageVersion": "0.0.0",
+  "nodeVersion": "v24.14.0",
+  "npmVersion": "11.9.0",
+  "git": {
+    "branch": "Latest",
+    "dirty": true,
+    "statusPreview": [
+      "M AGENTS.md",
+      " M package.json",
+      " M scripts/validateContent.ts",
+      " M src/content/contentPaths.ts",
+      " M src/content/index.ts",
+      " M src/content/loaders.ts",
+      " M src/services/diagnostics/release/releaseGateAdapters.ts",
+      " M src/services/diagnostics/release/releaseGateManifest.ts",
+      " M src/services/diagnostics/release/releaseGateTypes.ts",
+      " M src/services/rewards/RewardService.ts",
+      " M src/services/rewards/rewardSummary.ts",
+      " M src/services/rewards/types.ts",
+      " M src/types/index.ts",
+      " M tests/helpers/telemetry/runBalanceTelemetryProbe.ts",
+      " M tests/integration/balanceTelemetryHookCoverage.test.ts",
+      " M tests/integration/balanceTelemetryKpiSequence.test.ts",
+      " M tmp-progression-fixtures/src/content/contentPaths.js",
+      " M tmp-progression-fixtures/src/content/index.js",
+      " M tmp-progression-fixtures/src/content/loaders.js",
+      " M tmp-progression-fixtures/src/services/rewards/RewardService.js"
+    ]
+  },
+  "checks": [
+    {
+      "id": "package_json",
+      "title": "package.json",
+      "status": "pass",
+      "summary": "package.json parsed successfully.",
+      "evidence": [
+        "name=cultivation-idle",
+        "version=0.0.0"
+      ]
+    },
+    {
+      "id": "node_modules",
+      "title": "Dependencies",
+      "status": "pass",
+      "summary": "node_modules is present.",
+      "evidence": [
+        "node_modules"
+      ]
+    },
+    {
+      "id": "lockfile",
+      "title": "Lockfile",
+      "status": "pass",
+      "summary": "package-lock.json is present.",
+      "evidence": [
+        "package-lock.json"
+      ]
+    },
+    {
+      "id": "vendor_deps",
+      "title": "Local vendor dependencies",
+      "status": "pass",
+      "summary": "vendor directory is present.",
+      "evidence": [
+        "vendor"
+      ]
+    },
+    {
+      "id": "runtime_content_manifest",
+      "title": "Runtime content manifest",
+      "status": "pass",
+      "summary": "All runtime content files required by the manifest are present and non-empty.",
+      "evidence": [
+        "source=public/cultivation_idle_content_bible_v1_config",
+        "requiredFiles=19",
+        "missingFiles=0",
+        "emptyFiles=0"
+      ]
+    },
+    {
+      "id": "test_sources",
+      "title": "Test sources",
+      "status": "pass",
+      "summary": "572 TypeScript test source files found under tests/.",
+      "evidence": [
+        "tests/**/*.ts"
+      ]
+    },
+    {
+      "id": "compiled_tmp_tests",
+      "title": "Compiled tmp-tests",
+      "status": "info",
+      "summary": "tmp-tests directory is present.",
+      "evidence": [
+        "tmp-tests"
+      ]
+    },
+    {
+      "id": "test_configs",
+      "title": "Test tsconfig files",
+      "status": "pass",
+      "summary": "Checks for tsconfig.tests.json and tsconfig.progression-fixtures.json.",
+      "evidence": [
+        "tsconfig.tests.json: present",
+        "tsconfig.progression-fixtures.json: present"
+      ]
+    },
+    {
+      "id": "key_scripts",
+      "title": "Key package scripts",
+      "status": "pass",
+      "summary": "All 9 expected scripts are present.",
+      "evidence": [
+        "typecheck: present",
+        "check:icons: present",
+        "test: present",
+        "test:contracts: present",
+        "validate:content: present",
+        "progression:report: present",
+        "release:gate: present",
+        "release:runtime-content-manifest: present",
+        "release:implementation-baseline: present"
+      ]
+    },
+    {
+      "id": "release_capture_scripts",
+      "title": "Release/capture package scripts",
+      "status": "pass",
+      "summary": "All 9 expected scripts are present.",
+      "evidence": [
+        "release:gate-trial-exact-p0:capture: present",
+        "release:gate-trial-exact-p0:audit: present",
+        "release:outskirts-exact-p0:capture: present",
+        "release:ruins-exact-p0:capture: present",
+        "release:apothecary-exact-p0:capture: present",
+        "release:runtime-diagnostics: present",
+        "release:migration-matrix: present",
+        "release:offline-route-report: present",
+        "release:reclaim-route-report: present"
+      ]
+    },
+    {
+      "id": "release_docs",
+      "title": "Release docs directory",
+      "status": "pass",
+      "summary": "docs/release is present.",
+      "evidence": [
+        "docs/release"
+      ]
+    }
+  ],
+  "blockers": [],
+  "warnings": [],
+  "recommendedNextCommands": [
+    "npm run release:runtime-content-manifest:json",
+    "npm run typecheck",
+    "npm run check:icons",
+    "npm run test:contracts",
+    "npm run validate:content",
+    "npm run progression:report",
+    "npm run build",
+    "npm run release:gate -- --json"
+  ]
+}

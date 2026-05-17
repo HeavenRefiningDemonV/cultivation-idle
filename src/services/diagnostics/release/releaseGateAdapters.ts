@@ -4,6 +4,8 @@ import { spawnSync } from 'node:child_process';
 import { buildProgressionContract, adaptProgressionAuthoredContent, type RawProgressionContentLike } from '../../../systems/progression/contract/index.js';
 import { collectProgressionDiagnostics } from '../../../systems/progression/diagnostics/index.js';
 import { SEMESTER_SLICE_CONTRACT } from '../../../systems/progression/contract/semesterSlice.js';
+import { RUNTIME_CONTENT_FILE_BY_KEY } from '../../../content/runtimeContentManifest.js';
+import { buildRuntimeContentManifestReport } from './runtimeContentManifestReport.js';
 import type { ReleaseGateCheckId, ReleaseGateCheckResult, ReleaseGateFinding, ReleaseGateFindingSeverity } from './releaseGateTypes.js';
 
 type CommandResult = {
@@ -17,7 +19,11 @@ export type ReleaseGateAdapterContext = {
 };
 
 const defaultRunner = (command: string, args: string[]): CommandResult => {
-  const result = spawnSync(command, args, {
+  const executable = process.platform === 'win32' && command === 'npm' ? 'cmd.exe' : command;
+  const executableArgs = process.platform === 'win32' && command === 'npm'
+    ? ['/d', '/s', '/c', ['npm', ...args].join(' ')]
+    : args;
+  const result = spawnSync(executable, executableArgs, {
     cwd: process.cwd(),
     encoding: 'utf8',
     maxBuffer: 20 * 1024 * 1024,
@@ -99,30 +105,38 @@ const runtimePaths = [
 function loadProgressionRawContent(): RawProgressionContentLike {
   const base = path.resolve(process.cwd(), 'public', 'cultivation_idle_content_bible_v1_config');
   const read = (name: string) => JSON.parse(readFileSync(path.join(base, name), 'utf8'));
-  return {
-    economy: read('economy.json'),
-    cities: read('cities.json'),
-    items: read('items.json'),
-    techniques: read('techniques.json'),
-    pavilions: read('pavilions.json'),
-    outskirts: read('outskirts.json'),
-    enemies: read('enemies.json'),
-    trials: read('trials.json'),
-    ruins: read('ruins.json'),
-    alchemy_recipes: read('alchemy_recipes.json'),
-    forge_blueprints: read('forge_blueprints.json'),
-    runes: read('runes.json'),
-    talisman_recipes: read('talisman_recipes.json'),
-    apothecary_shops: read('apothecary_shops.json'),
-    expeditions: read('expeditions.json'),
-    bounties: read('bounties.json'),
-    heart_laws: read('heart_laws.json'),
-    prestige_store: read('prestige_store.json'),
-  } as RawProgressionContentLike;
+  return Object.fromEntries(
+    Object.entries(RUNTIME_CONTENT_FILE_BY_KEY).map(([key, fileName]) => [key, read(fileName)]),
+  ) as unknown as RawProgressionContentLike;
 }
 
 export async function runReleaseGateAdapter(checkId: ReleaseGateCheckId, context: ReleaseGateAdapterContext = {}): Promise<Omit<ReleaseGateCheckResult, 'checkId' | 'elapsedMs'>> {
   const runCommand = context.runCommand ?? defaultRunner;
+
+  if (checkId === 'runtime_content_manifest') {
+    const report = buildRuntimeContentManifestReport({ root: process.cwd() });
+    const findings: ReleaseGateFinding[] = [
+      ...report.blockers.map((message) => makeFinding(checkId, 'runtime_content_manifest_blocker', message, 'blocker', 'builder', false, 'npm run release:runtime-content-manifest:json')),
+      ...report.warnings.map((message) => makeFinding(checkId, 'runtime_content_manifest_warning', message, 'waiver_candidate', 'builder', true, 'npm run release:runtime-content-manifest:json')),
+    ];
+    const blockerCount = findings.filter((entry) => entry.severity === 'blocker').length;
+    const warningCount = findings.filter((entry) => entry.severity === 'waiver_candidate').length;
+    return {
+      status: blockerCount > 0 ? 'fail' : warningCount > 0 ? 'warning' : 'pass',
+      summary: blockerCount > 0
+        ? `Runtime content manifest failed with ${blockerCount} blocker(s).`
+        : warningCount > 0
+          ? `Runtime content manifest passed with ${warningCount} warning(s).`
+          : 'Runtime content manifest passed.',
+      blockerCount,
+      warningCount,
+      pendingManualCount: 0,
+      findings,
+      commandOrBuilder: 'buildRuntimeContentManifestReport',
+      evidence: ['public/cultivation_idle_content_bible_v1_config', 'docs/release/runtime_content_manifest.md'],
+      rawPayload: report,
+    };
+  }
 
   if (checkId === 'content_validation') {
     const command = 'npm run validate:content';
@@ -192,7 +206,7 @@ export async function runReleaseGateAdapter(checkId: ReleaseGateCheckId, context
     };
   }
 
-  const commandById: Record<Exclude<ReleaseGateCheckId, 'content_validation' | 'progression_contract'>, { command: string; args: string[]; json: boolean }> = {
+  const commandById: Record<Exclude<ReleaseGateCheckId, 'runtime_content_manifest' | 'content_validation' | 'progression_contract'>, { command: string; args: string[]; json: boolean }> = {
     build_audit: { command: 'npm', args: ['run', 'release:build-audit:json'], json: true },
     fresh_run_acceptance: { command: 'npm', args: ['run', 'release:fresh-run-report:json'], json: true },
     migration_matrix: { command: 'npm', args: ['run', 'release:migration-matrix:json'], json: true },

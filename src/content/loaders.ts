@@ -20,6 +20,7 @@ import type {
   TrialsConfig,
 } from './types.js';
 import { contentUrl } from './contentPaths.js';
+import { RUNTIME_CONTENT_DIR, RUNTIME_CONTENT_FILE_BY_KEY, type RuntimeContentFileName } from './runtimeContentManifest.js';
 
 export type ContentLoadFailurePhase = 'fetch' | 'parse' | 'load';
 
@@ -92,8 +93,12 @@ async function loadFile<T>(fileName: string): Promise<T> {
     return await fetchJson<T>(url);
   } catch (error) {
     if (error instanceof ContentLoadError) {
+      const expectedRuntimePath = `/${RUNTIME_CONTENT_DIR}/${fileName}`;
+      const message = error.phase === 'fetch'
+        ? `[Content] Missing runtime content file: ${fileName}. Expected public runtime path: ${expectedRuntimePath}. Run \`npm run release:runtime-content-manifest\` before shipping. Original error: ${error.message}`
+        : `[Content] ${fileName}: ${error.message}`;
       throw new ContentLoadError({
-        message: `[Content] ${fileName}: ${error.message}`,
+        message,
         phase: error.phase,
         fileName,
         url: error.url ?? url,
@@ -110,31 +115,11 @@ async function loadFile<T>(fileName: string): Promise<T> {
 }
 
 export async function loadAllContent(): Promise<LoadedContentRaw> {
-  const files = {
-    economy: 'economy.json',
-    cities: 'cities.json',
-    items: 'items.json',
-    techniques: 'techniques.json',
-    pavilions: 'pavilions.json',
-    outskirts: 'outskirts.json',
-    enemies: 'enemies.json',
-    trials: 'trials.json',
-    ruins: 'ruins.json',
-    alchemy_recipes: 'alchemy_recipes.json',
-    forge_blueprints: 'forge_blueprints.json',
-    runes: 'runes.json',
-    talisman_recipes: 'talisman_recipes.json',
-    apothecary_shops: 'apothecary_shops.json',
-    expeditions: 'expeditions.json',
-    bounties: 'bounties.json',
-    heart_laws: 'heart_laws.json',
-    prestige_store: 'prestige_store.json',
-    pavilion_records: 'pavilion_records.json',
-  } as const;
+  const files = RUNTIME_CONTENT_FILE_BY_KEY as Record<keyof LoadedContentRaw, RuntimeContentFileName>;
 
   const entries = await Promise.all(
     Object.entries(files).map(async ([key, fileName]) => {
-      const data = await loadFile(fileName as string);
+      const data = await loadFile(fileName);
       return [key, data] as const;
     }),
   );

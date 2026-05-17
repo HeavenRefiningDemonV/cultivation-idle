@@ -15,8 +15,20 @@ export type ReleaseGateCheckManifestEntry = {
 
 export const RELEASE_GATE_MANIFEST: ReadonlyArray<ReleaseGateCheckManifestEntry> = Object.freeze([
   {
-    checkId: 'build_audit',
+    checkId: 'runtime_content_manifest',
     order: 1,
+    title: 'Runtime Content Manifest',
+    packetOwners: ['P0-01'],
+    why: 'Ensures the playable artifact source tree contains every runtime JSON file the loader fetches.',
+    evidenceCommand: 'npm run release:runtime-content-manifest:json',
+    evidencePaths: ['public/cultivation_idle_content_bible_v1_config', 'docs/release/runtime_content_manifest.md'],
+    canEmitWaiverCandidateWarnings: false,
+    failureAlwaysBlocker: true,
+    canReturnPendingManual: false,
+  },
+  {
+    checkId: 'build_audit',
+    order: 2,
     title: 'Build Warning Inventory',
     packetOwners: ['7.4a'],
     why: 'Ensures build blockers/warnings are explicitly classified before RC sign-off.',
@@ -28,7 +40,7 @@ export const RELEASE_GATE_MANIFEST: ReadonlyArray<ReleaseGateCheckManifestEntry>
   },
   {
     checkId: 'content_validation',
-    order: 2,
+    order: 3,
     title: 'Content Validation',
     packetOwners: ['core-content'],
     why: 'Validates authored content pack cross-references and semester-slice integrity.',
@@ -40,7 +52,7 @@ export const RELEASE_GATE_MANIFEST: ReadonlyArray<ReleaseGateCheckManifestEntry>
   },
   {
     checkId: 'progression_contract',
-    order: 3,
+    order: 4,
     title: 'Progression Contract Drift',
     packetOwners: ['1.1-1.8'],
     why: 'Prevents progression-truth drift between authored content and runtime surfaces.',
@@ -52,7 +64,7 @@ export const RELEASE_GATE_MANIFEST: ReadonlyArray<ReleaseGateCheckManifestEntry>
   },
   {
     checkId: 'fresh_run_acceptance',
-    order: 4,
+    order: 5,
     title: 'Fresh Run Acceptance',
     packetOwners: ['7.1'],
     why: 'Ensures new-life progression and final-truth checkpoints remain release-honest.',
@@ -64,7 +76,7 @@ export const RELEASE_GATE_MANIFEST: ReadonlyArray<ReleaseGateCheckManifestEntry>
   },
   {
     checkId: 'migration_matrix',
-    order: 5,
+    order: 6,
     title: 'Migration Matrix',
     packetOwners: ['7.2'],
     why: 'Verifies migration safety across canonical fixture classes and high-risk save variants.',
@@ -76,7 +88,7 @@ export const RELEASE_GATE_MANIFEST: ReadonlyArray<ReleaseGateCheckManifestEntry>
   },
   {
     checkId: 'balance_regression',
-    order: 6,
+    order: 7,
     title: 'Balance Regression',
     packetOwners: ['6.x', '7.3'],
     why: 'Guards pacing, throughput and AP/hour envelopes for semester release balancing.',
@@ -88,7 +100,7 @@ export const RELEASE_GATE_MANIFEST: ReadonlyArray<ReleaseGateCheckManifestEntry>
   },
   {
     checkId: 'route_comparison',
-    order: 7,
+    order: 8,
     title: 'Route Comparison',
     packetOwners: ['7.3'],
     why: 'Ensures fresh/offline/reclaim route truth stays aligned with semester final-truth constraints.',
@@ -100,7 +112,7 @@ export const RELEASE_GATE_MANIFEST: ReadonlyArray<ReleaseGateCheckManifestEntry>
   },
   {
     checkId: 'runtime_diagnostics',
-    order: 8,
+    order: 9,
     title: 'Runtime Diagnostics',
     packetOwners: ['7.4c'],
     why: 'Catches runtime validation errors and health regressions before RC.',
@@ -112,7 +124,7 @@ export const RELEASE_GATE_MANIFEST: ReadonlyArray<ReleaseGateCheckManifestEntry>
   },
   {
     checkId: 'vocabulary_audit',
-    order: 9,
+    order: 10,
     title: 'Vocabulary Audit',
     packetOwners: ['7.5a'],
     why: 'Prevents stale placeholder/debug copy regressions on tracked live surfaces.',
@@ -124,7 +136,7 @@ export const RELEASE_GATE_MANIFEST: ReadonlyArray<ReleaseGateCheckManifestEntry>
   },
   {
     checkId: 'full_test_suite',
-    order: 10,
+    order: 11,
     title: 'Full Test Suite',
     packetOwners: ['7.4d-7.5d'],
     why: 'Authoritative umbrella proof for test-first release-critical checks.',

@@ -1,4 +1,5 @@
 import { contentUrl } from './contentPaths.js';
+import { RUNTIME_CONTENT_DIR, RUNTIME_CONTENT_FILE_BY_KEY } from './runtimeContentManifest.js';
 export class ContentLoadError extends Error {
     phase;
     fileName;
@@ -43,8 +44,12 @@ async function loadFile(fileName) {
     }
     catch (error) {
         if (error instanceof ContentLoadError) {
+            const expectedRuntimePath = `/${RUNTIME_CONTENT_DIR}/${fileName}`;
+            const message = error.phase === 'fetch'
+                ? `[Content] Missing runtime content file: ${fileName}. Expected public runtime path: ${expectedRuntimePath}. Run \`npm run release:runtime-content-manifest\` before shipping. Original error: ${error.message}`
+                : `[Content] ${fileName}: ${error.message}`;
             throw new ContentLoadError({
-                message: `[Content] ${fileName}: ${error.message}`,
+                message,
                 phase: error.phase,
                 fileName,
                 url: error.url ?? url,
@@ -60,27 +65,7 @@ async function loadFile(fileName) {
     }
 }
 export async function loadAllContent() {
-    const files = {
-        economy: 'economy.json',
-        cities: 'cities.json',
-        items: 'items.json',
-        techniques: 'techniques.json',
-        pavilions: 'pavilions.json',
-        outskirts: 'outskirts.json',
-        enemies: 'enemies.json',
-        trials: 'trials.json',
-        ruins: 'ruins.json',
-        alchemy_recipes: 'alchemy_recipes.json',
-        forge_blueprints: 'forge_blueprints.json',
-        runes: 'runes.json',
-        talisman_recipes: 'talisman_recipes.json',
-        apothecary_shops: 'apothecary_shops.json',
-        expeditions: 'expeditions.json',
-        bounties: 'bounties.json',
-        heart_laws: 'heart_laws.json',
-        prestige_store: 'prestige_store.json',
-        pavilion_records: 'pavilion_records.json',
-    };
+    const files = RUNTIME_CONTENT_FILE_BY_KEY;
     const entries = await Promise.all(Object.entries(files).map(async ([key, fileName]) => {
         const data = await loadFile(fileName);
         return [key, data];

@@ -1,4 +1,5 @@
 export type ReleaseGateCheckId =
+  | 'runtime_content_manifest'
   | 'build_audit'
   | 'content_validation'
   | 'progression_contract'

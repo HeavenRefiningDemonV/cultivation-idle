@@ -61,6 +61,22 @@ export function buildRewardSummary(result) {
             continue;
         parts.push(`+${item.qty} ${nameForItem(item.itemId)}`);
     }
+    for (const fragment of result.appliedTechniqueFragments ?? []) {
+        if (!fragment?.techId || fragment.qty <= 0)
+            continue;
+        parts.push(`+${fragment.qty} technique fragments: ${fragment.techId}`);
+    }
+    for (const manual of result.appliedManuals ?? []) {
+        if (!manual?.techId || manual.qty <= 0)
+            continue;
+        parts.push(`+${manual.qty} manual: ${manual.techId}`);
+    }
+    if (result.appliedComprehension?.applied) {
+        parts.push(`+${result.appliedComprehension.amount} Comprehension`);
+    }
+    else if (result.appliedComprehension?.skippedReason === 'no_selected_heart_law') {
+        parts.push('(Comprehension skipped: no Heart Law selected)');
+    }
     if (result.droppedItems.length > 0) {
         const dropped = normalizeItemList(result.droppedItems)
             .filter((item) => item && item.itemId && item.qty > 0)
@@ -88,13 +104,19 @@ export function normalizeRewardBundle(bundle) {
     }
     if (Array.isArray(bundle.manuals) && bundle.manuals.length > 0) {
         const manuals = bundle.manuals
-            .filter((manual) => manual && manual.manualId && manual.techId)
+            .filter((manual) => {
+            if (!manual || !manual.manualId || !manual.techId)
+                return false;
+            if (typeof manual.qty !== 'number' || !Number.isFinite(manual.qty))
+                return false;
+            return Math.floor(manual.qty) > 0;
+        })
             .map((manual) => ({
             manualId: manual.manualId,
             techId: manual.techId,
             grade: normalizeGrade(manual.grade),
             rarity: normalizeRarity(manual.rarity),
-            qty: Math.max(1, Math.floor(manual.qty ?? 0)),
+            qty: Math.floor(manual.qty),
         }))
             .filter((manual) => manual.qty > 0);
         if (manuals.length > 0) {

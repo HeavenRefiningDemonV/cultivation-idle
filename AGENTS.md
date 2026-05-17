@@ -26,3 +26,14 @@ React + TypeScript + Vite with Zustand for state, Headless UI for primitives, an
 - Keep TypeScript strict and prefer explicit types to implicit `any`.
 - For Zustand, expose selectors and avoid components subscribing to entire stores to minimize re-renders.
 - Favor small, cohesive modules over monoliths; share reusable UI primitives instead of duplicating patterns.
+
+## Loop integration / Codex packet guardrails
+- Treat progression contract, gate resolver, trial lifecycle, city progression runtime, RewardService, CombatStore, and PrestigeResetService as source-truth systems. Do not duplicate their logic in screens.
+- Exact screens and feature screens should render typed surfaces. Store reads and action wiring belong in owners, controllers, or builders; pure visual components should not mutate stores.
+- Reward application must remain centralized in RewardService. UI code must never grant currencies, items, manuals, fragments, comprehension, or gate proof directly.
+- Combat simulation/resolution must remain centralized in CombatStore. UI may start or stop allowed flows through existing actions but must never resolve fights.
+- Prestige reset truth must remain centralized in PrestigeResetService. UI preview code must read or classify reset behavior rather than inventing reset lists.
+- Runtime content packs are source truth. Missing content should fail release/runtime preflight by filename; never satisfy a check with empty placeholder content.
+- Every implementation packet should leave evidence: commands run, tests added or updated, changed files, unresolved blockers, and skipped checks with reasons.
+- Avoid greenfield rewrites. Prefer adapters, typed surfaces, manifests, tests, and release checks over broad replacement.
+- No destructive art/UI cutover: do not remove old scenic/base art or exact-screen visual ownership until a completed replacement is visible, wired, and accepted for that exact screen.

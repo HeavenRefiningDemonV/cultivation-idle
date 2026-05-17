@@ -18,7 +18,8 @@ export type ComprehensionSource =
   | "meditation"
   | "outskirtsBoss"
   | "trialClear"
-  | "ruinsClear";
+  | "ruinsClear"
+  | "rewardBundle";
 export type InsightChoiceId = "contemplate" | "stabilize" | "drawQi";
 
 export type MedicinePouchSlotKey = "healing" | "utility" | "specialty";

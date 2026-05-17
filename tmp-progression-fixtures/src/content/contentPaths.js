@@ -1,4 +1,5 @@
-export const CONTENT_DIR = 'cultivation_idle_content_bible_v1_config';
+import { RUNTIME_CONTENT_DIR } from './runtimeContentManifest.js';
+export const CONTENT_DIR = RUNTIME_CONTENT_DIR;
 export function getContentBaseUrl() {
     const baseUrl = import.meta.env.BASE_URL ?? '/';
     const normalized = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;

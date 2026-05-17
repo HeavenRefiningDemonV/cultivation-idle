@@ -28,10 +28,36 @@ export type RewardBundle = {
   comprehension?: number;
 };
 
+export type RewardSkippedEntry = {
+  kind: 'currency' | 'item' | 'techniqueFragment' | 'manual' | 'comprehension';
+  reason: string;
+  payload: unknown;
+};
+
+export type RewardComprehensionResult = {
+  amount: number;
+  applied: boolean;
+  source: string;
+  targetHeartLawId: string | null;
+  before?: {
+    chapter: number;
+    comprehension: number;
+  };
+  after?: {
+    chapter: number;
+    comprehension: number;
+  };
+  skippedReason?: 'no_selected_heart_law' | 'invalid_amount';
+};
+
 export type GrantRewardsResult = {
   appliedCurrencies: RewardCurrencyBundle;
   appliedItems: RewardItemBundle[];
   droppedItems: RewardItemBundle[];
+  appliedTechniqueFragments: RewardTechniqueFragmentBundle[];
+  appliedManuals: RewardManualBundle[];
+  appliedComprehension: RewardComprehensionResult | null;
+  skippedRewards: RewardSkippedEntry[];
 };
 
 export type LootContext = 'outskirts' | 'ruins';
