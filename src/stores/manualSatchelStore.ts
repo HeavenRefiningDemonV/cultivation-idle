@@ -214,10 +214,6 @@ export const useManualSatchelStore = create<ManualSatchelStoreState>()(
           .getState()
           .addFragments(manual.techId, fragmentsGained);
       }
-      GameEvents.emit({
-        type: "rewards/granted",
-        payload: { type: "techniqueFragments", techId: manual.techId } as any,
-      });
       return { ok: true, fragmentsGained, techId: manual.techId };
     },
 

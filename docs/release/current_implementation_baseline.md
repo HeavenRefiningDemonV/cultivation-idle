@@ -1,6 +1,6 @@
 # Current Implementation Baseline
 
-Generated: 2026-05-17T18:01:34.623Z
+Generated: 2026-05-17T19:52:04.428Z
 CWD: `C:\Users\abdul\Desktop\cultivation-idle`
 Package: cultivation-idle 0.0.0
 Node: v24.14.0
@@ -9,26 +9,26 @@ Git branch: Latest
 Git dirty: yes
 
 ## Git status preview
-- `M AGENTS.md`
-- ` M package.json`
-- ` M scripts/validateContent.ts`
-- ` M src/content/contentPaths.ts`
-- ` M src/content/index.ts`
-- ` M src/content/loaders.ts`
-- ` M src/services/diagnostics/release/releaseGateAdapters.ts`
-- ` M src/services/diagnostics/release/releaseGateManifest.ts`
-- ` M src/services/diagnostics/release/releaseGateTypes.ts`
-- ` M src/services/rewards/RewardService.ts`
-- ` M src/services/rewards/rewardSummary.ts`
-- ` M src/services/rewards/types.ts`
-- ` M src/types/index.ts`
-- ` M tests/helpers/telemetry/runBalanceTelemetryProbe.ts`
-- ` M tests/integration/balanceTelemetryHookCoverage.test.ts`
-- ` M tests/integration/balanceTelemetryKpiSequence.test.ts`
-- ` M tmp-progression-fixtures/src/content/contentPaths.js`
-- ` M tmp-progression-fixtures/src/content/index.js`
-- ` M tmp-progression-fixtures/src/content/loaders.js`
-- ` M tmp-progression-fixtures/src/services/rewards/RewardService.js`
+- `M docs/release/build_warning_inventory.md`
+- ` M docs/release/current_implementation_baseline.json`
+- ` M docs/release/current_implementation_baseline.md`
+- ` M docs/release/known_issues.md`
+- ` M docs/release/runtime_content_manifest.md`
+- ` M src/components/GameLayout.tsx`
+- ` M src/components/screens/StatusScreen.tsx`
+- ` M src/components/screens/WorldScreen.tsx`
+- ` M src/features/cultivation/exact/CultivationExactScreen.scss`
+- ` M src/features/cultivation/exact/CultivationExactScreen.tsx`
+- ` M src/features/cultivation/exact/buildCultivationExactSurface.ts`
+- ` M src/features/cultivation/exact/cultivationExactTypes.ts`
+- ` M src/features/prestige/prestigeLedgerExact/PrestigeLedgerExactScreen.scss`
+- ` M src/features/prestige/prestigeLedgerExact/PrestigeLedgerExactScreen.tsx`
+- ` M src/features/prestige/prestigeLedgerExact/PrestigeLedgerScreenOwner.tsx`
+- ` M src/features/prestige/prestigeLedgerExact/buildPrestigeLedgerExactSurface.ts`
+- ` M src/features/prestige/prestigeLedgerExact/prestigeLedgerExactTypes.ts`
+- ` M src/features/world/gateTrialExact/GateTrialExactScreen.scss`
+- ` M src/features/world/gateTrialExact/GateTrialExactScreen.ts`
+- ` M src/features/world/gateTrialExact/buildGateTrialExactSurface.ts`
 
 ## Checks
 | Check | Status | Summary |
@@ -38,7 +38,7 @@ Git dirty: yes
 | Lockfile | PASS | package-lock.json is present. |
 | Local vendor dependencies | PASS | vendor directory is present. |
 | Runtime content manifest | PASS | All runtime content files required by the manifest are present and non-empty. |
-| Test sources | PASS | 572 TypeScript test source files found under tests/. |
+| Test sources | PASS | 580 TypeScript test source files found under tests/. |
 | Compiled tmp-tests | INFO | tmp-tests directory is present. |
 | Test tsconfig files | PASS | Checks for tsconfig.tests.json and tsconfig.progression-fixtures.json. |
 | Key package scripts | PASS | All 9 expected scripts are present. |

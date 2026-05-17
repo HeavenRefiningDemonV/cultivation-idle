@@ -371,6 +371,35 @@ export function StatusScreen() {
               )}
             </DashboardPanel>
 
+            <DashboardPanel title="Recent Changes" icon={<PackageCheck />} className="statusDashboardPanel--recent">
+              {surface.runCompass.recentDeltas.length > 0 ? (
+                <div className="statusDashboardIssueList">
+                  {surface.runCompass.recentDeltas.map((row) => (
+                    <article key={row.id} className={`statusDashboardIssue statusDashboardIssue--${row.tone}`}>
+                      <span className="statusDashboardIssue__icon" aria-hidden>
+                        <SurfaceIcon icon={row.icon} size={20} />
+                      </span>
+                      <div>
+                        <span>{row.label}</span>
+                        <p>{row.value ? `${row.value}: ${row.detail}` : row.detail}</p>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              ) : (
+                <EmptyState
+                  row={{
+                    id: 'recent-empty',
+                    label: surface.runCompass.primaryBlockerLabel,
+                    detail: surface.runCompass.primaryRouteLabel,
+                    tone: 'muted',
+                    icon: 'recordSlip',
+                    source: 'runCompass.recentDeltas',
+                  }}
+                />
+              )}
+            </DashboardPanel>
+
             <DashboardPanel title="Identity & Attributes" icon={<Compass />} className="statusDashboardPanel--identity">
               <div className="statusDashboardIdentityTop">
                 <div className="statusDashboardSpiritCrest" data-element={elementKey} aria-hidden>

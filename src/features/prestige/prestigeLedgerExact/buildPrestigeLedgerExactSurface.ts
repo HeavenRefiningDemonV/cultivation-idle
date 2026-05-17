@@ -423,6 +423,7 @@ export function buildPrestigeLedgerExactSurfaceFromStores(input: PrestigeLedgerE
       title: 'Reset Contract',
       tablets: buildResetTabletsFromPreview(input.advisor.resetPreview),
     },
+    runCompassHint: input.runCompassHint ?? null,
     debug: {
       notes: [
         `Live recommendations drawn from ${input.visibleUpgrades.length} visible runtime prestige upgrades.`,

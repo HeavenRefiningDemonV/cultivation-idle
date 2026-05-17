@@ -33,6 +33,7 @@ const FILES = {
   bounties: 'bounties.json',
   heart_laws: 'heart_laws.json',
   prestige_store: 'prestige_store.json',
+  pavilion_records: 'pavilion_records.json',
 };
 
 async function readJson(fileName: string) {

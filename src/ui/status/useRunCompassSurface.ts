@@ -6,7 +6,12 @@ import { useCityStore } from '../../stores/cityStore.js';
 import { useTrialStore } from '../../stores/trialStore.js';
 import { usePrestigeStore } from '../../stores/prestigeStore.js';
 import { useCultivationStore } from '../../stores/cultivationStore.js';
-import { buildLiveRunCompassSurface, buildRunCompassCompactSurface } from '../../systems/ui/runCompass/index.js';
+import {
+  adaptRunCompassV2ToLegacy,
+  buildLiveRunCompassSurfaceV2,
+  buildRunCompassCompactSurfaceFromV2,
+} from '../../systems/ui/runCompass/index.js';
+import { useRunDeltaStore } from '../../systems/runDeltas/runDeltaStore.js';
 
 export function useRunCompassSurface() {
   const contentLoaded = useContentStore((state) => state.isLoaded);
@@ -24,15 +29,19 @@ export function useRunCompassSurface() {
   const highestRealmReached = usePrestigeStore((state) => state.highestRealmReached);
   const selectedHeartLawId = useCultivationStore((state) => state.selectedHeartLawId);
   const chapter = useCultivationStore((state) => state.chapter);
+  const runDeltas = useRunDeltaStore((state) => state.deltas);
 
   return useMemo(() => {
     if (!contentLoaded || !contentRaw) {
-      return { full: null, compact: null };
+      return { v2: null, full: null, compact: null, compactV2: null };
     }
-    const full = buildLiveRunCompassSurface();
+    const v2 = buildLiveRunCompassSurfaceV2();
+    const full = v2 ? adaptRunCompassV2ToLegacy(v2) : null;
     return {
+      v2,
       full,
-      compact: buildRunCompassCompactSurface(full),
+      compact: buildRunCompassCompactSurfaceFromV2(v2),
+      compactV2: buildRunCompassCompactSurfaceFromV2(v2),
     };
   }, [
     chapter,
@@ -45,6 +54,7 @@ export function useRunCompassSurface() {
     qi,
     qiPerSecond,
     realm,
+    runDeltas,
     selectedHeartLawId,
     selectedModuleByCity,
     selectedPath,

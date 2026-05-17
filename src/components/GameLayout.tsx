@@ -46,6 +46,7 @@ import { isLifeStartWizardRequired } from '../systems/ui/lifeStart/lifeStartWiza
 import { StoryCutsceneOverlay } from '../features/story/StoryCutsceneOverlay.js';
 import { useStoryStore } from '../features/story/storyStore.js';
 import { useStoryTriggers } from '../features/story/useStoryTriggers.js';
+import { initRunDeltaEventBridge } from '../systems/runDeltas/initRunDeltaEventBridge.js';
 import './GameLayout.scss';
 
 /**
@@ -137,6 +138,10 @@ export function GameLayout() {
     selectedHeartLawId,
   });
   const shouldDelayLifeStartForStory = selectedPath === null && !storyIntroSeen;
+
+  useEffect(() => {
+    initRunDeltaEventBridge();
+  }, []);
 
   useEffect(() => {
     if (prestigeCount > lastPrestigeCountRef.current) {

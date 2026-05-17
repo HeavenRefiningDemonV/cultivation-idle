@@ -42,6 +42,7 @@ import {
   type GateTrialChecklistLine,
   type GateTrialReadinessSurface,
 } from '../../../systems/readiness/section5Adapters.js';
+import { buildLiveRunCompassSurfaceV2 } from '../../../systems/ui/runCompass/index.js';
 
 import {
   GATE_TRIAL_EXACT_REGION_ORDER,
@@ -77,6 +78,18 @@ export interface BuildGateTrialExactSurfaceFromStoresOptions {
   mode?: 'fixture' | 'live';
   trialId?: string | null;
   nowMs?: number;
+}
+
+function buildGateTrialRunCompassProjection(): GateTrialExactSurfaceV1['runCompass'] {
+  const surface = buildLiveRunCompassSurfaceV2();
+  if (!surface) return null;
+  return {
+    milestoneLabel: surface.milestone.label,
+    primaryBlockerLabel: surface.primaryBlocker.label,
+    primaryRouteLabel: surface.primaryRoute.label,
+    detail: surface.primaryRoute.detail,
+    recentDeltaLine: surface.recentDeltas[0]?.memoryLine ?? null,
+  };
 }
 
 interface LiveMetrics {
@@ -1790,6 +1803,7 @@ export function buildGateTrialExactSurfaceFromStores(
     trialSummary: activeTrialSummary,
     readinessRail: buildLiveReadinessRail(context),
     primaryAction: activePrimaryAction,
+    runCompass: buildGateTrialRunCompassProjection(),
     debug: {
       ...fixture.debug,
       regionOrder: GATE_TRIAL_EXACT_REGION_ORDER,

@@ -355,6 +355,14 @@ export interface GateTrialExactDebugSurface {
   visualContractNotes: string[];
 }
 
+export interface GateTrialRunCompassSurface {
+  milestoneLabel: string;
+  primaryBlockerLabel: string;
+  primaryRouteLabel: string;
+  detail: string;
+  recentDeltaLine: string | null;
+}
+
 export interface GateTrialExactSurfaceV1 {
   meta: GateTrialExactSurfaceMeta;
   shell: GateTrialExactShellFlags;
@@ -368,5 +376,6 @@ export interface GateTrialExactSurfaceV1 {
   trialSummary: GateTrialTrialSummarySurface;
   readinessRail: GateTrialReadinessRailSurface;
   primaryAction: GateTrialButtonSurface;
+  runCompass?: GateTrialRunCompassSurface | null;
   debug: GateTrialExactDebugSurface;
 }

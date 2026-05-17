@@ -59,6 +59,24 @@ export function PrestigeLedgerExactScreen({
         </div>
       </header>
 
+      {surface.runCompassHint ? (
+        <section
+          className={`prestigeLedgerRunCompass parchmentPanel ${surface.runCompassHint.active ? 'prestigeLedgerRunCompass--active' : ''}`}
+          aria-label="Run Compass"
+        >
+          <div>
+            <span>{surface.runCompassHint.active ? 'Primary Route' : 'Run Compass'}</span>
+            <strong>{surface.runCompassHint.milestoneLabel}</strong>
+            <p>{surface.runCompassHint.blockerLabel}</p>
+            {surface.runCompassHint.recentDeltaLine ? <small>{surface.runCompassHint.recentDeltaLine}</small> : null}
+          </div>
+          <div>
+            <span>{surface.runCompassHint.routeLabel}</span>
+            <p>{surface.runCompassHint.detail}</p>
+          </div>
+        </section>
+      ) : null}
+
       <section className="prestigeLedgerCard prestigeLedgerCard--ledger parchmentPanel" aria-labelledby="prestige-ledger-current-title">
         <div className="prestigeLedgerCard__stamp" aria-hidden="true" />
         <h2 id="prestige-ledger-current-title">{surface.currentLifeLedger.title}</h2>

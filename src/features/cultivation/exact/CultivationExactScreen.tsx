@@ -302,6 +302,18 @@ export function CultivationExactScreen({
           <strong className="cultivationExactBreakthroughSeal__value">{surface.breakthroughSeal.value}</strong>
         </section>
 
+        {surface.runCompassCompact ? (
+          <section className="cultivationExactRunCompassSlip" data-region="run-compass-v2" aria-label="Run Compass">
+            <div>
+              <span className="cultivationExactRunCompassSlip__eyebrow">{surface.runCompassCompact.readinessLabel}</span>
+              <strong>{surface.runCompassCompact.milestoneLine}</strong>
+              <p>{surface.runCompassCompact.blockerLine}</p>
+              {surface.runCompassCompact.recentDeltaLine ? <small>{surface.runCompassCompact.recentDeltaLine}</small> : null}
+            </div>
+            <span>{surface.runCompassCompact.actionLine}</span>
+          </section>
+        ) : null}
+
         <section
           className={`cultivationExactQiRail cultivationExactQiRail--${surface.qiRail.state}`}
           data-region="qi-rail"

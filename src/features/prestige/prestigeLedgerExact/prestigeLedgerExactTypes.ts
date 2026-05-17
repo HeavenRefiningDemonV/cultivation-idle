@@ -84,6 +84,14 @@ export type PrestigeLedgerExactSurfaceV1 = {
     title: 'Reset Contract';
     tablets: { title: string; bullets: string[]; tone: 'reset' | 'carry' | 'rebuild' }[];
   };
+  runCompassHint?: {
+    milestoneLabel: string;
+    blockerLabel: string;
+    routeLabel: string;
+    detail: string;
+    active: boolean;
+    recentDeltaLine: string | null;
+  } | null;
   debug?: { notes: string[] };
 };
 
@@ -117,6 +125,7 @@ export type PrestigeLedgerExactLiveInput = {
   cityNamesReached: string[];
   resolvedGateCount: number;
   visibleUpgrades: PrestigeUpgradeDef[];
+  runCompassHint?: PrestigeLedgerExactSurfaceV1['runCompassHint'];
 };
 
 export type PrestigeLedgerExactScreenActions = {

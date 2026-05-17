@@ -1,5 +1,6 @@
 import type {
   RunCompassActionLine,
+  RunCompassCompactSurface,
   RunCompassTabTarget,
   RunCompassSurface,
 } from '../../../systems/ui/runCompass/index.js';
@@ -191,6 +192,7 @@ export interface CultivationExactSurfaceV1 {
     secondary?: CultivationButtonSurface;
     supportLine: string;
   };
+  runCompassCompact?: RunCompassCompactSurface | null;
 
   lifeCycleWhisper: {
     visible: boolean;
@@ -252,6 +254,7 @@ export interface CultivationExactBuildSnapshot {
   activeBuffSummary: string;
   runCompassActions: RunCompassActionLine[];
   runCompassFull?: RunCompassSurface | null;
+  runCompassCompact?: RunCompassCompactSurface | null;
 }
 
 export interface BuildCultivationExactSurfaceOptions {

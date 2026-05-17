@@ -25,6 +25,7 @@ export function RunCompassCompact({ surface, tone = 'paper', className }: RunCom
           </div>
           <div className="runCompassCompact__line">{surface.blockerLine}</div>
           <div className="runCompassCompact__line">{surface.actionLine}</div>
+          {surface.recentDeltaLine ? <div className="runCompassCompact__line runCompassCompact__line--delta">{surface.recentDeltaLine}</div> : null}
         </>
       )}
     </div>

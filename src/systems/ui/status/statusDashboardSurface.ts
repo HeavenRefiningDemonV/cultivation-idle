@@ -10,7 +10,14 @@ import { useContentStore } from '../../../stores/contentStore.js';
 import { useGameStore } from '../../../stores/gameStore.js';
 import { useProfessionStore, type ForgeJob } from '../../../stores/professionStore.js';
 import { useExpeditionStore } from '../../../stores/expeditionStore.js';
-import { buildLiveRunCompassSurface, type RunCompassActionLine, type RunCompassInfoLine } from '../runCompass/index.js';
+import {
+  buildLiveRunCompassSurface,
+  buildLiveRunCompassSurfaceV2,
+  type RunCompassActionLine,
+  type RunCompassInfoLine,
+  type RunCompassRouteV2,
+  type RunCompassSurfaceV2,
+} from '../runCompass/index.js';
 import { buildStatusTroubleshootingSurface, type StatusTroubleshootingSurface } from './statusTroubleshootingSurface.js';
 import { D, formatNumber, formatPercentFromValue } from '../../../utils/numbers.js';
 
@@ -144,6 +151,12 @@ export interface StatusDashboardSurfaceV1 {
     progressLabel: string;
     rows: StatusFactRow[];
     action: StatusActionSurface | null;
+  };
+  runCompass: {
+    milestoneLabel: string;
+    primaryBlockerLabel: string;
+    primaryRouteLabel: string;
+    recentDeltas: StatusFactRow[];
   };
   identity: {
     rows: StatusFactRow[];
@@ -282,6 +295,59 @@ function toStatusAction(action: RunCompassActionLine): StatusActionSurface | nul
     disabledReason: action.blockedReason ?? (target.kind === 'none' ? target.reason : null),
     tone: action.blocked || target.kind === 'none' ? 'muted' : 'info',
     source: 'run_compass',
+  };
+}
+
+function toStatusActionFromRoute(route: RunCompassRouteV2): StatusActionSurface {
+  const target: StatusRouteTarget = route.target
+    ? route.target.kind === 'tab'
+      ? { kind: 'tab', tab: route.target.tab }
+      : { kind: 'world_module', cityId: route.target.cityId, moduleKey: route.target.moduleKey }
+    : noneTarget(route.blockedReason ?? 'No route is currently available.');
+
+  return {
+    id: route.id,
+    label: route.label,
+    detail: route.detail,
+    destinationLabel: route.target ? route.destinationLabel : routeLabel(target),
+    target,
+    disabled: route.blocked || target.kind === 'none',
+    disabledReason: route.blockedReason ?? (target.kind === 'none' ? target.reason : null),
+    tone: route.blocked || target.kind === 'none' ? 'muted' : toTone(`${route.label} ${route.detail}`),
+    source: route.source === 'economy'
+      ? 'economy'
+      : route.source === 'prestige'
+        ? 'prestige'
+        : route.source === 'fallback'
+          ? 'fallback'
+          : route.source === 'run_delta'
+            ? 'activity'
+            : 'readiness',
+  };
+}
+
+function deltaTone(tone: RunCompassSurfaceV2['recentDeltas'][number]['tone']): StatusTone {
+  if (tone === 'success') return 'success';
+  if (tone === 'warning') return 'warning';
+  if (tone === 'danger') return 'danger';
+  if (tone === 'muted') return 'muted';
+  return 'info';
+}
+
+function buildRunCompassStatusRows(v2: RunCompassSurfaceV2 | null): StatusDashboardSurfaceV1['runCompass'] {
+  return {
+    milestoneLabel: v2?.milestone.label ?? 'Run Compass unavailable',
+    primaryBlockerLabel: v2?.primaryBlocker.label ?? 'No command truth available',
+    primaryRouteLabel: v2?.primaryRoute.label ?? 'No route available',
+    recentDeltas: (v2?.recentDeltas ?? []).slice(0, 3).map((delta): StatusFactRow => ({
+      id: `run-delta-${delta.id}`,
+      label: delta.label,
+      value: delta.rewardSummary ?? undefined,
+      detail: delta.memoryLine,
+      tone: deltaTone(delta.tone),
+      icon: delta.tone === 'success' ? 'taskComplete' : delta.tone === 'warning' || delta.tone === 'danger' ? 'inkWarning' : 'recordSlip',
+      source: `runDeltas.${delta.source}`,
+    })),
   };
 }
 
@@ -820,20 +886,48 @@ export function buildStatusDashboardSurface(now = Date.now()): StatusDashboardSu
     troubleshooting = buildFallbackTroubleshooting(debugNotes);
   }
 
+  let runCompassV2: ReturnType<typeof buildLiveRunCompassSurfaceV2> = null;
   let runCompass: ReturnType<typeof buildLiveRunCompassSurface> = null;
   try {
+    runCompassV2 = buildLiveRunCompassSurfaceV2();
     runCompass = buildLiveRunCompassSurface();
   } catch (error) {
     debugNotes.push(`runCompass error: ${error instanceof Error ? error.message : String(error)}`);
   }
 
-  const bestNextActions = (runCompass?.bestNextActions ?? [])
-    .map(toStatusAction)
-    .filter((action): action is StatusActionSurface => Boolean(action));
+  const bestNextActions = runCompassV2
+    ? [
+      toStatusActionFromRoute(runCompassV2.primaryRoute),
+      ...runCompassV2.secondaryRoutes.map(toStatusActionFromRoute),
+    ]
+    : (runCompass?.bestNextActions ?? [])
+      .map(toStatusAction)
+      .filter((action): action is StatusActionSurface => Boolean(action));
   const primaryAction = bestNextActions.find((action) => !action.disabled && action.target.kind !== 'none') ?? null;
-  const nextGoal = runCompass?.milestone.title ?? troubleshooting.readiness.gateTrialName;
-  const nextGoalDetail = runCompass?.milestone.detail ?? troubleshooting.readiness.shortfallLine;
+  const nextGoal = runCompassV2?.milestone.label ?? runCompass?.milestone.title ?? troubleshooting.readiness.gateTrialName;
+  const nextGoalDetail = runCompassV2?.milestone.detail ?? runCompass?.milestone.detail ?? troubleshooting.readiness.shortfallLine;
   const requirementRows = dedupeRequirements([
+    ...(runCompassV2 && runCompassV2.primaryBlocker.kind !== 'none'
+      ? [{
+        id: `run-compass-${runCompassV2.primaryBlocker.kind}`,
+        kind: runCompassV2.primaryBlocker.kind === 'content_cap' || runCompassV2.primaryBlocker.kind === 'prestige_recommended' ? 'prestige' as const : 'unknown' as const,
+        label: runCompassV2.primaryBlocker.label,
+        detail: runCompassV2.primaryBlocker.detail,
+        gapLabel: null,
+        priorityLabel: 'Primary blocker',
+        tone: runCompassV2.primaryBlocker.severity === 'danger'
+          ? 'danger' as const
+          : runCompassV2.primaryBlocker.severity === 'warning'
+            ? 'warning' as const
+            : runCompassV2.primaryBlocker.severity === 'success'
+              ? 'success' as const
+              : 'info' as const,
+        icon: runCompassV2.primaryBlocker.kind === 'content_cap' || runCompassV2.primaryBlocker.kind === 'prestige_recommended' ? 'spiritGrass' as const : 'inkWarning' as const,
+        action: toStatusActionFromRoute(runCompassV2.primaryRoute),
+        disabledReason: runCompassV2.primaryRoute.blockedReason,
+        source: runCompassV2.primaryBlocker.source === 'content_cap' ? 'content_cap' as const : runCompassV2.primaryBlocker.source === 'prestige' ? 'prestige' as const : 'readiness' as const,
+      }]
+      : []),
     ...(runCompass?.missingRequirements ?? []).map((line) => toRequirementRow(line, currentCityId)).filter((row): row is StatusRequirementRow => Boolean(row)),
     ...buildAdditionalRequirements(troubleshooting, currentCityId),
   ]).slice(0, 5);
@@ -863,15 +957,15 @@ export function buildStatusDashboardSurface(now = Date.now()): StatusDashboardSu
       archetypeLabel: troubleshooting.archetypeLabel,
       nextMajorGoalLabel: nextGoal,
       nextMajorGoalDetail: nextGoalDetail,
-      biggestShortfallLabel: troubleshooting.shortfall.headline,
+      biggestShortfallLabel: runCompassV2?.primaryBlocker.label ?? troubleshooting.shortfall.headline,
       primaryAction,
     },
     metrics: buildMetrics(),
     milestone: {
       title: nextGoal,
       detail: nextGoalDetail,
-      readinessLabel: runCompass?.milestone.readinessLabel ?? troubleshooting.readiness.readinessLabel,
-      tone: toTone(runCompass?.milestone.readinessLabel ?? troubleshooting.readiness.readinessLabel),
+      readinessLabel: runCompassV2?.readiness.label ?? runCompass?.milestone.readinessLabel ?? troubleshooting.readiness.readinessLabel,
+      tone: toTone(runCompassV2?.readiness.label ?? runCompass?.milestone.readinessLabel ?? troubleshooting.readiness.readinessLabel),
       nodes: buildMilestoneNodes({
         troubleshooting,
         nextGoal,
@@ -919,6 +1013,7 @@ export function buildStatusDashboardSurface(now = Date.now()): StatusDashboardSu
       ],
       action: actionForRequirement('safety_net', currentCityId),
     },
+    runCompass: buildRunCompassStatusRows(runCompassV2),
     identity: {
       rows: buildIdentityRows(troubleshooting),
       spiritRootElement: troubleshooting.identity.spiritRootSummary.element,

@@ -16,7 +16,7 @@ import { adaptSpiritRootDoctrineToSemanticView } from '../../../systems/doctrine
 import { getAffinityStatus } from '../../../systems/heartLaw/heartLawLogic.js';
 import { buildCultivationConsumableReadModel } from '../../../systems/consumables/cultivationConsumableEffects.js';
 import { CULTIVATION_CONSUMABLE_FAMILY_REGISTRY } from '../../../systems/consumables/cultivationConsumableTypes.js';
-import { buildLiveRunCompassSurface } from '../../../systems/ui/runCompass/index.js';
+import { buildLiveRunCompassSurface, buildRunCompassCompactSurface } from '../../../systems/ui/runCompass/index.js';
 import type { RunCompassActionLine } from '../../../systems/ui/runCompass/index.js';
 import { useActivityStore } from '../../../stores/activityStore.js';
 import { useContentStore } from '../../../stores/contentStore.js';
@@ -488,6 +488,7 @@ function createSurface(
       state: activityState === 'breakthrough_ready' ? 'ready' : activityState === 'near_edge' ? 'near_edge' : 'normal',
     },
     commandDeck,
+    runCompassCompact: snapshot.runCompassCompact ?? buildRunCompassCompactSurface(snapshot.runCompassFull ?? null),
     lifeCycleWhisper: {
       visible: false,
       active: false,
@@ -545,6 +546,7 @@ export function createCultivationExactMockupFixture(): CultivationExactSurfaceV1
     activeBuffSummary: 'No active cultivation tonics.',
     runCompassActions: [],
     runCompassFull: null,
+    runCompassCompact: null,
   };
 
   return createSurface(snapshot, {
@@ -616,6 +618,7 @@ export function buildCultivationExactSnapshotFromStores(
         : titleCase(active.type)
     : 'Idle';
   const runCompassFull = options.runCompassFull ?? buildLiveRunCompassSurface();
+  const runCompassCompact = buildRunCompassCompactSurface(runCompassFull);
   const buffReadModel = buildCultivationConsumableReadModel(
     cultivation.activeCultivationConsumables,
     options.nowMs ?? Date.now(),
@@ -675,6 +678,7 @@ export function buildCultivationExactSnapshotFromStores(
     activeBuffSummary,
     runCompassActions: runCompassFull?.bestNextActions ?? [],
     runCompassFull,
+    runCompassCompact,
   };
 }
 

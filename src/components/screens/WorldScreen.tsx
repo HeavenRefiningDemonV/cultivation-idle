@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useCallback, useRef, useState } from 'react';
-import type { CityDef } from '../../content/index.js';
+import type { CityDef, LiveWorldModuleKey } from '../../content/index.js';
 import { useContentStore } from '../../stores/contentStore.js';
 import { useCityStore } from '../../stores/cityStore.js';
 import { useCombatStore } from '../../stores/combatStore.js';
@@ -35,6 +35,7 @@ import { useFxQuality } from '../../ui/fx/FxQualityProvider.js';
 import { InspectorDrawer } from '../../ui/shell/InspectorDrawer.js';
 import { buildWorldCombatHandoffSurface } from '../../systems/world/worldCombatHandoff.js';
 import { resolveWorldInspectorBoundaryLine } from '../../systems/ui/world/worldInspectorSurface.js';
+import { useRunCompassSurface } from '../../ui/status/useRunCompassSurface.js';
 
 const WORLD_SCREEN_HIDDEN_MODULES = new Set<string>(DEFERRED_WORLD_MODULES);
 const EMPTY_VISIBLE_CITY_MODULES: readonly string[] = Object.freeze([]);
@@ -84,6 +85,7 @@ export function WorldScreen() {
   const activeActivityType = useActivityStore((state) => state.active?.type ?? null);
   const expeditionSlots = useExpeditionStore((state) => state.slots);
   const expeditionActive = useExpeditionStore((state) => state.active);
+  const runCompass = useRunCompassSurface();
   const { effectiveQuality, prefersReducedMotion } = useFxQuality();
 
   const selectedCity = useMemo(() => {
@@ -215,6 +217,30 @@ export function WorldScreen() {
     }
   }, [currentCityId, selectedCity?.id, rawContent]);
 
+  const runCompassModuleKeys = useMemo(() => {
+    const primaryTarget = runCompass.v2?.primaryRoute.target;
+    const primary = primaryTarget?.kind === 'world_module'
+      && selectedCity
+      && primaryTarget.cityId === selectedCity.id
+      && visibleCityModules.includes(primaryTarget.moduleKey)
+      ? primaryTarget.moduleKey
+      : null;
+    const secondary = primaryTarget?.kind === 'world_module'
+      ? runCompass.v2?.secondaryRoutes
+      .map((route) => route.target)
+      .find((target): target is { kind: 'world_module'; cityId: string; moduleKey: LiveWorldModuleKey } =>
+        target?.kind === 'world_module'
+        && Boolean(selectedCity)
+        && target.cityId === selectedCity?.id
+        && visibleCityModules.includes(target.moduleKey),
+      )?.moduleKey ?? null
+      : null;
+    return { primary, secondary };
+  }, [runCompass.v2, selectedCity, visibleCityModules]);
+  const allowWorldRecommendationFallback = !runCompass.v2
+    || runCompassModuleKeys.primary !== null
+    || runCompassModuleKeys.secondary !== null;
+
   const trackedAlert = useMemo(() => {
     if (!trackedBounty || !selectedCity) return null;
     const ctaModuleKey = trackedDestination?.kind === 'module' && visibleCityModules.includes(trackedDestination.moduleKey)
@@ -255,18 +281,18 @@ export function WorldScreen() {
         cityId: selectedCity.id,
         visibleModules: visibleCityModules as never,
         activeModuleKey: lockedModuleKey,
-        runCompassPrimaryModuleKey: null,
-        runCompassSecondaryModuleKey: null,
-        economicModuleKeys: economicPrimary?.cityId === selectedCity.id && economicPrimary.moduleKey ? [economicPrimary.moduleKey] : [],
+        runCompassPrimaryModuleKey: runCompassModuleKeys.primary,
+        runCompassSecondaryModuleKey: runCompassModuleKeys.secondary,
+        economicModuleKeys: allowWorldRecommendationFallback && economicPrimary?.cityId === selectedCity.id && economicPrimary.moduleKey ? [economicPrimary.moduleKey] : [],
         economicPrimaryProblemKind: buildLiveEconomicRecommendationEngine().topRouteCandidates[0]?.problemKind ?? null,
-        trackedBountyModuleKey: trackedDestination?.kind === 'module' ? trackedDestination.moduleKey as never : null,
+        trackedBountyModuleKey: allowWorldRecommendationFallback && trackedDestination?.kind === 'module' ? trackedDestination.moduleKey as never : null,
         trackedBountyAlert: trackedAlert,
         expeditionIdleAlert,
         readyBountyCount: currentCityId ? (activeByCityId[currentCityId] ?? []).filter((entry) => entry.progress >= entry.target && !entry.claimed).length : 0,
         idleExpeditionSlots: Math.max(0, expeditionSlots - expeditionActive.filter((entry) => entry.cityId === selectedCity.id && entry.status === 'running').length),
       });
     },
-    [activeByCityId, currentCityId, economicPrimary, expeditionActive, expeditionIdleAlert, expeditionSlots, lockedModuleKey, rawContent, selectedCity, trackedAlert, trackedDestination, visibleCityModules],
+    [activeByCityId, allowWorldRecommendationFallback, currentCityId, economicPrimary, expeditionActive, expeditionIdleAlert, expeditionSlots, lockedModuleKey, rawContent, runCompassModuleKeys.primary, runCompassModuleKeys.secondary, selectedCity, trackedAlert, trackedDestination, visibleCityModules],
   );
 
   const moduleMetadataByKey = useMemo(() => {
@@ -496,7 +522,10 @@ export function WorldScreen() {
     boundaryLineFromHandoff: inspectorCombatHandoff?.boundaryLine ?? null,
   });
   const inspectorCueKind = inspectorModuleKey ? moduleCueByKey[inspectorModuleKey] ?? null : null;
-  const inspectorStateLine = inspectorCueKind ? ({
+  const inspectorRunCompassLine = runCompass.v2 && inspectorModuleKey && runCompassModuleKeys.primary === inspectorModuleKey
+    ? `${runCompass.v2.primaryRoute.label}: ${runCompass.v2.primaryBlocker.label}`
+    : null;
+  const inspectorStateLine = inspectorRunCompassLine ?? (inspectorCueKind ? ({
     GATE: 'Gate is your next step.',
     NOW: `Recommended here now: ${inspectorLabel}.`,
     FIX: 'Build fix points here.',
@@ -504,7 +533,7 @@ export function WorldScreen() {
     CLAIM: 'Claimable board reward.',
     IDLE: 'Expedition slot idle.',
     SOON: 'Useful soon for your next step.',
-  } as const)[inspectorCueKind] : null;
+  } as const)[inspectorCueKind] : null);
   const inspectorOpenLabel = inspectorCombatHandoff?.openLabel ?? inspectorCard?.openLabel ?? (inspectorModuleKey ? `Open ${inspectorLabel}` : 'Open');
 
   return (
