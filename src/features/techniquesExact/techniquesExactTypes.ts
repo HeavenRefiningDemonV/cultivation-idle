@@ -4,6 +4,15 @@ import type {
   TechniqueSlotType,
 } from '../../types/index.js';
 import type { GameTab, WorldBuildingKey, WorldBuildingModalIntent } from '../../stores/uiStore.js';
+import type {
+  TechniqueGradeTone,
+  TechniquePathTone,
+  TechniqueRarityFx,
+  TechniqueRarityTone,
+  TechniqueRoleTone,
+  TechniqueVisualIdentity,
+  VisualBadgeSurface,
+} from '../techniques/techniqueVisualIdentity.js';
 
 export type TechniquesExactMode = 'fixture' | 'live' | 'legacy';
 export type TechniquesExactSource = 'fixture' | 'stores';
@@ -49,6 +58,8 @@ export interface TechniquesExactFactRowSurface {
   tone?: TechniquesExactTone;
   status?: TechniquesExactStatus;
   iconId?: string;
+  rowKind?: string;
+  badge?: VisualBadgeSurface;
 }
 
 export interface TechniquesExactLoadoutRowSurface {
@@ -97,6 +108,13 @@ export interface TechniquesExactSlotSurface {
   recommended: boolean;
   unlockLabel?: string;
   pathFit?: 'strong' | 'partial' | 'off' | 'unknown';
+  visualIdentity?: TechniqueVisualIdentity | null;
+  badges?: Partial<Record<'grade' | 'rarity' | 'path' | 'role', VisualBadgeSurface>>;
+  rarityFx?: TechniqueRarityFx;
+  gradeKey?: TechniqueGradeTone;
+  rarityKey?: TechniqueRarityTone;
+  pathKey?: TechniquePathTone;
+  roleKey?: TechniqueRoleTone;
   masteryLabel?: string;
   runeSocketLabel?: string;
   fixedGeometryKey: string;
@@ -124,6 +142,13 @@ export interface TechniquesExactOwnedTechniqueRowSurface {
   equipped: boolean;
   selected: boolean;
   recommended: boolean;
+  visualIdentity: TechniqueVisualIdentity;
+  badges: {
+    grade: VisualBadgeSurface;
+    rarity: VisualBadgeSurface;
+    path: VisualBadgeSurface;
+    role: VisualBadgeSurface;
+  };
   disabled?: boolean;
 }
 
@@ -190,6 +215,8 @@ export interface TechniquesExactSurfaceV1 {
     selectedTechniqueId: string | null;
     iconId?: string;
     stateStamp: string;
+    visualIdentity?: TechniqueVisualIdentity | null;
+    heroBadges?: VisualBadgeSurface[];
     rows: TechniquesExactFactRowSurface[];
     recommendedAction: string;
     openDetailsButton: TechniquesExactButtonSurface;

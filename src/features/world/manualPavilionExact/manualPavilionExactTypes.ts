@@ -1,4 +1,5 @@
 import type { IconId } from '../../../ui/icons/index.js';
+import type { TechniqueVisualIdentity, VisualBadgeSurface } from '../../techniques/techniqueVisualIdentity.js';
 
 export type ManualPavilionExactMode = 'fixture' | 'live';
 export type ManualPavilionExactValueSource = 'fixture' | 'live' | 'derived' | 'content' | 'synthetic';
@@ -114,6 +115,9 @@ export interface ManualPavilionFactRowSurface {
   iconKey?: string;
   tone: ManualPavilionExactTone;
   source: ManualPavilionExactValueSource;
+  rowKind?: string;
+  detail?: string;
+  badge?: VisualBadgeSurface;
 }
 
 export interface ManualPavilionSpineSurface {
@@ -153,6 +157,13 @@ export interface ManualPavilionSpineSurface {
   ariaLabel: string;
   testId: string;
   tags: ManualPavilionChipSurface[];
+  visualIdentity: TechniqueVisualIdentity;
+  displayBadges: {
+    grade: VisualBadgeSurface;
+    rarity: VisualBadgeSurface;
+    path: VisualBadgeSurface;
+    role: VisualBadgeSurface;
+  };
   spineVisual: {
     colorKey: ManualPavilionSpineColorKey;
     assetKey: string;

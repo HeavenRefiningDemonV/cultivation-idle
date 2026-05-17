@@ -320,9 +320,18 @@
 }
 
 .manualPavilionFactRow__value {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
   font-size: 23px;
   line-height: 1.14;
   color: #160e09;
+}
+
+.manualPavilionFactRow__value small {
+  font-size: 13px;
+  line-height: 1.1;
+  color: rgba(57, 38, 22, 0.72);
 }
 
 .manualPavilionShelf {
@@ -442,10 +451,43 @@
   border-radius: 14px 14px 7px 7px;
   background-size: 100% 100%;
   background-position: center;
+  overflow: hidden;
   box-shadow:
     inset 0 0 0 2px rgba(27, 18, 10, 0.72),
     inset 0 0 30px rgba(255, 241, 197, 0.08),
     0 8px 14px rgba(0, 0, 0, 0.48);
+}
+
+.manualPavilionSpine__backplate::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.manualPavilionSpine[data-rarity='uncommon'] .manualPavilionSpine__backplate::after {
+  opacity: 0.38;
+  background: linear-gradient(90deg, transparent 18%, rgba(188, 136, 68, 0.22) 46%, transparent 72%);
+}
+
+.manualPavilionSpine[data-rarity='rare'] .manualPavilionSpine__backplate::after {
+  opacity: 0.46;
+  background: radial-gradient(circle at 78% 17%, rgba(135, 181, 123, 0.38), transparent 32%);
+}
+
+.manualPavilionSpine[data-rarity='epic'] .manualPavilionSpine__backplate::after {
+  opacity: 0.44;
+  background:
+    radial-gradient(circle at 20% 78%, rgba(164, 50, 36, 0.28), transparent 25%),
+    linear-gradient(180deg, rgba(198, 126, 52, 0.16), transparent 36%);
+}
+
+.manualPavilionSpine[data-rarity='legendary'] .manualPavilionSpine__backplate::after {
+  opacity: 0.52;
+  background:
+    radial-gradient(circle at 50% 18%, rgba(220, 185, 92, 0.3), transparent 34%),
+    linear-gradient(90deg, transparent, rgba(90, 137, 88, 0.18), transparent);
 }
 
 .manualPavilionSpine[data-state='selected'] .manualPavilionSpine__backplate,
@@ -507,6 +549,21 @@
   border-radius: 50%;
   background: rgba(255, 239, 195, 0.18);
   box-shadow: inset 0 0 0 2px rgba(255, 225, 159, 0.35), 0 2px 8px rgba(0, 0, 0, 0.38);
+}
+
+.manualPavilionSpine[data-path='heaven'] .manualPavilionSpine__iconMedallion {
+  background: rgba(215, 224, 210, 0.22);
+  box-shadow: inset 0 0 0 2px rgba(226, 196, 105, 0.36), 0 0 14px rgba(99, 123, 157, 0.24);
+}
+
+.manualPavilionSpine[data-path='earth'] .manualPavilionSpine__iconMedallion {
+  background: rgba(143, 164, 112, 0.24);
+  box-shadow: inset 0 0 0 2px rgba(127, 159, 102, 0.38), 0 0 12px rgba(61, 91, 59, 0.22);
+}
+
+.manualPavilionSpine[data-path='martial'] .manualPavilionSpine__iconMedallion {
+  background: rgba(155, 55, 39, 0.22);
+  box-shadow: inset 0 0 0 2px rgba(222, 164, 86, 0.36), 0 0 12px rgba(129, 39, 30, 0.22);
 }
 
 .manualPavilionSpine__title {
@@ -584,11 +641,10 @@
   align-items: center;
   justify-content: center;
   gap: 2px;
-  font-size: 18px;
+  font-size: 13px;
   line-height: 1.05;
-  color: #fff6dc;
+  color: rgba(255, 246, 220, 0.9);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.78);
-  visibility: hidden;
 }
 
 .manualPavilionSpine__seal {
@@ -710,6 +766,13 @@
   font-size: 18px;
 }
 
+.manualPavilionInspectorRow[data-row-kind='grade'] dd,
+.manualPavilionInspectorRow[data-row-kind='rarity'] dd,
+.manualPavilionInspectorRow[data-row-kind='family'] dd,
+.manualPavilionInspectorRow[data-row-kind='role'] dd {
+  color: #183f2d;
+}
+
 .manualPavilionInspectorRow dt,
 .manualPavilionInspectorRow dd {
   margin: 0;
@@ -724,8 +787,120 @@
 }
 
 .manualPavilionInspectorRow dd {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
   color: #24543d;
   font-weight: 700;
+}
+
+.manualPavilionInspectorRow dd small {
+  font-size: 13px;
+  line-height: 1.08;
+  color: rgba(54, 35, 20, 0.74);
+  font-weight: 600;
+}
+
+.visualIdentityBadge {
+  max-width: 100%;
+  min-height: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  border: 1px solid rgba(80, 53, 30, 0.42);
+  color: #1f150d;
+  background: rgba(238, 224, 190, 0.68);
+  box-shadow: inset 0 -5px 9px rgba(94, 61, 30, 0.09);
+}
+
+.visualIdentityBadge__text {
+  min-width: 0;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.visualIdentityBadge__label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.visualIdentityBadge__sublabel {
+  display: inline;
+  margin-left: 0;
+  color: rgba(64, 42, 24, 0.72);
+  font-weight: 600;
+}
+
+.visualIdentityBadge--withSublabel {
+  justify-content: flex-start;
+  white-space: normal;
+}
+
+.visualIdentityBadge--withSublabel .visualIdentityBadge__text {
+  flex-wrap: nowrap;
+}
+
+.visualIdentityBadge--withSublabel .visualIdentityBadge__label {
+  flex: 0 0 auto;
+}
+
+.visualIdentityBadge--withSublabel .visualIdentityBadge__sublabel {
+  min-width: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.visualIdentityBadge[data-badge-kind='grade'][data-tone='mortal'],
+.visualIdentityBadge[data-tone='common'] {
+  border-color: rgba(94, 67, 39, 0.4);
+  background: rgba(235, 224, 198, 0.76);
+}
+
+.visualIdentityBadge[data-tone='earth'],
+.visualIdentityBadge[data-tone='guard'],
+.visualIdentityBadge[data-tone='heal'],
+.visualIdentityBadge[data-tone='rare'] {
+  border-color: rgba(63, 112, 73, 0.5);
+  background: rgba(180, 198, 151, 0.38);
+}
+
+.visualIdentityBadge[data-tone='heaven'],
+.visualIdentityBadge[data-tone='mobility'] {
+  border-color: rgba(92, 111, 145, 0.48);
+  background: rgba(206, 214, 202, 0.5);
+}
+
+.visualIdentityBadge[data-tone='martial'],
+.visualIdentityBadge[data-tone='damage'],
+.visualIdentityBadge[data-tone='epic'] {
+  border-color: rgba(144, 58, 43, 0.5);
+  background: rgba(220, 184, 145, 0.42);
+}
+
+.visualIdentityBadge[data-tone='uncommon'] {
+  border-color: rgba(159, 113, 53, 0.5);
+  background: rgba(226, 205, 162, 0.5);
+}
+
+.visualIdentityBadge[data-tone='legendary'] {
+  border-color: rgba(179, 137, 58, 0.62);
+  background: linear-gradient(180deg, rgba(237, 224, 181, 0.72), rgba(181, 202, 157, 0.34));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .manualPavilionSpine,
+  .manualPavilionSpine__backplate::after {
+    animation: none !important;
+    transition: none !important;
+  }
 }
 
 .manualPavilionWhy {

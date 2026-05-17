@@ -20,6 +20,11 @@ import { getTechniqueTaxonomyProfile } from '../../systems/builds/techniqueTaxon
 import type { TechniqueFamily } from '../../systems/builds/techniqueFamilies.js';
 import type { TechniqueProgressionSnapshot } from '../../systems/builds/index.js';
 import {
+  resolveTechniqueVisualIdentity,
+  type TechniqueVisualIdentity,
+  type VisualBadgeSurface,
+} from '../techniques/techniqueVisualIdentity.js';
+import {
   CASTING_POLICY_DISPLAY,
   CASTING_POLICY_ORDER,
   AI_PROFILE_LABELS,
@@ -159,6 +164,40 @@ const formatMasteryLabel = (level: number): string => {
 const gradeFromDef = (def?: TechniqueDef | null): string => titleCase(def?.tier ?? 'mortal');
 const rarityFromDef = (def?: TechniqueDef | null): string => titleCase(def?.rarity ?? 'common');
 
+function badgeFactExtras(rowKind: string, detail?: string, badge?: VisualBadgeSurface) {
+  return { rowKind, detail, badge };
+}
+
+function resolveIdentityForTechnique(args: {
+  techId: string;
+  def?: TechniqueDef | null;
+  progression?: TechniqueProgressionSnapshot | null;
+  selectedPath?: CultivationPath | null;
+  fixture?: {
+    path?: string;
+    role?: string;
+    type?: string;
+    grade?: string;
+    rarity?: string;
+    families?: readonly string[];
+  };
+}): TechniqueVisualIdentity {
+  const taxonomy = getTechniqueTaxonomyProfile(args.techId);
+  return resolveTechniqueVisualIdentity({
+    techId: args.techId,
+    name: args.def?.name ?? args.fixture?.role ?? args.techId,
+    path: taxonomy?.path ?? args.def?.path ?? args.fixture?.path ?? null,
+    type: args.def?.type ?? args.fixture?.type ?? null,
+    role: args.def?.role ?? args.fixture?.role ?? null,
+    tags: args.def?.tags ?? null,
+    families: taxonomy?.families ?? args.fixture?.families ?? null,
+    supportFlags: taxonomy?.supportFlags ?? null,
+    grade: args.progression?.grade ?? args.fixture?.grade ?? args.def?.tier ?? null,
+    rarity: args.progression?.rarity ?? args.fixture?.rarity ?? args.def?.rarity ?? null,
+    selectedPath: args.selectedPath ?? null,
+  });
+}
+
 function getProgression(techId: string) {
   return useTechCollectionStore.getState().getTechniqueProgressionSnapshot(techId);
 }
@@ -183,18 +222,24 @@ const makeOwnedRow = (args: {
         : 'off'
     : null;
   const traitSummary = collection.getTraitDisplay(techId).slice(0, 2).join(', ') || 'No traits yet';
+  const visualIdentity = resolveIdentityForTechnique({
+    techId,
+    def,
+    progression,
+    selectedPath,
+  });
 
   return {
     id: techId,
     name: def?.name ?? techId,
-    roleLabel: roleLabelFromFamilies(taxonomy?.families ?? [], def),
+    roleLabel: visualIdentity.roleDisplayLabel,
     typeLabel: getTechniqueTypeLabel(def),
-    gradeLabel: titleCase(progression.grade ?? def?.tier ?? 'mortal'),
-    rarityLabel: titleCase(progression.rarity ?? def?.rarity ?? 'common'),
+    gradeLabel: visualIdentity.gradeDisplayLabel,
+    rarityLabel: visualIdentity.rarityDisplayLabel,
     rankLabel: romanizeRank(progression.rank),
     masteryLabel: formatMasteryLabel(progression.masteryLevel),
     masteryProgressPct: Math.max(0, Math.min(100, progression.masteryLevel)),
-    pathLabel: titleCase(taxonomy?.path ?? def?.path ?? 'unknown'),
+    pathLabel: visualIdentity.pathDisplayLabel,
     pathFitLabel: pathFitLabel(fit),
     familyTags: (taxonomy?.families ?? []).slice(0, 3).map(familyLabel),
     supportTags: (taxonomy?.supportFlags ?? []).slice(0, 2).map(titleCase),
@@ -203,6 +248,8 @@ const makeOwnedRow = (args: {
     equipped,
     selected,
     recommended,
+    visualIdentity,
+    badges: visualIdentity.badges,
   };
 };
 
@@ -222,6 +269,13 @@ const makeSlot = (args: {
   const progression = args.techniqueId ? getProgression(args.techniqueId) : null;
   const pathFit = args.techniqueId ? getTechniqueTaxonomyProfile(args.techniqueId)?.alignment ?? 'unknown' : 'unknown';
   const canEquipSelected = args.isUnlocked && slotAcceptsTechnique(args.slotType, args.selectedTechniqueDef);
+  const visualIdentity = args.techniqueId
+    ? resolveIdentityForTechnique({
+        techId: args.techniqueId,
+        def: args.def,
+        progression,
+      })
+    : null;
   return {
     key: args.key,
     label: args.label,
@@ -238,6 +292,13 @@ const makeSlot = (args: {
     recommended: args.recommended,
     unlockLabel: args.isUnlocked ? undefined : 'Locked',
     pathFit: pathFit === 'strong' ? 'strong' : pathFit === 'neutral' ? 'partial' : pathFit === 'off' ? 'off' : 'unknown',
+    visualIdentity,
+    badges: visualIdentity?.badges,
+    rarityFx: visualIdentity?.rarityFx,
+    gradeKey: visualIdentity?.gradeKey,
+    rarityKey: visualIdentity?.rarityKey,
+    pathKey: visualIdentity?.pathKey,
+    roleKey: visualIdentity?.roleKey,
     masteryLabel: progression ? formatMasteryLabel(progression.masteryLevel) : undefined,
     runeSocketLabel: progression ? `${progression.appliedRuneCount} / ${progression.runeSockets}` : undefined,
     fixedGeometryKey: `${args.slotType}-${args.slotIndex}`,
@@ -265,6 +326,7 @@ export function createTechniquesExactMockupFixture(): TechniquesExactSurfaceV1 {
     makeFixtureSlot('support-0', 'Support', 'passive', 2, 'tech_mending_breath', 'Mending Breath', true, false, 'partial', 'support'),
     makeFixtureSlot('ultimate-0', 'Ultimate', 'ultimate', 0, null, null, false, false, 'unknown'),
   ];
+  const selectedIdentity = fixtureIdentity('tech_iron_palm', 'Iron Palm', 'Core Damage');
 
   return {
     meta: {
@@ -349,12 +411,20 @@ export function createTechniquesExactMockupFixture(): TechniquesExactSurfaceV1 {
       selectedTechniqueId: 'tech_iron_palm',
       iconId: 'inkBurst',
       stateStamp: 'Recommended',
+      visualIdentity: selectedIdentity,
+      heroBadges: [
+        selectedIdentity.badges.role,
+        selectedIdentity.badges.grade,
+        selectedIdentity.badges.rarity,
+        selectedIdentity.badges.path,
+      ],
       rows: [
-        fact('role', 'Role', 'Core Damage'),
-        fact('grade', 'Grade', 'Mortal'),
+        fact('role', 'Role', selectedIdentity.roleDisplayLabel, undefined, undefined, badgeFactExtras('role', 'direct strike doctrine', selectedIdentity.badges.role)),
+        fact('grade', 'Grade', selectedIdentity.gradeDisplayLabel, undefined, undefined, badgeFactExtras('grade', selectedIdentity.gradeMaterialLabel, selectedIdentity.badges.grade)),
+        fact('rarity', 'Rarity', selectedIdentity.rarityDisplayLabel, undefined, undefined, badgeFactExtras('rarity', selectedIdentity.rarityProvenanceLabel, selectedIdentity.badges.rarity)),
         fact('rank', 'Rank', 'I'),
         fact('mastery', 'Mastery', '25 / 50'),
-        fact('path-fit', 'Path Fit', 'Strong', 'jade'),
+        fact('path-fit', 'Path Fit', 'Strong', 'jade', undefined, badgeFactExtras('path-fit', 'Martial doctrine resonates')),
         fact('traits', 'Traits', 'direct strike, stable opener'),
         fact('runes', 'Rune Sockets', '0 / 1'),
       ],
@@ -383,8 +453,36 @@ function fact(
   value: string,
   tone?: TechniquesExactTone,
   status?: TechniquesExactFactRowSurface['status'],
+  extras: Pick<TechniquesExactFactRowSurface, 'rowKind' | 'detail' | 'badge'> = {},
 ): TechniquesExactFactRowSurface {
-  return { id, label, value, tone, status };
+  return { id, label, value, tone, status, ...extras };
+}
+
+function fixtureIdentity(techId: string, name: string, roleLabel: string): TechniqueVisualIdentity {
+  const fixtureById: Record<string, { path: string; role: string; type: string; grade: string; rarity: string; families: string[] }> = {
+    tech_iron_palm: { path: 'martial', role: 'damage', type: 'active', grade: 'mortal', rarity: 'common', families: ['coreDamage'] },
+    tech_quiet_guard: { path: 'earth', role: 'guard', type: 'passive', grade: 'mortal', rarity: 'uncommon', families: ['guard'] },
+    tech_cloudstep: { path: 'heaven', role: 'mobility', type: 'active', grade: 'earth', rarity: 'rare', families: ['mobility'] },
+    tech_mending_breath: { path: 'earth', role: 'heal', type: 'passive', grade: 'mortal', rarity: 'common', families: ['heal'] },
+  };
+  const fixture = fixtureById[techId] ?? {
+    path: roleLabel === 'Guard' || roleLabel === 'Heal' ? 'earth' : 'martial',
+    role: roleLabel.toLowerCase(),
+    type: roleLabel === 'Guard' || roleLabel === 'Heal' ? 'passive' : 'active',
+    grade: 'mortal',
+    rarity: 'common',
+    families: [roleLabel],
+  };
+  return resolveTechniqueVisualIdentity({
+    techId,
+    name,
+    path: fixture.path,
+    type: fixture.type,
+    role: fixture.role,
+    families: fixture.families,
+    grade: fixture.grade,
+    rarity: fixture.rarity,
+  });
 }
 
 function makeFixtureSlot(
@@ -399,6 +497,7 @@ function makeFixtureSlot(
   pathFit: TechniquesExactSlotSurface['pathFit'],
   displayRole?: TechniquesExactSlotSurface['displayRole'],
 ): TechniquesExactSlotSurface {
+  const visualIdentity = techniqueId && techniqueName ? fixtureIdentity(techniqueId, techniqueName, displayRole ?? slotType) : null;
   return {
     key,
     label,
@@ -415,6 +514,13 @@ function makeFixtureSlot(
     recommended: selected || key === 'passive-0' || key === 'support-0',
     unlockLabel: isUnlocked ? undefined : 'Locked',
     pathFit,
+    visualIdentity,
+    badges: visualIdentity?.badges,
+    rarityFx: visualIdentity?.rarityFx,
+    gradeKey: visualIdentity?.gradeKey,
+    rarityKey: visualIdentity?.rarityKey,
+    pathKey: visualIdentity?.pathKey,
+    roleKey: visualIdentity?.roleKey,
     masteryLabel: techniqueId ? (selected ? '25 / 50' : '10 / 50') : undefined,
     runeSocketLabel: techniqueId ? '0 / 1' : undefined,
     fixedGeometryKey: key,
@@ -433,17 +539,18 @@ function fixtureOwned(
   selected: boolean,
 ): TechniquesExactOwnedTechniqueRowSurface {
   const family = roleLabel === 'Heal' ? 'Heal' : roleLabel === 'Guard' ? 'Guard' : roleLabel === 'Mobility' ? 'Mobility' : 'Damage';
+  const visualIdentity = fixtureIdentity(id, name, roleLabel);
   return {
     id,
     name,
-    roleLabel,
+    roleLabel: visualIdentity.roleDisplayLabel,
     typeLabel: roleLabel === 'Guard' || roleLabel === 'Heal' ? 'Passive' : 'Active',
-    gradeLabel: 'Mortal',
-    rarityLabel: 'Common',
+    gradeLabel: visualIdentity.gradeDisplayLabel,
+    rarityLabel: visualIdentity.rarityDisplayLabel,
     rankLabel: 'I',
     masteryLabel,
     masteryProgressPct: Number.parseInt(masteryLabel, 10) || 0,
-    pathLabel: roleLabel === 'Guard' || roleLabel === 'Heal' ? 'Earth' : 'Martial',
+    pathLabel: visualIdentity.pathDisplayLabel,
     pathFitLabel: roleLabel === 'Core Damage' || roleLabel === 'Mobility' ? 'Strong' : 'Partial',
     familyTags: [family],
     supportTags: [],
@@ -452,6 +559,8 @@ function fixtureOwned(
     equipped,
     selected,
     recommended: selected || roleLabel === 'Guard',
+    visualIdentity,
+    badges: visualIdentity.badges,
   };
 }
 
@@ -801,6 +910,8 @@ function buildInspector(args: {
       selectedName: null,
       selectedTechniqueId: null,
       stateStamp: 'No Selection',
+      visualIdentity: null,
+      heroBadges: [],
       rows: [fact('empty', 'Selection', 'Choose a learned technique slip.')],
       recommendedAction: 'learn or select a technique',
       openDetailsButton: createButton('open-details', 'Open Details', 'disabled', false, 'Select a technique first.'),
@@ -821,18 +932,31 @@ function buildInspector(args: {
   const traits = args.selectedRow?.traitSummary ?? 'No traits yet';
   const fit = args.selectedRow?.pathFitLabel ?? pathFitLabel(args.selectedTaxonomy?.alignment ?? null);
   const recommended = buildRecommendedAction(args.selectedProgression.masteryLevel, args.selectedProgression.rank, args.selectedProgression.runeSockets);
+  const visualIdentity = args.selectedRow?.visualIdentity ?? resolveIdentityForTechnique({
+    techId: args.selectedTechniqueId,
+    def: args.selectedTechniqueDef,
+    progression: args.selectedProgression,
+  });
   return {
     title: 'Selected Technique',
     selectedName: args.selectedTechniqueDef.name ?? args.selectedTechniqueId,
     selectedTechniqueId: args.selectedTechniqueId,
     iconId: getTechniqueTypeLabel(args.selectedTechniqueDef) === 'Passive' ? 'inkShield' : 'inkBurst',
     stateStamp: args.selectedRow?.equipped ? 'Equipped' : args.selectedRow?.recommended ? 'Recommended' : 'Learned',
+    visualIdentity,
+    heroBadges: [
+      visualIdentity.badges.role,
+      visualIdentity.badges.grade,
+      visualIdentity.badges.rarity,
+      visualIdentity.badges.path,
+    ],
     rows: [
-      fact('role', 'Role', args.selectedRow?.roleLabel ?? roleLabelFromFamilies(args.selectedTaxonomy?.families ?? [], args.selectedTechniqueDef)),
-      fact('grade', 'Grade', titleCase(args.selectedProgression.grade ?? gradeFromDef(args.selectedTechniqueDef))),
+      fact('role', 'Role', visualIdentity.roleDisplayLabel, undefined, undefined, badgeFactExtras('role', roleLabelFromFamilies(args.selectedTaxonomy?.families ?? [], args.selectedTechniqueDef), visualIdentity.badges.role)),
+      fact('grade', 'Grade', visualIdentity.gradeDisplayLabel, undefined, undefined, badgeFactExtras('grade', visualIdentity.gradeMaterialLabel, visualIdentity.badges.grade)),
+      fact('rarity', 'Rarity', visualIdentity.rarityDisplayLabel, undefined, undefined, badgeFactExtras('rarity', visualIdentity.rarityProvenanceLabel, visualIdentity.badges.rarity)),
       fact('rank', 'Rank', romanizeRank(args.selectedProgression.rank)),
       fact('mastery', 'Mastery', formatMasteryLabel(args.selectedProgression.masteryLevel)),
-      fact('path-fit', 'Path Fit', fit, pathFitTone(fit)),
+      fact('path-fit', 'Path Fit', fit, pathFitTone(fit), undefined, badgeFactExtras('path-fit', fit === 'Strong' ? `${visualIdentity.pathDisplayLabel} resonates` : 'doctrine fit is partial')),
       fact('traits', 'Traits', traits),
       fact('runes', 'Rune Sockets', `${args.selectedProgression.appliedRuneCount} / ${args.selectedProgression.runeSockets}`),
     ],

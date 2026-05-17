@@ -1,5 +1,7 @@
 import type { AiProfile, CastingPolicy, TechniqueSlotType } from '../../types/index.js';
 import { GameIcon } from '../../ui/icons/index.js';
+import { SemanticTechniqueName } from '../../ui/techniques/SemanticTechniqueName.js';
+import { VisualIdentityBadge } from '../../ui/techniques/VisualIdentityBadge.js';
 import type {
   TechniquesExactAiProfileButtonSurface,
   TechniquesExactCastingPolicyButtonSurface,
@@ -206,20 +208,43 @@ export function TechniquesExactScreen({
       </section>
 
       <aside className="techniquesExactRightRail" aria-label="Technique inspection and readiness">
-        <section className="techniquesExactInspector" aria-labelledby="techniques-exact-inspector-title">
+        <section
+          className="techniquesExactInspector"
+          aria-labelledby="techniques-exact-inspector-title"
+          data-path={surface.inspector.visualIdentity?.cssAttrs.path ?? 'neutral'}
+          data-role={surface.inspector.visualIdentity?.cssAttrs.role ?? 'neutral'}
+          data-grade={surface.inspector.visualIdentity?.cssAttrs.grade ?? 'unknown'}
+          data-rarity={surface.inspector.visualIdentity?.cssAttrs.rarity ?? 'unknown'}
+          data-rarity-fx={surface.inspector.visualIdentity?.cssAttrs.rarityFx ?? 'none'}
+        >
           <h2 id="techniques-exact-inspector-title">{surface.inspector.title}</h2>
           <div className="techniquesExactInspector__hero">
             <span className="techniquesExactInspector__icon" aria-hidden="true">{icon(surface.inspector.iconId, 36)}</span>
             <div>
-              <strong>{surface.inspector.selectedName ?? 'No Technique Selected'}</strong>
+              <strong>
+                <SemanticTechniqueName
+                  tokens={surface.inspector.visualIdentity?.nameTokens}
+                  fallback={surface.inspector.selectedName ?? 'No Technique Selected'}
+                />
+              </strong>
               <span>{surface.inspector.stateStamp}</span>
+              {surface.inspector.heroBadges && surface.inspector.heroBadges.length > 0 ? (
+                <div className="techniquesExactInspector__badges" aria-label="Selected technique identity">
+                  {surface.inspector.heroBadges.map((badge) => (
+                    <VisualIdentityBadge key={badge.id} badge={badge} className="visualIdentityBadge--compact" />
+                  ))}
+                </div>
+              ) : null}
             </div>
           </div>
           <dl className="techniquesExactFactList">
             {surface.inspector.rows.map((row) => (
-              <div key={row.id} className="techniquesExactFactRow" data-tone={row.tone}>
+              <div key={row.id} className="techniquesExactFactRow" data-tone={row.tone} data-row-kind={row.rowKind}>
                 <dt>{row.label}</dt>
-                <dd>{row.value}</dd>
+                <dd>
+                  {row.badge ? <VisualIdentityBadge badge={row.badge} showSublabel /> : <span>{row.value}</span>}
+                  {row.detail && !row.badge ? <small>{row.detail}</small> : null}
+                </dd>
               </div>
             ))}
           </dl>
@@ -348,7 +373,12 @@ function TechniqueSlot({
       data-selected={slot.selected}
       data-unlocked={slot.isUnlocked}
       data-equipped={slot.equipped}
-      data-role={slot.displayRole ?? slot.slotType}
+      data-slot-role={slot.displayRole ?? slot.slotType}
+      data-role={slot.visualIdentity?.cssAttrs.role ?? 'neutral'}
+      data-path={slot.visualIdentity?.cssAttrs.path ?? 'neutral'}
+      data-grade={slot.visualIdentity?.cssAttrs.grade ?? 'unknown'}
+      data-rarity={slot.visualIdentity?.cssAttrs.rarity ?? 'unknown'}
+      data-rarity-fx={slot.visualIdentity?.cssAttrs.rarityFx ?? 'none'}
     >
       <button
         type="button"
@@ -358,10 +388,16 @@ function TechniqueSlot({
         title={slot.disabledReason}
         onClick={() => onSelectSlot?.(slot.key, slot.slotType, slot.slotIndex)}
       >
+        <span className="techniquesExactSlot__aura" aria-hidden="true" />
         <span className="techniquesExactSlot__label">{slot.label}</span>
         <span className="techniquesExactSlot__icon" aria-hidden="true">{icon(slot.iconId, 26)}</span>
-        <strong>{slot.techniqueName ?? slot.unlockLabel ?? 'Empty'}</strong>
-        <small>{slot.masteryLabel ?? slot.runeSocketLabel ?? 'fixed slot'}</small>
+        <strong>
+          <SemanticTechniqueName
+            tokens={slot.visualIdentity?.nameTokens}
+            fallback={slot.techniqueName ?? slot.unlockLabel ?? 'Empty'}
+          />
+        </strong>
+        <small>{slot.visualIdentity ? `${slot.visualIdentity.gradeLabel.replace(' Grade', '')} / ${slot.masteryLabel ?? slot.runeSocketLabel ?? 'fixed slot'}` : slot.masteryLabel ?? slot.runeSocketLabel ?? 'fixed slot'}</small>
       </button>
       <div className="techniquesExactSlot__actions">
         <button
@@ -400,18 +436,27 @@ function OwnedTechniqueRow({
       data-selected={row.selected}
       data-equipped={row.equipped}
       data-recommended={row.recommended}
+      data-path={row.visualIdentity.cssAttrs.path}
+      data-role={row.visualIdentity.cssAttrs.role}
+      data-grade={row.visualIdentity.cssAttrs.grade}
+      data-rarity={row.visualIdentity.cssAttrs.rarity}
+      data-rarity-fx={row.visualIdentity.cssAttrs.rarityFx}
       disabled={row.disabled}
       onClick={() => onSelect?.(row.id)}
     >
       <span className="techniquesExactTechniqueRow__icon" aria-hidden="true">{icon(row.typeLabel === 'Passive' ? 'inkShield' : 'inkBurst', 18)}</span>
-      <strong>{row.name}</strong>
-      <span>{row.gradeLabel}</span>
+      <strong>
+        <SemanticTechniqueName tokens={row.visualIdentity.nameTokens} fallback={row.name} />
+      </strong>
+      <VisualIdentityBadge badge={row.badges.role} className="visualIdentityBadge--compact" compact />
+      <VisualIdentityBadge badge={row.badges.grade} className="visualIdentityBadge--compact" compact />
+      <VisualIdentityBadge badge={row.badges.rarity} className="visualIdentityBadge--compact" compact />
       <span>Rank {row.rankLabel}</span>
       <span className="techniquesExactMastery">
         <span style={{ width: `${row.masteryProgressPct}%` }} aria-hidden="true" />
         <em>{row.masteryLabel}</em>
       </span>
-      <span>{row.pathLabel}</span>
+      <VisualIdentityBadge badge={row.badges.path} className="visualIdentityBadge--compact techniquesExactPathBadge" compact />
       <span className="techniquesExactRowTags">
         {row.familyTags.slice(0, 2).map((tag) => <small key={tag}>{tag}</small>)}
       </span>

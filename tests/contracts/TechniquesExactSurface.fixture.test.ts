@@ -74,17 +74,22 @@ test('techniques exact fixture locks the Inner Palace mockup anatomy', () => {
     'Cloudstep',
     'Mending Breath',
   ]);
+  assert.equal(surface.ownedLibrary.rows.every((row) => Boolean(row.visualIdentity)), true);
+  assert.equal(surface.ownedLibrary.rows.some((row) => row.visualIdentity.cssAttrs.rarity === 'rare'), true);
+  assert.equal(surface.altar.slots.filter((slot) => slot.equipped).every((slot) => Boolean(slot.visualIdentity)), true);
 
   assert.equal(surface.inspector.selectedName, 'Iron Palm');
   assert.deepEqual(surface.inspector.rows.map((row) => [row.label, row.value]), [
-    ['Role', 'Core Damage'],
-    ['Grade', 'Mortal'],
+    ['Role', 'Core Damage Art'],
+    ['Grade', 'Mortal Grade'],
+    ['Rarity', 'Common'],
     ['Rank', 'I'],
     ['Mastery', '25 / 50'],
     ['Path Fit', 'Strong'],
     ['Traits', 'direct strike, stable opener'],
     ['Rune Sockets', '0 / 1'],
   ]);
+  assert.equal(surface.inspector.heroBadges?.length, 4);
   assert.equal(surface.inspector.recommendedAction, 'raise mastery to 50');
 
   assert.deepEqual(surface.readinessImpact.segments.map((row) => [row.label, row.value]), [

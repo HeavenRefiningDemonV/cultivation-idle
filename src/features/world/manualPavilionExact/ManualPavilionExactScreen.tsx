@@ -1,5 +1,6 @@
 import type React from 'react';
 import { GameIcon, ICONS, type IconId } from '../../../ui/icons/index.js';
+import { VisualIdentityBadge } from '../../../ui/techniques/VisualIdentityBadge.js';
 import type {
   ManualPavilionButtonSurface,
   ManualPavilionChipSurface,
@@ -57,12 +58,20 @@ function ChipList({ chips }: { chips: ManualPavilionChipSurface[] }) {
 
 function FactRow({ row }: { row: ManualPavilionFactRowSurface }) {
   return (
-    <div className="manualPavilionFactRow" data-tone={row.tone} data-testid={`manual-pavilion-fact-${row.id}`}>
+    <div
+      className="manualPavilionFactRow"
+      data-tone={row.tone}
+      data-row-kind={row.rowKind}
+      data-testid={`manual-pavilion-fact-${row.id}`}
+    >
       <span className="manualPavilionFactRow__icon" aria-hidden="true">
         <DecorativeIcon iconKey={row.iconKey} size={28} />
       </span>
       <span className="manualPavilionFactRow__label">{row.label}</span>
-      <span className="manualPavilionFactRow__value">{row.value}</span>
+      <span className="manualPavilionFactRow__value">
+        {row.badge ? <VisualIdentityBadge badge={row.badge} /> : row.value}
+        {row.detail ? <small>{row.detail}</small> : null}
+      </span>
     </div>
   );
 }
@@ -121,8 +130,11 @@ function SpineButton({
       data-lifecycle={slot.lifecycleState}
       data-stock-state={slot.stockState}
       data-recommendation={slot.recommendationState}
-      data-path={slot.pathLabel}
-      data-rarity={slot.rarityLabel}
+      data-path={slot.visualIdentity.cssAttrs.path}
+      data-role={slot.visualIdentity.cssAttrs.role}
+      data-grade={slot.visualIdentity.cssAttrs.grade}
+      data-rarity={slot.visualIdentity.cssAttrs.rarity}
+      data-rarity-fx={slot.visualIdentity.cssAttrs.rarityFx}
       data-selected={slot.selected ? 'true' : 'false'}
       data-slot-index={slot.slotIndex ?? ''}
       data-testid={slot.testId}
@@ -147,8 +159,8 @@ function SpineButton({
         <span className="manualPavilionSpine__titleText">{slot.displayTitle}</span>
       </span>
       <span className="manualPavilionSpine__meta">
-        <span>{slot.gradeLabel}</span>
-        <span>{slot.roleLabel}</span>
+        <span>{slot.displayBadges.grade.label.replace(' Grade', '')}</span>
+        <span>{slot.displayBadges.rarity.label}</span>
       </span>
       <span className="manualPavilionSpine__seal" data-seal={slot.spineVisual.sealKey} data-testid={`manual-spine-state-${slot.slotIndex ?? 'placeholder'}`}>
         {slot.stateLabel}
@@ -183,12 +195,20 @@ function Inspector({
           <h2>{surface.inspector.title}</h2>
           <dl className="manualPavilionInspectorRows">
             {surface.inspector.rows.map((row) => (
-              <div key={row.id} className="manualPavilionInspectorRow" data-tone={row.tone}>
+              <div
+                key={row.id}
+                className="manualPavilionInspectorRow"
+                data-tone={row.tone}
+                data-row-kind={row.rowKind}
+              >
                 <dt>
                   <DecorativeIcon iconKey={row.iconKey} size={28} />
                   <span>{row.label}</span>
                 </dt>
-                <dd>{row.value}</dd>
+                <dd>
+                  {row.badge ? <VisualIdentityBadge badge={row.badge} showSublabel /> : <span>{row.value}</span>}
+                  {row.detail && !row.badge ? <small>{row.detail}</small> : null}
+                </dd>
               </div>
             ))}
           </dl>

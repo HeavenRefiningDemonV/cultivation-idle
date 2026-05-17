@@ -1,0 +1,232 @@
+{
+  "manual2048": {
+    "screenshotPath": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\docs\\release\\qa\\manual-tech-visual-identity\\manual-pavilion-visual-identity-2048x1152.png",
+    "audit": {
+      "hasPage": true,
+      "noBottomNavInsidePage": true,
+      "titleBoxesGone": true,
+      "spinesHaveSemanticAttrs": true,
+      "inspectorBadges": [
+        {
+          "text": "Mortal Gradepaper-bound foundation",
+          "kind": "grade",
+          "tone": "mortal"
+        },
+        {
+          "text": "Commonplain copy",
+          "kind": "rarity",
+          "tone": "common"
+        },
+        {
+          "text": "Martial Lineage",
+          "kind": "path",
+          "tone": "martial"
+        },
+        {
+          "text": "Setup Verse",
+          "kind": "role",
+          "tone": "setup"
+        }
+      ],
+      "layoutDeltas": [
+        {
+          "id": "manual-spine-1",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        },
+        {
+          "id": "manual-spine-4",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        },
+        {
+          "id": "manual-spine-5",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        },
+        {
+          "id": "manual-spine-7",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        },
+        {
+          "id": "manual-spine-8",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        },
+        {
+          "id": "manual-spine-10",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        }
+      ]
+    }
+  },
+  "manual1600": {
+    "screenshotPath": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\docs\\release\\qa\\manual-tech-visual-identity\\manual-pavilion-visual-identity-1600x900.png",
+    "audit": {
+      "hasPage": true,
+      "noBottomNavInsidePage": true,
+      "titleBoxesGone": true,
+      "spinesHaveSemanticAttrs": true,
+      "inspectorBadges": [
+        {
+          "text": "Mortal Gradepaper-bound foundation",
+          "kind": "grade",
+          "tone": "mortal"
+        },
+        {
+          "text": "Uncommonbronze-noted copy",
+          "kind": "rarity",
+          "tone": "uncommon"
+        },
+        {
+          "text": "Earth Lineage",
+          "kind": "path",
+          "tone": "earth"
+        },
+        {
+          "text": "Control Seal",
+          "kind": "role",
+          "tone": "control"
+        }
+      ],
+      "layoutDeltas": [
+        {
+          "id": "manual-spine-1",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        },
+        {
+          "id": "manual-spine-5",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        },
+        {
+          "id": "manual-spine-6",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        },
+        {
+          "id": "manual-spine-8",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        },
+        {
+          "id": "manual-spine-9",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        },
+        {
+          "id": "manual-spine-10",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        }
+      ]
+    }
+  },
+  "techniques2048": {
+    "screenshotPath": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\docs\\release\\qa\\manual-tech-visual-identity\\techniques-visual-identity-2048x1152.png",
+    "audit": {
+      "hasPage": true,
+      "bottomNavVisible": true,
+      "rowsHaveSemanticAttrs": true,
+      "slotsHaveSemanticAttrs": true,
+      "rareFxCount": 2,
+      "rowLayoutDeltas": [
+        {
+          "id": "Iron PalmCore Damage ArtMort",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        },
+        {
+          "id": "Quiet GuardGuard ArtMortal G",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        },
+        {
+          "id": "CloudstepMovement StepEarth ",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        },
+        {
+          "id": "Mending BreathHealing Breath",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        }
+      ]
+    }
+  },
+  "techniques1600": {
+    "screenshotPath": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\docs\\release\\qa\\manual-tech-visual-identity\\techniques-visual-identity-1600x900.png",
+    "audit": {
+      "hasPage": true,
+      "bottomNavVisible": true,
+      "rowsHaveSemanticAttrs": true,
+      "slotsHaveSemanticAttrs": true,
+      "rareFxCount": 2,
+      "rowLayoutDeltas": [
+        {
+          "id": "Iron PalmCore Damage ArtMort",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        },
+        {
+          "id": "Quiet GuardGuard ArtMortal G",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        },
+        {
+          "id": "CloudstepMovement StepEarth ",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        },
+        {
+          "id": "Mending BreathHealing Breath",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        }
+      ]
+    }
+  }
+}

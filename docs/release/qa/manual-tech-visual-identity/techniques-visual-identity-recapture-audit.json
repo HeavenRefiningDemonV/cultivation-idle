@@ -1,0 +1,138 @@
+{
+  "techniques2048": {
+    "screenshotPath": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\docs\\release\\qa\\manual-tech-visual-identity\\techniques-visual-identity-2048x1152.png",
+    "audit": {
+      "hasPage": true,
+      "bottomNavVisible": true,
+      "clippedBadges": [],
+      "factOverlaps": [],
+      "visibleFactLabels": [
+        "Role",
+        "Grade",
+        "Rarity",
+        "Rank",
+        "Mastery",
+        "Path Fit",
+        "Traits",
+        "Rune Sockets"
+      ],
+      "rowLayoutDeltas": [
+        {
+          "id": "Iron PalmDamageMortalCommonR",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        },
+        {
+          "id": "Quiet GuardGuardMortalUncomm",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        },
+        {
+          "id": "CloudstepStepEarthRareRank I",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        },
+        {
+          "id": "Mending BreathHealMortalComm",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        }
+      ],
+      "compactBadgeTexts": [
+        "Damage",
+        "Mortal",
+        "Common",
+        "Martial",
+        "Guard",
+        "Mortal",
+        "Uncommon",
+        "Earth",
+        "Step",
+        "Earth",
+        "Rare",
+        "Heaven",
+        "Heal",
+        "Mortal",
+        "Common",
+        "Earth"
+      ],
+      "rareFxCount": 4
+    }
+  },
+  "techniques1600": {
+    "screenshotPath": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\docs\\release\\qa\\manual-tech-visual-identity\\techniques-visual-identity-1600x900.png",
+    "audit": {
+      "hasPage": true,
+      "bottomNavVisible": true,
+      "clippedBadges": [],
+      "factOverlaps": [],
+      "visibleFactLabels": [
+        "Role",
+        "Grade",
+        "Rarity",
+        "Rank",
+        "Mastery",
+        "Path Fit",
+        "Traits",
+        "Rune Sockets"
+      ],
+      "rowLayoutDeltas": [
+        {
+          "id": "Iron PalmDamageMortalCommonR",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        },
+        {
+          "id": "Quiet GuardGuardMortalUncomm",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        },
+        {
+          "id": "CloudstepStepEarthRareRank I",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        },
+        {
+          "id": "Mending BreathHealMortalComm",
+          "dx": 0,
+          "dy": 0,
+          "dw": 0,
+          "dh": 0
+        }
+      ],
+      "compactBadgeTexts": [
+        "Damage",
+        "Mortal",
+        "Common",
+        "Martial",
+        "Guard",
+        "Mortal",
+        "Uncommon",
+        "Earth",
+        "Step",
+        "Earth",
+        "Rare",
+        "Heaven",
+        "Heal",
+        "Mortal",
+        "Common",
+        "Earth"
+      ],
+      "rareFxCount": 4
+    }
+  }
+}

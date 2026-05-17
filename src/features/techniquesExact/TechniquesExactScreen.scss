@@ -158,6 +158,141 @@
   color: var(--tech-red);
 }
 
+.semanticNameToken {
+  color: inherit;
+}
+
+.semanticNameToken[data-emphasis='soft'] {
+  font-weight: 700;
+}
+
+.semanticNameToken[data-emphasis='strong'] {
+  font-weight: 800;
+}
+
+.semanticNameToken[data-tone='heaven'],
+.semanticNameToken[data-tone='mobility'] {
+  color: #40577a;
+  text-shadow: 0 1px 0 rgba(255, 245, 210, 0.38), 0 0 5px rgba(121, 151, 190, 0.24);
+}
+
+.semanticNameToken[data-tone='earth'],
+.semanticNameToken[data-tone='guard'],
+.semanticNameToken[data-tone='heal'] {
+  color: #365b3b;
+  text-shadow: 0 1px 0 rgba(249, 236, 194, 0.3);
+}
+
+.semanticNameToken[data-tone='martial'],
+.semanticNameToken[data-tone='damage'],
+.semanticNameToken[data-tone='control'] {
+  color: #8a3829;
+  text-shadow: 0 1px 0 rgba(255, 230, 184, 0.28);
+}
+
+.visualIdentityBadge {
+  min-width: 0;
+  min-height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 3px 7px;
+  border: 1px solid rgba(77, 51, 30, 0.42);
+  color: var(--tech-ink);
+  background: rgba(235, 221, 188, 0.7);
+  box-shadow: inset 0 -5px 9px rgba(91, 59, 29, 0.08);
+  white-space: nowrap;
+}
+
+.visualIdentityBadge__text {
+  min-width: 0;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.visualIdentityBadge__label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.visualIdentityBadge__sublabel {
+  display: inline;
+  margin-left: 0;
+  color: rgba(57, 38, 22, 0.68);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.visualIdentityBadge--compact {
+  min-height: 21px;
+  gap: 3px;
+  padding: 2px 4px;
+  font-size: 11px;
+}
+
+.visualIdentityBadge--compact svg {
+  width: 11px;
+  height: 11px;
+  flex: 0 0 11px;
+}
+
+.visualIdentityBadge--withSublabel {
+  justify-content: flex-start;
+  white-space: normal;
+}
+
+.visualIdentityBadge--withSublabel .visualIdentityBadge__text {
+  flex-wrap: nowrap;
+}
+
+.visualIdentityBadge--withSublabel .visualIdentityBadge__label {
+  flex: 0 0 auto;
+}
+
+.visualIdentityBadge--withSublabel .visualIdentityBadge__sublabel {
+  min-width: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.visualIdentityBadge[data-tone='earth'],
+.visualIdentityBadge[data-tone='guard'],
+.visualIdentityBadge[data-tone='heal'],
+.visualIdentityBadge[data-tone='rare'] {
+  border-color: rgba(65, 116, 74, 0.5);
+  background: rgba(173, 199, 151, 0.36);
+}
+
+.visualIdentityBadge[data-tone='heaven'],
+.visualIdentityBadge[data-tone='mobility'] {
+  border-color: rgba(88, 107, 143, 0.48);
+  background: rgba(206, 215, 205, 0.52);
+}
+
+.visualIdentityBadge[data-tone='martial'],
+.visualIdentityBadge[data-tone='damage'],
+.visualIdentityBadge[data-tone='control'],
+.visualIdentityBadge[data-tone='epic'] {
+  border-color: rgba(141, 55, 41, 0.52);
+  background: rgba(223, 190, 149, 0.42);
+}
+
+.visualIdentityBadge[data-tone='uncommon'] {
+  border-color: rgba(159, 113, 53, 0.52);
+  background: rgba(229, 208, 163, 0.52);
+}
+
+.visualIdentityBadge[data-tone='legendary'] {
+  border-color: rgba(176, 135, 61, 0.66);
+  background: linear-gradient(180deg, rgba(237, 224, 181, 0.72), rgba(181, 202, 157, 0.35));
+}
+
 .techniquesExactTopBadges {
   display: grid;
   grid-template-columns: minmax(128px, 1fr) minmax(118px, 0.75fr);
@@ -399,6 +534,8 @@
 .techniquesExactSlot[data-slot="support-0"] { left: 28%; bottom: 13%; }
 
 .techniquesExactSlot__button {
+  position: relative;
+  overflow: hidden;
   width: 100%;
   height: 86px;
   display: grid;
@@ -413,6 +550,39 @@
   box-shadow: 0 8px 20px rgba(6, 4, 3, 0.34), inset 0 0 0 2px rgba(255, 244, 215, 0.18);
 }
 
+.techniquesExactSlot__aura {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.techniquesExactSlot[data-rarity-fx='bronze-thread'] .techniquesExactSlot__aura {
+  opacity: 0.42;
+  background: linear-gradient(90deg, transparent, rgba(190, 144, 70, 0.28), transparent);
+}
+
+.techniquesExactSlot[data-rarity-fx='jade-glint'] .techniquesExactSlot__aura {
+  opacity: 0.46;
+  background: radial-gradient(circle at 80% 18%, rgba(144, 202, 155, 0.38), transparent 34%);
+}
+
+.techniquesExactSlot[data-rarity-fx='cinnabar-embers'] .techniquesExactSlot__aura {
+  opacity: 0.5;
+  background:
+    radial-gradient(circle at 18% 80%, rgba(186, 69, 45, 0.32), transparent 26%),
+    radial-gradient(circle at 78% 24%, rgba(220, 160, 72, 0.24), transparent 20%);
+  animation: techniqueEmberDrift 5200ms ease-in-out infinite;
+}
+
+.techniquesExactSlot[data-rarity-fx='celestial-corona'] .techniquesExactSlot__aura {
+  opacity: 0.52;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(236, 205, 116, 0.2), transparent 54%),
+    conic-gradient(from 20deg, transparent, rgba(118, 170, 129, 0.22), transparent, rgba(226, 190, 104, 0.18), transparent);
+  animation: techniqueCoronaDrift 9000ms linear infinite;
+}
+
 .techniquesExactSlot[data-selected="true"] .techniquesExactSlot__button {
   outline: 2px solid rgba(205, 169, 86, 0.82);
   box-shadow: 0 0 0 3px rgba(75, 113, 74, 0.38), 0 12px 24px rgba(0, 0, 0, 0.42);
@@ -424,6 +594,8 @@
 }
 
 .techniquesExactSlot__label {
+  position: relative;
+  z-index: 1;
   grid-column: 1 / 3;
   text-align: center;
   font-size: 13px;
@@ -431,6 +603,8 @@
 }
 
 .techniquesExactSlot__icon {
+  position: relative;
+  z-index: 1;
   grid-row: 2 / 4;
   width: 38px;
   height: 38px;
@@ -442,6 +616,8 @@
 
 .techniquesExactSlot__button strong,
 .techniquesExactSlot__button small {
+  position: relative;
+  z-index: 1;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -532,11 +708,13 @@
 }
 
 .techniquesExactTechniqueRow {
+  position: relative;
+  overflow: hidden;
   width: 100%;
   min-width: 0;
   display: grid;
-  grid-template-columns: 34px minmax(140px, 1.45fr) 76px 72px minmax(112px, 0.9fr) 82px minmax(112px, 1fr) 54px;
-  gap: 8px;
+  grid-template-columns: 30px minmax(100px, 1fr) 88px 80px 98px 48px 82px 78px 46px 34px;
+  gap: 6px;
   align-items: center;
   text-align: left;
   color: var(--tech-ink);
@@ -544,13 +722,44 @@
   background: rgba(221, 203, 167, 0.72);
 }
 
+.techniquesExactTechniqueRow::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.techniquesExactTechniqueRow[data-rarity-fx='bronze-thread']::after {
+  opacity: 0.28;
+  background: linear-gradient(90deg, transparent 34%, rgba(190, 144, 70, 0.24), transparent 74%);
+}
+
+.techniquesExactTechniqueRow[data-rarity-fx='jade-glint']::after {
+  opacity: 0.34;
+  background: radial-gradient(circle at 92% 18%, rgba(144, 202, 155, 0.36), transparent 24%);
+}
+
+.techniquesExactTechniqueRow[data-rarity-fx='cinnabar-embers']::after,
+.techniquesExactTechniqueRow[data-rarity-fx='celestial-corona']::after {
+  opacity: 0.3;
+  background: linear-gradient(90deg, transparent, rgba(190, 92, 58, 0.2), transparent);
+}
+
 .techniquesExactTechniqueRow[data-selected="true"] {
   outline: 2px solid rgba(45, 108, 82, 0.66);
 }
 
 .techniquesExactTechniqueRow__icon {
+  position: relative;
+  z-index: 1;
   display: grid;
   place-items: center;
+}
+
+.techniquesExactTechniqueRow > * {
+  position: relative;
+  z-index: 1;
 }
 
 .techniquesExactMastery {
@@ -564,7 +773,7 @@
   position: absolute;
   inset: 2px auto 2px 2px;
   max-width: calc(100% - 4px);
-  background: linear-gradient(90deg, var(--tech-blue-ink), #57a0b1);
+  background: linear-gradient(90deg, #8b6230, #4f8a5e, #c3a24d);
 }
 
 .techniquesExactMastery em {
@@ -623,7 +832,7 @@
 }
 
 .techniquesExactInspector__hero {
-  min-height: 62px;
+  min-height: 84px;
   display: grid;
   grid-template-columns: 62px minmax(0, 1fr);
   gap: 12px;
@@ -631,6 +840,7 @@
 }
 
 .techniquesExactInspector__icon {
+  position: relative;
   width: 50px;
   height: 50px;
   display: grid;
@@ -638,6 +848,32 @@
   border-radius: 50%;
   background: rgba(31, 48, 74, 0.18);
   border: 1px solid rgba(70, 50, 31, 0.58);
+}
+
+.techniquesExactInspector__icon::after {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.techniquesExactInspector[data-rarity-fx='jade-glint'] .techniquesExactInspector__icon::after {
+  opacity: 0.42;
+  background: radial-gradient(circle, rgba(130, 190, 140, 0.34), transparent 62%);
+}
+
+.techniquesExactInspector[data-rarity-fx='cinnabar-embers'] .techniquesExactInspector__icon::after {
+  opacity: 0.44;
+  background: radial-gradient(circle, rgba(183, 70, 45, 0.34), transparent 64%);
+  animation: techniqueEmberDrift 5200ms ease-in-out infinite;
+}
+
+.techniquesExactInspector[data-rarity-fx='celestial-corona'] .techniquesExactInspector__icon::after {
+  opacity: 0.5;
+  background: conic-gradient(from 30deg, transparent, rgba(220, 185, 92, 0.28), transparent, rgba(97, 145, 98, 0.22), transparent);
+  animation: techniqueCoronaDrift 9000ms linear infinite;
 }
 
 .techniquesExactInspector__hero strong {
@@ -648,6 +884,13 @@
 
 .techniquesExactInspector__hero span {
   color: var(--tech-red);
+}
+
+.techniquesExactInspector__badges {
+  margin-top: 5px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
 }
 
 .techniquesExactFactList,
@@ -670,7 +913,7 @@
 }
 
 .techniquesExactInspector .techniquesExactFactRow {
-  min-height: 25px;
+  min-height: 26px;
 }
 
 .techniquesExactFactRow dt,
@@ -682,9 +925,45 @@
 .techniquesExactReadinessRows dd {
   margin: 0;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.techniquesExactInspector .techniquesExactFactRow dd {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.techniquesExactFactRow dd small {
+  font-size: 11px;
+  line-height: 1.08;
+  color: rgba(59, 39, 23, 0.72);
+  font-weight: 600;
+}
+
+@keyframes techniqueEmberDrift {
+  0%, 100% { transform: translate3d(0, 0, 0); opacity: 0.36; }
+  50% { transform: translate3d(2px, -1px, 0); opacity: 0.54; }
+}
+
+@keyframes techniqueCoronaDrift {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .techniquesExactSlot__aura,
+  .techniquesExactTechniqueRow::after,
+  .techniquesExactInspector__icon::after,
+  .manualPavilionSpine::after {
+    animation: none !important;
+    transition: none !important;
+  }
 }
 
 .techniquesExactFactRow[data-tone="jade"] dd,

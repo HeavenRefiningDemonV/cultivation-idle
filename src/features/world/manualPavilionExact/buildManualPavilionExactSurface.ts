@@ -6,6 +6,7 @@ import { useManualSatchelStore } from '../../../stores/manualSatchelStore.js';
 import { useTechCollectionStore } from '../../../stores/techCollectionStore.js';
 import { analyzeSelectedBuild } from '../../../systems/builds/buildAnalysisService.js';
 import type { BuildAnalysis, BuildGapCode } from '../../../systems/builds/buildAnalysisTypes.js';
+import { getTechniqueTaxonomyProfile } from '../../../systems/builds/techniqueTaxonomy.js';
 import { buildDoctrineSnapshot } from '../../../systems/doctrine/doctrineSnapshot.js';
 import {
   analyzeManualOffer,
@@ -16,6 +17,11 @@ import {
 } from '../../../systems/manuals/index.js';
 import { getManualPathIcon, getManualRoleIcon, getManualTypeIcon } from '../../manuals/manualIconMap.js';
 import type { ManualGrade, ManualRarity, PavilionStockSlot, PavilionStockState } from '../../manuals/pavilionStockTypes.js';
+import {
+  resolveTechniqueVisualIdentity,
+  type TechniqueVisualIdentity,
+  type VisualBadgeSurface,
+} from '../../techniques/techniqueVisualIdentity.js';
 import { MANUAL_PAVILION_EXACT_ASSETS, spineAssetForColor } from './manualPavilionExactAssetRegistry.js';
 import {
   MANUAL_PAVILION_DEFAULT_CITY_ID,
@@ -94,8 +100,9 @@ function fact(
   tone: ManualPavilionExactTone = 'neutral',
   source: ManualPavilionFactRowSurface['source'] = 'derived',
   iconKey?: string,
+  extras: Pick<ManualPavilionFactRowSurface, 'rowKind' | 'detail' | 'badge'> = {},
 ): ManualPavilionFactRowSurface {
-  return { id, label, value, tone, source, iconKey };
+  return { id, label, value, tone, source, iconKey, ...extras };
 }
 
 function normalizeCurrencyCosts(
@@ -120,6 +127,34 @@ function spineTitleFields(techniqueId: string | null | undefined, fullTitle: str
     displayTitle,
     titleLength: classifyManualSpineTitleLength(displayTitle),
   };
+}
+
+function visualIdentityForManual(input: {
+  techniqueId: string | null | undefined;
+  name: string;
+  technique?: TechniqueDef | null;
+  grade?: string | null;
+  rarity?: string | null;
+  fallbackPath?: string | null;
+  fallbackRole?: string | null;
+}): TechniqueVisualIdentity {
+  const taxonomy = input.techniqueId ? getTechniqueTaxonomyProfile(input.techniqueId) : null;
+  return resolveTechniqueVisualIdentity({
+    techId: input.techniqueId ?? 'manual-placeholder',
+    name: input.name,
+    path: taxonomy?.path ?? input.technique?.path ?? input.fallbackPath ?? null,
+    type: input.technique?.type ?? null,
+    role: input.technique?.role ?? input.fallbackRole ?? null,
+    tags: input.technique?.tags ?? null,
+    families: taxonomy?.families ?? null,
+    supportFlags: taxonomy?.supportFlags ?? null,
+    grade: input.grade ?? input.technique?.tier ?? null,
+    rarity: input.rarity ?? input.technique?.rarity ?? null,
+  });
+}
+
+function badgeExtras(rowKind: string, detail: string, badge?: VisualBadgeSurface) {
+  return { rowKind, detail, badge };
 }
 
 function primaryReasonTone(reason: ManualPrimaryReason): ManualPavilionExactTone {
@@ -233,6 +268,10 @@ function makeFixtureSpine(input: {
   duplicate?: boolean;
   stateLabel?: string;
   techniqueId: string;
+  path?: 'heaven' | 'earth' | 'martial';
+  role?: string;
+  grade?: string;
+  rarity?: string;
 }): ManualPavilionSpineSurface {
   const selected = input.selected ?? false;
   const duplicate = input.duplicate ?? false;
@@ -241,6 +280,14 @@ function makeFixtureSpine(input: {
     : MANUAL_PRIMARY_REASON_LABELS[input.primaryReason];
   const lifecycleState: ManualLifecycleState = duplicate ? 'duplicate_fragment' : 'unowned_affordable';
   const titleFields = spineTitleFields(input.techniqueId, input.title);
+  const visualIdentity = visualIdentityForManual({
+    techniqueId: input.techniqueId,
+    name: input.title,
+    grade: input.grade ?? 'mortal',
+    rarity: input.rarity ?? 'common',
+    fallbackPath: input.path ?? (input.slotIndex === 3 ? 'earth' : input.slotIndex === 5 ? 'martial' : 'heaven'),
+    fallbackRole: input.role ?? (input.slotIndex === 2 || input.slotIndex === 6 ? 'support' : 'active'),
+  });
   return {
     id: `fixture-spine-${input.slotIndex}`,
     slotIndex: input.slotIndex,
@@ -249,11 +296,11 @@ function makeFixtureSpine(input: {
     manualInstanceId: null,
     title: input.title,
     ...titleFields,
-    gradeLabel: 'Mortal Grade',
-    rarityLabel: 'Common',
-    pathLabel: input.slotIndex === 3 ? 'Earth' : input.slotIndex === 5 ? 'Martial' : 'Heaven',
-    familyLabel: input.slotIndex === 1 ? 'Martial Family' : 'Doctrine Family',
-    roleLabel: input.slotIndex === 2 || input.slotIndex === 6 ? 'Support' : 'Active',
+    gradeLabel: visualIdentity.gradeDisplayLabel,
+    rarityLabel: visualIdentity.rarityDisplayLabel,
+    pathLabel: visualIdentity.pathDisplayLabel,
+    familyLabel: visualIdentity.pathDisplayLabel,
+    roleLabel: visualIdentity.roleDisplayLabel,
     state: selected ? 'selected' : input.state,
     stateLabel: input.stateLabel ?? MANUAL_LIFECYCLE_LABELS[lifecycleState],
     lifecycleState,
@@ -273,9 +320,11 @@ function makeFixtureSpine(input: {
     sealed: false,
     notSold: false,
     priceLabel: '3,000 Gold \u00b7 160 Merit',
-    ariaLabel: `${input.title}. ${primaryReasonLabel}. ${MANUAL_LIFECYCLE_LABELS[lifecycleState]}. 3,000 Gold and 160 Merit.`,
+    ariaLabel: `${input.title}. ${visualIdentity.roleDisplayLabel}. ${visualIdentity.gradeDisplayLabel}. ${visualIdentity.rarityDisplayLabel}. ${primaryReasonLabel}. ${MANUAL_LIFECYCLE_LABELS[lifecycleState]}. 3,000 Gold and 160 Merit.`,
     testId: `manual-spine-${input.slotIndex}`,
     tags: [chip(`fixture-tag-${input.slotIndex}`, primaryReasonLabel, primaryReasonTone(input.primaryReason), 'fixture')],
+    visualIdentity,
+    displayBadges: visualIdentity.badges,
     spineVisual: {
       colorKey: input.colorKey,
       assetKey: spineAssetForColor(input.colorKey),
@@ -426,6 +475,10 @@ export function createManualPavilionExactMockupFixture(
       recommended: true,
       stateLabel: 'New',
       techniqueId: 'tech_iron_palm',
+      path: 'martial',
+      role: 'damage',
+      grade: 'mortal',
+      rarity: 'common',
     }),
     makeFixtureSpine({
       slotIndex: 2,
@@ -436,6 +489,10 @@ export function createManualPavilionExactMockupFixture(
       recommended: true,
       stateLabel: 'New',
       techniqueId: 'tech_quiet_guard',
+      path: 'earth',
+      role: 'guard',
+      grade: 'mortal',
+      rarity: 'uncommon',
     }),
     makeFixtureSpine({
       slotIndex: 3,
@@ -445,6 +502,10 @@ export function createManualPavilionExactMockupFixture(
       state: 'new',
       stateLabel: 'New',
       techniqueId: 'tech_cloudstep_notes',
+      path: 'heaven',
+      role: 'mobility',
+      grade: 'earth',
+      rarity: 'rare',
     }),
     makeFixtureSpine({
       slotIndex: 4,
@@ -455,6 +516,10 @@ export function createManualPavilionExactMockupFixture(
       recommended: true,
       stateLabel: 'New',
       techniqueId: 'tech_red_crane',
+      path: 'martial',
+      role: 'damage',
+      grade: 'mortal',
+      rarity: 'uncommon',
     }),
     makeFixtureSpine({
       slotIndex: 5,
@@ -465,6 +530,10 @@ export function createManualPavilionExactMockupFixture(
       duplicate: true,
       stateLabel: 'Fragment +2',
       techniqueId: 'tech_stone_root',
+      path: 'earth',
+      role: 'guard',
+      grade: 'earth',
+      rarity: 'rare',
     }),
     makeFixtureSpine({
       slotIndex: 6,
@@ -475,6 +544,10 @@ export function createManualPavilionExactMockupFixture(
       duplicate: true,
       stateLabel: 'Duplicate',
       techniqueId: 'tech_mending_breath',
+      path: 'earth',
+      role: 'heal',
+      grade: 'mortal',
+      rarity: 'common',
     }),
   ];
   const selectedSlot = primarySlots[0];
@@ -506,12 +579,12 @@ export function createManualPavilionExactMockupFixture(
     selectedSlot,
     totalStockLabel: 'Showing 6 of 6',
     inspectorRows: [
-      fact('fixture-grade', 'Grade', 'Mortal Grade', 'neutral', 'fixture', 'placeholderRingSmall'),
-      fact('fixture-rarity', 'Rarity', 'Common', 'neutral', 'fixture', 'sealBronze'),
-      fact('fixture-family', 'Family', 'Martial Family', 'neutral', 'fixture', 'bookMartial'),
-      fact('fixture-role', 'Role', 'Active', 'neutral', 'fixture', 'jadeSword'),
-      fact('fixture-path-fit', 'Path Fit', 'Path Fit: Strong', 'jade', 'fixture', 'jadeSword'),
-      fact('fixture-state', 'State', 'New', 'bronze', 'fixture', 'sealRed'),
+      fact('fixture-grade', 'Grade', selectedSlot.visualIdentity.gradeDisplayLabel, 'neutral', 'fixture', selectedSlot.visualIdentity.gradeIconId, badgeExtras('grade', selectedSlot.visualIdentity.gradeMaterialLabel, selectedSlot.displayBadges.grade)),
+      fact('fixture-rarity', 'Rarity', selectedSlot.visualIdentity.rarityDisplayLabel, 'neutral', 'fixture', selectedSlot.visualIdentity.rarityIconId, badgeExtras('rarity', selectedSlot.visualIdentity.rarityProvenanceLabel, selectedSlot.displayBadges.rarity)),
+      fact('fixture-family', 'Family', selectedSlot.visualIdentity.pathDisplayLabel, 'neutral', 'fixture', selectedSlot.visualIdentity.pathIconId, badgeExtras('family', 'strike doctrine', selectedSlot.displayBadges.path)),
+      fact('fixture-role', 'Role', selectedSlot.visualIdentity.roleDisplayLabel, 'neutral', 'fixture', selectedSlot.visualIdentity.roleIconId, badgeExtras('role', 'active doctrine', selectedSlot.displayBadges.role)),
+      fact('fixture-path-fit', 'Path Fit', 'Path Fit: Strong', 'jade', 'fixture', 'jadeSword', badgeExtras('path-fit', 'current doctrine resonates')),
+      fact('fixture-state', 'State', 'New', 'bronze', 'fixture', 'sealRed', badgeExtras('state', 'not yet studied')),
     ],
     whyRows: [
       fact('fixture-why-path', 'Path fit', 'Path fit: strong match for current doctrine.', 'jade', 'fixture', 'bookHeaven'),
@@ -569,6 +642,12 @@ export function createManualPavilionExactMockupFixture(
 
 function placeholderSpine(index: number, source: 'live' | 'synthetic' = 'synthetic'): ManualPavilionSpineSurface {
   const titleFields = spineTitleFields(null, 'Preparing');
+  const visualIdentity = visualIdentityForManual({
+    techniqueId: null,
+    name: 'Stock Preparing',
+    grade: 'unknown',
+    rarity: 'unknown',
+  });
   return {
     id: `manual-placeholder-${index}`,
     slotIndex: null,
@@ -604,6 +683,8 @@ function placeholderSpine(index: number, source: 'live' | 'synthetic' = 'synthet
     ariaLabel: 'Manual stock is preparing.',
     testId: `manual-spine-placeholder-${index}`,
     tags: [chip(`placeholder-${index}-tag`, 'Preparing', 'locked', source)],
+    visualIdentity,
+    displayBadges: visualIdentity.badges,
     spineVisual: {
       colorKey: 'neutral',
       assetKey: spineAssetForColor('neutral'),
@@ -866,6 +947,16 @@ function buildSpineSurface(input: {
   const stateLabel = stateLabelForLifecycle({ lifecycle: lifecycleState, duplicateFragments, fallback: fallbackStateLabel });
   const fullTitle = technique?.name ?? titleCase(slot.techniqueId);
   const titleFields = spineTitleFields(slot.techniqueId, fullTitle);
+  const taxonomy = getTechniqueTaxonomyProfile(slot.techniqueId);
+  const visualIdentity = visualIdentityForManual({
+    techniqueId: slot.techniqueId,
+    name: fullTitle,
+    technique,
+    grade: slot.grade,
+    rarity: slot.rarity,
+    fallbackPath: taxonomy?.path ?? technique?.path ?? null,
+    fallbackRole: technique?.role ?? technique?.type ?? null,
+  });
 
   return {
     id: `stock-${slot.slotIndex}-${slot.techniqueId}`,
@@ -875,11 +966,11 @@ function buildSpineSurface(input: {
     manualInstanceId: manualInstanceIdForSlot(slot),
     title: fullTitle,
     ...titleFields,
-    gradeLabel: normalizeGradeLabel(slot.grade),
-    rarityLabel: normalizeRarityLabel(slot.rarity),
-    pathLabel: titleCase(technique?.path ?? 'unknown'),
-    familyLabel: pathFamilyLabel(technique?.path),
-    roleLabel: titleCase(technique?.role ?? technique?.type ?? 'general'),
+    gradeLabel: visualIdentity.gradeDisplayLabel,
+    rarityLabel: visualIdentity.rarityDisplayLabel,
+    pathLabel: visualIdentity.pathDisplayLabel,
+    familyLabel: visualIdentity.pathDisplayLabel,
+    roleLabel: visualIdentity.roleDisplayLabel,
     state: stateForSlot({ slot, selected, analysis, tags }),
     stateLabel,
     lifecycleState,
@@ -899,9 +990,11 @@ function buildSpineSurface(input: {
     sealed: Boolean(slot.sealed),
     notSold: Boolean(slot.notSold),
     priceLabel: formatCostLine(slot.price),
-    ariaLabel: `${fullTitle}. ${primaryReasonLabel}. ${stateLabel}. ${formatCostLine(slot.price)}.`,
+    ariaLabel: `${fullTitle}. ${visualIdentity.roleDisplayLabel}. ${visualIdentity.gradeDisplayLabel}. ${visualIdentity.rarityDisplayLabel}. ${primaryReasonLabel}. ${stateLabel}. ${formatCostLine(slot.price)}.`,
     testId: `manual-spine-${slot.slotIndex}`,
     tags: tagSurfaces.length > 0 ? tagSurfaces : [chip(`tag-${slot.slotIndex}-available`, isNewTechnique ? 'New' : 'Available', 'neutral', 'derived')],
+    visualIdentity,
+    displayBadges: visualIdentity.badges,
     spineVisual: {
       colorKey,
       assetKey: spineAssetForColor(colorKey),
@@ -1016,10 +1109,10 @@ function buildInspectorRows(input: {
   }
 
   return [
-    fact('inspector-grade', 'Grade', input.selected.gradeLabel, 'neutral', 'live', 'placeholderRingSmall'),
-    fact('inspector-rarity', 'Rarity', input.selected.rarityLabel, 'neutral', 'live', 'sealBronze'),
-    fact('inspector-family', 'Family', input.selected.familyLabel, 'neutral', 'live', input.selected.spineVisual.pathIconKey),
-    fact('inspector-role', 'Role', input.selected.roleLabel, 'neutral', 'live', input.selected.spineVisual.roleIconKey),
+    fact('inspector-grade', 'Grade', input.selected.visualIdentity.gradeDisplayLabel, 'neutral', 'live', input.selected.visualIdentity.gradeIconId, badgeExtras('grade', input.selected.visualIdentity.gradeMaterialLabel, input.selected.displayBadges.grade)),
+    fact('inspector-rarity', 'Rarity', input.selected.visualIdentity.rarityDisplayLabel, 'neutral', 'live', input.selected.visualIdentity.rarityIconId, badgeExtras('rarity', input.selected.visualIdentity.rarityProvenanceLabel, input.selected.displayBadges.rarity)),
+    fact('inspector-family', 'Family', input.selected.visualIdentity.pathDisplayLabel, 'neutral', 'live', input.selected.visualIdentity.pathIconId, badgeExtras('family', `${input.selected.visualIdentity.pathKey === 'neutral' ? 'general' : input.selected.visualIdentity.pathKey} doctrine`, input.selected.displayBadges.path)),
+    fact('inspector-role', 'Role', input.selected.visualIdentity.roleDisplayLabel, 'neutral', 'live', input.selected.visualIdentity.roleIconId, badgeExtras('role', input.selected.roleLabel, input.selected.displayBadges.role)),
     fact(
       'inspector-path-fit',
       'Path Fit',
@@ -1027,8 +1120,9 @@ function buildInspectorRows(input: {
       input.analysis?.pathAligned ? 'jade' : input.analysis?.supportOffer ? 'bronze' : 'neutral',
       'derived',
       input.selected.spineVisual.roleIconKey,
+      badgeExtras('path-fit', input.analysis?.pathAligned ? 'current doctrine resonates' : input.analysis?.supportOffer ? 'useful off-path support' : 'no strong resonance'),
     ),
-    fact('inspector-state', 'State', input.selected.lifecycleLabel, stateToneForSlot(input.selected), 'derived', 'sealRed'),
+    fact('inspector-state', 'State', input.selected.lifecycleLabel, stateToneForSlot(input.selected), 'derived', 'sealRed', badgeExtras('state', input.selected.lifecycleState.replace(/_/g, ' '))),
   ];
 }
 

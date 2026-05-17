@@ -62,6 +62,11 @@ test('manual pavilion exact fixture locks the mockup page, six spines, inspector
   ]);
   assert.equal(surface.shelf.primarySlots.every((slot) => slot.shortTitle === slot.displayTitle), true);
   assert.equal(surface.shelf.primarySlots.every((slot) => slot.titleLength !== 'veryLong'), true);
+  assert.equal(surface.shelf.primarySlots.every((slot) => Boolean(slot.visualIdentity)), true);
+  assert.equal(surface.shelf.primarySlots.every((slot) => slot.visualIdentity.cssAttrs.rarity !== undefined), true);
+  assert.equal(surface.shelf.primarySlots.some((slot) => slot.visualIdentity.cssAttrs.rarity === 'rare'), true);
+  assert.match(surface.shelf.selectedSlot?.ariaLabel ?? '', /Mortal Grade/);
+  assert.match(surface.shelf.selectedSlot?.ariaLabel ?? '', /Common/);
   assert.equal(surface.shelf.selectedSlot?.title, 'Iron Palm Sutra');
   assert.equal(surface.shelf.selectedSlot?.selected, true);
   assert.equal(surface.shelf.selectedSlot?.lifecycleState, 'unowned_affordable');
@@ -74,11 +79,12 @@ test('manual pavilion exact fixture locks the mockup page, six spines, inspector
   assert.deepEqual(surface.inspector.rows.map((row) => [row.label, row.value]), [
     ['Grade', 'Mortal Grade'],
     ['Rarity', 'Common'],
-    ['Family', 'Martial Family'],
-    ['Role', 'Active'],
+    ['Family', 'Martial Lineage'],
+    ['Role', 'Core Damage Art'],
     ['Path Fit', 'Path Fit: Strong'],
     ['State', 'New'],
   ]);
+  assert.equal(surface.inspector.rows.filter((row) => row.badge).length >= 4, true);
   assert.deepEqual(surface.inspector.whyRows.map((row) => row.value), [
     'Path fit: strong match for current doctrine.',
     'Gate prep: improves next Gate readiness.',
