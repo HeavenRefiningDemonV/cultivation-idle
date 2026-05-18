@@ -28,6 +28,7 @@ import { useExpeditionStore } from '../../../stores/expeditionStore.js';
 import { useGameStore } from '../../../stores/gameStore.js';
 import { useInventoryStore, type InventoryState } from '../../../stores/inventoryStore.js';
 import { useMedicinePouchStore } from '../../../stores/medicinePouchStore.js';
+import { useRuinsStore } from '../../../stores/ruinsStore.js';
 import { useTechniqueStore } from '../../../stores/techniqueStore.js';
 import { useTrialStore, type TrialProgress } from '../../../stores/trialStore.js';
 import { resolveModuleRef } from '../../../components/screens/world/worldUtils.js';
@@ -43,6 +44,7 @@ import {
   type GateTrialReadinessSurface,
 } from '../../../systems/readiness/section5Adapters.js';
 import { buildLiveRunCompassSurfaceV2 } from '../../../systems/ui/runCompass/index.js';
+import { buildLiveCombatAftermathSurface } from '../../combatAftermath/index.js';
 
 import {
   GATE_TRIAL_EXACT_REGION_ORDER,
@@ -1152,6 +1154,47 @@ function buildLiveTopFixes(context: LiveResolvedContext): GateTrialFixSurface[] 
     .slice(0, 3);
 }
 
+function buildGateTrialSupportRunSurface(
+  context: LiveResolvedContext,
+): NonNullable<GateTrialExactSurfaceV1['recommendedPanel']['supportRun']> {
+  const ruins = useRuinsStore.getState();
+  const content = useContentStore.getState();
+  const city = content.maps.citiesById[context.cityId] ?? null;
+  const ruinId = resolveModuleRef(city, 'ruins');
+  const lastRunSummary = ruins.lastRunSummary;
+  const matchingLastRun = lastRunSummary?.ruinId === ruinId
+    ? lastRunSummary
+    : null;
+
+  if (matchingLastRun) {
+    return {
+      title: matchingLastRun.victory ? 'Ruins support completed' : 'Ruins support partial',
+      detail: matchingLastRun.victory
+        ? `${matchingLastRun.roomsCleared} / ${matchingLastRun.roomCount} rooms cleared; targeted materials can relieve the gate package.`
+        : `${matchingLastRun.roomsCleared} / ${matchingLastRun.roomCount} rooms cleared; return to finish the support route.`,
+      routeTarget: 'ruins',
+      source: LIVE_SOURCE,
+    };
+  }
+
+  const progress = ruinId ? ruins.progressByRuinId[ruinId] : null;
+  if (progress && progress.totalRuns > 0) {
+    return {
+      title: 'Ruins support recorded',
+      detail: `${progress.totalRuns} support ${progress.totalRuns === 1 ? 'run' : 'runs'} logged; latest room progress can feed prep decisions.`,
+      routeTarget: 'ruins',
+      source: LIVE_SOURCE,
+    };
+  }
+
+  return {
+    title: 'Ruins support route ready',
+    detail: 'Target one ruins run if Forge or medicine stock remains the gate blocker.',
+    routeTarget: 'ruins',
+    source: 'derived',
+  };
+}
+
 function buildLiveRecommendedPanel(context: LiveResolvedContext): GateTrialExactSurfaceV1['recommendedPanel'] {
   const inventory = useInventoryStore.getState();
   const failSafe = context.lifecycle.failSafe;
@@ -1161,6 +1204,7 @@ function buildLiveRecommendedPanel(context: LiveResolvedContext): GateTrialExact
   const boostStatsMet = context.metrics.healingQty >= 12 || useMedicinePouchStore.getState().slots.utility.equippedItemId !== null;
   const refineGearMet = context.metrics.weaponRefineLevel >= 5 || context.metrics.hasTemperedGear;
   const topFixes = buildLiveTopFixes(context);
+  const supportRun = buildGateTrialSupportRunSurface(context);
   const safetyNetButton: GateTrialButtonSurface = context.lifecycle.isResolved
     ? {
         visible: true,
@@ -1210,8 +1254,9 @@ function buildLiveRecommendedPanel(context: LiveResolvedContext): GateTrialExact
       makeChecklistRow('refineGear', 'Refine or temper gear', refineGearMet ? 'Gear floor looks stable.' : 'Weapon refine is below +5.', statusFromBoolean(refineGearMet), refineGearMet ? 'statusCheck' : 'statusWarning', 'forge'),
       makeChecklistRow('boostStats', 'Boost stats with pills', boostStatsMet ? 'Healing or support medicine prepared.' : 'Healing stock is below the recommended floor.', statusFromBoolean(boostStatsMet), boostStatsMet ? 'statusCheck' : 'statusWarning', 'apothecary'),
       makeChecklistRow('upgradeTechniques', 'Upgrade major techniques', loadoutComplete ? 'Loadout floor is filled.' : 'Fill at least two active and one passive slot.', statusFromBoolean(loadoutComplete), loadoutComplete ? 'statusCheck' : 'statusWarning', 'techniques'),
-      makeChecklistRow('ruinSupportRun', 'Complete one Ruin support run', 'Support progress signal unavailable in this packet.', 'warning', 'statusWarning', 'ruins'),
+      makeChecklistRow('ruinSupportRun', 'Complete one Ruin support run', supportRun.detail, supportRun.source === LIVE_SOURCE ? 'success' : 'warning', supportRun.source === LIVE_SOURCE ? 'statusCheck' : 'statusWarning', 'ruins'),
     ],
+    supportRun,
     failSafeTitle: 'Fail-Safe',
     failSafeRows: [
       makeFactRow(
@@ -1804,13 +1849,17 @@ export function buildGateTrialExactSurfaceFromStores(
     readinessRail: buildLiveReadinessRail(context),
     primaryAction: activePrimaryAction,
     runCompass: buildGateTrialRunCompassProjection(),
+    aftermath: buildLiveCombatAftermathSurface({
+      kind: 'gate_trial',
+      cityId: resolvedCityId,
+      trialId: resolvedTrialId,
+      gateLabel: context.gateTitle,
+      gateProofItemId: context.gateItemId,
+    }),
     debug: {
       ...fixture.debug,
       regionOrder: GATE_TRIAL_EXACT_REGION_ORDER,
-      missingDataFallbacks: [
-        ...context.missingDataFallbacks,
-        'Ruin support progress is not read in this packet; support prep remains warning unless later mapped.',
-      ],
+      missingDataFallbacks: context.missingDataFallbacks,
       fixtureLockedValues: [],
       liveSourceNotes: [
         'Resolved trial from city.refs.gateTrialId.',
@@ -1818,6 +1867,7 @@ export function buildGateTrialExactSurfaceFromStores(
         'Gate reward sourced from getTrialGateItemId.',
         'Readiness score adapted from buildGateTrialReadinessSurface.',
         'Top fixes use deterministic readiness-gap fallback until action-controller packets.',
+        'Ruins support row reads lastRunSummary and ruins progress when present.',
         'Approved Foundation Gate scenic plate bound from src/assets/world/gateTrial/foundation-gate-scene-approved-plate.png.',
         `Post-failure suggestion count observed: ${context.postFailureSuggestionCount}.`,
       ],

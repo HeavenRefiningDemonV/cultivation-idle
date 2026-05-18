@@ -1,0 +1,102 @@
+{
+  "schemaVersion": "ruins-exact-dom-audit.v1",
+  "url": "http://127.0.0.1:4173/?uiAudit=phase-6-combat&surface=ruins&fx=high&slot=high-fx&controls=0&ruinsExactMode=fixture",
+  "viewport": {
+    "width": 1920,
+    "height": 1080
+  },
+  "bodyClasses": [],
+  "found": {
+    "exactPage": true,
+    "leftRail": true,
+    "scenicStage": true,
+    "rightRail": true,
+    "route": true,
+    "cta": true,
+    "summary": true
+  },
+  "textMarkers": {
+    "spiritLeaf": true,
+    "beastMaterials": true,
+    "guaranteedAnchor": true,
+    "coreFragment": true,
+    "rarePity": true,
+    "autoRepeatOff": true,
+    "route": true,
+    "cta": true,
+    "summary": true
+  },
+  "forbiddenOldShellMarkers": [],
+  "rects": {
+    "tacticalStrip": {
+      "x": 53.78125,
+      "y": 78.46875,
+      "width": 1812.4375,
+      "height": 63.71875,
+      "top": 78.46875,
+      "right": 1866.21875,
+      "bottom": 142.1875,
+      "left": 53.78125
+    },
+    "leftRail": {
+      "x": 53.78125,
+      "y": 247.734375,
+      "width": 286,
+      "height": 652.3125,
+      "top": 247.734375,
+      "right": 339.78125,
+      "bottom": 900.046875,
+      "left": 53.78125
+    },
+    "scenic": {
+      "x": 362.8125,
+      "y": 864.5625,
+      "width": 1186.375,
+      "height": 2,
+      "top": 864.5625,
+      "right": 1549.1875,
+      "bottom": 866.5625,
+      "left": 362.8125
+    },
+    "rightRail": {
+      "x": 1572.21875,
+      "y": 247.734375,
+      "width": 294,
+      "height": 618.828125,
+      "top": 247.734375,
+      "right": 1866.21875,
+      "bottom": 866.5625,
+      "left": 1572.21875
+    },
+    "route": {
+      "x": 449.59375,
+      "y": 946.75,
+      "width": 1012.796875,
+      "height": 80.1875,
+      "top": 946.75,
+      "right": 1462.390625,
+      "bottom": 1026.9375,
+      "left": 449.59375
+    },
+    "cta": {
+      "x": 362.8125,
+      "y": 1026.9375,
+      "width": 1186.375,
+      "height": 64.796875,
+      "top": 1026.9375,
+      "right": 1549.1875,
+      "bottom": 1091.734375,
+      "left": 362.8125
+    },
+    "summary": {
+      "x": 1572.21875,
+      "y": 916.234375,
+      "width": 294,
+      "height": 194.703125,
+      "top": 916.234375,
+      "right": 1866.21875,
+      "bottom": 1110.9375,
+      "left": 1572.21875
+    }
+  }
+}

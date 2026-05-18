@@ -1,9 +1,10 @@
 import { useContentStore } from '../../../stores/contentStore.js';
 import { useRuinsStore } from '../../../stores/ruinsStore.js';
 import { resolveModuleRef } from '../../../components/screens/world/worldUtils.js';
+import { buildLiveCombatAftermathSurface } from '../../combatAftermath/index.js';
 import { RUINS_EXACT_REGION_ORDER, RUINS_EXACT_SURFACE_VERSION, RUINS_FIXTURE_COPY, RUINS_TARGET_MOCKUP_ID } from './ruinsExactPresentation.js';
 import { buildRuinsRouteNodes } from './ruinsExactRouteNodes.js';
-import type { RuinsExactSurfaceV1, RuinsKitCardSurface, RuinsPrimaryActionSurface, RuinsExactValueSource } from './types.js';
+import type { RuinsExactSurfaceV1, RuinsKitCardSurface, RuinsPrimaryActionSurface } from './types.js';
 
 export interface BuildRuinsExactSurfaceOptions { mode?: 'fixture' | 'live'; cityId?: string; ruinId?: string | null; nowMs?: number }
 
@@ -134,6 +135,11 @@ export function buildRuinsExactSurfaceFromStores(cityId?: string, options: Build
     kitCard: buildRuinsKitCardSurface({ source: 'synthetic', isInRuin: Boolean(activeRun) }),
     primaryAction,
     explorationSummary: { visible: true, title: 'Exploration Summary', rows: [{ id: 'rooms', label: 'Rooms', value: `${activeRun ? roomIndex + 1 : 0} / ${roomCount}`, iconKey: 'rooms' }, { id: 'anchor', label: 'Anchor', value: 'Final Chest', iconKey: 'anchorChest' }, { id: 'pity', label: 'Pity', value: pityText, iconKey: 'pitySeal' }, { id: 'mainTarget', label: 'Main Target', value: content.maps.itemsById.mat_spirit_leaf?.name ?? 'Spirit Leaf', iconKey: 'spiritLeaf' }] },
+    aftermath: buildLiveCombatAftermathSurface({
+      kind: 'ruins',
+      cityId: resolvedCityId,
+      ruinId: ruinDef?.id ?? ruinRefId ?? null,
+    }),
     debug: { regionOrder: RUINS_EXACT_REGION_ORDER, missingDataFallbacks: missing, placeholderAssetKeysInUse: [], liveSourceNotes: [...notes, 'Central scenic art is intentionally deferred; final approved Hollow Log Den plate must be bound in the later final art packet.'], fixtureLockedValues: ['Rare Pity 1 / 6 (fixture only)'] },
   };
 }

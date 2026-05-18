@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 
 const OUT_PATH = 'docs/release/qa/ui-cutover/outskirts-exact/p0-freeze/outskirtsExactP0CaptureAttempt.json';
 
@@ -16,13 +17,16 @@ interface CaptureAttemptRecord {
 
 function runCapture(rootDir: string): CaptureAttemptRecord {
   const command = 'npm run release:phase6-combat-capture -- --surface=outskirts --json';
-  const result = spawnSync('npm', ['run', 'release:phase6-combat-capture', '--', '--surface=outskirts', '--json'], {
+  const result = spawnSync(process.execPath, [
+    '--loader=./scripts/relativeJsLoader.mjs',
+    '--experimental-strip-types',
+    'scripts/release/capturePhase6CombatEvidence.ts',
+    '--surface=outskirts',
+    '--json',
+  ], {
     cwd: rootDir,
     encoding: 'utf-8',
-    env: {
-      ...process.env,
-      NODE_OPTIONS: '--loader=./scripts/relativeJsLoader.mjs',
-    },
+    env: { ...process.env },
   });
 
   return {
@@ -32,11 +36,15 @@ function runCapture(rootDir: string): CaptureAttemptRecord {
     ok: result.status === 0,
     exitCode: result.status,
     stdout: result.stdout ?? '',
-    stderr: result.stderr ?? '',
+    stderr: result.stderr ?? result.error?.message ?? '',
   };
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+function isMainModule(): boolean {
+  return path.resolve(fileURLToPath(import.meta.url)) === path.resolve(process.argv[1] ?? '');
+}
+
+if (isMainModule()) {
   const rootDir = process.cwd();
   const attempt = runCapture(rootDir);
   const outPath = path.resolve(rootDir, OUT_PATH);

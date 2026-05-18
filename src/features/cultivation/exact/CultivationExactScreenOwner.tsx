@@ -21,6 +21,7 @@ import type { CultivationExactFxQuality, CultivationExactSurfaceMode } from './c
 import { buildCultivationExactSurfaceFromStores } from './buildCultivationExactSurface.js';
 import { CultivationExactScreen } from './CultivationExactScreen.js';
 import { useCultivationExactActionController } from './useCultivationExactActionController.js';
+import { BreakthroughRitualOverlay } from './BreakthroughRitualOverlay.js';
 import './CultivationExactScreen.scss';
 
 export interface CultivationExactScreenOwnerProps {
@@ -219,7 +220,14 @@ export function CultivationExactScreenOwner({ forceFixture = false }: Cultivatio
         onDantianAnchorChange={setDantianFxAnchor}
       />
       {actions.showDaoHeart ? <DaoHeartModal onClose={actions.onCloseDaoHeart} /> : null}
-      {!suppressExactQueryChrome && showPerkSelectionModal && perkSelectionRealm !== null ? (
+      {actions.ritualSurface ? (
+        <BreakthroughRitualOverlay
+          surface={actions.ritualSurface}
+          onClose={actions.onCloseRitual}
+          onRoute={actions.onRitualRoute}
+        />
+      ) : null}
+      {!suppressExactQueryChrome && !actions.ritualSurface && showPerkSelectionModal && perkSelectionRealm !== null ? (
         <PerkSelectionModal onClose={hidePerkSelection} realmIndex={perkSelectionRealm} />
       ) : null}
     </ScreenFxStage>

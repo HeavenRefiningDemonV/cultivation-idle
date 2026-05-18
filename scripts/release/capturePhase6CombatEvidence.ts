@@ -348,11 +348,13 @@ async function runCapture(args: CaptureArgs): Promise<CaptureReport> {
     );
   }
 
-  const devServer = spawn('npm', ['run', 'dev', '--', '--host', '127.0.0.1', '--port', '4173', '--strictPort'], {
+  const viteBin = path.resolve(args.rootDir, 'node_modules/vite/bin/vite.js');
+  const devServer = spawn(process.execPath, [viteBin, '--host', '127.0.0.1', '--port', '4173', '--strictPort'], {
     cwd: args.rootDir,
     stdio: 'pipe',
     env: {
       ...process.env,
+      BROWSER: 'none',
       CI: '1',
     },
   });

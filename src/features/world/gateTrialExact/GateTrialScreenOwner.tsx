@@ -13,7 +13,9 @@ import { useTrialStore } from '../../../stores/trialStore.js';
 import { buildGateTrialExactSurfaceFromStores } from './buildGateTrialExactSurface.js';
 import { GateTrialExactScreen } from './GateTrialExactScreen.js';
 import { useGateTrialExactActionController } from './useGateTrialExactActionController.js';
+import { routeCombatAftermathTarget } from '../../combatAftermath/index.js';
 import './GateTrialExactScreen.scss';
+import '../../combatAftermath/CombatAftermathCard.scss';
 
 export interface GateTrialScreenOwnerProps {
   cityId: string;
@@ -130,7 +132,7 @@ export function GateTrialScreenOwner(props: GateTrialScreenOwnerProps) {
       data-actions-enabled={surface.meta.mode === 'live' ? 'true' : 'false'}
       data-active-theater={surface.scenicStage.activeTheater?.visible ? 'true' : 'false'}
     >
-      <GateTrialExactScreen surface={surface} {...screenActions} />
+      <GateTrialExactScreen surface={surface} {...screenActions} onAftermathRoute={routeCombatAftermathTarget} />
     </div>
   );
 }

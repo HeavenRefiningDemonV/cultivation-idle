@@ -10,8 +10,10 @@ import { OutskirtsExactMockupScreen } from './OutskirtsExactMockupScreen.js';
 import { useOutskirtsScreenActionController } from './useOutskirtsScreenActionController.js';
 import { isSameOutskirtsActivitySource, isSameOutskirtsCombatSource } from './getOutskirtsModuleViewState.js';
 import { useOutskirtsActiveClock } from './hooks/useOutskirtsActiveClock.js';
+import { routeCombatAftermathTarget } from '../../combatAftermath/index.js';
 import type { OutskirtsSurfaceMode } from './types.js';
 import './OutskirtsExactMockupScreen.scss';
+import '../../combatAftermath/CombatAftermathCard.scss';
 
 interface OutskirtsScreenOwnerProps {
   cityId: string;
@@ -148,6 +150,7 @@ export function OutskirtsScreenOwner({ cityId }: OutskirtsScreenOwnerProps) {
         onOpenTrackedBounties={actionController.onOpenTrackedBounties}
         onOpenTacticalCell={actionController.onOpenTacticalCell}
         onOpenAreaSelector={actionController.onOpenAreaSelector}
+        onAftermathRoute={routeCombatAftermathTarget}
       />
     </div>
   );

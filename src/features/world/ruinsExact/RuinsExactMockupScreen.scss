@@ -80,7 +80,8 @@
 .ruinsExactPage__rightRail { grid-area: right; align-self: start; height: var(--ruins-right-card-height); overflow: hidden; }
 .ruinsExactPage__routeSlot { grid-area: route; justify-self: center; align-self: stretch; width: min(100%, var(--ruins-route-max-width)); padding-top: var(--ruins-route-title-clearance); overflow: visible; z-index: 2; }
 .ruinsExactPage__ctaSlot { grid-area: cta; display: flex; align-items: center; justify-content: center; overflow: visible; z-index: 3; }
-.ruinsExactPage__summaryDock { grid-area: summary; align-self: start; justify-self: end; width: min(100%, var(--ruins-summary-width)); height: var(--ruins-summary-height); margin-top: var(--ruins-summary-drop-offset); overflow: visible; z-index: 4; }
+.ruinsExactPage__summaryDock { grid-area: summary; align-self: start; justify-self: end; width: min(100%, var(--ruins-summary-width)); min-height: var(--ruins-summary-height); margin-top: var(--ruins-summary-drop-offset); overflow: visible; z-index: 4; }
+.ruinsExactPage__aftermathSlot { min-height: 8.5rem; margin-top: 0.65rem; }
 
  .ruinsTopRegion { position: relative; z-index: 2; display:grid; grid-template-columns: var(--ruins-left-rail-width) var(--ruins-rail-gap) minmax(0,1fr) var(--ruins-rail-gap) var(--ruins-right-rail-width); row-gap: clamp(6px,0.72vh,10px); align-items:start; padding-top: clamp(2px,0.35vh,6px); }
 .ruinsTopRegion__topBand { grid-column:1/-1; min-width:0; min-height:clamp(34px,4.1vh,48px); display:grid; grid-template-columns:clamp(180px,13vw,230px) minmax(0,1fr) clamp(28px,2vw,36px); column-gap:clamp(14px,1.45vw,26px); align-items:center; }

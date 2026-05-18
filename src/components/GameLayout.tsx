@@ -47,6 +47,8 @@ import { StoryCutsceneOverlay } from '../features/story/StoryCutsceneOverlay.js'
 import { useStoryStore } from '../features/story/storyStore.js';
 import { useStoryTriggers } from '../features/story/useStoryTriggers.js';
 import { initRunDeltaEventBridge } from '../systems/runDeltas/initRunDeltaEventBridge.js';
+import { initBreakthroughEchoEventBridge } from '../features/breakthroughEchoes/index.js';
+import { initCombatAftermathEventBridge } from '../features/combatAftermath/index.js';
 import './GameLayout.scss';
 
 /**
@@ -141,6 +143,8 @@ export function GameLayout() {
 
   useEffect(() => {
     initRunDeltaEventBridge();
+    initBreakthroughEchoEventBridge();
+    initCombatAftermathEventBridge();
   }, []);
 
   useEffect(() => {

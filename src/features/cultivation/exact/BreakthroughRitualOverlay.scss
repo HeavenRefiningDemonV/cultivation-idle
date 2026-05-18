@@ -1,0 +1,114 @@
+.breakthroughRitualOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: clamp(1rem, 3vw, 2.5rem);
+  pointer-events: auto;
+}
+
+.breakthroughRitualOverlay__scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(30, 21, 12, 0.42);
+  border: 0;
+}
+
+.breakthroughRitualPanel {
+  position: relative;
+  z-index: 1;
+  width: min(58rem, 94vw);
+  max-height: min(44rem, 88vh);
+  overflow: auto;
+  display: grid;
+  gap: 1rem;
+  padding: clamp(1rem, 2vw, 1.5rem);
+  color: #302217;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(231, 185, 92, 0.28), transparent 35%),
+    linear-gradient(145deg, rgba(247, 229, 184, 0.98), rgba(199, 158, 93, 0.95));
+  border: 1px solid rgba(104, 54, 25, 0.48);
+  border-radius: 8px;
+  box-shadow: 0 24px 60px rgba(28, 19, 9, 0.38), inset 0 0 0 1px rgba(255, 248, 224, 0.45);
+}
+
+.breakthroughRitualPanel__header {
+  text-align: center;
+}
+
+.breakthroughRitualPanel__eyebrow {
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0;
+  color: #7c321f;
+}
+
+.breakthroughRitualPanel h2,
+.breakthroughRitualPanel h3,
+.breakthroughRitualPanel p {
+  margin: 0;
+}
+
+.breakthroughRitualPanel h2 {
+  margin-top: 0.15rem;
+  font-size: clamp(1.6rem, 4vw, 2.8rem);
+}
+
+.breakthroughRitualPanel__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.breakthroughRitualPanel__grid section {
+  display: grid;
+  gap: 0.45rem;
+  min-height: 8rem;
+  padding: 0.85rem;
+  background: rgba(255, 244, 214, 0.52);
+  border: 1px solid rgba(95, 56, 24, 0.2);
+  border-radius: 8px;
+}
+
+.breakthroughRitualPanel ul {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.breakthroughRitualPanel li {
+  display: grid;
+  gap: 0.12rem;
+  font-size: 0.9rem;
+}
+
+.breakthroughRitualPanel__actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.breakthroughRitualPanel__actions button {
+  min-width: 10rem;
+  padding: 0.65rem 0.9rem;
+  color: #2f2115;
+  background: rgba(252, 239, 201, 0.78);
+  border: 1px solid rgba(84, 55, 22, 0.34);
+  border-radius: 7px;
+  font-weight: 800;
+}
+
+.breakthroughRitualPanel__primary {
+  background: linear-gradient(145deg, rgba(224, 182, 91, 0.95), rgba(183, 111, 48, 0.9)) !important;
+}
+
+@media (max-width: 760px) {
+  .breakthroughRitualPanel__grid {
+    grid-template-columns: 1fr;
+  }
+}

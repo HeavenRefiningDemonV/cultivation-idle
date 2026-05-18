@@ -1,3 +1,5 @@
+import type { CombatAftermathSurfaceV1 } from '../../combatAftermath/index.js';
+
 export type GateTrialExactSurfaceMode = 'fixture' | 'live';
 export type GateTrialExactValueSource = 'fixture' | 'live' | 'derived' | 'content' | 'synthetic';
 export type GateTrialExactActivityMode = 'locked' | 'available' | 'active' | 'cleared' | 'bypassed' | 'transitioning';
@@ -297,6 +299,12 @@ export interface GateTrialRecommendedPanelSurface {
   title: 'Recommended';
   recommendedPrepTitle: 'Recommended Prep';
   prepRows: ReadonlyArray<GateTrialChecklistRowSurface>;
+  supportRun?: {
+    title: string;
+    detail: string;
+    routeTarget: GateTrialRouteTarget;
+    source: GateTrialExactValueSource;
+  } | null;
   failSafeTitle: 'Fail-Safe';
   failSafeRows: ReadonlyArray<GateTrialFactRowSurface>;
   safetyNetButton: GateTrialButtonSurface;
@@ -377,5 +385,6 @@ export interface GateTrialExactSurfaceV1 {
   readinessRail: GateTrialReadinessRailSurface;
   primaryAction: GateTrialButtonSurface;
   runCompass?: GateTrialRunCompassSurface | null;
+  aftermath?: CombatAftermathSurfaceV1 | null;
   debug: GateTrialExactDebugSurface;
 }

@@ -23,6 +23,10 @@ export type CombatResolvedEvent = {
     source?: string;
     trialId?: string;
     durationSec?: number;
+    playerHpPctRemaining?: number;
+    enemyHpPctRemaining?: number;
+    medicineUses?: number;
+    healingEvents?: number;
     timestamp?: number;
   };
 };
@@ -652,6 +656,37 @@ export type ProgressionBreakthroughEvent = {
   };
 };
 
+export type BreakthroughMethod =
+  | 'clean_clear'
+  | 'strained_clear'
+  | 'safety_net_bypass'
+  | 'unknown'
+  | 'cap_transition';
+
+export type ProgressionBreakthroughCompletedEvent = {
+  type: 'progression/breakthrough_completed';
+  payload: {
+    timestamp: number;
+    fromRealmIndex: number;
+    fromSubstage: number;
+    toRealmIndex: number;
+    toSubstage: number;
+    fromRealmName?: string;
+    toRealmName?: string;
+    major: boolean;
+    gateItemIdSpent?: string | null;
+    gateItemNameSpent?: string | null;
+    qiSpent?: string;
+    stabilityDelta?: number;
+    cityUnlockedIds?: string[];
+    cityUnlockedNames?: string[];
+    currentCityId?: string | null;
+    method?: BreakthroughMethod;
+    statSnapshotBefore?: Record<string, string | number>;
+    statSnapshotAfter?: Record<string, string | number>;
+  };
+};
+
 export type ProgressionCityEnteredEvent = {
   type: 'progression/city_entered';
   payload: {
@@ -895,6 +930,7 @@ export type GameEvent =
   | ProgressionGateAvailableEvent
   | ProgressionGateResolvedEvent
   | ProgressionBreakthroughEvent
+  | ProgressionBreakthroughCompletedEvent
   | ProgressionCityEnteredEvent
   | ProgressionContentCapReachedEvent
   | TrialsAttemptStartedEvent

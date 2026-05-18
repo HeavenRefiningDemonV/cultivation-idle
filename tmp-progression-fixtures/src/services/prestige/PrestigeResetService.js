@@ -19,6 +19,7 @@ import { useTechCollectionStore } from '../../stores/techCollectionStore.js';
 import { useTrialStore } from '../../stores/trialStore.js';
 import { useZoneStore } from '../../stores/zoneStore.js';
 import { useUIStore } from '../../stores/uiStore.js';
+import { hardResetBreakthroughEchoes } from '../../features/breakthroughEchoes/index.js';
 const MASTERY_RETENTION_BY_NODE_ID = {
     ap_mastery_retention_10: 0.1,
     ap_mastery_retention_25: 0.25,
@@ -94,6 +95,7 @@ export function performPrestigeReset({ resetGameRun }) {
     useProfessionStore.setState({ alchemyQueue: [], talismanQueue: [], forgeQueue: [], lastTickAt: 0 });
     useExpeditionStore.setState((state) => ({ ...state, active: [] }));
     useCraftSessionStore.setState({ activeSession: null });
+    hardResetBreakthroughEchoes();
     const combatStore = useCombatStore.getState();
     if (combatStore.resetCombat) {
         combatStore.resetCombat();

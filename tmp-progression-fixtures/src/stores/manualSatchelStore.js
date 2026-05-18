@@ -106,10 +106,6 @@ export const useManualSatchelStore = create()(immer((set, get) => ({
                 .getState()
                 .addFragments(manual.techId, fragmentsGained);
         }
-        GameEvents.emit({
-            type: "rewards/granted",
-            payload: { type: "techniqueFragments", techId: manual.techId },
-        });
         return { ok: true, fragmentsGained, techId: manual.techId };
     },
     startStudy: (instanceId, now = Date.now()) => {

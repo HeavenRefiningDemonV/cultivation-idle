@@ -180,6 +180,17 @@ function collapseItems(items: RewardItemBundle[]): RewardItemBundle[] {
   return Array.from(merged.entries()).map(([itemId, qty]) => ({ itemId, qty }));
 }
 
+function combatHpPct(current: string | number, max: string | number): number | undefined {
+  const currentValue = D(current).toNumber();
+  const maxValue = D(max).toNumber();
+  if (!Number.isFinite(currentValue) || !Number.isFinite(maxValue) || maxValue <= 0) return undefined;
+  return Math.max(0, Math.min(1, currentValue / maxValue));
+}
+
+function countHealingEvents(events: CombatEvent[]): number {
+  return events.filter((event) => event.type === 'HEAL').length;
+}
+
 function resolveCombatResourceModel(resourceModel?: string): 'qiPct' | 'intent' | 'none' {
   const normalized = (resourceModel ?? '').toLowerCase();
   if (normalized.includes('heaven') || normalized.includes('qi')) {
@@ -1393,6 +1404,11 @@ export const useCombatStore = create<ExtendedCombatState>()(
 
       const gameStore = useGameStore.getState();
       const inventoryStore = useInventoryStore.getState();
+      const combatSummaryPayload = {
+        playerHpPctRemaining: combatHpPct(state.playerHP, state.playerMaxHP),
+        enemyHpPctRemaining: combatHpPct(state.enemyHP, state.enemyMaxHP),
+        healingEvents: countHealingEvents(state.events),
+      };
 
       if (combatContext.type === 'trial') {
         const { cityId, trialId, countsTowardFailSafe, rewardBundle } = combatContext;
@@ -1429,7 +1445,15 @@ export const useCombatStore = create<ExtendedCombatState>()(
         });
         GameEvents.emit({
           type: 'combat/resolved',
-          payload: { enemyId: enemy.id, outcome: 'victory', source: 'trial', trialId, durationSec, timestamp: Date.now() },
+          payload: {
+            enemyId: enemy.id,
+            outcome: 'victory',
+            source: 'trial',
+            trialId,
+            durationSec,
+            timestamp: Date.now(),
+            ...combatSummaryPayload,
+          },
         });
 
         setTimeout(() => {
@@ -1443,6 +1467,17 @@ export const useCombatStore = create<ExtendedCombatState>()(
         const { runId, sourceId, cityId, roomIndex } = combatContext;
         const ruinId = sourceId ?? (combatContext as any).ruinsId;
         if (runId && ruinId && cityId) {
+          GameEvents.emit({
+            type: 'combat/resolved',
+            payload: {
+              enemyId: enemy.id,
+              outcome: 'victory',
+              source: 'ruins',
+              durationSec: state.combatStartTime ? (Date.now() - state.combatStartTime) / 1000 : undefined,
+              timestamp: Date.now(),
+              ...combatSummaryPayload,
+            },
+          });
           useRuinsStore.getState().handleRoomVictory({ runId, ruinId, cityId, roomIndex });
         } else {
           console.warn('[CombatStore] Missing ruins context data', combatContext);
@@ -1496,6 +1531,17 @@ export const useCombatStore = create<ExtendedCombatState>()(
         );
         RewardService.grantRewards(rewards, `Outskirts Victory (${isBossFight ? 'Boss' : 'Mob'})`);
         emitLootDrops(rewards.items, isBossFight ? 'Outskirts Boss' : 'Outskirts Victory');
+        GameEvents.emit({
+          type: 'combat/resolved',
+          payload: {
+            enemyId: enemy.id,
+            outcome: 'victory',
+            source: 'outskirts',
+            durationSec: state.combatStartTime ? (Date.now() - state.combatStartTime) / 1000 : undefined,
+            timestamp: Date.now(),
+            ...combatSummaryPayload,
+          },
+        });
 
         const { autoContinue, stopAtBoss } = useOutskirtsStore.getState();
 
@@ -1547,7 +1593,14 @@ export const useCombatStore = create<ExtendedCombatState>()(
       }
       GameEvents.emit({
         type: 'combat/resolved',
-        payload: { enemyId: enemy.id, outcome: 'victory', source: combatContext.type ?? 'unknown', durationSec: state.combatStartTime ? (Date.now() - state.combatStartTime) / 1000 : undefined, timestamp: Date.now() },
+        payload: {
+          enemyId: enemy.id,
+          outcome: 'victory',
+          source: combatContext.type ?? 'unknown',
+          durationSec: state.combatStartTime ? (Date.now() - state.combatStartTime) / 1000 : undefined,
+          timestamp: Date.now(),
+          ...combatSummaryPayload,
+        },
       });
 
       // Regular combat rewards (zone/enemy)
@@ -1628,6 +1681,11 @@ export const useCombatStore = create<ExtendedCombatState>()(
       const now = Date.now();
       const enemy = state.currentEnemy;
       const context = state.combatContext;
+      const combatSummaryPayload = {
+        playerHpPctRemaining: combatHpPct(state.playerHP, state.playerMaxHP),
+        enemyHpPctRemaining: combatHpPct(state.enemyHP, state.enemyMaxHP),
+        healingEvents: countHealingEvents(state.events),
+      };
       const uiStore = useUIStore.getState();
       const uiSettings = uiStore.settings;
       const addNotification = uiStore.addNotification;
@@ -1710,7 +1768,15 @@ export const useCombatStore = create<ExtendedCombatState>()(
       const shouldRetryOutskirts = autoRetryOnDeath && context?.type === 'outskirts';
       GameEvents.emit({
         type: 'combat/resolved',
-        payload: { enemyId: enemy.id, outcome: 'defeat', source: context?.type ?? 'unknown', trialId: context?.type === 'trial' ? context.trialId : undefined, durationSec: state.combatStartTime ? Math.max(0, (now - state.combatStartTime) / 1000) : undefined, timestamp: now },
+        payload: {
+          enemyId: enemy.id,
+          outcome: 'defeat',
+          source: context?.type ?? 'unknown',
+          trialId: context?.type === 'trial' ? context.trialId : undefined,
+          durationSec: state.combatStartTime ? Math.max(0, (now - state.combatStartTime) / 1000) : undefined,
+          timestamp: now,
+          ...combatSummaryPayload,
+        },
       });
 
       // Add respawn message (no death penalty in idle games usually)

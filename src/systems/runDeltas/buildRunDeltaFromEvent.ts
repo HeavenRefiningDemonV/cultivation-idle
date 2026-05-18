@@ -200,6 +200,27 @@ export function buildRunDeltaFromEvent(event: GameEvent): RunDeltaEventBuildResu
         },
       };
 
+    case 'progression/breakthrough_completed':
+      return {
+        kind: 'push',
+        delta: {
+          id: deltaId(event, `${event.payload.fromRealmIndex}:${event.payload.toRealmIndex}:completed`),
+          source: 'breakthrough',
+          timestamp: event.payload.timestamp,
+          tone: 'success',
+          label: 'Breakthrough ritual recorded',
+          detail: event.payload.major
+            ? `${event.payload.toRealmName ?? `Realm ${event.payload.toRealmIndex}`} entered.`
+            : `Substage ${event.payload.toSubstage} entered.`,
+          memoryLine: event.payload.major
+            ? `This life remembers ${event.payload.toRealmName ?? `realm ${event.payload.toRealmIndex}`}.`
+            : `Substage ${event.payload.toSubstage} crossed.`,
+          routeDelta: event.payload.method === 'cap_transition'
+            ? { label: 'Review Reincarnation', target: { kind: 'tab', tab: 'prestige' } }
+            : undefined,
+        },
+      };
+
     case 'progression/city_entered':
       return {
         kind: 'push',

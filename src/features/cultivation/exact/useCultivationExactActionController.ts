@@ -2,8 +2,15 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useActivityStore } from '../../../stores/activityStore.js';
 import { useGameStore } from '../../../stores/gameStore.js';
 import { useUIStore } from '../../../stores/uiStore.js';
+import { GameEvents, type ProgressionBreakthroughCompletedEvent } from '../../../services/events/GameEvents.js';
 import { performRunCompassAction } from '../../../systems/ui/runCompass/performRunCompassAction.js';
 import type { RunCompassActionLine } from '../../../systems/ui/runCompass/index.js';
+import type { WorldBuildingKey } from '../../../stores/uiStore.js';
+import {
+  buildLiveBreakthroughRitualPreviewSurface,
+  buildLiveBreakthroughRitualResultSurface,
+  type BreakthroughRitualSurfaceV1,
+} from '../../breakthroughRitual/index.js';
 import type {
   CultivationButtonSurface,
   CultivationExactDrawerId,
@@ -14,12 +21,15 @@ export interface CultivationExactActionController {
   selectedDrawer: CultivationExactDrawerId;
   showDaoHeart: boolean;
   isBreakingThrough: boolean;
+  ritualSurface: BreakthroughRitualSurfaceV1 | null;
   onCommandAction: (button: CultivationButtonSurface) => void;
   onOpenDrawer: (drawerId: CultivationExactDrawerId) => void;
   onCloseDrawer: () => void;
   onOpenDaoHeart: () => void;
   onCloseDaoHeart: () => void;
   onRunCompassAction: (action: RunCompassActionLine) => void;
+  onCloseRitual: () => void;
+  onRitualRoute: () => void;
 }
 
 function performActionIfAvailable(action: RunCompassActionLine | null | undefined): boolean {
@@ -33,6 +43,7 @@ export function useCultivationExactActionController(surface: CultivationExactSur
   const [selectedDrawer, setSelectedDrawer] = useState<CultivationExactDrawerId>(surface.meta.selectedDrawer);
   const [showDaoHeart, setShowDaoHeart] = useState(false);
   const [isBreakingThrough, setIsBreakingThrough] = useState(false);
+  const [ritualSurface, setRitualSurface] = useState<BreakthroughRitualSurfaceV1 | null>(null);
   const breakthroughTimeoutsRef = useRef<number[]>([]);
 
   useEffect(() => {
@@ -69,16 +80,29 @@ export function useCultivationExactActionController(surface: CultivationExactSur
   const breakThrough = useCallback(() => {
     if (isBreakingThrough) return;
     setIsBreakingThrough(true);
+    setRitualSurface(buildLiveBreakthroughRitualPreviewSurface());
     const gatherTimeout = window.setTimeout(() => {
       const game = useGameStore.getState();
-      game.breakthrough();
+      let completedEvent: ProgressionBreakthroughCompletedEvent | null = null;
+      const handleCompleted = (event: ProgressionBreakthroughCompletedEvent) => {
+        completedEvent = event;
+      };
+      GameEvents.on('progression/breakthrough_completed', handleCompleted);
+      const breakthroughOk = game.breakthrough();
+      GameEvents.off('progression/breakthrough_completed', handleCompleted);
+      if (breakthroughOk) {
+        setRitualSurface(buildLiveBreakthroughRitualResultSurface(completedEvent));
+      } else {
+        setRitualSurface(null);
+        addNotification('warning', 'Breakthrough threshold is not ready.');
+      }
       const settleTimeout = window.setTimeout(() => {
         setIsBreakingThrough(false);
       }, 600);
       breakthroughTimeoutsRef.current.push(settleTimeout);
     }, 2000);
     breakthroughTimeoutsRef.current.push(gatherTimeout);
-  }, [isBreakingThrough]);
+  }, [addNotification, isBreakingThrough]);
 
   const openGateTrial = useCallback((button: CultivationButtonSurface) => {
     const action = button.runCompassAction ?? surface.drawers.gate.action?.runCompassAction ?? null;
@@ -141,15 +165,43 @@ export function useCultivationExactActionController(surface: CultivationExactSur
     addNotification('warning', action.reason ?? 'That route is not available yet.');
   }, [addNotification]);
 
+  const onCloseRitual = useCallback(() => {
+    setRitualSurface(null);
+  }, []);
+
+  const onRitualRoute = useCallback(() => {
+    const target = ritualSurface?.nextMilestone?.target ?? null;
+    setRitualSurface(null);
+    if (!target) return;
+    const ui = useUIStore.getState();
+    if (target.kind === 'tab') {
+      ui.setActiveTab(target.tab);
+      return;
+    }
+    ui.setActiveTab('adventure');
+    ui.openWorldBuildingModal({
+      cityId: target.cityId,
+      buildingKey: target.moduleKey as WorldBuildingKey,
+      intent: target.moduleKey === 'gateTrial'
+        ? { gateTrialExactMode: 'live' }
+        : target.moduleKey === 'ruins'
+          ? { ruinsExactMode: 'live' }
+          : null,
+    });
+  }, [ritualSurface]);
+
   return {
     selectedDrawer,
     showDaoHeart,
     isBreakingThrough,
+    ritualSurface,
     onCommandAction,
     onOpenDrawer,
     onCloseDrawer,
     onOpenDaoHeart,
     onCloseDaoHeart,
     onRunCompassAction,
+    onCloseRitual,
+    onRitualRoute,
   };
 }

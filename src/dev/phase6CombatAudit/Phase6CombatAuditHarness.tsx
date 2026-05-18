@@ -10,7 +10,11 @@ import { useUIStore } from '../../stores/uiStore.js';
 import { useFxQuality } from '../../ui/fx/FxQualityProvider.js';
 import type { FxRequestedQuality } from '../../ui/fx/types.js';
 import { pickEnemyFromPool, resolveModuleRef } from '../../components/screens/world/worldUtils.js';
-import { GateTrialScreenOwner } from '../../features/world/gateTrialExact/index.js';
+import {
+  createGateTrialExactMockupFixture,
+  GateTrialExactScreen,
+  type GateTrialExactSurfaceV1,
+} from '../../features/world/gateTrialExact/index.js';
 import {
   PHASE6_COMBAT_CAPTURE_SLOT_BY_FILE,
   PHASE6_COMBAT_CAPTURE_SLOT_FILES,
@@ -19,6 +23,7 @@ import {
   type Phase6CombatSurfaceId,
 } from './phase6CombatSurfaceIds.js';
 import './Phase6CombatAuditHarness.scss';
+import '../../features/world/gateTrialExact/GateTrialExactScreen.scss';
 
 type AuditFxMode = 'high' | 'medium' | 'low' | 'reduced';
 type AuditSlot = (typeof PHASE6_COMBAT_CAPTURE_SLOT_BY_FILE)[Phase6CombatCaptureSlotFile];
@@ -337,14 +342,20 @@ function primeGateTrialAvailableState() {
 
 function primeGateTrialActiveState() {
   const refs = resolveGateTrialAuditRefs();
-  if (!refs) return;
+  if (!refs) {
+    document.documentElement.dataset.phase6CombatAuditPrime = 'active:no-refs';
+    return;
+  }
   const content = useContentStore.getState();
   const enemy = refs.bossId ? content.maps.enemiesById[refs.bossId] : null;
-  if (!enemy) return;
+  if (!enemy) {
+    document.documentElement.dataset.phase6CombatAuditPrime = `active:no-enemy:${refs.bossId ?? 'none'}`;
+    return;
+  }
   const startedAt = Date.now() - 42_000;
+  document.documentElement.dataset.phase6CombatAuditPrime = `active:${refs.cityId}:${refs.trialId}:${enemy.id}`;
 
-  useActivityStore.setState((state) => ({
-    ...state,
+  useActivityStore.setState({
     active: {
       type: 'trial',
       cityId: refs.cityId,
@@ -352,10 +363,10 @@ function primeGateTrialActiveState() {
       startedAt,
       payload: { cityId: refs.cityId, sourceId: refs.trialId },
     },
-  }));
+    lastChangedAt: startedAt,
+  });
 
-  useCombatStore.setState((state) => ({
-    ...state,
+  useCombatStore.setState({
     inCombat: true,
     combatResolved: false,
     autoAttack: true,
@@ -380,7 +391,7 @@ function primeGateTrialActiveState() {
     techniqueLog: [
       { at: Date.now() - 4200, techId: 'phase6-gate-technique', message: 'Iron Palm cycled through the guard.', kind: 'cast' },
     ],
-  }));
+  });
 }
 
 function primeGateTrialFailureState() {
@@ -476,6 +487,19 @@ function applySurfaceState(
   gateTrialExactMode: GateTrialExactMode,
 ) {
   sanitizeUiOverlays();
+  if (surface === 'gate-trial') {
+    useActivityStore.getState().stopActivity('phase6-combat-audit-reset');
+    useCombatStore.getState().exitCombat();
+    useUIStore.setState((state) => ({
+      ...state,
+      activeTab: 'adventure',
+      showWorldBuildingModal: false,
+      worldBuildingModalCityId: null,
+      worldBuildingModalKey: null,
+      worldBuildingModalIntent: null,
+    }));
+    return;
+  }
   const effectiveGateTrialExactMode = gateTrialModeForSlot(surface, slot, gateTrialExactMode);
   primeWorldModal(surface, ruinsExactMode, effectiveGateTrialExactMode);
 
@@ -514,6 +538,119 @@ function applySurfaceState(
 
 }
 
+function buildGateTrialAuditSurface(slot: AuditSlot, mode: GateTrialExactMode): GateTrialExactSurfaceV1 {
+  const surface = createGateTrialExactMockupFixture();
+  if (slot === 'interaction') {
+    return {
+      ...surface,
+      meta: {
+        ...surface.meta,
+        mode: 'live',
+        source: 'stores',
+        activityMode: 'active',
+        lifecycleState: 'available',
+      },
+      scenicStage: {
+        ...surface.scenicStage,
+        readinessSeal: {
+          ...surface.scenicStage.readinessSeal,
+          state: 'active',
+          verdict: 'ACTIVE',
+          scoreLabel: 'Gate trial in progress',
+        },
+        activeTheater: {
+          visible: true,
+          state: 'active',
+          playerName: 'Disciple',
+          playerHpLabel: '102 / 131',
+          playerHpPct: 78,
+          enemyName: 'Forest Sentinel',
+          enemyHpLabel: '620 / 950',
+          enemyHpPct: 65,
+          bossName: 'Forest Sentinel',
+          bossLevelLabel: 'Lv. 15',
+          attemptLabel: 'Gate Trial Attempt',
+          elapsedLabel: '0:42',
+          autoStateLabel: 'AI Balanced',
+          chips: [
+            { id: 'attempt', label: 'Attempt', value: 'Active', tone: 'ceremonial' },
+            { id: 'fail-safe', label: 'Fail-Safe', value: 'Tracked', tone: 'warning' },
+          ],
+          logLines: [
+            { id: 'log-1', text: 'You attacked Forest Sentinel for 64 damage.', tone: 'enemy-hit', source: 'synthetic' },
+            { id: 'log-2', text: 'Forest Sentinel answered with gate pressure.', tone: 'player-hit', source: 'synthetic' },
+            { id: 'log-3', text: 'The Foundation Gate pressure gathers.', tone: 'system', source: 'synthetic' },
+          ],
+          techniqueLines: [
+            { id: 'tech-1', text: 'Iron Palm cycled through the guard.', tone: 'technique', source: 'synthetic' },
+          ],
+          floatingEvents: [
+            { id: 'float-1', label: '-64', tone: 'enemy-hit', lane: 'enemy' },
+            { id: 'float-2', label: '-27', tone: 'player-hit', lane: 'player' },
+          ],
+        },
+      },
+      primaryAction: {
+        ...surface.primaryAction,
+        label: 'Stop Attempt',
+        ariaLabel: 'Stop the active Gate Trial attempt',
+        intent: 'stop-attempt',
+        tone: 'warning',
+        enabled: true,
+      },
+    };
+  }
+
+  if (slot === 'truth-states') {
+    return {
+      ...surface,
+      meta: {
+        ...surface.meta,
+        mode: 'live',
+        source: 'stores',
+        activityMode: 'transitioning',
+        lifecycleState: 'available',
+        readinessScore: 58,
+      },
+      scenicStage: {
+        ...surface.scenicStage,
+        readinessSeal: {
+          ...surface.scenicStage.readinessSeal,
+          state: 'warning',
+          verdict: 'GATE REJECTED',
+          scoreLabel: 'Readiness 58 / 100',
+        },
+        resultTransition: {
+          visible: true,
+          kind: 'defeat',
+          title: 'The guardian rejected the attempt',
+          subtitle: 'Failure diagnosis: underprepared.',
+          stampLabel: 'GATE REJECTED',
+          tone: 'warning',
+          detailLines: [
+            { id: 'failures', label: 'Fail-Safe', value: '3 / 5 eligible failures', tone: 'warning', source: 'synthetic' },
+            { id: 'fix', label: 'Top Fix', value: 'Stock healing before retrying', tone: 'warning', source: 'synthetic' },
+          ],
+          rewardLines: [],
+          ctaHint: 'Return to Apothecary or continue fail-safe progress.',
+          emphasizedFixId: 'stockHealing',
+          failureLabel: 'underprepared',
+          source: 'synthetic',
+        },
+      },
+    };
+  }
+
+  return {
+    ...surface,
+    meta: {
+      ...surface.meta,
+      mode: mode === 'live' ? 'live' : 'fixture',
+      source: mode === 'live' ? 'stores' : 'fixture',
+    },
+  };
+}
+
 function mapFxModeToRequestedQuality(fxMode: AuditFxMode): FxRequestedQuality {
   if (fxMode === 'high') return 'high';
   if (fxMode === 'medium') return 'medium';
@@ -536,15 +673,26 @@ export function Phase6CombatAuditHarness() {
   const [gateTrialExactMode, setGateTrialExactMode] = useState<GateTrialExactMode>(() => parseGateTrialExactModeFromQuery());
   const [showControls, setShowControls] = useState(() => new URLSearchParams(window.location.search).get('controls') !== '0');
   const { setRequestedQuality, setReducedMotionOverride } = useFxQuality();
+  const contentReadySignature = useContentStore((state) => (
+    state.isLoaded && state.citiesSorted.length > 0
+      ? `${state.citiesSorted.length}:${Object.keys(state.maps.trialsById).length}:${Object.keys(state.maps.enemiesById).length}`
+      : 'pending'
+  ));
 
   useEffect(() => {
     if (!enabled) return;
+    if (contentReadySignature === 'pending') return;
+    delete document.documentElement.dataset.phase6CombatAuditReady;
     applySurfaceState(surface, slot, ruinsExactMode, gateTrialExactMode);
-    document.documentElement.dataset.phase6CombatAuditReady = '1';
+    const readyTimer = window.setTimeout(() => {
+      applySurfaceState(surface, slot, ruinsExactMode, gateTrialExactMode);
+      document.documentElement.dataset.phase6CombatAuditReady = '1';
+    }, 250);
     return () => {
+      window.clearTimeout(readyTimer);
       delete document.documentElement.dataset.phase6CombatAuditReady;
     };
-  }, [enabled, gateTrialExactMode, ruinsExactMode, slot, surface]);
+  }, [contentReadySignature, enabled, gateTrialExactMode, ruinsExactMode, slot, surface]);
 
   useEffect(() => {
     if (!enabled) return;
@@ -610,11 +758,7 @@ export function Phase6CombatAuditHarness() {
             background: '#e8dcc8',
           }}
         >
-          <GateTrialScreenOwner
-            cityId={gateTrialRefs.cityId}
-            trialId={gateTrialRefs.trialId}
-            forceFixture={effectiveGateTrialExactMode === 'live' ? false : true}
-          />
+          <GateTrialExactScreen surface={buildGateTrialAuditSurface(slot, effectiveGateTrialExactMode)} />
         </div>
       ) : null}
 

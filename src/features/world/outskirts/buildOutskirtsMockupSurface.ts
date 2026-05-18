@@ -31,6 +31,7 @@ import {
 import { isSameOutskirtsActivitySource, isSameOutskirtsCombatSource } from './getOutskirtsModuleViewState.js';
 import { resolveOutskirtsEncounterStripArt } from './resolveOutskirtsEncounterStripArt.js';
 import { OUTSKIRTS_ASSETS } from './outskirtsAssetRegistry.js';
+import { buildLiveCombatAftermathSurface } from '../../combatAftermath/index.js';
 import { buildOutskirtsFloatingHitsFromCombatFeedback } from './outskirtsCombatFeedback.js';
 import { buildOutskirtsCombatStageChips } from './outskirtsCombatChips.js';
 import {
@@ -683,6 +684,13 @@ export function buildOutskirtsMockupSurface(
             { id: 'mainDrop', label: 'Main Drop', value: snapshot.sourceMode === 'fixture' ? 'Wolf Pelt' : (snapshot.rewardMaterialLabels[0] ?? 'Common Material'), iconKey: 'drop' },
           ],
     },
+    aftermath: snapshot.sourceMode === 'stores'
+      ? buildLiveCombatAftermathSurface({
+          kind: 'outskirts',
+          cityId: snapshot.cityId,
+          sourceId: snapshot.outskirtsId,
+        })
+      : null,
     shell: isActiveLikeMode ? OUTSKIRTS_ALLOWED_ACTIVE_CONTRACT_SHELL : OUTSKIRTS_ALLOWED_PLANNING_SHELL,
     debug: {
       missingDataFallbacks,

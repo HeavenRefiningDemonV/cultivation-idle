@@ -7,6 +7,7 @@ import { useInventoryStore } from '../../stores/inventoryStore.js';
 import { usePrestigeStore } from '../../stores/prestigeStore.js';
 import { useRuinsStore } from '../../stores/ruinsStore.js';
 import { useTrialStore } from '../../stores/trialStore.js';
+import { useBreakthroughEchoStore } from '../breakthroughEchoes/index.js';
 import { getPrestigeAdvisorSurface, type PrestigeAdvisorStateLabel } from './prestigeAdvisorSurface.js';
 import {
   formatArchetypeLabel,
@@ -20,6 +21,7 @@ import {
 
 export type LifeSummaryBlockKey =
   | 'life_arc'
+  | 'breakthrough_echoes'
   | 'doctrine_build'
   | 'world_progress'
   | 'gate_trials'
@@ -53,6 +55,7 @@ export interface LifeSummarySurface {
 
 const BLOCKS: ReadonlyArray<{ key: LifeSummaryBlockKey; title: string }> = Object.freeze([
   { key: 'life_arc', title: 'Life Arc' },
+  { key: 'breakthrough_echoes', title: 'Breakthrough Echoes' },
   { key: 'doctrine_build', title: 'Doctrine & Build' },
   { key: 'world_progress', title: 'World Progress' },
   { key: 'gate_trials', title: 'Gate Trials' },
@@ -84,6 +87,7 @@ const buildCurrentBlocks = (): LifeSummaryBlock[] => {
   const trial = useTrialStore.getState();
   const ruins = useRuinsStore.getState();
   const inventory = useInventoryStore.getState();
+  const echoes = useBreakthroughEchoStore.getState().echoes;
   const advisor = getPrestigeAdvisorSurface();
   const status = buildSection5StatusSurface();
 
@@ -102,6 +106,10 @@ const buildCurrentBlocks = (): LifeSummaryBlock[] => {
       `Potential AP on Reincarnation: +${advisor.apForecast.potentialGain}`,
       `Reincarnations completed: ${prestige.prestigeCount}`,
     ], 'This life has only just begun.'),
+    breakthrough_echoes: clampLines(
+      echoes.map((echo) => echo.memoryLine),
+      'No breakthrough echoes have been recorded this life.',
+    ),
     doctrine_build: clampLines([
       `Path: ${formatPathLabel(game.selectedPath)}`,
       `Heart Law: ${formatHeartLawLabel(cultivation.selectedHeartLawId)}`,

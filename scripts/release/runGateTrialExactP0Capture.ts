@@ -18,11 +18,11 @@ interface CaptureAttemptRecord {
 function runCapture(rootDir: string): CaptureAttemptRecord {
   const command = 'npm run release:phase6-combat-capture -- --surface=gate-trial --gate-trial-exact-mode=fixture --width=2048 --height=1152 --json';
   const result = spawnSync(
-    'npm',
+    process.execPath,
     [
-      'run',
-      'release:phase6-combat-capture',
-      '--',
+      '--loader=./scripts/relativeJsLoader.mjs',
+      '--experimental-strip-types',
+      'scripts/release/capturePhase6CombatEvidence.ts',
       '--surface=gate-trial',
       '--gate-trial-exact-mode=fixture',
       '--width=2048',
@@ -32,11 +32,7 @@ function runCapture(rootDir: string): CaptureAttemptRecord {
     {
       cwd: rootDir,
       encoding: 'utf-8',
-      shell: process.platform === 'win32',
-      env: {
-        ...process.env,
-        NODE_OPTIONS: '--loader=./scripts/relativeJsLoader.mjs',
-      },
+      env: { ...process.env },
     },
   );
 

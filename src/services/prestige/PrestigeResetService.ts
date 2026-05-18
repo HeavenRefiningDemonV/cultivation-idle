@@ -19,6 +19,7 @@ import { useTechCollectionStore } from '../../stores/techCollectionStore.js';
 import { useTrialStore } from '../../stores/trialStore.js';
 import { useZoneStore } from '../../stores/zoneStore.js';
 import { useUIStore } from '../../stores/uiStore.js';
+import { hardResetBreakthroughEchoes } from '../../features/breakthroughEchoes/index.js';
 
 export interface PrestigeResetOptions {
   resetGameRun: () => void;
@@ -133,6 +134,7 @@ export function performPrestigeReset({ resetGameRun }: PrestigeResetOptions): Pr
   useProfessionStore.setState({ alchemyQueue: [], talismanQueue: [], forgeQueue: [], lastTickAt: 0 });
   useExpeditionStore.setState((state) => ({ ...state, active: [] }));
   useCraftSessionStore.setState({ activeSession: null });
+  hardResetBreakthroughEchoes();
 
   const combatStore = useCombatStore.getState();
   if (combatStore.resetCombat) {

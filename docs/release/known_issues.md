@@ -1,6 +1,6 @@
 # Known Issues Ledger
 
-- Generated: 2026-05-17T19:12:09.854Z
+- Generated: 2026-05-17T22:00:23.045Z
 - Release gate headline: NO_GO
 
 ## Open blockers

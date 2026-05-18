@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "ruins-exact-dom-audit.v1",
+  "url": "http://127.0.0.1:4173/?uiAudit=phase-6-combat&surface=outskirts&fx=high&slot=base&controls=0",
+  "viewport": {
+    "width": 1920,
+    "height": 1080
+  },
+  "bodyClasses": [],
+  "found": {
+    "exactPage": false,
+    "leftRail": false,
+    "scenicStage": false,
+    "rightRail": false,
+    "route": false,
+    "cta": false,
+    "summary": false
+  },
+  "textMarkers": {
+    "spiritLeaf": false,
+    "beastMaterials": false,
+    "guaranteedAnchor": false,
+    "coreFragment": false,
+    "rarePity": false,
+    "autoRepeatOff": false,
+    "route": false,
+    "cta": false,
+    "summary": false
+  },
+  "forbiddenOldShellMarkers": [],
+  "rects": {
+    "tacticalStrip": null,
+    "leftRail": null,
+    "scenic": null,
+    "rightRail": null,
+    "route": null,
+    "cta": null,
+    "summary": null
+  }
+}

@@ -1,10 +1,12 @@
+import type { CombatAftermathSurfaceV1 } from '../../combatAftermath/index.js';
+
 export type RuinsExactSurfaceMode = 'fixture' | 'live';
 export type RuinsExactActivityMode = 'idle' | 'active' | 'transitioning' | 'victory' | 'defeat' | 'unavailable';
 export type RuinsExactValueSource = 'fixture' | 'live' | 'derived' | 'content' | 'synthetic';
 export type RuinsRouteNodeState = 'completed' | 'current' | 'future';
 export type RuinsTacticalTone = 'neutral' | 'positive' | 'warning' | 'critical';
 
-export interface RuinsExactSurfaceV1 { meta: RuinsExactSurfaceMeta; page: RuinsExactPageSurface; topRibbon: RuinsTopRibbonSurface; tacticalStrip: RuinsTacticalStripSurface; areaHeader: RuinsAreaHeaderSurface; kitCard: RuinsKitCardSurface; scenicStage: RuinsScenicStageSurface; targetedMaterialsCard: RuinsTargetedMaterialsCardSurface; roomRoute: RuinsRoomRouteSurface; primaryAction: RuinsPrimaryActionSurface; explorationSummary: RuinsExplorationSummarySurface; shell: RuinsExactShellFlags; debug: RuinsExactDebugSurface; }
+export interface RuinsExactSurfaceV1 { meta: RuinsExactSurfaceMeta; page: RuinsExactPageSurface; topRibbon: RuinsTopRibbonSurface; tacticalStrip: RuinsTacticalStripSurface; areaHeader: RuinsAreaHeaderSurface; kitCard: RuinsKitCardSurface; scenicStage: RuinsScenicStageSurface; targetedMaterialsCard: RuinsTargetedMaterialsCardSurface; roomRoute: RuinsRoomRouteSurface; primaryAction: RuinsPrimaryActionSurface; explorationSummary: RuinsExplorationSummarySurface; aftermath?: CombatAftermathSurfaceV1 | null; shell: RuinsExactShellFlags; debug: RuinsExactDebugSurface; }
 export interface RuinsExactSurfaceMeta { surfaceId: 'ruins-exact-mockup'; version: 'p2.v1'; mode: RuinsExactSurfaceMode; source: 'fixture' | 'stores'; cityId: string; ruinId: string | null; targetMockupId: 'ruins-hollow-log-den-approved-apr-30-2026'; activityMode: RuinsExactActivityMode; }
 export interface RuinsExactPageSurface { title: 'Ruins'; }
 export interface RuinsTopRibbonNode { id: string; label: string; state: 'completed' | 'current' | 'future'; variant: 'muted' | 'active'; }

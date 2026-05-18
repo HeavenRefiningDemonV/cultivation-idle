@@ -3,7 +3,9 @@ import { useRuinsStore } from '../../../stores/ruinsStore.js';
 import { buildRuinsExactSurfaceFromStores } from './buildRuinsExactSurface.js';
 import { RuinsExactMockupScreen } from './RuinsExactMockupScreen.js';
 import { useRuinsExactActionController } from './useRuinsExactActionController.js';
+import { routeCombatAftermathTarget } from '../../combatAftermath/index.js';
 import './RuinsExactMockupScreen.scss';
+import '../../combatAftermath/CombatAftermathCard.scss';
 
 export function RuinsScreenOwner(props: { cityId: string; ruinId?: string | null; forceFixture?: boolean }) {
   const { cityId, ruinId, forceFixture } = props;
@@ -13,5 +15,5 @@ export function RuinsScreenOwner(props: { cityId: string; ruinId?: string | null
   const surface = useMemo(() => buildRuinsExactSurfaceFromStores(cityId, { mode: forceFixture ? 'fixture' : 'live', ruinId }), [cityId, forceFixture, ruinId, activeRun, autoRepeatDefault, progressByRuinId]);
   const actions = useRuinsExactActionController({ cityId, ruinId: surface.meta.ruinId ?? ruinId, surface });
 
-  return <div className="ruinsScreenOwner" data-testid="ruins-view-screen" data-activity-mode={surface.meta.activityMode}><RuinsExactMockupScreen surface={surface} {...actions} /></div>;
+  return <div className="ruinsScreenOwner" data-testid="ruins-view-screen" data-activity-mode={surface.meta.activityMode}><RuinsExactMockupScreen surface={surface} {...actions} onAftermathRoute={routeCombatAftermathTarget} /></div>;
 }

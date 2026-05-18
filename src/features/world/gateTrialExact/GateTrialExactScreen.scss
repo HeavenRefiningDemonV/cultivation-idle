@@ -1755,11 +1755,18 @@ button.gateTrialTacticalCell:disabled {
 .gateTrialExactPage__summaryDock {
   grid-area: summary;
   display: flex;
+  flex-direction: column;
   align-items: flex-start;
+  gap: clamp(8px, 0.8vh, 12px);
   min-height: 0;
   padding-top: 0;
   transform: translateY(calc(-1 * var(--gate-summary-lift)));
   overflow: visible;
+}
+
+.gateTrialExactPage__aftermathSlot {
+  width: 100%;
+  min-height: 8.5rem;
 }
 
 .gateTrialExactCard {
@@ -2052,6 +2059,26 @@ button.gateTrialTacticalCell:disabled {
 .gateTrialRecommendedPanel__prepRows {
   display: grid;
   gap: clamp(6px, 0.58vh, 9px);
+}
+
+.gateTrialRecommendedPanel__supportRun {
+  display: grid;
+  gap: 2px;
+  margin-top: clamp(7px, 0.7vh, 10px);
+  padding: clamp(7px, 0.66vh, 10px);
+  color: rgba(50, 42, 32, 0.9);
+  background: rgba(232, 211, 159, 0.45);
+  border: 1px solid rgba(115, 91, 56, 0.2);
+  border-radius: 8px;
+}
+
+.gateTrialRecommendedPanel__supportRun strong {
+  font-size: clamp(12px, 0.78vw, 15px);
+}
+
+.gateTrialRecommendedPanel__supportRun span {
+  font-size: clamp(11px, 0.72vw, 13px);
+  line-height: 1.25;
 }
 
 .gateTrialRecommendedPanel__prepRow {

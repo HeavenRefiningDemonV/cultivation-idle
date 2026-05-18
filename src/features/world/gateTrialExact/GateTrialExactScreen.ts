@@ -12,6 +12,7 @@ import type {
   GateTrialTacticalCellId,
   GateTrialTacticalCellSurface,
 } from './gateTrialExactTypes.js';
+import { CombatAftermathCard, type CombatAftermathRouteSurface } from '../../combatAftermath/index.js';
 import {
   GATE_TRIAL_EXACT_REGION_ORDER,
   GATE_TRIAL_EXACT_TOP_REGION_CONTRACT,
@@ -29,6 +30,7 @@ export interface GateTrialExactScreenProps {
   onTopFixAction?: (fix: GateTrialFixSurface) => void;
   onTacticalCellAction?: (cellId: GateTrialTacticalCellId) => void;
   onReadinessNodeAction?: (nodeId: GateTrialReadinessNodeId) => void;
+  onAftermathRoute?: (route: CombatAftermathRouteSurface) => void;
 }
 
 function gateTrialToneClass(tone: string): string { return `gateTrialTone--${tone}`; }
@@ -872,6 +874,15 @@ function GateTrialExactScreen(props: GateTrialExactScreenProps) {
             className: 'gateTrialRecommendedPanel__prepRows',
             'data-testid': 'gate-trial-recommended-prep-rows',
           }, surface.recommendedPanel.prepRows.map((row) => el(GateTrialRailRowView, { key: row.id, row, variant: 'prep' }))),
+          surface.recommendedPanel.supportRun ? el('div', {
+            className: 'gateTrialRecommendedPanel__supportRun',
+            'data-testid': 'gate-trial-support-run',
+            'data-route-target': surface.recommendedPanel.supportRun.routeTarget,
+            'data-source': surface.recommendedPanel.supportRun.source,
+          },
+            el('strong', {}, surface.recommendedPanel.supportRun.title),
+            el('span', {}, surface.recommendedPanel.supportRun.detail),
+          ) : null,
         ),
         el('section', {
           className: 'gateTrialRecommendedPanel__section gateTrialRecommendedPanel__section--failSafe',
@@ -960,8 +971,14 @@ function GateTrialExactScreen(props: GateTrialExactScreenProps) {
           className: 'gateTrialTrialSummary__rows',
           'data-testid': 'gate-trial-summary-rows',
         }, surface.trialSummary.rows.map((row) => el(GateTrialSummaryRowView, { key: row.id, row }))),
-      )),
-    el('aside', { 'data-testid': 'gate-trial-exact-shell-flags', hidden: true }, JSON.stringify(surface.shell)),
+      ),
+      surface.aftermath ? el('section', {
+        className: 'gateTrialExactPage__aftermathSlot',
+        'data-testid': 'gate-trial-aftermath-slot',
+      },
+        el(CombatAftermathCard, { surface: surface.aftermath, compact: true, onRoute: props.onAftermathRoute }),
+      ) : null),
+    el('aside', { 'data-testid': 'gate-trial-exact-shell-flags', hidden: true }, 'exact-shell-active'),
     el('aside', { 'data-testid': 'gate-trial-exact-region-order', hidden: true }, (surface.debug.regionOrder ?? GATE_TRIAL_EXACT_REGION_ORDER).join('|')),
   );
 }

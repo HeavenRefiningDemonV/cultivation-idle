@@ -39,7 +39,7 @@ import { useTrialStore } from './trialStore.js';
 import { progressionTimingTracker } from '../services/diagnostics/progressionTimingTracker.js';
 import { adaptProgressionAuthoredContent } from '../systems/progression/contract/contentAdapter.js';
 import { getProgressionContract } from '../systems/progression/contract/progressionContract.js';
-import { GameEvents } from '../services/events/GameEvents.js';
+import { GameEvents, type BreakthroughMethod } from '../services/events/GameEvents.js';
 
 interface InventoryStoreDeps {
   getItemCount: (itemId: string) => number;
@@ -374,6 +374,8 @@ export const useGameStore = create<GameState>()(
       const currentRealm = REALMS[currentRealmIndex] ?? REALMS[0];
       const isFinalSubstage = state.realm.substage >= currentRealm.substages;
       const canAdvanceToNextRealm = isFinalSubstage && hasNextLiveRealm(currentRealmIndex);
+      const statSnapshotBefore = { ...state.stats };
+      const fromRealmName = currentRealm.name;
 
       // Get Qi requirement (includes prestige multipliers and live cultivation buffs)
       const requiredQi = get().getBreakthroughRequirement();
@@ -420,6 +422,12 @@ export const useGameStore = create<GameState>()(
 
       const previousRealmIndex = clampRealmIndexToSemesterSlice(state.realm.index);
       const previousSubstage = state.realm.substage;
+      const cityUnlockedBefore = [...useCityStore.getState().unlockedCityIds];
+      const stabilityBefore = useCultivationStore.getState().stability;
+      const contentStore = useContentStore.getState();
+      const gateItemNameSpent = gateItemId
+        ? contentStore.maps.itemsById[gateItemId]?.name ?? gateItemId
+        : null;
 
       set((state) => {
         // Deduct Qi
@@ -454,6 +462,7 @@ export const useGameStore = create<GameState>()(
 
       const newRealmIndex = get().realm.index;
       const nextSubstage = get().realm.substage;
+      const toRealmName = REALMS[newRealmIndex]?.name ?? fromRealmName;
       progressionTimingTracker.emitBreakthrough({
         runStartTime: get().runStartTime,
         timestamp: breakthroughTimestamp,
@@ -463,10 +472,12 @@ export const useGameStore = create<GameState>()(
         toSubstage: nextSubstage,
         major: newRealmIndex > previousRealmIndex,
       });
+      let cityUnlockedIds: string[] = [];
+      let bonusStability = 0;
       if (newRealmIndex > previousRealmIndex) {
         unlockContentForRealm(newRealmIndex);
-        useCityStore.getState().syncRealmEntry(getLiveRealmByIndex(newRealmIndex).id);
-        const bonusStability = useCultivationStore.getState().consumeMajorBreakthroughBonus(Date.now());
+        cityUnlockedIds = useCityStore.getState().syncRealmEntry(getLiveRealmByIndex(newRealmIndex).id);
+        bonusStability = useCultivationStore.getState().consumeMajorBreakthroughBonus(Date.now());
         if (bonusStability > 0) {
           useCultivationStore.getState().addStability(bonusStability);
         }
@@ -475,6 +486,59 @@ export const useGameStore = create<GameState>()(
       // Recalculate stats and Qi generation
       get().calculateQiPerSecond();
       get().calculatePlayerStats();
+      const statSnapshotAfter = { ...get().stats };
+      const currentCityId = useCityStore.getState().currentCityId;
+      const allNewCityIds = cityUnlockedIds.length > 0
+        ? cityUnlockedIds
+        : useCityStore.getState().unlockedCityIds.filter((cityId) => !cityUnlockedBefore.includes(cityId));
+      const cityUnlockedNames = allNewCityIds.map((cityId) => useContentStore.getState().maps.citiesById[cityId]?.name ?? cityId);
+      let method: BreakthroughMethod = 'unknown';
+      if (newRealmIndex > previousRealmIndex) {
+        if (!hasNextLiveRealm(newRealmIndex)) {
+          method = 'cap_transition';
+        } else {
+          try {
+            const raw = useContentStore.getState().raw;
+            const contract = raw ? getProgressionContract(adaptProgressionAuthoredContent(raw)) : null;
+            const transition = contract?.gateTransitions.find((entry) => {
+              const realm = contract.majorRealms[entry.fromRealmId];
+              return realm?.index === previousRealmIndex;
+            });
+            const resolution = transition ? useTrialStore.getState().getProgress(transition.trialId).resolution : null;
+            method = resolution === 'bypassed'
+              ? 'safety_net_bypass'
+              : resolution === 'cleared'
+                ? 'clean_clear'
+                : 'unknown';
+          } catch {
+            method = 'unknown';
+          }
+        }
+      }
+
+      GameEvents.emit({
+        type: 'progression/breakthrough_completed',
+        payload: {
+          timestamp: breakthroughTimestamp,
+          fromRealmIndex: previousRealmIndex,
+          fromSubstage: previousSubstage,
+          toRealmIndex: newRealmIndex,
+          toSubstage: nextSubstage,
+          fromRealmName,
+          toRealmName,
+          major: newRealmIndex > previousRealmIndex,
+          gateItemIdSpent: gateItemId,
+          gateItemNameSpent,
+          qiSpent: requiredQi,
+          stabilityDelta: useCultivationStore.getState().stability - stabilityBefore,
+          cityUnlockedIds: allNewCityIds,
+          cityUnlockedNames,
+          currentCityId,
+          method,
+          statSnapshotBefore,
+          statSnapshotAfter,
+        },
+      });
 
       // Trigger perk selection for newly reached realms when a path is selected
       const selectedPath = get().selectedPath;

@@ -10,6 +10,7 @@ import { OutskirtsEncounterProgressStrip } from './components/OutskirtsEncounter
 import { OutskirtsStartHuntCta } from './components/OutskirtsStartHuntCta.js';
 import { OutskirtsGrindSummaryCard } from './components/OutskirtsGrindSummaryCard.js';
 import { OutskirtsRewardsCard } from './components/OutskirtsRewardsCard.js';
+import { CombatAftermathCard, type CombatAftermathRouteSurface } from '../../combatAftermath/index.js';
 
 export interface OutskirtsExactMockupScreenProps {
   surface: OutskirtsExactSurfaceV2;
@@ -28,6 +29,7 @@ export interface OutskirtsExactMockupScreenProps {
   onOpenTrackedBounties?: () => void;
   onOpenTacticalCell?: (cellId: OutskirtsExactSurfaceV2['tacticalStrip']['cells'][number]['id']) => void;
   onOpenAreaSelector?: () => void;
+  onAftermathRoute?: (route: CombatAftermathRouteSurface) => void;
 }
 
 export function OutskirtsExactMockupScreen({
@@ -47,6 +49,7 @@ export function OutskirtsExactMockupScreen({
   onOpenTrackedBounties,
   onOpenTacticalCell,
   onOpenAreaSelector,
+  onAftermathRoute,
 }: OutskirtsExactMockupScreenProps) {
   return React.createElement(
     'article',
@@ -102,6 +105,13 @@ export function OutskirtsExactMockupScreen({
         'aside',
         { className: 'outskirtsExactPage__summaryDock', 'data-testid': 'outskirts-exact-summary-dock', 'data-legacy-testid': 'outskirts-exact-summary-dock-slot' },
         React.createElement(OutskirtsGrindSummaryCard, { summary: surface.grindSummary }),
+        surface.aftermath
+          ? React.createElement(
+              'section',
+              { className: 'outskirtsExactPage__aftermathSlot', 'data-testid': 'outskirts-aftermath-slot' },
+              React.createElement(CombatAftermathCard, { surface: surface.aftermath, compact: true, onRoute: onAftermathRoute }),
+            )
+          : null,
       ),
     ),
     React.createElement('aside', { 'data-testid': 'outskirts-exact-quality-state', hidden: true }, 'layout-static'),

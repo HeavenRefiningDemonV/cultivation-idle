@@ -1,4 +1,5 @@
 import type { AiProfile } from '../../../types/index.js';
+import type { CombatAftermathSurfaceV1 } from '../../combatAftermath/index.js';
 
 export type OutskirtsSurfaceValueSource = 'live' | 'derived' | 'synthetic' | 'manifest';
 export type OutskirtsTacticalTone = 'neutral' | 'positive' | 'warning' | 'critical';
@@ -400,6 +401,7 @@ export interface OutskirtsExactSurfaceV2 {
   primaryAction: OutskirtsPrimaryAction;
   combatStage: OutskirtsCombatStage;
   grindSummary: OutskirtsGrindSummary;
+  aftermath?: CombatAftermathSurfaceV1 | null;
   shell: OutskirtsMockupShellFlags;
   debug: OutskirtsExactSurfaceDebug;
 }
