@@ -11,6 +11,9 @@ import { useGameStore } from '../../stores/gameStore.js';
 import { useTechCollectionStore } from '../../stores/techCollectionStore.js';
 import { useTechniqueStore, type SlotType } from '../../stores/techniqueStore.js';
 import { useUIStore } from '../../stores/uiStore.js';
+import { useCityStore } from '../../stores/cityStore.js';
+import { openWorldModule } from '../../systems/world/openWorldModule.js';
+import { buildLiveModuleRoleBannerSurface, type ModuleRoleRouteButton } from '../../systems/world/moduleRoleBannerSurface.js';
 import type {
   TechniquesExactDetailIntent,
   TechniquesExactFeedback,
@@ -82,8 +85,10 @@ export function TechniquesScreenOwner({ forceFixture = false }: TechniquesScreen
   const realmIndex = useGameStore((state) => state.realm.index);
   const techniqueLibraryIntent = useUIStore((state) => state.techniqueLibraryIntent);
   const techniqueFocusRequest = useUIStore((state) => state.techniqueFocusRequest);
+  const setActiveTab = useUIStore((state) => state.setActiveTab);
   const clearTechniqueLibraryIntent = useUIStore((state) => state.clearTechniqueLibraryIntent);
   const clearTechniqueFocusRequest = useUIStore((state) => state.clearTechniqueFocusRequest);
+  const currentCityId = useCityStore((state) => state.currentCityId);
 
   const surface = useMemo(() => buildTechniquesExactSurfaceFromStores({
     mode: forceFixture ? 'fixture' : 'live',
@@ -103,6 +108,14 @@ export function TechniquesScreenOwner({ forceFixture = false }: TechniquesScreen
     selectedSlotKey,
     selectedTechniqueId,
   ]);
+  const roleBannerSurface = useMemo(() => {
+    if (forceFixture) return null;
+    try {
+      return buildLiveModuleRoleBannerSurface('techniques', currentCityId);
+    } catch {
+      return null;
+    }
+  }, [currentCityId, forceFixture, surface.meta.selectedLoadoutId]);
 
   useEffect(() => {
     if (selectedTechniqueId !== null || !surface.meta.selectedTechniqueId) return;
@@ -146,6 +159,16 @@ export function TechniquesScreenOwner({ forceFixture = false }: TechniquesScreen
     setDetailInitialAction(intent === 'open' ? null : intent ?? null);
     setDetailOpen(true);
   }, []);
+  const handleRoleBannerRoute = useCallback((route: ModuleRoleRouteButton) => {
+    const target = route.target;
+    if (target?.kind === 'world_module') {
+      openWorldModule({ cityId: target.cityId, moduleKey: target.moduleKey, source: 'techniques-role-banner' });
+      return;
+    }
+    if (target?.kind === 'tab') {
+      setActiveTab(target.tab);
+    }
+  }, [setActiveTab]);
 
   const controller = useTechniquesExactActionController({
     surface,
@@ -168,6 +191,8 @@ export function TechniquesScreenOwner({ forceFixture = false }: TechniquesScreen
     <>
       <TechniquesExactScreen
         surface={surface}
+        roleBanner={roleBannerSurface}
+        onRoleBannerRoute={handleRoleBannerRoute}
         onSelectLoadout={controller.selectLoadout}
         onSelectAiProfile={controller.selectAiProfile}
         onSelectCastingPolicy={controller.selectCastingPolicy}

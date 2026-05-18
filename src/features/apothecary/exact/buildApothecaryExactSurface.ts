@@ -3,10 +3,12 @@ import { resolveModuleRef } from '../../../components/screens/world/worldUtils.j
 import { useBountyStore } from '../../../stores/bountyStore.js';
 import { useContentStore } from '../../../stores/contentStore.js';
 import { useExpeditionStore } from '../../../stores/expeditionStore.js';
+import { useGameStore } from '../../../stores/gameStore.js';
 import { useInventoryStore } from '../../../stores/inventoryStore.js';
 import { useMedicinePouchStore } from '../../../stores/medicinePouchStore.js';
 import { useProfessionStore } from '../../../stores/professionStore.js';
 import { useShopStore } from '../../../stores/shopStore.js';
+import { buildCurrentGateEconomyContext } from '../../../systems/progression/currentGateEconomyContext.js';
 import { APOTHECARY_STOCK_FLOORS } from '../apothecaryStockFloors.js';
 import { buildApothecaryBuyReadModel } from '../apothecaryBuyReadModel.js';
 import { buildApothecaryPrepReadModel } from '../apothecaryPrepReadModel.js';
@@ -616,8 +618,16 @@ export function buildApothecaryExactSurfaceFromStores(
   const brewQueue = useProfessionStore.getState().alchemyQueue;
   const expedition = useExpeditionStore.getState();
   const bounty = useBountyStore.getState();
-  const targetGateId = resolveModuleRef(city, 'gateTrial') ?? null;
-  const targetGateLabel = compactGateLabel(gateTitleForTrial(content, targetGateId));
+  const game = useGameStore.getState();
+  const currentGateContext = content
+    ? buildCurrentGateEconomyContext({
+        content,
+        realmIndex: game.realm.index,
+        cityId: resolvedCityId,
+      })
+    : null;
+  const targetGateId = currentGateContext?.gateId ?? resolveModuleRef(city, 'gateTrial') ?? null;
+  const targetGateLabel = compactGateLabel(currentGateContext?.gateLabel ?? gateTitleForTrial(content, targetGateId));
   const prepModel = buildApothecaryPrepReadModel({
     content,
     shop,

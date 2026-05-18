@@ -2,9 +2,11 @@ import type { RewardBundle } from '../../../services/rewards/index.js';
 import { useBountyStore, type BountyInstance } from '../../../stores/bountyStore.js';
 import { useCityStore } from '../../../stores/cityStore.js';
 import { useContentStore } from '../../../stores/contentStore.js';
+import { useGameStore } from '../../../stores/gameStore.js';
 import { useInventoryStore } from '../../../stores/inventoryStore.js';
 import { buildLiveCraftBountyRouteSupportState } from '../../../systems/bounties/liveCraftBountyRouteSupport.js';
 import { buildSupportEconomySurfaceModel } from '../../../systems/economy/supportEconomySurfaceModel.js';
+import { buildCurrentGateEconomyContext } from '../../../systems/progression/currentGateEconomyContext.js';
 import { LIVE_BOUNTY_BOARD_SLOTS, type LiveBountyBoardRole } from '../../../systems/world/bountyBoardContract.js';
 import { getWorldModuleLabel, sanitizeLiveCityName } from '../../../ui/text/playerFacingLabels.js';
 import { normalizeItemList } from '../../../utils/itemList.js';
@@ -389,8 +391,16 @@ export function buildBountiesExactSurfaceFromStores(
   const contentStore = useContentStore.getState();
   const bountyStore = useBountyStore.getState();
   const inventory = useInventoryStore.getState();
+  const game = useGameStore.getState();
   const resolvedCityId = resolveCityId(cityId);
   const city = contentStore.maps.citiesById[resolvedCityId] ?? null;
+  const currentGateContext = contentStore.raw
+    ? buildCurrentGateEconomyContext({
+        content: contentStore.raw,
+        realmIndex: game.realm.index,
+        cityId: resolvedCityId,
+      })
+    : null;
   const cityIndex = typeof city?.index === 'number' ? city.index : null;
   const cityName = sanitizeLiveCityName(city?.name ?? 'Unknown City');
   const board = bountyStore.activeByCityId[resolvedCityId] ?? [];
@@ -449,7 +459,7 @@ export function buildBountiesExactSurfaceFromStores(
       statusPlaque: `${cityName} · ${trackedNote ? 1 : 0} Tracked · ${claimReady.length} Claimable · ${supportSurface.readModel.currentMerit} / ${supportSurface.readModel.targetMeritReserve} Reserve`,
     },
     statCards: asStatCards([
-      { id: 'next-need', label: 'Next Need', value: gateLabel(contentStore.raw, resolvedCityId), iconKey: 'foundationGate' },
+      { id: 'next-need', label: 'Next Need', value: currentGateContext?.gateLabel ?? gateLabel(contentStore.raw, resolvedCityId), iconKey: 'foundationGate' },
       {
         id: 'merit',
         label: 'Merit',

@@ -5,10 +5,21 @@ const GATE_RECOMMENDATIONS = {
     4: { gateIndex: 4, weaponRefine: 9, accessoryRefine: 8, temperSuccesses: 4, runeCountRecommended: 2, runeCountLabel: '2 runes recommended' },
     5: { gateIndex: 5, weaponRefine: 10, accessoryRefine: 10, temperSuccesses: 5, runeCountRecommended: 3, runeCountLabel: '2–3 runes recommended' },
 };
-function getNextGateRecommendation(cityIndex) {
-    if (cityIndex === null || !Number.isFinite(cityIndex))
+function getNextGateRecommendation(input) {
+    const fallbackGateIndex = input.cityIndex === null || !Number.isFinite(input.cityIndex)
+        ? null
+        : input.cityIndex + 1;
+    const gateIndex = input.currentGateIndex ?? fallbackGateIndex;
+    if (gateIndex === null || !Number.isFinite(gateIndex))
         return null;
-    return GATE_RECOMMENDATIONS[Math.max(1, Math.min(5, cityIndex + 1))] ?? null;
+    const recommendation = GATE_RECOMMENDATIONS[Math.max(1, Math.min(5, gateIndex))] ?? null;
+    if (!recommendation)
+        return null;
+    return {
+        ...recommendation,
+        gateLabel: input.gateLabel ?? undefined,
+        source: input.gateContextSource ?? (input.currentGateIndex === null || input.currentGateIndex === undefined ? 'fallback-city' : undefined),
+    };
 }
 function sum(values) {
     return values.reduce((total, value) => total + value, 0);
@@ -37,6 +48,6 @@ export function buildForgeFloorReadModel(input) {
         runeSummaryLabel: runeTotalCount <= 0
             ? 'No crafted runes yet'
             : `${runeTotalCount} crafted · ${runeSocketedCount} socketed · ${runeUniqueCount} families`,
-        nextGateRecommendation: getNextGateRecommendation(input.cityIndex),
+        nextGateRecommendation: getNextGateRecommendation(input),
     };
 }

@@ -59,7 +59,7 @@ test('forge exact fixture locks the mockup truth strip, rails, inspector, ctas, 
   ]);
   assert.deepEqual(surface.rightInspector.bestSources.buttons.map((button) => button.label), ['Outskirts', 'Ruins', 'Expeditions']);
   assert.equal(surface.rightInspector.recommendation.headline, 'Recommended now: Assisted Refine');
-  assert.equal(surface.rightInspector.recommendation.reason, 'Reason: Foundation Gate weapon floor');
+  assert.equal(surface.rightInspector.recommendation.reason, 'Reason: fixture gate weapon floor');
 
   assert.deepEqual(surface.floorRail.nodes.map((node) => [node.label, node.value]), [
     ['Weapon', '+2 -> +3'],

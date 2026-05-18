@@ -72,6 +72,7 @@ export function CityMapHub({
   moduleCueByKey = {},
   glintModuleKey = null,
   recommendedModuleKey = null,
+  moduleMetadataByKey,
   getModuleLabel,
   onOpenModule,
   atmosphereQuality = 'medium',
@@ -118,6 +119,11 @@ export function CityMapHub({
           const cueKind = moduleCueByKey[moduleKey] ?? null;
           const isRecommended = recommendedModuleKey === moduleKey;
           const isGlinting = glintModuleKey === moduleKey;
+          const metadata = moduleMetadataByKey?.[moduleKey] ?? null;
+          const outputsPreview = metadata?.outputs.slice(0, 2).join(' / ') ?? null;
+          const ariaDescription = metadata
+            ? `${metadata.roleTag}. ${metadata.bestUsedWhen}`
+            : `Open ${getModuleLabel(moduleKey)}`;
 
           return (
             <button
@@ -136,9 +142,17 @@ export function CityMapHub({
               onMouseLeave={() => handleHover(null)}
               onFocus={() => handleHover(moduleKey)}
               onBlur={() => handleHover(null)}
-              title={`Open ${getModuleLabel(moduleKey)}`}
+              title={metadata ? `${metadata.roleTag} - ${metadata.bestUsedWhen}` : `Open ${getModuleLabel(moduleKey)}`}
+              aria-label={`Open ${getModuleLabel(moduleKey)}: ${metadata?.roleTag ?? 'World module'}`}
             >
               <span className="cityMapHubHotspotLabel">{getModuleLabel(moduleKey)}</span>
+              {metadata ? (
+                <span className="cityMapHubHotspotMeta" aria-hidden="true">
+                  <span className="cityMapHubHotspotRole">{metadata.roleTag}</span>
+                  {outputsPreview ? <span className="cityMapHubHotspotOutputs">{outputsPreview}</span> : null}
+                </span>
+              ) : null}
+              <span className="cityMapHubSrOnly">{ariaDescription}</span>
             </button>
           );
         })}

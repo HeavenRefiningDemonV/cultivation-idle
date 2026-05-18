@@ -2,6 +2,8 @@ import type { EquipmentSlot } from '../../stores/equipmentStore.js';
 
 export interface ForgeGateRecommendation {
   gateIndex: number;
+  gateLabel?: string;
+  source?: string;
   weaponRefine: number;
   accessoryRefine: number;
   temperSuccesses: number;
@@ -37,11 +39,29 @@ export interface ForgeFloorReadModelInput {
   inventoryRuneCounts: Record<string, number>;
   socketedRuneIds: string[];
   cityIndex: number | null;
+  currentGateIndex?: number | null;
+  gateLabel?: string | null;
+  gateContextSource?: string | null;
 }
 
-function getNextGateRecommendation(cityIndex: number | null): ForgeGateRecommendation | null {
-  if (cityIndex === null || !Number.isFinite(cityIndex)) return null;
-  return GATE_RECOMMENDATIONS[Math.max(1, Math.min(5, cityIndex + 1))] ?? null;
+function getNextGateRecommendation(input: {
+  cityIndex: number | null;
+  currentGateIndex?: number | null;
+  gateLabel?: string | null;
+  gateContextSource?: string | null;
+}): ForgeGateRecommendation | null {
+  const fallbackGateIndex = input.cityIndex === null || !Number.isFinite(input.cityIndex)
+    ? null
+    : input.cityIndex + 1;
+  const gateIndex = input.currentGateIndex ?? fallbackGateIndex;
+  if (gateIndex === null || !Number.isFinite(gateIndex)) return null;
+  const recommendation = GATE_RECOMMENDATIONS[Math.max(1, Math.min(5, gateIndex))] ?? null;
+  if (!recommendation) return null;
+  return {
+    ...recommendation,
+    gateLabel: input.gateLabel ?? undefined,
+    source: input.gateContextSource ?? (input.currentGateIndex === null || input.currentGateIndex === undefined ? 'fallback-city' : undefined),
+  };
 }
 
 function sum(values: number[]): number {
@@ -75,6 +95,6 @@ export function buildForgeFloorReadModel(input: ForgeFloorReadModelInput): Forge
       runeTotalCount <= 0
         ? 'No crafted runes yet'
         : `${runeTotalCount} crafted · ${runeSocketedCount} socketed · ${runeUniqueCount} families`,
-    nextGateRecommendation: getNextGateRecommendation(input.cityIndex),
+    nextGateRecommendation: getNextGateRecommendation(input),
   };
 }

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useCallback, useRef, useState } from 'react';
-import type { CityDef, LiveWorldModuleKey } from '../../content/index.js';
+import type { CityDef, LiveWorldModuleKey, ValidatedContent } from '../../content/index.js';
 import { useContentStore } from '../../stores/contentStore.js';
 import { useCityStore } from '../../stores/cityStore.js';
 import { useCombatStore } from '../../stores/combatStore.js';
@@ -7,6 +7,7 @@ import { useBountyStore } from '../../stores/bountyStore.js';
 import { useActivityStore } from '../../stores/activityStore.js';
 import { useExpeditionStore } from '../../stores/expeditionStore.js';
 import { useUIStore } from '../../stores/uiStore.js';
+import { useGameStore } from '../../stores/gameStore.js';
 import './WorldScreen.scss';
 import { resolveBountyDestination } from '../../utils/bountyRouting.js';
 import { buildLiveCraftBountyRouteSupportState } from '../../systems/bounties/liveCraftBountyRouteSupport.js';
@@ -36,6 +37,7 @@ import { InspectorDrawer } from '../../ui/shell/InspectorDrawer.js';
 import { buildWorldCombatHandoffSurface } from '../../systems/world/worldCombatHandoff.js';
 import { resolveWorldInspectorBoundaryLine } from '../../systems/ui/world/worldInspectorSurface.js';
 import { useRunCompassSurface } from '../../ui/status/useRunCompassSurface.js';
+import { buildCityPhaseSurfaceFromSnapshot } from '../../systems/world/cityPhaseSurface.js';
 
 const WORLD_SCREEN_HIDDEN_MODULES = new Set<string>(DEFERRED_WORLD_MODULES);
 const EMPTY_VISIBLE_CITY_MODULES: readonly string[] = Object.freeze([]);
@@ -67,15 +69,38 @@ function deriveCityRequirementText(city: CityDef): string | null {
 }
 
 export function WorldScreen() {
-  const addNotification = useUIStore((state) => state.addNotification);
   const isLoaded = useContentStore((state) => state.isLoaded);
   const isLoading = useContentStore((state) => state.isLoading);
   const error = useContentStore((state) => state.error);
   const citiesSorted = useContentStore((state) => state.citiesSorted);
   const rawContent = useContentStore((state) => state.raw);
 
+  if (isLoading) return <div className={'worldScreen worldScreenMessage'}>Loading content...</div>;
+
+  if (error) {
+    return (
+      <div className={'worldScreen worldScreenMessage worldScreenMessageError'}>
+        <div>Content failed to load.</div>
+        <div className={'worldScreenErrorText'}>{error}</div>
+      </div>
+    );
+  }
+
+  if (!isLoaded || citiesSorted.length === 0) return <div className={'worldScreen worldScreenMessage'}>No cities available.</div>;
+
+  return <LoadedWorldScreen citiesSorted={citiesSorted} rawContent={rawContent} />;
+}
+
+interface LoadedWorldScreenProps {
+  citiesSorted: CityDef[];
+  rawContent: ValidatedContent | null;
+}
+
+function LoadedWorldScreen({ citiesSorted, rawContent }: LoadedWorldScreenProps) {
+  const addNotification = useUIStore((state) => state.addNotification);
   const currentCityId = useCityStore((state) => state.currentCityId);
   const unlockedCityIds = useCityStore((state) => state.unlockedCityIds);
+  const acknowledgedArrivalCityIds = useCityStore((state) => state.acknowledgedArrivalCityIds);
   const selectedModuleByCity = useCityStore((state) => state.selectedModuleByCity);
   const setSelectedModule = useCityStore((state) => state.setSelectedModule);
   const setCurrentCity = useCityStore((state) => state.setCurrentCity);
@@ -136,6 +161,8 @@ export function WorldScreen() {
   const worldModalCityId = useUIStore((state) => state.worldBuildingModalCityId);
   const showWorldBuildingModal = useUIStore((state) => state.showWorldBuildingModal);
   const combatPresentation = useUIStore((state) => state.combatPresentation);
+  const pendingCityArrivalId = useUIStore((state) => state.pendingCityArrivalId);
+  const currentRealmIndex = useGameStore((state) => state.realm.index);
   const [hoveredModuleKey, setHoveredModuleKey] = useState<string | null>(null);
   const [lastHoveredModuleKey, setLastHoveredModuleKey] = useState<string | null>(null);
   const inspectorHoverSeedCityRef = useRef<string | null>(null);
@@ -202,20 +229,22 @@ export function WorldScreen() {
     setIsNarrowInspectorOpen(false);
   }, [selectedCity?.id, currentCityId]);
 
-  const economicPrimary = useMemo(() => {
+  const economicSnapshot = useMemo(() => {
     try {
-      const engine = buildLiveEconomicRecommendationEngine();
-      const top = engine.topRouteCandidates[0] ?? null;
-      if (!top) return null;
-      return {
-        moduleKey: top.destinationModuleKey,
-        cityId: top.destinationCityId,
-        reason: top.reasonSummary,
-      };
+      return buildLiveEconomicRecommendationEngine();
     } catch {
       return null;
     }
   }, [currentCityId, selectedCity?.id, rawContent]);
+  const economicTopRoute = economicSnapshot?.topRouteCandidates[0] ?? null;
+  const economicPrimary = economicTopRoute
+    ? {
+        moduleKey: economicTopRoute.destinationModuleKey,
+        cityId: economicTopRoute.destinationCityId,
+        reason: economicTopRoute.reasonSummary,
+      }
+    : null;
+  const economicPrimaryProblemKind = economicTopRoute?.problemKind ?? null;
 
   const runCompassModuleKeys = useMemo(() => {
     const primaryTarget = runCompass.v2?.primaryRoute.target;
@@ -225,16 +254,14 @@ export function WorldScreen() {
       && visibleCityModules.includes(primaryTarget.moduleKey)
       ? primaryTarget.moduleKey
       : null;
-    const secondary = primaryTarget?.kind === 'world_module'
-      ? runCompass.v2?.secondaryRoutes
+    const secondary = runCompass.v2?.secondaryRoutes
       .map((route) => route.target)
       .find((target): target is { kind: 'world_module'; cityId: string; moduleKey: LiveWorldModuleKey } =>
         target?.kind === 'world_module'
         && Boolean(selectedCity)
         && target.cityId === selectedCity?.id
         && visibleCityModules.includes(target.moduleKey),
-      )?.moduleKey ?? null
-      : null;
+      )?.moduleKey ?? null;
     return { primary, secondary };
   }, [runCompass.v2, selectedCity, visibleCityModules]);
   const allowWorldRecommendationFallback = !runCompass.v2
@@ -284,7 +311,7 @@ export function WorldScreen() {
         runCompassPrimaryModuleKey: runCompassModuleKeys.primary,
         runCompassSecondaryModuleKey: runCompassModuleKeys.secondary,
         economicModuleKeys: allowWorldRecommendationFallback && economicPrimary?.cityId === selectedCity.id && economicPrimary.moduleKey ? [economicPrimary.moduleKey] : [],
-        economicPrimaryProblemKind: buildLiveEconomicRecommendationEngine().topRouteCandidates[0]?.problemKind ?? null,
+        economicPrimaryProblemKind,
         trackedBountyModuleKey: allowWorldRecommendationFallback && trackedDestination?.kind === 'module' ? trackedDestination.moduleKey as never : null,
         trackedBountyAlert: trackedAlert,
         expeditionIdleAlert,
@@ -292,8 +319,21 @@ export function WorldScreen() {
         idleExpeditionSlots: Math.max(0, expeditionSlots - expeditionActive.filter((entry) => entry.cityId === selectedCity.id && entry.status === 'running').length),
       });
     },
-    [activeByCityId, allowWorldRecommendationFallback, currentCityId, economicPrimary, expeditionActive, expeditionIdleAlert, expeditionSlots, lockedModuleKey, rawContent, runCompassModuleKeys.primary, runCompassModuleKeys.secondary, selectedCity, trackedAlert, trackedDestination, visibleCityModules],
+    [activeByCityId, allowWorldRecommendationFallback, currentCityId, economicPrimary, economicPrimaryProblemKind, expeditionActive, expeditionIdleAlert, expeditionSlots, lockedModuleKey, rawContent, runCompassModuleKeys.primary, runCompassModuleKeys.secondary, selectedCity, trackedAlert, trackedDestination, visibleCityModules],
   );
+
+  const cityPhaseSurface = useMemo(() => {
+    if (!rawContent || !selectedCity) return null;
+    return buildCityPhaseSurfaceFromSnapshot({
+      content: rawContent,
+      cityId: selectedCity.id,
+      unlockedCityIds,
+      acknowledgedArrivalCityIds,
+      pendingCityArrivalId,
+      currentRealmIndex,
+      runCompass: runCompass.v2,
+    });
+  }, [acknowledgedArrivalCityIds, currentRealmIndex, pendingCityArrivalId, rawContent, runCompass.v2, selectedCity, unlockedCityIds]);
 
   const moduleMetadataByKey = useMemo(() => {
     const byModuleKey: Record<string, {
@@ -411,19 +451,6 @@ export function WorldScreen() {
     [visibleCityModules],
   );
 
-  if (isLoading) return <div className={'worldScreen worldScreenMessage'}>Loading content...</div>;
-
-  if (error) {
-    return (
-      <div className={'worldScreen worldScreenMessage worldScreenMessageError'}>
-        <div>Content failed to load.</div>
-        <div className={'worldScreenErrorText'}>{error}</div>
-      </div>
-    );
-  }
-
-  if (!isLoaded || citiesSorted.length === 0) return <div className={'worldScreen worldScreenMessage'}>No cities available.</div>;
-
   const supportCapsuleText = trackedBounty || expeditionIdleAlert
     ? [
       trackedBounty ? '1 Tracked Bounty' : null,
@@ -525,6 +552,12 @@ export function WorldScreen() {
   const inspectorRunCompassLine = runCompass.v2 && inspectorModuleKey && runCompassModuleKeys.primary === inspectorModuleKey
     ? `${runCompass.v2.primaryRoute.label}: ${runCompass.v2.primaryBlocker.label}`
     : null;
+  const phaseLine = cityPhaseSurface
+    ? `City Phase: ${cityPhaseSurface.cityName} - ${cityPhaseSurface.phaseLesson.title.toLowerCase()}`
+    : null;
+  const pressureLine = cityPhaseSurface
+    ? `Pressure: ${cityPhaseSurface.newPressure.explanation}`
+    : null;
   const inspectorStateLine = inspectorRunCompassLine ?? (inspectorCueKind ? ({
     GATE: 'Gate is your next step.',
     NOW: `Recommended here now: ${inspectorLabel}.`,
@@ -572,6 +605,8 @@ export function WorldScreen() {
                 selectedCityId={selectedCity.id}
                 onSelectCity={handleSelectCityById}
                 supportCapsuleText={supportCapsuleText}
+                phaseLine={phaseLine}
+                pressureLine={pressureLine}
               />
             </div>
 

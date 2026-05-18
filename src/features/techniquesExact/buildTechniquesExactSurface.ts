@@ -16,9 +16,10 @@ import { analyzeSelectedBuild } from '../../systems/builds/buildAnalysisService.
 import { getBuildArchetype } from '../../systems/builds/archetypeRegistry.js';
 import { buildLoadoutSnapshotFromLoadout } from '../../systems/builds/loadoutSnapshot.js';
 import { evaluateCurrentCombatPostureFit } from '../../systems/builds/combatPostureFit.js';
-import { getTechniqueTaxonomyProfile } from '../../systems/builds/techniqueTaxonomy.js';
+import { getPathAlignmentStrengthForTechnique, getTechniqueTaxonomyProfile } from '../../systems/builds/techniqueTaxonomy.js';
 import type { TechniqueFamily } from '../../systems/builds/techniqueFamilies.js';
 import type { TechniqueProgressionSnapshot } from '../../systems/builds/index.js';
+import { buildCurrentGateEconomyContext } from '../../systems/progression/currentGateEconomyContext.js';
 import {
   resolveTechniqueVisualIdentity,
   type TechniqueVisualIdentity,
@@ -102,7 +103,7 @@ const makeCastingPolicies = (selectedPolicy: CastingPolicy) =>
     };
   });
 
-const pathFitLabel = (fit: 'strong' | 'neutral' | 'off' | null | undefined) => {
+const pathFitLabel = (fit: 'strong' | 'neutral' | 'off' | 'unknown' | null | undefined) => {
   if (fit === 'strong') return 'Strong';
   if (fit === 'neutral') return 'Partial';
   if (fit === 'off') return 'Off-path';
@@ -149,6 +150,14 @@ const getTechniqueTypeLabel = (def?: TechniqueDef | null): 'Active' | 'Passive' 
   if (def?.type === 'ultimate') return 'Ultimate';
   return 'Active';
 };
+
+function resolveTechniquePathFit(
+  techniqueId: string | null,
+  selectedPath: CultivationPath | null,
+): 'strong' | 'neutral' | 'off' | 'unknown' {
+  if (!techniqueId || !selectedPath) return 'unknown';
+  return getPathAlignmentStrengthForTechnique(techniqueId, selectedPath);
+}
 
 const slotAcceptsTechnique = (slotType: TechniqueSlotType, def?: TechniqueDef | null): boolean => {
   if (!def) return false;
@@ -265,15 +274,17 @@ const makeSlot = (args: {
   selected: boolean;
   recommended: boolean;
   selectedTechniqueDef?: TechniqueDef | null;
+  selectedPath: CultivationPath | null;
 }): TechniquesExactSlotSurface => {
   const progression = args.techniqueId ? getProgression(args.techniqueId) : null;
-  const pathFit = args.techniqueId ? getTechniqueTaxonomyProfile(args.techniqueId)?.alignment ?? 'unknown' : 'unknown';
+  const pathFit = resolveTechniquePathFit(args.techniqueId, args.selectedPath);
   const canEquipSelected = args.isUnlocked && slotAcceptsTechnique(args.slotType, args.selectedTechniqueDef);
   const visualIdentity = args.techniqueId
     ? resolveIdentityForTechnique({
         techId: args.techniqueId,
         def: args.def,
         progression,
+        selectedPath: args.selectedPath,
       })
     : null;
   return {
@@ -620,6 +631,15 @@ export function buildTechniquesExactSurfaceFromStores(
   const selectedAi = selectedLoadout?.aiProfile ?? 'balanced';
   const selectedPolicy = selectedLoadout?.castingPolicy ?? 'balanced';
   const selectedPath = game.selectedPath as CultivationPath | null;
+  const cityState = useCityStore.getState();
+  const currentGateContext = content.raw
+    ? buildCurrentGateEconomyContext({
+        content: content.raw,
+        realmIndex: game.realm.index,
+        cityId: cityState.currentCityId,
+      })
+    : null;
+  const currentGateLabel = currentGateContext?.gateLabel ?? 'Current Gate';
   const equippedIds = new Set([
     ...(selectedLoadout?.slots.active ?? []).filter(Boolean),
     ...(selectedLoadout?.slots.passive ?? []).filter(Boolean),
@@ -645,6 +665,7 @@ export function buildTechniquesExactSurfaceFromStores(
     selectedTechniqueDef,
     contentTechniques: content.maps.techniquesById,
     loadoutSnapshot,
+    selectedPath,
   });
   const selectedTechniqueRow = allOwnedRows.find((row) => row.id === selectedTechniqueId) ?? null;
   const selectedProgression = selectedTechniqueId ? collection.getTechniqueProgressionSnapshot(selectedTechniqueId) : null;
@@ -674,7 +695,7 @@ export function buildTechniquesExactSurfaceFromStores(
     diagnosisBanner: {
       title: TECHNIQUES_EXACT_COPY.diagnosisTitle,
       primaryLine: buildDiagnosisLine(buildAnalysis),
-      chips: buildDiagnosisChips(buildAnalysis),
+      chips: buildDiagnosisChips(buildAnalysis, currentGateLabel),
     },
     leftRail: {
       title: 'Loadouts',
@@ -783,6 +804,7 @@ function buildLiveSlots(args: {
   selectedTechniqueDef?: TechniqueDef | null;
   contentTechniques: Record<string, TechniqueDef>;
   loadoutSnapshot: ReturnType<typeof buildLoadoutSnapshotFromLoadout> | null;
+  selectedPath: CultivationPath | null;
 }): TechniquesExactSlotSurface[] {
   const active = args.selectedLoadout?.slots.active ?? [];
   const passive = args.selectedLoadout?.slots.passive ?? [];
@@ -808,6 +830,7 @@ function buildLiveSlots(args: {
       selected: args.selectedSlotKey === key,
       recommended: false,
       selectedTechniqueDef: args.selectedTechniqueDef,
+      selectedPath: args.selectedPath,
     }));
   }
 
@@ -827,6 +850,7 @@ function buildLiveSlots(args: {
       selected: args.selectedSlotKey === key,
       recommended: !techId && index < unlockedPassive,
       selectedTechniqueDef: args.selectedTechniqueDef,
+      selectedPath: args.selectedPath,
     }));
   }
 
@@ -842,6 +866,7 @@ function buildLiveSlots(args: {
     selected: args.selectedSlotKey === 'ultimate-0',
     recommended: false,
     selectedTechniqueDef: args.selectedTechniqueDef,
+    selectedPath: args.selectedPath,
   }));
 
   return slots;
@@ -883,11 +908,11 @@ function buildDiagnosisLine(buildAnalysis: BuildAnalysis | null): string {
   }
 }
 
-function buildDiagnosisChips(buildAnalysis: BuildAnalysis | null): TechniquesExactChipSurface[] {
+function buildDiagnosisChips(buildAnalysis: BuildAnalysis | null, gateLabel: string): TechniquesExactChipSurface[] {
   const archetype = getBuildArchetype(buildAnalysis?.archetypeId ?? null);
   const alignment = Math.round(Math.max(0, Math.min(100, buildAnalysis?.pathAlignmentScore ?? 0)));
   return [
-    { id: 'target', label: 'Target', value: 'Foundation Gate', tone: 'bronze' },
+    { id: 'target', label: 'Target', value: gateLabel, tone: 'bronze' },
     { id: 'archetype', label: 'Archetype', value: archetype?.label ?? 'Unshaped Build', tone: 'bronze' },
     { id: 'alignment', label: 'Path Alignment', value: `${alignment}%`, tone: alignment >= 70 ? 'jade' : alignment >= 45 ? 'amber' : 'red' },
     { id: 'mastery', label: 'Mastery Floor', value: String(ACTIVE_PASSIVE_MASTERY_FLOOR), tone: buildAnalysis?.masteryFloorMet ? 'jade' : 'amber' },

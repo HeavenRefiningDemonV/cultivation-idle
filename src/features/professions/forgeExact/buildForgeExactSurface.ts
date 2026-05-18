@@ -255,7 +255,7 @@ function buildTopTruth(args: {
   floor: ForgeFloorReadModel;
   queueLabel: string;
 }): ForgeExactSurfaceV1['topTruthStrip'] {
-  const gate = compactGateLabel(gateLabelForCity(args.content, args.cityId));
+  const gate = compactGateLabel(args.floor.nextGateRecommendation?.gateLabel ?? gateLabelForCity(args.content, args.cityId));
   const recommendation = args.floor.nextGateRecommendation;
   const weaponTarget = recommendation?.weaponRefine ?? 0;
   const accessoryTarget = recommendation?.accessoryRefine ?? 0;
@@ -540,7 +540,7 @@ function buildInspector(args: {
       title: 'Recommendation',
       headline: `Recommended now: ${modeLabel} ${tabLabel}`,
       reason: args.activeTab === 'refine'
-        ? 'Reason: Foundation Gate weapon floor'
+        ? `Reason: ${compactGateLabel(args.floor.nextGateRecommendation?.gateLabel ?? gateLabelForCity(args.content, args.cityId))} ${args.targetSlot === 'weapon' ? 'weapon' : 'accessory'} floor`
         : args.activeTab === 'temper'
           ? 'Reason: permanent temper floor'
           : 'Reason: rune socket readiness',
@@ -701,7 +701,7 @@ export function createForgeExactMockupFixture(
       recommendation: {
         title: 'Recommendation',
         headline: 'Recommended now: Assisted Refine',
-        reason: 'Reason: Foundation Gate weapon floor',
+        reason: 'Reason: fixture gate weapon floor',
         status: 'recommended',
       },
     },
@@ -787,7 +787,7 @@ export function buildForgeExactSurfaceFromStores(
       : queue.mode === 'queued' || queue.mode === 'active' ? queue.mode
       : !selectedBlueprint || !canStart.ok || activeOtherActivity || !modeAllowed ? 'blocked'
       : 'planning';
-  const gateLabel = gateLabelForCity(content, resolvedCityId);
+  const gateLabel = floor.nextGateRecommendation?.gateLabel ?? gateLabelForCity(content, resolvedCityId);
   const surfaceModel = buildForgeSurfaceModel({ blueprints: visibleBlueprints, activeTab, floor });
   const materialRows = buildMaterialRows(selectedBlueprint);
   const missingMaterial = materialRows.find((row) => row.status === 'missing');

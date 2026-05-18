@@ -303,6 +303,8 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
     (state) => state.manuals.length + (state.activeStudy ? 1 : 0),
   );
   const activeStudy = useManualSatchelStore((state) => state.activeStudy);
+  const unlockedTechs = useTechCollectionStore((state) => state.unlockedTechs);
+  const techniqueFragments = useTechCollectionStore((state) => state.fragments);
   const doctrineSnapshot = buildDoctrineSnapshot();
   const runCompass = useRunCompassSurface();
   const buildAnalysis = useMemo(
@@ -461,6 +463,8 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
     doctrineSnapshot.path,
     doctrineSnapshot.selectedLoadoutId,
     buildAnalysis,
+    unlockedTechs,
+    techniqueFragments,
   ]);
   const offerTagsBySlotIndex = useMemo(() => {
     const tags = new Map<number, ManualOfferTag[]>();
@@ -470,7 +474,7 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
         tags.set(slot.slotIndex, []);
         return;
       }
-      const isNewTechnique = !useTechCollectionStore.getState().hasTech(slot.techniqueId);
+      const isNewTechnique = !unlockedTechs[slot.techniqueId]?.unlocked;
       tags.set(
         slot.slotIndex,
         buildManualOfferTags({
@@ -482,7 +486,7 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
       );
     });
     return tags;
-  }, [offerAnalysisBySlotIndex, stock?.generatedAt, stock?.slots]);
+  }, [offerAnalysisBySlotIndex, stock?.generatedAt, stock?.slots, unlockedTechs, techniqueFragments]);
 
   const handleSelect = (
     slot: PavilionStockSlot,

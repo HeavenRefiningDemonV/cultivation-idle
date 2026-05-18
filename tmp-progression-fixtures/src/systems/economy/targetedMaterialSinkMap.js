@@ -1,4 +1,5 @@
 export const TARGETED_MATERIAL_IDS = [
+    'mat_spirit_leaf',
     'mat_spirit_dew',
     'mat_quarry_ore',
     'mat_iron_sand',
@@ -20,6 +21,12 @@ export const TARGETED_MATERIAL_IDS = [
     'mat_artifact_shard',
 ];
 export const TARGETED_MATERIAL_SINK_MAP = [
+    {
+        materialId: 'mat_spirit_leaf',
+        cityId: 'city_pinewind_hamlet',
+        primarySinkIds: ['alc_qi_elixir_t1', 'rune_inscription_basic'],
+        secondarySinkIds: ['alc_reagent_soul_ink_t0', 'alc_windstep_powder_t1'],
+    },
     {
         materialId: 'mat_spirit_dew',
         cityId: 'city_pinewind_hamlet',

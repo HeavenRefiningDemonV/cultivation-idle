@@ -1,4 +1,4 @@
-import { useEffect, useMemo, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, type ReactNode } from 'react';
 import { useContentStore } from '../../stores/contentStore.js';
 import { useUIStore, type WorldBuildingKey } from '../../stores/uiStore.js';
 import { resolveModuleRef } from '../screens/world/worldUtils.js';
@@ -6,7 +6,7 @@ import { ManualPavilionPanel } from '../screens/ManualPavilionPanel.js';
 import { ForgeWorkshop } from '../../features/professions/forge/ForgeWorkshop.js';
 import { BountyBoardPanel } from '../screens/BountyBoardPanel.js';
 import { ExpeditionBoardPanel } from '../screens/ExpeditionBoardPanel.js';
-import { isCombatModule } from '../../systems/world/openWorldModule.js';
+import { isCombatModule, openWorldModule } from '../../systems/world/openWorldModule.js';
 import { GameIcon } from '../../ui/icons/index.js';
 import hammer from '../../assets/onscreen/hammer.png';
 import './WorldBuildingModal.scss';
@@ -22,6 +22,9 @@ import { ForgeExactScreenOwner } from '../../features/professions/forgeExact/ind
 import { BountiesExactScreenOwner } from '../../features/world/bountiesExact/index.js';
 import { ExpeditionsExactScreenOwner } from '../../features/world/expeditionsExact/index.js';
 import { ManualPavilionScreenOwner } from '../../features/world/manualPavilionExact/index.js';
+import { ModuleRoleBanner } from '../../ui/world/ModuleRoleBanner.js';
+import { buildLiveModuleRoleBannerSurface, type ModuleRoleRouteButton } from '../../systems/world/moduleRoleBannerSurface.js';
+import type { P3ModuleKey } from '../../systems/world/p3SurfaceTypes.js';
 
 export interface WorldBuildingModalProps {
   open?: boolean;
@@ -32,7 +35,9 @@ export interface WorldBuildingModalProps {
   useStore?: boolean;
 }
 
-export const WORLD_MODAL_LIVE_KEYS: ReadonlyArray<WorldBuildingKey> = [
+const NOOP_CLOSE = () => {};
+
+const WORLD_MODAL_LIVE_KEYS: ReadonlyArray<WorldBuildingKey> = [
   'manualPavilion',
   'apothecary',
   'forge',
@@ -42,6 +47,24 @@ export const WORLD_MODAL_LIVE_KEYS: ReadonlyArray<WorldBuildingKey> = [
   'gateTrial',
   'ruins',
 ];
+
+function normalizeP3RoleModuleKey(buildingKey: WorldBuildingKey | null | undefined): P3ModuleKey | null {
+  switch (buildingKey) {
+    case 'alchemy':
+    case 'apothecary':
+      return 'apothecary';
+    case 'manualPavilion':
+    case 'forge':
+    case 'bounties':
+    case 'expeditions':
+    case 'outskirts':
+    case 'gateTrial':
+    case 'ruins':
+      return buildingKey;
+    default:
+      return null;
+  }
+}
 
 export function WorldBuildingModal({
   open: controlledOpen,
@@ -54,6 +77,7 @@ export function WorldBuildingModal({
   const storeCityId = useUIStore((state) => state.worldBuildingModalCityId);
   const storeBuildingKey = useUIStore((state) => state.worldBuildingModalKey);
   const closeFromStore = useUIStore((state) => state.closeWorldBuildingModal);
+  const setActiveTab = useUIStore((state) => state.setActiveTab);
   const storeModalIntent = useUIStore((state) => state.worldBuildingModalIntent);
   const city = useContentStore((state) => (storeCityId ? state.maps.citiesById[storeCityId] : undefined));
   const moduleRefId = useMemo(() => resolveModuleRef(city ?? null, storeBuildingKey ?? null), [city, storeBuildingKey]);
@@ -61,7 +85,11 @@ export function WorldBuildingModal({
   const isStoreMode = useStore;
   const open = isStoreMode ? storeOpen : Boolean(controlledOpen);
   const buildingKey: WorldBuildingKey | null | undefined = isStoreMode ? storeBuildingKey : undefined;
-  const close = isStoreMode ? closeFromStore : controlledOnClose || (() => { });
+  const close = useMemo(
+    () => (isStoreMode ? closeFromStore : controlledOnClose ?? NOOP_CLOSE),
+    [closeFromStore, controlledOnClose, isStoreMode],
+  );
+  const roleModuleKey = normalizeP3RoleModuleKey(buildingKey ?? null);
   const buildingAudit = useMemo(
     () => (isStoreMode ? inspectWorldFacingModuleTarget(buildingKey ?? null) : { ok: true, moduleKey: buildingKey ?? null, reason: 'ok' }),
     [buildingKey, isStoreMode],
@@ -87,6 +115,31 @@ export function WorldBuildingModal({
       isStoreMode,
     }),
     [buildingKey, city?.name, controlledTitle, isStoreMode, storeModalIntent],
+  );
+  const roleBannerSurface = useMemo(
+    () => {
+      if (!isStoreMode || !open || !storeCityId || !roleModuleKey) return null;
+      try {
+        return buildLiveModuleRoleBannerSurface(roleModuleKey, storeCityId);
+      } catch {
+        return null;
+      }
+    },
+    [isStoreMode, open, roleModuleKey, storeCityId],
+  );
+  const handleRoleBannerRoute = useCallback(
+    (route: ModuleRoleRouteButton) => {
+      const target = route.target;
+      if (target?.kind === 'world_module') {
+        openWorldModule({ cityId: target.cityId, moduleKey: target.moduleKey, source: 'module-role-banner' });
+        return;
+      }
+      if (target?.kind === 'tab') {
+        close();
+        setActiveTab(target.tab);
+      }
+    },
+    [close, setActiveTab],
   );
 
   if (
@@ -206,6 +259,13 @@ export function WorldBuildingModal({
           <p className="worldBuildingTitle">{entrySurface.cityLabel} — {entrySurface.moduleLabel}</p>
           {entrySurface.contextReason ? <p className="worldBuildingSubtitle">{entrySurface.contextReason}</p> : null}
         </div>
+      ) : null}
+      {roleBannerSurface ? (
+        <ModuleRoleBanner
+          surface={roleBannerSurface}
+          className="worldBuildingP3Banner"
+          onRoute={handleRoleBannerRoute}
+        />
       ) : null}
       <div className={`worldBuildingBody worldBuildingBody--${entrySurface.backgroundVariant} worldBuildingBody--${entrySurface.shellFamily} worldBuildingBody--${entrySurface.shellMode}`}>{content}</div>
     </Modal>

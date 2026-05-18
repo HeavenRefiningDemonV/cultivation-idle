@@ -1,5 +1,7 @@
 import type { AiProfile, CastingPolicy, TechniqueSlotType } from '../../types/index.js';
 import { GameIcon } from '../../ui/icons/index.js';
+import { ModuleRoleBanner } from '../../ui/world/ModuleRoleBanner.js';
+import type { ModuleRoleBannerSurfaceV1, ModuleRoleRouteButton } from '../../systems/world/moduleRoleBannerSurface.js';
 import { SemanticTechniqueName } from '../../ui/techniques/SemanticTechniqueName.js';
 import { VisualIdentityBadge } from '../../ui/techniques/VisualIdentityBadge.js';
 import type {
@@ -26,6 +28,8 @@ export interface TechniquesExactScreenProps {
   onApplyLoadout?: () => void;
   onGoToManualPavilion?: () => void;
   onOpenAdvancedFilters?: () => void;
+  roleBanner?: ModuleRoleBannerSurfaceV1 | null;
+  onRoleBannerRoute?: (route: ModuleRoleRouteButton) => void;
 }
 
 const icon = (iconId?: string, size = 18) => (
@@ -48,6 +52,8 @@ export function TechniquesExactScreen({
   onApplyLoadout,
   onGoToManualPavilion,
   onOpenAdvancedFilters,
+  roleBanner,
+  onRoleBannerRoute,
 }: TechniquesExactScreenProps) {
   const selectedTechniqueId = surface.meta.selectedTechniqueId;
 
@@ -61,6 +67,13 @@ export function TechniquesExactScreen({
       data-selected-technique-id={selectedTechniqueId ?? ''}
       data-selected-slot-key={surface.meta.selectedSlotKey ?? ''}
     >
+      {roleBanner ? (
+        <ModuleRoleBanner
+          surface={roleBanner}
+          className="techniquesExactP3Banner"
+          onRoute={onRoleBannerRoute}
+        />
+      ) : null}
       <header className="techniquesExactTop">
         <div className="techniquesExactTitleBlock">
           <h1>{surface.page.title}</h1>

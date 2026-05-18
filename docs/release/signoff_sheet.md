@@ -1,12 +1,12 @@
 # Release Sign-off Sheet
 
 ## Release candidate identity
-- generatedAt: 2026-05-12T19:51:57.411Z
+- generatedAt: 2026-05-18T20:05:08.954Z
 - releaseDecision: NO_GO
 - cleanPass: false
 - acceptedWaiverCount: 0
-- unresolvedBlockerCount: 1
-- pendingManualCount: 0
+- unresolvedBlockerCount: 6
+- pendingManualCount: 1
 - version: unknown
 - buildId: unknown
 - commit: unknown
@@ -24,38 +24,38 @@
 ## Evidence summary: Build / Content / Test
 | check id | status | evidence command/doc | summary | blockers | warnings |
 | --- | --- | --- | --- | --- | --- |
-| `build_audit` | fail | `npm run release:build-audit:json` | stub | 1 | 0 |
-| `content_validation` | pass | `npm run validate:content` | stub | 0 | 0 |
-| `full_test_suite` | pass | `npm run test` | stub | 0 | 0 |
+| `build_audit` | fail | `npm run release:build-audit:json` | build_audit failed with blocker findings. | 1 | 0 |
+| `content_validation` | pass | `npm run validate:content` | Content validation passed. | 0 | 0 |
+| `full_test_suite` | fail | `npm run test` | Full test suite failed. | 1 | 0 |
 
 ## Evidence summary: Progression / Fresh-run / Migration
 | check id | status | evidence command/doc | summary | blockers | warnings |
 | --- | --- | --- | --- | --- | --- |
-| `progression_contract` | pass | `builder:buildProgressionContract + collectProgressionDiagnostics` | stub | 0 | 0 |
-| `fresh_run_acceptance` | pass | `npm run release:fresh-run-report:json` | stub | 0 | 0 |
-| `migration_matrix` | pass | `npm run release:migration-matrix:json` | stub | 0 | 0 |
+| `progression_contract` | warning | `builder:buildProgressionContract + collectProgressionDiagnostics` | Progression diagnostics: 0 blockers, 4 warnings. | 0 | 4 |
+| `fresh_run_acceptance` | pending_manual | `npm run release:fresh-run-report:json` | fresh_run_acceptance is pending manual coverage. | 1 | 3 |
+| `migration_matrix` | pass | `npm run release:migration-matrix:json` | migration_matrix passed. | 0 | 0 |
 
 ## Evidence summary: Balance / Routes
 | check id | status | evidence command/doc | summary | blockers | warnings |
 | --- | --- | --- | --- | --- | --- |
-| `balance_regression` | pass | `npm run balance:report:json` | stub | 0 | 0 |
-| `route_comparison` | pass | `npm run release:route-report:json` | stub | 0 | 0 |
+| `balance_regression` | fail | `npm run balance:report:json` | balance_regression failed. | 1 | 0 |
+| `route_comparison` | fail | `npm run release:route-report:json` | Adapter execution failed. | 1 | 0 |
 
 ## Evidence summary: Runtime diagnostics
 | check id | status | evidence command/doc | summary | blockers | warnings |
 | --- | --- | --- | --- | --- | --- |
-| `runtime_diagnostics` | pass | `npm run release:runtime-diagnostics:json` | stub | 0 | 0 |
+| `runtime_diagnostics` | fail | `npm run release:runtime-diagnostics:json` | runtime_diagnostics failed with blocker findings. | 1 | 0 |
 
 ## Evidence summary: Vocabulary / Copy / Presentation
 | check id | status | evidence command/doc | summary | blockers | warnings |
 | --- | --- | --- | --- | --- | --- |
-| `vocabulary_audit` | pass | `npm run release:vocab-audit:json` | stub | 0 | 0 |
+| `vocabulary_audit` | pass | `npm run release:vocab-audit:json` | vocabulary_audit passed. | 0 | 0 |
 
 ## Route summary
 - Fresh-run (normal/cautious/aggressive):
-  - normal: automated=unknown, manual=unknown
-  - cautious: automated=unknown, manual=unknown
-  - aggressive: automated=unknown, manual=unknown
+  - normal: automated=pass, manual=missing
+  - cautious: automated=not_run, manual=missing
+  - aggressive: automated=not_run, manual=missing
 - Route classes (fail_safe/offline_heavy/low_attention/high_skill/reclaim):
   - fail_safe: status=unknown, automation=unknown
   - offline_heavy: status=unknown, automation=unknown
@@ -87,16 +87,12 @@
 ### Unresolved blockers
 | issue id | title | classification | owner | rationale | mitigation | evidence |
 | --- | --- | --- | --- | --- | --- | --- |
-| build_audit_blocker | blocker | blocker | from_check | blocker | fix before GO | build_audit |
-| build_audit_blocker | blocker | blocker | from_check | blocker | fix before GO | content_validation |
-| build_audit_blocker | blocker | blocker | from_check | blocker | fix before GO | progression_contract |
-| build_audit_blocker | blocker | blocker | from_check | blocker | fix before GO | fresh_run_acceptance |
-| build_audit_blocker | blocker | blocker | from_check | blocker | fix before GO | migration_matrix |
-| build_audit_blocker | blocker | blocker | from_check | blocker | fix before GO | balance_regression |
-| build_audit_blocker | blocker | blocker | from_check | blocker | fix before GO | route_comparison |
-| build_audit_blocker | blocker | blocker | from_check | blocker | fix before GO | runtime_diagnostics |
-| build_audit_blocker | blocker | blocker | from_check | blocker | fix before GO | vocabulary_audit |
-| build_audit_blocker | blocker | blocker | from_check | blocker | fix before GO | full_test_suite |
+| build_audit_build_command_failed_nonzero_build_command_exited | build_command_failed_nonzero | blocker | from_check | Build command exited non-zero without a classified blocker line. | fix before GO | npm run release:build-audit:json |
+| fresh_run_acceptance_fresh_run_manual_pending_required_manual_fres | fresh_run_manual_pending | blocker | from_check | Required manual fresh-run coverage is incomplete. | fix before GO | npm run release:fresh-run-report:json |
+| balance_regression_balance_regression_command_failed_balance_regression_c | balance_regression_command_failed | blocker | from_check | balance_regression command returned non-zero exit code. | fix before GO | npm run balance:report:json |
+| route_comparison_adapter_exception | adapter_exception | blocker | from_check | Cannot read properties of undefined (reading 'toLowerCase') | fix before GO | route_comparison |
+| runtime_diagnostics_runtime_diagnostics_errors_runtime_diagnostics_ | runtime_diagnostics_errors | blocker | from_check | Runtime diagnostics reported 5 error-level findings. | fix before GO | npm run release:runtime-diagnostics:json |
+| full_test_suite_test_suite_failed_npm_run_test_failed | test_suite_failed | blocker | from_check | npm run test failed. | fix before GO | npm run test |
 
 ## Sign-off owner fields
 | owner area | reviewer name | decision/initials | date | notes |
@@ -108,5 +104,5 @@
 
 ## Final decision
 - RELEASE DECISION: NO_GO
-- reason: no go
+- reason: 6 unresolved blockers remain; 1 pending-manual checks remain; 3 waiver-candidate findings are untracked/unaccepted
 - accepted waivers listed separately: 6
