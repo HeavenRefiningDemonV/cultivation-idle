@@ -1,0 +1,62 @@
+.daoImpressionSeal {
+  box-sizing: border-box;
+  min-width: 0;
+  border: 1px solid rgba(120, 88, 48, 0.26);
+  border-radius: 8px;
+  background: rgba(255, 252, 244, 0.78);
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: 8px;
+  padding: 8px;
+  align-items: center;
+}
+
+.daoImpressionSeal__stamp {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid rgba(92, 55, 34, 0.36);
+  box-shadow: inset 0 0 0 4px rgba(255, 255, 255, 0.28);
+  background: rgba(83, 70, 52, 0.18);
+}
+
+.daoImpressionSeal--jade .daoImpressionSeal__stamp {
+  background: rgba(34, 197, 94, 0.22);
+}
+
+.daoImpressionSeal--gold .daoImpressionSeal__stamp {
+  background: rgba(217, 119, 6, 0.24);
+}
+
+.daoImpressionSeal--vermillion .daoImpressionSeal__stamp {
+  background: rgba(185, 28, 28, 0.2);
+}
+
+.daoImpressionSeal--shadow .daoImpressionSeal__stamp {
+  background: rgba(55, 65, 81, 0.22);
+}
+
+.daoImpressionSeal__copy {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.daoImpressionSeal__copy strong,
+.daoImpressionSeal__copy span,
+.daoImpressionSeal__copy small {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.daoImpressionSeal__copy strong {
+  font-size: 12px;
+  line-height: 1.15;
+}
+
+.daoImpressionSeal__copy span,
+.daoImpressionSeal__copy small {
+  font-size: 11px;
+  color: rgba(53, 41, 30, 0.78);
+}
+

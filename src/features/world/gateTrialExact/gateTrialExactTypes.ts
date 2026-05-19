@@ -1,4 +1,5 @@
 import type { CombatAftermathSurfaceV1 } from '../../combatAftermath/index.js';
+import type { FailureReflectionSurfaceV1 } from '../../../systems/failureReflection/index.js';
 
 export type GateTrialExactSurfaceMode = 'fixture' | 'live';
 export type GateTrialExactValueSource = 'fixture' | 'live' | 'derived' | 'content' | 'synthetic';
@@ -27,8 +28,24 @@ export type GateTrialReadinessNodeId =
   | 'safetyNet'
   | 'gate';
 
-export type GateTrialFixId = 'forgeWeapon' | 'stockHealing' | 'upgradeTechnique' | 'ruinSupportRun' | 'adjustLoadout' | 'safetyNet';
-export type GateTrialRouteTarget = 'forge' | 'apothecary' | 'techniques' | 'ruins' | 'loadout' | 'cultivation' | 'gateTrial';
+export type GateTrialFixId =
+  | 'forgeWeapon'
+  | 'stockHealing'
+  | 'upgradeTechnique'
+  | 'ruinSupportRun'
+  | 'adjustLoadout'
+  | 'safetyNet'
+  | 'innerDemonReflection';
+export type GateTrialRouteTarget =
+  | 'forge'
+  | 'apothecary'
+  | 'techniques'
+  | 'ruins'
+  | 'bounties'
+  | 'expeditions'
+  | 'loadout'
+  | 'cultivation'
+  | 'gateTrial';
 
 export type GateTrialButtonIntent =
   | 'attempt-gate'
@@ -39,6 +56,8 @@ export type GateTrialButtonIntent =
   | 'route-to-apothecary'
   | 'route-to-techniques'
   | 'route-to-ruins'
+  | 'route-to-bounties'
+  | 'route-to-expeditions'
   | 'disabled';
 
 export interface GateTrialExactSurfaceMeta {
@@ -386,5 +405,6 @@ export interface GateTrialExactSurfaceV1 {
   primaryAction: GateTrialButtonSurface;
   runCompass?: GateTrialRunCompassSurface | null;
   aftermath?: CombatAftermathSurfaceV1 | null;
+  failureReflection?: FailureReflectionSurfaceV1 | null;
   debug: GateTrialExactDebugSurface;
 }

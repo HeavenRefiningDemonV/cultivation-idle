@@ -334,6 +334,12 @@ export function useGateTrialExactActionController(
       case 'ruins':
         openRuinsModule(cityId);
         return;
+      case 'bounties':
+        openBountiesModule(cityId);
+        return;
+      case 'expeditions':
+        openExpeditionsModule(cityId);
+        return;
       case 'cultivation':
         openCultivationTab();
         return;

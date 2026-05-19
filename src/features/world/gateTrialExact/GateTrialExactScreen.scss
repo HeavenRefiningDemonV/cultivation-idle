@@ -3082,3 +3082,63 @@ button.gateTrialTacticalCell:disabled {
   right: 5px;
   border-width: 1px 1px 0 0;
 }
+
+.gateTrialInnerDemon {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid rgba(113, 56, 37, 0.38);
+  border-radius: 8px;
+  background: rgba(48, 30, 25, 0.78);
+  color: #f4e1c5;
+  box-sizing: border-box;
+}
+
+.gateTrialInnerDemon__title,
+.gateTrialInnerDemon__line,
+.gateTrialInnerDemon__diagnosis,
+.gateTrialInnerDemon__count {
+  margin: 0;
+}
+
+.gateTrialInnerDemon__title {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0;
+}
+
+.gateTrialInnerDemon__line,
+.gateTrialInnerDemon__diagnosis {
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+.gateTrialInnerDemon__count {
+  display: block;
+  color: rgba(244, 225, 197, 0.72);
+  font-size: 0.72rem;
+}
+
+.gateTrialInnerDemon__route {
+  display: grid;
+  gap: 3px;
+  width: 100%;
+  padding: 9px 10px;
+  border: 1px solid rgba(215, 174, 99, 0.45);
+  border-radius: 6px;
+  background: rgba(115, 63, 42, 0.62);
+  color: #fff2d2;
+  text-align: left;
+  cursor: pointer;
+}
+
+.gateTrialInnerDemon__route span {
+  font-weight: 700;
+  font-size: 0.78rem;
+}
+
+.gateTrialInnerDemon__route small {
+  color: rgba(255, 242, 210, 0.78);
+  font-size: 0.7rem;
+  line-height: 1.25;
+}

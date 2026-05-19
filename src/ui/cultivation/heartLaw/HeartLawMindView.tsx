@@ -8,6 +8,8 @@ import { useContentStore } from '../../../stores/contentStore.js';
 import { useCultivationStore } from '../../../stores/cultivationStore.js';
 import { useGameStore } from '../../../stores/gameStore.js';
 import { usePrestigeStore } from '../../../stores/prestigeStore.js';
+import { buildRecentDaoImpressionSurfaces, useDaoImpressionStore } from '../../../systems/daoImpressions/index.js';
+import { DaoImpressionSeal } from '../../daoImpressions/DaoImpressionSeal.js';
 import { ChangeHeartLawModal } from './ChangeHeartLawModal.js';
 import { RadialVerseRing } from './RadialVerseRing.js';
 import './HeartLawMindView.scss';
@@ -56,6 +58,7 @@ export function HeartLawMindView() {
   const heartLawsById = useContentStore((state) => state.maps.heartLawsById);
   const spiritRoot = usePrestigeStore((state) => state.spiritRoot);
   const realm = useGameStore((state) => state.realm);
+  const recentDaoAwards = useDaoImpressionStore((state) => state.awards.slice(0, 3));
 
   const [selectedVerse, setSelectedVerse] = useState(chapter);
   const [showModal, setShowModal] = useState(false);
@@ -90,6 +93,10 @@ export function HeartLawMindView() {
   const selectedVerseSummary = useMemo(
     () => summarizeNormalizedEffects(selectedHeartLawId, selectedVerse),
     [selectedHeartLawId, selectedVerse],
+  );
+  const recentDaoSurfaces = useMemo(
+    () => buildRecentDaoImpressionSurfaces(recentDaoAwards, 3),
+    [recentDaoAwards],
   );
 
   const isNewLife = realm.index === INITIAL_REALM.index && realm.substage === INITIAL_REALM.substage;
@@ -173,6 +180,14 @@ export function HeartLawMindView() {
           </p>
         </div>
       </section>
+
+      {recentDaoSurfaces.length > 0 ? (
+        <section className="heartLawMindImpressions" aria-label="Recent Dao Impressions">
+          {recentDaoSurfaces.map((surface) => (
+            <DaoImpressionSeal key={surface.awardId} surface={surface} />
+          ))}
+        </section>
+      ) : null}
 
       {showModal ? (
         <ChangeHeartLawModal

@@ -5,7 +5,6 @@ import { useActivityStore } from './activityStore.js';
 import { useCombatStore } from './combatStore.js';
 import { useCityStore } from './cityStore.js';
 import { useBountyStore } from './bountyStore.js';
-import { useHeartLawStore } from './heartLawStore.js';
 import { RewardService } from '../services/rewards/index.js';
 import { applyLootBonuses } from '../services/rewards/applyLootBonuses.js';
 import { D } from '../utils/numbers.js';
@@ -254,9 +253,6 @@ export const useRuinsStore = create()(immer((set, get) => {
                     }
                 }
                 useBountyStore.getState().recordEvent({ type: 'RUINS_RUN_CLEAR', cityId, amount: 1 });
-                if (useHeartLawStore.getState().selectedHeartLawId) {
-                    useHeartLawStore.getState().addComprehension(15, 'ruinsClear');
-                }
                 const now = Date.now();
                 const seconds = Math.max(0, (now - active.startedAt) / 1000);
                 const events = useCombatStore.getState().events;

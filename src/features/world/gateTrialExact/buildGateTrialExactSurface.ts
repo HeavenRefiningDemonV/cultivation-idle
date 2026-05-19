@@ -44,7 +44,9 @@ import {
   type GateTrialReadinessSurface,
 } from '../../../systems/readiness/section5Adapters.js';
 import { buildLiveRunCompassSurfaceV2 } from '../../../systems/ui/runCompass/index.js';
+import { buildFailureReflectionSurface, useFailureReflectionStore } from '../../../systems/failureReflection/index.js';
 import { buildLiveCombatAftermathSurface } from '../../combatAftermath/index.js';
+import { getTrialGateIndex } from '../../../services/diagnostics/balanceTelemetryService.js';
 
 import {
   GATE_TRIAL_EXACT_REGION_ORDER,
@@ -110,6 +112,7 @@ interface LiveResolvedContext {
   cityId: string;
   trialId: string;
   trialDef: TrialDef;
+  gateIndex: number;
   trialProgress: TrialProgress;
   lifecycle: TrialLifecycleSnapshot;
   readinessSurface: GateTrialReadinessSurface | null;
@@ -886,6 +889,7 @@ function resolveLiveContext(cityId: string, trialId: string | null): LiveResolve
   if (!contentStore.raw || !city || !resolvedTrialId || !trialDef) return null;
 
   const trialProgress = trialStore.getProgress(resolvedTrialId);
+  const gateIndex = getTrialGateIndex(resolvedTrialId);
   const requiredItemSatisfied = trialDef.requiredItemId
     ? inventory.getItemCount(trialDef.requiredItemId) > 0
     : true;
@@ -953,6 +957,7 @@ function resolveLiveContext(cityId: string, trialId: string | null): LiveResolve
     cityId,
     trialId: resolvedTrialId,
     trialDef,
+    gateIndex,
     trialProgress,
     lifecycle,
     readinessSurface,
@@ -1778,6 +1783,17 @@ export function buildGateTrialExactSurfaceFromStores(
                     : 'locked',
               }
   );
+  const activeFailureReflectionCandidate = useFailureReflectionStore
+    .getState()
+    .getActiveReflectionForTrial(resolvedTrialId, context.gateIndex);
+  const currentDiagnosisCode = context.readinessSurface?.rawDiagnosis?.primary ?? null;
+  const activeFailureReflection = activeFailureReflectionCandidate
+    && (!currentDiagnosisCode || activeFailureReflectionCandidate.diagnosisCode === currentDiagnosisCode)
+      ? activeFailureReflectionCandidate
+      : null;
+  const suppressedFailureReflectionNote = activeFailureReflectionCandidate && !activeFailureReflection
+    ? `Suppressed stale Inner Demon reflection for diagnosis ${activeFailureReflectionCandidate.diagnosisCode}; current diagnosis is ${currentDiagnosisCode ?? 'unavailable'}.`
+    : null;
 
   return {
     ...fixture,
@@ -1856,6 +1872,7 @@ export function buildGateTrialExactSurfaceFromStores(
       gateLabel: context.gateTitle,
       gateProofItemId: context.gateItemId,
     }),
+    failureReflection: activeFailureReflection ? buildFailureReflectionSurface(activeFailureReflection) : null,
     debug: {
       ...fixture.debug,
       regionOrder: GATE_TRIAL_EXACT_REGION_ORDER,
@@ -1870,6 +1887,7 @@ export function buildGateTrialExactSurfaceFromStores(
         'Ruins support row reads lastRunSummary and ruins progress when present.',
         'Approved Foundation Gate scenic plate bound from src/assets/world/gateTrial/foundation-gate-scene-approved-plate.png.',
         `Post-failure suggestion count observed: ${context.postFailureSuggestionCount}.`,
+        ...(suppressedFailureReflectionNote ? [suppressedFailureReflectionNote] : []),
       ],
       placeholderAssetKeysInUse: fixture.debug.placeholderAssetKeysInUse,
       visualContractNotes: fixture.debug.visualContractNotes,

@@ -1,14 +1,7 @@
 # Known Issues Ledger
 
-- Generated: 2026-05-19T10:17:30.038Z
+- Generated: 2026-05-19T15:05:56.867Z
 - Release gate headline: NO_GO
-
-## P4 closeout release-gate blockers
-- [fresh_run_acceptance] fresh_run_manual_pending: Required manual fresh-run coverage is incomplete for normal, cautious, and aggressive routes. Classification: non-P4 manual coverage gap.
-- [balance_regression] balance_regression_command_failed: `npm run balance:report:json` returned non-zero. Classification: non-P4 balance/report debt.
-- [route_comparison] adapter_exception: route comparison still throws `Cannot read properties of undefined (reading 'toLowerCase')`. Classification: non-P4 route-report adapter debt.
-- [runtime_diagnostics] runtime_diagnostics_errors: runtime diagnostics reported five error-level findings in diagnostic scenarios. Classification: non-P4 diagnostics/harness debt.
-- [full_test_suite] test_suite_failed: broad `npm run test` still fails across pre-existing exact-screen, economy, content, forge/apothecary, P6 visual, and legacy life-summary contract tests. Classification: broad non-P4 suite debt; focused P4 tests pass.
 
 ## Open blockers
 - None

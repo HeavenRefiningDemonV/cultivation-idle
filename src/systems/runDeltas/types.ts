@@ -12,6 +12,7 @@ export type RunDeltaSource =
   | 'prestige'
   | 'life'
   | 'offline'
+  | 'dao_impression'
   | 'manual'
   | 'technique'
   | 'unknown';

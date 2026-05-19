@@ -21,6 +21,7 @@ import {
 } from '../../progression/runtime/index.js';
 import { normalizeCityModulesForLiveSlice } from '../../world/liveWorldSchema.js';
 import { captureRunDeltaSnapshot } from '../../runDeltas/runDeltaStore.js';
+import { useFailureReflectionStore, type FailureReflectionRouteTarget } from '../../failureReflection/index.js';
 import { formatNumber } from '../../../utils/numbers.js';
 import {
   getDiagnosisLabel,
@@ -275,6 +276,103 @@ function routeForFailureFix(destination: FailureFixDestination, cityId: string |
   }
 }
 
+function routeForFailureReflection(
+  target: FailureReflectionRouteTarget,
+  label: string,
+  detail: string,
+  cityId: string | null,
+): RunCompassRouteV2 {
+  switch (target) {
+    case 'cultivation':
+      return tabRoute({
+        id: 'inner-demon-cultivation',
+        label,
+        detail,
+        tab: 'cultivation',
+        expectedDeltaLabel: 'Breath and threshold stability improve.',
+        source: 'readiness',
+        priority: 34,
+      });
+    case 'techniques':
+    case 'manual_pavilion':
+      return tabRoute({
+        id: 'inner-demon-techniques',
+        label,
+        detail,
+        tab: 'techniques',
+        expectedDeltaLabel: 'Build posture improves.',
+        source: 'readiness',
+        priority: 34,
+      });
+    case 'forge':
+      return moduleRoute({
+        id: 'inner-demon-forge',
+        label,
+        detail,
+        cityId,
+        moduleKey: 'forge',
+        expectedDeltaLabel: 'Forge floor rises before the next attempt.',
+        source: 'readiness',
+        priority: 34,
+      });
+    case 'apothecary':
+      return moduleRoute({
+        id: 'inner-demon-apothecary',
+        label,
+        detail,
+        cityId,
+        moduleKey: 'apothecary',
+        expectedDeltaLabel: 'Medicine reserve improves.',
+        source: 'readiness',
+        priority: 34,
+      });
+    case 'ruins':
+      return moduleRoute({
+        id: 'inner-demon-ruins',
+        label,
+        detail,
+        cityId,
+        moduleKey: 'ruins',
+        expectedDeltaLabel: 'Support materials improve.',
+        source: 'readiness',
+        priority: 34,
+      });
+    case 'bounties':
+      return moduleRoute({
+        id: 'inner-demon-bounties',
+        label,
+        detail,
+        cityId,
+        moduleKey: 'bounties',
+        expectedDeltaLabel: 'Merit support improves.',
+        source: 'readiness',
+        priority: 34,
+      });
+    case 'expeditions':
+      return moduleRoute({
+        id: 'inner-demon-expeditions',
+        label,
+        detail,
+        cityId,
+        moduleKey: 'expeditions',
+        expectedDeltaLabel: 'Background support improves.',
+        source: 'readiness',
+        priority: 34,
+      });
+    case 'gate_trial':
+      return moduleRoute({
+        id: 'inner-demon-gate-trial',
+        label,
+        detail,
+        cityId,
+        moduleKey: 'gateTrial',
+        expectedDeltaLabel: 'Gate result updates.',
+        source: 'readiness',
+        priority: 34,
+      });
+  }
+}
+
 function blockerKindForDiagnosis(primary: FailureDiagnosisCode): RunCompassBlockerKindV2 {
   switch (primary) {
     case 'undercultivated':
@@ -384,6 +482,9 @@ export function buildLiveRunCompassSurfaceV2(): RunCompassSurfaceV2 | null {
       : null;
     const visibleModuleKeys = normalizeCityModulesForLiveSlice(currentCityDef?.modules ?? []);
     const recentDeltas = captureRunDeltaSnapshot().map(toDeltaSummary);
+    const activeFailureReflection = activeTrial
+      ? useFailureReflectionStore.getState().getActiveReflectionForTrial(activeTrial.id)
+      : null;
     const canPrestige = prestige.canPrestige();
     const prestigeTarget = canPrestige || atCap ? PRESTIGE_TARGET : null;
     const prestigeHint: RunCompassPrestigeHintV2 | null = atCap
@@ -640,17 +741,25 @@ export function buildLiveRunCompassSurfaceV2(): RunCompassSurfaceV2 | null {
     } else if (section5.currentDiagnosis) {
       const diagnosis = section5.currentDiagnosis;
       const topFix = diagnosis.topFixes[0] ?? null;
+      const matchingReflection = activeFailureReflection?.diagnosisCode === diagnosis.primary ? activeFailureReflection : null;
       milestoneState = diagnosis.primary === 'bypassAvailable' ? 'attemptable' : 'gate_failed';
       milestoneLabel = activeTrial ? `Recover for ${activeTrial.name}` : 'Recover from gate rejection';
-      milestoneDetail = diagnosis.reasons[0] ?? getDiagnosisLabel(diagnosis.primary);
+      milestoneDetail = matchingReflection?.correctiveRoute.reason ?? diagnosis.reasons[0] ?? getDiagnosisLabel(diagnosis.primary);
       primaryBlocker = blocker({
         kind: blockerKindForDiagnosis(diagnosis.primary),
-        label: diagnosis.primary === 'bypassAvailable' ? 'Safety Net is available' : getDiagnosisLabel(diagnosis.primary),
+        label: matchingReflection ? 'Inner Demon Reflection active' : diagnosis.primary === 'bypassAvailable' ? 'Safety Net is available' : getDiagnosisLabel(diagnosis.primary),
         detail: milestoneDetail,
         severity: diagnosis.primary === 'close' || diagnosis.primary === 'bypassAvailable' ? 'info' : 'warning',
         source: 'readiness',
       });
-      primaryRoute = topFix
+      primaryRoute = matchingReflection
+        ? routeForFailureReflection(
+          matchingReflection.correctiveRoute.target,
+          matchingReflection.correctiveRoute.label,
+          matchingReflection.correctiveRoute.reason,
+          currentCityDef?.id ?? null,
+        )
+        : topFix
         ? routeForFailureFix(topFix.destination, currentCityDef?.id ?? null)
         : diagnosis.primary === 'bypassAvailable'
           ? moduleRoute({

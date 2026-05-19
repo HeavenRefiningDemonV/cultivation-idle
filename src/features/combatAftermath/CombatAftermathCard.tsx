@@ -111,6 +111,15 @@ export function CombatAftermathCard({ surface, compact = false, onRoute }: Comba
         </section>
       ) : null}
 
+      {surface.failureReflection ? (
+        <section className="combatAftermathCard__reflection" data-testid="combat-aftermath-inner-demon">
+          <span>{surface.failureReflection.title}</span>
+          <p>{surface.failureReflection.innerDemonLine}</p>
+          <strong>{surface.failureReflection.correctiveRouteLabel}</strong>
+          <small>{surface.failureReflection.correctiveRouteReason}</small>
+        </section>
+      ) : null}
+
       <footer className="combatAftermathCard__footer">
         <p className="combatAftermathCard__memoryLine">{surface.memoryLine}</p>
         <div className="combatAftermathCard__routes">

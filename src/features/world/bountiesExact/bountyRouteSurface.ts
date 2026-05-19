@@ -108,3 +108,10 @@ export function buildCityRecognitionSurface(args: BuildCityRecognitionSurfaceArg
     debugNotes: ['P3 keeps recognition as a notice layer.'],
   };
 }
+
+export function buildCityRecognitionMemoryLine(surface: CityRecognitionSurfaceV1): string | null {
+  if (surface.state === 'unknown') return null;
+  const title = surface.title;
+  const standing = surface.state.replace(/_/g, ' ');
+  return `${title}: ${surface.cityId} recorded ${standing} standing this life.`;
+}

@@ -80,6 +80,95 @@ function GateTrialStatusMedallion(props: {
   );
 }
 
+function mapReflectionRouteTarget(
+  target: NonNullable<GateTrialExactSurfaceV1['failureReflection']>['routeTarget'],
+): GateTrialFixSurface['routeTarget'] {
+  switch (target) {
+    case 'cultivation':
+      return 'cultivation';
+    case 'forge':
+      return 'forge';
+    case 'apothecary':
+      return 'apothecary';
+    case 'ruins':
+      return 'ruins';
+    case 'bounties':
+      return 'bounties';
+    case 'expeditions':
+      return 'expeditions';
+    case 'techniques':
+    case 'manual_pavilion':
+      return 'techniques';
+    case 'gate_trial':
+    default:
+      return 'gateTrial';
+  }
+}
+
+function reflectionIntentForRoute(routeTarget: GateTrialFixSurface['routeTarget']): GateTrialFixSurface['button']['intent'] {
+  switch (routeTarget) {
+    case 'forge':
+      return 'route-to-forge';
+    case 'apothecary':
+      return 'route-to-apothecary';
+    case 'techniques':
+      return 'route-to-techniques';
+    case 'ruins':
+      return 'route-to-ruins';
+    case 'bounties':
+      return 'route-to-bounties';
+    case 'expeditions':
+      return 'route-to-expeditions';
+    default:
+      return 'disabled';
+  }
+}
+
+function GateTrialFailureReflectionCard(props: {
+  surface: NonNullable<GateTrialExactSurfaceV1['failureReflection']>;
+  onTopFixAction?: (fix: GateTrialFixSurface) => void;
+}) {
+  const routeTarget = mapReflectionRouteTarget(props.surface.routeTarget);
+  const fix: GateTrialFixSurface = {
+    id: 'innerDemonReflection',
+    label: props.surface.correctiveRouteLabel,
+    iconKey: 'statusWarning',
+    routeTarget,
+    source: 'live',
+    button: {
+      label: props.surface.correctiveRouteLabel,
+      ariaLabel: props.surface.correctiveRouteLabel,
+      intent: reflectionIntentForRoute(routeTarget),
+      tone: 'warning',
+      enabled: true,
+      visible: true,
+      singleDominantCta: false,
+      ornamentVariant: 'jade-gold',
+    },
+  };
+  return el('section', {
+    className: `gateTrialInnerDemon gateTrialInnerDemon--${props.surface.tone}`,
+    'data-testid': 'gate-trial-inner-demon-reflection',
+    'aria-label': props.surface.title,
+  },
+    el('div', { className: 'gateTrialInnerDemon__copy' },
+      el('h4', { className: 'gateTrialInnerDemon__title' }, props.surface.title),
+      el('p', { className: 'gateTrialInnerDemon__line' }, props.surface.innerDemonLine),
+      el('p', { className: 'gateTrialInnerDemon__diagnosis' }, props.surface.diagnosisLine),
+      el('small', { className: 'gateTrialInnerDemon__count' }, props.surface.repeatedCountLine),
+    ),
+    el('button', {
+      type: 'button',
+      className: 'gateTrialInnerDemon__route',
+      'data-route-target': routeTarget,
+      onClick: () => props.onTopFixAction?.(fix),
+    },
+      el('span', null, props.surface.correctiveRouteLabel),
+      el('small', null, props.surface.correctiveRouteReason),
+    ),
+  );
+}
+
 function GateTrialRailRowView(props: { row: GateTrialRailRowSurface; variant: 'minimum' | 'prep' }) {
   const { row, variant } = props;
   if (variant === 'minimum') {
@@ -932,6 +1021,10 @@ function GateTrialExactScreen(props: GateTrialExactScreenProps) {
             el('span', { className: 'gateTrialRecommendedPanel__safetyNetLabel' }, surface.recommendedPanel.safetyNetButton.label),
           ) : null,
         ),
+        surface.failureReflection ? el(GateTrialFailureReflectionCard, {
+          surface: surface.failureReflection,
+          onTopFixAction: props.onTopFixAction,
+        }) : null,
         el('section', {
           className: 'gateTrialRecommendedPanel__section gateTrialRecommendedPanel__section--topFixes',
           'data-testid': 'gate-trial-top-fixes',

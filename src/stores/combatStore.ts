@@ -55,7 +55,6 @@ function stampCombatEvent<TType extends CombatEvent['type']>(
   return { ...event, type, at, id: event.id ?? makeCombatEventId(at) } as Extract<CombatEvent, { type: TType }>;
 }
 import { COMBAT_ACTIVITY_TYPES } from '../types/activity.js';
-import { COMPREHENSION_EVENT_BONUSES } from '../content/tuning/cultivationTuning.js';
 import { buildTrialDefeatSummary } from '../systems/combat/trialModel.js';
 import { buildTrialAttemptId, getEligibleFailCount, getTrialGateIndex } from '../services/diagnostics/balanceTelemetryService.js';
 import { normalizeTrialBossMechanics } from '../systems/combat/trialBossMechanicCatalog.js';
@@ -70,6 +69,7 @@ import { GameEvents } from '../services/events/GameEvents.js';
 import { getDefaultCastingPolicyForAiProfile } from '../systems/builds/castingPolicyFit.js';
 import { buildOutskirtsRewardBundle, getOutskirtsDropsConfig } from '../systems/economy/index.js';
 import { getGateFailureMeritPolicyForTrial } from '../systems/economy/gateFailureMeritPolicy.js';
+import { buildSection5ReadinessSurface } from '../systems/readiness/section5Adapters.js';
 
 
 function getHeartLawCombatMultiplier(): number {
@@ -1416,12 +1416,6 @@ export const useCombatStore = create<ExtendedCombatState>()(
         const attemptId = buildTrialAttemptId(trialId, state.combatStartTime ?? Date.now());
 
         useActivityStore.getState().stopActivity();
-        if (useHeartLawStore.getState().selectedHeartLawId) {
-          useHeartLawStore
-            .getState()
-            .addComprehension(COMPREHENSION_EVENT_BONUSES.trialClear, 'trialClear');
-        }
-
         if (countsTowardFailSafe) {
           useTrialStore.getState().markCleared(trialId);
           useCityStore.getState().markGateTrialCleared(cityId);
@@ -1450,6 +1444,8 @@ export const useCombatStore = create<ExtendedCombatState>()(
             outcome: 'victory',
             source: 'trial',
             trialId,
+            cityId,
+            isBoss: true,
             durationSec,
             timestamp: Date.now(),
             ...combatSummaryPayload,
@@ -1473,6 +1469,13 @@ export const useCombatStore = create<ExtendedCombatState>()(
               enemyId: enemy.id,
               outcome: 'victory',
               source: 'ruins',
+              cityId,
+              sourceId: ruinId,
+              ruinId,
+              runId,
+              roomIndex,
+              roomCount: combatContext.roomCount,
+              isBoss: roomIndex + 1 >= combatContext.roomCount,
               durationSec: state.combatStartTime ? (Date.now() - state.combatStartTime) / 1000 : undefined,
               timestamp: Date.now(),
               ...combatSummaryPayload,
@@ -1508,13 +1511,6 @@ export const useCombatStore = create<ExtendedCombatState>()(
           useBountyStore
             .getState()
             .recordEvent({ type: isBossFight ? 'OUTSKIRTS_BOSS_KILL' : 'OUTSKIRTS_KILL', cityId, amount: 1 });
-          if (isBossFight) {
-            if (useHeartLawStore.getState().selectedHeartLawId) {
-              useHeartLawStore
-                .getState()
-                .addComprehension(COMPREHENSION_EVENT_BONUSES.outskirtsBoss, 'outskirtsBoss');
-            }
-          }
         }
         if (isBossFight && cityId) {
           useCityStore.getState().markOutskirtsBossDefeated(cityId);
@@ -1537,6 +1533,9 @@ export const useCombatStore = create<ExtendedCombatState>()(
             enemyId: enemy.id,
             outcome: 'victory',
             source: 'outskirts',
+            cityId,
+            sourceId,
+            isBoss: isBossFight,
             durationSec: state.combatStartTime ? (Date.now() - state.combatStartTime) / 1000 : undefined,
             timestamp: Date.now(),
             ...combatSummaryPayload,
@@ -1725,6 +1724,9 @@ export const useCombatStore = create<ExtendedCombatState>()(
         const trialStore = useTrialStore.getState();
         trialStore.recordAttemptSummary(context.trialId, summary);
         trialStore.recordFailure(context.trialId, context.countsTowardFailSafe);
+        const failureReadinessSurface = buildSection5ReadinessSurface(context.trialId);
+        const failureDiagnosis = failureReadinessSurface?.diagnosis ?? null;
+        const failureTopFix = failureDiagnosis?.topFixes[0] ?? null;
 
         if (context.countsTowardFailSafe) {
           const content = useContentStore.getState().raw;
@@ -1748,6 +1750,9 @@ export const useCombatStore = create<ExtendedCombatState>()(
             bossHpPctRemaining: Number(summary.bossHpPct) / 100,
             countsTowardFailSafe: context.countsTowardFailSafe,
             eligibleFailCountAfterAttempt: getEligibleFailCount(context.trialId),
+            ...(failureDiagnosis?.primary ? { diagnosisCode: failureDiagnosis.primary } : {}),
+            ...(failureTopFix?.destination ? { topFixDestination: failureTopFix.destination } : {}),
+            ...(failureTopFix?.reason ? { topFixReason: failureTopFix.reason } : {}),
           },
         });
       }

@@ -6,6 +6,7 @@ import type {
 import type { RunCausalityDelta } from '../../systems/runDeltas/types.js';
 import type { CombatResolvedEvent, TrialsAttemptResolvedEvent } from '../../services/events/GameEvents.js';
 import type { GrantRewardsResult } from '../../services/rewards/types.js';
+import type { FailureReflectionSurfaceV1 } from '../../systems/failureReflection/index.js';
 
 export type CombatAftermathContextKind = 'outskirts' | 'ruins' | 'gate_trial';
 export type CombatAftermathOutcomeKind =
@@ -115,6 +116,7 @@ export interface CombatAftermathSurfaceV1 {
   economyDelta: CombatAftermathDeltaSurface | null;
   doctrineDelta: CombatAftermathDeltaSurface | null;
   diagnosis: CombatAftermathDiagnosisSurface | null;
+  failureReflection?: FailureReflectionSurfaceV1 | null;
   memoryLine: string;
   primaryRoute: CombatAftermathRouteSurface | null;
   secondaryRoutes: CombatAftermathRouteSurface[];
@@ -157,6 +159,7 @@ export interface CombatAftermathBuildSnapshot {
   combatSummary?: CombatAftermathCombatSummaryInput | null;
   trialAttempt?: Partial<TrialsAttemptResolvedEvent['payload']> | null;
   diagnosis?: CombatAftermathDiagnosisInput | null;
+  failureReflection?: FailureReflectionSurfaceV1 | null;
   runCompass?: RunCompassSurfaceV2 | null;
   recentDeltas?: RunCausalityDelta[];
   itemNamesById?: Record<string, { name?: string } | string | undefined>;

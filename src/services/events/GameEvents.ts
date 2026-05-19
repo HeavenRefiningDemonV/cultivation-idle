@@ -21,6 +21,13 @@ export type CombatResolvedEvent = {
     enemyId?: string;
     outcome?: 'victory' | 'defeat';
     source?: string;
+    cityId?: string;
+    sourceId?: string;
+    ruinId?: string;
+    runId?: string;
+    roomIndex?: number;
+    roomCount?: number;
+    isBoss?: boolean;
     trialId?: string;
     durationSec?: number;
     playerHpPctRemaining?: number;
@@ -735,6 +742,49 @@ export type TrialsAttemptResolvedEvent = {
     bossHpPctRemaining?: number;
     countsTowardFailSafe: boolean;
     eligibleFailCountAfterAttempt?: number;
+    diagnosisCode?: string;
+    topFixDestination?: string;
+    topFixReason?: string;
+  };
+};
+
+export type DaoImpressionAwardedEvent = {
+  type: 'dao/impression_awarded';
+  payload: {
+    timestamp: number;
+    awardId: string;
+    impressionId: string;
+    sourceKind:
+      | 'outskirts_first_boss'
+      | 'gate_close_defeat'
+      | 'gate_clear'
+      | 'ruins_completion'
+      | 'breakthrough_resonance'
+      | 'technique_mastery_milestone';
+    sourceEventKey: string;
+    comprehensionDelta: number;
+    applied: boolean;
+    targetHeartLawId: string | null;
+    memoryEligible: boolean;
+    title: string;
+    memoryLine: string;
+    routeKind?: 'heart_law' | 'cultivation' | 'gate_trial' | 'techniques' | 'records';
+    routeLabel?: string;
+  };
+};
+
+export type FailureReflectionUpdatedEvent = {
+  type: 'failure_reflection/updated';
+  payload: {
+    timestamp: number;
+    reflectionId: string;
+    trialId: string;
+    gateIndex: number;
+    diagnosisCode: string;
+    repeatedCount: number;
+    resolved: boolean;
+    correctiveRouteTarget: string;
+    correctiveRouteLabel: string;
   };
 };
 
@@ -935,6 +985,8 @@ export type GameEvent =
   | ProgressionContentCapReachedEvent
   | TrialsAttemptStartedEvent
   | TrialsAttemptResolvedEvent
+  | DaoImpressionAwardedEvent
+  | FailureReflectionUpdatedEvent
   | BountiesClaimedEvent
   | ExpeditionsStartedEvent
   | ExpeditionsClaimedEvent

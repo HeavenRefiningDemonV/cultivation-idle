@@ -52,7 +52,8 @@
 .combatAftermathCard__footer,
 .combatAftermathCard__groupHeader,
 .combatAftermathCard__deltaSlip,
-.combatAftermathCard__diagnosis {
+.combatAftermathCard__diagnosis,
+.combatAftermathCard__reflection {
   position: relative;
   z-index: 1;
 }
@@ -114,7 +115,8 @@
 }
 
 .combatAftermathCard__groupHeader strong,
-.combatAftermathCard__diagnosis span {
+.combatAftermathCard__diagnosis span,
+.combatAftermathCard__reflection span {
   font-size: 0.72rem;
   color: #5f3f1f;
   text-transform: uppercase;
@@ -157,7 +159,8 @@
 }
 
 .combatAftermathCard__deltaSlip,
-.combatAftermathCard__diagnosis {
+.combatAftermathCard__diagnosis,
+.combatAftermathCard__reflection {
   display: grid;
   gap: 0.16rem;
   padding: 0.48rem 0.55rem;
@@ -179,6 +182,7 @@
 }
 
 .combatAftermathCard__diagnosis p,
+.combatAftermathCard__reflection p,
 .combatAftermathCard__memoryLine {
   margin: 0;
   font-size: 0.78rem;
@@ -188,6 +192,22 @@
 .combatAftermathCard__diagnosis strong {
   font-size: 0.76rem;
   color: #7c321f;
+}
+
+.combatAftermathCard__reflection strong,
+.combatAftermathCard__reflection small {
+  display: block;
+}
+
+.combatAftermathCard__reflection strong {
+  font-size: 0.76rem;
+  color: #7c321f;
+}
+
+.combatAftermathCard__reflection small {
+  color: rgba(47, 36, 24, 0.72);
+  font-size: 0.72rem;
+  line-height: 1.3;
 }
 
 .combatAftermathCard__footer {

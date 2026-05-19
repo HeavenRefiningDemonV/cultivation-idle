@@ -2,6 +2,7 @@ import { useCombatStore } from '../../stores/combatStore.js';
 import { useContentStore } from '../../stores/contentStore.js';
 import { useTrialStore } from '../../stores/trialStore.js';
 import { buildLiveRunCompassSurfaceV2 } from '../../systems/ui/runCompass/index.js';
+import { buildFailureReflectionSurface, useFailureReflectionStore } from '../../systems/failureReflection/index.js';
 import { captureRunDeltaSnapshot } from '../../systems/runDeltas/runDeltaStore.js';
 import type { RunCausalityDelta } from '../../systems/runDeltas/types.js';
 import { findLatestCombatAftermathEvents } from './combatAftermathEventBridge.js';
@@ -147,7 +148,12 @@ function buildSpoilsGroups(snapshot: CombatAftermathBuildSnapshot): CombatAfterm
 
   for (const delta of snapshot.recentDeltas ?? []) {
     if (!delta.rewardSummary) continue;
-    pushGroupLine(groups, delta.source === 'trial' ? 'gate_prep' : 'immediate_spend', {
+    const groupId = delta.source === 'dao_impression'
+      ? 'rare_signs'
+      : delta.source === 'trial'
+        ? 'gate_prep'
+        : 'immediate_spend';
+    pushGroupLine(groups, groupId, {
       id: `delta:${delta.id}`,
       label: delta.label,
       value: delta.rewardSummary,
@@ -462,6 +468,7 @@ export function buildCombatAftermathSurfaceFromSnapshot(snapshot: CombatAftermat
     economyDelta: buildEconomyDelta(snapshot, spoilsGroups),
     doctrineDelta: buildDoctrineDelta(snapshot, spoilsGroups),
     diagnosis,
+    failureReflection: snapshot.failureReflection ?? null,
     memoryLine: buildMemoryLine(snapshot, outcome.kind, diagnosis),
     primaryRoute,
     secondaryRoutes,
@@ -472,6 +479,7 @@ export function buildCombatAftermathSurfaceFromSnapshot(snapshot: CombatAftermat
 }
 
 function matchesContext(delta: RunCausalityDelta, hint: BuildLiveCombatAftermathContextHint): boolean {
+  if (delta.source === 'dao_impression') return true;
   if (hint.kind === 'gate_trial') return delta.source === 'trial' || /gate|trial/i.test(delta.detail);
   if (hint.kind === 'ruins') return delta.source === 'combat' || /ruin|material|craft/i.test(delta.detail);
   return delta.source === 'rewards' || delta.source === 'combat' || /outskirts|gold/i.test(delta.detail);
@@ -503,6 +511,9 @@ export function buildLiveCombatAftermathSurface(
   const combat = useCombatStore.getState();
   const content = useContentStore.getState();
   const trialProgress = contextHint.trialId ? useTrialStore.getState().getProgress(contextHint.trialId) : null;
+  const failureReflection = contextHint.trialId
+    ? useFailureReflectionStore.getState().getActiveReflectionForTrial(contextHint.trialId)
+    : null;
   const hasResultSignal =
     recentDeltas.length > 0 ||
     combat.combatResolved ||
@@ -559,6 +570,7 @@ export function buildLiveCombatAftermathSurface(
       : null,
     trialAttempt,
     diagnosis: diagnosisFromTrialSummary(contextHint.trialId),
+    failureReflection: failureReflection ? buildFailureReflectionSurface(failureReflection) : null,
     itemNamesById: content.maps.itemsById,
     sourceEventIds: eventMemory.sourceEventIds,
     debugNotes: [

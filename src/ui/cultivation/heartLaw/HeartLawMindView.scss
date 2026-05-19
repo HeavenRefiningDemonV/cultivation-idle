@@ -199,6 +199,16 @@
   min-height: 30px;
 }
 
+.heartLawMindImpressions {
+  border: 1px solid rgba(120, 88, 48, 0.2);
+  border-radius: 12px;
+  background: rgba(255, 252, 245, 0.72);
+  padding: 10px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
 @media (max-width: 960px) {
   .heartLawMindHeader,
   .heartLawMindCenter,
@@ -212,5 +222,9 @@
 
   .heartLawMindRadial {
     min-height: 280px;
+  }
+
+  .heartLawMindImpressions {
+    grid-template-columns: minmax(0, 1fr);
   }
 }

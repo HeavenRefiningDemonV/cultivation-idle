@@ -1,0 +1,109 @@
+.p5CloseoutHarness {
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding: 32px;
+  background:
+    linear-gradient(180deg, rgba(17, 24, 39, 0.74), rgba(20, 16, 12, 0.78)),
+    radial-gradient(circle at 18% 8%, rgba(184, 137, 66, 0.26), transparent 30%),
+    #201c16;
+  color: #f8f1df;
+}
+
+.p5CloseoutHarness__header {
+  max-width: 920px;
+  margin: 0 auto 24px;
+}
+
+.p5CloseoutHarness__eyebrow {
+  margin: 0 0 8px;
+  color: #d7b16c;
+  font-size: 0.78rem;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.p5CloseoutHarness__header h1 {
+  margin: 0;
+  font-size: 2rem;
+  line-height: 1.12;
+}
+
+.p5CloseoutHarness__header p:last-child {
+  max-width: 720px;
+  margin: 10px 0 0;
+  color: rgba(248, 241, 223, 0.78);
+}
+
+.p5CloseoutHarness__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.75fr);
+  gap: 18px;
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.p5CloseoutHarness > .combatAftermathCard,
+.p5CloseoutHarness__panel {
+  max-width: 920px;
+  margin: 0 auto;
+}
+
+.p5CloseoutHarness__panel {
+  box-sizing: border-box;
+  padding: 18px;
+  border: 1px solid rgba(215, 177, 108, 0.38);
+  border-radius: 8px;
+  background: rgba(34, 28, 19, 0.86);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.p5CloseoutHarness__panel--warning {
+  border-color: rgba(198, 128, 72, 0.72);
+}
+
+.p5CloseoutHarness__panel h2 {
+  margin: 0 0 12px;
+  font-size: 1.1rem;
+}
+
+.p5CloseoutHarness__panel p {
+  margin: 0 0 12px;
+  color: rgba(248, 241, 223, 0.82);
+}
+
+.p5CloseoutHarness__panel strong {
+  display: block;
+  color: #f1cf8a;
+}
+
+.p5CloseoutHarness__panel small {
+  display: block;
+  margin-top: 8px;
+  color: rgba(248, 241, 223, 0.68);
+}
+
+.p5CloseoutHarness__seals {
+  display: grid;
+  gap: 10px;
+}
+
+.p5CloseoutHarness__memoryList {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding-left: 18px;
+}
+
+.p5CloseoutHarness__memoryList li {
+  color: rgba(248, 241, 223, 0.86);
+}
+
+@media (max-width: 760px) {
+  .p5CloseoutHarness {
+    padding: 18px;
+  }
+
+  .p5CloseoutHarness__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

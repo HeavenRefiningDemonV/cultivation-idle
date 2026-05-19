@@ -1,0 +1,234 @@
+{
+  "schemaVersion": "p6-preflight-v1",
+  "generatedAt": "2026-05-19T18:07:39.5147959+03:00",
+  "repo": {
+    "cwd": "C:\\Users\\abdul\\Desktop\\cultivation-idle",
+    "branch": "codex/p5-xianxia-memory-mechanics",
+    "gitStatusEntryCount": 1761,
+    "nodeVersion": "v24.14.0",
+    "npmVersion": "11.9.0",
+    "rootPathChecks": [
+      { "path": "AGENTS.md", "exists": true },
+      { "path": "package.json", "exists": true },
+      { "path": "package-lock.json", "exists": true },
+      { "path": "public/cultivation_idle_content_bible_v1_config", "exists": true },
+      { "path": "scripts", "exists": true },
+      { "path": "docs/release", "exists": true },
+      { "path": "src", "exists": true },
+      { "path": "tests", "exists": true },
+      { "path": "tsconfig.tests.json", "exists": true },
+      { "path": "tsconfig.progression-fixtures.json", "exists": true },
+      { "path": "vite.config.ts", "exists": true },
+      { "path": "playwright.config.ts", "exists": true }
+    ]
+  },
+  "commands": [
+    {
+      "command": "pwd",
+      "result": "pass",
+      "exitCode": 0,
+      "summary": "Confirmed live checkout at C:\\Users\\abdul\\Desktop\\cultivation-idle.",
+      "classification": "evidence"
+    },
+    {
+      "command": "git status --short",
+      "result": "warning",
+      "exitCode": 0,
+      "summary": "Working tree is dirty with 1761 status entries, including P5 source/docs, generated release docs, tmp-progression-fixtures, review-bundle deletions, and untracked P5/P6 bundles.",
+      "classification": "release blocker",
+      "nextAction": "Do not revert user state. Any P6 continuation must either isolate, accept, or cleanly classify this dirty baseline."
+    },
+    {
+      "command": "node --version",
+      "result": "pass",
+      "exitCode": 0,
+      "summary": "v24.14.0",
+      "classification": "evidence"
+    },
+    {
+      "command": "npm --version",
+      "result": "pass",
+      "exitCode": 0,
+      "summary": "11.9.0",
+      "classification": "evidence"
+    },
+    {
+      "command": "npm run release:implementation-baseline:json",
+      "result": "pass",
+      "exitCode": 0,
+      "summary": "Implementation baseline found package scripts, runtime content, tests, configs, node_modules, and release docs.",
+      "classification": "pass"
+    },
+    {
+      "command": "npm run release:runtime-content-manifest:json",
+      "result": "pass",
+      "exitCode": 0,
+      "summary": "All 19 source runtime content JSON files are present and non-empty.",
+      "classification": "pass"
+    },
+    {
+      "command": "npm run typecheck",
+      "result": "pass",
+      "exitCode": 0,
+      "summary": "tsc --noEmit completed.",
+      "classification": "pass"
+    },
+    {
+      "command": "npm run check:icons",
+      "result": "pass",
+      "exitCode": 0,
+      "summary": "No emoji icon usage found in UI source files.",
+      "classification": "pass"
+    },
+    {
+      "command": "npm run validate:content",
+      "result": "pass",
+      "exitCode": 0,
+      "summary": "Content validation passed; technique and pavilion pool counts printed for all live cities.",
+      "classification": "pass"
+    },
+    {
+      "command": "npm run progression:report",
+      "result": "pass_with_warnings",
+      "exitCode": 0,
+      "summary": "Authored slice remains five-city/five-trial through Spirit Severing. Diagnostics warn about gate namespace split, offline pipeline split, hidden prestige runtime consumer, and partial prestige reset.",
+      "classification": "post-semester debt",
+      "nextAction": "Keep warnings classified unless they surface in P6 scenario evidence."
+    },
+    {
+      "command": "npm run release:prestige-runtime-audit:json",
+      "result": "pass",
+      "exitCode": 0,
+      "summary": "11 visible live prestige effects, 5 deferred effects, 11 hidden unsupported effects, 0 unknown blocked effects.",
+      "classification": "pass"
+    },
+    {
+      "command": "npm run build",
+      "result": "pass_with_warnings",
+      "exitCode": 0,
+      "summary": "Production build completed. Warnings: stale Browserslist data, unresolved InsideDungeon.png runtime reference, chunk size advisory.",
+      "classification": "waiver candidate",
+      "nextAction": "Warnings must be accepted or reclassified before release candidate signoff."
+    },
+    {
+      "command": "npm run release:gate -- --json",
+      "result": "fail",
+      "exitCode": 1,
+      "summary": "Release gate headline NO_GO with 5 unresolved blockers, 1 pending-manual check, and 6 untracked waiver-candidate findings.",
+      "classification": "release blocker",
+      "nextAction": "Do not proceed to P6 tuning or release signoff until blockers are fixed or explicitly waived where allowed."
+    },
+    {
+      "command": "npm exec tsc -- --project tsconfig.tests.json",
+      "result": "pass",
+      "exitCode": 0,
+      "summary": "Test TypeScript compile completed.",
+      "classification": "pass"
+    },
+    {
+      "command": "focused P5 prerequisite tests",
+      "result": "pass",
+      "exitCode": 0,
+      "summary": "43 P5-focused Dao Impression, Failure Reflection, Tribulation, Artifact, City Recognition, Heart Law, and Run Compass tests passed.",
+      "classification": "pass"
+    },
+    {
+      "command": "focused P4 prestige/offline prerequisite subset",
+      "result": "fail",
+      "exitCode": 1,
+      "summary": "38/40 passed. lifeSummarySurface.test still expects six blocks, but current/P5-expanded summary returns nine blocks. V2 and integration Life Summary, prestige advisor, reset preview, reclaim objective, and offline tests passed.",
+      "classification": "prior-phase blocker",
+      "nextAction": "Reconcile or replace the stale Life Summary V1 contract before using broad contract tests as release proof."
+    },
+    {
+      "command": "npm run release:fresh-run-report:json",
+      "result": "pass_with_warnings",
+      "exitCode": 0,
+      "summary": "Automated normal route reached Spirit Severing and cap truth; manual coverage is missing for normal, cautious, and aggressive routes, so releaseReady=false.",
+      "classification": "P6 blocker",
+      "nextAction": "P6 scenario telemetry/browser coverage must replace or satisfy the missing manual route evidence."
+    },
+    {
+      "command": "npm run release:runtime-diagnostics:json",
+      "result": "pass_with_failed_scenarios",
+      "exitCode": 0,
+      "summary": "clean_baseline passed. seeded_runtime_residue has 3 repairable errors; content_failure_snapshot has 2 errors including content_not_loaded.",
+      "classification": "release blocker",
+      "nextAction": "Classify diagnostics as expected seeded-failure scenarios or change the release gate so expected failure snapshots do not count as unresolved blockers."
+    },
+    {
+      "command": "npm run test:contracts",
+      "result": "fail",
+      "exitCode": 1,
+      "summary": "Broad contract suite is red. Confirmed failures include Apothecary live source [PavilionContent] manifest root, Life Summary six-block expectation versus nine blocks, and 10 World inspector proof source-assertion failures.",
+      "classification": "prior-phase blocker",
+      "nextAction": "Fix or explicitly classify broad contract failures before P6 can produce final release evidence."
+    }
+  ],
+  "p4Prerequisites": {
+    "status": "conditional",
+    "safeEnoughForMeasurement": false,
+    "findings": [
+      "Prestige forecast, reset preview, post-reset reclaim objective, offline surface, and v2 Life Summary checks passed in focused coverage.",
+      "Stale Life Summary V1 contract failed because the surface now returns nine blocks rather than the old six-block lock.",
+      "P4 browser smoke docs exist and claim 0 console errors, but P6 did not regenerate browser evidence."
+    ]
+  },
+  "p5Prerequisites": {
+    "status": "pass_for_focused_mechanics",
+    "safeEnoughForMeasurement": true,
+    "findings": [
+      "Focused P5 mechanics tests passed 43/43.",
+      "Dao Impression caps/cooldowns and RewardService comprehension bridge are covered.",
+      "Failure Reflection live diagnosis, stale-gate suppression, and no-reward policy are covered.",
+      "Tribulation Pressure remains disabled by default.",
+      "Artifact Imprints remain future-stub only with no live drops.",
+      "City Recognition remains notice/stub only."
+    ],
+    "deferred": [
+      "Route-completed Inner Demon resolution remains deferred.",
+      "Technique/manual mastery Dao Impression trigger remains deferred."
+    ]
+  },
+  "releaseGateClassification": {
+    "headline": "NO_GO",
+    "unresolvedBlockerCount": 5,
+    "pendingManualCount": 1,
+    "unresolvedWaiverCandidateCount": 6,
+    "items": [
+      {
+        "item": "fresh_run_acceptance manual coverage incomplete",
+        "classification": "P6 blocker",
+        "reason": "P6 is specifically responsible for scenario/browser/manual evidence."
+      },
+      {
+        "item": "runtime_diagnostics seeded/content-failure scenarios count as failing release evidence",
+        "classification": "release blocker",
+        "reason": "The command exits 0, but release gate treats scenario errors as unresolved until classified."
+      },
+      {
+        "item": "full test suite failed",
+        "classification": "prior-phase blocker",
+        "reason": "Broad contract failures predate P6 measurement and are not tuning issues."
+      },
+      {
+        "item": "build warnings untracked in gate despite build_warning_inventory dispositions",
+        "classification": "waiver candidate",
+        "reason": "Build succeeds, but release gate still reports untracked waiver candidates."
+      },
+      {
+        "item": "progression diagnostic warnings",
+        "classification": "post-semester debt",
+        "reason": "Known ledger entries already classify equivalent progression warnings."
+      }
+    ]
+  },
+  "decision": {
+    "p6_00": "no_go",
+    "p6_01": "blocked",
+    "p6_02": "blocked",
+    "p6_03": "blocked",
+    "reason": "The live checkout passed core source/runtime/build checks but failed prerequisite release evidence and broad contract health. Proceeding into scenario harness or tuning would mix P6 work with unresolved prior-phase blockers.",
+    "nextSafeStep": "Run a prerequisite repair/classification packet for release gate blockers, then rerun P6-00."
+  }
+}

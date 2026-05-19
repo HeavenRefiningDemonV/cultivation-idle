@@ -1,7 +1,11 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { buildBountyRouteSurface, buildCityRecognitionSurface } from '../../src/features/world/bountiesExact/bountyRouteSurface.js';
+import {
+  buildBountyRouteSurface,
+  buildCityRecognitionMemoryLine,
+  buildCityRecognitionSurface,
+} from '../../src/features/world/bountiesExact/bountyRouteSurface.js';
 import { getValidatedEconomicContent } from '../helpers/economy/setupEconomicRuntimeScenario.js';
 
 test('BountyRouteSurfaceV1 and CityRecognitionSurfaceV1 show Merit support without a social sim', async () => {
@@ -28,4 +32,10 @@ test('BountyRouteSurfaceV1 and CityRecognitionSurfaceV1 show Merit support witho
   assert.equal(recognition.version, 1);
   assert.equal(recognition.state, 'gate_challenger');
   assert.deepEqual(recognition.unlockedBenefits, []);
+  assert.equal(recognition.futureBenefits.every((benefit) => benefit.state === 'future'), true);
+  assert.doesNotMatch(JSON.stringify(recognition), /discount|stock unlock|sect rank|reputation currency/i);
+
+  const memoryLine = buildCityRecognitionMemoryLine(recognition);
+  assert.match(memoryLine ?? '', /recorded|standing|Gate Challenger/i);
+  assert.doesNotMatch(memoryLine ?? '', /discount|sect|currency/i);
 });

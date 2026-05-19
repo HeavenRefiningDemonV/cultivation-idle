@@ -28,3 +28,10 @@ test('live heart-law tab path uses radial mind language and grouped reading trut
 test('live heart-law owner does not use compatibility-era resonance wording helper', () => {
   assert.equal(mindViewSource.includes('getAffinityStatus('), false);
 });
+
+test('live heart-law owner renders compact recent Dao Impression seals without a new tab', () => {
+  assert.ok(mindViewSource.includes('DaoImpressionSeal'));
+  assert.ok(mindViewSource.includes('useDaoImpressionStore'));
+  assert.ok(mindViewSource.includes('heartLawMindImpressions'));
+  assert.equal(modalSource.includes('dao-heart-tab-impressions'), false);
+});

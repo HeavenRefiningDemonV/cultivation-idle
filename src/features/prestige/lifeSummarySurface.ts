@@ -12,6 +12,8 @@ import { useBountyStore } from '../../stores/bountyStore.js';
 import { useExpeditionStore } from '../../stores/expeditionStore.js';
 import { useProfessionStore } from '../../stores/professionStore.js';
 import { useBreakthroughEchoStore } from '../breakthroughEchoes/index.js';
+import { captureMemoryEligibleDaoImpressions } from '../../systems/daoImpressions/index.js';
+import { captureResolvedFailureReflections } from '../../systems/failureReflection/index.js';
 import { getPrestigeAdvisorSurface, type PrestigeAdvisorStateLabel } from './prestigeAdvisorSurface.js';
 import { buildPostResetObjectivePreview, type PrestigePostResetObjective } from './prestigeForecastSurface.js';
 import {
@@ -146,6 +148,8 @@ const buildHeadline = (args: {
 
 const buildMajorMemories = (args: {
   echoes: { echoId: string; memoryLine: string }[];
+  daoImpressions: { awardId: string; title: string; memoryLine: string }[];
+  failureReflections: { reflectionId: string; diagnosisCode: string; correctiveRoute: { label: string }; resolvedBy?: string }[];
   clearedTrials: number;
   bypassedTrials: number;
   totalRuinsRuns: number;
@@ -158,6 +162,26 @@ const buildMajorMemories = (args: {
     source: 'breakthrough_echo',
     summaryEligible: true,
   }));
+
+  args.daoImpressions.slice(0, 3).forEach((award) => {
+    memories.push({
+      id: `dao_${award.awardId}`,
+      title: award.title,
+      detail: award.memoryLine,
+      source: 'dao_impression',
+      summaryEligible: true,
+    });
+  });
+
+  args.failureReflections.slice(0, 2).forEach((reflection) => {
+    memories.push({
+      id: `reflection_${reflection.reflectionId}`,
+      title: 'Resolved Inner Demon',
+      detail: `Resolved ${reflection.diagnosisCode} gate pattern through ${reflection.correctiveRoute.label}.`,
+      source: 'gate_trial',
+      summaryEligible: true,
+    });
+  });
 
   if (args.clearedTrials > 0 || args.bypassedTrials > 0) {
     memories.push({
@@ -212,6 +236,8 @@ const buildCurrentBlocks = (): LifeSummaryBlock[] => {
   const expeditions = useExpeditionStore.getState();
   const profession = useProfessionStore.getState();
   const echoes = useBreakthroughEchoStore.getState().echoes;
+  const daoImpressions = captureMemoryEligibleDaoImpressions(3);
+  const failureReflections = captureResolvedFailureReflections(2);
   const advisor = getPrestigeAdvisorSurface();
   const status = buildSection5StatusSurface();
 
@@ -247,6 +273,7 @@ const buildCurrentBlocks = (): LifeSummaryBlock[] => {
       `Path: ${formatPathLabel(game.selectedPath)}`,
       `Heart Law: ${formatHeartLawLabel(cultivation.selectedHeartLawId)}`,
       `Build posture: ${formatArchetypeLabel(status.archetypeId)}`,
+      ...daoImpressions.map((award) => award.memoryLine),
       prestige.spiritRoot ? `Spirit Root: grade ${prestige.spiritRoot.grade}, ${prestige.spiritRoot.element}, purity ${prestige.spiritRoot.purity}%` : 'Spirit Root not rolled yet.',
     ], 'Doctrine data is still sparse for this life.'),
     world_progress: clampLines([
@@ -259,6 +286,7 @@ const buildCurrentBlocks = (): LifeSummaryBlock[] => {
       `Gate trials cleared: ${clearedTrials}`,
       `Gate trials bypassed: ${bypassedTrials}`,
       `Total gate attempts: ${totalTrialAttempts}`,
+      ...failureReflections.map((reflection) => `Resolved Inner Demon: ${reflection.diagnosisCode} corrected through ${reflection.correctiveRoute.label}.`),
       status.currentDiagnosis ? `Latest diagnosis: ${formatDiagnosisLabel(status.currentDiagnosis.primary)}` : 'No active gate diagnosis recorded.',
     ], 'No gate trial progress has been recorded yet.'),
     ruins_supply: clampLines([
@@ -304,6 +332,8 @@ export const buildCurrentLifeSummarySurface = (): LifeSummarySurface => {
   const ruins = useRuinsStore.getState();
   const ui = useUIStore.getState();
   const echoes = useBreakthroughEchoStore.getState().echoes;
+  const daoImpressions = captureMemoryEligibleDaoImpressions(3);
+  const failureReflections = captureResolvedFailureReflections(2);
   const clearedTrials = Object.values(trial.progressByTrialId).filter((progress) => progress.resolution === 'cleared').length;
   const bypassedTrials = Object.values(trial.progressByTrialId).filter((progress) => progress.resolution === 'bypassed').length;
   const totalRuinsRuns = Object.values(ruins.progressByRuinId).reduce((sum, progress) => sum + progress.totalRuns, 0);
@@ -334,6 +364,8 @@ export const buildCurrentLifeSummarySurface = (): LifeSummarySurface => {
     blocks: buildCurrentBlocks(),
     majorMemories: buildMajorMemories({
       echoes,
+      daoImpressions,
+      failureReflections,
       clearedTrials,
       bypassedTrials,
       totalRuinsRuns,

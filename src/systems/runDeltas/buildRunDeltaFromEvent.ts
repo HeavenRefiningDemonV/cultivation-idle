@@ -167,6 +167,50 @@ export function buildRunDeltaFromEvent(event: GameEvent): RunDeltaEventBuildResu
       };
     }
 
+    case 'dao/impression_awarded':
+      return {
+        kind: 'push',
+        delta: {
+          id: deltaId(event, event.payload.awardId),
+          source: 'dao_impression',
+          timestamp: event.payload.timestamp,
+          tone: event.payload.applied ? 'success' : 'info',
+          label: `Dao Impression gained: ${event.payload.title}`,
+          detail: event.payload.applied
+            ? `+${event.payload.comprehensionDelta} Comprehension`
+            : 'Spiritual trace recorded without comprehension.',
+          memoryLine: event.payload.memoryLine,
+          rewardSummary: event.payload.applied ? `+${event.payload.comprehensionDelta} Comprehension` : null,
+          doctrineDelta: event.payload.applied
+            ? { heartLawId: event.payload.targetHeartLawId, amount: event.payload.comprehensionDelta }
+            : null,
+          routeDelta: event.payload.routeKind && event.payload.routeLabel
+            ? { label: event.payload.routeLabel }
+            : null,
+        },
+      };
+
+    case 'failure_reflection/updated':
+      return {
+        kind: 'push',
+        delta: {
+          id: deltaId(event, event.payload.reflectionId),
+          source: 'trial',
+          timestamp: event.payload.timestamp,
+          tone: event.payload.resolved ? 'success' : 'warning',
+          label: event.payload.resolved ? 'Inner Demon resolved' : 'Inner Demon Reflection',
+          detail: event.payload.resolved
+            ? `${event.payload.correctiveRouteLabel} settled the repeated gate pattern.`
+            : `${event.payload.diagnosisCode} repeated ${event.payload.repeatedCount} times.`,
+          memoryLine: event.payload.resolved
+            ? `Resolved Inner Demon: ${event.payload.diagnosisCode} pattern settled.`
+            : `Inner Demon: repeated ${event.payload.diagnosisCode} at the gate.`,
+          routeDelta: event.payload.resolved
+            ? null
+            : { label: event.payload.correctiveRouteLabel },
+        },
+      };
+
     case 'progression/gate_resolved':
       return {
         kind: 'push',

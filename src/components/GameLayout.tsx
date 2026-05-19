@@ -42,11 +42,14 @@ import { OnboardingPromptRuntime } from './system/OnboardingPromptRuntime.js';
 import { SectionCAuditHarness, isSectionCAuditQueryEnabled } from '../dev/sectionCAudit/SectionCAuditHarness.js';
 import { Phase0CoreAuditHarness, isPhase0CoreAuditQueryEnabled } from '../dev/phase0CoreAudit/Phase0CoreAuditHarness.js';
 import { Phase6CombatAuditHarness, isPhase6CombatAuditQueryEnabled } from '../dev/phase6CombatAudit/Phase6CombatAuditHarness.js';
+import { P5CloseoutHarness, getP5CloseoutFixtureId } from '../dev/p5Closeout/P5CloseoutHarness.js';
 import { isLifeStartWizardRequired } from '../systems/ui/lifeStart/lifeStartWizardContract.js';
 import { StoryCutsceneOverlay } from '../features/story/StoryCutsceneOverlay.js';
 import { useStoryStore } from '../features/story/storyStore.js';
 import { useStoryTriggers } from '../features/story/useStoryTriggers.js';
 import { initRunDeltaEventBridge } from '../systems/runDeltas/initRunDeltaEventBridge.js';
+import { initDaoImpressionEventBridge } from '../systems/daoImpressions/index.js';
+import { initFailureReflectionEventBridge } from '../systems/failureReflection/index.js';
 import { initBreakthroughEchoEventBridge } from '../features/breakthroughEchoes/index.js';
 import { initCombatAftermathEventBridge } from '../features/combatAftermath/index.js';
 import './GameLayout.scss';
@@ -143,6 +146,8 @@ export function GameLayout() {
 
   useEffect(() => {
     initRunDeltaEventBridge();
+    initDaoImpressionEventBridge();
+    initFailureReflectionEventBridge();
     initBreakthroughEchoEventBridge();
     initCombatAftermathEventBridge();
   }, []);
@@ -254,6 +259,7 @@ export function GameLayout() {
   const showSectionCAuditHarness = isSectionCAuditQueryEnabled();
   const showPhase0CoreAuditHarness = isPhase0CoreAuditQueryEnabled();
   const showPhase6CombatAuditHarness = isPhase6CombatAuditQueryEnabled();
+  const p5CloseoutFixture = getP5CloseoutFixtureId();
   const shouldShowOfflineProgress =
     showOfflineProgressModal && showOfflineModalSetting && !suppressExactCaptureChrome;
   const shouldShowLifeStartWizard =
@@ -262,6 +268,14 @@ export function GameLayout() {
   useEffect(() => {
     setLifeStartWizardOpenForNotifications(lifeStartWizardOpen && shouldShowLifeStartWizard);
   }, [lifeStartWizardOpen, setLifeStartWizardOpenForNotifications, shouldShowLifeStartWizard]);
+
+  if (p5CloseoutFixture) {
+    return (
+      <FxQualityProvider>
+        <P5CloseoutHarness fixture={p5CloseoutFixture} />
+      </FxQualityProvider>
+    );
+  }
 
   return (
     <FxQualityProvider>
