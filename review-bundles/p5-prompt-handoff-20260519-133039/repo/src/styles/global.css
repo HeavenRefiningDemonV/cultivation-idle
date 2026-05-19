@@ -1,0 +1,178 @@
+:root {
+  --button-hover-neutral: #d9d9d9;
+  --ui-bottom-nav-height: 86px;
+  --ui-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --ui-bottom-nav-total: calc(var(--ui-bottom-nav-height) + var(--ui-safe-bottom));
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.uiNoShift {
+  position: relative;
+  box-sizing: border-box;
+  border: var(--ui-no-shift-border, 2px) solid transparent;
+  transform: none;
+  outline: var(--ui-no-shift-outline, 0 solid transparent);
+  outline-offset: var(--ui-no-shift-outline-offset, 0);
+  transition:
+    box-shadow var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease),
+    outline-color var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease),
+    filter var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease),
+    background-color var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease),
+    opacity var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease),
+    transform var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease);
+}
+
+.uiNoShift:hover,
+.uiNoShift.is-selected,
+.uiNoShift.is-active,
+.uiNoShift.is-highlighted,
+.uiNoShift:focus-visible {
+  outline: var(--ui-no-shift-outline-active, 2px solid rgba(0, 0, 0, 0.45));
+  outline-offset: var(--ui-no-shift-outline-offset, 2px);
+  box-shadow: var(--ui-no-shift-shadow-active, none);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: 'Julee', cursive;
+  background-color: #0f172a;
+  color: #000000;
+  background-image: radial-gradient(ellipse at center, #2d2d2d 0%, #0a0a0a 100%);
+  background-attachment: fixed;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+img {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+}
+
+input,
+textarea,
+select,
+option {
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+body * {
+  color: #000000;
+}
+
+#root {
+  min-height: 100vh;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+a {
+  color: inherit;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Julee', cursive;
+  margin: 0;
+}
+
+button {
+  font-family: 'Julee', cursive;
+  background: #d0d0d0;
+  border-image: url("../assets/menus/buttoncorners.png") 60 / 5px / 1px;
+  border-radius: 0;
+  color: #000000;
+}
+
+button:hover,
+button:active,
+button:focus-visible {
+  background: var(--button-hover-neutral);
+  border-image: url("../assets/menus/buttoncorners.png") 60 / 5px / 1px;
+  border-radius: 0;
+  color: #000000;
+  box-shadow: none;
+  transform: none;
+}
+
+button:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.button-standard {
+  background: #d0d0d0;
+  border-image: url("../assets/menus/buttoncorners.png") 60 / 5px / 1px;
+  border-radius: 0;
+  color: #000000;
+}
+
+.button-standard:hover,
+.button-standard:active,
+.button-standard:focus-visible {
+  background: var(--button-hover-neutral);
+  border-image: url("../assets/menus/buttoncorners.png") 60 / 5px / 1px;
+  border-radius: 0;
+  color: #000000;
+}
+
+.text-mono {
+  font-family: 'Julee', cursive;
+}
+
+.title-font {
+  font-family: 'Julee', cursive;
+}
+
+/* Scrollbar styling - ink-inspired stroke with subtle texture */
+* {
+  scrollbar-color: var(--ink-scrollbar-thumb, rgba(120, 72, 33, 0.62)) var(--ink-scrollbar-track, rgba(59, 42, 24, 0.28));
+}
+
+*::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--ink-scrollbar-track, rgba(59, 42, 24, 0.28));
+  border-left: 1px solid rgba(65, 45, 25, 0.22);
+  box-shadow: inset 0 0 6px rgba(22, 12, 4, 0.25);
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--ink-scrollbar-thumb, rgba(120, 72, 33, 0.62));
+  border: 2px solid rgba(43, 33, 22, 0.4);
+  border-radius: 12px;
+  box-shadow: inset 0 0 5px rgba(255, 245, 225, 0.28), 0 2px 5px rgba(22, 12, 4, 0.3);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--ink-scrollbar-thumb-hover, rgba(159, 59, 46, 0.68));
+}
+
+*::-webkit-scrollbar-corner {
+  background: var(--ink-scrollbar-track, rgba(59, 42, 24, 0.28));
+}
+
+.white-text {
+  color: white;
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  .uiNoShift {
+    transition-duration: 80ms;
+    transition-property: box-shadow, outline-color, background-color, opacity;
+  }
+}

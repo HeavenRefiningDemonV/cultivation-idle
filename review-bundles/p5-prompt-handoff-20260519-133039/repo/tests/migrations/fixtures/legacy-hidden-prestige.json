@@ -1,0 +1,29 @@
+{
+  "version": "2.0.0",
+  "timestamp": 1736035200000,
+  "gameState": {
+    "realm": { "index": 2, "substage": 0, "name": "Core Formation" },
+    "qi": "500",
+    "selectedPath": "earth",
+    "lifePath": "earth",
+    "focusMode": "balanced",
+    "pathPerks": [],
+    "totalAuras": 2,
+    "upgradeTiers": { "idle": 1, "damage": 1, "hp": 1 },
+    "pityState": { "killsSinceUncommon": 0, "killsSinceRare": 0, "killsSinceEpic": 0, "killsSinceLegendary": 0 },
+    "playerLuck": 0
+  },
+  "prestigeState": {
+    "totalAP": 0,
+    "lifetimeAP": 0,
+    "currentRunAP": 0,
+    "prestigeCount": 0,
+    "prestigeRuns": [],
+    "purchasesById": { "ap_unlock_pagoda": 1, "ap_unlock_jade_core": 1 },
+    "highestRealmReached": 2,
+    "runStartTime": 0,
+    "rerollCount": 0,
+    "spiritRoot": null
+  },
+  "inventoryState": { "currencies": { "gold": "0", "spiritStones": "0", "merit": "0" }, "items": {} }
+}

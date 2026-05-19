@@ -1,0 +1,54 @@
+.onboardingPromptHost {
+  position: fixed;
+  top: 188px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 105;
+  width: min(640px, calc(100vw - 24px));
+  pointer-events: none;
+}
+
+.onboardingCalloutCard {
+  pointer-events: auto;
+  display: grid;
+  gap: 8px;
+  padding: 14px 16px;
+  border: 1px solid rgba(67, 52, 35, 0.25);
+  border-radius: 14px;
+  background: rgba(245, 236, 220, 0.96);
+  box-shadow: 0 12px 24px rgba(39, 27, 16, 0.12);
+  min-height: 152px;
+}
+
+.onboardingCalloutCard__eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(94, 66, 34, 0.72);
+}
+
+.onboardingCalloutCard__title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #2f2216;
+}
+
+.onboardingCalloutCard__badge {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(58, 41, 24, 0.84);
+}
+
+.onboardingCalloutCard__body {
+  font-size: 14px;
+  color: rgba(58, 41, 24, 0.84);
+}
+
+.onboardingCalloutCard__actions {
+  margin-top: 2px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 34px;
+  align-items: center;
+}

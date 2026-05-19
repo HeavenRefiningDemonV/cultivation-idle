@@ -1,0 +1,74 @@
+@import '../../styles/paperInkTokens.scss';
+
+.inspectorPanel {
+  --inspector-gap: var(--ui-layout-card-gap, 12px);
+  min-width: 0;
+}
+
+.inspectorPanel--sticky {
+  position: sticky;
+  top: 14px;
+}
+
+.inspectorPanel__frame {
+  height: 100%;
+}
+
+.inspectorPanel__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.inspectorPanel__statusArea,
+.inspectorPanel__recommendationArea {
+  border: 1px solid var(--paper-shell-border-subtle, rgba(122, 94, 53, 0.34));
+  border-radius: 10px;
+  background: rgba(250, 242, 226, 0.86);
+  padding: 8px 10px;
+  min-block-size: var(--ui-size-row-min-block, 44px);
+}
+
+.inspectorPanel__statusArea.is-empty,
+.inspectorPanel__recommendationArea.is-empty {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.inspectorPanel__statusArea.is-collapsed,
+.inspectorPanel__recommendationArea.is-collapsed {
+  display: none;
+}
+
+.inspectorPanel__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--inspector-gap);
+  min-width: 0;
+}
+
+.inspectorPanel__footer {
+  border-top: 1px solid var(--paper-shell-border-subtle, rgba(122, 94, 53, 0.34));
+  padding-top: 8px;
+}
+
+.inspectorPanel--compact {
+  --inspector-gap: var(--paper-density-gap-dense, 8px);
+}
+
+.inspectorPanel--dense .inspectorPanel__statusArea,
+.inspectorPanel--dense .inspectorPanel__recommendationArea {
+  min-block-size: var(--ui-size-button-min-block, 36px);
+  padding: 6px 8px;
+}
+
+.inspectorPanel--ink .inspectorPanel__statusArea,
+.inspectorPanel--ink .inspectorPanel__recommendationArea {
+  background: rgba(243, 234, 215, 0.72);
+}
+
+@media (max-width: 1100px) {
+  .inspectorPanel--sticky {
+    position: static;
+  }
+}

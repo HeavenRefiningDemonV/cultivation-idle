@@ -1,0 +1,20 @@
+{
+  "version": "2.0.0",
+  "timestamp": 1736035200000,
+  "meta": { "lastActiveAtMs": 1736031000000 },
+  "gameState": {
+    "realm": { "index": 0, "substage": 0, "name": "Qi Condensation" },
+    "qi": "0",
+    "selectedPath": null,
+    "lifePath": null,
+    "focusMode": "balanced",
+    "pathPerks": [],
+    "totalAuras": 0,
+    "upgradeTiers": { "idle": 0, "damage": 0, "hp": 0 },
+    "pityState": { "killsSinceUncommon": 0, "killsSinceRare": 0, "killsSinceEpic": 0, "killsSinceLegendary": 0 },
+    "playerLuck": 0,
+    "lastActiveTime": 1736032000000,
+    "lastTickTime": 1736033000000
+  },
+  "inventoryState": { "currencies": { "gold": "0", "spiritStones": "0", "merit": "0" }, "items": {} }
+}

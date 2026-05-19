@@ -1,0 +1,42 @@
+.purposeSourceCallout {
+  display: grid;
+  gap: 0.45rem;
+  padding: 0.75rem;
+}
+
+.purposeSourceCallout--compact {
+  padding: 0.6rem;
+  gap: 0.35rem;
+}
+
+.purposeSourceCallout__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.purposeSourceCallout__body,
+.purposeSourceCallout__lineText,
+.purposeSourceCallout__boundary {
+  color: rgba(45, 37, 29, 0.88);
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
+
+.purposeSourceCallout__line {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.purposeSourceCallout__lineLabel {
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(87, 69, 52, 0.7);
+}
+
+.purposeSourceCallout__boundary {
+  padding-top: 0.15rem;
+  border-top: 1px solid rgba(87, 69, 52, 0.14);
+  color: rgba(87, 69, 52, 0.84);
+}

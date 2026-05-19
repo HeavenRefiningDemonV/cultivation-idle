@@ -1,0 +1,742 @@
+.bountiesExactScreenOwner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.bountiesExactPage {
+  --exact-paper: #eadfc9;
+  --exact-paper-light: #f2ead8;
+  --exact-paper-deep: #d6c3a4;
+  --exact-ink: #2b2116;
+  --exact-muted-ink: rgba(64, 48, 30, 0.72);
+  --exact-cinnabar: #94372e;
+  --exact-jade: #4e7458;
+  --exact-jade-deep: #315340;
+  --exact-gold: #c8a35a;
+  --exact-bronze: #8f6330;
+  --exact-line: rgba(80, 60, 37, 0.35);
+  --exact-shadow: rgba(80, 58, 33, 0.22);
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: Georgia, 'Times New Roman', serif;
+  color: var(--exact-ink);
+  background:
+    linear-gradient(rgba(234, 223, 201, 0.9), rgba(234, 223, 201, 0.93)),
+    var(--bounties-exact-paper-underlay) center bottom / cover no-repeat,
+    #e9dfcf;
+  box-sizing: border-box;
+}
+
+.bountiesExactPage *,
+.bountiesExactPage *::before,
+.bountiesExactPage *::after {
+  box-sizing: border-box;
+}
+
+.bountiesExactPlane {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 2048px;
+  height: 1152px;
+  transform: translate(-50%, -50%) scale(var(--bounties-exact-scale, 1));
+  transform-origin: center center;
+  overflow: hidden;
+}
+
+.bountiesExactBackdrop {
+  position: absolute;
+  inset: 0;
+  border: 5px double rgba(80, 60, 37, 0.35);
+  background:
+    radial-gradient(circle at 60% 12%, rgba(255, 248, 226, 0.45), transparent 22%),
+    linear-gradient(90deg, rgba(64, 48, 30, 0.06) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(64, 48, 30, 0.05) 1px, transparent 1px);
+  background-size: auto, 78px 78px, 78px 78px;
+  pointer-events: none;
+}
+
+.bountiesExactHeader { position: absolute; left: 64px; top: 24px; width: 520px; height: 86px; }
+.bountiesExactStatusPlaque { position: absolute; left: 1323px; top: 27px; width: 692px; height: 58px; }
+.bountiesExactStatStrip { position: absolute; left: 61px; top: 132px; width: 1929px; height: 83px; display: grid; grid-template-columns: repeat(7, 1fr); gap: 14px; }
+.bountiesExactTrackedRail { position: absolute; left: 47px; top: 245px; width: 358px; height: 752px; }
+.bountiesExactBoard { position: absolute; left: 434px; top: 242px; width: 1186px; height: 752px; }
+.bountiesExactOffice { position: absolute; left: 1646px; top: 245px; width: 358px; height: 752px; }
+.bountiesExactBottomActions { position: absolute; left: 496px; top: 1028px; width: 1033px; height: 80px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+
+.bountiesExactHeader__titleRow {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.bountiesExactHeader h1 {
+  margin: 0;
+  font-size: 58px;
+  line-height: 0.95;
+  letter-spacing: 0;
+}
+
+.bountiesExactHeader p {
+  margin: 8px 0 0;
+  font-size: 21px;
+  color: var(--exact-ink);
+}
+
+.bountiesExactSeal,
+.bountiesExactMiniSeal {
+  display: inline-block;
+  width: 34px;
+  height: 34px;
+  border: 3px solid var(--exact-cinnabar);
+  position: relative;
+  opacity: 0.9;
+}
+
+.bountiesExactSeal::before,
+.bountiesExactSeal::after,
+.bountiesExactMiniSeal::before,
+.bountiesExactMiniSeal::after {
+  content: "";
+  position: absolute;
+  background: var(--exact-cinnabar);
+  opacity: 0.85;
+}
+
+.bountiesExactSeal::before,
+.bountiesExactMiniSeal::before {
+  left: 7px;
+  right: 7px;
+  top: 50%;
+  height: 2px;
+}
+
+.bountiesExactSeal::after,
+.bountiesExactMiniSeal::after {
+  top: 7px;
+  bottom: 7px;
+  left: 50%;
+  width: 2px;
+}
+
+.bountiesExactSeal--small {
+  width: 25px;
+  height: 25px;
+  border-width: 2px;
+}
+
+.bountiesExactMiniSeal {
+  position: absolute;
+  right: 18px;
+  bottom: 16px;
+  width: 28px;
+  height: 28px;
+  border-width: 2px;
+}
+
+.bountiesExactStatusPlaque {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 19px;
+  border: 2px solid rgba(80, 60, 37, 0.42);
+  background: rgba(242, 234, 216, 0.82);
+  box-shadow: inset 0 0 0 4px rgba(128, 94, 49, 0.08), 0 5px 14px rgba(80, 58, 33, 0.13);
+}
+
+.bountiesExactStatusPlaque strong {
+  font-size: 24px;
+  line-height: 1;
+}
+
+.bountiesExactStatCard,
+.bountiesExactRail {
+  border: 1px solid rgba(95, 70, 39, 0.34);
+  background:
+    linear-gradient(135deg, rgba(255, 250, 231, 0.84), rgba(218, 196, 158, 0.22)),
+    rgba(242, 234, 216, 0.86);
+  box-shadow: 0 7px 15px rgba(80, 58, 33, 0.13), inset 0 0 0 3px rgba(255, 249, 230, 0.42);
+}
+
+.bountiesExactStatCard {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  gap: 18px;
+  padding: 12px 18px;
+  border-radius: 7px;
+}
+
+.bountiesExactStatCard__icon {
+  width: 54px;
+  height: 54px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border: 1px solid rgba(80, 60, 37, 0.25);
+  background: rgba(89, 118, 75, 0.18);
+  box-shadow: inset 0 0 12px rgba(67, 91, 58, 0.22);
+}
+
+.bountiesExactStatCard__icon img,
+.bountiesExactStatCard__icon svg {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+  fill: none;
+  stroke: #3e563e;
+  stroke-width: 4px;
+}
+
+.bountiesExactStatCard__copy {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.bountiesExactStatCard__copy span {
+  font-size: 17px;
+  color: var(--exact-muted-ink);
+}
+
+.bountiesExactStatCard__copy strong {
+  font-size: 21px;
+  line-height: 1.15;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bountiesExactRail {
+  padding: 22px 24px;
+  border-radius: 6px;
+}
+
+.bountiesExactRail::before,
+.bountiesExactRail::after {
+  content: "";
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  border-color: rgba(105, 76, 42, 0.4);
+}
+
+.bountiesExactRail::before {
+  left: 8px;
+  top: 8px;
+  border-left: 2px solid;
+  border-top: 2px solid;
+}
+
+.bountiesExactRail::after {
+  right: 8px;
+  bottom: 8px;
+  border-right: 2px solid;
+  border-bottom: 2px solid;
+}
+
+.bountiesExactRail h2 {
+  margin: 4px 0 18px;
+  text-align: center;
+  font-size: 28px;
+  line-height: 1;
+}
+
+.bountiesExactRail h2::after {
+  content: "";
+  display: block;
+  width: 210px;
+  height: 2px;
+  margin: 15px auto 0;
+  background: linear-gradient(90deg, transparent, rgba(80, 60, 37, 0.55), transparent);
+}
+
+.bountiesExactPinnedNotice {
+  position: relative;
+  height: 330px;
+  padding: 32px 28px 24px;
+  background:
+    linear-gradient(135deg, rgba(255, 252, 235, 0.94), rgba(237, 222, 190, 0.86));
+  border: 1px solid rgba(95, 70, 39, 0.26);
+  box-shadow: 0 8px 15px rgba(80, 58, 33, 0.18);
+}
+
+.bountiesExactPinnedNotice::before,
+.bountiesExactNote::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(135deg, rgba(128, 94, 49, 0.16), transparent 13%, transparent 86%, rgba(128, 94, 49, 0.16)),
+    radial-gradient(circle at 20% 16%, rgba(120, 86, 44, 0.08), transparent 10%);
+}
+
+.bountiesExactPinnedNotice h3 {
+  margin: 0 0 15px;
+  font-size: 26px;
+}
+
+.bountiesExactPinnedNotice p {
+  margin: 0 0 20px;
+  font-size: 18px;
+  line-height: 1.44;
+}
+
+.bountiesExactProgress {
+  width: 100%;
+  height: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(80, 60, 37, 0.28);
+  border-radius: 12px;
+  background: rgba(93, 70, 43, 0.14);
+  box-shadow: inset 0 2px 5px rgba(80, 58, 33, 0.18);
+}
+
+.bountiesExactProgress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(180deg, #7fa070, #416b4a);
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.35);
+}
+
+.bountiesExactProgressText {
+  margin-top: -20px;
+  text-align: right;
+  font-size: 16px;
+}
+
+.bountiesExactDivider {
+  height: 1px;
+  margin: 18px 0;
+  background: linear-gradient(90deg, transparent, rgba(80, 60, 37, 0.28), transparent);
+}
+
+.bountiesExactRailActions {
+  display: grid;
+  gap: 14px;
+  margin-top: 28px;
+}
+
+.bountiesExactBoardTruth {
+  position: relative;
+  margin-top: 26px;
+  padding: 16px 8px 24px;
+  border-top: 1px solid rgba(80, 60, 37, 0.25);
+}
+
+.bountiesExactBoardTruth > div {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.bountiesExactBoardTruth svg {
+  width: 30px;
+  height: 30px;
+  fill: none;
+  stroke: #4c6f52;
+  stroke-width: 4px;
+}
+
+.bountiesExactBoardTruth h3,
+.bountiesExactOfficeSection h3 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.bountiesExactBoardTruth p,
+.bountiesExactOfficeSection p {
+  margin: 10px 0 0;
+  font-size: 17px;
+  line-height: 1.42;
+}
+
+.bountiesExactBoard {
+  background:
+    linear-gradient(rgba(47, 32, 19, 0.58), rgba(47, 32, 19, 0.62)),
+    var(--bounties-exact-board-texture) center / cover no-repeat,
+    #4b321d;
+  border: 20px solid #56391f;
+  box-shadow:
+    0 18px 32px rgba(43, 31, 18, 0.28),
+    inset 0 0 0 5px rgba(28, 18, 11, 0.5),
+    inset 0 0 80px rgba(0, 0, 0, 0.38);
+}
+
+.bountiesExactBoard::before,
+.bountiesExactBoard::after {
+  content: "";
+  position: absolute;
+  inset: -18px;
+  pointer-events: none;
+  border: 3px solid rgba(23, 17, 13, 0.42);
+}
+
+.bountiesExactBoard__plaque {
+  position: absolute;
+  left: 355px;
+  top: -12px;
+  z-index: 4;
+  width: 480px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  color: #f0e2c5;
+  background: linear-gradient(180deg, #6a5231, #2e2218);
+  border: 4px solid rgba(25, 18, 12, 0.75);
+  box-shadow: 0 8px 14px rgba(0, 0, 0, 0.35), inset 0 0 0 2px rgba(232, 198, 126, 0.26);
+}
+
+.bountiesExactBoard__plaque h2 {
+  margin: 0;
+  font-size: 36px;
+}
+
+.bountiesExactBoard__plaque span {
+  width: 12px;
+  height: 12px;
+  rotate: 45deg;
+  background: #d3b062;
+}
+
+.bountiesExactBoard__subtitle {
+  position: absolute;
+  left: 270px;
+  top: 78px;
+  z-index: 3;
+  width: 650px;
+  margin: 0;
+  color: #f0e2c5;
+  text-align: center;
+  font-size: 21px;
+  line-height: 1.35;
+  text-shadow: 0 1px 2px #1c130b;
+}
+
+.bountiesExactBoard__strings {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  fill: none;
+  stroke: #6d2c20;
+  stroke-width: 5px;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.45));
+}
+
+.bountiesExactBoard__notes {
+  position: absolute;
+  left: 58px;
+  right: 58px;
+  top: 154px;
+  height: 520px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 34px;
+  z-index: 3;
+}
+
+.bountiesExactNote {
+  position: relative;
+  min-width: 0;
+  height: 520px;
+  padding: 92px 36px 28px;
+  background: linear-gradient(135deg, #f8efd8, #e7d3aa);
+  border: 1px solid rgba(89, 60, 34, 0.32);
+  box-shadow: 0 14px 22px rgba(30, 20, 13, 0.38);
+  overflow: hidden;
+}
+
+.bountiesExactNote__hit {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.bountiesExactNote > *:not(.bountiesExactNote__hit) {
+  position: relative;
+  z-index: 2;
+}
+
+.bountiesExactNote--selected {
+  outline: 4px solid rgba(166, 127, 54, 0.65);
+  outline-offset: -8px;
+}
+
+.bountiesExactNote--route .bountiesExactProgress span {
+  background: linear-gradient(180deg, #c2763f, #8f3b2b);
+}
+
+.bountiesExactNote--challenge .bountiesExactProgress span {
+  background: linear-gradient(180deg, #c4863d, #9a521e);
+}
+
+.bountiesExactPin {
+  position: absolute;
+  left: 50%;
+  top: 18px;
+  width: 28px;
+  height: 28px;
+  translate: -50% 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ffe3a6, #9b6c2d 62%, #422919);
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.35);
+}
+
+.bountiesExactRibbon {
+  position: absolute;
+  left: -18px;
+  top: 32px;
+  width: 128px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  rotate: -24deg;
+  color: #fff4d6;
+  background: #8d342b;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.bountiesExactRibbon--empty {
+  visibility: hidden;
+}
+
+.bountiesExactNote--support .bountiesExactRibbon {
+  background: #4e7458;
+}
+
+.bountiesExactNote__medallion {
+  position: absolute;
+  left: 50%;
+  top: 42px;
+  width: 68px;
+  height: 68px;
+  display: grid;
+  place-items: center;
+  translate: -50% 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, #6c7652, #30311f);
+  border: 3px solid rgba(255, 240, 195, 0.52);
+  box-shadow: 0 5px 10px rgba(54, 35, 18, 0.35);
+}
+
+.bountiesExactNote__medallion img,
+.bountiesExactNote__medallion svg {
+  width: 46px;
+  height: 46px;
+  object-fit: contain;
+  fill: none;
+  stroke: #f5e6c0;
+  stroke-width: 4px;
+}
+
+.bountiesExactNote h3 {
+  margin: 14px 0 6px;
+  text-align: center;
+  font-size: 24px;
+  line-height: 1.08;
+}
+
+.bountiesExactNote__subtitle {
+  display: block;
+  text-align: center;
+  color: #7d331f;
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.bountiesExactNote p {
+  height: 74px;
+  margin: 13px 0 14px;
+  font-size: 16px;
+  line-height: 1.32;
+}
+
+.bountiesExactNote__progressRow {
+  display: grid;
+  grid-template-columns: 1fr 48px;
+  gap: 12px;
+  align-items: center;
+}
+
+.bountiesExactNote__progressRow strong {
+  font-size: 16px;
+}
+
+.bountiesExactNote__rewardLabel {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 16px;
+}
+
+.bountiesExactNote__rewards {
+  min-height: 30px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  overflow: hidden;
+}
+
+.bountiesExactRewardChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.bountiesExactRewardChip img,
+.bountiesExactRewardChip svg {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 auto;
+  object-fit: contain;
+  fill: none;
+  stroke: #4e7458;
+  stroke-width: 4px;
+}
+
+.bountiesExactNote__button {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  bottom: 24px;
+  width: auto;
+  height: 54px;
+  z-index: 3;
+}
+
+.bountiesExactBoard__sideTalisman {
+  position: absolute;
+  right: 36px;
+  top: 150px;
+  z-index: 3;
+  width: 52px;
+  height: 198px;
+  padding-top: 20px;
+  display: grid;
+  justify-items: center;
+  color: #3c2a1b;
+  background: linear-gradient(#ccb48a, #a88252);
+  border: 1px solid rgba(44, 30, 18, 0.32);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.22);
+}
+
+.bountiesExactButton {
+  position: relative;
+  min-width: 0;
+  min-height: 48px;
+  border: 1px solid rgba(89, 58, 25, 0.54);
+  border-radius: 5px;
+  color: #2b2116;
+  background: linear-gradient(180deg, #ead6a4, #c79743);
+  box-shadow: inset 0 2px 0 rgba(255, 248, 224, 0.45), 0 5px 9px rgba(83, 56, 26, 0.2);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 21px;
+  font-weight: 700;
+  letter-spacing: 0;
+  cursor: pointer;
+}
+
+.bountiesExactButton:focus-visible {
+  outline: 4px solid rgba(78, 116, 88, 0.75);
+  outline-offset: 3px;
+}
+
+.bountiesExactButton:disabled {
+  opacity: 0.55;
+  cursor: default;
+  filter: grayscale(0.25);
+}
+
+.bountiesExactButton.bountiesExactNote__button {
+  position: absolute;
+}
+
+.bountiesExactButton--secondary,
+.bountiesExactButton--muted {
+  background: linear-gradient(180deg, #f4e8cf, #dfca9f);
+}
+
+.bountiesExactButton--jade {
+  color: #f9efd6;
+  background: linear-gradient(180deg, #668961, #365b42);
+}
+
+.bountiesExactBottomActions .bountiesExactButton {
+  height: 74px;
+  font-size: 28px;
+  border-radius: 8px;
+}
+
+.bountiesExactBottomActions .bountiesExactButton::before,
+.bountiesExactBottomActions .bountiesExactButton::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 42px;
+  height: 42px;
+  translate: 0 -50%;
+  border-radius: 50%;
+  background: radial-gradient(circle, #7c8f63, #30462d);
+  border: 2px solid #c8a35a;
+}
+
+.bountiesExactBottomActions .bountiesExactButton::before {
+  left: -18px;
+}
+
+.bountiesExactBottomActions .bountiesExactButton::after {
+  right: -18px;
+}
+
+.bountiesExactOfficeSection {
+  position: relative;
+  padding: 20px 8px 28px;
+  border-top: 1px solid rgba(80, 60, 37, 0.25);
+}
+
+.bountiesExactOfficeReserve {
+  display: block;
+  margin: 14px 0;
+  color: var(--exact-jade-deep);
+  text-align: center;
+  font-size: 42px;
+}
+
+.bountiesExactOfficeReady {
+  color: var(--exact-jade-deep);
+  font-size: 22px !important;
+  font-weight: 700;
+}
+
+.bountiesExactOfficeSection .bountiesExactButton {
+  width: 100%;
+  margin-top: 16px;
+}
+
+.bountiesExactNote .bountiesExactButton.bountiesExactNote__button {
+  position: absolute !important;
+  left: 24px;
+  right: 24px;
+  bottom: 24px;
+  z-index: 5;
+  display: grid;
+  place-items: center;
+}

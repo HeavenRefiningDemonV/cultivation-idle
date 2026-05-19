@@ -52,6 +52,9 @@ function buildPatchedProgressByTrialId(trialId) {
         return [currentTrialId, normalized];
     }));
 }
+function getTrialProgressSnapshot(trialId) {
+    return normalizeTrialProgress(useTrialStore.getState().progressByTrialId[trialId] ?? createDefaultTrialProgress());
+}
 function buildBypassAvailability(trialId) {
     const trial = useContentStore.getState().maps.trialsById[trialId] ?? null;
     const content = useContentStore.getState().raw;
@@ -60,7 +63,7 @@ function buildBypassAvailability(trialId) {
     const lifecycle = getTrialLifecycleSnapshot({
         content,
         trial,
-        progress: useTrialStore.getState().getProgress(trialId),
+        progress: getTrialProgressSnapshot(trialId),
         realm: game.realm,
         qi: game.qi,
         breakthroughRequirement: game.getBreakthroughRequirement(),
@@ -151,7 +154,7 @@ export function buildSection5ReadinessSurface(trialId, snapshot) {
             return null;
         const resolvedSnapshot = snapshot ?? buildDoctrineSnapshot();
         const build = analyzeSelectedBuild(resolvedSnapshot);
-        const progress = useTrialStore.getState().getProgress(resolvedTrialId);
+        const progress = getTrialProgressSnapshot(resolvedTrialId);
         const lastAttemptSummary = progress.lastAttemptSummary ?? null;
         const readiness = buildTrialGateReadinessResult(resolvedTrialId, resolvedSnapshot);
         const bypassAvailable = buildBypassAvailability(resolvedTrialId);
@@ -186,7 +189,7 @@ export function buildSection5StatusSurface(snapshot) {
         const readiness = evaluateCurrentGateReadiness(resolvedSnapshot);
         let currentDiagnosis = null;
         if (currentGateTrialId && readiness) {
-            const progress = useTrialStore.getState().getProgress(currentGateTrialId);
+            const progress = getTrialProgressSnapshot(currentGateTrialId);
             if (progress.lastAttemptSummary) {
                 currentDiagnosis = diagnoseTrialFailure({
                     trialId: currentGateTrialId,
@@ -227,7 +230,7 @@ export function buildSection5PostFailureSurface(trialId) {
     const trialDef = useContentStore.getState().maps.trialsById[readinessSurface.trialId] ?? null;
     const content = useContentStore.getState().raw;
     const game = useGameStore.getState();
-    const progress = useTrialStore.getState().getProgress(readinessSurface.trialId);
+    const progress = getTrialProgressSnapshot(readinessSurface.trialId);
     const requiredItemSatisfied = !trialDef?.requiredItemId || useInventoryStore.getState().getItemCount(trialDef.requiredItemId) > 0;
     const lifecycle = getTrialLifecycleSnapshot({
         content,
@@ -323,7 +326,7 @@ export function buildGateTrialReadinessSurface(trialId) {
     const trialDef = maps.trialsById[resolvedTrialId] ?? null;
     if (!trialDef)
         return null;
-    const progress = useTrialStore.getState().getProgress(resolvedTrialId);
+    const progress = getTrialProgressSnapshot(resolvedTrialId);
     const requiredItemCount = trialDef.requiredItemId ? useInventoryStore.getState().getItemCount(trialDef.requiredItemId) : 0;
     const requiredItemSatisfied = !trialDef.requiredItemId || requiredItemCount > 0;
     const lifecycle = getTrialLifecycleSnapshot({

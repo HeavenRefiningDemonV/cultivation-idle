@@ -1,0 +1,87 @@
+.qiLotusIcon {
+  width: var(--qi-lotus-size, 44px);
+  height: var(--qi-lotus-size, 44px);
+  position: relative;
+  display: inline-block;
+  flex: 0 0 auto;
+  margin-right: 2px;
+  overflow: visible;
+  transform: translateY(0);
+}
+
+.qiLotusIcon__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  opacity: 0;
+  transform: scale(1);
+  transition: opacity 180ms ease, transform 220ms ease, filter 220ms ease;
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.35)) drop-shadow(0 0 4px rgba(59, 42, 24, 0.18));
+}
+
+.qiLotusIcon[data-state="idle"] .qiLotusIcon__img--closed {
+  opacity: 1;
+  transform: scale(0.96);
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.35)) drop-shadow(0 0 2px rgba(59, 42, 24, 0.12));
+}
+
+.qiLotusIcon[data-state="active"] .qiLotusIcon__img--open {
+  opacity: 1;
+  transform: scale(1.06);
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.4)) drop-shadow(0 0 7px rgba(98, 142, 108, 0.22));
+}
+
+.qiLotusIcon[data-state="ready"] .qiLotusIcon__img--full {
+  opacity: 1;
+  transform: scale(1.1);
+  filter:
+    drop-shadow(0 1px 0 rgba(0, 0, 0, 0.45))
+    drop-shadow(0 0 10px rgba(168, 129, 73, 0.3))
+    drop-shadow(0 0 15px rgba(236, 214, 172, 0.22));
+  animation: qiLotusReadyPulse 1.25s ease-in-out infinite;
+}
+
+.qiLotusIcon[data-fixed="1"] {
+  width: var(--qi-lotus-size, 36px);
+  height: var(--qi-lotus-size, 36px);
+}
+
+.qiLotusIcon[data-fixed="1"] .qiLotusIcon__img {
+  transition: opacity 180ms ease, filter 220ms ease;
+  transform: scale(1);
+}
+
+.qiLotusIcon[data-fixed="1"][data-state="idle"] .qiLotusIcon__img--closed,
+.qiLotusIcon[data-fixed="1"][data-state="active"] .qiLotusIcon__img--open,
+.qiLotusIcon[data-fixed="1"][data-state="ready"] .qiLotusIcon__img--full {
+  transform: scale(1);
+  animation: none;
+}
+
+@keyframes qiLotusReadyPulse {
+  0%,
+  100% {
+    transform: scale(1.1);
+  }
+
+  50% {
+    transform: scale(1.14);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .qiLotusIcon__img {
+    transition: none;
+  }
+
+  .qiLotusIcon[data-state="ready"] .qiLotusIcon__img--full {
+    animation: none;
+  }
+}
+
+
+.qiLotusIcon__label {
+  display: none;
+}

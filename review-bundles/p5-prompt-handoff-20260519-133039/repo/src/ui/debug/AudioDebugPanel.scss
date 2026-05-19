@@ -1,0 +1,68 @@
+.audioDebugPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.audioDebugControls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-end;
+}
+
+.audioDebugLabel {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.95rem;
+}
+
+.audioDebugInput {
+  min-width: 220px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.audioDebugControlActions {
+  display: flex;
+  gap: 8px;
+}
+
+.audioDebugList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.audioDebugRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.audioDebugId {
+  font-weight: 600;
+}
+
+.audioDebugButtons {
+  display: flex;
+  gap: 8px;
+}
+
+.audioDebugButton {
+  padding: 4px 10px;
+}
+
+.audioDebugEmpty {
+  font-style: italic;
+  opacity: 0.7;
+}

@@ -1,0 +1,398 @@
+@import '../../styles/paperInkTokens.scss';
+
+.bottomNavDock {
+  position: fixed;
+  inset: auto 0 0 0;
+  display: flex;
+  justify-content: center;
+  padding: 0.4rem 0 calc(10px + var(--ui-safe-bottom));
+  pointer-events: auto;
+  z-index: 200;
+}
+
+.bottomNavDock__inner {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 0 0.9rem;
+  pointer-events: none;
+}
+
+.bottomNavDock__rail {
+  position: relative;
+  width: min(var(--ui-layout-page-max-inline, 1280px), 100%);
+  display: flex;
+  align-items: stretch;
+  gap: 0.55rem;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  justify-content: center;
+  padding: 0.45rem 0.55rem;
+  border: 1px solid var(--paper-shell-border-subtle, rgba(122, 94, 53, 0.34));
+  border-radius: 14px 12px 15px 13px;
+  background: rgba(243, 234, 215, 0.74);
+  outline: 1px solid var(--paper-shell-outline-subtle, rgba(139, 48, 40, 0.3));
+  outline-offset: -2px;
+  box-shadow: var(--paper-shadow-surface, 0 8px 18px rgba(22, 12, 4, 0.22));
+  pointer-events: auto;
+}
+
+.bottomNavDock__rail::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('../../assets/menus/bar_long.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 98% 60%;
+  opacity: 0.12;
+  pointer-events: none;
+}
+
+.bottomNavDock--world .bottomNavDock__rail::before {
+  background-image: none;
+}
+
+.bottomNavDock__button {
+  position: relative;
+  min-width: 7.3rem;
+  min-height: var(--ui-size-button-min-block, 36px);
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  padding: 0.55rem 0.85rem 0.45rem;
+  color: var(--paper-ink, #1f1a17);
+  background: var(--paper-shell-raised, rgba(250, 242, 226, 0.95));
+  border-color: var(--paper-shell-border-subtle, rgba(122, 94, 53, 0.34));
+  box-shadow: var(--paper-shadow-surface, 0 8px 18px rgba(22, 12, 4, 0.22));
+  transition:
+    box-shadow var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease),
+    background-color var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease),
+    border-color var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease),
+    filter var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease),
+    outline-color var(--ui-motion-selection-duration, 180ms) var(--ui-motion-selection-ease, ease);
+}
+
+.bottomNavDock__icon {
+  inline-size: 1.35rem;
+  block-size: 1.35rem;
+  display: inline-grid;
+  place-items: center;
+  color: currentColor;
+  filter: drop-shadow(0 1px 0 rgba(255, 248, 229, 0.55));
+}
+
+.bottomNavDock__label {
+  line-height: 1.15;
+  font-size: var(--ui-type-button, 14px);
+  font-weight: 700;
+}
+
+.bottomNavDock__indicatorSlot {
+  inline-size: 0.85rem;
+  block-size: 0.45rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bottomNavDock__indicator {
+  inline-size: 0.38rem;
+  block-size: 0.38rem;
+  border-radius: 999px;
+  border: 1px solid rgba(31, 26, 23, 0.35);
+  background: rgba(122, 94, 53, 0.44);
+}
+
+.bottomNavDock__indicator--recommended {
+  background: var(--paper-warning, #a2712a);
+}
+
+.bottomNavDock__indicator--attention {
+  background: var(--paper-stamp, #8b3028);
+}
+
+.bottomNavDock__button:hover {
+  border-color: var(--paper-shell-border-strong, rgba(122, 94, 53, 0.56));
+  box-shadow: var(--paper-shadow-raised, 0 12px 24px rgba(22, 12, 4, 0.28));
+  filter: saturate(1.02);
+}
+
+.bottomNavDock__button:focus-visible {
+  outline: 2px solid var(--paper-shell-outline-strong, rgba(139, 48, 40, 0.52));
+  outline-offset: 2px;
+}
+
+.bottomNavDock__button--active {
+  background: var(--paper-shell-active, rgba(139, 48, 40, 0.18));
+  border-color: var(--paper-shell-border-strong, rgba(122, 94, 53, 0.56));
+  box-shadow:
+    inset 0 0 0 1px var(--paper-shell-outline-strong, rgba(139, 48, 40, 0.52)),
+    var(--paper-shadow-raised, 0 12px 24px rgba(22, 12, 4, 0.28));
+}
+
+.bottomNavDock__button--active .bottomNavDock__label {
+  color: var(--paper-stamp, #8b3028);
+}
+
+.bottomNavDock__button:disabled {
+  opacity: 0.62;
+  cursor: not-allowed;
+}
+
+.bottomNavDock--world .bottomNavDock__button {
+  border: 2px solid rgba(108, 77, 43, 0.56);
+  border-image: url('../../assets/menus/buttoncorners.png') 60 / 5px / 1px stretch;
+  border-radius: 0;
+  background: linear-gradient(180deg, rgba(247, 239, 224, 0.96), rgba(233, 219, 191, 0.95));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 250, 239, 0.6),
+    0 6px 14px rgba(22, 12, 4, 0.18);
+}
+
+.bottomNavDock--world .bottomNavDock__button:hover {
+  border-color: rgba(120, 72, 33, 0.72);
+  background: linear-gradient(180deg, rgba(251, 243, 229, 0.98), rgba(238, 224, 197, 0.97));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 252, 243, 0.74),
+    0 8px 17px rgba(22, 12, 4, 0.2);
+  filter: none;
+}
+
+.bottomNavDock--world .bottomNavDock__button:focus-visible {
+  outline: 2px solid rgba(120, 72, 33, 0.75);
+  outline-offset: 2px;
+}
+
+.bottomNavDock--world .bottomNavDock__button--active {
+  border-color: rgba(122, 81, 40, 0.86);
+  background: linear-gradient(180deg, rgba(245, 233, 208, 0.98), rgba(231, 210, 175, 0.97));
+  box-shadow:
+    inset 0 0 0 1px rgba(120, 72, 33, 0.3),
+    0 9px 18px rgba(22, 12, 4, 0.22);
+}
+
+.bottomNavDock--inkPlaque,
+.bottomNavDock--statusDashboard {
+  padding-bottom: calc(8px + var(--ui-safe-bottom));
+}
+
+.bottomNavDock--inkPlaque .bottomNavDock__rail,
+.bottomNavDock--statusDashboard .bottomNavDock__rail {
+  width: min(1380px, calc(100% - 64px));
+  gap: 0;
+  padding: 0;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  outline: 0;
+  box-shadow: none;
+}
+
+.bottomNavDock--inkPlaque .bottomNavDock__rail::before,
+.bottomNavDock--statusDashboard .bottomNavDock__rail::before {
+  inset: auto 0 50%;
+  height: 18px;
+  transform: translateY(50%);
+  background-image: url('../../assets/menus/bar_long.png');
+  background-size: 100% 100%;
+  opacity: 0.24;
+}
+
+.bottomNavDock--inkPlaque .bottomNavDock__button,
+.bottomNavDock--statusDashboard .bottomNavDock__button {
+  min-width: 8.85rem;
+  min-height: 3.82rem;
+  display: grid;
+  grid-template-columns: 1.65rem minmax(0, auto);
+  grid-template-rows: 1fr;
+  align-items: center;
+  justify-content: center;
+  column-gap: 0.52rem;
+  padding: 0.54rem 1rem;
+  border: 1px solid rgba(104, 82, 56, 0.45);
+  border-radius: 8px;
+  background:
+    radial-gradient(80% 120% at 50% 0%, rgba(255, 255, 255, 0.42), transparent 56%),
+    linear-gradient(180deg, rgba(244, 238, 226, 0.96), rgba(224, 214, 196, 0.94));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 252, 242, 0.72),
+    0 6px 14px rgba(35, 26, 18, 0.16);
+  font-family: "Segoe UI", "Trebuchet MS", Arial, sans-serif;
+}
+
+.bottomNavDock--inkPlaque .bottomNavDock__button + .bottomNavDock__button,
+.bottomNavDock--statusDashboard .bottomNavDock__button + .bottomNavDock__button {
+  margin-left: 4px;
+}
+
+.bottomNavDock--inkPlaque .bottomNavDock__label,
+.bottomNavDock--statusDashboard .bottomNavDock__label {
+  font-size: 0.78rem;
+  color: #1f1a15;
+}
+
+.bottomNavDock--inkPlaque .bottomNavDock__icon,
+.bottomNavDock--statusDashboard .bottomNavDock__icon {
+  opacity: 0.72;
+}
+
+.bottomNavDock--inkPlaque .bottomNavDock__button--active,
+.bottomNavDock--statusDashboard .bottomNavDock__button--active {
+  border-color: rgba(33, 99, 88, 0.64);
+  background:
+    radial-gradient(90% 120% at 50% 0%, rgba(107, 169, 151, 0.34), transparent 55%),
+    linear-gradient(180deg, rgba(43, 121, 108, 0.96), rgba(20, 92, 82, 0.98));
+  color: #fff8e8;
+  box-shadow:
+    inset 0 0 0 1px rgba(235, 251, 241, 0.18),
+    0 8px 18px rgba(24, 58, 51, 0.24);
+}
+
+.bottomNavDock--inkPlaque .bottomNavDock__button--active .bottomNavDock__label,
+.bottomNavDock--statusDashboard .bottomNavDock__button--active .bottomNavDock__label {
+  color: #fff8e8;
+}
+
+.bottomNavDock--inkPlaque .bottomNavDock__indicatorSlot,
+.bottomNavDock--statusDashboard .bottomNavDock__indicatorSlot {
+  display: none;
+}
+
+.bottomNavDock--cultivationBare {
+  bottom: clamp(28px, 3.3vh, 42px);
+  padding: 0;
+}
+
+.bottomNavDock--cultivationBare .bottomNavDock__inner {
+  padding: 0;
+}
+
+.bottomNavDock--cultivationBare .bottomNavDock__rail {
+  width: auto;
+  max-width: min(calc(100vw - 44px), var(--ui-layout-page-max-inline, 1280px));
+  min-height: 0;
+  align-items: center;
+  gap: clamp(8px, 0.8vw, 14px);
+  padding: 0;
+  overflow: visible;
+  scrollbar-width: none;
+  border: 0;
+  border-image: none;
+  border-radius: 0;
+  background: transparent;
+  outline: 0;
+  box-shadow: none;
+}
+
+.bottomNavDock--cultivationBare .bottomNavDock__rail::-webkit-scrollbar {
+  display: none;
+}
+
+.bottomNavDock--cultivationBare .bottomNavDock__rail::before {
+  content: none;
+  display: none;
+}
+
+.bottomNavDock--cultivationBare .bottomNavDock__button {
+  min-width: 8.9rem;
+  min-height: 3.55rem;
+  display: grid;
+  grid-template-columns: 1.6rem minmax(0, auto);
+  grid-template-rows: 1fr;
+  align-items: center;
+  justify-content: center;
+  column-gap: 0.48rem;
+  padding: 0.56rem 0.92rem 0.5rem;
+  border: 2px solid rgba(81, 58, 33, 0.58);
+  border-image: url('../../assets/menus/buttoncorners.png') 60 / 5px / 1px stretch;
+  border-radius: 0;
+  background:
+    radial-gradient(85% 160% at 50% 0%, rgba(255, 251, 235, 0.4), transparent 48%),
+    linear-gradient(180deg, rgba(244, 235, 214, 0.97), rgba(222, 205, 171, 0.96));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 252, 242, 0.7),
+    0 6px 14px rgba(22, 12, 4, 0.18);
+}
+
+.bottomNavDock--cultivationBare .bottomNavDock__label {
+  font-size: 0.96rem;
+  font-weight: 700;
+}
+
+.bottomNavDock--cultivationBare .bottomNavDock__indicatorSlot {
+  position: absolute;
+  left: 50%;
+  bottom: -0.34rem;
+  transform: translateX(-50%);
+}
+
+.bottomNavDock--cultivationBare .bottomNavDock__button--active {
+  border-color: rgba(117, 50, 35, 0.82);
+  background:
+    radial-gradient(circle at 50% -18%, rgba(159, 60, 42, 0.28), transparent 38%),
+    linear-gradient(180deg, rgba(239, 219, 195, 0.98), rgba(219, 188, 160, 0.96));
+  box-shadow:
+    inset 0 0 0 1px rgba(117, 50, 35, 0.34),
+    0 9px 18px rgba(22, 12, 4, 0.23);
+}
+
+.bottomNavDock--cultivationBare .bottomNavDock__button--active::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -13px;
+  width: 26px;
+  height: 20px;
+  transform: translateX(-50%) rotate(45deg);
+  border-right: 2px solid rgba(117, 50, 35, 0.75);
+  border-bottom: 2px solid rgba(117, 50, 35, 0.75);
+  background: linear-gradient(135deg, rgba(190, 72, 48, 0.78), rgba(112, 44, 32, 0.88));
+  box-shadow: 0 2px 4px rgba(28, 18, 11, 0.2);
+}
+
+@media (max-width: 640px) {
+  .bottomNavDock__button {
+    min-width: 6.2rem;
+    min-height: 2.6rem;
+    padding: 0.5rem 0.72rem 0.4rem;
+  }
+
+  .bottomNavDock__label {
+    font-size: 0.86rem;
+  }
+
+  .bottomNavDock--cultivationBare .bottomNavDock__rail {
+    width: calc(100% - 1.5rem);
+    overflow: visible;
+  }
+
+  .bottomNavDock--cultivationBare .bottomNavDock__button {
+    min-width: 7.1rem;
+  }
+}
+
+@media (max-height: 860px) and (min-width: 900px) {
+  .bottomNavDock--cultivationBare .bottomNavDock__rail {
+    min-height: 0;
+    padding-block: 0;
+  }
+
+  .bottomNavDock--cultivationBare .bottomNavDock__button {
+    min-height: 2.95rem;
+    padding-block: 0.42rem 0.36rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bottomNavDock__button {
+    transition-duration: 80ms;
+  }
+
+  .bottomNavDock__button:hover {
+    filter: none;
+  }
+}

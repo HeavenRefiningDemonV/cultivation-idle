@@ -1,0 +1,104 @@
+.postFailureDiagnosisPanel {
+  border-radius: 12px;
+  border: 1px solid rgba(120, 72, 33, 0.25);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 220px;
+  background: rgba(248, 238, 220, 0.75);
+  color: var(--paper-ink, #2b2116);
+}
+
+.postFailureDiagnosisPanel--ink {
+  background: rgba(16, 24, 39, 0.72);
+  color: rgba(248, 250, 252, 0.95);
+  border-color: rgba(148, 163, 184, 0.35);
+}
+
+.postFailureDiagnosisPanel__header,
+.postFailureDiagnosisPanel__titleWrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.postFailureDiagnosisPanel__title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.postFailureDiagnosisPanel__badge {
+  border-radius: 999px;
+  border: 1px solid rgba(120, 72, 33, 0.35);
+  padding: 1px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.postFailureDiagnosisPanel__badge--secondary {
+  border-color: rgba(22, 163, 74, 0.45);
+}
+
+.postFailureDiagnosisPanel__headline {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.postFailureDiagnosisPanel__explanation,
+.postFailureDiagnosisPanel__reason,
+.postFailureDiagnosisPanel__fixReason,
+.postFailureDiagnosisPanel__recap,
+.postFailureDiagnosisPanel__fixDestination {
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.postFailureDiagnosisPanel__reasons {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.postFailureDiagnosisPanel__reason--quiet,
+.postFailureDiagnosisPanel__fix--quiet {
+  opacity: 0.8;
+}
+
+.postFailureDiagnosisPanel__fixes {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.postFailureDiagnosisPanel__fix {
+  border: 1px solid rgba(120, 72, 33, 0.2);
+  border-radius: 8px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.postFailureDiagnosisPanel__fixLabel {
+  font-weight: 700;
+}
+
+.postFailureDiagnosisPanel__blockedReason {
+  font-size: 11px;
+  opacity: 0.8;
+}
+
+.postFailureDiagnosisPanel__recap {
+  border-top: 1px dashed rgba(120, 72, 33, 0.35);
+  padding-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}

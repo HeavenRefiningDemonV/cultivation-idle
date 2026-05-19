@@ -1,0 +1,569 @@
+.storyCutsceneOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1800;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: #090806;
+  color: var(--story-caption-ink, #f1ead9);
+  outline: none;
+  isolation: isolate;
+}
+
+.storyCutsceneOverlay::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 48%, rgba(255, 246, 219, 0), rgba(12, 8, 6, 0.2) 74%, rgba(6, 5, 4, 0.42) 100%),
+    linear-gradient(180deg, rgba(10, 8, 6, 0.08), rgba(10, 8, 6, 0.02) 46%, rgba(10, 8, 6, 0.28));
+}
+
+.storySlideStack,
+.storySlide {
+  position: absolute;
+  inset: 0;
+}
+
+.storySlideStack {
+  z-index: 1;
+  overflow: hidden;
+  background: #090806;
+  transform: translateZ(0);
+}
+
+.storySlideStack::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.storySlideStack--inkVeil::after {
+  background:
+    radial-gradient(ellipse at 50% 48%, rgba(54, 43, 29, 0.2), transparent 58%),
+    linear-gradient(90deg, transparent, rgba(235, 221, 194, 0.16), transparent);
+  animation: storyTransitionVeil var(--story-transition-ms, 1120ms) cubic-bezier(0.35, 0, 0.18, 1) forwards;
+}
+
+.storySlideStack--ashCrossfade::after {
+  background:
+    radial-gradient(ellipse at 52% 22%, rgba(255, 251, 236, 0.18), transparent 44%),
+    linear-gradient(125deg, transparent 0 18%, rgba(243, 238, 222, 0.2) 45%, transparent 72%);
+  animation: storyTransitionAshVeil var(--story-transition-ms, 1120ms) cubic-bezier(0.35, 0, 0.18, 1) forwards;
+}
+
+.storySlideStack--pageTurnSoft::after,
+.storySlideStack--gateMistDissolve::after {
+  background:
+    linear-gradient(100deg, transparent 0 32%, rgba(246, 235, 210, 0.2) 48%, transparent 66%),
+    radial-gradient(ellipse at 50% 72%, rgba(242, 230, 204, 0.16), transparent 54%);
+  animation: storyTransitionPageVeil var(--story-transition-ms, 1180ms) cubic-bezier(0.35, 0, 0.18, 1) forwards;
+}
+
+.storySlide {
+  overflow: hidden;
+  background: #130f0a;
+  opacity: 1;
+  contain: paint;
+  will-change: opacity;
+}
+
+.storySlide--incoming {
+  opacity: 0;
+  animation: storySlideFadeIn var(--story-transition-ms, 1120ms) cubic-bezier(0.35, 0, 0.18, 1) forwards;
+}
+
+.storySlide--outgoing {
+  opacity: 1;
+  animation: storySlideFadeOut var(--story-transition-ms, 1120ms) cubic-bezier(0.35, 0, 0.18, 1) forwards;
+}
+
+.storySlide--transition-pageTurnSoft.storySlide--incoming,
+.storySlide--transition-gateMistDissolve.storySlide--incoming {
+  animation-duration: var(--story-transition-ms, 1180ms);
+}
+
+.storySlide--transition-pageTurnSoft.storySlide--outgoing,
+.storySlide--transition-gateMistDissolve.storySlide--outgoing {
+  animation-duration: var(--story-transition-ms, 1180ms);
+}
+
+.storySlide__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  user-select: none;
+  opacity: 1;
+  filter: none;
+  transform: none;
+}
+
+.storySlide--fallback {
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 50% 46%, rgba(238, 218, 174, 0.18), rgba(83, 62, 38, 0.18) 48%, rgba(20, 14, 10, 0.88) 100%),
+    #160f0a;
+}
+
+.storySlide__fallbackPaper {
+  width: min(780px, 74vw);
+  aspect-ratio: 16 / 9;
+  border: 1px solid rgba(232, 206, 159, 0.24);
+  background:
+    radial-gradient(circle at 50% 50%, rgba(239, 223, 186, 0.18), rgba(239, 223, 186, 0.05) 55%, rgba(16, 11, 8, 0.26)),
+    linear-gradient(135deg, rgba(92, 68, 42, 0.34), rgba(206, 184, 134, 0.2));
+  box-shadow: inset 0 0 80px rgba(20, 12, 6, 0.45), 0 18px 48px rgba(0, 0, 0, 0.3);
+}
+
+.storySlide__lowerGradient,
+.storySlide__edgeVignette,
+.storySlide__staticTexture {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.storySlide__lowerGradient {
+  inset: auto 0 0;
+  height: 30%;
+  z-index: 2;
+  background: linear-gradient(180deg, rgba(24, 14, 8, 0), rgba(24, 14, 8, 0.28));
+}
+
+.storySlide__edgeVignette {
+  z-index: 2;
+  background: radial-gradient(circle at 50% 48%, transparent 58%, rgba(7, 5, 4, 0.26) 88%, rgba(7, 5, 4, 0.38));
+}
+
+.storySlide__staticTexture {
+  z-index: 3;
+  background-image: url('../../assets/texture_overlay.png');
+  background-size: 512px 512px;
+  background-position: center;
+  opacity: 0.032;
+  mix-blend-mode: multiply;
+}
+
+.storyVfxLayer {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  overflow: hidden;
+  mix-blend-mode: screen;
+  contain: paint;
+}
+
+.storyVfxLayer__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 1;
+}
+
+.storyVfxLayer::before,
+.storyVfxLayer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.storyVfxLayer--pinewindMist::before {
+  opacity: 0.34;
+  background:
+    radial-gradient(ellipse at 24% 78%, rgba(232, 221, 196, 0.16), transparent 34%),
+    radial-gradient(ellipse at 72% 82%, rgba(232, 221, 196, 0.12), transparent 38%);
+}
+
+.storyVfxLayer--gateCensusMotes::before {
+  opacity: 0.52;
+  background:
+    radial-gradient(ellipse at 53% 22%, rgba(212, 239, 226, 0.18), transparent 28%),
+    linear-gradient(180deg, rgba(235, 245, 232, 0.12), transparent 34%);
+}
+
+.storyVfxLayer--nameAshfall::before {
+  opacity: 0.72;
+  background:
+    radial-gradient(ellipse at 59% 20%, rgba(255, 253, 236, 0.26), rgba(255, 253, 236, 0.08) 24%, transparent 48%),
+    linear-gradient(112deg, transparent 10%, rgba(255, 253, 236, 0.12) 42%, transparent 68%);
+}
+
+.storyVfxLayer--returningPageGlow::before {
+  opacity: 0.78;
+  background:
+    radial-gradient(circle at 52% 58%, rgba(241, 247, 210, 0.26), rgba(190, 228, 194, 0.12) 16%, transparent 34%),
+    radial-gradient(ellipse at 50% 68%, rgba(238, 220, 165, 0.14), transparent 42%);
+}
+
+.storyVfxLayer--pathBannerMist::before,
+.storyVfxLayer--daoSelectionReveal::before {
+  opacity: 0.7;
+  background:
+    radial-gradient(ellipse at 25% 35%, rgba(204, 236, 250, 0.2), transparent 28%),
+    radial-gradient(ellipse at 50% 38%, rgba(235, 184, 92, 0.18), transparent 30%),
+    radial-gradient(ellipse at 75% 38%, rgba(188, 62, 58, 0.17), transparent 30%),
+    radial-gradient(ellipse at 50% 78%, rgba(250, 239, 205, 0.16), transparent 42%);
+}
+
+.storyVfxLayer--transition::after {
+  opacity: 0.82;
+  background:
+    radial-gradient(ellipse at 50% 54%, rgba(255, 250, 232, 0.18), transparent 46%),
+    linear-gradient(105deg, transparent 20%, rgba(255, 246, 220, 0.18) 49%, transparent 74%);
+  animation: storyTransitionBreath var(--story-transition-ms, 1120ms) cubic-bezier(0.35, 0, 0.18, 1) forwards;
+}
+
+.storyVfxLayer__glow {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.storyVfxLayer__glow--page {
+  left: 50%;
+  bottom: 14%;
+  width: min(440px, 42vw);
+  height: min(320px, 34vh);
+  border-radius: 50%;
+  transform: translateX(-50%);
+  background: radial-gradient(circle, rgba(246, 244, 211, 0.2), rgba(193, 224, 196, 0.08) 42%, transparent 72%);
+}
+
+.storyVfxLayer--returningPageGlow .storyVfxLayer__glow--page,
+.storyVfxLayer--pathBannerMist .storyVfxLayer__glow--page,
+.storyVfxLayer--daoSelectionReveal .storyVfxLayer__glow--page {
+  opacity: 1;
+  animation: storyLocalPageGlow 5.6s ease-in-out infinite;
+}
+
+.storyVfxLayer__glow--heaven,
+.storyVfxLayer__glow--earth,
+.storyVfxLayer__glow--martial {
+  top: 18%;
+  bottom: 24%;
+  width: 22%;
+  border-radius: 40% 40% 22% 22%;
+  filter: blur(10px);
+}
+
+.storyVfxLayer__glow--heaven {
+  left: 14%;
+  background: linear-gradient(180deg, rgba(213, 238, 248, 0.16), rgba(213, 238, 248, 0));
+}
+
+.storyVfxLayer__glow--earth {
+  left: 39%;
+  background: linear-gradient(180deg, rgba(225, 176, 88, 0.14), rgba(225, 176, 88, 0));
+}
+
+.storyVfxLayer__glow--martial {
+  right: 14%;
+  background: linear-gradient(180deg, rgba(164, 56, 48, 0.13), rgba(164, 56, 48, 0));
+}
+
+.storyVfxLayer--pathBannerMist .storyVfxLayer__glow--heaven,
+.storyVfxLayer--pathBannerMist .storyVfxLayer__glow--earth,
+.storyVfxLayer--pathBannerMist .storyVfxLayer__glow--martial,
+.storyVfxLayer--daoSelectionReveal .storyVfxLayer__glow--heaven,
+.storyVfxLayer--daoSelectionReveal .storyVfxLayer__glow--earth,
+.storyVfxLayer--daoSelectionReveal .storyVfxLayer__glow--martial {
+  opacity: 1;
+  animation: storyBannerAuraSettle 6s ease-in-out infinite;
+}
+
+.storyCaption {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(76px, 9vh, 118px);
+  z-index: 6;
+  transform: translateX(-50%);
+  width: min(860px, calc(100vw - 64px));
+  margin: 0;
+  padding: 10px 16px 12px;
+  text-align: center;
+  color: var(--story-caption-ink, #f1ead9);
+  text-shadow:
+    0 1px 1px rgba(42, 30, 20, 0.75),
+    0 0 16px rgba(30, 22, 16, 0.46);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(1.05rem, 1.55vw, 1.62rem);
+  line-height: 1.42;
+  letter-spacing: 0;
+  border-radius: 12px;
+  background:
+    radial-gradient(ellipse at 50% 100%, rgba(28, 18, 10, 0.48), rgba(28, 18, 10, 0.14) 60%, rgba(28, 18, 10, 0));
+  opacity: 0;
+  animation: storyCaptionIn 560ms ease-out 420ms forwards;
+}
+
+.storyCaption--hidden {
+  animation: storyCaptionOut 320ms ease-out forwards;
+}
+
+.storyControls {
+  position: absolute;
+  z-index: 7;
+  inset: auto clamp(20px, 3vw, 48px) clamp(22px, 4vh, 42px);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  gap: 12px;
+  pointer-events: none;
+  transition: opacity 260ms ease;
+}
+
+.storyCutsceneOverlay--completing .storyControls {
+  opacity: 0;
+}
+
+.storyControls button {
+  pointer-events: auto;
+  border: 1px solid rgba(225, 205, 164, 0.42);
+  color: rgba(248, 238, 216, 0.96);
+  background:
+    linear-gradient(180deg, rgba(84, 65, 38, 0.86), rgba(48, 35, 22, 0.88));
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 246, 226, 0.08),
+    0 10px 26px rgba(0, 0, 0, 0.26);
+  cursor: pointer;
+  font-family: inherit;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    filter 160ms ease,
+    opacity 160ms ease;
+}
+
+.storyControls button:disabled {
+  cursor: default;
+  opacity: 0.38;
+}
+
+.storyControls button:not(:disabled):hover,
+.storyControls button:not(:disabled):focus-visible {
+  border-color: rgba(190, 218, 177, 0.68);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 246, 226, 0.13),
+    0 0 0 3px rgba(145, 185, 134, 0.18),
+    0 12px 28px rgba(0, 0, 0, 0.3);
+  outline: none;
+}
+
+.storyControls__skip {
+  justify-self: end;
+  align-self: start;
+  padding: 8px 12px;
+  min-width: 72px;
+  min-height: 36px;
+  border-radius: 999px;
+  font-size: 13px;
+}
+
+.storyControls__next {
+  grid-column: 2;
+  padding: 9px 16px;
+  min-width: 88px;
+  min-height: 40px;
+  border-radius: 999px;
+  font-weight: 700;
+}
+
+.storyControls__objective {
+  grid-column: 1 / -1;
+  justify-self: center;
+  min-width: min(280px, calc(100vw - 48px));
+  min-height: 56px;
+  padding: 13px 28px;
+  border-radius: 999px;
+  font-size: clamp(1rem, 1.2vw, 1.22rem);
+  font-weight: 800;
+  letter-spacing: 0;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(211, 235, 188, 0.3), rgba(211, 235, 188, 0) 54%),
+    linear-gradient(180deg, rgba(124, 99, 48, 0.94), rgba(68, 53, 29, 0.96));
+}
+
+.storyCutsceneOverlay__progress {
+  position: absolute;
+  z-index: 7;
+  left: clamp(20px, 3vw, 48px);
+  bottom: clamp(26px, 4vh, 44px);
+  display: flex;
+  gap: 8px;
+}
+
+.storyCutsceneOverlay__dot {
+  width: 24px;
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(240, 222, 178, 0.3);
+}
+
+.storyCutsceneOverlay__dot--active {
+  background: rgba(220, 230, 185, 0.78);
+}
+
+.storyLogPanel {
+  display: grid;
+  gap: 12px;
+}
+
+.storyLogPanel__entry {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  border: 1px solid rgba(120, 72, 33, 0.3);
+  border-radius: 10px;
+  background: rgba(249, 242, 226, 0.58);
+  padding: 12px;
+}
+
+.storyLogPanel__title {
+  font-weight: 800;
+  color: var(--ink-text-color);
+}
+
+.storyLogPanel__meta,
+.storyLogPanel__empty {
+  margin: 3px 0 0;
+  color: var(--ink-muted-color);
+  font-size: 13px;
+}
+
+.storyLogPanel__replay {
+  min-width: 86px;
+}
+
+@keyframes storySlideFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes storySlideFadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes storyTransitionVeil {
+  0%, 100% { opacity: 0; }
+  42%, 58% { opacity: 1; }
+}
+
+@keyframes storyTransitionAshVeil {
+  0%, 100% { opacity: 0; transform: translate3d(0, -2%, 0); }
+  45%, 62% { opacity: 1; transform: translate3d(-1.2%, 1.2%, 0); }
+}
+
+@keyframes storyTransitionPageVeil {
+  0%, 100% { opacity: 0; transform: translate3d(-6%, 0, 0); }
+  45%, 62% { opacity: 1; transform: translate3d(3%, 0, 0); }
+}
+
+@keyframes storyTransitionBreath {
+  0%, 100% { opacity: 0; transform: translate3d(-2%, 0, 0); }
+  38%, 66% { opacity: 0.82; transform: translate3d(1.5%, 0, 0); }
+}
+
+@keyframes storyLocalPageGlow {
+  0%, 100% { transform: translateX(-50%) scale(0.98); opacity: 0.72; }
+  50% { transform: translateX(-50%) scale(1.03); opacity: 1; }
+}
+
+@keyframes storyBannerAuraSettle {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 0.86; }
+}
+
+@keyframes storyCaptionIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(6px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+@keyframes storyCaptionOut {
+  from { opacity: 1; transform: translateX(-50%) translateY(0); }
+  to { opacity: 0; transform: translateX(-50%) translateY(6px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .storySlide,
+  .storySlideStack::after,
+  .storyVfxLayer__glow,
+  .storyCaption {
+    animation: none !important;
+  }
+
+  .storySlide--incoming,
+  .storySlide--outgoing,
+  .storyCaption {
+    opacity: 1;
+  }
+
+  .storySlideStack::after,
+  .storyVfxLayer::after,
+  .storyVfxLayer__canvas {
+    display: none;
+  }
+}
+
+.storyCutsceneOverlay--reducedMotion .storySlide,
+.storyCutsceneOverlay--reducedMotion .storySlideStack::after,
+.storyCutsceneOverlay--reducedMotion .storyVfxLayer__glow,
+.storyCutsceneOverlay--reducedMotion .storyCaption {
+  animation: none !important;
+}
+
+.storyCutsceneOverlay--reducedMotion .storySlide--incoming,
+.storyCutsceneOverlay--reducedMotion .storySlide--outgoing,
+.storyCutsceneOverlay--reducedMotion .storyCaption {
+  opacity: 1;
+}
+
+.storyCutsceneOverlay--reducedMotion .storySlideStack::after,
+.storyCutsceneOverlay--reducedMotion .storyVfxLayer::after,
+.storyCutsceneOverlay--reducedMotion .storyVfxLayer__canvas {
+  display: none;
+}
+
+.storyCutsceneOverlay[data-story-motion='off'] .storyVfxLayer::before,
+.storyCutsceneOverlay[data-story-motion='off'] .storyVfxLayer::after,
+.storyCutsceneOverlay[data-story-motion='off'] .storyVfxLayer__glow,
+.storyCutsceneOverlay[data-story-motion='off'] .storyVfxLayer__canvas {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .storyCaption {
+    bottom: clamp(98px, 13vh, 132px);
+    width: min(92vw, calc(100vw - 28px));
+    font-size: clamp(1rem, 4.2vw, 1.22rem);
+  }
+
+  .storyControls {
+    inset-inline: 14px;
+    grid-template-columns: auto auto;
+  }
+
+  .storyControls__objective {
+    min-height: 52px;
+  }
+
+  .storyCutsceneOverlay__progress {
+    left: 16px;
+  }
+}

@@ -1,0 +1,72 @@
+﻿ M docs/release/build_warning_inventory.md
+ M docs/release/current_implementation_baseline.json
+ M docs/release/current_implementation_baseline.md
+ M docs/release/go_no_go_checklist.md
+ M docs/release/known_issues.md
+ M docs/release/release_handoff_bundle.md
+ M docs/release/runtime_content_manifest.md
+ M docs/release/signoff_sheet.md
+ M package.json
+ M scripts/release/captureBuildWarnings.ts
+ M src/components/GameLayout.tsx
+ M src/components/modals/LifeSummaryModal.tsx
+ M src/components/modals/OfflineProgressModal.scss
+ M src/components/modals/OfflineProgressModal.tsx
+ M src/features/prestige/lifeSummarySurface.ts
+ M src/features/prestige/prestigeAdvisorSurface.ts
+ M src/features/prestige/prestigeLedgerExact/PrestigeLedgerExactScreen.scss
+ M src/features/prestige/prestigeLedgerExact/PrestigeLedgerExactScreen.tsx
+ M src/features/prestige/prestigeLedgerExact/PrestigeLedgerScreenOwner.tsx
+ M src/features/prestige/prestigeLedgerExact/buildPrestigeLedgerExactSurface.ts
+ M src/features/prestige/prestigeLedgerExact/prestigeLedgerExactTypes.ts
+ M src/services/diagnostics/release/buildAuditReport.ts
+ M src/services/prestige/PrestigeResetService.ts
+ M src/services/time/OfflineCatchup.ts
+ M src/stores/prestigeStore.ts
+ M src/systems/offline.ts
+ M src/systems/prestige/runtime/prestigeRuntimeCatalog.ts
+ M src/systems/readiness/section5Adapters.ts
+ M src/systems/ui/runCompass/buildRunCompassSurfaceV2.ts
+ M tests/contracts/buildWarningInventory.test.ts
+ M tests/contracts/prestigeStarterSpendPlanner.test.ts
+ M tests/integration/lifeSummaryPrestigeFlow.test.ts
+ M tests/integration/prestigeAdvisorUiBridge.test.ts
+ M tmp-progression-fixtures/src/features/prestige/lifeSummarySurface.js
+ M tmp-progression-fixtures/src/features/prestige/prestigeAdvisorSurface.js
+ M tmp-progression-fixtures/src/services/prestige/PrestigeResetService.js
+ M tmp-progression-fixtures/src/services/time/OfflineCatchup.js
+ M tmp-progression-fixtures/src/stores/prestigeStore.js
+ M tmp-progression-fixtures/src/systems/prestige/runtime/prestigeRuntimeCatalog.js
+ M tmp-progression-fixtures/src/systems/readiness/section5Adapters.js
+?? docs/release/p4_browser_smoke.md
+?? docs/release/p4_offline_catchup_trust_report.md
+?? docs/release/p4_prestige_runtime_effect_audit.json
+?? docs/release/p4_prestige_runtime_effect_audit.md
+?? docs/release/p4_prestige_trust_report.md
+?? docs/release/qa/p4-browser-evidence.json
+?? docs/release/qa/p4-life-summary-current.png
+?? docs/release/qa/p4-life-summary-last-completed.png
+?? docs/release/qa/p4-offline-priority.png
+?? docs/release/qa/p4-offline-summary.png
+?? docs/release/qa/p4-post-reset-reclaim-dismissed.png
+?? docs/release/qa/p4-post-reset-reclaim-objective.png
+?? docs/release/qa/p4-prestige-recommended-after-ritual.png
+?? docs/release/qa/p4-prestige-too-early.png
+?? docs/release/qa/p4-preview-prestige-fixture.png
+?? review-bundles/
+?? scripts/release/buildPrestigeRuntimeEffectAudit.ts
+?? src/features/prestige/postResetReclaimObjectiveSurface.ts
+?? src/features/prestige/prestigeForecastSurface.ts
+?? src/services/prestige/PrestigeResetContract.ts
+?? src/systems/offline/offlineCatchupSurface.ts
+?? tests/contracts/lifeSummarySurfaceV2.test.ts
+?? tests/contracts/offlineCatchupSurface.test.ts
+?? tests/contracts/offlineModalPriority.test.ts
+?? tests/contracts/prestigeForecastSurfaceV2.test.ts
+?? tests/contracts/prestigeResetPreviewMatchesService.test.ts
+?? tests/contracts/prestigeRuntimeEffectAudit.test.ts
+?? tests/integration/postResetReclaimObjective.test.ts
+?? tmp-progression-fixtures/src/features/prestige/postResetReclaimObjectiveSurface.js
+?? tmp-progression-fixtures/src/features/prestige/prestigeForecastSurface.js
+?? tmp-progression-fixtures/src/services/prestige/PrestigeResetContract.js
+?? tmp-progression-fixtures/src/systems/offline/offlineCatchupSurface.js

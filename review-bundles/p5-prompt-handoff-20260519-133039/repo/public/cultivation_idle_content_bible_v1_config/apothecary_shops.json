@@ -1,0 +1,161 @@
+{
+  "version": "1.0",
+  "shops": [
+    {
+      "id": "shop_apothecary_pinewind",
+      "cityId": "city_pinewind_hamlet",
+      "stock": [
+        {
+          "itemId": "cons_healing_pellet_t1",
+          "buy": {
+            "gold": 40
+          },
+          "dailyLimit": null
+        },
+        {
+          "itemId": "cons_ironblood_pellet_t1",
+          "buy": {
+            "gold": 250
+          },
+          "dailyLimit": 10
+        },
+        {
+          "itemId": "cons_qi_elixir_t1",
+          "buy": {
+            "gold": 300
+          },
+          "dailyLimit": 10
+        }
+      ]
+    },
+    {
+      "id": "shop_apothecary_stonecrag",
+      "cityId": "city_stonecrag_town",
+      "stock": [
+        {
+          "itemId": "cons_healing_pellet_t1",
+          "buy": {
+            "gold": 60
+          },
+          "dailyLimit": null
+        },
+        {
+          "itemId": "cons_windstep_powder_t1",
+          "buy": {
+            "gold": 1200
+          },
+          "dailyLimit": 10
+        },
+        {
+          "itemId": "cons_ward_salt_t1",
+          "buy": {
+            "gold": 1500
+          },
+          "dailyLimit": 10
+        },
+        {
+          "itemId": "cons_meridian_warmth_draft_t1",
+          "buy": {
+            "gold": 1800
+          },
+          "dailyLimit": 10
+        }
+      ]
+    },
+    {
+      "id": "shop_apothecary_spirit_cavern",
+      "cityId": "city_spirit_cavern_city",
+      "stock": [
+        {
+          "itemId": "cons_healing_pellet_t1",
+          "buy": {
+            "gold": 120
+          },
+          "dailyLimit": null
+        },
+        {
+          "itemId": "cons_focus_tonic_t1",
+          "buy": {
+            "gold": 7000
+          },
+          "dailyLimit": 8
+        },
+        {
+          "itemId": "cons_qi_elixir_t2",
+          "buy": {
+            "gold": 9000
+          },
+          "dailyLimit": 8
+        }
+      ]
+    },
+    {
+      "id": "shop_apothecary_lotusford",
+      "cityId": "city_lotusford",
+      "stock": [
+        {
+          "itemId": "cons_healing_pellet_t1",
+          "buy": {
+            "gold": 220
+          },
+          "dailyLimit": null
+        },
+        {
+          "itemId": "cons_anti_venom_pellet_t1",
+          "buy": {
+            "gold": 24000
+          },
+          "dailyLimit": 8
+        },
+        {
+          "itemId": "cons_quiet_breath_tea_t1",
+          "buy": {
+            "gold": 26000
+          },
+          "dailyLimit": 8
+        }
+      ]
+    },
+    {
+      "id": "shop_apothecary_ironpeak",
+      "cityId": "city_ironpeak_bastion",
+      "stock": [
+        {
+          "itemId": "cons_healing_pellet_t1",
+          "buy": {
+            "gold": 400
+          },
+          "dailyLimit": null
+        },
+        {
+          "itemId": "cons_mastery_tonic_t1",
+          "buy": {
+            "gold": 180000
+          },
+          "dailyLimit": 5
+        },
+        {
+          "itemId": "cons_ironblood_pellet_t2",
+          "buy": {
+            "gold": 140000
+          },
+          "dailyLimit": 6
+        },
+        {
+          "itemId": "cons_windstep_powder_t2",
+          "buy": {
+            "gold": 140000
+          },
+          "dailyLimit": 6
+        },
+        {
+          "itemId": "cons_ward_salt_t2",
+          "buy": {
+            "gold": 160000
+          },
+          "dailyLimit": 6
+        }
+      ]
+    }
+  ]
+}

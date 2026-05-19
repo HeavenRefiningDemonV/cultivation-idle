@@ -1,0 +1,201 @@
+.traitRerollOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 30;
+}
+
+.traitRerollModal {
+  background: #0f1622;
+  color: #e6f1ff;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  width: 680px;
+  max-width: 95vw;
+  padding: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+}
+
+.traitRerollHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.traitRerollTitle {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.traitRerollSubtitle {
+  font-size: 13px;
+  color: #9fb3c8;
+}
+
+.traitRerollClose {
+  background: none;
+  border: none;
+  color: #9fb3c8;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.traitRerollBody {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.traitRerollName {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.traitRerollSlots {
+  font-size: 13px;
+  color: #9fb3c8;
+  margin-bottom: 10px;
+}
+
+.traitRerollList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.traitRerollRow {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 12px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+}
+
+.traitRerollMain {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4px;
+}
+
+.traitRerollLabel {
+  font-weight: 600;
+}
+
+.traitRerollValue {
+  color: #8ae8a2;
+}
+
+.traitRerollRange {
+  color: #9fb3c8;
+  font-size: 13px;
+}
+
+.traitRerollQuality {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+}
+
+.traitRerollQualityBar {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.traitRerollQualityFill {
+  height: 100%;
+  background: linear-gradient(90deg, #22c55e, #8b5cf6);
+}
+
+.traitRerollLock {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #d6e4ff;
+}
+
+.traitRerollLockRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.traitRerollToggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.traitRerollCost {
+  font-size: 14px;
+  color: #d6e4ff;
+}
+
+.traitRerollHint {
+  color: #9fb3c8;
+  font-size: 14px;
+}
+
+.traitRerollStatus {
+  margin-top: 12px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.traitRerollStatus.is-success {
+  background: rgba(16, 185, 129, 0.12);
+  color: #22c55e;
+  border: 1px solid rgba(16, 185, 129, 0.35);
+}
+
+.traitRerollStatus.is-error {
+  background: rgba(239, 68, 68, 0.12);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+}
+
+.traitRerollActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.traitRerollButton {
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  background: linear-gradient(90deg, #f472b6, #a855f7);
+  color: #0b1220;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.traitRerollButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.traitRerollButtonSecondary {
+  background: rgba(255, 255, 255, 0.08);
+  color: #e6f1ff;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}

@@ -1,0 +1,201 @@
+:root {
+  /* Legacy base aliases used across older surfaces. */
+  --paper-0: #f3ead7;
+  --paper-1: rgba(255, 255, 255, 0.45);
+  --ink-0: rgba(31, 26, 23, 0.92);
+  --ink-1: rgba(31, 26, 23, 0.65);
+  --seal-red: rgba(139, 48, 40, 0.75);
+  --jade: rgba(78, 107, 94, 0.75);
+  --gold: rgba(162, 113, 42, 0.75);
+  --shadow-soft: 0 10px 22px rgba(20, 13, 6, 0.2);
+  --shadow-strong: 0 18px 34px rgba(20, 13, 6, 0.3);
+
+  /* v3 base palette / text */
+  --paper-parchment: #f3ead7;
+  --paper-parchment-strong: #e7d8bc;
+  --paper-parchment-soft: #faf2e2;
+  --paper-ink: #1f1a17;
+  --paper-ink-muted: rgba(92, 81, 70, 0.92);
+  --paper-ink-faint: rgba(92, 81, 70, 0.72);
+
+  /* Semantic roles: critical/risk/safe/emphasis */
+  --paper-stamp: #8b3028;
+  --paper-stamp-muted: rgba(139, 48, 40, 0.6);
+  --paper-rare: #7a5e35;
+  --paper-bronze: var(--paper-rare);
+  --paper-amber: #a2712a;
+  --paper-gold: var(--paper-amber);
+  --paper-jade: #4e6b5e;
+  --paper-jade-muted: rgba(78, 107, 94, 0.66);
+  --paper-complete: #4e6b5e;
+  --paper-warning: var(--paper-amber);
+  --paper-danger: #8b3028;
+  --paper-success: #4e6b5e;
+  --paper-glow: rgba(78, 107, 94, 0.16);
+
+  /* Shell backgrounds (depth model) */
+  --paper-shell-surface: rgba(243, 234, 215, 0.93);
+  --paper-shell-raised: rgba(250, 242, 226, 0.95);
+  --paper-shell-inspector: rgba(231, 216, 188, 0.86);
+  --paper-shell-dense: rgba(235, 223, 198, 0.9);
+  --paper-shell-ritual: rgba(248, 239, 223, 0.97);
+
+  /* Border / outline strengths */
+  --paper-shell-border-subtle: rgba(122, 94, 53, 0.34);
+  --paper-shell-border-strong: rgba(122, 94, 53, 0.56);
+  --paper-shell-outline-subtle: rgba(139, 48, 40, 0.3);
+  --paper-shell-outline-strong: rgba(139, 48, 40, 0.52);
+
+  /* Shadows */
+  --paper-shadow-surface: 0 8px 18px rgba(22, 12, 4, 0.22);
+  --paper-shadow-raised: 0 12px 24px rgba(22, 12, 4, 0.28);
+  --paper-shadow-inspector: 0 6px 14px rgba(22, 12, 4, 0.2);
+  --paper-shadow-dense: 0 5px 10px rgba(22, 12, 4, 0.18);
+  --paper-shadow-ritual: 0 16px 30px rgba(22, 12, 4, 0.32);
+
+  /* Density */
+  --paper-density-dense-inline: 12px;
+  --paper-density-dense-block: 10px;
+  --paper-density-default-inline: 16px;
+  --paper-density-default-block: 14px;
+  --paper-density-roomy-inline: 22px;
+  --paper-density-roomy-block: 18px;
+  --paper-density-gap-dense: 8px;
+  --paper-density-gap-default: 12px;
+  --paper-density-gap-roomy: 16px;
+
+  /* Chip state colors */
+  --paper-chip-role-bg: rgba(122, 94, 53, 0.14);
+  --paper-chip-role-border: rgba(122, 94, 53, 0.5);
+  --paper-chip-ready-bg: rgba(78, 107, 94, 0.16);
+  --paper-chip-ready-border: rgba(78, 107, 94, 0.48);
+  --paper-chip-warning-bg: rgba(162, 113, 42, 0.18);
+  --paper-chip-warning-border: rgba(162, 113, 42, 0.5);
+  --paper-chip-recommended-bg: rgba(139, 48, 40, 0.14);
+  --paper-chip-recommended-border: rgba(139, 48, 40, 0.46);
+  --paper-chip-selected-bg: rgba(139, 48, 40, 0.18);
+  --paper-chip-selected-border: rgba(139, 48, 40, 0.56);
+
+  /* Texture / watermark / ritual backdrop */
+  --paper-texture-opacity-subtle: 0.14;
+  --paper-texture-opacity-default: 0.2;
+  --paper-texture-opacity-strong: 0.26;
+  --paper-watermark-opacity-subtle: 0.05;
+  --paper-watermark-opacity-default: 0.08;
+  --paper-watermark-opacity-strong: 0.12;
+  --paper-modal-backdrop: rgba(30, 24, 17, 0.62);
+  --paper-modal-backdrop-texture-opacity: 0.28;
+  --paper-header-bg: rgba(243, 234, 215, 0.75);
+  --paper-header-shadow: 0 4px 10px rgba(22, 12, 4, 0.12);
+  --paper-chip-bg: rgba(243, 234, 215, 0.92);
+
+  /* Backward-compatible shell aliases. */
+  --paper-shell-base: var(--paper-shell-surface);
+  --paper-shell-muted: var(--paper-shell-inspector);
+  --paper-shell-border: var(--paper-shell-border-subtle);
+  --paper-shell-outline: var(--paper-shell-outline-strong);
+  --paper-shell-active: var(--paper-chip-selected-bg);
+  --paper-shell-active-subtle: rgba(122, 94, 53, 0.12);
+
+  --paper-progress-fill: rgba(78, 107, 94, 0.76);
+  --paper-progress-fill-soft: rgba(139, 48, 40, 0.6);
+  --paper-scrollbar-track: rgba(122, 94, 53, 0.24);
+  --paper-scrollbar-thumb: rgba(122, 94, 53, 0.62);
+  --paper-scrollbar-thumb-hover: rgba(139, 48, 40, 0.64);
+  --paper-shadow-soft: var(--paper-shadow-surface);
+  --paper-shadow-strong: var(--paper-shadow-raised);
+
+  /* Legacy paper-surface aliases still consumed by compatibility layers. */
+  --paper-border: var(--paper-shell-border-subtle);
+  --paper-outline: var(--paper-shell-outline-subtle);
+  --paper-bg: var(--paper-shell-surface);
+  --paper-bg-strong: var(--paper-shell-raised);
+  --paper-bg-soft: var(--paper-parchment-soft);
+  --paper-shadow: var(--paper-shadow-surface);
+
+  /* Canonical shared-shell structure + typography (P2-04 locked values). */
+  --ui-layout-page-max-inline: 1280px;
+  --ui-layout-page-pad-inline: 16px;
+  --ui-layout-section-gap: 16px;
+  --ui-layout-card-gap: 12px;
+
+  --ui-space-card-pad-default: 16px;
+  --ui-space-card-pad-compact: 12px;
+
+  --ui-size-button-min-block: 36px;
+  --ui-size-chip-min-block: 22px;
+  --ui-size-row-min-block: 44px;
+  --ui-size-progress-block: 8px;
+
+  --ui-type-page-title: 20px;
+  --ui-type-section-title: 18px;
+  --ui-type-card-title: 16px;
+  --ui-type-body: 14px;
+  --ui-type-meta: 12px;
+  --ui-type-button: 14px;
+
+  --ui-motion-hover-duration: 140ms;
+  --ui-motion-selection-duration: 180ms;
+  --ui-motion-drawer-duration: 250ms;
+  --ui-motion-modal-duration: 210ms;
+  --ui-motion-screen-duration: 280ms;
+  --ui-motion-hover-ease: cubic-bezier(0.2, 0.75, 0.25, 1);
+  --ui-motion-selection-ease: cubic-bezier(0.2, 0.75, 0.25, 1);
+  --ui-motion-drawer-ease: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --ui-motion-modal-ease: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --ui-motion-screen-ease: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --ui-motion-ritual-breathe-duration: 12s;
+  --ui-motion-ritual-ring-duration: 10s;
+  --ui-motion-ritual-drift-duration: 22s;
+  --ui-motion-ritual-pulse-duration: 8s;
+  --ui-motion-ritual-ease: ease-in-out;
+
+  /* Ink-scoped aliases for gradual shared-consumer convergence. */
+  --ink-motion-hover-duration: var(--ui-motion-hover-duration);
+  --ink-motion-selection-duration: var(--ui-motion-selection-duration);
+  --ink-motion-drawer-duration: var(--ui-motion-drawer-duration);
+  --ink-motion-modal-duration: var(--ui-motion-modal-duration);
+  --ink-motion-screen-duration: var(--ui-motion-screen-duration);
+  --ink-motion-hover-ease: var(--ui-motion-hover-ease);
+  --ink-motion-selection-ease: var(--ui-motion-selection-ease);
+  --ink-motion-drawer-ease: var(--ui-motion-drawer-ease);
+  --ink-motion-modal-ease: var(--ui-motion-modal-ease);
+  --ink-motion-screen-ease: var(--ui-motion-screen-ease);
+  --ink-motion-ritual-breathe-duration: var(--ui-motion-ritual-breathe-duration);
+  --ink-motion-ritual-ring-duration: var(--ui-motion-ritual-ring-duration);
+  --ink-motion-ritual-drift-duration: var(--ui-motion-ritual-drift-duration);
+  --ink-motion-ritual-pulse-duration: var(--ui-motion-ritual-pulse-duration);
+  --ink-motion-ritual-ease: var(--ui-motion-ritual-ease);
+  --hero-surface-radius: 18px;
+  --hero-surface-padding: 18px;
+  --hero-surface-padding-compact: 14px;
+  --hero-surface-min-card-height: 210px;
+  --hero-surface-inline-gap: 12px;
+  --hero-surface-stack-gap: 14px;
+  --hero-surface-row-min-height: 64px;
+  --hero-surface-shadow: 0 12px 22px rgba(26, 20, 14, 0.22);
+  --hero-surface-shadow-soft: 0 8px 16px rgba(26, 20, 14, 0.16);
+  --hero-ribbon-padding-block: 12px;
+  --hero-ribbon-padding-inline: 14px;
+  --hero-ribbon-gap: 10px;
+  --hero-ribbon-cell-gap: 8px;
+  --hero-ribbon-cell-min-height: 88px;
+  --hero-ribbon-icon-size: 14px;
+  --hero-ribbon-label-size: 11px;
+  --hero-ribbon-value-size: 18px;
+  --hero-action-min-height: 30px;
+  --hero-action-pill-radius: 999px;
+  --ui-reserved-badge-inline-size-chip: 3.5rem;
+  --ui-reserved-badge-inline-size-compact-chip: 2.6rem;
+  --ui-reserved-badge-inline-size-tab-button: 3rem;
+  --ui-reserved-badge-inline-size-spine-badge: 3.25rem;
+  --ui-reserved-badge-inline-size-slot-badge: 2.7rem;
+  --ui-reserved-badge-inline-size-row-end: 3rem;
+  --ui-reserved-badge-inline-size-card-corner: 2.8rem;
+  --ui-reserved-badge-block-size-row-end: 1.2rem;
+  --ui-reserved-badge-block-size-card-corner: 1.2rem;
+  --ui-reserved-badge-block-size-chip: 1.25rem;
+  --ui-reserved-badge-block-size-tab-button: 1.1rem;
+  --ui-reserved-badge-block-size-spine-badge: 1.2rem;
+  --ui-reserved-badge-block-size-slot-badge: 1.1rem;
+}

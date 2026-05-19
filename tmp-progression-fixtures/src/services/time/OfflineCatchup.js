@@ -10,6 +10,10 @@ import { cultivationService } from '../cultivationService.js';
 import { buildCultivationConsumableCarryoverWindows } from '../../systems/consumables/cultivationConsumableEffects.js';
 import { getHeartLawBonuses } from '../../systems/heartLaw/heartLawLogic.js';
 import { getExpeditionReadinessDelta, getQueuedActionReadinessDelta } from '../../systems/offline/offlineSummaryReadModel.js';
+import { buildOfflineCatchupSurface } from '../../systems/offline/offlineCatchupSurface.js';
+function formatPercent(value) {
+    return `${Math.round(value * 100)}%`;
+}
 function getLiveOfflineEfficiency() {
     const prestigeStore = usePrestigeStore.getState();
     const cultivationStore = useCultivationStore.getState();
@@ -20,10 +24,24 @@ function getLiveOfflineEfficiency() {
         chapter: cultivationStore.chapter,
         spiritRoot: prestigeStore.spiritRoot,
     }).offlineEfficiencyAdd;
-    return resolveOfflineCultivationEfficiency({
-        prestigeEfficiencyAdd: prestigeStore.getOfflineEfficiencyBonusAdditive(),
+    const prestigeEfficiencyAdd = prestigeStore.getOfflineEfficiencyBonusAdditive();
+    const value = resolveOfflineCultivationEfficiency({
+        prestigeEfficiencyAdd,
         heartLawBonus,
     });
+    const sources = [
+        { id: 'base', label: 'Base idle settlement', value: formatPercent(resolveOfflineCultivationEfficiency({ prestigeEfficiencyAdd: 0, heartLawBonus: 0 })) },
+    ];
+    if (prestigeEfficiencyAdd > 0) {
+        sources.push({ id: 'prestige', label: 'Prestige decree', value: `+${formatPercent(prestigeEfficiencyAdd)}` });
+    }
+    if (heartLawBonus > 0) {
+        sources.push({ id: 'heart_law', label: 'Heart Law', value: `+${formatPercent(heartLawBonus)}` });
+    }
+    if (sources.length === 1) {
+        sources.push({ id: 'no_bonus', label: 'No active offline bonus', value: '+0%' });
+    }
+    return { value, sources };
 }
 function calculateOfflineQiGain(startAt, endAt, offlineEfficiency) {
     if (offlineEfficiency <= 0 || endAt <= startAt)
@@ -44,14 +62,22 @@ function calculateOfflineQiGain(startAt, endAt, offlineEfficiency) {
 }
 export function apply(context) {
     if (context.dtMs <= 0) {
-        return { summary: null };
+        return {
+            summary: null,
+            surface: buildOfflineCatchupSurface({
+                summary: null,
+                generatedAt: context.now,
+                rawSeconds: Math.floor(context.rawMs / 1000),
+            }),
+        };
     }
     const seconds = Math.floor(Math.min(context.dtMs, MAX_OFFLINE_MS) / 1000);
     const summaryParts = [];
     const startAt = context.now - seconds * 1000;
     const gameStore = useGameStore.getState();
     useGameStore.setState({ lastActiveTime: context.now, lastTickTime: context.now });
-    const offlineEfficiency = getLiveOfflineEfficiency();
+    const offlineEfficiencyDetail = getLiveOfflineEfficiency();
+    const offlineEfficiency = offlineEfficiencyDetail.value;
     const qiGain = calculateOfflineQiGain(startAt, context.now, offlineEfficiency);
     if (qiGain.greaterThan(0)) {
         const nextQi = D(gameStore.qi ?? '0').plus(qiGain);
@@ -97,13 +123,22 @@ export function apply(context) {
     if (expeditionReadiness.newlyComplete > 0) {
         summaryParts.push({ kind: 'expeditions', label: 'Expeditions ready', value: `${expeditionReadiness.newlyComplete}` });
     }
+    const summary = {
+        offlineSeconds: seconds,
+        rawOfflineSeconds: Math.floor(context.rawMs / 1000),
+        maxOfflineSeconds: MAX_OFFLINE_MS / 1000,
+        offlineDuration: formatOfflineDuration(seconds),
+        efficiency: offlineEfficiency,
+        efficiencySources: offlineEfficiencyDetail.sources,
+        wasCapped: context.wasCapped,
+        parts: summaryParts,
+    };
     return {
-        summary: {
-            offlineSeconds: seconds,
-            offlineDuration: formatOfflineDuration(seconds),
-            efficiency: offlineEfficiency,
-            wasCapped: context.wasCapped,
-            parts: summaryParts,
-        },
+        summary,
+        surface: buildOfflineCatchupSurface({
+            summary,
+            generatedAt: context.now,
+            rawSeconds: Math.floor(context.rawMs / 1000),
+        }),
     };
 }

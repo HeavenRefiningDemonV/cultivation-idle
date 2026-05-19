@@ -1,0 +1,44 @@
+.migrationIssuesModalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(8, 10, 16, 0.6);
+}
+
+.migrationIssuesModalCard {
+  width: min(560px, 100%);
+  max-height: min(80vh, 680px);
+  overflow: auto;
+  border-radius: 14px;
+  border: 1px solid rgba(208, 180, 132, 0.45);
+  background: #111217;
+  color: #efe8d8;
+  padding: 18px;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.45);
+}
+
+.migrationIssuesModalTitle {
+  margin: 0 0 8px;
+  font-size: 1.15rem;
+}
+
+.migrationIssuesModalSummary {
+  margin: 0 0 10px;
+  color: rgba(239, 232, 216, 0.88);
+}
+
+.migrationIssuesModalList {
+  margin: 0 0 14px;
+  padding-left: 18px;
+  display: grid;
+  gap: 6px;
+}
+
+.migrationIssuesModalActions {
+  display: flex;
+  justify-content: flex-end;
+}

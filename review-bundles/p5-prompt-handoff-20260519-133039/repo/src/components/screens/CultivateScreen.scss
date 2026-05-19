@@ -1,0 +1,1126 @@
+.cultivationScreenFxStage {
+  width: 100%;
+  height: 100%;
+}
+
+.cultivationScreenFxStage__layer {
+  z-index: 0;
+}
+
+.cultivationScreenFxStage__content {
+  width: 100%;
+  height: 100%;
+}
+
+.cultivationScreenRoot {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  --cultivation-hud-anchor-y: 66%;
+  --cultivation-stack-gap-1: 10px;
+  --cultivation-stack-gap-2: 14px;
+  --qi-frame-h: 44px;
+  --qi-track-h: 14px;
+  --verse-frame-h: 30px;
+  --cultHudMaxW: 980px;
+  --cultHudSidePad: 80px;
+  --cultHudW: min(var(--cultHudMaxW), calc(100% - var(--cultHudSidePad)));
+  --cultCommandDeckTop: calc(env(safe-area-inset-top, 0px) + 126px);
+  --cultCommandDeckW: min(980px, calc(100% - 112px));
+}
+
+.cultivationSceneLayer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.cultivationCenterpieceShell {
+  position: absolute;
+  inset: 0;
+}
+
+.cultivationCenterpieceShell__halo {
+  position: absolute;
+  left: 50%;
+  top: 58%;
+  width: clamp(280px, 32vw, 460px);
+  height: clamp(160px, 22vw, 300px);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(238, 226, 196, 0.24), rgba(132, 97, 52, 0.06) 58%, rgba(18, 24, 35, 0) 100%);
+  animation: cultivationCenterHalo 4.2s ease-in-out infinite;
+}
+
+.cultivationCenterpieceShell__mist {
+  position: absolute;
+  left: 50%;
+  top: calc(var(--cultivation-hud-anchor-y) - 10px);
+  width: clamp(340px, 40vw, 620px);
+  height: clamp(90px, 12vw, 180px);
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: radial-gradient(ellipse at center, rgba(136, 156, 142, 0.2), rgba(136, 156, 142, 0));
+  filter: blur(14px);
+  animation: cultivationCenterMist 8.5s ease-in-out infinite;
+}
+
+.cultivationCenterpieceShell__altarBase {
+  position: absolute;
+  left: 50%;
+  top: calc(var(--cultivation-hud-anchor-y) + 24px);
+  width: clamp(300px, 44vw, 660px);
+  height: clamp(70px, 10vw, 120px);
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background:
+    radial-gradient(ellipse at 50% 25%, rgba(238, 223, 193, 0.58), rgba(110, 82, 46, 0.28) 60%, rgba(20, 18, 14, 0.06) 100%);
+  box-shadow:
+    0 16px 30px rgba(10, 8, 6, 0.3),
+    inset 0 0 0 1px rgba(148, 112, 66, 0.3);
+  opacity: 0.88;
+}
+
+.cultivationCultivatorArt {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.cultivationHeroFigure {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  height: clamp(860px, 120vh, 1180px);
+  aspect-ratio: 1280/1002;
+  transform: translateX(-56%);
+  --dantian-anchor-x: 55.75%;
+  --dantian-anchor-y: 50.9%;
+}
+
+.cultivationHeroAbdomenAnchor {
+  position: absolute;
+  left: var(--dantian-anchor-x);
+  top: var(--dantian-anchor-y);
+  width: clamp(72px, 4.8vw, 96px);
+  height: clamp(72px, 4.8vw, 96px);
+  transform: translate(-50%, -50%);
+  z-index: 14;
+  pointer-events: none;
+}
+
+.cultivationHeaderRail {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  padding: 10px 24px 0;
+  pointer-events: none;
+}
+
+.cultivationCommandDeck {
+  position: absolute;
+  top: calc(var(--cultCommandDeckTop) + 2px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 17;
+  width: min(640px, calc(100% - 180px));
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  pointer-events: none;
+  isolation: isolate;
+}
+
+.cultivationCommandDeck::before {
+  content: '';
+  position: absolute;
+  inset: -8px -12px -6px;
+  z-index: -1;
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(43, 33, 22, 0.12), rgba(43, 33, 22, 0.04) 42%, rgba(43, 33, 22, 0));
+  pointer-events: none;
+}
+
+.cultivationSideRails {
+  width: 100%;
+}
+
+.cultivationSideRails {
+  position: absolute;
+  top: var(--cultCommandDeckTop);
+  left: 0;
+  right: 0;
+  z-index: 17;
+  pointer-events: none;
+}
+
+.cultivationSideRail {
+  position: absolute;
+  width: clamp(276px, 22vw, 392px);
+  pointer-events: auto;
+}
+
+.cultivationSideRail--left {
+  left: clamp(14px, 2.8vw, 44px);
+}
+
+.cultivationSideRail--right {
+  width: clamp(276px, 20vw, 344px);
+  right: clamp(14px, 2.8vw, 44px);
+}
+
+.cultivationTruthStack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cultivationRunCompass--native {
+  color: var(--paper-ink, #2b2116);
+  background: linear-gradient(180deg, rgba(250, 242, 222, 0.9), rgba(237, 224, 200, 0.78));
+  border: 1px solid var(--paper-shell-border-strong, rgba(122, 94, 53, 0.56));
+  border-radius: var(--hero-surface-radius, 18px);
+  padding: var(--hero-surface-padding-compact, 14px) var(--hero-surface-padding-compact, 14px) calc(var(--hero-surface-padding-compact, 14px) - 1px);
+  box-shadow: var(--hero-surface-shadow, 0 12px 22px rgba(26, 20, 14, 0.22));
+  backdrop-filter: blur(8px);
+  position: relative;
+}
+
+.cultivationRunCompass--native::after {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border-radius: 13px;
+  border: 1px solid rgba(130, 83, 36, 0.14);
+  pointer-events: none;
+}
+
+.cultivationRunCompass--native .runCompassSection__title,
+.cultivationRunCompass--native .runCompassMilestone__title,
+.cultivationRunCompass--native .runCompassSafetyNet__title,
+.cultivationRunCompass--native .runCompassAction__label,
+.cultivationRunCompass--native .runCompassInfoRow__label {
+  color: rgba(43, 33, 22, 0.9);
+}
+
+.cultivationRunCompass--native .runCompassMilestone__detail,
+.cultivationRunCompass--native .runCompassMilestone__context,
+.cultivationRunCompass--native .runCompassMilestone__prestige,
+.cultivationRunCompass--native .runCompassReadinessDetail,
+.cultivationRunCompass--native .runCompassReadinessHead__diagnosis,
+.cultivationRunCompass--native .runCompassInfoRow__detail,
+.cultivationRunCompass--native .runCompassAction__why,
+.cultivationRunCompass--native .runCompassSafetyNet__line,
+.cultivationRunCompass--native .runCompassSafetyNet__detail {
+  color: rgba(43, 33, 22, 0.72);
+}
+
+.cultivationRunCompass--native .runCompassInfoRow,
+.cultivationRunCompass--native .runCompassAction {
+  border-color: rgba(120, 72, 33, 0.18);
+  background: rgba(255, 248, 233, 0.58);
+}
+
+.cultivationRunCompass--native .runCompassSection {
+  gap: 6px;
+}
+
+.cultivationRunCompass--native .runCompassActionList,
+.cultivationRunCompass--native .runCompassInfoList {
+  gap: 6px;
+}
+
+.cultivationRunCompass--native .runCompassAction__button {
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: 8px;
+}
+
+.cultivationRunCompass {
+  max-height: min(61vh, 590px);
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.cultivationBreakthroughPanel--compact,
+.cultivationDoctrinePanel--compact {
+  min-height: 164px;
+  padding: 12px 12px 11px;
+}
+
+.cultivationBreakthroughPanel--compact .cultivationCommandCard__header,
+.cultivationDoctrinePanel--compact .cultivationCommandCard__header {
+  margin-bottom: 8px;
+}
+
+.cultivationBreakthroughPanel--compact .cultivationCommandCard__title,
+.cultivationDoctrinePanel--compact .cultivationCommandCard__title {
+  font-size: 16px;
+}
+
+.cultivationBreakthroughPanel--compact .cultivationCommandList {
+  gap: 4px;
+}
+
+.cultivationBreakthroughPanel--compact .cultivationCommandList__row,
+.cultivationDoctrinePanel--compact .cultivationDoctrinePanel__row {
+  padding-bottom: 6px;
+}
+
+.cultivationBreakthroughPanel--summary .cultivationCommandCard__guidance {
+  font-size: 12px;
+  margin: 6px 0 0;
+  min-height: 32px;
+}
+
+.cultivationDoctrinePanel__actions,
+.cultivationBreakthroughPanel__action {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.cultivationCommandLinkButton--subtle {
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  background: rgba(255, 255, 255, 0.66);
+}
+
+.cultivationBreakthroughChecklist {
+  display: grid;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.cultivationBreakthroughChecklist__row {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: rgba(43, 33, 22, 0.88);
+}
+
+.cultivationBreakthroughChecklist__state {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 52px;
+  border-radius: 999px;
+  padding: 2px 7px;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+}
+
+.cultivationBreakthroughChecklist__state--done {
+  background: rgba(47, 143, 102, 0.12);
+  border-color: rgba(47, 143, 102, 0.32);
+}
+
+.cultivationBreakthroughChecklist__state--pending {
+  background: rgba(165, 105, 42, 0.12);
+  border-color: rgba(165, 105, 42, 0.3);
+}
+
+.cultivationDisclosurePopover {
+  position: absolute;
+  top: calc(100% + 8px);
+  width: min(460px, calc(100% - 8px));
+  z-index: 25;
+  pointer-events: auto;
+}
+
+.cultivationDisclosurePopover--breakthrough {
+  left: 0;
+}
+
+.cultivationDisclosurePopover--doctrine {
+  right: 0;
+}
+
+.cultivationDisclosurePopover .cultivationCommandCard {
+  min-height: 0;
+}
+
+.cultivationPinnedDoctrineCard {
+  position: absolute;
+  right: -8px;
+  top: calc(100% + 8px);
+  width: min(460px, calc(100% - 8px));
+  z-index: 24;
+}
+
+.cultivationPinnedDoctrineCard .cultivationCommandCard {
+  min-height: 0;
+}
+
+.cultivationCommandCard {
+  min-height: calc(var(--hero-surface-min-card-height, 210px) + 26px);
+  padding: var(--hero-surface-padding-compact, 14px) var(--hero-surface-padding-compact, 14px) calc(var(--hero-surface-padding-compact, 14px) - 1px);
+  border-radius: var(--hero-surface-radius, 18px);
+  background: linear-gradient(180deg, rgba(255, 247, 228, 0.9), rgba(237, 225, 203, 0.78));
+  border: 1px solid var(--paper-shell-border-strong, rgba(122, 94, 53, 0.56));
+  color: var(--paper-ink, #2b2116);
+  box-shadow: var(--hero-surface-shadow-soft, 0 8px 16px rgba(26, 20, 14, 0.16));
+  backdrop-filter: blur(8px);
+  position: relative;
+}
+
+@keyframes cultivationCenterHalo {
+  0%, 100% { opacity: 0.55; transform: translate(-50%, -50%) scale(0.98); }
+  50% { opacity: 0.72; transform: translate(-50%, -50%) scale(1.02); }
+}
+
+@keyframes cultivationCenterMist {
+  0%, 100% { opacity: 0.52; transform: translateX(-50%); }
+  50% { opacity: 0.72; transform: translateX(calc(-50% + 8px)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cultivationCenterpieceShell__halo,
+  .cultivationCenterpieceShell__mist {
+    animation: none;
+  }
+}
+
+.cultivationCommandCard::after {
+  content: '';
+  position: absolute;
+  inset: 7px;
+  border-radius: 12px;
+  border: 1px solid rgba(120, 72, 33, 0.1);
+  pointer-events: none;
+}
+
+.cultivationCommandCard__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.cultivationCommandCard__eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(120, 72, 33, 0.8);
+  margin-bottom: 4px;
+}
+
+.cultivationCommandCard__title {
+  margin: 0;
+  font-size: 19px;
+  line-height: 1.15;
+}
+
+.cultivationCommandCard__badge {
+  align-self: flex-start;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(47, 143, 102, 0.12);
+  border: 1px solid rgba(47, 143, 102, 0.24);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.cultivationBreakthroughPanel .cultivationCommandCard__badge {
+  background: rgba(165, 105, 42, 0.12);
+  border-color: rgba(165, 105, 42, 0.3);
+}
+
+.cultivationDoctrinePanel .cultivationCommandCard__badge {
+  background: rgba(47, 143, 102, 0.12);
+  border-color: rgba(47, 143, 102, 0.28);
+}
+
+.cultivationCommandList {
+  display: grid;
+  gap: 8px;
+}
+
+.cultivationCommandList__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.cultivationCommandList__row:last-child {
+  border-bottom: 0;
+}
+
+.cultivationCommandList__row--priority {
+  background: rgba(120, 72, 33, 0.07);
+  border-radius: 10px;
+  padding: 9px 10px;
+}
+
+.cultivationCommandList__label {
+  font-size: var(--ui-type-meta, 12px);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: rgba(89, 56, 25, 0.76);
+}
+
+.cultivationCommandList__value {
+  text-align: right;
+  font-size: 13px;
+  color: rgba(43, 33, 22, 0.88);
+}
+
+.cultivationCommandCard__guidance,
+.cultivationDoctrinePanel__detail,
+.cultivationBreakthroughPanel__actionDetail,
+.cultivationBreakthroughPanel__actionHint {
+  font-size: 13px;
+  line-height: 1.45;
+  color: rgba(43, 33, 22, 0.75);
+}
+
+.cultivationCommandCard__guidance {
+  margin: 12px 0 0;
+}
+
+.cultivationBreakthroughPanel__action {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cultivationCommandLinkButton {
+  align-self: flex-start;
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: 10px;
+}
+
+.cultivationDoctrinePanel__rows {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.cultivationDoctrinePanel__sentence {
+  margin: 0 0 10px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(120, 72, 33, 0.22);
+  background: rgba(255, 248, 233, 0.5);
+  font-size: 12px;
+  line-height: 1.4;
+  color: rgba(43, 33, 22, 0.84);
+}
+
+.cultivationDoctrinePanel__row {
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.cultivationDoctrinePanel__row:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.cultivationDoctrinePanel__row--identity .cultivationDoctrinePanel__label {
+  color: rgba(120, 72, 33, 0.85);
+}
+
+.cultivationDoctrinePanel__row--identity .cultivationDoctrinePanel__value {
+  color: rgba(43, 33, 22, 0.95);
+}
+
+.cultivationDoctrinePanel__rowTop {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.cultivationDoctrinePanel__label {
+  font-size: var(--ui-type-meta, 12px);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: rgba(89, 56, 25, 0.76);
+}
+
+.cultivationDoctrinePanel__value {
+  text-align: right;
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(43, 33, 22, 0.9);
+}
+
+.cultivationDoctrinePanel__verseSlot {
+  width: 100%;
+  min-height: 36px;
+  border-top: 1px solid rgba(120, 72, 33, 0.16);
+  padding-top: 8px;
+  margin-top: 6px;
+}
+
+.cultivationDoctrinePanel__verseSlot--summary {
+  min-height: 28px;
+  padding-top: 6px;
+  border-top-color: rgba(120, 72, 33, 0.12);
+}
+
+.cultivationDoctrinePanel__verseEyebrow {
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(120, 72, 33, 0.72);
+  margin-bottom: 4px;
+}
+
+.cultivationDoctrinePanel__row--heartLaw {
+  background: linear-gradient(180deg, rgba(120, 72, 33, 0.08), rgba(120, 72, 33, 0.02));
+  border-radius: 10px;
+  padding: 8px 8px 10px;
+  border-bottom: 1px solid rgba(120, 72, 33, 0.16);
+}
+
+.cultivationDoctrineVerseBar {
+  width: 100%;
+  min-height: 34px;
+  opacity: 0.96;
+}
+
+.cultivationDoctrineVerseBar--compact {
+  max-width: 100%;
+}
+
+.cultivationHudRail {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+}
+
+.cultivationHudStack {
+  position: absolute;
+  left: 50%;
+  top: var(--cultivation-hud-anchor-y);
+  transform: translateX(-50%);
+  width: var(--cultHudW);
+  display: flex;
+  flex-direction: column;
+  gap: var(--cultivation-stack-gap-1);
+  align-items: center;
+  pointer-events: auto;
+  margin-top: calc(var(--qi-frame-h) * -0.5);
+}
+
+.progress-bar {
+  position: relative;
+  width: 100%;
+  height: 100px;
+  display: grid;
+  grid-template-areas: "stack";
+  align-items: center;
+  justify-items: center;
+}
+
+.progress-bar > img {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  grid-area: stack;
+}
+
+.qiProgressBar {
+  position: relative;
+  z-index: 1;
+  grid-area: stack;
+  place-self: center;
+  width: 900px;
+  max-width: calc(100% - 42px);
+  height: var(--qi-track-h);
+  background: rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  border-radius: 999px;
+}
+
+.qiProgressBar--pulse .qiProgressFill {
+  animation: qiPulse 2.4s ease-in-out infinite;
+}
+
+.qiProgressFill {
+  position: absolute;
+  inset: 0;
+  width: 0;
+  background: linear-gradient(90deg, rgba(47, 143, 102, 0.7), rgba(159, 59, 46, 0.58));
+  transition: width var(--ui-motion-selection-duration, 180ms) var(--ui-motion-selection-ease, ease-out);
+}
+
+@keyframes qiPulse {
+  0% { filter: brightness(0.95); opacity: 0.7; }
+  50% { filter: brightness(1.05); opacity: 0.9; }
+  100% { filter: brightness(0.95); opacity: 0.7; }
+}
+
+.qiProgressLabel {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(11, 16, 32, 0.8);
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+.qiProgressRate {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(11, 16, 32, 0.7);
+}
+
+.progress-bar--ready .progress-bar-shape {
+  filter: drop-shadow(0 0 6px rgba(234, 179, 8, 0.55));
+}
+
+.qiProgressReady {
+  position: absolute;
+  right: 12px;
+  top: -8px;
+  background: rgba(234, 179, 8, 0.92);
+  color: #2d1b06;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  border: 1px solid rgba(92, 63, 14, 0.45);
+}
+
+.daoHeartSealButton {
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + 84px);
+  left: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  z-index: 21;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-image: none;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.5), transparent 45%),
+    radial-gradient(circle at 70% 70%, rgba(0, 0, 0, 0.25), transparent 55%),
+    radial-gradient(circle at center, rgba(133, 0, 0, 0.85), rgba(78, 6, 6, 0.95));
+  color: #fdf2f8;
+  border: 2px solid rgba(30, 10, 10, 0.6);
+  box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.25), 0 6px 14px rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+  transition:
+    box-shadow var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease),
+    border-color var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease),
+    background var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease);
+  --ui-no-shift-outline-active: 2px solid rgba(120, 72, 33, 0.46);
+  --ui-no-shift-outline-offset: 1px;
+  --ui-no-shift-shadow-active: inset 0 0 10px rgba(255, 255, 255, 0.38), 0 10px 18px rgba(0, 0, 0, 0.44);
+}
+
+.daoHeartSealButton:hover,
+.daoHeartSealButton:focus-visible {
+  box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.38), 0 10px 18px rgba(0, 0, 0, 0.44);
+  border-color: rgba(120, 72, 33, 0.62);
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255, 244, 214, 0.56), transparent 45%),
+    radial-gradient(circle at 70% 70%, rgba(54, 33, 17, 0.32), transparent 55%),
+    radial-gradient(circle at center, rgba(133, 24, 24, 0.9), rgba(86, 18, 18, 0.96));
+  border-image: none;
+  outline: 2px solid rgba(120, 72, 33, 0.46);
+  outline-offset: 1px;
+}
+
+.daoHeartSealButton:active {
+  box-shadow: inset 0 0 8px rgba(255, 255, 255, 0.3), 0 7px 14px rgba(0, 0, 0, 0.4);
+}
+
+.cultivationHudStack > .progress-bar {
+  width: 100%;
+  margin-bottom: 0;
+}
+
+.cultivationBuffSummary {
+  width: min(92%, 880px);
+  min-height: 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: -2px;
+  padding: 8px 12px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(241, 227, 196, 0.84), rgba(224, 202, 167, 0.82));
+  border: 1px solid rgba(120, 72, 33, 0.24);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.14);
+}
+
+.cultivationBuffSummaryTitle {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(89, 56, 25, 0.76);
+}
+
+.cultivationBuffSummaryEmpty {
+  font-size: 12px;
+  color: rgba(64, 44, 27, 0.8);
+}
+
+.cultivationBuffSummaryChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.cultivationBuffChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(250, 242, 224, 0.72);
+  border: 1px solid rgba(120, 72, 33, 0.24);
+  color: rgba(43, 33, 22, 0.95);
+  font-size: 12px;
+}
+
+.cultivationBuffChipFamily {
+  font-weight: 700;
+  color: rgba(47, 143, 102, 0.92);
+}
+
+.cultivationBuffChipBody {
+  color: rgba(64, 44, 27, 0.9);
+}
+
+.cultivationBuffChipTimer {
+  font-variant-numeric: tabular-nums;
+  color: rgba(253, 224, 71, 0.95);
+}
+
+.cultivationActionStack {
+  position: relative;
+  width: clamp(320px, 44vw, 520px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  z-index: 2;
+  min-height: 170px;
+}
+
+.cultivationActionButton {
+  width: min(80%, 448px);
+  height: 44px;
+  padding: 0 18px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  color: rgba(43, 33, 22, 0.96);
+  background: linear-gradient(180deg, rgba(246, 238, 221, 0.96), rgba(214, 197, 165, 0.92));
+  border: 2px solid rgba(120, 72, 33, 0.28);
+  box-shadow: 0 8px 18px rgba(43, 31, 18, 0.24);
+  transition:
+    box-shadow var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease),
+    border-color var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease),
+    background var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease),
+    color var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease);
+  min-inline-size: 248px;
+}
+
+.cultivationActionButton:hover,
+.cultivationActionButton:focus-visible {
+  box-shadow: 0 11px 22px rgba(43, 31, 18, 0.3);
+  border-color: rgba(120, 72, 33, 0.42);
+  background: rgba(224, 216, 199, 0.98);
+  outline: 2px solid rgba(120, 72, 33, 0.32);
+  outline-offset: 1px;
+}
+
+.cultivationActionButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: 0 6px 14px rgba(43, 31, 18, 0.16);
+}
+
+.cultivationActionButton--secondary {
+  width: min(62%, 360px);
+  height: 36px;
+  font-size: 14px;
+  border-radius: 10px;
+  min-inline-size: 212px;
+  opacity: 0.86;
+}
+
+.cultivationBreakthroughHint {
+  min-height: 18px;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(43, 33, 22, 0.72);
+  text-align: center;
+  width: min(86%, 460px);
+}
+
+.cultivationActionButton--tone-cultivate {
+  background: linear-gradient(180deg, rgba(191, 220, 171, 0.96), rgba(153, 198, 129, 0.92));
+}
+
+.cultivationActionButton--tone-gate {
+  background: linear-gradient(180deg, rgba(239, 208, 170, 0.95), rgba(215, 177, 126, 0.9));
+}
+
+.cultivationActionButton--tone-ready {
+  background: linear-gradient(180deg, rgba(237, 218, 164, 0.96), rgba(226, 185, 111, 0.92));
+}
+
+.cultivationActionButton--tone-cap {
+  background: linear-gradient(180deg, rgba(233, 223, 202, 0.95), rgba(189, 172, 142, 0.9));
+}
+
+.cultivationActionButton--tone-prepare {
+  background: linear-gradient(180deg, rgba(224, 216, 199, 0.98), rgba(204, 189, 163, 0.95));
+}
+
+.breakthrough-effects {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 0;
+  height: 0;
+  z-index: 18;
+  pointer-events: none;
+}
+
+.progress-bar--ready .qiProgressReady {
+  animation: qiReadyPulse 2.6s ease-in-out infinite;
+}
+
+@keyframes qiReadyPulse {
+  0%, 100% { transform: translateY(0); box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25); }
+  50% { transform: translateY(-1px); box-shadow: 0 8px 16px rgba(234, 179, 8, 0.45); }
+}
+
+.breakthrough-effects.animate::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 150vmax;
+  height: 150vmax;
+  transform: translate(-50%, -50%) scale(1.5);
+  background: repeating-conic-gradient(from 0deg,
+      transparent 0deg,
+      rgba(197, 155, 65, 0.45) 2deg,
+      rgba(197, 155, 65, 0.12) 5deg,
+      transparent 5deg,
+      transparent 15deg,
+      rgba(47, 143, 102, 0.45) 12deg,
+      rgba(47, 143, 102, 0.1) 15deg,
+      transparent 15deg,
+      transparent 20deg);
+  -webkit-mask-image: radial-gradient(circle, transparent 40%, black 70%);
+  mask-image: radial-gradient(circle, transparent 40%, black 70%);
+  animation: raysImplode 1s ease-in forwards;
+  opacity: 0;
+}
+
+.breakthrough-effects.animate::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  box-shadow: 0 0 20px 10px rgba(197, 155, 65, 0.72), 0 0 50px 20px rgba(47, 143, 102, 0.56);
+  background: transparent;
+  animation: shockwaveOut 0.8s ease-out 1.3s forwards;
+  opacity: 0;
+}
+
+@keyframes raysImplode {
+  0% { opacity: 1; transform: translate(-50%, -50%) scale(1.5); }
+  20% { opacity: 1; }
+  100% { opacity: 1; transform: translate(-50%, -50%) scale(0); }
+}
+
+@keyframes shockwaveOut {
+  0% { opacity: 1; width: 0; height: 0; border-width: 50px; border-color: rgba(255, 255, 255, 0.8); }
+  100% { opacity: 0; width: 150vmax; height: 150vmax; border-width: 0; border-color: rgba(197, 155, 65, 0); }
+}
+
+@media (max-width: 1180px) {
+  .cultivationScreenRoot {
+    --cultCommandDeckW: min(940px, calc(100% - 88px));
+  }
+
+  .cultivationCommandDeck {
+    width: var(--cultCommandDeckW);
+  }
+
+  .cultivationSideRail {
+    width: clamp(240px, 26vw, 320px);
+  }
+
+  .cultivationRunCompass {
+    max-height: min(62vh, 540px);
+  }
+}
+
+@media (max-width: 1000px) {
+  .cultivationScreenRoot {
+    --cultHudSidePad: 60px;
+    --cultivation-hud-anchor-y: 70%;
+    --cultCommandDeckTop: calc(env(safe-area-inset-top, 0px) + 106px);
+    --cultCommandDeckW: calc(100% - 32px);
+  }
+
+  .cultivationHeroFigure {
+    --dantian-anchor-y: 51.4%;
+  }
+
+  .cultivationCommandDeck {
+    top: var(--cultCommandDeckTop);
+    width: var(--cultCommandDeckW);
+  }
+
+  .cultivationSideRails {
+    position: absolute;
+    top: var(--cultCommandDeckTop);
+    left: 16px;
+    right: 16px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .cultivationSideRail {
+    position: static;
+    width: 100%;
+  }
+
+  .cultivationCommandCard {
+    min-height: 0;
+  }
+
+  .cultivationActionStack {
+    width: clamp(300px, 56vw, 460px);
+  }
+
+  .cultivationRunCompass {
+    max-height: 360px;
+  }
+}
+
+@media (max-width: 760px) {
+  .cultivationScreenRoot {
+    overflow-y: auto;
+    overflow-x: hidden;
+    --cultivation-hud-anchor-y: 92%;
+    --cultCommandDeckTop: calc(env(safe-area-inset-top, 0px) + 98px);
+    --cultCommandDeckW: calc(100% - 20px);
+    min-height: 1280px;
+  }
+
+  .cultivationHeroFigure {
+    --dantian-anchor-x: 56.2%;
+    --dantian-anchor-y: 52.2%;
+  }
+
+  .cultivationHeaderRail {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .cultivationCommandDeck {
+    top: var(--cultCommandDeckTop);
+    width: var(--cultCommandDeckW);
+    gap: 10px;
+  }
+
+  .cultivationSideRails {
+    left: 10px;
+    right: 10px;
+    gap: 8px;
+  }
+
+  .cultivationHudStack {
+    top: 1040px;
+    width: min(calc(100% - 28px), 720px);
+    margin-bottom: 32px;
+  }
+
+  .daoHeartSealButton {
+    top: calc(env(safe-area-inset-top, 0px) + 72px);
+  }
+}
+
+@media (max-width: 480px) {
+  .cultivationScreenRoot {
+    --qi-frame-h: 40px;
+    --verse-frame-h: 26px;
+    --cultHudSidePad: 24px;
+    --qi-track-h: 12px;
+  }
+
+  .cultivationActionButton {
+    width: 86%;
+    font-size: 15px;
+  }
+
+  .cultivationActionButton--secondary {
+    width: 72%;
+    font-size: 13px;
+  }
+
+  .cultivationCommandList__row,
+  .cultivationDoctrinePanel__rowTop {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .cultivationDoctrinePanel__value,
+  .cultivationCommandList__value {
+    text-align: left;
+  }
+}

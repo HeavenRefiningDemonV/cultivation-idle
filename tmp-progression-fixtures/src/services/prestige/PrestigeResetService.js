@@ -20,15 +20,7 @@ import { useTrialStore } from '../../stores/trialStore.js';
 import { useZoneStore } from '../../stores/zoneStore.js';
 import { useUIStore } from '../../stores/uiStore.js';
 import { hardResetBreakthroughEchoes } from '../../features/breakthroughEchoes/index.js';
-const MASTERY_RETENTION_BY_NODE_ID = {
-    ap_mastery_retention_10: 0.1,
-    ap_mastery_retention_25: 0.25,
-    ap_mastery_retention_50: 0.5,
-};
-export const deriveMasteryRetentionCarryOver = (purchasesById) => Object.entries(MASTERY_RETENTION_BY_NODE_ID).reduce((best, [nodeId, ratio]) => {
-    const purchasedLevels = purchasesById[nodeId] ?? 0;
-    return purchasedLevels > 0 ? Math.max(best, ratio) : best;
-}, 0);
+import { deriveMasteryRetentionCarryOver } from './PrestigeResetContract.js';
 const snapshotTechniqueMasteryXp = () => {
     const unlocked = useTechCollectionStore.getState().unlockedTechs;
     return Object.fromEntries(Object.entries(unlocked)

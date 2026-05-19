@@ -8,6 +8,7 @@ import { recomputeAndApplyPrestigeUnlocks } from '../systems/prestige/applyPrest
 import { canPurchasePrestigeNode, getPrestigeNodeRuntimeStatus, isPrestigeNodeVisible, } from '../systems/prestige/runtime/prestigeRuntimeCatalog.js';
 import { useTrialStore } from './trialStore.js';
 import { buildPrestigeApBreakdownRows, buildPrestigeProgressionSnapshot, calculatePrestigeApForecast, countResolvedSemesterGateTrials, extractLiveTrialIds, resolvePrestigeAdvisorLabel, } from '../systems/prestige/prestigeApReadModel.js';
+import { buildPostResetReclaimObjectiveSurface, } from '../features/prestige/postResetReclaimObjectiveSurface.js';
 /**
  * Lazy getter for game store to avoid circular dependency
  */
@@ -93,6 +94,7 @@ const createInitialPrestigeState = () => ({
     rerollCount: 0,
     spiritRoot: null,
     lastLifeSummary: null,
+    postResetReclaimObjective: null,
 });
 function getUpgradesFromContent() {
     const content = useContentStore.getState();
@@ -167,18 +169,39 @@ export const usePrestigeStore = create()(immer((set, get) => ({
             resolvedGateCount,
         }));
         const lifeSummarySnapshot = preparedLifeSummary ?? {
+            version: 2,
             capturedAt: Date.now(),
+            lifeOrdinal: state.prestigeCount + 1,
             advisorLabel: resolvePrestigeAdvisorLabel(fallbackForecast),
             apForecastGain: fallbackForecast.totalAp,
             apAfterRitual: state.totalAP + fallbackForecast.totalAp,
+            headline: 'Life summary was captured from runtime fallback.',
+            summarySeal: 'quiet_life',
             blocks: [
                 { key: 'life_arc', title: 'Life Arc', lines: ['Life summary was captured from runtime fallback.'] },
+                { key: 'breakthrough_echoes', title: 'Breakthrough Echoes', lines: ['Breakthrough echoes were not captured for this ritual call.'] },
                 { key: 'doctrine_build', title: 'Doctrine & Build', lines: ['Doctrine details were not captured for this ritual call.'] },
                 { key: 'world_progress', title: 'World Progress', lines: ['World progress details were not captured for this ritual call.'] },
                 { key: 'gate_trials', title: 'Gate Trials', lines: ['Gate-trial details were not captured for this ritual call.'] },
                 { key: 'ruins_supply', title: 'Ruins & Supply', lines: ['Ruins and supply details were not captured for this ritual call.'] },
+                { key: 'economy_support', title: 'Economy Support', lines: ['Economy support details were not captured for this ritual call.'] },
+                { key: 'offline_background', title: 'Offline & Background', lines: ['Offline details were not captured for this ritual call.'] },
                 { key: 'next_life_focus', title: 'Next Life Focus', lines: ['Open the live Life Summary panel for full guidance.'] },
             ],
+            majorMemories: [{
+                    id: 'fallback_summary',
+                    title: 'Fallback Summary',
+                    detail: 'The ritual call did not provide a prepared life summary.',
+                    source: 'prestige',
+                    summaryEligible: true,
+                }],
+            nextLifeFocus: {
+                id: 'fallback_reclaim',
+                label: 'Review the new life',
+                detail: 'Choose path and Heart Law, then rebuild the reclaim route from live state.',
+                route: { kind: 'tab', tabId: 'cultivation', anchor: 'life_setup' },
+            },
+            warnings: ['Emergency fallback summary was used.'],
         };
         if (!state.canPrestige())
             return;
@@ -201,6 +224,10 @@ export const usePrestigeStore = create()(immer((set, get) => ({
             state.highestRealmReached = 0;
             state.runStartTime = Date.now();
             state.lastLifeSummary = lifeSummarySnapshot;
+            state.postResetReclaimObjective = buildPostResetReclaimObjectiveSurface({
+                sourceSummary: lifeSummarySnapshot,
+                purchasesById: state.purchasesById,
+            });
         });
         GameEvents.emit({
             type: 'prestige/performed',
@@ -455,6 +482,16 @@ export const usePrestigeStore = create()(immer((set, get) => ({
             Object.assign(state, createInitialPrestigeState());
         });
         get().initializeUpgrades();
+    },
+    dismissPostResetReclaimObjective: (objectiveId) => {
+        const current = get().postResetReclaimObjective;
+        if (!current)
+            return;
+        if (objectiveId && current.id !== objectiveId)
+            return;
+        set((state) => {
+            state.postResetReclaimObjective = null;
+        });
     },
 })));
 if (import.meta.env?.DEV && typeof window !== 'undefined') {

@@ -72,3 +72,86 @@ export const getPurchasedVisiblePrestigeNodeIds = (purchases, content) => {
         .filter(([nodeId, level]) => visibleIds.has(nodeId) && level > 0)
         .map(([nodeId]) => nodeId);
 };
+const isRecord = (value) => Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+const collectEffectKeys = (upgrade) => {
+    const keys = new Set();
+    if (typeof upgrade.stat === 'string' && upgrade.stat.trim())
+        keys.add(upgrade.stat);
+    if (isRecord(upgrade.effect)) {
+        Object.keys(upgrade.effect).forEach((key) => keys.add(key));
+    }
+    if (isRecord(upgrade.effectPerLevel)) {
+        Object.keys(upgrade.effectPerLevel).forEach((key) => keys.add(key));
+    }
+    else if (typeof upgrade.effectPerLevel === 'number' && upgrade.stat) {
+        keys.add(upgrade.stat);
+    }
+    if (Array.isArray(upgrade.unlocks) && upgrade.unlocks.length > 0)
+        keys.add('unlocks');
+    return Array.from(keys).sort();
+};
+const toAuditStatus = (status) => {
+    if (status === 'visible_live')
+        return 'visible_live';
+    if (status === 'deferred')
+        return 'deferred';
+    if (status === 'hidden_unsupported')
+        return 'hidden_unsupported';
+    return 'unknown_blocked';
+};
+const reasonForAuditStatus = (node) => {
+    if (node.status === 'visible_live') {
+        return `Live runtime consumer(s): ${node.consumers.join(', ')}.`;
+    }
+    if (node.status === 'deferred') {
+        return 'Deferred future-slice decree; blocked from live purchasing.';
+    }
+    if (node.status === 'hidden_unsupported') {
+        return 'Content effect has no confirmed runtime consumer in this slice, so it is hidden.';
+    }
+    return 'Runtime status is unknown; blocked until content or consumer metadata is fixed.';
+};
+const remediationForAuditStatus = (status) => {
+    if (status === 'visible_live')
+        return 'none';
+    if (status === 'deferred')
+        return 'label_deferred';
+    if (status === 'hidden_unsupported')
+        return 'hide';
+    return 'fix_content_key';
+};
+export function buildPrestigeEffectAuditReport(content, options) {
+    const catalog = getPrestigeRuntimeCatalog(content);
+    const rows = catalog.nodes.map((node) => {
+        const status = toAuditStatus(node.status);
+        const purchaseAllowed = status === 'visible_live';
+        const displayAllowed = status === 'visible_live' || status === 'deferred';
+        return {
+            upgradeId: node.upgrade.id,
+            upgradeName: node.upgrade.name ?? node.upgrade.id,
+            status,
+            contentEffectKeys: collectEffectKeys(node.upgrade),
+            runtimeConsumers: node.consumers,
+            purchaseAllowed,
+            displayAllowed,
+            reason: reasonForAuditStatus(node),
+            remediation: remediationForAuditStatus(status),
+        };
+    }).sort((left, right) => left.upgradeId.localeCompare(right.upgradeId));
+    const blockers = rows
+        .filter((row) => row.purchaseAllowed && row.runtimeConsumers.length === 0)
+        .map((row) => `${row.upgradeId} is purchasable without a runtime consumer.`);
+    const warnings = rows
+        .filter((row) => row.status === 'unknown_blocked')
+        .map((row) => `${row.upgradeId} is unknown and blocked.`);
+    return {
+        generatedAt: options?.generatedAt ?? Date.now(),
+        rows,
+        visibleLiveCount: rows.filter((row) => row.status === 'visible_live').length,
+        deferredCount: rows.filter((row) => row.status === 'deferred').length,
+        hiddenUnsupportedCount: rows.filter((row) => row.status === 'hidden_unsupported').length,
+        unknownBlockedCount: rows.filter((row) => row.status === 'unknown_blocked').length,
+        blockers,
+        warnings,
+    };
+}

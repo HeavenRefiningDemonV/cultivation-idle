@@ -1,0 +1,167 @@
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5rem;
+  background-image:
+    linear-gradient(to right, #ddd 0, rgba(221, 221, 221, 0) 14rem),
+    linear-gradient(to left, #ddd 0, rgba(221, 221, 221, 0) 14rem);
+  background-repeat: no-repeat;
+  background-size: 14rem 100%;
+  background-position: left top, right top;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-image: url("../assets/menus/buttoncorners.png") 60 / 0 0 10px 0 / 5px;
+  z-index: 40;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+
+header * {
+  color: #000000;
+}
+
+.header--lightTitles .titles-container {
+  .big-title,
+  .subtitle {
+    color: #ffffff;
+  }
+}
+
+.headerBar {
+  height: 100%;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.headerStatBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 20%;
+}
+
+.headerQiLine {
+  font-family: 'Julee', cursive;
+  font-size: 14px;
+}
+
+.headerQiValue {
+  font-size: 20px;
+  font-weight: 700;
+  margin-left: 8px;
+}
+
+.headerQiRate {
+  margin-left: 8px;
+  font-size: 12px;
+}
+
+.headerRealmLine {
+  font-size: 12px;
+}
+
+.headerRealmAccent {
+  font-weight: 600;
+  margin-left: 4px;
+}
+
+.headerRealmSubstage {
+  margin-left: 8px;
+}
+
+.headerSaveBlock {
+  text-align: right;
+  width: 20%;
+}
+
+.headerTrackedBlock {
+  display: flex;
+  justify-content: center;
+  width: 30%;
+}
+
+.headerTrackedBadge {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  min-width: 220px;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+.headerTrackedBadge:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+}
+
+.headerTrackedLabel {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #0f172a;
+}
+
+.headerTrackedTitle {
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.headerTrackedProgress {
+  display: inline-flex;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.1);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.headerSaveLabel {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 12px;
+}
+
+.headerSaveTime {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.headerSaveTime.headerNeutral {
+  color: #565d68;
+}
+
+.headerSaveTime.headerFresh {
+  color: #2fab5d;
+}
+
+.headerSaveTime.headerWarn {
+  color: #b7950d;
+}
+
+.headerSaveTime.headerOld {
+  color: #b16527;
+}
+
+.titles-container {
+  text-align: center;
+
+  .big-title {
+    font-size: 30px;
+    font-weight: 700;
+  }
+
+  .subtitle {
+    font-size: 14px;
+  }
+}

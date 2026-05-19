@@ -1,0 +1,161 @@
+@import '../ink/inkTheme.scss';
+
+.scenicLabel {
+  --scenic-label-min-inline: 106px;
+  --scenic-label-min-block: 30px;
+  --scenic-label-pad-inline: 9px;
+  --scenic-label-pad-block: 4px;
+  --scenic-label-state-inline: 34px;
+
+  min-inline-size: var(--scenic-label-min-inline);
+  min-block-size: var(--scenic-label-min-block);
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: var(--scenic-label-pad-block) var(--scenic-label-pad-inline);
+  border: 1px solid var(--paper-shell-border-strong, rgba(122, 94, 53, 0.56));
+  border-radius: 10px 9px 11px 8px;
+  background: var(--paper-shell-raised, rgba(250, 242, 226, 0.95));
+  color: var(--paper-ink, #1f1a17);
+  box-shadow: 0 4px 10px rgba(22, 12, 4, 0.2);
+  backdrop-filter: blur(0.5px);
+  text-align: left;
+}
+
+.scenicLabel--interactive {
+  appearance: none;
+  border-image: none;
+  font-family: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  outline: none;
+  transition:
+    box-shadow var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease),
+    background-color var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease),
+    outline-color var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease);
+}
+
+.scenicLabel--interactive.uiNoShift {
+  --ui-no-shift-border: 1px;
+  --ui-no-shift-outline-active: 2px solid rgba(82, 53, 28, 0.8);
+  --ui-no-shift-outline-offset: 2px;
+}
+
+.scenicLabel--interactive:hover,
+.scenicLabel--interactive:focus-visible {
+  background: var(--paper-shell-ritual, rgba(248, 239, 223, 0.95));
+  box-shadow: 0 6px 12px rgba(22, 12, 4, 0.22);
+}
+
+.scenicLabel--interactive:disabled,
+.scenicLabel--locked {
+  cursor: not-allowed;
+}
+
+.scenicLabel__textStack {
+  min-width: 0;
+  display: inline-flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.scenicLabel__label {
+  font-size: 10px;
+  line-height: 1.12;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-shadow: 0 1px 0 rgba(255, 251, 241, 0.6);
+}
+
+.scenicLabel__sublabel {
+  font-size: 11px;
+  line-height: 1.1;
+  color: var(--paper-ink-muted, rgba(92, 81, 70, 0.92));
+  white-space: nowrap;
+}
+
+.scenicLabel__stateSlot {
+  inline-size: var(--scenic-label-state-inline);
+  min-inline-size: var(--scenic-label-state-inline);
+  display: inline-flex;
+  justify-content: flex-end;
+  align-items: center;
+  font-size: 9px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: rgba(98, 76, 53, 0.86);
+}
+
+.scenicLabel__statePlaceholder {
+  inline-size: 100%;
+  block-size: 1px;
+}
+
+.scenicLabel--building {
+  --scenic-label-min-inline: 110px;
+}
+
+.scenicLabel--location {
+  --scenic-label-min-inline: 140px;
+  --scenic-label-pad-inline: 12px;
+  --scenic-label-pad-block: 8px;
+  border-radius: 14px;
+}
+
+.scenicLabel--quiet {
+  opacity: 0.96;
+}
+
+.scenicLabel--medium {
+  opacity: 1;
+}
+
+.scenicLabel--active {
+  border-color: var(--paper-shell-border-strong, rgba(122, 94, 53, 0.56));
+}
+
+.scenicLabel--active .scenicLabel__stateSlot {
+  color: var(--paper-rare, #7a5e35);
+  font-weight: 700;
+}
+
+.scenicLabel--recommended {
+  border-color: var(--paper-warning, #a2712a);
+}
+
+.scenicLabel--recommended .scenicLabel__stateSlot {
+  color: var(--paper-warning, #a2712a);
+  font-weight: 700;
+}
+
+.scenicLabel--locked {
+  opacity: 0.78;
+  filter: saturate(0.78);
+}
+
+.scenicLabel--locked .scenicLabel__stateSlot {
+  color: rgba(88, 76, 67, 0.92);
+  font-weight: 700;
+}
+
+@media (max-width: 900px) {
+  .scenicLabel {
+    --scenic-label-min-inline: 96px;
+    --scenic-label-pad-inline: 8px;
+    --scenic-label-pad-block: 4px;
+    --scenic-label-state-inline: 30px;
+  }
+
+  .scenicLabel__label {
+    font-size: 9.5px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scenicLabel--interactive {
+    transition-duration: 80ms;
+  }
+}

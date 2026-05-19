@@ -1,0 +1,245 @@
+{
+  "version": "1.0",
+  "pavilions": [
+    {
+      "id": "pavilion_pinewind",
+      "cityId": "city_pinewind_hamlet",
+      "cityIndex": 0,
+      "gradeSold": "mortal",
+      "currency": {
+        "gold": true,
+        "spiritStones": true,
+        "merit": true
+      },
+      "poolByPath": {
+        "heaven": [
+          "tech_heaven_starfire_bolt",
+          "tech_heaven_celestial_ward",
+          "tech_heaven_astral_needle",
+          "tech_heaven_heavens_pulse",
+          "tech_heaven_tranquil_mind",
+          "tech_heaven_cloudbind"
+        ],
+        "earth": [
+          "tech_earth_stonebreaker_fist",
+          "tech_earth_iron_body",
+          "tech_earth_rooted_breath",
+          "tech_earth_mountain_stance",
+          "tech_earth_shatter_palm",
+          "tech_earth_enduring_pulse"
+        ],
+        "martial": [
+          "tech_martial_gale_cut",
+          "tech_martial_guarding_stance",
+          "tech_martial_tempered_spirit",
+          "tech_martial_killing_rhythm",
+          "tech_martial_armor_splitter",
+          "tech_martial_stance_mastery"
+        ]
+      },
+      "featuredRules": {
+        "allowUltimates": false
+      }
+    },
+    {
+      "id": "pavilion_stonecrag",
+      "cityId": "city_stonecrag_town",
+      "cityIndex": 1,
+      "gradeSold": "earth",
+      "currency": {
+        "gold": true,
+        "spiritStones": true,
+        "merit": true
+      },
+      "poolByPath": {
+        "heaven": [
+          "tech_heaven_starfire_bolt",
+          "tech_heaven_celestial_ward",
+          "tech_heaven_astral_needle",
+          "tech_heaven_heavens_pulse",
+          "tech_heaven_tranquil_mind",
+          "tech_heaven_azure_tide_lance",
+          "tech_heaven_flame_affinity"
+        ],
+        "earth": [
+          "tech_earth_stonebreaker_fist",
+          "tech_earth_iron_body",
+          "tech_earth_rooted_breath",
+          "tech_earth_mountain_stance",
+          "tech_earth_shatter_palm",
+          "tech_earth_boulder_toss",
+          "tech_earth_quake_step",
+          "tech_earth_earthen_shackles",
+          "tech_earth_stone_skin"
+        ],
+        "martial": [
+          "tech_martial_gale_cut",
+          "tech_martial_guarding_stance",
+          "tech_martial_tempered_spirit",
+          "tech_martial_killing_rhythm",
+          "tech_martial_armor_splitter",
+          "tech_martial_quickdraw_slash",
+          "tech_martial_bloodletting_thrust",
+          "tech_martial_edge_instinct"
+        ]
+      },
+      "featuredRules": {
+        "allowUltimates": false
+      }
+    },
+    {
+      "id": "pavilion_spirit_cavern",
+      "cityId": "city_spirit_cavern_city",
+      "cityIndex": 2,
+      "gradeSold": "heaven",
+      "currency": {
+        "gold": true,
+        "spiritStones": true,
+        "merit": true
+      },
+      "poolByPath": {
+        "heaven": [
+          "tech_heaven_starfire_bolt",
+          "tech_heaven_celestial_ward",
+          "tech_heaven_astral_needle",
+          "tech_heaven_heavens_pulse",
+          "tech_heaven_tranquil_mind",
+          "tech_heaven_golden_seal",
+          "tech_heaven_thunder_scripture",
+          "tech_heaven_qi_threading",
+          "tech_heaven_celestial_composure"
+        ],
+        "earth": [
+          "tech_earth_stonebreaker_fist",
+          "tech_earth_iron_body",
+          "tech_earth_rooted_breath",
+          "tech_earth_mountain_stance",
+          "tech_earth_shatter_palm",
+          "tech_earth_crystal_carapace",
+          "tech_earth_dragon_vein_surge",
+          "tech_earth_unyielding",
+          "tech_earth_enduring_pulse"
+        ],
+        "martial": [
+          "tech_martial_gale_cut",
+          "tech_martial_guarding_stance",
+          "tech_martial_tempered_spirit",
+          "tech_martial_killing_rhythm",
+          "tech_martial_armor_splitter",
+          "tech_martial_steel_tempest",
+          "tech_martial_windstep_footwork",
+          "tech_martial_dragonfang_combo",
+          "tech_martial_battle_hunger",
+          "tech_martial_weapon_forged_will"
+        ]
+      },
+      "featuredRules": {
+        "allowUltimates": false
+      }
+    },
+    {
+      "id": "pavilion_lotusford",
+      "cityId": "city_lotusford",
+      "cityIndex": 3,
+      "gradeSold": "mystic",
+      "currency": {
+        "gold": true,
+        "spiritStones": true,
+        "merit": true
+      },
+      "poolByPath": {
+        "heaven": [
+          "tech_heaven_starfire_bolt",
+          "tech_heaven_celestial_ward",
+          "tech_heaven_astral_needle",
+          "tech_heaven_heavens_pulse",
+          "tech_heaven_tranquil_mind",
+          "tech_heaven_void_ripple",
+          "tech_heaven_soul_lantern_ray",
+          "tech_heaven_spirit_siphon",
+          "tech_heaven_mirror_step",
+          "tech_heaven_astral_focus"
+        ],
+        "earth": [
+          "tech_earth_stonebreaker_fist",
+          "tech_earth_iron_body",
+          "tech_earth_rooted_breath",
+          "tech_earth_mountain_stance",
+          "tech_earth_shatter_palm",
+          "tech_earth_mire_breath",
+          "tech_earth_iron_marrow_temper",
+          "tech_earth_true_root_anchor",
+          "tech_earth_forge_bone",
+          "tech_earth_granite_focus"
+        ],
+        "martial": [
+          "tech_martial_gale_cut",
+          "tech_martial_guarding_stance",
+          "tech_martial_tempered_spirit",
+          "tech_martial_killing_rhythm",
+          "tech_martial_armor_splitter",
+          "tech_martial_soul_severing_cut",
+          "tech_martial_mist_veil_parry",
+          "tech_martial_executioner_mark",
+          "tech_martial_iron_nerves",
+          "tech_martial_stance_mastery"
+        ]
+      },
+      "featuredRules": {
+        "allowUltimates": false
+      }
+    },
+    {
+      "id": "pavilion_ironpeak",
+      "cityId": "city_ironpeak_bastion",
+      "cityIndex": 4,
+      "gradeSold": "mystic",
+      "currency": {
+        "gold": true,
+        "spiritStones": true,
+        "merit": true
+      },
+      "poolByPath": {
+        "heaven": [
+          "tech_heaven_heavenly_cataclysm",
+          "tech_heaven_time_sundering_prayer",
+          "tech_heaven_void_ripple",
+          "tech_heaven_soul_lantern_ray",
+          "tech_heaven_spirit_siphon",
+          "tech_heaven_mirror_step",
+          "tech_heaven_astral_focus",
+          "tech_heaven_thunder_scripture",
+          "tech_heaven_golden_seal",
+          "tech_heaven_qi_threading"
+        ],
+        "earth": [
+          "tech_earth_heaven_stamping_mountain",
+          "tech_earth_world_pillar_slam",
+          "tech_earth_true_root_anchor",
+          "tech_earth_iron_marrow_temper",
+          "tech_earth_mire_breath",
+          "tech_earth_crystal_carapace",
+          "tech_earth_dragon_vein_surge",
+          "tech_earth_unyielding",
+          "tech_earth_forge_bone",
+          "tech_earth_stone_skin"
+        ],
+        "martial": [
+          "tech_martial_ninefold_sword_rain",
+          "tech_martial_heaven_splitting_slash",
+          "tech_martial_soul_severing_cut",
+          "tech_martial_mist_veil_parry",
+          "tech_martial_executioner_mark",
+          "tech_martial_dragonfang_combo",
+          "tech_martial_steel_tempest",
+          "tech_martial_quickdraw_slash",
+          "tech_martial_edge_instinct",
+          "tech_martial_battle_hunger"
+        ]
+      },
+      "featuredRules": {
+        "allowUltimates": true
+      }
+    }
+  ]
+}

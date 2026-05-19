@@ -1,0 +1,638 @@
+import { useEffect, useMemo, useState } from 'react';
+import type { CSSProperties } from 'react';
+import './LifeStartWizardModal.scss';
+import heavenArt from '../../assets/menus/path_heaven 1.png';
+import earthArt from '../../assets/menus/path_earth 1.png';
+import martialArt from '../../assets/menus/path_martial 1.png';
+import { SaveService } from '../../services/save/SaveService.js';
+import { useContentStore } from '../../stores/contentStore.js';
+import { useGameStore } from '../../stores/gameStore.js';
+import { useHeartLawStore } from '../../stores/heartLawStore.js';
+import { usePrestigeStore } from '../../stores/prestigeStore.js';
+import { useUIStore } from '../../stores/uiStore.js';
+import { resolveStoryImageAsset } from '../../features/story/storyAssets.js';
+import { useStoryStore } from '../../features/story/storyStore.js';
+import { getBreathModeSemantics } from '../../systems/doctrine/breathSemantics.js';
+import { getPathDoctrineProfile, getPathDoctrineSummary } from '../../systems/doctrine/pathDoctrineRegistry.js';
+import { getPathDoctrinePresentation } from '../../systems/doctrine/pathDoctrinePresentation.js';
+import { getHeartLawSelectionPresentation } from '../../systems/doctrine/heartLawSelectionPresentation.js';
+import {
+  LIFE_START_WIZARD_STEPS,
+  resolveLifeStartWizardUiStep,
+  type LifeStartWizardStep,
+} from '../../systems/ui/lifeStart/lifeStartWizardContract.js';
+import { InkModalFrame, PaperChip } from '../../ui/ink/index.js';
+import { useFxQuality } from '../../ui/fx/FxQualityProvider.js';
+import { getSelectionCommitDelay } from '../../ui/motion/ritualMotion.js';
+import type { BreathMode, CultivationPath, HeartLawDef } from '../../types/index.js';
+
+const LIFE_PATHS: { id: CultivationPath; title: string; art: string; alt: string }[] = [
+  { id: 'heaven', title: 'HEAVEN', art: heavenArt, alt: 'Heaven path' },
+  { id: 'earth', title: 'EARTH', art: earthArt, alt: 'Earth path' },
+  { id: 'martial', title: 'MARTIAL', art: martialArt, alt: 'Martial path' },
+];
+
+const BREATH_MODE_IDS: readonly BreathMode[] = ['balanced', 'safe', 'fast'];
+const RETURNING_PAGE_PATHS_URL = resolveStoryImageAsset('story/s00/s00_05_returning_page_paths.webp').src;
+const PATH_STORY_LINES: Record<CultivationPath, string> = {
+  heaven: 'Understand the pattern before it devours you.',
+  earth: 'Endure until the world admits you exist.',
+  martial: 'Cut a road where the Gate left none.',
+};
+
+interface LifeStartWizardModalProps {
+  debugForceOpen?: boolean;
+  debugForceStep?: LifeStartWizardStep;
+}
+
+export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }: LifeStartWizardModalProps = {}) {
+  const forcedOpen = import.meta.env.DEV && debugForceOpen;
+  const forcedStep = import.meta.env.DEV ? debugForceStep : undefined;
+
+  const selectedPath = useGameStore((state) => state.selectedPath);
+  const selectPath = useGameStore((state) => state.selectPath);
+
+  const selectedHeartLawId = useHeartLawStore((state) => state.selectedHeartLawId);
+  const selectHeartLaw = useHeartLawStore((state) => state.selectHeartLaw);
+  const isHeartLawUnlocked = useHeartLawStore((state) => state.isUnlocked);
+  const breathMode = useHeartLawStore((state) => state.breathMode);
+  const setBreathMode = useHeartLawStore((state) => state.setBreathMode);
+
+  const prestigeCount = usePrestigeStore((state) => state.prestigeCount);
+  const spiritRoot = usePrestigeStore((state) => state.spiritRoot);
+
+  const setActiveTab = useUIStore((state) => state.setActiveTab);
+  const addNotification = useUIStore((state) => state.addNotification);
+  const lifeStartWizardContext = useUIStore((state) => state.lifeStartWizardContext);
+  const clearLifeStartWizardContext = useUIStore((state) => state.clearLifeStartWizardContext);
+  const storyIntroSeen = useStoryStore((state) => Boolean(state.seenFlags.story_intro_seen));
+
+  const contentLoaded = useContentStore((state) => state.isLoaded);
+  const listHeartLaws = useContentStore((state) => state.listHeartLaws);
+  const { effectiveQuality, prefersReducedMotion } = useFxQuality();
+
+  const [requestedStep, setRequestedStep] = useState<LifeStartWizardStep | null>(null);
+  const [hoveredPath, setHoveredPath] = useState<CultivationPath | null>(null);
+  const [committingPath, setCommittingPath] = useState<CultivationPath | null>(null);
+
+  const [draftHeartLawId, setDraftHeartLawId] = useState<string | null>(null);
+  const [hoveredHeartLawId, setHoveredHeartLawId] = useState<string | null>(null);
+  const [draftBreathMode, setDraftBreathMode] = useState<BreathMode>(breathMode);
+  const [autoPickChecked, setAutoPickChecked] = useState(false);
+  const [autoPickError, setAutoPickError] = useState<string | null>(null);
+
+  const shouldShow = forcedOpen || selectedPath === null || selectedHeartLawId === null;
+
+  const wizardStep: LifeStartWizardStep = forcedStep
+    ?? resolveLifeStartWizardUiStep({
+      selectedPath,
+      selectedHeartLawId,
+      draftHeartLawId,
+      requestedStep,
+    });
+
+  useEffect(() => {
+    if (selectedPath === null) {
+      setRequestedStep(null);
+      setDraftHeartLawId(null);
+      setDraftBreathMode(breathMode);
+      setAutoPickChecked(false);
+      setAutoPickError(null);
+      setHoveredHeartLawId(null);
+      return;
+    }
+
+    if (selectedHeartLawId !== null) {
+      setDraftHeartLawId(selectedHeartLawId);
+      setDraftBreathMode(breathMode);
+    }
+  }, [breathMode, selectedHeartLawId, selectedPath]);
+
+  useEffect(() => {
+    if (typeof document === 'undefined') return undefined;
+    const pathModeActive = shouldShow && wizardStep === 1;
+    document.body.classList.toggle('lifePathMode', pathModeActive);
+    return () => {
+      document.body.classList.remove('lifePathMode');
+    };
+  }, [shouldShow, wizardStep]);
+
+  const heartLaws: HeartLawDef[] = useMemo(() => {
+    if (!contentLoaded) return [];
+    try {
+      return listHeartLaws();
+    } catch (error) {
+      console.warn('[LifeStartWizard] Unable to list heart laws', error);
+      return [];
+    }
+  }, [contentLoaded, listHeartLaws]);
+
+  const selectedHeartLaw = useMemo(
+    () => heartLaws.find((law) => law.id === draftHeartLawId) ?? null,
+    [draftHeartLawId, heartLaws],
+  );
+
+  const pathDoctrineProfile = useMemo(() => getPathDoctrineProfile(selectedPath), [selectedPath]);
+  const pathSummary = useMemo(() => getPathDoctrineSummary(selectedPath), [selectedPath]);
+  const draftBreathSemantics = useMemo(() => getBreathModeSemantics(draftBreathMode), [draftBreathMode]);
+
+  useEffect(() => {
+    if (!autoPickChecked) {
+      setAutoPickError(null);
+      return;
+    }
+
+    const lastId = lifeStartWizardContext.lastHeartLawId;
+    if (!lastId) {
+      setAutoPickError('No previous Heart Law is recorded yet.');
+      return;
+    }
+
+    if (!isHeartLawUnlocked(lastId)) {
+      setAutoPickError('Last run Heart Law is not unlocked this life.');
+      return;
+    }
+
+    setDraftHeartLawId(lastId);
+    setRequestedStep(3);
+    setAutoPickError(null);
+  }, [autoPickChecked, isHeartLawUnlocked, lifeStartWizardContext.lastHeartLawId]);
+
+  const handleFinish = () => {
+    if (!selectedPath || !draftHeartLawId) {
+      setRequestedStep(2);
+      return;
+    }
+
+    selectHeartLaw(draftHeartLawId);
+    setBreathMode(draftBreathMode);
+    setActiveTab('cultivation');
+
+    const pathLabel = selectedPath.charAt(0).toUpperCase() + selectedPath.slice(1);
+    const heartLawLabel = selectedHeartLaw?.name ?? 'Heart Law';
+    const breathLabel = draftBreathMode.charAt(0).toUpperCase() + draftBreathMode.slice(1);
+    addNotification('success', `Life begins: ${pathLabel} • ${heartLawLabel} • ${breathLabel}`, 5000);
+
+    clearLifeStartWizardContext();
+    setRequestedStep(null);
+    setDraftHeartLawId(null);
+    setAutoPickChecked(false);
+    setAutoPickError(null);
+    SaveService.save();
+  };
+
+  const handlePickPath = (pathId: CultivationPath) => {
+    if (selectedPath !== null || committingPath !== null) return;
+
+    const commitPath = () => {
+      selectPath(pathId);
+      setRequestedStep(2);
+      setCommittingPath(null);
+    };
+
+    if (prefersReducedMotion) {
+      commitPath();
+      return;
+    }
+
+    setCommittingPath(pathId);
+    window.setTimeout(commitPath, getSelectionCommitDelay(prefersReducedMotion));
+  };
+
+  const handleSelectDraftLaw = (heartLawId: string) => {
+    setDraftHeartLawId(heartLawId);
+  };
+
+  const handleChoosePreviewedLaw = () => {
+    if (!previewHeartLaw || !previewUnlocked) return;
+    setDraftHeartLawId(previewHeartLaw.id);
+  };
+
+  const handleContinueToBreath = () => {
+    if (!draftHeartLawId) return;
+    setRequestedStep(3);
+  };
+
+
+  const rememberedHeartLawId = useMemo(() => {
+    const lastId = lifeStartWizardContext.lastHeartLawId;
+    if (!lastId) return null;
+    const exists = heartLaws.some((law) => law.id === lastId);
+    if (!exists || !isHeartLawUnlocked(lastId)) return null;
+    return lastId;
+  }, [heartLaws, isHeartLawUnlocked, lifeStartWizardContext.lastHeartLawId]);
+
+  const firstUnlockedHeartLawId = useMemo(() => {
+    const firstUnlocked = heartLaws.find((law) => isHeartLawUnlocked(law.id));
+    return firstUnlocked?.id ?? heartLaws[0]?.id ?? null;
+  }, [heartLaws, isHeartLawUnlocked]);
+
+  const chosenHeartLawId = draftHeartLawId ?? selectedHeartLawId ?? rememberedHeartLawId ?? firstUnlockedHeartLawId;
+  const previewHeartLawId = hoveredHeartLawId ?? chosenHeartLawId;
+
+  const previewHeartLaw = useMemo(
+    () => heartLaws.find((law) => law.id === previewHeartLawId) ?? null,
+    [heartLaws, previewHeartLawId],
+  );
+
+  const previewUnlocked = previewHeartLaw ? isHeartLawUnlocked(previewHeartLaw.id) : false;
+
+  const previewPresentationCard = useMemo(() => {
+    if (!previewHeartLaw) return null;
+    return getHeartLawSelectionPresentation(previewHeartLaw, {
+      spiritRoot,
+      isUnlocked: previewUnlocked,
+      isSelected: chosenHeartLawId === previewHeartLaw.id,
+    });
+  }, [chosenHeartLawId, previewHeartLaw, previewUnlocked, spiritRoot]);
+
+  const showAutoPick = prestigeCount > 0 && Boolean(lifeStartWizardContext.lastHeartLawId);
+  const activePresentationPath: CultivationPath = hoveredPath ?? committingPath ?? selectedPath ?? 'heaven';
+  const activePresentation = getPathDoctrinePresentation(activePresentationPath);
+  const pathHandoffStyle = {
+    '--life-path-story-bg': `url(${RETURNING_PAGE_PATHS_URL})`,
+  } as CSSProperties;
+
+  if (!shouldShow) return null;
+
+  if (wizardStep === 1) {
+    return (
+      <div className="lifeStartWizardOverlay lifeStartWizardOverlay--path">
+        <div className="lifeStartWizardModal lifeStartWizardModal--path">
+          <div
+            className="lifePathFullscreen"
+            data-ui="life-path-fullscreen"
+            data-fx-quality={effectiveQuality}
+            data-reduced-motion={prefersReducedMotion ? 'true' : 'false'}
+            data-story-handoff={storyIntroSeen ? 'true' : 'false'}
+            style={pathHandoffStyle}
+          >
+            <div className="lifePathHero">
+              <div className="lifePathHeroBackdrop" aria-hidden />
+              <header className="lifePathHeroHeader">
+                <p className="lifePathHeroEyebrow">Returning Page</p>
+                <h2 className="lifePathHeroTitle">Choose the first stroke of your Dao.</h2>
+                <p className="lifePathHeroSubline">The page opens, but it does not choose.</p>
+                <div className="lifePathHeroDividerBar" aria-hidden />
+              </header>
+
+              <div className="lifePathTriptychFrame">
+                <div className={`lifePathTriptychRail lifePathTriptychRail--${activePresentationPath}`} data-active-path={activePresentationPath}>
+                  <aside
+                    id="lifePath-active-plaque"
+                    className={`lifePathPreviewPlaque lifePathPreviewPlaque--${activePresentationPath}`}
+                    aria-live="polite"
+                  >
+                    <div className="lifePathPreviewPlaque__label">{activePresentation?.label ?? 'Path Preview'}</div>
+                    <p className="lifePathPreviewPlaque__subtitle">{activePresentation?.doctrineSubtitle ?? 'Choose a doctrine to preview its cadence.'}</p>
+                    <p className="lifePathPreviewPlaque__summary">{activePresentation?.summary ?? 'Choose a doctrine to preview its philosophy.'}</p>
+                    <div className="lifePathPreviewPlaque__highlights" aria-label="Path highlights">
+                      {(activePresentation?.statHighlights ?? []).map((highlight) => (
+                        <span key={highlight} className="lifePathPreviewPlaque__chip">{highlight}</span>
+                      ))}
+                    </div>
+                    <div className="lifePathPreviewPlaque__tags" aria-label="Doctrine tags">
+                      {(activePresentation?.tags ?? []).map((tag) => (
+                        <span key={tag} className="lifePathPreviewPlaque__tag">{tag}</span>
+                      ))}
+                    </div>
+                  </aside>
+                </div>
+                <div className="lifePathTriptych" data-ui="life-path-triptych" data-preview={activePresentationPath} role="group" aria-label="Choose your Life Path">
+                {LIFE_PATHS.map((path) => {
+                  const selected = selectedPath === path.id;
+                  const disabled = selectedPath !== null && !selected;
+                  const isActivePresentation = activePresentationPath === path.id;
+                  const isDimmed = hoveredPath !== null && hoveredPath !== path.id;
+                  const isCommitting = committingPath === path.id;
+                  const presentation = getPathDoctrinePresentation(path.id);
+                  const roleCue = PATH_STORY_LINES[path.id] ?? presentation?.practicalRoleLine ?? 'Choose this path to shape your life.';
+                  const roleId = `lifePath-role-${path.id}`;
+                  const plaqueId = 'lifePath-active-plaque';
+                  return (
+                    <div
+                      key={path.id}
+                      className={`lifePathPanel lifePathPanel--${path.id}${isActivePresentation ? ' lifePathPanel--previewed' : ''}${isDimmed ? ' lifePathPanel--receded' : ''}${isCommitting ? ' lifePathPanel--commit' : ''}`}
+                      data-testid={`life-path-card-${path.id}`}
+                    >
+                      <div className="lifePathPanel__frame" aria-hidden />
+                      <div className="lifePathPanel__veil" aria-hidden />
+                      <span className="lifePathPanel__stamp" aria-hidden="true" />
+                      <img className="lifePathPanel__art" src={path.art} alt={path.alt} draggable={false} />
+                      <div className="lifePathPanel__title">{path.title}</div>
+                      <div className="lifePathPanel__footer">
+                        <p id={roleId} className="lifePathPanel__role">{roleCue}</p>
+                        <div className="lifePathPanel__actionPlate">
+                          <button
+                            type="button"
+                            className="lifePathPanel__select"
+                            onClick={() => handlePickPath(path.id)}
+                            onMouseEnter={() => setHoveredPath(path.id)}
+                            onMouseLeave={() => setHoveredPath(null)}
+                            onFocus={() => setHoveredPath(path.id)}
+                            onBlur={() => setHoveredPath(null)}
+                            disabled={disabled || committingPath !== null}
+                            aria-label={`Select ${path.title.toLowerCase()} path`}
+                            aria-pressed={selected}
+                            aria-describedby={`${roleId} ${plaqueId}`}
+                          >
+                            Select
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <InkModalFrame
+      ariaLabel="Begin Your New Life"
+      className="lifeStartWizardFrame"
+      panelClassName="lifeStartWizardModal--ink"
+      variant="heartlaw"
+      watermark
+    >
+      <div className="lifeStartWizardContent">
+        <div className="lifeStartWizardHeader">
+          <h2>Begin Your New Life</h2>
+          <p>Choose your path, scripture, and initial breath focus before cultivation begins.</p>
+        </div>
+
+        <div className="lifeStartWizardSteps" role="list" aria-label="Life start steps">
+          {LIFE_START_WIZARD_STEPS.map((step) => (
+            <PaperChip
+              key={step}
+              text={step === 1 ? '1 · Life Path' : step === 2 ? '2 · Heart Law' : '3 · Breath Focus'}
+              className={`wizardStepChip${wizardStep === step ? ' wizardStepChip--active' : ''}`}
+            />
+          ))}
+        </div>
+
+        <div className="wizardPathSummary" aria-live="polite">
+          <div className="wizardPathSummary__title">Locked Path: {pathDoctrineProfile?.label ?? 'Unknown'}</div>
+          <p className="wizardPathSummary__desc">{pathSummary}</p>
+          <div className="wizardPathSummary__chips">
+            {pathDoctrineProfile?.coreIdentity ? <span className="wizardPathSummary__chip">{pathDoctrineProfile.coreIdentity}</span> : null}
+            <span className="wizardPathSummary__chip">Breath: {draftBreathSemantics.label}</span>
+          </div>
+        </div>
+
+        {wizardStep === 2 ? (
+          <div className="wizardSection lifeStartHeartLawShell" data-ui="life-start-heart-law-shell">
+            <div
+              className="lifeStartHeartLawShell__choices"
+              role="group"
+              aria-label="Heart Law choices"
+              data-ui="life-start-heart-law-selection-region"
+            >
+              <div className="lifeStartHeartLawShell__choicesHeader">
+                <h3>Choose the sentence your soul will repeat when the Gate presses down.</h3>
+                <p>A path points forward. A Heart Law keeps the breath from scattering.</p>
+              </div>
+
+              <div className="lifeStartHeartLawChoicesGrid">
+                {heartLaws.map((law) => {
+                  const unlocked = isHeartLawUnlocked(law.id);
+                  const selected = chosenHeartLawId === law.id;
+                  const previewed = previewHeartLawId === law.id;
+                  const presentation = getHeartLawSelectionPresentation(law, {
+                    spiritRoot,
+                    isUnlocked: unlocked,
+                    isSelected: selected,
+                  });
+
+                  return (
+                    <button
+                      key={law.id}
+                      type="button"
+                      className={`lifeStartHeartLawChoice${selected ? ' lifeStartHeartLawChoice--selected' : ''}${previewed ? ' lifeStartHeartLawChoice--previewed' : ''}${!unlocked ? ' lifeStartHeartLawChoice--locked' : ''}`}
+                      onClick={() => (unlocked ? handleSelectDraftLaw(law.id) : undefined)}
+                      onMouseEnter={() => setHoveredHeartLawId(law.id)}
+                      onMouseLeave={() => setHoveredHeartLawId(null)}
+                      onFocus={() => setHoveredHeartLawId(law.id)}
+                      onBlur={() => setHoveredHeartLawId(null)}
+                      aria-disabled={!unlocked}
+                      aria-pressed={selected}
+                      aria-describedby={`lifeStartHeartLawDetailTitle lifeStartHeartLawDetailResonance`}
+                      aria-label={`${presentation.label}, ${presentation.familyLabel}, Resonance ${presentation.resonanceLabel}, ${presentation.statusLabel}`}
+                    >
+                      <div className={`lifeStartHeartLawChoice__stamp lifeStartHeartLawChoice__stamp--${presentation.statusTone}`} aria-hidden="true">{presentation.statusLabel}</div>
+                      <div className="lifeStartHeartLawChoice__title">{presentation.label}</div>
+                      <div className="lifeStartHeartLawChoice__family">{presentation.familyLabel}</div>
+                      <div className={`lifeStartHeartLawChoice__resonance lifeStartHeartLawChoice__resonance--${presentation.resonanceTone}`}>{presentation.resonanceLabel}</div>
+                      <div className="lifeStartHeartLawChoice__role">{presentation.roleLine}</div>
+                      <div className="lifeStartHeartLawChoice__tags">
+                        {presentation.tagLabels.map((tag) => (
+                          <span key={tag} className="lifeStartHeartLawChoice__tag">{tag}</span>
+                        ))}
+                      </div>
+                      <div className="lifeStartHeartLawChoice__footer">
+                        <span className="lifeStartHeartLawChoice__tier">{presentation.tierLabel}</span>
+                        <span className="lifeStartHeartLawChoice__statusLine">{presentation.statusLabel}</span>
+                      </div>
+                      <div className="lifeStartHeartLawChoice__unlock">{presentation.availabilityLine}</div>
+                    </button>
+                  );
+                })}
+                {heartLaws.length === 0 ? <div className="wizardEmpty">Heart laws are loading...</div> : null}
+              </div>
+            </div>
+
+            <aside
+              className={`lifeStartHeartLawShell__detail lifeStartHeartLawShell__detail--${previewPresentationCard?.previewFamilyTone ?? 'unknown'}`}
+              aria-live="polite"
+              data-ui="life-start-heart-law-detail-region"
+            >
+              <div className="lifeStartHeartLawDetail">
+                <p className="lifeStartHeartLawDetail__eyebrow">Scripture Detail</p>
+                <h3 id="lifeStartHeartLawDetailTitle" className="lifeStartHeartLawDetail__title">{previewHeartLaw?.name ?? 'No Heart Law available'}</h3>
+                <p className="lifeStartHeartLawDetail__subtitle">
+                  {previewHeartLaw ? `${previewPresentationCard?.familyLabel ?? 'Doctrine'} • ${previewPresentationCard?.tierLabel ?? 'Tier ?'} • ${previewPresentationCard?.archetypeLabel ?? 'Doctrine'}` : 'Awaiting scripture data'}
+                </p>
+
+                <p className="lifeStartHeartLawDetail__doctrineSubtitle">{previewPresentationCard?.doctrineSubtitle ?? 'Doctrine scripture.'}</p>
+                <p className="lifeStartHeartLawDetail__roleLine">{previewPresentationCard?.roleLine ?? 'Role: Foundational doctrine support.'}</p>
+
+                <div id="lifeStartHeartLawDetailResonance" className={`lifeStartHeartLawResonance lifeStartHeartLawResonance--${previewPresentationCard?.resonanceTone ?? 'neutral'}`}>
+                  {previewPresentationCard ? `Resonance: ${previewPresentationCard.resonanceLabel} — ${previewPresentationCard.resonanceDetail}` : 'Resonance: Neutral — No resonance bonus needed.'}
+                </div>
+
+                <div className="lifeStartHeartLawDetail__anchor" aria-hidden="true" data-ui="life-start-heart-law-sacred-anchor">
+                  <div className="lifeStartHeartLawDetail__anchorSeal" />
+                  <div className="lifeStartHeartLawDetail__anchorLabel">Inner Scripture Altar</div>
+                  <div className="lifeStartHeartLawDetail__anchorName">{previewHeartLaw?.name ?? 'Scripture Awaiting'}</div>
+                  <div className="lifeStartHeartLawDetail__anchorLine">{previewPresentationCard?.doctrineSubtitle ?? 'Parchment stillness'}</div>
+                </div>
+
+                <div className="lifeStartHeartLawDetail__tags" aria-label="Dao tags">
+                  {(previewPresentationCard?.tagLabels ?? []).map((tag) => (
+                    <span key={tag} className="lifeStartHeartLawDetail__tag">{tag}</span>
+                  ))}
+                </div>
+
+                <p className="lifeStartHeartLawDetail__fantasy">{previewPresentationCard?.fantasyDescription ?? 'A scripture carried through quiet inner discipline.'}</p>
+                <p className="lifeStartHeartLawDetail__practical">{previewPresentationCard?.practicalDescription ?? 'Best for reliable doctrine development in early lives.'}</p>
+
+                <div className="lifeStartHeartLawDetail__signature">
+                  <p className="lifeStartHeartLawDetail__signatureTitle">Signature</p>
+                  <p className="lifeStartHeartLawDetail__summary">{previewPresentationCard?.signatureSummary ?? 'Doctrine-focused signature.'}</p>
+                  <ul className="lifeStartHeartLawDetail__benefits">
+                    {(previewPresentationCard?.keyBenefits ?? []).slice(0, 3).map((benefit) => (
+                      <li key={benefit}>{benefit}</li>
+                    ))}
+                  </ul>
+                </div>
+
+                <p className="lifeStartHeartLawDetail__unlock">
+                  {previewPresentationCard?.availabilityLine ?? 'Starter scripture available immediately.'}
+                </p>
+
+                <div className="lifeStartHeartLawDetail__ctaLane">
+                  <button
+                    type="button"
+                    className="button-secondary uiNoShift"
+                    onClick={handleChoosePreviewedLaw}
+                    disabled={Boolean(previewPresentationCard?.ctaDisabledReason)}
+                  >
+                    {previewPresentationCard?.ctaLabel ?? 'Choose This Heart Law'}
+                  </button>
+                  {previewPresentationCard?.ctaDisabledReason ? (
+                    <p className="lifeStartHeartLawDetail__ctaReason">{previewPresentationCard.ctaDisabledReason}</p>
+                  ) : null}
+                </div>
+
+                <div className="lifeStartHeartLawSupport">
+                  <p className="lifeStartHeartLawSupport__hint">
+                    This is doctrine preview only; verse progress begins after life-start is confirmed.
+                  </p>
+
+                  {showAutoPick ? (
+                    <label className="lifeStartHeartLawMemory">
+                      <input
+                        type="checkbox"
+                        checked={autoPickChecked}
+                        onChange={(event) => setAutoPickChecked(event.target.checked)}
+                        disabled={lifeStartWizardContext.lastHeartLawId === null}
+                      />
+                      <span>Use last run's Heart Law memory</span>
+                    </label>
+                  ) : null}
+                  {autoPickError ? <div className="lifeStartHeartLawMemory__error">{autoPickError}</div> : null}
+                </div>
+              </div>
+            </aside>
+
+            <div className="wizardFooter wizardFooter--stable">
+              <div className="wizardFooterLane wizardFooterLane--left" aria-hidden="true" />
+              <div className="wizardFooterLane wizardFooterLane--right">
+                <button
+                  type="button"
+                  className="button-primary uiNoShift"
+                  onClick={handleContinueToBreath}
+                  disabled={!draftHeartLawId}
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : null}
+
+        {wizardStep === 3 ? (
+          <div className="wizardSection lifeStartBreathShell" data-ui="life-start-breath-focus-shell">
+            <section
+              className="lifeStartBreathShell__choices"
+              aria-label="Breath focus choices"
+              data-ui="life-start-breath-focus-selection-region"
+            >
+              <div className="lifeStartBreathShell__choicesHeader">
+                <h3>Choose Breath Focus</h3>
+                <p>Select how this life will pace cultivation breath cycles.</p>
+              </div>
+              <div className="lifeStartBreathChoicesGrid">
+                {BREATH_MODE_IDS.map((modeId) => {
+                  const semantics = getBreathModeSemantics(modeId);
+                  const selected = draftBreathMode === modeId;
+                  const modeName = semantics.label;
+                  return (
+                    <button
+                      key={modeId}
+                      type="button"
+                      className={`lifeStartBreathChoice${selected ? ' lifeStartBreathChoice--selected' : ''}`}
+                      onClick={() => setDraftBreathMode(modeId)}
+                      aria-pressed={selected}
+                      aria-describedby="lifeStartBreathDetailTitle lifeStartBreathDetailSummary"
+                    >
+                      <div className="lifeStartBreathChoice__stamp" aria-hidden="true">
+                        {selected ? 'Chosen' : 'Discipline'}
+                      </div>
+                      <div className="lifeStartBreathChoice__title">{modeName}</div>
+                      <div className="lifeStartBreathChoice__summary">{semantics.summary}</div>
+                      <div className="lifeStartBreathChoice__preferredFor">
+                        Best for: {semantics.preferredFor.slice(0, 2).join(', ').replace(/_/g, ' ')}
+                      </div>
+                      <div className="lifeStartBreathChoice__meta">{selected ? 'Selected for this life' : 'Select focus'}</div>
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+
+            <aside
+              className="lifeStartBreathShell__detail"
+              aria-live="polite"
+              data-ui="life-start-breath-focus-detail-region"
+            >
+              <div className="lifeStartBreathDetail">
+                <p className="lifeStartBreathDetail__eyebrow">Breath Discipline</p>
+                <h3 id="lifeStartBreathDetailTitle" className="lifeStartBreathDetail__title">{draftBreathSemantics.label}</h3>
+                <p id="lifeStartBreathDetailSummary" className="lifeStartBreathDetail__summary">{draftBreathSemantics.summary}</p>
+
+                <div className="lifeStartBreathDetail__continuity">
+                  Path: {pathDoctrineProfile?.label ?? 'Unknown'} • Scripture: {selectedHeartLaw?.name ?? 'Awaiting heart law'}
+                </div>
+
+                <div className="lifeStartBreathDetail__rail">
+                  <div className="lifeStartBreathDetail__block">
+                    <p className="lifeStartBreathDetail__blockLabel">Best for</p>
+                    <ul className="lifeStartBreathDetail__list">
+                      {draftBreathSemantics.preferredFor.map((entry) => (
+                        <li key={entry}>{entry.replace(/_/g, ' ')}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="lifeStartBreathDetail__block">
+                    <p className="lifeStartBreathDetail__blockLabel">Caution</p>
+                    <p className="lifeStartBreathDetail__caution">{draftBreathSemantics.cautions[0]}</p>
+                  </div>
+                </div>
+
+                <div className="lifeStartBreathDetail__ctaLane">
+                  <button type="button" className="button-secondary uiNoShift" onClick={() => setRequestedStep(2)}>
+                    Back
+                  </button>
+                  <button
+                    type="button"
+                    className="button-primary uiNoShift"
+                    onClick={handleFinish}
+                    disabled={!selectedPath || !draftHeartLawId}
+                  >
+                    Finish
+                  </button>
+                </div>
+              </div>
+            </aside>
+          </div>
+        ) : null}
+      </div>
+    </InkModalFrame>
+  );
+}

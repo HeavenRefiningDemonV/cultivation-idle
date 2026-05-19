@@ -1,0 +1,171 @@
+.medicinePouchPanel {
+  margin-bottom: 16px;
+  color: var(--ink-text-color);
+}
+
+.medicinePouchPanel--modal {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.medicinePouchPanelHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.medicinePouchTitle {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.medicinePouchSubtitle {
+  font-size: 13px;
+  color: var(--ink-muted-color);
+}
+
+.medicinePouchFootnote {
+  font-size: 12px;
+  color: var(--ink-muted-color);
+  text-align: right;
+}
+
+.medicinePouchGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px;
+}
+
+.medicinePouchPanel--modal .medicinePouchGrid {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+}
+
+.medicinePouchPanel--modal .medicinePouchCard {
+  padding: 10px;
+}
+
+.medicinePouchPanel--modal .medicinePouchCardTitle {
+  font-size: 14px;
+}
+
+.medicinePouchPanel--modal .medicinePouchCardSubtitle {
+  font-size: 12px;
+}
+
+.medicinePouchEmptyState {
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.medicinePouchEmptyTitle {
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.medicinePouchEmptyBody {
+  font-size: 12px;
+  color: var(--ink-muted-color);
+}
+
+.medicinePouchCard {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.medicinePouchCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.medicinePouchCardTitle {
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.medicinePouchSlotIcon {
+  margin-right: 6px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.medicinePouchCardSubtitle {
+  font-size: 13px;
+  color: var(--ink-muted-color);
+}
+
+.medicinePouchTag {
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.medicinePouchChips {
+  margin-top: 6px;
+  margin-bottom: 6px;
+}
+
+.medicinePouchField {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.medicinePouchField--inline {
+  justify-content: space-between;
+}
+
+.medicinePouchLabel {
+  min-width: 90px;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.medicinePouchSelect,
+.medicinePouchInput {
+  flex: 1;
+  background: rgba(250, 242, 228, 0.85);
+  border: 1px solid rgba(120, 72, 33, 0.45);
+  color: var(--ink-text-color);
+  border-radius: 6px;
+  padding: 6px;
+}
+
+.medicinePouchButton {
+  background: rgba(250, 242, 228, 0.9);
+  border: 1px solid rgba(120, 72, 33, 0.45);
+  color: var(--ink-text-color);
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.medicinePouchButton--ghost {
+  background: rgba(250, 242, 228, 0.65);
+  color: var(--ink-muted-color);
+  border: 1px solid rgba(120, 72, 33, 0.35);
+}
+
+.medicinePouchCheckbox {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--ink-muted-color);
+}
+
+.medicinePouchHint {
+  font-size: 12px;
+  color: var(--ink-muted-color);
+}

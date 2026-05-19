@@ -1,0 +1,1657 @@
+.combatPathModule {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    --combat-accent: #59739a;
+}
+
+.ruinsPanelFxStage {
+    width: 100%;
+    height: 100%;
+}
+
+.ruinsPanelFxStage__layer {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.ruinsPanelFxStage__content {
+    position: relative;
+}
+
+.combatPathModule--outskirts {
+    --combat-accent: #4c8d6f;
+}
+
+.combatPathModule--ruins {
+    --combat-accent: #5f6eb2;
+}
+
+.combatPathModule--gateTrial {
+    --combat-accent: #b5852b;
+}
+
+.combatPathModule__topLane {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.combatPathModule__runCompass {
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    border-radius: 8px;
+    background: rgba(236, 225, 205, 0.72);
+    padding: 8px;
+}
+
+.combatPathModule__header {
+    border: 1px solid rgba(148, 163, 184, 0.32);
+    border-radius: 10px;
+    background: rgba(236, 225, 205, 0.78);
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.combatPathModule__headerMain {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.combatPathModule__title {
+    margin: 0;
+    font-family: "Protest Revolution";
+    font-size: 22px;
+    color: #161616;
+}
+
+.combatPathModule__roleTag {
+    border-radius: 999px;
+    border: 1px solid color-mix(in srgb, var(--combat-accent) 45%, #1f2937);
+    color: #111827;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    background: color-mix(in srgb, var(--combat-accent) 16%, white);
+    white-space: nowrap;
+}
+
+.combatPathModule__bestUsedWhen {
+    margin: 0;
+    color: #1f2937;
+    font-size: 12px;
+    line-height: 1.35;
+}
+
+.combatPathModule__chipRow {
+    min-height: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.combatPathModule__chip {
+    font-size: 11px;
+    border-radius: 999px;
+    border: 1px solid rgba(148, 163, 184, 0.4);
+    color: #1f2937;
+    padding: 1px 8px;
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.combatPathModule__chip--active {
+    border-color: rgba(74, 222, 128, 0.45);
+    color: #166534;
+}
+
+.combatPathModule__chip--warning {
+    border-color: rgba(245, 158, 11, 0.5);
+    color: #92400e;
+}
+
+.combatPathModule__chip--recommended {
+    border-color: rgba(59, 130, 246, 0.45);
+    color: #1d4ed8;
+}
+
+.combatPathModule__close {
+    position: absolute;
+    right: 6px;
+    top: 6px;
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    border-radius: 999px;
+    width: 26px;
+    height: 26px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.72);
+    color: #1f2937;
+    cursor: pointer;
+}
+
+.combatPathModule__contextRail,
+.combatPathModule__supportCluster,
+.combatPathModule__routeHints,
+.combatPathModule__actionZone {
+    border: 1px solid rgba(148, 163, 184, 0.24);
+    border-radius: 10px;
+    padding: 8px;
+    background: rgba(236, 225, 205, 0.64);
+}
+
+.combatPathModule__actionZone {
+    border-color: color-mix(in srgb, var(--combat-accent) 45%, #1f2937);
+    background: color-mix(in srgb, var(--combat-accent) 10%, rgba(236, 225, 205, 0.74));
+}
+
+.combatPathModule__scene {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.outskirts-combat__stage {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    background: linear-gradient(to bottom, rgba(238, 250, 239, 0.52), rgba(212, 226, 211, 0.26));
+    --outskirts-haze-opacity: 0.2;
+
+    > * {
+        position: relative;
+        z-index: 1;
+    }
+
+    .outskirts-combat__atmosphere {
+        position: absolute;
+        inset: 0;
+        overflow: clip;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .outskirts-combat__haze {
+        position: absolute;
+        inset: 0;
+        background:
+            radial-gradient(120% 90% at 40% 56%, rgba(209, 234, 199, var(--outskirts-haze-opacity)) 0%, rgba(209, 234, 199, 0) 72%),
+            linear-gradient(92deg, rgba(227, 241, 213, calc(var(--outskirts-haze-opacity) * 0.7)) 0%, rgba(227, 241, 213, 0) 78%);
+        transition: opacity 180ms ease;
+    }
+
+    .outskirts-combat__mote,
+    .outskirts-combat__leaf,
+    .outskirts-combat__glint {
+        position: absolute;
+    }
+
+    .outskirts-combat__mote {
+        width: 3px;
+        height: 3px;
+        border-radius: 999px;
+        background: rgba(214, 226, 190, 0.52);
+        box-shadow: 0 0 5px rgba(214, 226, 190, 0.22);
+        animation: outskirts-mote-drift 18s linear infinite;
+    }
+
+    .outskirts-combat__mote--1 { left: 8%; top: 72%; animation-delay: 0.4s; }
+    .outskirts-combat__mote--2 { left: 24%; top: 61%; animation-delay: 2.8s; }
+    .outskirts-combat__mote--3 { left: 39%; top: 76%; animation-delay: 1.2s; }
+    .outskirts-combat__mote--4 { left: 56%; top: 66%; animation-delay: 3.4s; }
+    .outskirts-combat__mote--5 { left: 71%; top: 79%; animation-delay: 0.9s; }
+    .outskirts-combat__mote--6 { left: 87%; top: 68%; animation-delay: 2.2s; }
+
+    .outskirts-combat__leaf {
+        width: 10px;
+        height: 4px;
+        border-radius: 999px;
+        background: rgba(138, 173, 118, 0.26);
+        transform-origin: center;
+        animation: outskirts-leaf-sway 13s ease-in-out infinite;
+    }
+
+    .outskirts-combat__leaf--1 { left: 16%; top: 28%; animation-delay: 0.5s; }
+    .outskirts-combat__leaf--2 { left: 82%; top: 34%; animation-delay: 2.2s; }
+
+    .outskirts-combat__glint {
+        right: 12px;
+        top: 8px;
+        width: 110px;
+        height: 46px;
+        background: radial-gradient(ellipse at 100% 0%, rgba(246, 255, 226, 0.26), rgba(246, 255, 226, 0));
+        opacity: 0.7;
+        transition: opacity 170ms ease;
+    }
+
+    .outskirts-combat__atmosphere[data-quality='low'] .outskirts-combat__mote,
+    .outskirts-combat__atmosphere[data-quality='low'] .outskirts-combat__leaf,
+    .outskirts-combat__atmosphere[data-quality='low'] .outskirts-combat__glint,
+    .outskirts-combat__atmosphere[data-quality='reducedMotion'] .outskirts-combat__mote,
+    .outskirts-combat__atmosphere[data-quality='reducedMotion'] .outskirts-combat__leaf,
+    .outskirts-combat__atmosphere[data-quality='reducedMotion'] .outskirts-combat__glint,
+    .outskirts-combat__atmosphere[data-animate='0'] .outskirts-combat__mote,
+    .outskirts-combat__atmosphere[data-animate='0'] .outskirts-combat__leaf {
+        animation: none;
+    }
+
+    .outskirts-combat__atmosphere[data-quality='low'] .outskirts-combat__leaf,
+    .outskirts-combat__atmosphere[data-quality='reducedMotion'] .outskirts-combat__leaf {
+        display: none;
+    }
+
+    .outskirts-combat__atmosphere[data-quality='low'] .outskirts-combat__glint,
+    .outskirts-combat__atmosphere[data-quality='reducedMotion'] .outskirts-combat__glint {
+        display: none;
+    }
+
+    .outskirts-combat__atmosphere[data-combat-active='1'] .outskirts-combat__haze {
+        opacity: 1;
+    }
+
+    .outskirts-combat__sceneLabel {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        z-index: 2;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        border-radius: 999px;
+        border: 1px solid rgba(76, 141, 111, 0.44);
+        color: #1f2937;
+        background: rgba(255, 255, 255, 0.66);
+        padding: 2px 8px;
+    }
+
+    .outskirts-combat__healthbars {
+        width: 100%;
+        height: 220px;
+        display: flex;
+        padding-top: 24px;
+    }
+
+    .images-div {
+        width: 100%;
+        height: 420px;
+        display: flex;
+
+            .combat-motion {
+                animation-duration: 220ms;
+                animation-timing-function: ease-out;
+            }
+
+            .combat-motion--player-attack {
+                animation-name: combat-player-attack;
+                animation-timing-function: cubic-bezier(0.1, -0.6, 0.2, 0);
+            }
+
+            .combat-motion--player-dodge {
+                animation-name: combat-player-dodge;
+                animation-timing-function: cubic-bezier(0.1, -0.6, 0.2, 0);
+            }
+
+            .combat-motion--enemy-attack {
+                animation-name: combat-enemy-attack;
+                animation-timing-function: cubic-bezier(0.1, -0.6, 0.2, 0);
+            }
+
+            .combat-motion--enemy-dodge {
+                animation-name: combat-enemy-dodge;
+                animation-timing-function: cubic-bezier(0.1, -0.6, 0.2, 0);
+            }
+
+            .cultivator-image-wrapper {
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+                width: 50%;
+                padding-left: 40px;
+                justify-content: flex-end;
+                align-items: center;
+
+                .cultivator-image {
+                    height: 460px;
+                    width: 460px;
+                }
+            }
+
+            .enemy-image-wrapper {
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+                width: 50%;
+                justify-content: flex-start;
+                align-items: center;
+                position: relative;
+
+                .enemy-image {
+                    height: 300px;
+                    width: 300px;
+                }
+
+                .enemy-hit-overlay {
+                    position: absolute;
+                    inset: 0;
+                    pointer-events: none;
+                }
+
+                .enemy-hit-text {
+                    position: absolute;
+                    transform: translate(-50%, -50%);
+                    font-family: "Protest Revolution";
+                    font-weight: 700;
+                    font-size: 22px;
+                    color: #f8fafc;
+                    text-shadow:
+                        0 2px 6px black,
+                        0 0 12px black;
+                    animation: enemy-hit-float 0.9s ease-out forwards;
+                }
+
+                .enemy-hit-text--crit {
+                    color: #ef4444;
+                    font-size: 30px;
+                }
+
+                .enemy-hit-text--dodge {
+                    color: #2f8f66;
+                    font-size: 24px;
+                }
+            }
+
+            .enemy-image-wrapper--inactive {
+                visibility: hidden;
+            }
+    }
+}
+
+@keyframes outskirts-mote-drift {
+    0% {
+        transform: translateY(0) translateX(0);
+        opacity: 0.5;
+    }
+    50% {
+        transform: translateY(-20px) translateX(7px);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translateY(-42px) translateX(2px);
+        opacity: 0;
+    }
+}
+
+@keyframes outskirts-leaf-sway {
+    0%, 100% {
+        transform: translateX(0) rotate(2deg);
+        opacity: 0.3;
+    }
+    50% {
+        transform: translateX(8px) rotate(-4deg);
+        opacity: 0.46;
+    }
+}
+
+.gate-trial__support-summary {
+    min-height: 136px;
+}
+
+.gate-trial__eligible-merit-line {
+    font-weight: 600;
+}
+
+@keyframes combat-player-attack {
+    0% {
+        transform: translateX(0);
+    }
+
+    50% {
+        transform: translateX(40px);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
+}
+
+@keyframes combat-player-dodge {
+    0% {
+        transform: translateX(0);
+    }
+
+    50% {
+        transform: translateX(-10px);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
+}
+
+@keyframes combat-enemy-attack {
+    0% {
+        transform: translateX(0);
+    }
+
+    50% {
+        transform: translateX(-20px);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
+}
+
+@keyframes combat-enemy-dodge {
+    0% {
+        transform: translateX(0);
+    }
+
+    50% {
+        transform: translateX(10px);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
+}
+
+@keyframes enemy-hit-float {
+    0% {
+        transform: translate(-50%, -50%) translateY(0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translate(-50%, -50%) translateY(-40px);
+        opacity: 0;
+    }
+}
+
+.gateTrialPanel__readiness {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.gateTrialPanel__supportRail {
+    display: grid;
+    gap: 8px;
+}
+
+.gateTrialPanel__roleFrame {
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    border-radius: 8px;
+    padding: 8px;
+    background: rgba(236, 225, 205, 0.68);
+    display: grid;
+    gap: 4px;
+}
+
+.gateTrialPanel__roleTag {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #b45309;
+}
+
+.gateTrialPanel__roleSummary {
+    font-size: 12px;
+    color: #334155;
+}
+
+.gateTrialPanel__readinessScore {
+    min-height: 18px;
+    font-size: 12px;
+    color: #0f172a;
+}
+
+.gateTrialPanel__checklists {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+}
+
+.gateTrialReadinessCard {
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    border-radius: 8px;
+    padding: 8px;
+    background: rgba(236, 225, 205, 0.78);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.gateTrialReadinessCard__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.gateTrialReadinessCard__title {
+    margin: 0;
+    font-size: 14px;
+}
+
+.gateTrialReadinessCard__label {
+    font-size: 11px;
+    border: 1px solid rgba(250, 204, 21, 0.35);
+    border-radius: 999px;
+    padding: 2px 8px;
+}
+
+.gateTrialReadinessCard__detail,
+.gateTrialReadinessCard__counts,
+.gateTrialReadinessCard__facts {
+    font-size: 12px;
+    color: #cbd5e1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.gateTrialReadinessCard__detail {
+    min-height: 32px;
+}
+
+.gateTrialReadinessCard__score {
+    min-height: 18px;
+    font-size: 12px;
+    color: #0f172a;
+}
+
+.gateTrialReadinessCard__counts {
+    min-height: 34px;
+}
+
+.gateTrialReadinessCard__facts {
+    min-height: 56px;
+}
+
+.gateTrialChecklist {
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    border-radius: 8px;
+    padding: 8px;
+    background: rgba(236, 225, 205, 0.72);
+    position: relative;
+    overflow: hidden;
+}
+
+.gateTrialChecklist--supported::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: var(--gate-trial-support-art);
+    background-size: cover;
+    background-position: center;
+    opacity: 0.2;
+    pointer-events: none;
+}
+
+.gateTrialChecklist__title,
+.gateTrialChecklist__rows {
+    position: relative;
+    z-index: 1;
+}
+
+.gateTrialChecklist__title {
+    margin: 0 0 6px;
+    font-size: 13px;
+}
+
+.gateTrialChecklist__rows {
+    min-height: 104px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.gateTrialChecklist__row {
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    gap: 8px;
+    align-items: start;
+}
+
+.gateTrialChecklist__state {
+    font-size: 11px;
+    border-radius: 999px;
+    text-align: center;
+    padding: 2px 6px;
+    border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+.gateTrialChecklist__state--met {
+    color: #86efac;
+    border-color: rgba(134, 239, 172, 0.45);
+}
+
+.gateTrialChecklist__state--close {
+    color: #fcd34d;
+    border-color: rgba(252, 211, 77, 0.45);
+}
+
+.gateTrialChecklist__state--open {
+    color: #fca5a5;
+    border-color: rgba(252, 165, 165, 0.45);
+}
+
+.gateTrialChecklist__label {
+    font-size: 12px;
+    color: #e2e8f0;
+}
+
+.gateTrialChecklist__detail {
+    font-size: 12px;
+    color: #94a3b8;
+}
+
+.gateTrialPanel__actions,
+.gateTrialPanel__support {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.gateTrialAttemptCluster,
+.gateTrialSafetyNetCard,
+.gateTrialTopFixes {
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    border-radius: 8px;
+    padding: 8px;
+    background: rgba(236, 225, 205, 0.75);
+}
+
+.gateTrialReadinessCard,
+.gateTrialSafetyNetCard,
+.gateTrialAttemptCluster {
+    position: relative;
+    overflow: hidden;
+}
+
+.gateTrialReadinessCard--supported::before,
+.gateTrialReadinessCard--supported::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.gateTrialReadinessCard--supported::before {
+    background-image: var(--gate-trial-readiness-art);
+    background-size: cover;
+    opacity: 0.16;
+}
+
+.gateTrialReadinessCard--supported::after {
+    background-image: var(--gate-trial-readiness-art-alt);
+    background-size: contain;
+    opacity: 0.12;
+}
+
+.gateTrialReadinessCard > * {
+    position: relative;
+    z-index: 1;
+}
+
+.gateTrialSafetyNetCard--supported::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: var(--gate-trial-failsafe-art);
+    background-size: cover;
+    background-position: center;
+    opacity: 0.16;
+    pointer-events: none;
+}
+
+.gateTrialSafetyNetCard > * {
+    position: relative;
+    z-index: 1;
+}
+
+.gateTrialAttemptCluster__actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.gateTrialAttemptCluster--supported::before,
+.gateTrialAttemptCluster--supported::after {
+    content: '';
+    position: absolute;
+    pointer-events: none;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.gateTrialAttemptCluster--supported::before {
+    inset: 0;
+    background-image: var(--gate-trial-attempt-primary-art);
+    background-size: cover;
+    opacity: 0.2;
+}
+
+.gateTrialAttemptCluster--supported::after {
+    right: 8px;
+    bottom: 8px;
+    width: 120px;
+    height: 56px;
+    background-image: var(--gate-trial-attempt-secondary-art);
+    background-size: contain;
+    opacity: 0.18;
+}
+
+.gateTrialAttemptCluster__primary,
+.gateTrialAttemptCluster__detail,
+.gateTrialAttemptCluster__actions {
+    position: relative;
+    z-index: 1;
+}
+
+.gateTrialAttemptCluster__detail {
+    min-height: 18px;
+    font-size: 12px;
+    color: #cbd5e1;
+    margin: 6px 0;
+}
+
+.gateTrialTopFixes__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.gateTrialTopFixes__badge {
+    font-size: 11px;
+    border: 1px solid rgba(134, 239, 172, 0.45);
+    border-radius: 999px;
+    padding: 2px 8px;
+    color: #86efac;
+}
+
+.gateTrialTopFixes__fix {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 8px;
+    align-items: start;
+    margin-top: 6px;
+}
+
+.gateTrialSafetyNetCard__stack {
+    min-height: 150px;
+    display: grid;
+    gap: 2px;
+    align-content: start;
+}
+
+.gateTrialSafetyNetCard__blockedReason,
+.gateTrialSafetyNetCard__resolved {
+    min-height: 18px;
+}
+
+
+.gateTrialPanelFxStage {
+    border-radius: 10px;
+}
+
+.gateTrialPanelFxStage__layer {
+    border-radius: 10px;
+}
+
+.gateTrialStage {
+    width: 100%;
+    height: 100%;
+    min-height: 300px;
+    border-radius: 10px;
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    overflow: hidden;
+    position: relative;
+    background: linear-gradient(180deg, rgba(20, 26, 38, 0.8), rgba(13, 20, 33, 0.92));
+}
+
+.gateTrialStage__healthbars {
+    padding: 10px;
+    display: grid;
+    gap: 6px;
+}
+
+.gateTrialStage__activeScene {
+    min-height: 220px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: end;
+    padding: 10px;
+}
+
+.gateTrialStage__idleScene {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    gap: 8px;
+    z-index: 1;
+}
+
+.gateTrialStage__idleBackdrop {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.3;
+}
+
+.gateTrialStage__underglow,
+.gateTrialStage__halo {
+    position: absolute;
+    left: 50%;
+    top: 56%;
+    transform: translate(-50%, -50%);
+    background-repeat: no-repeat;
+    background-position: center;
+    pointer-events: none;
+}
+
+.gateTrialStage__underglow {
+    width: min(460px, 92%);
+    height: min(280px, 72%);
+    background-size: contain;
+    opacity: 0.22;
+}
+
+.gateTrialStage__halo {
+    width: min(420px, 84%);
+    height: min(260px, 68%);
+    background-size: contain;
+    opacity: 0.24;
+}
+
+.gateTrialStage__idleGate,
+.gateTrialStage__idleEntry {
+    position: relative;
+    max-width: min(280px, 56%);
+    filter: drop-shadow(0 2px 8px rgba(15, 23, 42, 0.5));
+}
+
+.gateTrialStage__idleEntry {
+    max-width: min(240px, 48%);
+}
+
+.gateTrialStage__idleLabel {
+    position: relative;
+    margin-top: 4px;
+    color: #f8fafc;
+    font-size: 13px;
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    border-radius: 999px;
+    padding: 3px 10px;
+    background: rgba(15, 23, 42, 0.55);
+}
+
+.gateTrialPanel__roleFrame {
+    position: relative;
+    overflow: hidden;
+}
+
+.gateTrialPanel__roleFrameArt {
+    position: absolute;
+    inset: 0;
+    background-position: center;
+    background-size: cover;
+    opacity: 0.12;
+    pointer-events: none;
+}
+
+.gateTrialPanel__roleFrameArt--alt {
+    background-size: contain;
+    opacity: 0.1;
+}
+
+.gateTrialPanel__sealAccent {
+    position: absolute;
+    right: 8px;
+    top: 8px;
+    width: 42px;
+    height: 42px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    opacity: 0.45;
+    pointer-events: none;
+}
+
+.gateTrialPanel__supportFallbackNote {
+    font-size: 11px;
+    color: #475569;
+}
+
+.gateTrialStage__healthbars,
+.gateTrialStage__activeScene {
+    position: relative;
+    z-index: 1;
+}
+
+.outskirtsPanel__summary,
+.ruinsPanel__summary {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.outskirtsPanel__summary--bounty .outskirtsSummaryCard__context--bounty {
+    background: rgba(76, 141, 111, 0.08);
+    border-radius: 6px;
+    padding: 2px 4px;
+}
+
+.ink-combat-shell--outskirts .ink-combat-shell__sidebar {
+    width: clamp(248px, 22vw, 320px);
+    padding: 12px 10px;
+}
+
+.ink-combat-shell--outskirts .ink-combat-shell__main {
+    width: auto;
+}
+
+.outskirtsPanel__composition {
+    height: 100%;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto minmax(0, auto);
+    gap: 10px;
+}
+
+.outskirtsPanel__mainBand {
+    min-height: 0;
+    display: grid;
+}
+
+.outskirtsPanel__actionStrip {
+    margin-bottom: 0;
+    gap: 8px;
+    min-height: 108px;
+}
+
+.outskirtsPanel__actionPrimaryLane {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 10px;
+    align-items: center;
+}
+
+.outskirtsPanel__actionContext {
+    min-height: 32px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.outskirtsPanel__primaryAction {
+    min-width: 140px;
+}
+
+.outskirtsPanel__primaryAction--start {
+    box-shadow: inset 0 0 0 1px rgba(74, 222, 128, 0.35);
+}
+
+.outskirtsPanel__primaryAction--stop {
+    box-shadow: inset 0 0 0 1px rgba(251, 146, 60, 0.35);
+}
+
+.outskirtsPanel__cadenceMini {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.outskirtsPanel__cadenceMiniTop {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.outskirtsPanel__cadenceLabel {
+    font-size: 12px;
+    color: #1f2937;
+}
+
+.outskirtsPanel__cadenceStatus {
+    font-size: 11px;
+    color: #475569;
+}
+
+.outskirtsPanel__cadenceSegments {
+    display: grid;
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    gap: 4px;
+}
+
+.outskirtsPanel__cadenceSegment {
+    height: 7px;
+    border-radius: 999px;
+    background: rgba(15, 23, 42, 0.14);
+}
+
+.outskirtsPanel__cadenceSegment--filled {
+    background: color-mix(in srgb, var(--combat-accent) 72%, #1f2937);
+}
+
+.outskirtsPanel__stripToggle {
+    margin: 0;
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    border-radius: 999px;
+    padding: 4px 9px;
+    background: rgba(255, 255, 255, 0.46);
+}
+
+.outskirtsSummaryCard {
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    border-radius: 8px;
+    padding: 10px;
+    background: rgba(236, 225, 205, 0.75);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 12px;
+    color: #273343;
+}
+
+.ruinsSummaryCard {
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    border-radius: 8px;
+    padding: 10px;
+    background: rgba(17, 24, 39, 0.86);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 12px;
+    color: #cbd5e1;
+}
+
+.outskirtsSummaryCard__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    color: #111827;
+}
+
+.ruinsSummaryCard__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 12px;
+    color: #f8fafc;
+}
+
+.ruinsSummaryCard__label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #93c5fd;
+    margin-bottom: 2px;
+}
+
+.ruinsSummaryCard__ruinName {
+    font-size: 16px;
+    line-height: 1.2;
+}
+
+.ruinsSummaryCard__roleTag {
+    border: 1px solid rgba(125, 211, 252, 0.45);
+    border-radius: 999px;
+    padding: 3px 10px;
+    color: #dbeafe;
+    background: rgba(37, 99, 235, 0.22);
+    white-space: nowrap;
+}
+
+.outskirtsSummaryCard__purpose {
+    margin: 0;
+    font-size: 12px;
+    color: #1f2937;
+    line-height: 1.4;
+}
+
+.outskirtsSummaryCard__expectations {
+    display: grid;
+    gap: 3px;
+    padding: 7px 8px;
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.48);
+}
+
+.outskirtsSummaryCard__context {
+    min-height: 24px;
+    font-size: 11px;
+    color: #334155;
+    display: flex;
+    align-items: center;
+}
+
+.outskirtsSummaryCard__context--milestone {
+    border-radius: 6px;
+    border: 1px solid rgba(76, 141, 111, 0.3);
+    background: rgba(76, 141, 111, 0.08);
+    padding: 4px 6px;
+}
+
+.outskirtsSummaryCard__context--bounty {
+    min-height: 46px;
+    align-items: flex-start;
+}
+
+.outskirtsSummaryCard__context--route {
+    min-height: 52px;
+    align-items: flex-start;
+}
+
+.outskirtsSummaryCard__routeHints {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.outskirtsSummaryCard__routeHint {
+    border-radius: 999px;
+    border: 1px solid rgba(148, 163, 184, 0.34);
+    background: rgba(255, 255, 255, 0.52);
+    padding: 3px 10px;
+    color: #1e293b;
+    text-align: left;
+    display: inline-flex;
+    flex-direction: column;
+    gap: 1px;
+    cursor: pointer;
+}
+
+.outskirtsSummaryCard__routeHint small {
+    color: #64748b;
+    font-size: 10px;
+}
+
+.outskirtsSummaryCard__context--empty {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.outskirtsSummaryCard__boundary {
+    font-size: 11px;
+    color: rgba(90, 43, 34, 0.85);
+    border-top: 1px solid rgba(148, 163, 184, 0.2);
+    padding-top: 6px;
+}
+
+.outskirtsSummaryCard__hint {
+    font-size: 11px;
+    color: #64748b;
+}
+
+.ruinsSummaryCard__purpose {
+    min-height: 32px;
+    color: #dbeafe;
+    line-height: 1.35;
+}
+
+.ruinsSummaryCard__structure {
+    color: #f1f5f9;
+    min-height: 18px;
+}
+
+.ruinsSummaryCard__deterministicBlock {
+    border: 1px solid rgba(125, 211, 252, 0.28);
+    border-radius: 8px;
+    padding: 8px;
+    min-height: 92px;
+    display: grid;
+    gap: 4px;
+    background: rgba(30, 41, 59, 0.58);
+}
+
+.ruinsSummaryCard__anchorRewardPlate {
+    min-height: 24px;
+    border: 1px solid rgba(125, 211, 252, 0.22);
+    border-radius: 6px;
+    background:
+        linear-gradient(90deg, rgba(59, 130, 246, 0.16) 0%, rgba(59, 130, 246, 0.02) 72%),
+        rgba(15, 23, 42, 0.3);
+}
+
+.ruinsSummaryCard__anchorRewardPlate--art {
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.ruinsSummaryCard__anchorGlowOverlay {
+    min-height: 16px;
+    margin-top: -12px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    opacity: 0.42;
+    pointer-events: none;
+}
+
+.ruinsSummaryCard__deterministicTitle {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #93c5fd;
+}
+
+.ruinsSummaryCard__deterministicLine {
+    min-height: 16px;
+}
+
+.ruinsSummaryCard__outputs {
+    color: #e2e8f0;
+}
+
+.ruinsSummaryCard__supportRow {
+    min-height: 36px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+}
+
+.ruinsSummaryCard__statusRow {
+    min-height: 18px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 6px;
+    padding: 3px 6px;
+    background: rgba(15, 23, 42, 0.42);
+}
+
+.ruinsSummaryCard__trackedBounty {
+    min-height: 34px;
+    display: flex;
+    align-items: flex-start;
+}
+
+.ruinsSummaryCard__trackedBounty--empty {
+    opacity: 0;
+    pointer-events: none;
+}
+
+
+.ruinsSummaryCard__adjacency {
+    min-height: 84px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
+}
+
+.ruinsSummaryCard__exitHint {
+    min-height: 56px;
+    border: 1px solid rgba(125, 211, 252, 0.22);
+    border-radius: 6px;
+    padding: 5px 7px;
+    background: rgba(15, 23, 42, 0.46);
+    display: grid;
+    gap: 2px;
+    align-content: start;
+}
+
+.ruinsSummaryCard__exitHint--primary {
+    border-color: rgba(74, 222, 128, 0.35);
+}
+
+.ruinsSummaryCard__exitHint--secondary {
+    border-color: rgba(148, 163, 184, 0.3);
+}
+
+.ruinsSummaryCard__exitHintTitle {
+    color: #e2e8f0;
+    font-size: 11px;
+}
+
+.ruinsSummaryCard__exitHintReason {
+    color: #93c5fd;
+    font-size: 10px;
+    min-height: 12px;
+}
+
+.ruinsSummaryCard__exitHintAction {
+    justify-self: start;
+    margin-top: 2px;
+    border: 1px solid rgba(125, 211, 252, 0.4);
+    border-radius: 999px;
+    padding: 2px 8px;
+    font-size: 10px;
+    color: #dbeafe;
+    background: rgba(30, 64, 175, 0.25);
+}
+
+.ruinsSummaryCard__exitHintActionSlot {
+    min-height: 18px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.ruinsSummaryCard__exitHintAction:focus-visible {
+    outline: 2px solid #bae6fd;
+    outline-offset: 2px;
+}
+
+.ruinsSummaryCard__exitHint--empty {
+    opacity: 0;
+    pointer-events: none;
+}
+.ruinsSummaryCard__boundary {
+    border-top: 1px solid rgba(148, 163, 184, 0.24);
+    padding-top: 6px;
+    color: rgba(254, 240, 138, 0.82);
+    min-height: 22px;
+    font-size: 11px;
+}
+
+.outskirtsPanel__secondary {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border: 1px dashed rgba(148, 163, 184, 0.42);
+    border-radius: 10px;
+    padding: 8px;
+    background: rgba(236, 225, 205, 0.42);
+    min-height: 210px;
+}
+
+.outskirtsPanel__secondaryTitle {
+    font-size: 11px;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: rgba(71, 85, 105, 0.9);
+}
+
+.outskirtsPanel__secondaryGrid {
+    display: grid;
+    gap: 8px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.outskirtsPanel__secondaryCard {
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 8px;
+    padding: 7px;
+    background: rgba(236, 225, 205, 0.6);
+}
+
+.outskirtsPanel__secondaryCard--fill {
+    min-height: 130px;
+    grid-column: 1 / -1;
+}
+
+.outskirtsPanel__runOptionsNote {
+    font-size: 12px;
+    color: #475569;
+}
+
+.trackedBountyProgressLine {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 6px;
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    border-radius: 6px;
+    padding: 4px 6px;
+    background: rgba(255, 255, 255, 0.54);
+    min-height: 24px;
+}
+
+.trackedBountyProgressLine__label {
+    color: #334155;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.trackedBountyProgressLine__progress {
+    color: #92400e;
+    white-space: nowrap;
+}
+
+.trackedBountyProgressLine__detail {
+    width: 100%;
+    font-size: 10px;
+    color: #475569;
+}
+
+.trackedBountyProgressLine--compact {
+    font-size: 11px;
+}
+
+@media (max-width: 1320px) {
+    .outskirtsPanel__secondaryGrid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .outskirtsPanel__actionPrimaryLane {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .outskirtsPanel__primaryAction {
+        width: 100%;
+    }
+}
+
+.ruinsPanel {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    height: 100%;
+}
+
+.ruinsPanel__composition {
+    min-height: 0;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto auto minmax(0, auto);
+    gap: 10px;
+}
+
+.ruinsPanel__centerBand {
+    min-height: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+    gap: 10px;
+}
+
+.ruinsPanel__scenicCenter {
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    border-radius: 10px;
+    background:
+        radial-gradient(120% 100% at 20% 8%, rgba(59, 130, 246, 0.14) 0%, rgba(15, 23, 42, 0.55) 60%, rgba(2, 6, 23, 0.78) 100%);
+    padding: 12px;
+    min-height: 180px;
+    display: grid;
+    grid-template-rows: auto auto auto auto auto;
+    gap: 6px;
+    position: relative;
+    overflow: hidden;
+
+    > * {
+        position: relative;
+        z-index: 1;
+    }
+}
+
+.ruinsPanel__ambientOverlay {
+    position: absolute !important;
+    pointer-events: none;
+    z-index: 0 !important;
+}
+
+.ruinsPanel__ambientOverlay--haze {
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 46%;
+    background-position: bottom center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    opacity: 0.24;
+    transition: opacity 160ms ease;
+}
+
+.ruinsPanel__ambientOverlay--haze[data-quality='high'] {
+    opacity: 0.3;
+}
+
+.ruinsPanel__ambientOverlay--haze[data-quality='medium'] {
+    opacity: 0.24;
+}
+
+.ruinsPanel__ambientOverlay--haze[data-quality='low'],
+.ruinsPanel__ambientOverlay--haze[data-quality='reduced'] {
+    opacity: 0.18;
+}
+
+.ruinsPanel__scenicBadge {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: rgba(191, 219, 254, 0.9);
+}
+
+.ruinsPanel__locationPlaque {
+    justify-self: start;
+    width: min(240px, 90%);
+    min-height: 22px;
+    border: 1px solid rgba(125, 211, 252, 0.24);
+    border-radius: 999px;
+    background:
+        linear-gradient(90deg, rgba(59, 130, 246, 0.16) 0%, rgba(59, 130, 246, 0.04) 78%),
+        rgba(15, 23, 42, 0.28);
+}
+
+.ruinsPanel__locationPlaque--art {
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.ruinsPanel__scenicTitle {
+    font-size: 20px;
+    color: #f8fafc;
+    font-weight: 700;
+}
+
+.ruinsPanel__scenicLine {
+    color: #dbeafe;
+    font-size: 12px;
+    min-height: 18px;
+}
+
+.ruinsPanel__scenicMaterials {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-height: 24px;
+}
+
+.ruinsPanel__scenicChip {
+    border-radius: 999px;
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    background: rgba(15, 23, 42, 0.45);
+    padding: 3px 10px;
+    color: #e2e8f0;
+    font-size: 11px;
+}
+
+.ruinsPanel__inspector {
+    min-height: 0;
+}
+
+.ruinsPanel__progressRail,
+.ruinsPanel__utility {
+    min-height: 0;
+}
+
+.ruinsPanel__ctaZone {
+    min-height: 0;
+}
+
+.ruinsCtaZone {
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    border-radius: 8px;
+    background: rgba(15, 23, 42, 0.62);
+    padding: 8px 10px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 10px;
+    align-items: center;
+}
+
+.ruinsCtaZone__primary {
+    min-width: 160px;
+}
+
+.ruinsCtaZone__primary--start {
+    box-shadow: inset 0 0 0 1px rgba(74, 222, 128, 0.35);
+}
+
+.ruinsCtaZone__primary--stop {
+    box-shadow: inset 0 0 0 1px rgba(251, 146, 60, 0.35);
+}
+
+.ruinsCtaZone__primary:focus-visible,
+.ruinsCtaZone__toggle input:focus-visible {
+    outline: 2px solid #bae6fd;
+    outline-offset: 2px;
+}
+
+.ruinsCtaZone__toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #dbeafe;
+    font-size: 12px;
+    min-height: 22px;
+}
+
+.ruinsCtaZone__secondary {
+    min-height: 38px;
+    display: grid;
+    gap: 4px;
+}
+
+.ruinsCtaZone__stateLine {
+    font-size: 11px;
+    color: rgba(191, 219, 254, 0.9);
+    min-height: 14px;
+}
+
+@media (max-width: 1200px) {
+    .ruinsPanel__centerBand {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 900px) {
+    .ruinsCtaZone {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .ruinsCtaZone__primary {
+        width: 100%;
+    }
+}

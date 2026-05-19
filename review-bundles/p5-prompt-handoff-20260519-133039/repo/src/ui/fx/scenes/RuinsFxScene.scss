@@ -1,0 +1,137 @@
+.ruinsFxScene {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: clip;
+  z-index: 0;
+  --ruins-fx-center-x: 50%;
+  --ruins-fx-center-y: 40%;
+  --ruins-fx-radius: 220px;
+}
+
+.ruinsFxScene__haze {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 50% 30%, rgba(51, 65, 85, 0.18), rgba(51, 65, 85, 0) 62%),
+    radial-gradient(ellipse at 50% 84%, rgba(15, 23, 42, 0.44), rgba(15, 23, 42, 0) 70%),
+    linear-gradient(180deg, rgba(2, 6, 23, 0.2), rgba(2, 6, 23, 0.48));
+  opacity: 0.5;
+  animation: ruinsHazeDrift 8s ease-in-out infinite;
+}
+
+.ruinsFxScene__torchGlow {
+  position: absolute;
+  left: var(--ruins-fx-center-x);
+  top: var(--ruins-fx-center-y);
+  width: calc(var(--ruins-fx-radius) * 2.1);
+  height: calc(var(--ruins-fx-radius) * 1.2);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(251, 191, 36, 0.12), rgba(251, 191, 36, 0) 72%);
+  opacity: 0.38;
+  animation: ruinsTorchBreathe 6s ease-in-out infinite;
+}
+
+.ruinsFxScene__activeVeil {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 44%, rgba(59, 130, 246, 0.08), rgba(59, 130, 246, 0) 68%);
+  opacity: 0.42;
+}
+
+.ruinsFxScene__dustField {
+  position: absolute;
+  inset: 0;
+}
+
+.ruinsFxScene__dust {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  border-radius: 999px;
+  background: rgba(203, 213, 225, 0.44);
+  box-shadow: 0 0 5px rgba(203, 213, 225, 0.22);
+  animation: ruinsDustDrift 7.2s linear infinite;
+}
+
+.ruinsFxScene__dust--1 { left: 14%; top: 66%; animation-delay: 0.4s; }
+.ruinsFxScene__dust--2 { left: 31%; top: 58%; animation-delay: 1.4s; }
+.ruinsFxScene__dust--3 { left: 52%; top: 61%; animation-delay: 2.8s; }
+.ruinsFxScene__dust--4 { left: 72%; top: 54%; animation-delay: 0.9s; }
+.ruinsFxScene__dust--5 { left: 86%; top: 62%; animation-delay: 2.1s; }
+
+.ruinsFxScene__anchorGlint {
+  position: absolute;
+  left: calc(var(--ruins-fx-center-x) + 18%);
+  top: calc(var(--ruins-fx-center-y) + 14%);
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(251, 191, 36, 0.72);
+  box-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
+  animation: ruinsAnchorGlint 4.8s ease-in-out infinite;
+}
+
+.ruinsFxScene[data-quality='medium'] .ruinsFxScene__haze {
+  opacity: 0.38;
+}
+
+.ruinsFxScene[data-quality='medium'] .ruinsFxScene__torchGlow {
+  opacity: 0.3;
+}
+
+.ruinsFxScene[data-quality='low'] .ruinsFxScene__haze,
+.ruinsFxScene[data-quality='low'] .ruinsFxScene__torchGlow,
+.ruinsFxScene[data-quality='low'] .ruinsFxScene__dust,
+.ruinsFxScene[data-quality='low'] .ruinsFxScene__anchorGlint,
+.ruinsFxScene[data-quality='reducedMotion'] .ruinsFxScene__haze,
+.ruinsFxScene[data-quality='reducedMotion'] .ruinsFxScene__torchGlow,
+.ruinsFxScene[data-quality='reducedMotion'] .ruinsFxScene__dust,
+.ruinsFxScene[data-quality='reducedMotion'] .ruinsFxScene__anchorGlint,
+.ruinsFxScene[data-can-animate='0'] .ruinsFxScene__haze,
+.ruinsFxScene[data-can-animate='0'] .ruinsFxScene__torchGlow,
+.ruinsFxScene[data-can-animate='0'] .ruinsFxScene__dust,
+.ruinsFxScene[data-can-animate='0'] .ruinsFxScene__anchorGlint,
+.ruinsFxScene[data-dormant='1'] .ruinsFxScene__haze,
+.ruinsFxScene[data-dormant='1'] .ruinsFxScene__torchGlow,
+.ruinsFxScene[data-dormant='1'] .ruinsFxScene__dust,
+.ruinsFxScene[data-dormant='1'] .ruinsFxScene__anchorGlint {
+  animation: none;
+}
+
+.ruinsFxScene[data-quality='low'] .ruinsFxScene__haze {
+  opacity: 0.3;
+}
+
+.ruinsFxScene[data-quality='low'] .ruinsFxScene__torchGlow {
+  opacity: 0.24;
+}
+
+.ruinsFxScene[data-quality='low'] .ruinsFxScene__dustField,
+.ruinsFxScene[data-quality='low'] .ruinsFxScene__anchorGlint,
+.ruinsFxScene[data-quality='reducedMotion'] .ruinsFxScene__dustField,
+.ruinsFxScene[data-quality='reducedMotion'] .ruinsFxScene__anchorGlint {
+  display: none;
+}
+
+@keyframes ruinsHazeDrift {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+@keyframes ruinsTorchBreathe {
+  0%, 100% { transform: translate(-50%, -50%) scale(0.985); }
+  50% { transform: translate(-50%, -50%) scale(1.02); }
+}
+
+@keyframes ruinsDustDrift {
+  0% { transform: translateY(0); opacity: 0.16; }
+  50% { transform: translateY(-10px); opacity: 0.5; }
+  100% { transform: translateY(-18px); opacity: 0.1; }
+}
+
+@keyframes ruinsAnchorGlint {
+  0%, 100% { opacity: 0.14; transform: scale(0.82); }
+  50% { opacity: 0.52; transform: scale(1); }
+}

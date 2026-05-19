@@ -5,26 +5,7 @@ import { useTrialStore } from '../../stores/trialStore.js';
 import { buildPrestigeProgressionSnapshot, calculatePrestigeApForecast, countResolvedSemesterGateTrials, extractLiveTrialIds, resolvePrestigeAdvisorLabel, } from '../../systems/prestige/prestigeApReadModel.js';
 import { PRESTIGE_CATEGORIES, getPrestigeCategoryKey } from './prestigeCategories.js';
 import { buildPrestigeStarterSpendPlan } from '../../systems/prestige/prestigeStarterSpendPlanner.js';
-const RESETS_THIS_LIFE = Object.freeze([
-    'Realm progress',
-    'Qi and combat run state',
-    'Inventory and currencies',
-    'Equipment loadout',
-    'Trial and ruins progress',
-    'Outskirts and bounty progress',
-    'Current activity',
-]);
-const CARRIES_FORWARD = Object.freeze([
-    'Ascension Points (AP)',
-    'Lifetime AP earned',
-    'Purchased AP upgrades',
-    'Prestige run history',
-    'Prestige count',
-]);
-const REBUILT_NEXT_LIFE = Object.freeze([
-    'Spirit root (new roll)',
-    'City baseline (starter city)',
-]);
+import { getPrestigeResetContractSurface } from '../../services/prestige/PrestigeResetContract.js';
 const getAdvisorDetail = (stateLabel) => {
     if (stateLabel === 'Too Early') {
         return 'Push this life to Core Formation before beginning Reincarnation.';
@@ -78,6 +59,7 @@ export const getPrestigeAdvisorSurface = () => {
     const potentialGain = Math.max(0, forecast.totalAp);
     const breakdown = prestige.getApBreakdown();
     const stateLabel = resolvePrestigeAdvisorLabel(forecast);
+    const resetContract = getPrestigeResetContractSurface({ purchasesById: prestige.purchasesById });
     return {
         stateLabel,
         stateDetail: getAdvisorDetail(stateLabel),
@@ -86,9 +68,9 @@ export const getPrestigeAdvisorSurface = () => {
             breakdown,
         },
         resetPreview: {
-            resetsThisLife: [...RESETS_THIS_LIFE],
-            carriesForward: [...CARRIES_FORWARD],
-            rebuiltNextLife: [...REBUILT_NEXT_LIFE],
+            resetsThisLife: resetContract.reset.map((line) => line.label),
+            carriesForward: resetContract.carry.map((line) => line.label),
+            rebuiltNextLife: resetContract.rebuilt.map((line) => line.label),
         },
         spiritRootClassification: prestige.spiritRoot ? 'Awakened' : 'Dormant',
         topRecommendedPurchase: buildTopRecommendedPurchase(),

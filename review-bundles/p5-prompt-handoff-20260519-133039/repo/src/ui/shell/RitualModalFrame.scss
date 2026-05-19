@@ -1,0 +1,135 @@
+@import '../ink/inkTheme.scss';
+
+.ritualModalFrame {
+  --ritual-modal-header-gap: 14px;
+  --ritual-modal-body-gap: 14px;
+  --ritual-modal-pad-inline: clamp(14px, 2vw, 24px);
+  --ritual-modal-pad-block: clamp(14px, 2.4vh, 24px);
+}
+
+.ritualModalFrame__panel {
+  min-height: min(620px, 88vh);
+  animation: ritualPanelSettle 200ms ease-out;
+}
+
+.ritualModalFrame__inner {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  gap: var(--ritual-modal-body-gap);
+  min-height: inherit;
+  padding: var(--ritual-modal-pad-block) var(--ritual-modal-pad-inline);
+}
+
+.ritualModalFrame__content {
+  animation: ritualContentFadeIn 180ms ease-out;
+}
+
+.ritualModalFrame__header {
+  margin-bottom: calc(var(--ritual-modal-header-gap) * -0.2);
+}
+
+.ritualModalFrame__ornament {
+  display: flex;
+  justify-content: center;
+}
+
+.ritualModalFrame__body {
+  position: relative;
+  min-height: 0;
+}
+
+.ritualModalFrame__body--scroll {
+  overflow: auto;
+  scrollbar-gutter: stable;
+}
+
+.ritualModalFrame__content {
+  position: relative;
+  z-index: 1;
+}
+
+.ritualModalFrame__scrollShadow {
+  position: sticky;
+  inset-inline: 0;
+  height: 16px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 140ms ease;
+}
+
+.ritualModalFrame__scrollShadow--top {
+  top: 0;
+  margin-bottom: -16px;
+  background: linear-gradient(to bottom, rgba(35, 29, 21, 0.28), rgba(35, 29, 21, 0));
+}
+
+.ritualModalFrame__scrollShadow--bottom {
+  bottom: 0;
+  margin-top: -16px;
+  background: linear-gradient(to top, rgba(35, 29, 21, 0.3), rgba(35, 29, 21, 0));
+}
+
+.ritualModalFrame__body--shadowTop .ritualModalFrame__scrollShadow--top,
+.ritualModalFrame__body--shadowBottom .ritualModalFrame__scrollShadow--bottom {
+  opacity: 1;
+}
+
+.ritualModalFrame__footer {
+  margin-top: auto;
+  padding-top: 8px;
+  border-top: 1px solid rgba(120, 72, 33, 0.2);
+}
+
+
+.ritualModalFrame__readingZone {
+  min-height: 0;
+}
+
+.ritualModalFrame__actionBand {
+  min-height: 56px;
+  display: grid;
+  align-content: end;
+}
+
+.ritualModalFrame--chapterEnd {
+  --ritual-modal-body-gap: 16px;
+  --ritual-modal-header-gap: 16px;
+}
+
+.ritualModalFrame--summary {
+  --ritual-modal-body-gap: 12px;
+  --ritual-modal-header-gap: 10px;
+}
+
+.ritualModalFrame--static .ritualModalFrame__panel,
+.ritualModalFrame--static .ritualModalFrame__content {
+  animation: none;
+}
+
+@keyframes ritualPanelSettle {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ritualContentFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 700px) {
+  .ritualModalFrame {
+    --ritual-modal-pad-inline: 10px;
+    --ritual-modal-pad-block: 10px;
+    --ritual-modal-header-gap: 10px;
+  }
+}

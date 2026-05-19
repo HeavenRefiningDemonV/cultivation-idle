@@ -1,0 +1,319 @@
+.forgeWorkbenchScene {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 5 / 3;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(15, 23, 33, 0.65);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.02);
+}
+
+.forgeWorkbenchScene__background {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  filter: saturate(0.9) contrast(1.05);
+}
+
+.forgeWorkbenchScene__overlay {
+  position: absolute;
+  inset: 0;
+}
+
+.forgeWorkbenchScene__anchor {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  opacity: 0;
+}
+
+.forgeWorkbenchScene__anchor--furnace {
+  left: 20%;
+  top: 63%;
+}
+
+.forgeWorkbenchScene__anchor--anvil {
+  left: 64%;
+  top: 64%;
+}
+
+.forgeWorkbenchScene__workpiece {
+  position: absolute;
+  width: 70px;
+  height: 18px;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #4b5563 0%, #1f2937 100%);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.45);
+  transition:
+    left 220ms ease,
+    top 220ms ease,
+    background 200ms ease,
+    box-shadow 200ms ease,
+    transform 300ms ease-out,
+    filter 200ms ease;
+}
+
+.forgeWorkbenchScene__workpiece--furnace {
+  left: 18%;
+  top: 62%;
+  transform: translate(-50%, -50%) rotate(-3deg);
+}
+
+.forgeWorkbenchScene__workpiece--anvil {
+  left: 64%;
+  top: 63%;
+  transform: translate(-50%, -50%) rotate(2deg);
+}
+
+.forgeWorkbenchScene__workpiece--low {
+  background: linear-gradient(180deg, #485360 0%, #1f2937 100%);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.45);
+}
+
+.forgeWorkbenchScene__workpiece--mid {
+  background: linear-gradient(180deg, #b45309 0%, #7c2d12 100%);
+  box-shadow:
+    0 0 12px rgba(248, 113, 113, 0.35),
+    0 6px 14px rgba(0, 0, 0, 0.45);
+}
+
+.forgeWorkbenchScene__workpiece--high {
+  background: linear-gradient(180deg, #fbbf24 0%, #ea580c 100%);
+  box-shadow:
+    0 0 16px rgba(253, 186, 116, 0.85),
+    0 0 30px rgba(251, 146, 60, 0.6),
+    0 8px 16px rgba(0, 0, 0, 0.5);
+}
+
+.forgeWorkbenchScene__workpiece--moving {
+  filter: blur(0.5px);
+}
+
+.forgeWorkbenchScene__workpiece--cooling {
+  animation: forgeWorkpieceCool 6s ease-out forwards;
+}
+
+.forgeWorkbenchScene__content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+}
+
+.forgeWorkbenchScene__furnaceSlot {
+  position: absolute;
+  left: 20%;
+  top: 63%;
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+  pointer-events: auto;
+}
+
+.forgeWorkbenchScene__anvilSlot {
+  position: absolute;
+  left: 64%;
+  top: 64%;
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+  gap: 8px;
+}
+
+.forgeWorkbenchScene__anvilSlot--engrave {
+  top: 58%;
+}
+
+.forgeWorkbenchScene__anvilSlot--formation {
+  top: 60%;
+}
+
+.forgeWorkbenchScene__impact {
+  position: absolute;
+  width: 110px;
+  height: 110px;
+  border-radius: 999px;
+  opacity: 0;
+  animation: forgeImpactPulse 180ms ease-out forwards;
+}
+
+.forgeWorkbenchScene__impact--perfect {
+  border: 2px solid rgba(255, 232, 164, 0.85);
+  box-shadow: 0 0 22px rgba(255, 232, 164, 0.7);
+}
+
+.forgeWorkbenchScene__impact--good {
+  border: 2px solid rgba(144, 240, 192, 0.75);
+  box-shadow: 0 0 18px rgba(144, 240, 192, 0.55);
+}
+
+.forgeWorkbenchScene__impact--miss {
+  border: 2px solid rgba(248, 113, 113, 0.65);
+  box-shadow: 0 0 14px rgba(248, 113, 113, 0.45);
+  background: radial-gradient(circle, rgba(248, 113, 113, 0.2), rgba(248, 113, 113, 0));
+}
+
+.forgeWorkbenchScene__sparkBurst {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  pointer-events: none;
+}
+
+.forgeWorkbenchScene__sparkBurst--perfect {
+  width: 96px;
+  height: 96px;
+}
+
+.forgeWorkbenchScene__sparkBurst--good {
+  width: 80px;
+  height: 80px;
+}
+
+.forgeWorkbenchScene__spark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 232, 164, 0.9);
+  box-shadow: 0 0 10px rgba(255, 232, 164, 0.85);
+  transform: rotate(var(--spark-angle)) translateY(-34px);
+  animation: forgeSparkBurst 320ms ease-out forwards;
+}
+
+.forgeWorkbenchScene__sparkBurst--good .forgeWorkbenchScene__spark {
+  width: 5px;
+  height: 5px;
+  transform: rotate(var(--spark-angle)) translateY(-28px);
+  box-shadow: 0 0 8px rgba(144, 240, 192, 0.75);
+  background: rgba(144, 240, 192, 0.85);
+}
+
+.forgeWorkbenchScene__pulse {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  border-radius: 999px;
+  opacity: 0;
+  animation: forgePulse 260ms ease-out forwards;
+  pointer-events: none;
+}
+
+.forgeWorkbenchScene__pulse--perfect {
+  border: 1px solid rgba(255, 232, 164, 0.8);
+  box-shadow: 0 0 18px rgba(255, 232, 164, 0.55);
+}
+
+.forgeWorkbenchScene__pulse--good {
+  border: 1px solid rgba(144, 240, 192, 0.7);
+  box-shadow: 0 0 14px rgba(144, 240, 192, 0.45);
+}
+
+.forgeWorkbenchScene__pulse--miss {
+  border: 1px solid rgba(248, 113, 113, 0.5);
+  box-shadow: 0 0 12px rgba(248, 113, 113, 0.35);
+  pointer-events: none;
+}
+
+.forgeWorkbenchScene__workpieceShake {
+  position: absolute;
+  width: 70px;
+  height: 18px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  animation: forgeWorkpieceShake 160ms ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes forgeImpactPulse {
+  0% {
+    transform: scale(0.3);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes forgeSparks {
+  0% {
+    transform: scale(0.4);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1.1);
+    opacity: 0;
+  }
+}
+
+@keyframes forgeSparkBurst {
+  0% {
+    transform: rotate(var(--spark-angle)) translateY(-18px) scale(0.4);
+    opacity: 0;
+  }
+  40% {
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(var(--spark-angle)) translateY(-40px) scale(1.2);
+    opacity: 0;
+  }
+}
+
+@keyframes forgePulse {
+  0% {
+    transform: scale(0.4);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.1);
+    opacity: 0;
+  }
+}
+
+@keyframes forgeWorkpieceCool {
+  0% {
+    background: linear-gradient(180deg, #fbbf24 0%, #ea580c 100%);
+    filter: drop-shadow(0 0 12px rgba(251, 146, 60, 0.8));
+  }
+  100% {
+    background: linear-gradient(180deg, #f97316 0%, #b45309 100%);
+    filter: drop-shadow(0 0 4px rgba(248, 113, 113, 0.35));
+  }
+}
+
+@keyframes forgeWorkpieceShake {
+  0% {
+    transform: translate(-2px, -1px) rotate(-1deg);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translate(2px, -3px) rotate(1.5deg);
+    opacity: 0.5;
+  }
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .forgeWorkbenchScene__workpiece {
+    transition: none;
+  }
+
+  .forgeWorkbenchScene__workpiece--cooling,
+  .forgeWorkbenchScene__impact,
+  .forgeWorkbenchScene__spark,
+  .forgeWorkbenchScene__pulse {
+    animation: none;
+  }
+}

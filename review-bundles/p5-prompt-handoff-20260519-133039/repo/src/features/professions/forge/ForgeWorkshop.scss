@@ -1,0 +1,712 @@
+.forgeWorkshop {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  color: var(--forge-ink);
+  --forge-paper: rgba(245, 238, 220, 0.9);
+  --forge-paper-strong: rgba(238, 230, 210, 0.94);
+  --forge-ink: #2b2116;
+  --forge-ink-muted: rgba(43, 33, 22, 0.7);
+  --forge-border: rgba(120, 72, 33, 0.35);
+  --forge-shadow: 0 12px 24px rgba(0, 0, 0, 0.16);
+  --forge-accent: rgba(159, 59, 46, 0.8);
+}
+
+.forgeWorkshop__banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 16px;
+}
+
+.forgeWorkshop__bannerTitle {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.forgeWorkshop__bannerBody {
+  font-size: 13px;
+  color: var(--forge-ink-muted);
+}
+
+.forgeWorkshop__bannerHint {
+  margin-top: 4px;
+  font-size: 12px;
+  color: rgba(145, 58, 37, 0.92);
+}
+
+.forgeWorkshop__bannerActions {
+  display: flex;
+  gap: 8px;
+}
+
+.forgeWorkshop__navButton {
+  background: rgba(251, 244, 228, 0.88);
+  border: 1px solid var(--forge-border);
+  color: var(--forge-ink);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
+}
+
+.forgeWorkshop__navButton:hover {
+  background: rgba(255, 250, 240, 0.96);
+}
+
+.forgeWorkshop .worldScreenModuleButton {
+  background: rgba(251, 244, 228, 0.9);
+  border: 1px solid var(--forge-border);
+  color: var(--forge-ink);
+}
+
+.forgeWorkshop .worldScreenModuleButton--active {
+  background: rgba(252, 245, 232, 0.98);
+  border-color: rgba(120, 72, 33, 0.6);
+  box-shadow: 0 8px 14px rgba(0, 0, 0, 0.14);
+}
+
+.forgeWorkshop__usedFor {
+  margin-left: auto;
+}
+
+.forgeWorkshop__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 16px;
+}
+
+.forgeWorkshop__summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.forgeWorkshop__summaryCard {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.forgeWorkshop__summaryLabel {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--forge-ink-muted);
+}
+
+.forgeWorkshop__summaryRows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.forgeWorkshop__summaryRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.forgeWorkshop__summaryEmpty {
+  font-size: 12px;
+  color: var(--forge-ink-muted);
+}
+
+.forgeWorkshop__materialRow {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.forgeWorkshop__materialCopy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 12px;
+  color: var(--forge-ink-muted);
+}
+
+.forgeWorkshop__materialRouteButton {
+  white-space: nowrap;
+}
+
+.forgeWorkshop__materialRouteText {
+  font-size: 11px;
+  color: var(--forge-ink-muted);
+}
+
+.forgeWorkshop__workbench {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.forgeWorkshop__workbenchFrame {
+  min-height: 380px;
+}
+
+.forgeWorkshop__idleBench {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  color: var(--forge-ink-muted);
+}
+
+.forgeWorkshop__idleTitle {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.forgeWorkshop__idleHint {
+  font-size: 12px;
+  color: var(--forge-ink-muted);
+}
+
+.forgeWorkshop__ctaDisabled {
+  opacity: 0.65;
+}
+
+.forgeWorkshop__status {
+  font-size: 12px;
+  color: var(--forge-ink-muted);
+}
+
+.forgeWorkshop__sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.forgeWorkshop__filters {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.forgeWorkshop__search {
+  border-radius: 10px;
+  padding: 8px 10px;
+  border: 1px solid var(--forge-border);
+  background: rgba(251, 244, 228, 0.85);
+  color: var(--forge-ink);
+}
+
+.forgeWorkshop__chips {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.forgeWorkshop__chip {
+  min-height: 40px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--forge-border);
+  background: rgba(251, 244, 228, 0.75);
+  font-size: 12px;
+  color: var(--forge-ink-muted);
+  text-align: left;
+}
+
+.forgeWorkshop__chip--active {
+  border-color: rgba(120, 72, 33, 0.6);
+  color: var(--forge-ink);
+  background: rgba(252, 245, 232, 0.9);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
+}
+
+.forgeWorkshop__tabCopy {
+  font-size: 12px;
+  color: var(--forge-ink-muted);
+}
+
+.forgeWorkshop__list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.forgeWorkshop__listEmpty {
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px dashed var(--forge-border);
+  background: rgba(251, 244, 228, 0.7);
+  font-size: 12px;
+  color: var(--forge-ink-muted);
+  text-align: center;
+}
+
+.forgeWorkshop__rowButton {
+  border: none;
+  background: transparent;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+}
+
+.forgeWorkshop__rowButton:focus-visible {
+  outline: 2px solid rgba(120, 72, 33, 0.45);
+  outline-offset: 3px;
+}
+
+.forgeWorkshop__rowButton:disabled {
+  cursor: not-allowed;
+}
+
+.forgeWorkshop__row {
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  gap: 10px;
+  text-align: left;
+}
+
+.forgeWorkshop__row--active {
+  border-color: rgba(120, 72, 33, 0.6);
+  box-shadow: 0 0 0 1px rgba(159, 59, 46, 0.2), 0 10px 18px rgba(0, 0, 0, 0.12);
+}
+
+.forgeWorkshop__row--locked {
+  opacity: 0.7;
+}
+
+.forgeWorkshop__rowIcon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(248, 239, 221, 0.8);
+  border: 1px solid var(--forge-border);
+  display: grid;
+  place-items: center;
+  font-weight: 600;
+}
+
+.forgeWorkshop__rowTitle {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.forgeWorkshop__rowMeta {
+  font-size: 12px;
+  color: var(--forge-ink-muted);
+}
+
+.forgeWorkshop__rowLock {
+  font-size: 11px;
+  color: rgba(145, 58, 37, 0.9);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.forgeWorkshop__detail {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.forgeWorkshop__detailHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.forgeWorkshop__detailTitle {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.forgeWorkshop__detailMeta {
+  font-size: 12px;
+  color: var(--forge-ink-muted);
+}
+
+.forgeWorkshop__detailGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.forgeWorkshop__detailSection {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.forgeWorkshop__slotButtons {
+  display: flex;
+  gap: 8px;
+}
+
+.forgeWorkshop__slotButton {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--forge-border);
+  background: rgba(251, 244, 228, 0.8);
+  color: var(--forge-ink);
+  font-size: 12px;
+}
+
+.forgeWorkshop__slotButton--active {
+  border-color: rgba(120, 72, 33, 0.7);
+  background: rgba(252, 245, 232, 0.95);
+  color: var(--forge-ink);
+  box-shadow: 0 0 0 1px rgba(159, 59, 46, 0.2);
+}
+
+.forgeWorkshop__detailLabel {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--forge-ink-muted);
+}
+
+.forgeWorkshop__detailValue {
+  font-size: 12px;
+  color: var(--forge-ink);
+}
+
+.forgeWorkshop__requirementRow {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid var(--forge-border);
+  background: rgba(251, 244, 228, 0.58);
+}
+
+.forgeWorkshop__requirementName {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.forgeWorkshop__requirementCounts,
+.forgeWorkshop__requirementSource {
+  font-size: 11px;
+  color: var(--forge-ink-muted);
+}
+
+.forgeWorkshop__requirementRouteButton {
+  margin-top: 2px;
+  align-self: flex-start;
+  font-size: 11px;
+  padding: 4px 8px;
+}
+
+.forgeWorkshop__detailSection--compare {
+  border: 1px solid var(--forge-border);
+  border-radius: 10px;
+  padding: 8px;
+  background: rgba(251, 244, 228, 0.5);
+}
+
+.forgeWorkshop__compareRows {
+  display: grid;
+  gap: 6px;
+}
+
+.forgeWorkshop__compareRow {
+  display: grid;
+  grid-template-columns: 1fr auto auto auto;
+  gap: 8px;
+  align-items: center;
+  font-size: 12px;
+  color: var(--forge-ink);
+}
+
+.forgeWorkshop__stepSummary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--forge-ink-muted);
+}
+
+.forgeWorkshop__stepPreview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 12px;
+  align-items: center;
+}
+
+.forgeWorkshop__stepPreviewItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--forge-ink-muted);
+}
+
+.forgeWorkshop__stepIcon {
+  display: inline-flex;
+  align-items: center;
+}
+
+.forgeWorkshop__stepLabel {
+  font-size: 12px;
+}
+
+.forgeWorkshop__stepArrow {
+  margin: 0 4px;
+  color: rgba(120, 72, 33, 0.5);
+}
+
+.forgeWorkshop__modeCopy {
+  font-size: 12px;
+  color: var(--forge-ink-muted);
+}
+
+.forgeWorkshop__benefits {
+  border-radius: 10px;
+  padding: 10px;
+  border: 1px dashed var(--forge-border);
+  display: grid;
+  gap: 6px;
+}
+
+.forgeWorkshop__benefitRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+}
+
+.forgeWorkshop__benefitLabel {
+  color: var(--forge-ink-muted);
+}
+
+.forgeWorkshop__benefitValue {
+  color: var(--forge-ink);
+}
+
+.forgeWorkshop__queue {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.forgeWorkshop__queueHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.forgeWorkshop__queueTitle {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.forgeWorkshop__queueSub {
+  font-size: 12px;
+  color: var(--forge-ink-muted);
+}
+
+.forgeWorkshop__queueEmpty {
+  font-size: 12px;
+  color: var(--forge-ink-muted);
+}
+
+.forgeWorkshop__queueList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.forgeWorkshop__queueCard {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.forgeWorkshop__queueRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.forgeWorkshop__queueName {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.forgeWorkshop__queueMeta {
+  font-size: 11px;
+  color: var(--forge-ink-muted);
+}
+
+.forgeWorkshop__queueTiming {
+  font-size: 11px;
+  text-align: right;
+  color: var(--forge-ink-muted);
+}
+
+.forgeWorkshop__queueActions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.forgeWorkshop__queueStatus {
+  font-size: 11px;
+  padding: 6px 8px;
+  border-radius: 8px;
+}
+
+.forgeWorkshop__queueStatus--success {
+  background: rgba(231, 246, 237, 0.9);
+  color: rgba(34, 116, 74, 0.95);
+}
+
+.forgeWorkshop__queueStatus--error {
+  background: rgba(248, 230, 226, 0.9);
+  color: rgba(145, 58, 37, 0.95);
+}
+
+.forgeWorkshop__meter {
+  color: var(--forge-ink);
+}
+
+.forgeWorkshop__meterHeader {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.forgeWorkshop__meterGrid {
+  display: grid;
+  gap: 8px;
+}
+
+.forgeWorkshop__meterRow {
+  display: grid;
+  grid-template-columns: 1fr 160px 48px;
+  gap: 10px;
+  align-items: center;
+  font-size: 12px;
+}
+
+.forgeWorkshop__meterBar {
+  width: 100%;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(120, 72, 33, 0.15);
+  overflow: hidden;
+}
+
+.forgeWorkshop__meterBar span {
+  display: block;
+  height: 100%;
+  background: rgba(120, 72, 33, 0.55);
+}
+
+.forgeWorkshop__meterEmpty {
+  font-size: 12px;
+  color: var(--forge-ink-muted);
+}
+
+.forgeWorkshop__error {
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(145, 58, 37, 0.4);
+  background: rgba(248, 230, 226, 0.9);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.forgeWorkshop__errorTitle {
+  font-weight: 600;
+}
+
+.forgeWorkshop__errorBody {
+  font-size: 12px;
+  color: var(--forge-ink-muted);
+}
+
+.forgeResultModal .modalCard {
+  max-width: 720px;
+}
+
+.forgeResultGrade {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--forge-ink);
+}
+
+.forgeResultGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.forgeResultSection {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.forgeResultRow {
+  font-size: 12px;
+  color: var(--forge-ink-muted);
+  display: flex;
+  justify-content: space-between;
+}
+
+.forgeResultDelta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.forgeResultDeltaRow {
+  display: grid;
+  grid-template-columns: 80px 1fr 70px;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--forge-ink-muted);
+}
+
+.forgeResultDeltaLabel {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 11px;
+}
+
+.forgeResultDeltaValues {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.forgeResultDeltaArrow {
+  color: rgba(120, 72, 33, 0.6);
+}
+
+.forgeResultDeltaValue {
+  text-align: right;
+  font-weight: 600;
+  color: var(--forge-ink);
+}
+
+@media (max-width: 1000px) {
+  .forgeWorkshop__body {
+    grid-template-columns: 1fr;
+  }
+
+  .forgeWorkshop__banner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .forgeWorkshop__bannerActions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .forgeWorkshop__chips {
+    grid-template-columns: 1fr;
+  }
+}

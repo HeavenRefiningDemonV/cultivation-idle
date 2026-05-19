@@ -1,0 +1,94 @@
+import { useEffect, useState } from 'react';
+import { GameLayout } from './components/GameLayout.js';
+import { ContentInitGate } from './components/system/ContentInitGate.js';
+import { initializeGame } from './systems/gameLoop.js';
+import { useShopStore } from './stores/shopStore.js';
+import paperTexture from "./assets/texture_overlay.png";
+import { GameIcon } from './ui/icons/index.js';
+import './App.scss';
+
+/**
+ * Main App component
+ */
+function App() {
+  const [gameInitialized, setGameInitialized] = useState(false);
+  const [initError, setInitError] = useState<string | null>(null);
+
+  // Initialize game on mount
+  useEffect(() => {
+    console.log('[App] Initializing game...');
+
+    try {
+      const success = initializeGame();
+
+      if (success) {
+        console.log('[App] Game initialized successfully');
+        setGameInitialized(true);
+      } else {
+        console.error('[App] Game initialization failed');
+        setInitError('Failed to initialize game. Please refresh the page.');
+      }
+    } catch (error) {
+      console.error('[App] Game initialization error:', error);
+      setInitError(`Game initialization error: ${error}`);
+    }
+  }, []); // Run once on mount
+
+  useEffect(() => {
+    if (!gameInitialized) return;
+
+    const ensureDayKey = useShopStore.getState().ensureDayKeyCurrent;
+    ensureDayKey();
+    const intervalId = window.setInterval(() => ensureDayKey(), 60000);
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [gameInitialized]);
+
+  // Show error screen if initialization failed
+  if (initError) {
+    return (
+      <div className={'appShell'}>
+        <div className={'appMessageCard'}>
+          <div className={'appHeroIcon'}>
+            <GameIcon icon="inkWarning" size={64} decorative />
+          </div>
+          <h1 className={'appTitle'}>Initialization Error</h1>
+          <p className={'appSubtext'}>{initError}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className={'button-standard appPrimaryButton'}
+          >
+            Reload Page
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Show loading screen while initializing
+  if (!gameInitialized) {
+    return (
+      <div className={'appShell'}>
+        <div className={'appMessageCard'}>
+          <div className={'appHeroIcon'}>
+            <GameIcon icon="inkBolt" size={64} decorative className="appLoader" />
+          </div>
+          <h1 className={'appTitle'}>Cultivation Idle</h1>
+          <p className={'appSubtext'}>Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Render game layout once initialized
+  return (
+    <ContentInitGate>
+      <img className="paper-texture" src={paperTexture}></img>
+      <GameLayout />
+    </ContentInitGate>
+  );
+}
+
+export default App;

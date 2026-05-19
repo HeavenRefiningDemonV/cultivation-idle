@@ -1,0 +1,132 @@
+.gameLayoutRoot {
+  position: relative;
+  min-width: 100vw;
+  min-height: 100vh;
+  background-image: url('../assets/background/cbg_bgblue.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+}
+
+.gameLayoutRoot--world {
+  background-image: url('../assets/background/citystates/citygreen.png');
+}
+
+.gameLayoutRoot--techniques {
+  background-image: url('../assets/background/tech.png');
+}
+
+.gameLayoutRoot--records {
+  background-image: none;
+  overflow: hidden;
+}
+
+.gameLayoutBackgroundOverlay {
+  position: fixed;
+  inset: 0;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  pointer-events: none;
+  opacity: 0.96;
+  transition: opacity 120ms ease;
+  z-index: 0;
+}
+
+.gameLayoutTextureOverlay {
+  position: fixed;
+  inset: 0;
+  background-image: url('../assets/texture_overlay.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  pointer-events: none;
+  opacity: 0.25;
+  mix-blend-mode: overlay;
+  z-index: 0;
+}
+
+.gameLayoutContent {
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+  height: calc(100vh - var(--ui-bottom-nav-total));
+  width: 100vw;
+
+}
+
+.gameLayoutRoot--cultivation .gameLayoutContent {
+  height: 100vh;
+  width: 100vw;
+  padding-bottom: var(--ui-bottom-nav-total);
+  overflow: hidden;
+}
+
+.gameLayoutRoot--cultivation .cultivationExactFxStage,
+.gameLayoutRoot--cultivation .cultivationExactFxStage__content,
+.gameLayoutRoot--cultivation .cultivationExactPage {
+  height: 100vh;
+  min-height: 100%;
+}
+
+.gameLayoutRoot--records .gameLayoutContent {
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+.gameLayoutRoot--records .gameLayoutTextureOverlay {
+  opacity: 0;
+}
+
+.gameLayoutContent--scrollable {
+  overflow-y: auto;
+  scrollbar-gutter: stable both-edges;
+}
+
+@supports not (scrollbar-gutter: stable) {
+  .gameLayoutContent--scrollable {
+    overflow-y: scroll;
+  }
+}
+
+.gameLayoutPlaceholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  height: 100%;
+}
+
+.gameLayoutPlaceholderCard {
+  text-align: center;
+}
+
+.gameLayoutPlaceholderIcon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.gameLayoutPlaceholderTitle {
+  font-size: 24px;
+  font-weight: 700;
+  color: #e8e8e8;
+  margin-bottom: 12px;
+}
+
+.gameLayoutPlaceholderText {
+  color: #6b6b6b;
+  font-size: 16px;
+}
+
+@media (max-width: 1024px) {
+  .gameLayoutMain {
+    margin-left: 0;
+    padding-top: calc(40px + 20px);
+  }
+}

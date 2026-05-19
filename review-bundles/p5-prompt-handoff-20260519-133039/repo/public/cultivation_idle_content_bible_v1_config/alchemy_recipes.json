@@ -1,0 +1,320 @@
+{
+  "version": "1.0",
+  "recipes": [
+    {
+      "id": "alc_healing_pellet_t1",
+      "unlocksAtCityId": "city_pinewind_hamlet",
+      "station": "alchemy",
+      "timeSec": 30,
+      "inputs": {
+        "mat_common_herb_bundle": 2,
+        "mat_beast_blood": 1
+      },
+      "outputs": {
+        "cons_healing_pellet_t1": 3
+      },
+      "assistedPrompts": [
+        {
+          "id": "stab_flame_first",
+          "type": "STABILIZE_FLAME",
+          "atPct": 0.33,
+          "windowSec": 8,
+          "bonus": {
+            "yieldPct": 2
+          },
+          "ui": {
+            "title": "Stabilize the flame",
+            "body": "Hold the flame steady during the simmer to earn a small yield bonus."
+          }
+        },
+        {
+          "id": "add_catalyst_finish",
+          "type": "ADD_CATALYST",
+          "atPct": 0.75,
+          "windowSec": 10,
+          "bonus": {
+            "yieldPct": 2
+          },
+          "ui": {
+            "title": "Add the catalyst",
+            "body": "Guide the catalyst into the cauldron at the right moment for a slight yield boost."
+          }
+        }
+      ]
+    },
+    {
+      "id": "alc_qi_elixir_t1",
+      "unlocksAtCityId": "city_pinewind_hamlet",
+      "station": "alchemy",
+      "timeSec": 60,
+      "inputs": {
+        "mat_common_herb_bundle": 3,
+        "mat_spirit_leaf": 1
+      },
+      "outputs": {
+        "cons_qi_elixir_t1": 1
+      }
+    },
+    {
+      "id": "alc_ironblood_pellet_t1",
+      "unlocksAtCityId": "city_pinewind_hamlet",
+      "station": "alchemy",
+      "timeSec": 60,
+      "inputs": {
+        "mat_beast_blood": 2,
+        "mat_beast_bone": 1
+      },
+      "outputs": {
+        "cons_ironblood_pellet_t1": 1
+      }
+    },
+    {
+      "id": "alc_reagent_soul_ink_t0",
+      "unlocksAtCityId": "city_pinewind_hamlet",
+      "station": "alchemy",
+      "timeSec": 90,
+      "inputs": {
+        "mat_spirit_leaf": 2,
+        "mat_beast_bone": 1
+      },
+      "outputs": {
+        "reagent_soul_ink_t0": 1
+      }
+    },
+    {
+      "id": "alc_windstep_powder_t1",
+      "unlocksAtCityId": "city_stonecrag_town",
+      "station": "alchemy",
+      "timeSec": 90,
+      "inputs": {
+        "mat_iron_sand": 2,
+        "mat_spirit_leaf": 1
+      },
+      "outputs": {
+        "cons_windstep_powder_t1": 1
+      }
+    },
+    {
+      "id": "alc_meridian_warmth_draft_t1",
+      "unlocksAtCityId": "city_stonecrag_town",
+      "station": "alchemy",
+      "timeSec": 120,
+      "inputs": {
+        "mat_common_herb_bundle": 2,
+        "mat_earth_essence": 1
+      },
+      "outputs": {
+        "cons_meridian_warmth_draft_t1": 1
+      }
+    },
+    {
+      "id": "alc_ward_salt_t1",
+      "unlocksAtCityId": "city_stonecrag_town",
+      "station": "alchemy",
+      "timeSec": 120,
+      "inputs": {
+        "mat_earth_essence": 1,
+        "mat_stone_chunk": 2
+      },
+      "outputs": {
+        "cons_ward_salt_t1": 1
+      }
+    },
+    {
+      "id": "alc_reagent_quenching_oil_t1",
+      "unlocksAtCityId": "city_stonecrag_town",
+      "station": "alchemy",
+      "timeSec": 150,
+      "inputs": {
+        "mat_fire_ash": 2,
+        "mat_quarry_ore": 1
+      },
+      "outputs": {
+        "reagent_quenching_oil_t1": 1
+      }
+    },
+    {
+      "id": "alc_qi_elixir_t2",
+      "unlocksAtCityId": "city_spirit_cavern_city",
+      "station": "alchemy",
+      "timeSec": 150,
+      "inputs": {
+        "mat_core_fragment": 2,
+        "mat_common_herb_bundle": 2
+      },
+      "outputs": {
+        "cons_qi_elixir_t2": 1
+      }
+    },
+    {
+      "id": "alc_reagent_soul_ink_t1",
+      "unlocksAtCityId": "city_spirit_cavern_city",
+      "station": "alchemy",
+      "timeSec": 180,
+      "inputs": {
+        "mat_aura_residue": 2,
+        "mat_spirit_leaf": 1
+      },
+      "outputs": {
+        "reagent_soul_ink_t1": 1
+      }
+    },
+    {
+      "id": "alc_reagent_spirit_solvent_t1",
+      "unlocksAtCityId": "city_spirit_cavern_city",
+      "station": "alchemy",
+      "timeSec": 200,
+      "inputs": {
+        "mat_crystal_shard": 2,
+        "mat_aura_residue": 1
+      },
+      "outputs": {
+        "reagent_spirit_solvent_t1": 1
+      }
+    },
+    {
+      "id": "alc_focus_tonic_t1",
+      "unlocksAtCityId": "city_spirit_cavern_city",
+      "station": "alchemy",
+      "timeSec": 180,
+      "inputs": {
+        "mat_spirit_stone_chunk": 1,
+        "mat_aura_residue": 1
+      },
+      "outputs": {
+        "cons_focus_tonic_t1": 1
+      }
+    },
+    {
+      "id": "alc_quiet_breath_tea_t1",
+      "unlocksAtCityId": "city_lotusford",
+      "station": "alchemy",
+      "timeSec": 240,
+      "inputs": {
+        "mat_mist_pearl": 2,
+        "mat_common_herb_bundle": 2
+      },
+      "outputs": {
+        "cons_quiet_breath_tea_t1": 1
+      }
+    },
+    {
+      "id": "alc_anti_venom_pellet_t1",
+      "unlocksAtCityId": "city_lotusford",
+      "station": "alchemy",
+      "timeSec": 220,
+      "inputs": {
+        "mat_venom_sac": 2,
+        "mat_lotus_pollen": 1
+      },
+      "outputs": {
+        "cons_anti_venom_pellet_t1": 1
+      }
+    },
+    {
+      "id": "alc_reagent_soul_ink_t2",
+      "unlocksAtCityId": "city_lotusford",
+      "station": "alchemy",
+      "timeSec": 260,
+      "inputs": {
+        "mat_soul_ember": 2,
+        "mat_aura_residue": 2
+      },
+      "outputs": {
+        "reagent_soul_ink_t2": 1
+      }
+    },
+    {
+      "id": "alc_purity_elixir_t1",
+      "unlocksAtCityId": "city_lotusford",
+      "station": "alchemy",
+      "timeSec": 300,
+      "inputs": {
+        "mat_seed_ancient": 1,
+        "mat_lotus_pollen": 2
+      },
+      "outputs": {
+        "cons_purity_elixir_t1": 1
+      }
+    },
+    {
+      "id": "alc_ironblood_pellet_t2",
+      "unlocksAtCityId": "city_ironpeak_bastion",
+      "station": "alchemy",
+      "timeSec": 300,
+      "inputs": {
+        "mat_blade_core": 2,
+        "mat_beast_blood": 2
+      },
+      "outputs": {
+        "cons_ironblood_pellet_t2": 1
+      }
+    },
+    {
+      "id": "alc_windstep_powder_t2",
+      "unlocksAtCityId": "city_ironpeak_bastion",
+      "station": "alchemy",
+      "timeSec": 300,
+      "inputs": {
+        "mat_thunder_sand": 2,
+        "mat_mist_pearl": 1
+      },
+      "outputs": {
+        "cons_windstep_powder_t2": 1
+      }
+    },
+    {
+      "id": "alc_ward_salt_t2",
+      "unlocksAtCityId": "city_ironpeak_bastion",
+      "station": "alchemy",
+      "timeSec": 320,
+      "inputs": {
+        "mat_furnace_cinder": 2,
+        "mat_earth_essence": 1
+      },
+      "outputs": {
+        "cons_ward_salt_t2": 1
+      }
+    },
+    {
+      "id": "alc_reagent_quenching_oil_t2",
+      "unlocksAtCityId": "city_ironpeak_bastion",
+      "station": "alchemy",
+      "timeSec": 240,
+      "inputs": {
+        "mat_furnace_cinder": 2,
+        "mat_thunder_sand": 1
+      },
+      "outputs": {
+        "reagent_quenching_oil_t2": 1
+      }
+    },
+    {
+      "id": "alc_mastery_tonic_t1",
+      "unlocksAtCityId": "city_ironpeak_bastion",
+      "station": "alchemy",
+      "timeSec": 350,
+      "inputs": {
+        "mat_spirit_stone_chunk": 2,
+        "reagent_soul_ink_t2": 1
+      },
+      "outputs": {
+        "cons_mastery_tonic_t1": 1
+      }
+    },
+    {
+      "id": "alc_tribulation_buffer_t1",
+      "unlocksAtCityId": "city_ironpeak_bastion",
+      "station": "alchemy",
+      "timeSec": 400,
+      "inputs": {
+        "mat_artifact_shard": 3,
+        "mat_soul_ember": 2
+      },
+      "outputs": {
+        "cons_tribulation_buffer_t1": 1
+      },
+      "note": "Future-proof"
+    }
+  ]
+}

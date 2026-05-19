@@ -1,0 +1,187 @@
+.lifeSummaryModal .ritualModalFrame__panel {
+  width: min(940px, 96vw);
+}
+
+.lifeSummaryModal__seal {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  border: 1px solid rgba(120, 72, 33, 0.28);
+  background: radial-gradient(circle, rgba(246, 230, 206, 0.95) 0%, rgba(232, 208, 175, 0.84) 72%, rgba(216, 186, 148, 0.35) 100%);
+  display: grid;
+  place-items: center;
+}
+
+.lifeSummaryModal__seal span {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid rgba(120, 72, 33, 0.35);
+}
+
+.lifeSummaryModal__body {
+  display: grid;
+  gap: 12px;
+}
+
+.lifeSummaryModal__modeStrip {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid rgba(120, 72, 33, 0.22);
+  border-radius: 12px;
+  background: rgba(255, 249, 238, 0.95);
+  padding: 10px;
+}
+
+.lifeSummaryModal__modeBadge {
+  border-radius: 999px;
+  border: 1px solid rgba(120, 72, 33, 0.35);
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(62, 30, 6, 0.9);
+  background: rgba(248, 236, 214, 0.95);
+}
+
+.lifeSummaryModal__capturedAt {
+  font-size: 12px;
+  color: rgba(72, 45, 18, 0.7);
+  min-height: 16px;
+}
+
+.lifeSummaryModal__meta {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.lifeSummaryModal__metaItem {
+  border: 1px solid rgba(120, 72, 33, 0.24);
+  border-radius: 12px;
+  background: rgba(255, 249, 238, 0.95);
+  padding: 10px;
+  display: grid;
+  gap: 4px;
+}
+
+.lifeSummaryModal__metaLabel {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(72, 45, 18, 0.72);
+}
+
+.lifeSummaryModal__metaValue {
+  font-size: 15px;
+  font-weight: 700;
+  color: rgba(52, 31, 11, 0.95);
+}
+
+.lifeSummaryModal__blocks {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.lifeSummaryModal__block {
+  border: 1px solid rgba(120, 72, 33, 0.24);
+  border-radius: 12px;
+  background: rgba(255, 249, 238, 0.95);
+  padding: 12px;
+  min-height: 124px;
+}
+
+.lifeSummaryModal__block h3 {
+  margin: 0 0 6px;
+  font-size: 15px;
+  color: rgba(62, 30, 6, 0.9);
+}
+
+.lifeSummaryModal__block ul {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 4px;
+  color: rgba(62, 30, 6, 0.88);
+}
+
+.lifeSummaryModal__empty {
+  border: 1px solid rgba(120, 72, 33, 0.24);
+  border-radius: 12px;
+  background: rgba(255, 249, 238, 0.95);
+  color: rgba(62, 30, 6, 0.88);
+  padding: 12px;
+}
+
+.lifeSummaryModal__actionLane {
+  display: grid;
+  gap: 8px;
+}
+
+.lifeSummaryModal__status {
+  margin: 0;
+  min-height: 18px;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(72, 45, 18, 0.76);
+}
+
+.lifeSummaryModal__actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.lifeSummaryModal__action {
+  border-radius: 12px;
+  border: 1px solid rgba(120, 72, 33, 0.4);
+  color: #2b2116;
+  font-weight: 700;
+  padding: 9px 14px;
+  cursor: pointer;
+  min-height: 42px;
+  --ui-no-shift-border: 1px;
+  --ui-no-shift-outline-active: 2px solid rgba(62, 30, 6, 0.5);
+  --ui-no-shift-outline-offset: 2px;
+  transition: background-color 0.16s ease-out, box-shadow 0.16s ease-out, opacity 0.16s ease-out;
+}
+
+.lifeSummaryModal__action--primary {
+  background: rgba(236, 211, 175, 0.96);
+  box-shadow: 0 2px 8px rgba(84, 54, 22, 0.16);
+}
+
+.lifeSummaryModal__action--tertiary {
+  background: rgba(236, 228, 214, 0.9);
+}
+
+@media (max-width: 900px) {
+  .lifeSummaryModal__meta,
+  .lifeSummaryModal__blocks {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .lifeSummaryModal__modeStrip {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .lifeSummaryModal__actions {
+    flex-direction: column-reverse;
+  }
+
+  .lifeSummaryModal__action {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lifeSummaryModal__action {
+    transition: none;
+  }
+}

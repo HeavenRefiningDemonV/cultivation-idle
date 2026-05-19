@@ -1,0 +1,959 @@
+{
+  "version": "1.0",
+  "affinityRules": {
+    "matchBonusByTier": {
+      "starter": 0.1,
+      "tier1": 0.14,
+      "tier2": 0.18,
+      "tier3": 0.22
+    },
+    "mismatchPenalty": 0.05,
+    "appliesTo": "signatureOnly"
+  },
+  "heartLaws": [
+    {
+      "id": "heart_quiet_breath_method",
+      "name": "Quiet Breath Method",
+      "tier": "starter",
+      "archetype": "steady",
+      "daoTags": [
+        "neutral",
+        "breath"
+      ],
+      "spiritRootAffinities": [
+        "any"
+      ],
+      "signature": {
+        "cultivateQiMult": 0.1,
+        "offlineEfficiencyAdd": 0.05,
+        "stabilityCostMult": -0.03
+      },
+      "chapters": [
+        {
+          "chapter": 1,
+          "effects": {
+            "cultivateQiMult": 0.1
+          }
+        },
+        {
+          "chapter": 2,
+          "effects": {
+            "offlineEfficiencyAdd": 0.05
+          }
+        },
+        {
+          "chapter": 3,
+          "effects": {
+            "maxQiMult": 0.06
+          }
+        },
+        {
+          "chapter": 4,
+          "effects": {
+            "combatDamageMult": 0.04
+          }
+        },
+        {
+          "chapter": 5,
+          "effects": {
+            "techniqueMasteryGainMult": 0.06
+          }
+        }
+      ]
+    },
+    {
+      "id": "heart_stone_root_tempering",
+      "name": "Stone Root Tempering",
+      "tier": "starter",
+      "archetype": "steady",
+      "daoTags": [
+        "earth",
+        "body"
+      ],
+      "spiritRootAffinities": [
+        "earth",
+        "metal"
+      ],
+      "signature": {
+        "maxHpMult": 0.12,
+        "defMult": 0.1,
+        "cultivateQiMult": -0.03
+      },
+      "chapters": [
+        {
+          "chapter": 1,
+          "effects": {
+            "maxHpMult": 0.12
+          }
+        },
+        {
+          "chapter": 2,
+          "effects": {
+            "defMult": 0.1
+          }
+        },
+        {
+          "chapter": 3,
+          "effects": {
+            "damageReduction": 0.03
+          }
+        },
+        {
+          "chapter": 4,
+          "effects": {
+            "forgeSpeed": 0.06
+          }
+        },
+        {
+          "chapter": 5,
+          "effects": {
+            "bossDamageTakenMult": -0.05
+          }
+        }
+      ]
+    },
+    {
+      "id": "heart_ember_thread_sutra",
+      "name": "Ember Thread Sutra",
+      "tier": "starter",
+      "archetype": "burst",
+      "daoTags": [
+        "fire",
+        "flame"
+      ],
+      "spiritRootAffinities": [
+        "fire",
+        "wood"
+      ],
+      "signature": {
+        "cultivationCharge": {
+          "resourceId": "ember",
+          "gainPerCultivateMinute": 1,
+          "cap": 60
+        },
+        "combatOpenerBuff": {
+          "durationSec": 10,
+          "atkMultPer10Charge": 0.02,
+          "burnChanceAdd": 0.1
+        }
+      },
+      "chapters": [
+        {
+          "chapter": 1,
+          "effects": {
+            "emberCapAdd": 20
+          }
+        },
+        {
+          "chapter": 2,
+          "effects": {
+            "combatOpenerAtkMultAddPer10Charge": 0.01
+          }
+        },
+        {
+          "chapter": 3,
+          "effects": {
+            "burnDamageMult": 0.1
+          }
+        },
+        {
+          "chapter": 4,
+          "effects": {
+            "heavenManualDropChance": 0.02,
+            "note": "small flavor; cap in code"
+          }
+        },
+        {
+          "chapter": 5,
+          "effects": {
+            "combatOpenerDurationAddSec": 4
+          }
+        }
+      ]
+    },
+    {
+      "id": "heart_river_mirror_art",
+      "name": "River Mirror Art",
+      "tier": "starter",
+      "archetype": "steady",
+      "daoTags": [
+        "water",
+        "mirror"
+      ],
+      "spiritRootAffinities": [
+        "water"
+      ],
+      "signature": {
+        "cooldownMult": -0.04,
+        "shieldStrength": 0.06
+      },
+      "chapters": [
+        {
+          "chapter": 1,
+          "effects": {
+            "cooldownMult": -0.04
+          }
+        },
+        {
+          "chapter": 2,
+          "effects": {
+            "shieldStrength": 0.06
+          }
+        },
+        {
+          "chapter": 3,
+          "effects": {
+            "dodgeAddPctPoints": 3
+          }
+        },
+        {
+          "chapter": 4,
+          "effects": {
+            "poisonResist": 0.1
+          }
+        },
+        {
+          "chapter": 5,
+          "effects": {
+            "bossUltimateDamageTakenMult": -0.06
+          }
+        }
+      ]
+    },
+    {
+      "id": "heart_verdant_pulse_canon",
+      "name": "Verdant Pulse Canon",
+      "tier": "starter",
+      "archetype": "artisan",
+      "daoTags": [
+        "wood",
+        "life"
+      ],
+      "spiritRootAffinities": [
+        "wood"
+      ],
+      "signature": {
+        "herbYieldMult": 0.12,
+        "regenMult": 0.08
+      },
+      "chapters": [
+        {
+          "chapter": 1,
+          "effects": {
+            "herbYieldMult": 0.12
+          }
+        },
+        {
+          "chapter": 2,
+          "effects": {
+            "regenMult": 0.08
+          }
+        },
+        {
+          "chapter": 3,
+          "effects": {
+            "alchemyYieldMult": 0.06
+          }
+        },
+        {
+          "chapter": 4,
+          "effects": {
+            "poisonDamageMult": 0.1
+          }
+        },
+        {
+          "chapter": 5,
+          "effects": {
+            "cultivateQiMult": 0.06
+          }
+        }
+      ]
+    },
+    {
+      "id": "heart_iron_intent_scripture",
+      "name": "Iron Intent Scripture",
+      "tier": "starter",
+      "archetype": "burst",
+      "daoTags": [
+        "metal",
+        "weapon"
+      ],
+      "spiritRootAffinities": [
+        "metal",
+        "earth"
+      ],
+      "signature": {
+        "critDmgMult": 0.12,
+        "intentMaxAdd": 8,
+        "cultivateQiMult": -0.02
+      },
+      "chapters": [
+        {
+          "chapter": 1,
+          "effects": {
+            "critDmgMult": 0.12
+          }
+        },
+        {
+          "chapter": 2,
+          "effects": {
+            "intentMaxAdd": 8
+          }
+        },
+        {
+          "chapter": 3,
+          "effects": {
+            "martialDamageMult": 0.06
+          }
+        },
+        {
+          "chapter": 4,
+          "effects": {
+            "forgeSpeed": 0.08
+          }
+        },
+        {
+          "chapter": 5,
+          "effects": {
+            "critChanceAddPctPoints": 4
+          }
+        }
+      ]
+    },
+    {
+      "id": "heart_heaven_flame_manual",
+      "name": "Heaven Flame Manual",
+      "tier": "tier1",
+      "archetype": "burst",
+      "daoTags": [
+        "fire",
+        "heaven"
+      ],
+      "spiritRootAffinities": [
+        "fire",
+        "lightning"
+      ],
+      "signature": {
+        "cultivateQiMult": 0.12,
+        "combatFireDamageMult": 0.1,
+        "combatOpenerBuff": {
+          "durationSec": 12,
+          "atkMult": 0.08,
+          "burnStacksOnHit": 1
+        }
+      },
+      "chapters": [
+        {
+          "chapter": 1,
+          "effects": {
+            "cultivateQiMult": 0.12
+          }
+        },
+        {
+          "chapter": 2,
+          "effects": {
+            "combatFireDamageMult": 0.1
+          }
+        },
+        {
+          "chapter": 3,
+          "effects": {
+            "heavenCostMult": -0.06
+          }
+        },
+        {
+          "chapter": 4,
+          "effects": {
+            "burnMaxStacksAdd": 1
+          }
+        },
+        {
+          "chapter": 5,
+          "effects": {
+            "ultimateCooldownMult": -0.08
+          }
+        }
+      ]
+    },
+    {
+      "id": "heart_black_tortoise_codex",
+      "name": "Black Tortoise Body Codex",
+      "tier": "tier1",
+      "archetype": "steady",
+      "daoTags": [
+        "earth",
+        "water",
+        "body"
+      ],
+      "spiritRootAffinities": [
+        "earth",
+        "water"
+      ],
+      "signature": {
+        "defMult": 0.14,
+        "damageReduction": 0.04,
+        "stabilityCostMult": -0.08
+      },
+      "chapters": [
+        {
+          "chapter": 1,
+          "effects": {
+            "defMult": 0.14
+          }
+        },
+        {
+          "chapter": 2,
+          "effects": {
+            "damageReduction": 0.04
+          }
+        },
+        {
+          "chapter": 3,
+          "effects": {
+            "stabilityCostMult": -0.08
+          }
+        },
+        {
+          "chapter": 4,
+          "effects": {
+            "shieldStrength": 0.1
+          }
+        },
+        {
+          "chapter": 5,
+          "effects": {
+            "bossDamageTakenMult": -0.08
+          }
+        }
+      ]
+    },
+    {
+      "id": "heart_sword_river_heart_law",
+      "name": "Sword-River Heart Law",
+      "tier": "tier1",
+      "archetype": "steady",
+      "daoTags": [
+        "metal",
+        "water",
+        "sword"
+      ],
+      "spiritRootAffinities": [
+        "metal",
+        "water"
+      ],
+      "signature": {
+        "techniqueMasteryGainMult": 0.12,
+        "critChanceAddPctPoints": 3,
+        "cooldownMult": -0.03
+      },
+      "chapters": [
+        {
+          "chapter": 1,
+          "effects": {
+            "techniqueMasteryGainMult": 0.12
+          }
+        },
+        {
+          "chapter": 2,
+          "effects": {
+            "critChanceAddPctPoints": 3
+          }
+        },
+        {
+          "chapter": 3,
+          "effects": {
+            "cooldownMult": -0.03
+          }
+        },
+        {
+          "chapter": 4,
+          "effects": {
+            "critDmgMult": 0.1
+          }
+        },
+        {
+          "chapter": 5,
+          "effects": {
+            "ruinsFragmentGainMult": 0.08,
+            "cap": 0.08
+          }
+        }
+      ]
+    },
+    {
+      "id": "heart_stormstep_diagram",
+      "name": "Stormstep Diagram",
+      "tier": "tier1",
+      "archetype": "burst",
+      "daoTags": [
+        "wind",
+        "lightning",
+        "movement"
+      ],
+      "spiritRootAffinities": [
+        "lightning",
+        "wind"
+      ],
+      "signature": {
+        "hasteMult": 0.08,
+        "dodgeAddPctPoints": 4,
+        "combatFirstBossKillBonus": {
+          "type": "extraBossChest",
+          "chance": 0.1,
+          "capPerHour": 2
+        }
+      },
+      "chapters": [
+        {
+          "chapter": 1,
+          "effects": {
+            "hasteMult": 0.08
+          }
+        },
+        {
+          "chapter": 2,
+          "effects": {
+            "dodgeAddPctPoints": 4
+          }
+        },
+        {
+          "chapter": 3,
+          "effects": {
+            "critChanceAddPctPoints": 3
+          }
+        },
+        {
+          "chapter": 4,
+          "effects": {
+            "combatDamageMult": 0.06
+          }
+        },
+        {
+          "chapter": 5,
+          "effects": {
+            "bossRespawnTimeMult": -0.1
+          }
+        }
+      ]
+    },
+    {
+      "id": "heart_soul_lantern_sutra",
+      "name": "Soul Lantern Sutra",
+      "tier": "tier2",
+      "archetype": "mystic",
+      "daoTags": [
+        "soul",
+        "mystic"
+      ],
+      "spiritRootAffinities": [
+        "soul",
+        "water"
+      ],
+      "signature": {
+        "bossKillLantern": {
+          "resourceId": "lantern",
+          "gainPerBossKill": 1,
+          "cap": 20
+        },
+        "manualFragmentBonusPerLantern": 0.01,
+        "maxLanternBonus": 0.2
+      },
+      "chapters": [
+        {
+          "chapter": 1,
+          "effects": {
+            "lanternCapAdd": 10
+          }
+        },
+        {
+          "chapter": 2,
+          "effects": {
+            "manualFragmentBonusPerLantern": 0.01
+          }
+        },
+        {
+          "chapter": 3,
+          "effects": {
+            "ruinsFragmentGainMult": 0.1,
+            "cap": 0.1
+          }
+        },
+        {
+          "chapter": 4,
+          "effects": {
+            "soulDamageMult": 0.12
+          }
+        },
+        {
+          "chapter": 5,
+          "effects": {
+            "bossChestManualDropChanceAdd": 0.03
+          }
+        }
+      ]
+    },
+    {
+      "id": "heart_bloodseal_scripture",
+      "name": "Bloodseal Scripture",
+      "tier": "tier2",
+      "archetype": "risk",
+      "daoTags": [
+        "blood",
+        "demon"
+      ],
+      "spiritRootAffinities": [
+        "fire",
+        "metal"
+      ],
+      "signature": {
+        "cultivateQiMult": 0.18,
+        "stabilityCostMult": 0.1,
+        "combatDamageMult": 0.08
+      },
+      "chapters": [
+        {
+          "chapter": 1,
+          "effects": {
+            "cultivateQiMult": 0.18
+          }
+        },
+        {
+          "chapter": 2,
+          "effects": {
+            "stabilityCostMult": 0.1
+          }
+        },
+        {
+          "chapter": 3,
+          "effects": {
+            "combatDamageMult": 0.08
+          }
+        },
+        {
+          "chapter": 4,
+          "effects": {
+            "lifestealMaxHpPct": 0.006
+          }
+        },
+        {
+          "chapter": 5,
+          "effects": {
+            "bossDamageMult": 0.1
+          }
+        }
+      ]
+    },
+    {
+      "id": "heart_void_palm_record",
+      "name": "Void Palm Record",
+      "tier": "tier2",
+      "archetype": "mystic",
+      "daoTags": [
+        "void",
+        "space"
+      ],
+      "spiritRootAffinities": [
+        "void",
+        "metal"
+      ],
+      "signature": {
+        "voidWindow": {
+          "everySec": 22,
+          "durationSec": 4,
+          "ignoreDefPct": 0.25
+        }
+      },
+      "chapters": [
+        {
+          "chapter": 1,
+          "effects": {
+            "voidWindowIgnoreDefPct": 0.25
+          }
+        },
+        {
+          "chapter": 2,
+          "effects": {
+            "voidWindowDurationAddSec": 2
+          }
+        },
+        {
+          "chapter": 3,
+          "effects": {
+            "cooldownMult": -0.04
+          }
+        },
+        {
+          "chapter": 4,
+          "effects": {
+            "bossDamageMult": 0.08
+          }
+        },
+        {
+          "chapter": 5,
+          "effects": {
+            "voidDamageMult": 0.15
+          }
+        }
+      ]
+    },
+    {
+      "id": "heart_moment_thread_chronicle",
+      "name": "Moment-Thread Chronicle",
+      "tier": "tier2",
+      "archetype": "mystic",
+      "daoTags": [
+        "time",
+        "mystic"
+      ],
+      "spiritRootAffinities": [
+        "time",
+        "water"
+      ],
+      "signature": {
+        "cooldownRefundChance": 0.08,
+        "cooldownRefundPct": 0.25
+      },
+      "chapters": [
+        {
+          "chapter": 1,
+          "effects": {
+            "cooldownRefundChance": 0.08
+          }
+        },
+        {
+          "chapter": 2,
+          "effects": {
+            "cooldownRefundPct": 0.25
+          }
+        },
+        {
+          "chapter": 3,
+          "effects": {
+            "hasteMult": 0.06
+          }
+        },
+        {
+          "chapter": 4,
+          "effects": {
+            "techniqueMasteryGainMult": 0.1
+          }
+        },
+        {
+          "chapter": 5,
+          "effects": {
+            "bossUltimateWarningAddSec": 1,
+            "note": "utility flavor"
+          }
+        }
+      ]
+    },
+    {
+      "id": "heart_nine_heavens_scripture",
+      "name": "Nine Heavens Scripture",
+      "tier": "tier3",
+      "archetype": "risk",
+      "daoTags": [
+        "heaven",
+        "light"
+      ],
+      "spiritRootAffinities": [
+        "lightning",
+        "fire"
+      ],
+      "signature": {
+        "cultivateQiMult": 0.16,
+        "breakthroughRequirementMult": -0.06,
+        "stabilityCostMult": 0.06
+      },
+      "chapters": [
+        {
+          "chapter": 1,
+          "effects": {
+            "cultivateQiMult": 0.16
+          }
+        },
+        {
+          "chapter": 2,
+          "effects": {
+            "breakthroughRequirementMult": -0.06
+          }
+        },
+        {
+          "chapter": 3,
+          "effects": {
+            "ultimateDamageMult": 0.1
+          }
+        },
+        {
+          "chapter": 4,
+          "effects": {
+            "bossDamageTakenMult": -0.06
+          }
+        },
+        {
+          "chapter": 5,
+          "effects": {
+            "tribulationResist": 0.12,
+            "note": "future system hook"
+          }
+        }
+      ]
+    },
+    {
+      "id": "heart_earth_dragon_spine_manual",
+      "name": "Earth Dragon Spine Manual",
+      "tier": "tier3",
+      "archetype": "artisan",
+      "daoTags": [
+        "earth",
+        "metal",
+        "artisan"
+      ],
+      "spiritRootAffinities": [
+        "earth",
+        "metal"
+      ],
+      "signature": {
+        "forgeSpeed": 0.18,
+        "refineEffectiveness": 0.1,
+        "runeDustYield": 0.12
+      },
+      "chapters": [
+        {
+          "chapter": 1,
+          "effects": {
+            "forgeSpeed": 0.18
+          }
+        },
+        {
+          "chapter": 2,
+          "effects": {
+            "refineEffectiveness": 0.1
+          }
+        },
+        {
+          "chapter": 3,
+          "effects": {
+            "runeDustYield": 0.12
+          }
+        },
+        {
+          "chapter": 4,
+          "effects": {
+            "artifactShardGainMult": 0.1,
+            "cap": 0.1
+          }
+        },
+        {
+          "chapter": 5,
+          "effects": {
+            "combatDamageMult": 0.06
+          }
+        }
+      ]
+    },
+    {
+      "id": "heart_star_core_refinement_law",
+      "name": "Star-Core Refinement Law",
+      "tier": "tier3",
+      "archetype": "steady",
+      "daoTags": [
+        "astral",
+        "star"
+      ],
+      "spiritRootAffinities": [
+        "astral",
+        "void"
+      ],
+      "signature": {
+        "maxQiMult": 0.16,
+        "cultivateQiMult": 0.1,
+        "heavenCostMult": -0.06
+      },
+      "chapters": [
+        {
+          "chapter": 1,
+          "effects": {
+            "maxQiMult": 0.16
+          }
+        },
+        {
+          "chapter": 2,
+          "effects": {
+            "cultivateQiMult": 0.1
+          }
+        },
+        {
+          "chapter": 3,
+          "effects": {
+            "heavenCostMult": -0.06
+          }
+        },
+        {
+          "chapter": 4,
+          "effects": {
+            "bossDamageMult": 0.08
+          }
+        },
+        {
+          "chapter": 5,
+          "effects": {
+            "ruinsDropRate": 0.05,
+            "cap": 0.05
+          }
+        }
+      ]
+    },
+    {
+      "id": "heart_unbroken_will_method",
+      "name": "Unbroken Will Method",
+      "tier": "tier3",
+      "archetype": "steady",
+      "daoTags": [
+        "martial",
+        "will"
+      ],
+      "spiritRootAffinities": [
+        "metal",
+        "earth"
+      ],
+      "signature": {
+        "martialDamageMult": 0.12,
+        "intentMaxAdd": 15,
+        "damageReduction": 0.03
+      },
+      "chapters": [
+        {
+          "chapter": 1,
+          "effects": {
+            "martialDamageMult": 0.12
+          }
+        },
+        {
+          "chapter": 2,
+          "effects": {
+            "intentMaxAdd": 15
+          }
+        },
+        {
+          "chapter": 3,
+          "effects": {
+            "damageReduction": 0.03
+          }
+        },
+        {
+          "chapter": 4,
+          "effects": {
+            "critDmgMult": 0.12
+          }
+        },
+        {
+          "chapter": 5,
+          "effects": {
+            "bossDamageMult": 0.1
+          }
+        }
+      ]
+    }
+  ]
+}

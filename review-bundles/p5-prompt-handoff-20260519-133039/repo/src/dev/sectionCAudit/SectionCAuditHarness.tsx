@@ -1,0 +1,359 @@
+import { useEffect, useMemo, useState } from 'react';
+import { DaoHeartModal } from '../../components/modals/DaoHeartModal.js';
+import { LifeStartWizardModal } from '../../components/modals/LifeStartWizardModal.js';
+import { PrestigeRitualModal } from '../../components/modals/PrestigeRitualModal.js';
+import { getPrestigeAdvisorSurface } from '../../features/prestige/prestigeAdvisorSurface.js';
+import { getLiveRealmNameByIndex } from '../../systems/progression/runtime/index.js';
+import { useContentStore } from '../../stores/contentStore.js';
+import { useCultivationStore } from '../../stores/cultivationStore.js';
+import { useGameStore } from '../../stores/gameStore.js';
+import { usePrestigeStore } from '../../stores/prestigeStore.js';
+import { useUIStore } from '../../stores/uiStore.js';
+import { ChangeHeartLawModal } from '../../ui/cultivation/heartLaw/ChangeHeartLawModal.js';
+import { useFxQuality } from '../../ui/fx/FxQualityProvider.js';
+import type { FxRequestedQuality } from '../../ui/fx/types.js';
+import { SECTION_C_SURFACE_IDS, type SectionCSurfaceId } from './sectionCSurfaceIds.js';
+import './SectionCAuditHarness.scss';
+
+type AuditFxMode = 'high' | 'medium' | 'low' | 'reduced';
+type ChangeHeartLawAuditState = 'current' | 'affordable' | 'unaffordable' | 'locked' | 'restricted';
+
+const FORCED_ONLY_SURFACES: ReadonlySet<SectionCSurfaceId> = new Set();
+const DEFAULT_SURFACE: SectionCSurfaceId = 'life-start-path';
+const CHANGE_HEART_LAW_AUDIT_STATES: readonly ChangeHeartLawAuditState[] = ['current', 'affordable', 'unaffordable', 'locked', 'restricted'];
+
+function parseSurfaceFromQuery(): SectionCSurfaceId {
+  const surface = new URLSearchParams(window.location.search).get('surface');
+  if (surface && SECTION_C_SURFACE_IDS.includes(surface as SectionCSurfaceId)) {
+    return surface as SectionCSurfaceId;
+  }
+  return DEFAULT_SURFACE;
+}
+
+function parseFxModeFromQuery(): AuditFxMode {
+  const fx = new URLSearchParams(window.location.search).get('fx');
+  return fx === 'medium' || fx === 'low' || fx === 'reduced' ? fx : 'high';
+}
+
+function parseChangeHeartLawAuditStateFromQuery(): ChangeHeartLawAuditState {
+  const state = new URLSearchParams(window.location.search).get('changeState');
+  return CHANGE_HEART_LAW_AUDIT_STATES.includes(state as ChangeHeartLawAuditState)
+    ? (state as ChangeHeartLawAuditState)
+    : 'current';
+}
+
+function setQuery(next: { surface?: SectionCSurfaceId; fx?: AuditFxMode; controls?: '0' | '1'; changeState?: ChangeHeartLawAuditState }) {
+  const params = new URLSearchParams(window.location.search);
+  params.set('uiAudit', 'section-c');
+  if (next.surface) params.set('surface', next.surface);
+  if (next.fx) params.set('fx', next.fx);
+  if (next.controls) params.set('controls', next.controls);
+  if (next.changeState) params.set('changeState', next.changeState);
+  window.history.replaceState(null, '', `${window.location.pathname}?${params.toString()}${window.location.hash}`);
+}
+
+function pickAuditHeartLawId(): string | null {
+  const content = useContentStore.getState();
+  if (!content.isLoaded) return null;
+  try {
+    return content.listHeartLaws()[0]?.id ?? null;
+  } catch {
+    return null;
+  }
+}
+
+function sanitizeUiOverlays() {
+  // Dev-only harness shim: this state hygiene prevents non-target overlays from contaminating manual captures.
+  useUIStore.setState((state) => ({
+    ...state,
+    showOfflineProgressModal: false,
+    showManualSatchelModal: false,
+    showTechniqueLearnedModal: false,
+    showWorldBuildingModal: false,
+    showMigrationIssuesModal: false,
+    notifications: [],
+    pendingNotifications: [],
+    activeOnboardingPrompt: null,
+    queuedOnboardingPrompts: [],
+  }));
+}
+
+function applySurfaceState(surface: SectionCSurfaceId) {
+  sanitizeUiOverlays();
+  const heartLawId = pickAuditHeartLawId();
+
+  useUIStore.setState((state) => ({
+    ...state,
+    activeTab: surface === 'prestige-ritual' ? 'prestige' : 'cultivation',
+    showCurrentChapterExhaustedModal: surface === 'current-chapter-exhausted',
+    showLifeSummaryModal: surface === 'life-summary',
+    lifeSummaryMode: 'current',
+    currentChapterExhaustedAcknowledgedThisLife: false,
+  }));
+
+  if (surface === 'life-start-path') {
+    useGameStore.setState((state) => ({ ...state, selectedPath: null }));
+    useCultivationStore.setState((state) => ({ ...state, selectedHeartLawId: null }));
+    return;
+  }
+
+  if (surface === 'life-start-heart-law') {
+    useGameStore.setState((state) => ({ ...state, selectedPath: 'heaven' }));
+    useCultivationStore.setState((state) => ({ ...state, selectedHeartLawId: null }));
+    return;
+  }
+
+  if (surface === 'life-start-breath-focus') {
+    useGameStore.setState((state) => ({ ...state, selectedPath: 'heaven' }));
+    useCultivationStore.setState((state) => ({ ...state, selectedHeartLawId: heartLawId }));
+    return;
+  }
+
+  useGameStore.setState((state) => ({ ...state, selectedPath: 'heaven' }));
+  useCultivationStore.setState((state) => ({
+    ...state,
+    selectedHeartLawId: heartLawId,
+    chapter: 2,
+    comprehension: 24,
+  }));
+}
+
+function mapFxModeToRequestedQuality(fxMode: AuditFxMode): FxRequestedQuality {
+  if (fxMode === 'high') return 'high';
+  if (fxMode === 'medium') return 'medium';
+  if (fxMode === 'low') return 'low';
+  return 'medium';
+}
+
+function resolveChangeHeartLawAuditScenario(mode: ChangeHeartLawAuditState): {
+  currentHeartLawId: string | null;
+  selectedHeartLawId: string | null;
+  canChange: boolean;
+  canAffordOverride?: boolean;
+} {
+  const content = useContentStore.getState();
+  if (!content.isLoaded) {
+    return {
+      currentHeartLawId: null,
+      selectedHeartLawId: null,
+      canChange: mode !== 'restricted',
+      canAffordOverride: mode === 'unaffordable' ? false : undefined,
+    };
+  }
+
+  const laws = content.listHeartLaws();
+  const unlocked = laws.filter((law) => useCultivationStore.getState().isUnlocked(law.id));
+  const locked = laws.filter((law) => !useCultivationStore.getState().isUnlocked(law.id));
+
+  const current = unlocked[0]?.id ?? laws[0]?.id ?? null;
+  const altUnlocked = unlocked.find((law) => law.id !== current)?.id ?? current;
+  const altLocked = locked[0]?.id ?? altUnlocked;
+
+  if (mode === 'current') {
+    return { currentHeartLawId: current, selectedHeartLawId: current, canChange: true };
+  }
+
+  if (mode === 'affordable') {
+    return {
+      currentHeartLawId: current,
+      selectedHeartLawId: altUnlocked,
+      canChange: true,
+      canAffordOverride: true,
+    };
+  }
+
+  if (mode === 'unaffordable') {
+    return {
+      currentHeartLawId: current,
+      selectedHeartLawId: altUnlocked,
+      canChange: true,
+      canAffordOverride: false,
+    };
+  }
+
+  if (mode === 'locked') {
+    return {
+      currentHeartLawId: current,
+      selectedHeartLawId: altLocked,
+      canChange: true,
+      canAffordOverride: true,
+    };
+  }
+
+  return {
+    currentHeartLawId: current,
+    selectedHeartLawId: altUnlocked,
+    canChange: false,
+    canAffordOverride: true,
+  };
+}
+
+export function SectionCAuditHarness() {
+  const enabled = import.meta.env.DEV && new URLSearchParams(window.location.search).get('uiAudit') === 'section-c';
+  const [surface, setSurface] = useState<SectionCSurfaceId>(() => parseSurfaceFromQuery());
+  const [fxMode, setFxMode] = useState<AuditFxMode>(() => parseFxModeFromQuery());
+  const [showControls, setShowControls] = useState(() => new URLSearchParams(window.location.search).get('controls') !== '0');
+  const [showDaoHeart, setShowDaoHeart] = useState(false);
+  const [changeHeartLawAuditState, setChangeHeartLawAuditState] = useState<ChangeHeartLawAuditState>(() => parseChangeHeartLawAuditStateFromQuery());
+  const { setRequestedQuality, setReducedMotionOverride } = useFxQuality();
+
+  useEffect(() => {
+    if (!enabled) return;
+    applySurfaceState(surface);
+  }, [enabled, surface]);
+
+  useEffect(() => {
+    if (!enabled) return;
+    setRequestedQuality(mapFxModeToRequestedQuality(fxMode));
+    setReducedMotionOverride(fxMode === 'reduced' ? true : false);
+    // Compatibility shim for CSS transitions outside provider-backed FX surfaces.
+    document.body.classList.toggle('uiAuditReducedMotion', fxMode === 'reduced');
+    return () => {
+      setReducedMotionOverride(null);
+      document.body.classList.remove('uiAuditReducedMotion');
+    };
+  }, [enabled, fxMode, setReducedMotionOverride, setRequestedQuality]);
+
+  useEffect(() => {
+    if (!enabled) return;
+    setShowDaoHeart(surface === 'dao-heart-law' || surface === 'dao-heart-study');
+  }, [enabled, surface]);
+
+  useEffect(() => {
+    if (!enabled) return;
+    const onPopState = () => {
+      setSurface(parseSurfaceFromQuery());
+      setFxMode(parseFxModeFromQuery());
+      setChangeHeartLawAuditState(parseChangeHeartLawAuditStateFromQuery());
+    };
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, [enabled]);
+
+  const prestigeModalProps = useMemo(() => {
+    const advisor = getPrestigeAdvisorSurface();
+    const breakdown = usePrestigeStore.getState().getApBreakdown();
+    return {
+      apGain: Math.max(1, advisor.apForecast.potentialGain),
+      advisorLabel: advisor.stateLabel,
+      advisorDetail: advisor.stateDetail,
+      breakdown: {
+        ...breakdown,
+        potentialGain: Math.max(1, breakdown.potentialGain),
+      },
+      resetPreview: advisor.resetPreview,
+      currentRealm: getLiveRealmNameByIndex(useGameStore.getState().realm.index),
+    };
+  }, [surface]);
+
+  const changeHeartLawScenario = useMemo(
+    () => resolveChangeHeartLawAuditScenario(changeHeartLawAuditState),
+    [changeHeartLawAuditState],
+  );
+
+  if (!enabled) return null;
+
+  const updateSurface = (next: SectionCSurfaceId) => {
+    setSurface(next);
+    setQuery({ surface: next });
+  };
+
+  const updateFxMode = (next: AuditFxMode) => {
+    setFxMode(next);
+    setQuery({ fx: next });
+  };
+
+  const updateChangeHeartLawState = (next: ChangeHeartLawAuditState) => {
+    setChangeHeartLawAuditState(next);
+    setQuery({ changeState: next });
+  };
+
+  const toggleControls = () => {
+    const next = !showControls;
+    setShowControls(next);
+    setQuery({ controls: next ? '1' : '0' });
+  };
+
+  return (
+    <>
+      {showControls ? (
+        <aside className="sectionCAuditPanel" data-ui="section-c-audit-controls">
+          <div className="sectionCAuditPanel__title">Section C Audit Harness</div>
+          <label>
+            Surface
+            <select value={surface} onChange={(event) => updateSurface(event.target.value as SectionCSurfaceId)}>
+              {SECTION_C_SURFACE_IDS.map((id) => (
+                <option key={id} value={id}>{id}</option>
+              ))}
+            </select>
+          </label>
+          <label>
+            FX
+            <select value={fxMode} onChange={(event) => updateFxMode(event.target.value as AuditFxMode)}>
+              <option value="high">high</option>
+              <option value="medium">medium</option>
+              <option value="low">low</option>
+              <option value="reduced">reduced</option>
+            </select>
+          </label>
+          {surface === 'change-heart-law' ? (
+            <label>
+              Change-law truth state
+              <select value={changeHeartLawAuditState} onChange={(event) => updateChangeHeartLawState(event.target.value as ChangeHeartLawAuditState)}>
+                <option value="current">current law selected</option>
+                <option value="affordable">alt unlocked + affordable</option>
+                <option value="unaffordable">alt unlocked + unaffordable</option>
+                <option value="locked">locked alternative selected</option>
+                <option value="restricted">canChange false restriction</option>
+              </select>
+            </label>
+          ) : null}
+          <button type="button" className="button-standard" onClick={toggleControls}>Hide Controls</button>
+          <div className="sectionCAuditPanel__meta">
+            Reachability: {FORCED_ONLY_SURFACES.has(surface) ? 'forced-only for audit' : 'live / state-gated'}
+          </div>
+          <div className="sectionCAuditPanel__meta">Narrow-width pass uses manual browser resize.</div>
+        </aside>
+      ) : (
+        <button type="button" className="sectionCAuditPanel__show" onClick={toggleControls}>Show Audit Controls</button>
+      )}
+
+      {surface === 'life-start-breath-focus' ? <LifeStartWizardModal debugForceOpen debugForceStep={3} /> : null}
+
+      {(surface === 'dao-heart-law' || surface === 'dao-heart-study') && showDaoHeart ? (
+        <DaoHeartModal onClose={() => setShowDaoHeart(false)} debugInitialTab={surface === 'dao-heart-study' ? 'study' : 'heartLaw'} />
+      ) : null}
+
+      {surface === 'change-heart-law' ? (
+        <ChangeHeartLawModal
+          currentHeartLawId={changeHeartLawScenario.currentHeartLawId}
+          canChange={changeHeartLawScenario.canChange}
+          debugCanAffordOverride={changeHeartLawScenario.canAffordOverride}
+          debugInitialSelectedHeartLawId={changeHeartLawScenario.selectedHeartLawId}
+          onClose={() => undefined}
+        />
+      ) : null}
+
+      {surface === 'prestige-ritual' ? (
+        <PrestigeRitualModal
+          open
+          apGain={prestigeModalProps.apGain}
+          breakdown={prestigeModalProps.breakdown}
+          advisorLabel={prestigeModalProps.advisorLabel}
+          advisorDetail={prestigeModalProps.advisorDetail}
+          resetPreview={prestigeModalProps.resetPreview}
+          canPrestigeNow
+          currentRealm={prestigeModalProps.currentRealm}
+          sellBeforePrestige
+          onClose={() => undefined}
+          onConfirm={() => false}
+        />
+      ) : null}
+    </>
+  );
+}
+
+export function isSectionCAuditQueryEnabled() {
+  if (!import.meta.env.DEV || typeof window === 'undefined') return false;
+  return new URLSearchParams(window.location.search).get('uiAudit') === 'section-c';
+}

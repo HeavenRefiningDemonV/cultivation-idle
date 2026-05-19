@@ -1,0 +1,781 @@
+.techniqueDetailModal {
+  position: relative;
+  z-index: 1200;
+}
+
+.techniqueDetailModalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(7, 10, 16, 0.72);
+  backdrop-filter: blur(2px);
+  animation: techniqueModalFade 0.25s ease-out;
+}
+
+.techniqueDetailModalPosition {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.techniqueDetailModalPanel {
+  position: relative;
+  width: min(860px, 92vw);
+  max-height: min(86vh, 900px);
+  display: flex;
+  flex-direction: column;
+  background: rgba(18, 24, 34, 0.98);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  color: #f5f5f5;
+  animation: techniqueModalIn 0.28s ease-out;
+}
+
+.techniqueDetailModalHeader {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+  padding: 16px 20px;
+  background: rgba(18, 24, 34, 0.98);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.techniqueDetailModalHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.techniqueDetailModalHeaderMain {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.techniqueDetailModalTitle {
+  font-size: 20px;
+  font-weight: 800;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.techniqueDetailModalMeta {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-size: 12px;
+  color: rgba(245, 245, 245, 0.8);
+}
+
+.techniqueDetailModalMetaIcon {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 14px;
+}
+
+.techniqueDetailModalClose {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+  color: #f5f5f5;
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.techniqueDetailModalClose:hover {
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.techniqueDetailModalEquipStrip {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(16, 22, 32, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.techniqueDetailModalEquipStatusRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.techniqueDetailModalEquipStatus {
+  font-size: 12px;
+  color: #cfe4ff;
+  max-width: 60%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.techniqueDetailModalEquipActions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.techniqueDetailModalEquipButton {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f5f5f5;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.techniqueDetailModalFavoriteButtonContent {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.techniqueDetailModalEquipButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.techniqueDetailModalEquipButton.is-primary {
+  background: linear-gradient(135deg, rgba(108, 199, 255, 0.85), rgba(123, 227, 157, 0.85));
+  color: #0b1724;
+  border: none;
+}
+
+.techniqueDetailModalEquipChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.techniqueDetailModalEquipChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.06);
+  color: #f5f5f5;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.techniqueDetailModalEquipChip:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.techniqueDetailModalEquipChip.is-selected {
+  border-color: rgba(164, 255, 190, 0.7);
+  box-shadow: 0 0 0 1px rgba(164, 255, 190, 0.35);
+}
+
+.techniqueDetailModalEquipChip.is-shaking {
+  animation: techniqueEquipShake 0.35s ease-in-out;
+}
+
+.techniqueDetailModalEquipChipIcon {
+  display: inline-flex;
+  align-items: center;
+}
+
+.techniqueDetailModalEquipChipLabel {
+  letter-spacing: 0.04em;
+}
+
+.techniqueDetailModalEquipEmpty {
+  font-size: 12px;
+  color: rgba(245, 245, 245, 0.6);
+}
+
+.techniqueDetailModalEquipConfirm {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(18, 24, 34, 0.8);
+  font-size: 12px;
+}
+
+.techniqueDetailModalEquipConfirmText {
+  color: #dbeaff;
+}
+
+.techniqueDetailModalEquipConfirmActions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.techniqueDetailModalEquipFeedback {
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  align-self: flex-start;
+  animation: techniqueModalPulse 1.4s ease-out;
+}
+
+.techniqueDetailModalEquipFeedback.is-success {
+  background: rgba(139, 226, 139, 0.18);
+  border: 1px solid rgba(139, 226, 139, 0.35);
+  color: rgba(180, 255, 210, 0.95);
+}
+
+.techniqueDetailModalEquipFeedback.is-error {
+  background: rgba(255, 107, 107, 0.14);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  color: rgba(255, 210, 210, 0.95);
+}
+
+.techniqueDetailModalEquipFeedback.is-info {
+  background: rgba(108, 199, 255, 0.14);
+  border: 1px solid rgba(108, 199, 255, 0.3);
+  color: rgba(200, 230, 255, 0.95);
+}
+
+.techniqueDetailModalBody {
+  padding: 16px 20px 24px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.techniqueDetailModalScrollShadow {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 24px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 1;
+}
+
+.techniqueDetailModalScrollShadow--top {
+  top: 120px;
+  background: linear-gradient(180deg, rgba(10, 14, 22, 0.9), rgba(10, 14, 22, 0));
+}
+
+.techniqueDetailModalScrollShadow--bottom {
+  bottom: 0;
+  background: linear-gradient(0deg, rgba(10, 14, 22, 0.9), rgba(10, 14, 22, 0));
+}
+
+.techniqueDetailModalScrollShadow.is-visible {
+  opacity: 1;
+}
+
+.techniqueDetailModalMissing {
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(255, 107, 107, 0.16);
+  border: 1px solid rgba(255, 107, 107, 0.35);
+  font-weight: 600;
+}
+
+.techniqueDetailModalSection {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.techniqueDetailModalSection h4 {
+  margin: 0;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.techniqueDetailModalSummary {
+  margin: 0;
+  color: #dfe8ff;
+}
+
+.techniqueDetailModalChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.techniqueDetailModalChip {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.techniqueDetailModalMetaLine {
+  font-size: 12px;
+  color: #a0b7d8;
+}
+
+.techniqueDetailModalDivider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 4px 0;
+}
+
+.techniqueDetailModalEffectList {
+  padding-left: 18px;
+  color: #dfe8ff;
+  line-height: 1.4;
+}
+
+.techniqueDetailModalEffectMeta {
+  display: grid;
+  gap: 4px;
+  font-size: 12px;
+  color: #c5d6ff;
+}
+
+.techniqueDetailModalSubsection {
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.techniqueDetailModalSubheading {
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #cde7ff;
+}
+
+.techniqueDetailModalHint {
+  color: #a0b7d8;
+  font-size: 12px;
+}
+
+.techniqueDetailModalProgressGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.techniqueDetailModalProgressCard {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 10px;
+  background: rgba(16, 22, 32, 0.85);
+}
+
+.techniqueDetailModalProgressHeader {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+}
+
+.techniqueDetailModalProgressBar {
+  position: relative;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  margin: 8px 0 6px;
+  overflow: hidden;
+}
+
+.techniqueDetailModalProgressFill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, #6cc7ff, #7be39d);
+}
+
+.techniqueDetailModalProgressTick {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.techniqueDetailModalProgressLabel {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.techniqueDetailModalRankRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.techniqueDetailModalRankPips {
+  display: flex;
+  gap: 4px;
+}
+
+.techniqueDetailModalRankPip {
+  width: 12px;
+  height: 8px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.techniqueDetailModalRankPip.is-filled {
+  background: linear-gradient(90deg, #7ddfc3, #5ab0ff);
+}
+
+.techniqueDetailModalRankActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.techniqueDetailModalSlotList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.techniqueDetailModalSlotRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 8px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(18, 23, 33, 0.8);
+}
+
+.techniqueDetailModalSlotRow.is-selected {
+  border-color: rgba(164, 255, 190, 0.6);
+  box-shadow: 0 0 0 1px rgba(164, 255, 190, 0.4);
+}
+
+.techniqueDetailModalSlotRow.is-locked {
+  opacity: 0.6;
+}
+
+.techniqueDetailModalSlotSelect {
+  background: none;
+  border: none;
+  color: inherit;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.techniqueDetailModalSlotSelect:disabled {
+  cursor: not-allowed;
+}
+
+.techniqueDetailModalSlotLabel {
+  font-weight: 700;
+}
+
+.techniqueDetailModalSlotValue {
+  font-size: 13px;
+  color: #dfe8ff;
+}
+
+.techniqueDetailModalSlotHint {
+  font-size: 12px;
+  color: #d299ff;
+}
+
+.techniqueDetailModalActionRow {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.techniqueDetailModalPrimaryButton {
+  background: linear-gradient(135deg, #6cc7ff, #7be39d);
+  color: #0b1724;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.1s ease, opacity 0.15s ease;
+}
+
+.techniqueDetailModalPrimaryButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.techniqueDetailModalSecondaryButton {
+  background: rgba(255, 255, 255, 0.1);
+  color: #f5f5f5;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.techniqueDetailModalLinkButton {
+  background: transparent;
+  border: none;
+  color: #a4ffbe;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.techniqueDetailModalActionMessage {
+  margin-top: 8px;
+  padding: 10px;
+  border-radius: 8px;
+  font-weight: 600;
+  animation: techniqueModalPulse 1.4s ease-out;
+}
+
+.techniqueDetailModalActionMessage.is-success {
+  background: rgba(139, 226, 139, 0.2);
+  border: 1px solid rgba(139, 226, 139, 0.4);
+}
+
+.techniqueDetailModalActionMessage.is-error {
+  background: rgba(255, 107, 107, 0.16);
+  border: 1px solid rgba(255, 107, 107, 0.35);
+}
+
+.techniqueDetailModalActionMessage.is-info {
+  background: rgba(108, 199, 255, 0.16);
+  border: 1px solid rgba(108, 199, 255, 0.35);
+}
+
+@keyframes techniqueEquipShake {
+  0% {
+    transform: translateX(0);
+  }
+
+  50% {
+    transform: translateX(3px);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes techniqueModalFade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes techniqueModalIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes techniqueModalPulse {
+  0% {
+    box-shadow: 0 0 0 rgba(140, 220, 200, 0);
+  }
+
+  40% {
+    box-shadow: 0 0 14px rgba(140, 220, 200, 0.35);
+  }
+
+  100% {
+    box-shadow: 0 0 0 rgba(140, 220, 200, 0);
+  }
+}
+
+.techniqueDetailModalTraitRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  background: rgba(18, 23, 33, 0.8);
+  margin-top: 8px;
+}
+
+.techniqueDetailModalTraitMain {
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  gap: 10px;
+  align-items: center;
+}
+
+.techniqueDetailModalTraitName {
+  font-weight: 700;
+}
+
+.techniqueDetailModalTraitValue {
+  color: #a4ffbe;
+}
+
+.techniqueDetailModalTraitRange {
+  color: #a0b7d8;
+  font-size: 12px;
+}
+
+.techniqueDetailModalTraitQuality {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-end;
+}
+
+.techniqueDetailModalTraitQualityBar {
+  width: 140px;
+  height: 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.techniqueDetailModalTraitQualityFill {
+  height: 100%;
+  background: linear-gradient(90deg, #ffc38d, #ffd166);
+}
+
+.techniqueDetailModalRuneSockets {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.techniqueDetailModalRuneRow {
+  display: grid;
+  grid-template-columns: 90px 1fr 1fr auto auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.techniqueDetailModalRunePill {
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  text-align: center;
+  font-size: 13px;
+  color: #cde7ff;
+}
+
+.techniqueDetailModalRunePill.is-filled {
+  border-style: solid;
+  background: rgba(148, 207, 255, 0.15);
+}
+
+.techniqueDetailModalRuneSlotLabel {
+  color: #a0b7d8;
+}
+
+.techniqueDetailModalEffectList em {
+  color: #a0b7d8;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .techniqueDetailModalScrollShadow,
+  .techniqueDetailModalPrimaryButton {
+    transition: none;
+  }
+
+  .techniqueDetailModalEquipChip {
+    transition: none;
+  }
+
+  .techniqueDetailModalEquipChip.is-shaking {
+    animation: none;
+  }
+
+  .techniqueDetailModalOverlay,
+  .techniqueDetailModalPanel,
+  .techniqueDetailModalEquipFeedback,
+  .techniqueDetailModalActionMessage {
+    animation: none;
+  }
+}
+
+.techniqueDetailModalSection.is-disabled {
+  opacity: 0.6;
+}
+
+@media (max-width: 720px) {
+  .techniqueDetailModalPosition {
+    padding: 16px;
+  }
+
+  .techniqueDetailModalPanel {
+    width: 100%;
+    height: 100%;
+    max-height: none;
+    border-radius: 16px;
+  }
+
+  .techniqueDetailModalHeader {
+    padding: 14px 16px;
+  }
+
+  .techniqueDetailModalBody {
+    padding: 14px 16px 20px;
+  }
+
+  .techniqueDetailModalEquipStatus {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 520px) {
+  .techniqueDetailModalPosition {
+    padding: 8px;
+  }
+
+  .techniqueDetailModalPanel {
+    border-radius: 12px;
+  }
+}

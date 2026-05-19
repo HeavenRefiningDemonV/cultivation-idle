@@ -1,0 +1,1105 @@
+.statusDashboardRoot {
+  position: relative;
+  height: 100%;
+  min-height: 0;
+  display: grid;
+  overflow: hidden;
+  color: #1f1a15;
+  font-family: "Segoe UI", "Trebuchet MS", Arial, sans-serif;
+}
+
+.statusDashboardRoot * {
+  font-family: inherit;
+}
+
+.statusDashboardRoot::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(42% 60% at 0% 68%, rgba(63, 88, 88, 0.24), transparent 72%),
+    radial-gradient(36% 58% at 100% 60%, rgba(84, 91, 92, 0.2), transparent 70%),
+    linear-gradient(180deg, rgba(238, 234, 224, 0.18), rgba(220, 213, 199, 0.22));
+}
+
+.statusDashboardCanvas {
+  position: relative;
+  z-index: 1;
+  width: min(1900px, calc(100vw - clamp(28px, 3.5vw, 72px)));
+  height: 100%;
+  min-height: 0;
+  margin: 0 auto;
+  padding-block: clamp(8px, 1.15vh, 16px) clamp(8px, 1.1vh, 14px);
+  display: grid;
+  grid-template-rows: minmax(82px, auto) minmax(42px, auto) minmax(0, 1fr);
+  gap: clamp(7px, 0.95vh, 12px);
+  container-type: size;
+}
+
+.statusDashboardHero,
+.statusDashboardMetricStrip,
+.statusDashboardPanel {
+  border: 1px solid rgba(112, 85, 57, 0.44);
+  border-radius: 8px;
+  background:
+    radial-gradient(120% 90% at 50% 0%, rgba(255, 253, 246, 0.64), transparent 60%),
+    linear-gradient(180deg, rgba(238, 232, 221, 0.92), rgba(224, 216, 200, 0.88));
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 252, 244, 0.45),
+    0 8px 18px rgba(40, 30, 20, 0.12);
+}
+
+.statusDashboardHero {
+  position: relative;
+  min-height: clamp(82px, 10.8vh, 124px);
+  display: grid;
+  grid-template-columns: minmax(310px, 0.9fr) minmax(380px, 1.05fr) minmax(460px, 1.25fr);
+  gap: 20px;
+  align-items: stretch;
+  padding: clamp(10px, 1.35vh, 16px) 22px;
+  overflow: hidden;
+}
+
+.statusDashboardHero__art {
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: 48%;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(238, 232, 221, 0), rgba(238, 232, 221, 0.28) 28%, rgba(238, 232, 221, 0.05)),
+    url("../../assets/background/citystates/city_gate.png") right center / cover no-repeat;
+  opacity: 0.34;
+  filter: grayscale(0.34) sepia(0.18);
+}
+
+.statusDashboardRealm,
+.statusDashboardPath,
+.statusDashboardGoal {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+}
+
+.statusDashboardRealm {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
+}
+
+.statusDashboardRealm__crest {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: rgba(44, 61, 59, 0.78);
+  background:
+    radial-gradient(circle at 46% 42%, rgba(255, 255, 255, 0.82), rgba(201, 207, 199, 0.38) 54%, rgba(102, 112, 105, 0.18)),
+    url("../../assets/background/citystates/city_gate.png") center / cover no-repeat;
+  border: 1px solid rgba(87, 82, 69, 0.28);
+  box-shadow:
+    inset 0 0 0 7px rgba(244, 240, 226, 0.45),
+    inset 0 0 0 14px rgba(80, 87, 81, 0.08);
+}
+
+.statusDashboardRealm__crest svg {
+  width: 38px;
+  height: 38px;
+  opacity: 0.52;
+}
+
+.statusDashboardMeta,
+.statusDashboardMetric__label,
+.statusDashboardPanel__heading h2,
+.statusDashboardDetailLine span,
+.statusDashboardChip__label {
+  letter-spacing: 0;
+  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 800;
+  color: rgba(52, 54, 44, 0.72);
+}
+
+.statusDashboardHero h1,
+.statusDashboardHero h2,
+.statusDashboardHero h3,
+.statusDashboardPanel h2,
+.statusDashboardPanel h3,
+.statusDashboardHero p {
+  margin: 0;
+}
+
+.statusDashboardHero h1 {
+  margin-top: 5px;
+  font-size: 23px;
+  line-height: 1.12;
+  font-weight: 800;
+}
+
+.statusDashboardHero h2 {
+  margin-top: 4px;
+  font-size: 17px;
+  line-height: 1.18;
+  font-weight: 800;
+}
+
+.statusDashboardHero p {
+  margin-top: 6px;
+  font-size: 13px;
+  line-height: 1.28;
+  color: rgba(44, 35, 24, 0.82);
+  font-weight: 650;
+}
+
+.statusDashboardRealm p {
+  color: #286d64;
+  font-weight: 800;
+}
+
+.statusDashboardPath {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr);
+  gap: 14px;
+  align-content: start;
+}
+
+.statusDashboardPath__seal,
+.statusDashboardPanel__icon {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  color: #2b7067;
+}
+
+.statusDashboardPath__seal {
+  color: #af7a22;
+  border-radius: 50%;
+  border: 1px solid rgba(175, 122, 34, 0.34);
+  background: rgba(255, 249, 235, 0.5);
+}
+
+.statusDashboardPath__seal svg,
+.statusDashboardPanel__icon svg {
+  width: 25px;
+  height: 25px;
+}
+
+.statusDashboardGoal {
+  padding-left: 2px;
+}
+
+.statusDashboardGoal h2 {
+  max-width: 580px;
+}
+
+.statusDashboardGoal__action {
+  margin-top: 12px;
+}
+
+.statusDashboardMetricStrip {
+  margin-top: 0;
+  min-height: clamp(38px, 4.8vh, 48px);
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  padding: 0;
+  overflow: hidden;
+}
+
+.statusDashboardMetric {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 0 54px;
+  border-right: 1px solid rgba(117, 93, 66, 0.22);
+}
+
+.statusDashboardMetric:last-child {
+  border-right: 0;
+}
+
+.statusDashboardMetric__icon {
+  display: grid;
+  place-items: center;
+  color: rgba(53, 50, 43, 0.62);
+}
+
+.statusDashboardMetric__icon svg {
+  width: 25px;
+  height: 25px;
+}
+
+.statusDashboardMetric__icon .gameIcon {
+  inline-size: 25px;
+  block-size: 25px;
+}
+
+.statusDashboardMetric strong {
+  font-size: 18px;
+  line-height: 1;
+  font-weight: 750;
+  color: #191713;
+}
+
+.statusDashboardGrid {
+  margin-top: 0;
+  min-height: 0;
+  height: 100%;
+  display: grid;
+  grid-template-columns: minmax(330px, 1fr) minmax(370px, 1.14fr) minmax(330px, 0.98fr);
+  grid-template-rows: minmax(168px, 0.34fr) minmax(172px, 0.35fr) minmax(188px, 0.46fr);
+  gap: clamp(7px, 0.85vh, 11px);
+  align-items: stretch;
+}
+
+.statusDashboardColumn {
+  display: contents;
+  min-width: 0;
+}
+
+.statusDashboardPanel {
+  position: relative;
+  min-height: 0;
+  min-width: 0;
+  padding: 13px 16px;
+  overflow: hidden;
+}
+
+.statusDashboardPanel--milestone {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.statusDashboardPanel--actions {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.statusDashboardPanel--identity {
+  grid-column: 1;
+  grid-row: 3;
+}
+
+.statusDashboardPanel--readiness {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.statusDashboardPanel--safety {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.statusDashboardPanel--overview {
+  grid-column: 2;
+  grid-row: 3;
+}
+
+.statusDashboardPanel--requirements {
+  grid-column: 3;
+  grid-row: 1 / 3;
+}
+
+.statusDashboardPanel--preparation {
+  grid-column: 3;
+  grid-row: 3;
+}
+
+.statusDashboardPanel__heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 9px;
+}
+
+.statusDashboardPanel__heading h2 {
+  font-size: 13px;
+  color: #234d49;
+}
+
+.statusDashboardPanelLead {
+  margin: -4px 0 8px;
+  font-size: 12px;
+  line-height: 1.25;
+  color: rgba(44, 35, 24, 0.74);
+  font-weight: 650;
+}
+
+.statusDashboardMilestone {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: start;
+}
+
+.statusDashboardMilestone h3,
+.statusDashboardActionRow h3,
+.statusDashboardRequirement h3,
+.statusDashboardSpiritText h3,
+.statusDashboardPanel--safety > h3,
+.statusDashboardPreparationBlock h3 {
+  font-size: 14px;
+  line-height: 1.25;
+  color: #1d1a14;
+  font-weight: 800;
+}
+
+.statusDashboardMilestone p,
+.statusDashboardActionRow p,
+.statusDashboardRequirement p,
+.statusDashboardPanel--safety > p,
+.statusDashboardIssue p,
+.statusDashboardSpiritText p,
+.statusDashboardReserveNote {
+  margin: 4px 0 0;
+  font-size: 12px;
+  line-height: 1.25;
+  color: rgba(39, 33, 24, 0.76);
+  font-weight: 650;
+}
+
+.statusDashboardActionRow p,
+.statusDashboardIssue p {
+  font-size: 11px;
+  line-height: 1.18;
+}
+
+.statusDashboardActionRow p {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.statusDashboardDetailLine span {
+  font-size: 11px;
+}
+
+.statusDashboardReadinessPill {
+  min-width: 76px;
+  min-height: 28px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 8px;
+  border: 1px solid rgba(111, 85, 50, 0.2);
+  background: rgba(224, 211, 187, 0.72);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.statusDashboardReadinessPill--ready {
+  color: #1f6b4d;
+  background: rgba(193, 222, 204, 0.62);
+  border-color: rgba(53, 130, 88, 0.24);
+}
+
+.statusDashboardReadinessPill--blocked {
+  color: #7a2f24;
+  background: rgba(226, 207, 174, 0.72);
+}
+
+.statusDashboardProgressRail {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 20px;
+  padding-top: 8px;
+}
+
+.statusDashboardProgressRail::before {
+  content: "";
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  top: 20px;
+  height: 2px;
+  background: rgba(91, 84, 72, 0.24);
+}
+
+.statusDashboardProgressNode {
+  position: relative;
+  min-width: 0;
+  display: grid;
+  justify-items: center;
+  gap: 5px;
+  text-align: center;
+}
+
+.statusDashboardProgressNode span {
+  position: relative;
+  z-index: 1;
+  width: 27px;
+  height: 27px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #c7c0b1;
+  color: rgba(68, 64, 55, 0.75);
+  border: 2px solid rgba(238, 232, 219, 0.9);
+}
+
+.statusDashboardProgressNode.is-current span {
+  background: #d8a849;
+  color: #245f58;
+  box-shadow: 0 0 0 3px rgba(36, 95, 88, 0.13);
+}
+
+.statusDashboardProgressNode svg {
+  width: 15px;
+  height: 15px;
+}
+
+.statusDashboardProgressNode strong {
+  font-size: 10px;
+  line-height: 1.2;
+  color: rgba(30, 26, 19, 0.8);
+}
+
+.statusDashboardActionList,
+.statusDashboardRequirementList,
+.statusDashboardReadinessRows,
+.statusDashboardIssueList {
+  display: grid;
+  gap: 6px;
+}
+
+.statusDashboardActionRow,
+.statusDashboardRequirement,
+.statusDashboardIssue,
+.statusDashboardChevronRow {
+  min-width: 0;
+  border: 1px solid rgba(117, 93, 66, 0.18);
+  border-radius: 8px;
+  background: rgba(255, 252, 246, 0.36);
+}
+
+.statusDashboardActionRow {
+  min-height: 52px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(72px, auto) minmax(62px, auto);
+  gap: 10px;
+  align-items: center;
+  padding: 6px 10px 6px 14px;
+}
+
+.statusDashboardActionRow > span {
+  min-height: 24px;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid rgba(117, 93, 66, 0.14);
+  border-radius: 8px;
+  background: rgba(235, 226, 210, 0.66);
+  padding: 0 12px;
+  font-size: 11px;
+  font-weight: 750;
+  color: rgba(56, 48, 37, 0.8);
+}
+
+.statusDashboardButton {
+  min-height: 27px;
+  min-width: 58px;
+  border-radius: 8px;
+  border: 1px solid rgba(57, 91, 79, 0.34);
+  background: linear-gradient(180deg, #2d7a70, #17645b);
+  color: #fffaf0;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.statusDashboardButton:hover:not(:disabled) {
+  filter: brightness(1.04);
+}
+
+.statusDashboardButton:focus-visible {
+  outline: 2px solid rgba(45, 122, 112, 0.42);
+  outline-offset: 2px;
+}
+
+.statusDashboardButton:disabled,
+.statusDashboardButton--blocked,
+.statusDashboardButton--settled {
+  cursor: not-allowed;
+  color: rgba(52, 44, 33, 0.68);
+  border-color: rgba(117, 93, 66, 0.16);
+  background: linear-gradient(180deg, rgba(236, 231, 220, 0.84), rgba(219, 211, 196, 0.8));
+}
+
+.statusDashboardButton--blocked {
+  color: #6d342b;
+}
+
+.statusDashboardChevronRow {
+  width: 100%;
+  min-height: 39px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 28px;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 10px 5px 14px;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+}
+
+.statusDashboardChevronRow:disabled {
+  cursor: default;
+}
+
+.statusDashboardChevronRow span {
+  min-width: 0;
+  display: grid;
+  gap: 1px;
+}
+
+.statusDashboardChevronRow strong {
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.statusDashboardChevronRow small {
+  min-width: 0;
+  font-size: 11px;
+  line-height: 1.18;
+  color: rgba(45, 36, 26, 0.72);
+  font-weight: 650;
+}
+
+.statusDashboardChevronRow > svg {
+  width: 20px;
+  height: 20px;
+  color: rgba(62, 49, 34, 0.7);
+}
+
+.statusDashboardSafetyTiles {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.statusDashboardChip {
+  min-width: 0;
+  min-height: 56px;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 4px;
+  text-align: center;
+  border: 1px solid rgba(117, 93, 66, 0.18);
+  border-radius: 8px;
+  background: rgba(255, 252, 246, 0.28);
+  padding: 6px;
+}
+
+.statusDashboardChip__icon {
+  color: #2d7a70;
+}
+
+.statusDashboardChip__icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.statusDashboardChip strong {
+  max-width: 100%;
+  font-size: 10px;
+  line-height: 1.16;
+  color: #1e1a14;
+  overflow-wrap: anywhere;
+}
+
+.statusDashboardReserveNote {
+  min-height: 28px;
+  margin-top: 8px;
+  padding: 8px 10px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  border: 1px solid rgba(117, 93, 66, 0.16);
+  border-radius: 8px;
+  background: rgba(255, 252, 246, 0.32);
+}
+
+.statusDashboardStatusChips {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.statusDashboardStatusChips .statusDashboardChip {
+  min-height: 44px;
+}
+
+.statusDashboardIssue {
+  min-height: 38px;
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+  padding: 5px 8px;
+}
+
+.statusDashboardIssue > svg,
+.statusDashboardIssue__icon .gameIcon {
+  width: 20px;
+  height: 20px;
+}
+
+.statusDashboardIssue span {
+  font-size: 11px;
+  text-transform: uppercase;
+  font-weight: 800;
+  color: rgba(73, 45, 33, 0.74);
+}
+
+.statusDashboardIssue p {
+  margin-top: 2px;
+}
+
+.statusDashboardIssue--danger {
+  border-color: rgba(178, 74, 64, 0.35);
+  background: rgba(239, 216, 209, 0.58);
+}
+
+.statusDashboardIssue--danger > svg {
+  color: #b24a40;
+}
+
+.statusDashboardIssue--warning {
+  border-color: rgba(197, 137, 45, 0.35);
+  background: rgba(244, 228, 194, 0.58);
+}
+
+.statusDashboardIssue--warning > svg {
+  color: #c5892d;
+}
+
+.statusDashboardIssue--info {
+  border-color: rgba(74, 137, 177, 0.32);
+  background: rgba(217, 232, 241, 0.58);
+}
+
+.statusDashboardIssue--info > svg {
+  color: #4a89b1;
+}
+
+.statusDashboardIssue--success {
+  border-color: rgba(72, 139, 92, 0.3);
+  background: rgba(216, 235, 221, 0.5);
+}
+
+.statusDashboardIssue--success > svg {
+  color: #488b5c;
+}
+
+.statusDashboardRequirement {
+  min-height: 62px;
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 9px 16px;
+}
+
+.statusDashboardRequirement__icon {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 250, 238, 0.72);
+  background: #98b47a;
+  color: #244e3f;
+  box-shadow: 0 0 0 1px rgba(65, 83, 51, 0.28);
+}
+
+.statusDashboardRequirement--info .statusDashboardRequirement__icon {
+  background: #9dc2d8;
+  color: #27516b;
+}
+
+.statusDashboardRequirement--warning .statusDashboardRequirement__icon {
+  background: #d99a61;
+  color: #69351e;
+}
+
+.statusDashboardRequirement--danger .statusDashboardRequirement__icon {
+  background: #d98273;
+  color: #6d251c;
+}
+
+.statusDashboardRequirement--success .statusDashboardRequirement__icon {
+  background: #98b47a;
+  color: #244e3f;
+}
+
+.statusDashboardRequirement--muted .statusDashboardRequirement__icon {
+  background: #c4bdae;
+  color: #4d4a40;
+}
+
+.statusDashboardRequirement__icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.statusDashboardRequirement__icon .gameIcon {
+  inline-size: 22px;
+  block-size: 22px;
+}
+
+.statusDashboardEmptyState {
+  min-height: 74px;
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  padding: 12px 14px;
+  border: 1px solid rgba(117, 93, 66, 0.18);
+  border-radius: 8px;
+  background: rgba(255, 252, 246, 0.34);
+}
+
+.statusDashboardEmptyState > span {
+  display: grid;
+  place-items: center;
+  color: #2d7a70;
+}
+
+.statusDashboardEmptyState h3,
+.statusDashboardEmptyState p {
+  margin: 0;
+}
+
+.statusDashboardEmptyState h3 {
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.statusDashboardEmptyState p {
+  margin-top: 3px;
+  font-size: 12px;
+  line-height: 1.24;
+  color: rgba(39, 33, 24, 0.76);
+  font-weight: 650;
+}
+
+.statusDashboardPanel--requirements {
+  min-height: 420px;
+}
+
+.statusDashboardPanel--requirements::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 54%;
+  height: 38%;
+  pointer-events: none;
+  background: url("../../assets/background/citystates/city_gate.png") right bottom / contain no-repeat;
+  opacity: 0.12;
+  filter: grayscale(0.5);
+}
+
+.statusDashboardIdentityTop {
+  display: grid;
+  grid-template-columns: 66px minmax(0, 1fr) minmax(90px, 0.5fr) minmax(106px, 0.52fr);
+  gap: 11px;
+  align-items: center;
+  padding-bottom: 9px;
+  border-bottom: 1px solid rgba(117, 93, 66, 0.18);
+}
+
+.statusDashboardSpiritCrest {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #fff1d8;
+  border: 4px solid rgba(224, 209, 181, 0.78);
+  background:
+    radial-gradient(circle at 50% 38%, rgba(250, 229, 178, 0.7), transparent 36%),
+    linear-gradient(145deg, #5a3128, #d36c2d);
+  box-shadow:
+    inset 0 0 0 1px rgba(92, 47, 28, 0.5),
+    0 4px 10px rgba(42, 27, 16, 0.18);
+}
+
+.statusDashboardSpiritCrest[data-element="water"] {
+  background: linear-gradient(145deg, #2f5970, #58a3c6);
+}
+
+.statusDashboardSpiritCrest[data-element="wood"] {
+  background: linear-gradient(145deg, #2f6b48, #83a951);
+}
+
+.statusDashboardSpiritCrest[data-element="earth"] {
+  background: linear-gradient(145deg, #7a5527, #ca9a46);
+}
+
+.statusDashboardSpiritCrest[data-element="metal"] {
+  background: linear-gradient(145deg, #626b72, #b9c0c4);
+}
+
+.statusDashboardSpiritCrest svg {
+  width: 30px;
+  height: 30px;
+}
+
+.statusDashboardSpiritText h3 {
+  margin-top: 4px;
+  color: #9f3f21;
+}
+
+.statusDashboardIdentityStat {
+  min-height: 54px;
+  border: 1px solid rgba(117, 93, 66, 0.17);
+  border-radius: 8px;
+  background: rgba(255, 252, 246, 0.28);
+  padding: 8px 10px;
+  display: grid;
+  align-content: center;
+  gap: 3px;
+}
+
+.statusDashboardIdentityStat span,
+.statusDashboardIdentityStat small {
+  font-size: 11px;
+  color: rgba(58, 47, 34, 0.62);
+  font-weight: 700;
+}
+
+.statusDashboardIdentityStat strong {
+  font-size: 15px;
+  color: #1e1a14;
+}
+
+.statusDashboardIdentityDetails,
+.statusDashboardPreparationBlock {
+  margin-top: 7px;
+  display: grid;
+  gap: 3px;
+}
+
+.statusDashboardDetailLine {
+  min-width: 0;
+  min-height: 16px;
+  display: grid;
+  grid-template-columns: minmax(104px, 0.74fr) minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  border-bottom: 1px solid rgba(117, 93, 66, 0.13);
+  padding-bottom: 2px;
+}
+
+.statusDashboardDetailLine strong {
+  min-width: 0;
+  color: #1f1a15;
+  font-size: 11px;
+  line-height: 1.14;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.statusDashboardDetailLine--urgent strong {
+  color: #b93327;
+}
+
+.statusDashboardPreparationBlock + .statusDashboardPreparationBlock {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(117, 93, 66, 0.18);
+}
+
+.statusDashboardPreparationBlock h3 {
+  margin-bottom: 0;
+  color: #274e49;
+}
+
+@container (max-height: 760px) {
+  .statusDashboardPanel {
+    padding-block: 10px;
+  }
+
+  .statusDashboardActionRow,
+  .statusDashboardRequirement {
+    min-height: 48px;
+  }
+
+  .statusDashboardSafetyTiles,
+  .statusDashboardStatusChips {
+    gap: 5px;
+  }
+}
+
+@media (max-width: 1500px) {
+  .statusDashboardRoot {
+    height: auto;
+    min-height: 100%;
+    overflow: visible;
+  }
+
+  .statusDashboardCanvas {
+    width: min(1360px, calc(100vw - 40px));
+    height: auto;
+    padding-block: 12px 14px;
+  }
+
+  .statusDashboardHero {
+    grid-template-columns: minmax(250px, 0.8fr) minmax(300px, 1fr) minmax(360px, 1.1fr);
+  }
+
+  .statusDashboardMetric {
+    padding: 0 30px;
+  }
+
+  .statusDashboardGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: none;
+    height: auto;
+    align-items: start;
+  }
+
+  .statusDashboardColumn {
+    display: grid;
+    gap: 8px;
+  }
+
+  .statusDashboardPanel--milestone,
+  .statusDashboardPanel--actions,
+  .statusDashboardPanel--identity,
+  .statusDashboardPanel--readiness,
+  .statusDashboardPanel--safety,
+  .statusDashboardPanel--overview,
+  .statusDashboardPanel--requirements,
+  .statusDashboardPanel--preparation {
+    grid-column: auto;
+    grid-row: auto;
+  }
+
+  .statusDashboardColumn:last-child {
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .statusDashboardPanel--requirements {
+    min-height: 0;
+  }
+}
+
+@media (max-width: 1040px) {
+  .statusDashboardHero {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .statusDashboardHero__art {
+    width: 100%;
+    opacity: 0.16;
+  }
+
+  .statusDashboardMetricStrip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .statusDashboardMetric:nth-child(2) {
+    border-right: 0;
+  }
+
+  .statusDashboardMetric:nth-child(-n + 2) {
+    border-bottom: 1px solid rgba(117, 93, 66, 0.22);
+  }
+
+  .statusDashboardGrid,
+  .statusDashboardColumn:last-child {
+    grid-template-columns: 1fr;
+  }
+
+  .statusDashboardColumn:last-child {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 720px) {
+  .statusDashboardCanvas {
+    width: calc(100vw - 24px);
+    margin-top: 12px;
+  }
+
+  .statusDashboardHero,
+  .statusDashboardPanel {
+    padding: 14px;
+  }
+
+  .statusDashboardRealm,
+  .statusDashboardPath,
+  .statusDashboardMilestone,
+  .statusDashboardActionRow,
+  .statusDashboardRequirement,
+  .statusDashboardIssue,
+  .statusDashboardIdentityTop {
+    grid-template-columns: 1fr;
+  }
+
+  .statusDashboardRealm__crest {
+    width: 88px;
+    height: 88px;
+  }
+
+  .statusDashboardMetricStrip,
+  .statusDashboardSafetyTiles,
+  .statusDashboardStatusChips {
+    grid-template-columns: 1fr;
+  }
+
+  .statusDashboardMetric {
+    min-height: 44px;
+    padding: 0 16px;
+    border-right: 0;
+    border-bottom: 1px solid rgba(117, 93, 66, 0.22);
+  }
+
+  .statusDashboardMetric:last-child {
+    border-bottom: 0;
+  }
+
+  .statusDashboardProgressRail {
+    grid-template-columns: 1fr;
+  }
+
+  .statusDashboardProgressRail::before {
+    left: 14px;
+    right: auto;
+    top: 20px;
+    bottom: 22px;
+    width: 2px;
+    height: auto;
+  }
+
+  .statusDashboardProgressNode {
+    grid-template-columns: 30px minmax(0, 1fr);
+    justify-items: start;
+    text-align: left;
+  }
+
+  .statusDashboardDetailLine {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+
+  .statusDashboardDetailLine strong {
+    text-align: left;
+  }
+}
