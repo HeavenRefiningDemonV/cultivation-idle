@@ -5,6 +5,17 @@ import { getContentBaseUrl } from '../../content/index.js';
 import { RewardService } from '../../services/rewards/index.js';
 import { buildMegaRewardBundle } from '../../debug/buildMegaRewardBundle.js';
 import { useUIStore } from '../../stores/uiStore.js';
+import {
+  DAO_GUIDANCE_OATH_OPTIONS,
+  type DaoAdvancedReadinessMathSetting,
+  type DaoBackgroundRemindersSetting,
+  type DaoFailureCoachingSetting,
+  type DaoJadeSlipLessonsSetting,
+  type DaoLocalLensBannersSetting,
+  type DaoMandateMotionModeSetting,
+  type DaoRecentOmensFeedSetting,
+  type DaoSourceRouteDetailSetting,
+} from '../../systems/ui/daoMandate/index.js';
 import { useRewardsLogStore } from '../../stores/rewardsLogStore.js';
 import { useManualSatchelStore } from '../../stores/manualSatchelStore.js';
 import { SystemStatusPanel } from '../SystemStatusPanel.js';
@@ -25,6 +36,61 @@ import {
   type ValidationIssue,
 } from '../../services/diagnostics/runValidation.js';
 import './SettingsScreen.scss';
+
+type GuidanceSelectOption<T extends string> = {
+  value: T;
+  label: string;
+};
+
+const JADE_SLIP_LESSON_OPTIONS: GuidanceSelectOption<DaoJadeSlipLessonsSetting>[] = [
+  { value: 'off', label: 'Off' },
+  { value: 'first_time', label: 'First time only' },
+  { value: 'repeat_until_learned', label: 'Repeat until learned' },
+];
+
+const LOCAL_LENS_BANNER_OPTIONS: GuidanceSelectOption<DaoLocalLensBannersSetting>[] = [
+  { value: 'hidden', label: 'Hidden' },
+  { value: 'compact', label: 'Compact' },
+  { value: 'full', label: 'Full' },
+];
+
+const SOURCE_ROUTE_DETAIL_OPTIONS: GuidanceSelectOption<DaoSourceRouteDetailSetting>[] = [
+  { value: 'needed_only', label: 'Needed only' },
+  { value: 'always', label: 'Always' },
+  { value: 'never', label: 'Never' },
+];
+
+const ADVANCED_READINESS_MATH_OPTIONS: GuidanceSelectOption<DaoAdvancedReadinessMathSetting>[] = [
+  { value: 'off', label: 'Off' },
+  { value: 'collapsed', label: 'Collapsed' },
+  { value: 'expanded', label: 'Expanded' },
+];
+
+const FAILURE_COACHING_OPTIONS: GuidanceSelectOption<DaoFailureCoachingSetting>[] = [
+  { value: 'critical_only', label: 'Critical only' },
+  { value: 'every_gate_loss', label: 'Every gate loss' },
+  { value: 'full_reflection', label: 'Full reflection' },
+];
+
+const BACKGROUND_REMINDER_OPTIONS: GuidanceSelectOption<DaoBackgroundRemindersSetting>[] = [
+  { value: 'critical_idle_only', label: 'Critical idle only' },
+  { value: 'normal', label: 'Normal' },
+  { value: 'full_optimization', label: 'Full optimization' },
+];
+
+const RECENT_OMENS_FEED_OPTIONS: GuidanceSelectOption<DaoRecentOmensFeedSetting>[] = [
+  { value: 'hidden', label: 'Hidden' },
+  { value: 'compact', label: 'Compact' },
+  { value: 'full', label: 'Full' },
+];
+
+const MANDATE_MOTION_MODE_OPTIONS: GuidanceSelectOption<DaoMandateMotionModeSetting>[] = [
+  { value: 'follow_story', label: 'Follow story motion' },
+  { value: 'full', label: 'Full' },
+  { value: 'medium', label: 'Medium' },
+  { value: 'low', label: 'Low' },
+  { value: 'reduced', label: 'Reduced' },
+];
 
 function downloadJson(filename: string, data: unknown) {
   try {
@@ -83,7 +149,18 @@ export function SettingsScreen() {
   const requirePrestigeConfirm = useUIStore((state) => state.settings.requirePrestigeConfirm);
   const showSystemStatusPanel = useUIStore((state) => state.settings.showSystemStatusPanel);
   const storyMotionMode = useUIStore((state) => state.settings.storyMotionMode);
+  const guidanceOath = useUIStore((state) => state.settings.guidanceOath);
+  const jadeSlipLessons = useUIStore((state) => state.settings.jadeSlipLessons);
+  const localLensBanners = useUIStore((state) => state.settings.localLensBanners);
+  const sourceRouteDetail = useUIStore((state) => state.settings.sourceRouteDetail);
+  const advancedReadinessMath = useUIStore((state) => state.settings.advancedReadinessMath);
+  const failureCoaching = useUIStore((state) => state.settings.failureCoaching);
+  const backgroundReminders = useUIStore((state) => state.settings.backgroundReminders);
+  const recentOmensFeed = useUIStore((state) => state.settings.recentOmensFeed);
+  const mandateMotionMode = useUIStore((state) => state.settings.mandateMotionMode);
   const setSettings = useUIStore((state) => state.setSettings);
+  const setGuidanceOath = useUIStore((state) => state.setGuidanceOath);
+  const setGuidanceSetting = useUIStore((state) => state.setGuidanceSetting);
   const setHeaderTitles = useUIStore((state) => state.setHeaderTitles);
   const addNotification = useUIStore((state) => state.addNotification);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -307,6 +384,205 @@ export function SettingsScreen() {
             <h2 className={'settingsScreenPanelTitle'}>Gameplay &amp; UI</h2>
             <p className={'settingsScreenPanelSubtitle'}>Toggle interface elements and confirmations.</p>
             <div className={'settingsScreenOptionList'}>
+              <section className={'settingsGuidanceOath'} aria-labelledby="settingsGuidanceOathTitle">
+                <div className={'settingsGuidanceOathHeader'}>
+                  <h3 id="settingsGuidanceOathTitle" className={'settingsGuidanceOathTitle'}>Guidance Oath</h3>
+                  <p className={'settingsGuidanceOathIntro'}>
+                    Choose how openly the Dao Mandate counsels this life. This changes only displayed help and
+                    explanations, never rewards, power, or progression.
+                  </p>
+                </div>
+
+                <div className={'settingsGuidanceOathCards'} role="radiogroup" aria-label="Guidance Oath">
+                  {DAO_GUIDANCE_OATH_OPTIONS.map((option) => {
+                    const selected = guidanceOath === option.id;
+                    return (
+                      <label
+                        key={option.id}
+                        className={`settingsGuidanceOathCard ${selected ? 'settingsGuidanceOathCardSelected' : ''}`}
+                      >
+                        <input
+                          type="radio"
+                          name="guidanceOath"
+                          value={option.id}
+                          checked={selected}
+                          onChange={() => setGuidanceOath(option.id)}
+                          aria-label={`${option.title}, ${option.subtitle}`}
+                          className={'settingsGuidanceOathInput'}
+                        />
+                        <span className={'settingsGuidanceOathSeal'} aria-hidden="true">
+                          {selected ? 'Selected' : 'Select'}
+                        </span>
+                        <span className={'settingsGuidanceOathCardTitle'}>{option.title}</span>
+                        <span className={'settingsGuidanceOathSubtitle'}>{option.subtitle}</span>
+                        <span className={'settingsGuidanceOathDescription'}>{option.description}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+
+                <details className={'settingsGuidanceAdvanced'}>
+                  <summary className={'settingsGuidanceAdvancedSummary'}>Advanced guidance details</summary>
+                  <p className={'settingsGuidanceAdvancedIntro'}>
+                    Fine-tune how much the Mandate explains after the main Oath has chosen the broad density.
+                  </p>
+
+                  <div className={'settingsGuidanceAdvancedGrid'}>
+                    <label className={'settingsGuidanceAdvancedRow'}>
+                      <span>
+                        <span className={'settingsGuidanceAdvancedLabel'}>Jade Slip lessons</span>
+                        <span className={'settingsGuidanceAdvancedDescription'}>
+                          Controls tutorial-like lesson slips that explain why a Mandate row or route matters.
+                        </span>
+                      </span>
+                      <select
+                        value={jadeSlipLessons}
+                        onChange={(event) =>
+                          setGuidanceSetting('jadeSlipLessons', event.target.value as DaoJadeSlipLessonsSetting)}
+                        className={'settingsScreenSelect'}
+                      >
+                        {JADE_SLIP_LESSON_OPTIONS.map((option) => (
+                          <option key={option.value} value={option.value}>{option.label}</option>
+                        ))}
+                      </select>
+                    </label>
+
+                    <label className={'settingsGuidanceAdvancedRow'}>
+                      <span>
+                        <span className={'settingsGuidanceAdvancedLabel'}>Local module lens banners</span>
+                        <span className={'settingsGuidanceAdvancedDescription'}>
+                          Controls whether each module explains its relationship to the current Mandate when you visit it.
+                        </span>
+                      </span>
+                      <select
+                        value={localLensBanners}
+                        onChange={(event) =>
+                          setGuidanceSetting('localLensBanners', event.target.value as DaoLocalLensBannersSetting)}
+                        className={'settingsScreenSelect'}
+                      >
+                        {LOCAL_LENS_BANNER_OPTIONS.map((option) => (
+                          <option key={option.value} value={option.value}>{option.label}</option>
+                        ))}
+                      </select>
+                    </label>
+
+                    <label className={'settingsGuidanceAdvancedRow'}>
+                      <span>
+                        <span className={'settingsGuidanceAdvancedLabel'}>Source route detail</span>
+                        <span className={'settingsGuidanceAdvancedDescription'}>
+                          Controls whether the Mandate explains where missing materials, currencies, and proof items come from.
+                        </span>
+                      </span>
+                      <select
+                        value={sourceRouteDetail}
+                        onChange={(event) =>
+                          setGuidanceSetting('sourceRouteDetail', event.target.value as DaoSourceRouteDetailSetting)}
+                        className={'settingsScreenSelect'}
+                      >
+                        {SOURCE_ROUTE_DETAIL_OPTIONS.map((option) => (
+                          <option key={option.value} value={option.value}>{option.label}</option>
+                        ))}
+                      </select>
+                    </label>
+
+                    <label className={'settingsGuidanceAdvancedRow'}>
+                      <span>
+                        <span className={'settingsGuidanceAdvancedLabel'}>Advanced readiness math</span>
+                        <span className={'settingsGuidanceAdvancedDescription'}>
+                          Controls detailed readiness rows such as weapon floor, medicine reserve, loadout coverage, and mastery targets.
+                        </span>
+                      </span>
+                      <select
+                        value={advancedReadinessMath}
+                        onChange={(event) =>
+                          setGuidanceSetting('advancedReadinessMath', event.target.value as DaoAdvancedReadinessMathSetting)}
+                        className={'settingsScreenSelect'}
+                      >
+                        {ADVANCED_READINESS_MATH_OPTIONS.map((option) => (
+                          <option key={option.value} value={option.value}>{option.label}</option>
+                        ))}
+                      </select>
+                    </label>
+
+                    <label className={'settingsGuidanceAdvancedRow'}>
+                      <span>
+                        <span className={'settingsGuidanceAdvancedLabel'}>Failure coaching</span>
+                        <span className={'settingsGuidanceAdvancedDescription'}>
+                          Controls how much the Mandate explains after gate losses or repeated combat failures.
+                        </span>
+                      </span>
+                      <select
+                        value={failureCoaching}
+                        onChange={(event) =>
+                          setGuidanceSetting('failureCoaching', event.target.value as DaoFailureCoachingSetting)}
+                        className={'settingsScreenSelect'}
+                      >
+                        {FAILURE_COACHING_OPTIONS.map((option) => (
+                          <option key={option.value} value={option.value}>{option.label}</option>
+                        ))}
+                      </select>
+                    </label>
+
+                    <label className={'settingsGuidanceAdvancedRow'}>
+                      <span>
+                        <span className={'settingsGuidanceAdvancedLabel'}>Background reminders</span>
+                        <span className={'settingsGuidanceAdvancedDescription'}>
+                          Controls reminders for passive support such as expeditions, bounties, and queues while the main route continues.
+                        </span>
+                      </span>
+                      <select
+                        value={backgroundReminders}
+                        onChange={(event) =>
+                          setGuidanceSetting('backgroundReminders', event.target.value as DaoBackgroundRemindersSetting)}
+                        className={'settingsScreenSelect'}
+                      >
+                        {BACKGROUND_REMINDER_OPTIONS.map((option) => (
+                          <option key={option.value} value={option.value}>{option.label}</option>
+                        ))}
+                      </select>
+                    </label>
+
+                    <label className={'settingsGuidanceAdvancedRow'}>
+                      <span>
+                        <span className={'settingsGuidanceAdvancedLabel'}>Recent omens feed</span>
+                        <span className={'settingsGuidanceAdvancedDescription'}>
+                          Controls whether recent events such as offline gains, gate losses, clears, and unlocks appear in Mandate memory.
+                        </span>
+                      </span>
+                      <select
+                        value={recentOmensFeed}
+                        onChange={(event) =>
+                          setGuidanceSetting('recentOmensFeed', event.target.value as DaoRecentOmensFeedSetting)}
+                        className={'settingsScreenSelect'}
+                      >
+                        {RECENT_OMENS_FEED_OPTIONS.map((option) => (
+                          <option key={option.value} value={option.value}>{option.label}</option>
+                        ))}
+                      </select>
+                    </label>
+
+                    <label className={'settingsGuidanceAdvancedRow'}>
+                      <span>
+                        <span className={'settingsGuidanceAdvancedLabel'}>Mandate motion</span>
+                        <span className={'settingsGuidanceAdvancedDescription'}>
+                          Controls only Mandate ceremony, reveals, glints, and seals. Reduced motion keeps the meaning but removes nonessential movement.
+                        </span>
+                      </span>
+                      <select
+                        value={mandateMotionMode}
+                        onChange={(event) =>
+                          setGuidanceSetting('mandateMotionMode', event.target.value as DaoMandateMotionModeSetting)}
+                        className={'settingsScreenSelect'}
+                      >
+                        {MANDATE_MOTION_MODE_OPTIONS.map((option) => (
+                          <option key={option.value} value={option.value}>{option.label}</option>
+                        ))}
+                      </select>
+                    </label>
+                  </div>
+                </details>
+              </section>
+
               <label className={'settingsScreenOptionRow'}>
                 <input
                   type="checkbox"

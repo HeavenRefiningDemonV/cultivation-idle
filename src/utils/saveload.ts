@@ -35,6 +35,10 @@ import { getLastMigrationReport } from '../save/migrations/index.js';
 import { buildOfflineContext, type OfflineContext } from '../systems/offline.js';
 import { normalizeCitySaveState } from '../save/cityStateNormalization.js';
 import { COMBAT_ACTIVITY_TYPES, type ActiveActivity } from '../types/activity.js';
+import {
+  pickDaoMandateGuidanceSettings,
+  sanitizeDaoMandateGuidanceSettings,
+} from '../systems/ui/daoMandate/daoMandateGuidanceSettings.js';
 
 /**
  * Save system constants
@@ -238,6 +242,7 @@ function gatherGameState(): SaveData {
     },
     uiSettings: {
       storyMotionMode: uiState.settings.storyMotionMode,
+      ...pickDaoMandateGuidanceSettings(uiState.settings),
     },
 
     zoneState: {
@@ -1165,13 +1170,14 @@ function applySaveData(saveData: SaveData): void {
     });
 
     const savedStoryMotionMode = saveData.uiSettings?.storyMotionMode;
-    if (
-      savedStoryMotionMode === 'full'
-      || savedStoryMotionMode === 'reduced'
-      || savedStoryMotionMode === 'off'
-    ) {
-      useUIStore.getState().setSettings({ storyMotionMode: savedStoryMotionMode });
-    }
+    const restoredStoryMotionMode =
+      savedStoryMotionMode === 'full' || savedStoryMotionMode === 'reduced' || savedStoryMotionMode === 'off'
+        ? savedStoryMotionMode
+        : 'full';
+    useUIStore.getState().setSettings({
+      storyMotionMode: restoredStoryMotionMode,
+      ...sanitizeDaoMandateGuidanceSettings(saveData.uiSettings),
+    });
 
     // Apply zone state (if exists)
     useZoneStore.setState({

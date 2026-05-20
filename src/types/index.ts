@@ -2,6 +2,17 @@ import type { CraftSessionSaveState } from "../systems/crafting/craftingTypes.js
 import type { RewardBundle } from "../services/rewards/index.js";
 import type { PavilionSaveState } from "../features/pavilion/pavilionTypes.js";
 import type { StoryMotionMode, StorySaveState } from "../features/story/storyTypes.js";
+import type {
+  DaoAdvancedReadinessMathSetting,
+  DaoBackgroundRemindersSetting,
+  DaoFailureCoachingSetting,
+  DaoJadeSlipLessonsSetting,
+  DaoLocalLensBannersSetting,
+  DaoMandateMotionModeSetting,
+  DaoRecentOmensFeedSetting,
+  DaoSourceRouteDetailSetting,
+} from "../systems/ui/daoMandate/daoMandateGuidanceSettings.js";
+import type { DaoMandateGuidanceProfile } from "../systems/ui/daoMandate/daoMandateTypes.js";
 
 /**
  * Cultivation path types
@@ -480,6 +491,15 @@ export interface SaveData {
 
   uiSettings?: {
     storyMotionMode?: StoryMotionMode;
+    guidanceOath?: DaoMandateGuidanceProfile;
+    jadeSlipLessons?: DaoJadeSlipLessonsSetting;
+    localLensBanners?: DaoLocalLensBannersSetting;
+    sourceRouteDetail?: DaoSourceRouteDetailSetting;
+    advancedReadinessMath?: DaoAdvancedReadinessMathSetting;
+    failureCoaching?: DaoFailureCoachingSetting;
+    backgroundReminders?: DaoBackgroundRemindersSetting;
+    recentOmensFeed?: DaoRecentOmensFeedSetting;
+    mandateMotionMode?: DaoMandateMotionModeSetting;
   };
 
   // Zone progression

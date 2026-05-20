@@ -2,6 +2,11 @@ import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import type { OfflineCatchupResult } from '../services/time/OfflineCatchup.js';
 import type { StoryMotionMode } from '../features/story/storyTypes.js';
+import {
+  createDefaultDaoMandateGuidanceSettings,
+  type DaoMandateGuidanceSettings,
+} from '../systems/ui/daoMandate/daoMandateGuidanceSettings.js';
+import type { DaoMandateGuidanceProfile } from '../systems/ui/daoMandate/daoMandateTypes.js';
 import { useActivityStore } from './activityStore.js';
 import { useCombatStore } from './combatStore.js';
 import { useOutskirtsStore } from './outskirtsStore.js';
@@ -94,7 +99,7 @@ export const getWorldBuildingIntentKey = (intent: WorldBuildingModalIntent): str
   gateTrialExactMode: intent?.gateTrialExactMode ?? null,
 });
 
-export interface UISettingsState {
+export interface UISettingsState extends DaoMandateGuidanceSettings {
   showOfflineModal: boolean;
   showCombatLog: boolean;
   requirePrestigeConfirm: boolean;
@@ -229,6 +234,12 @@ export interface UIState extends UIStateBase {
   setLastSaveAt: (timestamp: number | null) => void;
   setLastOfflineSummary: (summary: OfflineCatchupResult['summary']) => void;
   setSettings: (partial: Partial<UISettingsState>) => void;
+  setGuidanceOath: (oath: DaoMandateGuidanceProfile) => void;
+  setGuidanceSetting: <K extends keyof DaoMandateGuidanceSettings>(
+    key: K,
+    value: DaoMandateGuidanceSettings[K],
+  ) => void;
+  resetGuidanceSettings: () => void;
   toggleCombatMinibarExpanded: () => void;
   openCombatPreview: (context: CombatPresentationContext) => void;
   startCombatFromPreview: () => void;
@@ -329,6 +340,7 @@ const INITIAL_UI_STATE: UIStateBase = {
     useConsumablesInCombat: false,
     preferredTarget: 'boss',
     storyMotionMode: 'full',
+    ...createDefaultDaoMandateGuidanceSettings(),
   },
   lastSaveAt: null,
   lastOfflineSummary: null,
@@ -669,6 +681,30 @@ export const useUIStore = create<UIState>()(
     setSettings: (partial: Partial<UISettingsState>) => {
       set((state) => {
         state.settings = { ...state.settings, ...partial };
+      });
+    },
+
+    setGuidanceOath: (oath) => {
+      set((state) => {
+        state.settings.guidanceOath = oath;
+      });
+    },
+
+    setGuidanceSetting: (key, value) => {
+      set((state) => {
+        state.settings = {
+          ...state.settings,
+          [key]: value,
+        };
+      });
+    },
+
+    resetGuidanceSettings: () => {
+      set((state) => {
+        state.settings = {
+          ...state.settings,
+          ...createDefaultDaoMandateGuidanceSettings(),
+        };
       });
     },
 

@@ -101,6 +101,11 @@
   padding: 5px 8px;
 }
 
+.settingsScreenSelect:focus-visible {
+  outline: 2px solid rgba(20, 130, 96, 0.72);
+  outline-offset: 2px;
+}
+
 .settingsScreenOptionLabel {
   color: #000000;
   font-weight: 600;
@@ -110,6 +115,186 @@
   margin: 0;
   color: #000000;
   font-size: 14px;
+}
+
+.settingsGuidanceOath {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid rgba(116, 86, 44, 0.4);
+  border-radius: 8px;
+  background: rgba(250, 244, 229, 0.72);
+}
+
+.settingsGuidanceOathHeader {
+  display: grid;
+  gap: 6px;
+}
+
+.settingsGuidanceOathTitle {
+  margin: 0;
+  color: #1f1710;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.settingsGuidanceOathIntro {
+  margin: 0;
+  color: #35271a;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.settingsGuidanceOathCards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+@media (min-width: 720px) {
+  .settingsGuidanceOathCards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.settingsGuidanceOathCard {
+  position: relative;
+  display: grid;
+  gap: 6px;
+  min-height: 188px;
+  padding: 12px;
+  border: 1px solid rgba(91, 70, 43, 0.42);
+  border-radius: 8px;
+  background: rgba(255, 252, 245, 0.88);
+  color: #1f1710;
+  text-align: left;
+  cursor: pointer;
+}
+
+.settingsGuidanceOathInput {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.settingsGuidanceOathCard > span {
+  pointer-events: none;
+}
+
+.settingsGuidanceOathCard:hover,
+.settingsGuidanceOathCard:focus-visible,
+.settingsGuidanceOathCard:focus-within {
+  border-color: rgba(163, 116, 39, 0.9);
+  outline: 2px solid rgba(20, 130, 96, 0.72);
+  outline-offset: 2px;
+}
+
+.settingsGuidanceOathCardSelected {
+  border-color: rgba(176, 128, 36, 0.95);
+  box-shadow: inset 0 0 0 2px rgba(20, 130, 96, 0.42), 0 8px 18px rgba(74, 52, 20, 0.18);
+  background: rgba(255, 248, 224, 0.96);
+}
+
+.settingsGuidanceOathSeal {
+  justify-self: start;
+  min-height: 24px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(20, 130, 96, 0.38);
+  background: rgba(20, 130, 96, 0.12);
+  color: #0f5f49;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.settingsGuidanceOathCardTitle {
+  color: #1f1710;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.settingsGuidanceOathSubtitle {
+  color: #7a4f11;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.settingsGuidanceOathDescription {
+  color: #35271a;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.settingsGuidanceAdvanced {
+  display: grid;
+  gap: 10px;
+  padding-top: 2px;
+}
+
+.settingsGuidanceAdvancedSummary {
+  width: fit-content;
+  min-height: 34px;
+  padding: 7px 10px;
+  border-radius: 8px;
+  color: #1f1710;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.settingsGuidanceAdvancedSummary:focus-visible {
+  outline: 2px solid rgba(20, 130, 96, 0.72);
+  outline-offset: 2px;
+}
+
+.settingsGuidanceAdvancedIntro {
+  margin: 10px 0 0;
+  color: #35271a;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.settingsGuidanceAdvancedGrid {
+  display: grid;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.settingsGuidanceAdvancedRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid rgba(91, 70, 43, 0.22);
+  border-radius: 8px;
+  background: rgba(255, 252, 245, 0.64);
+  cursor: pointer;
+}
+
+@media (min-width: 720px) {
+  .settingsGuidanceAdvancedRow {
+    grid-template-columns: minmax(0, 1fr) minmax(170px, 210px);
+    align-items: center;
+  }
+}
+
+.settingsGuidanceAdvancedLabel {
+  display: block;
+  color: #1f1710;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.settingsGuidanceAdvancedDescription {
+  display: block;
+  margin-top: 3px;
+  color: #35271a;
+  font-size: 13px;
+  line-height: 1.4;
 }
 
 .settingsScreenDangerButton {

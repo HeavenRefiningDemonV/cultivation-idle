@@ -3,7 +3,9 @@ import type {
   DaoCurrentWorkSurface,
   DaoJadeSlip,
   DaoMandateGuidanceProfile,
+  DaoMandateObstructionKind,
   DaoMandateRoute,
+  DaoMandateRouteSource,
   DaoMandateSurfaceV1,
   DaoReadinessLedger,
   DaoReadinessRow,
@@ -13,13 +15,19 @@ import type {
   DaoSourceMapEntry,
   DaoSourceOption,
 } from './daoMandateTypes.js';
+import {
+  createDefaultDaoMandateGuidanceSettings,
+  sanitizeDaoMandateGuidanceSettings,
+  type DaoMandateGuidanceSettings,
+} from './daoMandateGuidanceSettings.js';
 
 export interface DaoMandateVisibilityOptions {
-  profile: DaoMandateGuidanceProfile;
+  profile?: DaoMandateGuidanceProfile;
+  settings?: Partial<DaoMandateGuidanceSettings>;
 }
 
 export function getDefaultDaoMandateGuidanceProfile(): DaoMandateGuidanceProfile {
-  return 'elder';
+  return createDefaultDaoMandateGuidanceSettings().guidanceOath;
 }
 
 type LedgerBucketKey = keyof DaoRequirementLedger;
@@ -36,6 +44,17 @@ const LEDGER_BUCKETS: LedgerBucketKey[] = [
   'sourceRoutes',
   'optionalOptimizations',
   'recentOmens',
+];
+
+const SOURCE_DETAIL_ROUTE_SOURCES: DaoMandateRouteSource[] = ['economy', 'readiness', 'build'];
+
+const SOURCE_OBVIOUS_OBSTRUCTION_KINDS: DaoMandateObstructionKind[] = [
+  'required_item_missing',
+  'source_route_locked',
+  'bounty_merit_shortfall',
+  'apothecary_prep_shortfall',
+  'forge_floor_shortfall',
+  'manual_pavilion_gap',
 ];
 
 function cloneRoute(route: DaoMandateRoute): DaoMandateRoute {
@@ -198,10 +217,10 @@ function findFirstActionable(
   return null;
 }
 
-function primaryRouteNeedsSourceExplanation(surface: DaoMandateSurfaceV1): boolean {
-  return surface.primaryRoute.source === 'economy' ||
-    surface.primaryRoute.source === 'readiness' ||
-    surface.primaryRoute.source === 'build';
+function surfaceNeedsSourceRouteDetail(surface: DaoMandateSurfaceV1): boolean {
+  if (SOURCE_DETAIL_ROUTE_SOURCES.includes(surface.primaryRoute.source)) return true;
+  if (SOURCE_OBVIOUS_OBSTRUCTION_KINDS.includes(surface.obstruction.kind)) return true;
+  return surface.requirementLedger.sourceRoutes.some(isActionableState);
 }
 
 function findSealedLedgerRow(surface: DaoMandateSurfaceV1): SelectedLedgerRow | null {
@@ -211,7 +230,7 @@ function findSealedLedgerRow(surface: DaoMandateSurfaceV1): SelectedLedgerRow | 
   const actionable = findFirstActionable(surface, ['hardGates', 'readinessFloors', 'supportReserves']);
   if (actionable) return actionable;
 
-  if (primaryRouteNeedsSourceExplanation(surface)) {
+  if (surfaceNeedsSourceRouteDetail(surface)) {
     const sourceRoute = surface.requirementLedger.sourceRoutes[0];
     if (sourceRoute) return { bucket: 'sourceRoutes', row: sourceRoute };
   }
@@ -262,7 +281,7 @@ function buildElderLedger(surface: DaoMandateSurfaceV1): DaoRequirementLedger {
     .filter((entry) => {
       if (entry.bucket === 'hardGates') return isActionableState(entry.row);
       if (entry.bucket === 'readinessFloors' || entry.bucket === 'supportReserves') return isActionableState(entry.row);
-      if (entry.bucket === 'sourceRoutes') return primaryRouteNeedsSourceExplanation(surface);
+      if (entry.bucket === 'sourceRoutes') return surfaceNeedsSourceRouteDetail(surface);
       if (entry.bucket === 'optionalOptimizations') {
         return surface.obstruction.kind === 'attempt_gate_now' || surface.obstruction.kind === 'none';
       }
@@ -309,18 +328,142 @@ function applyElder(surface: DaoMandateSurfaceV1): void {
   surface.lessonSlips = surface.lessonSlips.slice(0, 1);
 }
 
+function resolveVisibilitySettings(options: DaoMandateVisibilityOptions): DaoMandateGuidanceSettings {
+  const settings = sanitizeDaoMandateGuidanceSettings(options.settings ?? {});
+  return {
+    ...settings,
+    guidanceOath: options.profile ?? settings.guidanceOath,
+  };
+}
+
+function hideSourceRouteDetails(surface: DaoMandateSurfaceV1): void {
+  surface.sourceMap = [];
+  surface.requirementLedger = {
+    ...surface.requirementLedger,
+    sourceRoutes: [],
+  };
+}
+
+function applySourceRouteDetail(surface: DaoMandateSurfaceV1, settings: DaoMandateGuidanceSettings): void {
+  if (settings.sourceRouteDetail === 'always') return;
+  if (settings.sourceRouteDetail === 'never' || !surfaceNeedsSourceRouteDetail(surface)) {
+    hideSourceRouteDetails(surface);
+  }
+}
+
+function applyJadeSlipLessons(surface: DaoMandateSurfaceV1, settings: DaoMandateGuidanceSettings): void {
+  if (settings.jadeSlipLessons === 'off') {
+    surface.lessonSlips = [];
+    return;
+  }
+  if (settings.jadeSlipLessons === 'first_time') {
+    surface.lessonSlips = surface.lessonSlips.slice(0, 1);
+  }
+}
+
+function shouldKeepLocalLens(surface: DaoMandateSurfaceV1, settings: DaoMandateGuidanceSettings): boolean {
+  if (!surface.localLens) return false;
+  if (settings.localLensBanners === 'hidden') return false;
+  if (settings.localLensBanners === 'full') return true;
+  if (settings.guidanceOath !== 'sealed') return true;
+  return surface.localLens.relation === 'primary' || surface.localLens.relation === 'blocked';
+}
+
+function applyLocalLensBanners(surface: DaoMandateSurfaceV1, settings: DaoMandateGuidanceSettings): void {
+  if (!shouldKeepLocalLens(surface, settings)) {
+    surface.localLens = null;
+  }
+}
+
+function applyAdvancedReadinessMath(surface: DaoMandateSurfaceV1, settings: DaoMandateGuidanceSettings): void {
+  if (settings.advancedReadinessMath === 'off') {
+    surface.readiness = {
+      ...surface.readiness,
+      rows: [],
+    };
+  }
+}
+
+function applyFailureCoaching(surface: DaoMandateSurfaceV1, settings: DaoMandateGuidanceSettings): void {
+  if (settings.failureCoaching !== 'critical_only') return;
+  if (surface.obstruction.kind === 'gate_recent_failure' || surface.obstruction.source === 'failure_reflection') return;
+
+  const removeFailureRows = (rows: DaoRequirementRow[]): DaoRequirementRow[] =>
+    rows.filter((row) => row.source !== 'failure_reflection');
+
+  surface.requirementLedger = {
+    hardGates: removeFailureRows(surface.requirementLedger.hardGates),
+    readinessFloors: removeFailureRows(surface.requirementLedger.readinessFloors),
+    supportReserves: removeFailureRows(surface.requirementLedger.supportReserves),
+    sourceRoutes: removeFailureRows(surface.requirementLedger.sourceRoutes),
+    optionalOptimizations: removeFailureRows(surface.requirementLedger.optionalOptimizations),
+    recentOmens: removeFailureRows(surface.requirementLedger.recentOmens),
+  };
+  surface.recentOmens = surface.recentOmens.filter((omen) => omen.source !== 'failure_reflection');
+  surface.lessonSlips = surface.lessonSlips.filter((slip) => slip.trigger !== 'gate_recent_failure');
+}
+
+function applyBackgroundReminders(surface: DaoMandateSurfaceV1, settings: DaoMandateGuidanceSettings): void {
+  if (settings.backgroundReminders === 'full_optimization') return;
+
+  const routes = surface.backgroundPlan.routes;
+  if (settings.backgroundReminders === 'normal') {
+    surface.backgroundPlan = {
+      ...surface.backgroundPlan,
+      routes: routes.slice(0, 1),
+    };
+    return;
+  }
+
+  const blockedRoute = routes.find((route) => route.blocked);
+  const hasIdleSlots = (surface.backgroundPlan.idleSlotCount ?? 0) > 0;
+  surface.backgroundPlan = {
+    ...surface.backgroundPlan,
+    routes: blockedRoute ? [blockedRoute] : hasIdleSlots && settings.guidanceOath !== 'sealed' ? routes.slice(0, 1) : [],
+  };
+}
+
+function applyRecentOmensFeed(surface: DaoMandateSurfaceV1, settings: DaoMandateGuidanceSettings): void {
+  if (settings.recentOmensFeed === 'full') return;
+  if (settings.recentOmensFeed === 'hidden') {
+    surface.recentOmens = [];
+    surface.requirementLedger = {
+      ...surface.requirementLedger,
+      recentOmens: [],
+    };
+    return;
+  }
+  surface.recentOmens = surface.recentOmens.slice(0, 1);
+  surface.requirementLedger = {
+    ...surface.requirementLedger,
+    recentOmens: surface.requirementLedger.recentOmens.slice(0, 1),
+  };
+}
+
+function applyGranularSettings(surface: DaoMandateSurfaceV1, settings: DaoMandateGuidanceSettings): void {
+  applySourceRouteDetail(surface, settings);
+  applyJadeSlipLessons(surface, settings);
+  applyLocalLensBanners(surface, settings);
+  applyAdvancedReadinessMath(surface, settings);
+  applyFailureCoaching(surface, settings);
+  applyBackgroundReminders(surface, settings);
+  applyRecentOmensFeed(surface, settings);
+}
+
 export function applyDaoMandateVisibility(
   surface: DaoMandateSurfaceV1,
   options: DaoMandateVisibilityOptions,
 ): DaoMandateSurfaceV1 {
+  const settings = resolveVisibilitySettings(options);
   const next = cloneSurface(surface);
-  next.meta.guidanceProfile = options.profile;
+  next.meta.guidanceProfile = settings.guidanceOath;
 
-  if (options.profile === 'sealed') {
+  if (settings.guidanceOath === 'sealed') {
     applySealed(next);
-  } else if (options.profile === 'elder') {
+  } else if (settings.guidanceOath === 'elder') {
     applyElder(next);
   }
+  applyGranularSettings(next, settings);
 
   return next;
 }
