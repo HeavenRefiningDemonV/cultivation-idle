@@ -1,0 +1,20 @@
+﻿bundle: p4-dao-mandate-review-bundle-20260520-222140
+created: 2026-05-20T22:21:40.5470176+03:00
+source: C:\Users\abdul\Desktop\cultivation-idle
+git branch: Latest
+git head: d4029d3d443a25db65067908d96abe65a9948703
+
+included files:
+- README_REVIEW_BUNDLE.md (880 bytes)
+- REVIEW_NOTES.md (1258 bytes)
+- src/components/screens/StatusScreen.scss (25881 bytes)
+- src/components/screens/StatusScreen.tsx (17330 bytes)
+- src/features/cultivation/exact/buildCultivationExactSurface.ts (41193 bytes)
+- src/features/cultivation/exact/CultivationExactScreen.scss (36873 bytes)
+- src/features/cultivation/exact/CultivationExactScreen.tsx (20291 bytes)
+- src/features/cultivation/exact/CultivationExactScreenOwner.tsx (10576 bytes)
+- src/features/cultivation/exact/cultivationExactTypes.ts (8017 bytes)
+- src/features/cultivation/exact/useCultivationExactActionController.ts (8300 bytes)
+- src/systems/ui/status/statusDashboardSurface.ts (44711 bytes)
+- tests/contracts/cultivationMandateLensContract.test.ts (2929 bytes)
+- tests/contracts/statusMandateChamberContract.test.ts (2466 bytes)

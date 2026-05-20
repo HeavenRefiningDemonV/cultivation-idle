@@ -1,0 +1,272 @@
+.ink-combat-shell {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+
+.ink-combat-shell__body {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+.ink-combat-shell__body--sidebar-right {
+  flex-direction: row-reverse;
+}
+
+.ink-combat-shell__sidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 300px;
+  background-color: #ddd;
+  border-image: url('../../assets/menus/buttoncorners.png') 60 / 0 10px 0 0 / 5px;
+  padding: 20px 16px;
+  gap: 12px;
+  overflow-y: auto;
+}
+
+
+.ink-combat-shell__sidebar-top {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ink-combat-shell__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: -5px;
+}
+
+.ink-combat-shell__title {
+  color: #141414;
+  font-family: 'Protest Revolution';
+  font-size: 22px;
+}
+
+.ink-combat-shell__subtitle {
+  color: #2d2d2d;
+  font-size: 14px;
+}
+
+.ink-combat-shell__close {
+  border: none;
+  background: transparent;
+  width: 32px;
+  height: 32px;
+  font-weight: 700;
+  color: black;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.ink-combat-shell__section {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-bottom: 5px;
+}
+
+.ink-combat-shell__section--fill {
+  flex: 1;
+  min-height: 160px;
+}
+
+.ink-combat-shell__section-title {
+  color: #141414;
+  font-family: 'Protest Revolution';
+  font-size: 22px;
+}
+
+.ink-combat-shell__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ink-combat-shell__controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ink-combat-shell__control {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: #1f1f1f;
+  font-size: 13px;
+}
+
+.ink-combat-shell__control select {
+  height: 28px;
+  padding: 2px 6px;
+  background-color: #e4e4e4;
+  border-image: url('../../assets/menus/buttoncorners.png') 60 / 3px;
+}
+
+.ink-combat-shell__control--checkbox {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+.ink-combat-shell__control-label {
+  font-size: 12px;
+}
+
+.ink-combat-shell__meter {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ink-combat-shell__segments {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.ink-combat-shell__segment {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.ink-combat-shell__segment--filled {
+  background: #4a8bbe;
+}
+
+.ink-combat-shell__meter-text {
+  font-size: 12px;
+  color: #2b2b2b;
+}
+
+.ink-combat-shell__log {
+  background-color: #d5d5d5;
+  height: 100%;
+  width: 100%;
+  padding: 0.3125rem;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow-y: auto;
+  min-height: 140px;
+  font-size: 12px;
+  color: #111111;
+  border-image: url('../../assets/menus/buttoncorners.png') 60 / 3px;
+}
+
+.ink-combat-shell__log-entry {
+  line-height: 1.4;
+}
+
+.ink-combat-shell__log-empty {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.ink-combat-shell__stat-line {
+  font-size: 12px;
+  color: #1f1f1f;
+}
+
+.ink-combat-shell__main {
+  height: 100%;
+  width: 980px;
+  display: flex;
+  flex-direction: column;
+}
+
+.ink-combat-shell__body--sidebar-right .ink-combat-shell__main {
+  width: auto;
+  flex: 1 1 auto;
+}
+
+.ink-combat-shell--gate-trial .ink-combat-shell__sidebar {
+  overflow: hidden;
+}
+
+.ink-combat-shell--gate-trial .ink-combat-shell__section--fill {
+  flex: 1;
+  min-height: 160px;
+}
+
+.ink-combat-shell--gate-trial .ink-combat-shell__log {
+  flex: 0 0 180px;
+  overflow: hidden;
+}
+
+.ink-combat-shell--gate-trial .gate-trial__log {
+  height: 100%;
+  overflow: auto;
+}
+
+.ink-combat-shell--gate-trial .gate-trial__progress {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ink-combat-shell--gate-trial .gate-trial__segments {
+  display: grid;
+  gap: 8px;
+}
+
+.ink-combat-shell--gate-trial .gate-trial__segment {
+  height: 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(20, 20, 20, 0.5);
+  background: rgba(20, 20, 20, 0.12);
+}
+
+.ink-combat-shell--gate-trial .gate-trial__segment--filled {
+  background: #1f1f1f;
+}
+
+.ink-combat-shell--gate-trial .gate-trial__segment--current {
+  box-shadow: 0 0 0 2px rgba(20, 20, 20, 0.25);
+}
+
+.ink-combat-shell--gate-trial .gate-trial__segment--overflow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  background: rgba(20, 20, 20, 0.08);
+}
+
+.ink-combat-shell--gate-trial .gate-trial__progress-text {
+  font-size: 12px;
+  color: #2b2b2b;
+}
+
+.ink-combat-shell--gate-trial .gate-trial__eligibility-details {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #1f1f1f;
+}
+
+.ink-combat-shell--gate-trial .gate-trial__eligibility-details summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.ink-combat-shell--gate-trial .gate-trial__eligibility-details pre {
+  margin: 6px 0 0;
+  padding: 6px;
+  background: rgba(0, 0, 0, 0.08);
+  border-image: url('../../assets/menus/buttoncorners.png') 60 / 3px;
+  white-space: pre-wrap;
+}
