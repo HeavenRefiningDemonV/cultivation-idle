@@ -6,6 +6,7 @@ import { useGameStore } from '../../stores/gameStore.js';
 import { useUIStore } from '../../stores/uiStore.js';
 import { buildLiveRunCompassSurfaceV2 } from '../ui/runCompass/index.js';
 import type { RunCompassSurfaceV2 } from '../ui/runCompass/types.js';
+import type { DaoMandateSurfaceV1 } from '../ui/daoMandate/index.js';
 import { labelForP3Module, p3ModuleRoute, type P3ModuleKey, type P3Route } from './p3SurfaceTypes.js';
 
 export interface CityPhaseSurfaceV1 {
@@ -78,6 +79,7 @@ export interface BuildCityPhaseSurfaceSnapshot {
   pendingCityArrivalId?: string | null;
   currentRealmIndex: number;
   runCompass?: RunCompassSurfaceV2 | null;
+  mandate?: DaoMandateSurfaceV1 | null;
 }
 
 interface CityPhaseProfile {
@@ -189,6 +191,13 @@ function runCompassWorldModule(runCompass: RunCompassSurfaceV2 | null | undefine
   return null;
 }
 
+function mandateWorldModule(mandate: DaoMandateSurfaceV1 | null | undefined): P3ModuleKey | null {
+  const target = mandate?.primaryRoute.target;
+  if (target?.kind === 'world_module') return target.moduleKey;
+  if (target?.kind === 'tab' && (target.tab === 'cultivation' || target.tab === 'techniques' || target.tab === 'prestige')) return target.tab;
+  return null;
+}
+
 function nextGateLine(content: ValidatedContent, cityId: string | null, cap: boolean): { line?: string; gateId?: string } {
   if (cap) return { line: 'Authored content cap reached. Route toward Prestige rather than hidden progression.' };
   const trial = cityId ? content.trials.find((entry) => entry.cityId === cityId) ?? null : null;
@@ -203,15 +212,17 @@ export function buildCityPhaseSurfaceFromSnapshot(snapshot: BuildCityPhaseSurfac
   const currentCity = resolveCurrentCity(snapshot);
   const cityId = currentCity?.id ?? snapshot.cityId ?? 'unknown_city';
   const unlocked = snapshot.unlockedCityIds.includes(cityId);
-  const capByCompass = snapshot.runCompass?.milestone.state === 'content_cap' || snapshot.runCompass?.milestone.state === 'prestige_recommended';
+  const mandateState = snapshot.mandate?.milestone.state;
+  const capByMandate = mandateState === 'content_cap' || mandateState === 'prestige_recommended';
+  const capByCompass = !snapshot.mandate && (snapshot.runCompass?.milestone.state === 'content_cap' || snapshot.runCompass?.milestone.state === 'prestige_recommended');
   const capByRealm = snapshot.currentRealmIndex >= 5 && cityId === (snapshot.content.cities.at(-1)?.id ?? cityId);
-  const cap = capByCompass || capByRealm;
+  const cap = capByMandate || capByCompass || capByRealm;
   const profile = profileForCity(cityId, cap);
   const gate = nextGateLine(snapshot.content, cityId, cap);
-  const currentRouteModule = runCompassWorldModule(snapshot.runCompass);
+  const currentRouteModule = mandateWorldModule(snapshot.mandate) ?? runCompassWorldModule(snapshot.runCompass);
   const firstModule = cap ? 'prestige' : profile.firstModule;
   const firstReason = currentRouteModule && currentRouteModule === firstModule
-    ? snapshot.runCompass?.primaryRoute.detail ?? profile.bottleneck.explanation
+    ? snapshot.mandate?.primaryRoute.detail ?? snapshot.runCompass?.primaryRoute.detail ?? profile.bottleneck.explanation
     : profile.bottleneck.explanation;
   const state: CityPhaseSurfaceV1['state'] = !unlocked
     ? 'locked'
@@ -248,7 +259,7 @@ export function buildCityPhaseSurfaceFromSnapshot(snapshot: BuildCityPhaseSurfac
     nextGateLine: gate.line,
     cityMemoryLine: profile.lesson.xianxiaLine,
     warnings: unlocked ? [] : [{ code: 'city_not_unlocked', message: `${cityDisplayName(currentCity)} is not unlocked by current city state.` }],
-    debugNotes: currentRouteModule ? [`runCompass.primary=${currentRouteModule}`] : [],
+    debugNotes: currentRouteModule ? [`mandate.primary=${currentRouteModule}`] : [],
   };
 }
 

@@ -33,7 +33,7 @@ function SourceOptionView({
   onRouteAction?: DaoMandateRouteActionHandler;
 }) {
   return (
-    <li className={classNames('daoSourceRouteSlipOption', { 'daoSourceRouteSlipOption--locked': option.lockedReason })}>
+    <li className={classNames('daoSourceRouteSlipOption', { 'daoSourceRouteSlipOption--locked': Boolean(option.lockedReason) })}>
       <div className="daoSourceRouteSlipOption__main">
         <strong>{option.label}</strong>
         <span>{option.detail}</span>

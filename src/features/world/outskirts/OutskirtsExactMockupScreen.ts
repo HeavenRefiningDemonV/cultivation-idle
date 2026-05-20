@@ -11,6 +11,7 @@ import { OutskirtsStartHuntCta } from './components/OutskirtsStartHuntCta.js';
 import { OutskirtsGrindSummaryCard } from './components/OutskirtsGrindSummaryCard.js';
 import { OutskirtsRewardsCard } from './components/OutskirtsRewardsCard.js';
 import { CombatAftermathCard, type CombatAftermathRouteSurface } from '../../combatAftermath/index.js';
+import type { OutskirtsMandateLensView } from './components/OutskirtsTopRegion.js';
 
 export interface OutskirtsExactMockupScreenProps {
   surface: OutskirtsExactSurfaceV2;
@@ -30,6 +31,7 @@ export interface OutskirtsExactMockupScreenProps {
   onOpenTacticalCell?: (cellId: OutskirtsExactSurfaceV2['tacticalStrip']['cells'][number]['id']) => void;
   onOpenAreaSelector?: () => void;
   onAftermathRoute?: (route: CombatAftermathRouteSurface) => void;
+  mandateLens?: OutskirtsMandateLensView | null;
 }
 
 export function OutskirtsExactMockupScreen({
@@ -50,6 +52,7 @@ export function OutskirtsExactMockupScreen({
   onOpenTacticalCell,
   onOpenAreaSelector,
   onAftermathRoute,
+  mandateLens,
 }: OutskirtsExactMockupScreenProps) {
   return React.createElement(
     'article',
@@ -60,7 +63,7 @@ export function OutskirtsExactMockupScreen({
       'data-activity-mode': surface.meta.activityMode,
     },
     React.createElement('div', { className: 'outskirtsExactPage__underlay', 'aria-hidden': 'true' }),
-    React.createElement(OutskirtsTopRegion, { surface, onOpenSettings, onOpenTacticalCell, onOpenAreaSelector }),
+    React.createElement(OutskirtsTopRegion, { surface, mandateLens, onOpenSettings, onOpenTacticalCell, onOpenAreaSelector }),
     React.createElement(
       'section',
       { className: 'outskirtsExactPage__bodyCluster', 'data-testid': 'outskirts-exact-body-grid' },

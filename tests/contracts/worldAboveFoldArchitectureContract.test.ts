@@ -22,14 +22,16 @@ test('WR-02 world above-the-fold anatomy keeps map, ribbon, and inspector overla
   assert.ok(drawerIndex > inspectorLayerIndex, 'Narrow inspector drawer should remain a fallback after the wide layer.');
 });
 
-test('WR-02 routes Run Compass truth into the world routing surface instead of duplicating command UI', () => {
+test('WR-02 routes Dao Mandate truth into the world routing surface instead of duplicating command UI', () => {
   const worldScreen = read('src/components/screens/WorldScreen.tsx');
-  assert.match(worldScreen, /const runCompass = useRunCompassSurface\(\)/);
-  assert.match(worldScreen, /runCompassPrimaryModuleKey: runCompassModuleKeys\.primary/);
-  assert.match(worldScreen, /runCompassSecondaryModuleKey: runCompassModuleKeys\.secondary/);
+  assert.match(worldScreen, /buildLiveDaoMandateSurfaceV1/);
+  assert.match(worldScreen, /buildWorldMandateRoutingLensSurface/);
+  assert.match(worldScreen, /mandatePrimaryModuleKey: mandateRoutingLens\?\.primaryModuleKey/);
+  assert.match(worldScreen, /mandateSecondaryModuleKeys: mandateRoutingLens\?\.secondaryModuleKeys/);
   assert.match(worldScreen, /<WorldOverlayRibbon/);
   assert.match(worldScreen, /<WorldOverlayInspector/);
   assert.match(worldScreen, /<InspectorDrawer/);
   assert.doesNotMatch(worldScreen, /worldScreenHubShellHeader/);
   assert.doesNotMatch(worldScreen, /<RunCompass surface=\{runCompass\.full\}/);
+  assert.doesNotMatch(worldScreen, /useRunCompassSurface/);
 });

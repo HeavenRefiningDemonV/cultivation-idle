@@ -358,6 +358,31 @@
   text-overflow: ellipsis;
 }
 
+.outskirtsTopRegion__mandateSlot {
+  grid-column: 3;
+  justify-self: center;
+  width: min(100%, clamp(480px, 48vw, 720px));
+  min-height: clamp(40px, 4.8vh, 56px);
+  display: grid;
+  align-items: start;
+}
+
+.outskirtsMandateLens.daoLocalMandateLensHeader {
+  width: 100%;
+  min-height: clamp(38px, 4.4vh, 52px);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(247, 240, 221, 0.92), rgba(229, 215, 183, 0.86));
+  border-color: rgba(84, 111, 82, 0.28);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 249, 230, 0.36),
+    0 1px 4px rgba(74, 61, 39, 0.08);
+}
+
+.outskirtsMandateLens .daoLocalMandateLensHeader__main {
+  align-items: center;
+}
+
 
 .outskirtsExactPage__bodyCluster {
   display: grid;

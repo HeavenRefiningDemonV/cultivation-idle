@@ -31,6 +31,7 @@ import { useMedicinePouchStore } from '../../../stores/medicinePouchStore.js';
 import { useRuinsStore } from '../../../stores/ruinsStore.js';
 import { useTechniqueStore } from '../../../stores/techniqueStore.js';
 import { useTrialStore, type TrialProgress } from '../../../stores/trialStore.js';
+import { useUIStore } from '../../../stores/uiStore.js';
 import { resolveModuleRef } from '../../../components/screens/world/worldUtils.js';
 import { getTrialGateItemId, getTrialGateRewardBundle } from '../../../systems/progression/runtime/gateResolver.js';
 import {
@@ -43,7 +44,18 @@ import {
   type GateTrialChecklistLine,
   type GateTrialReadinessSurface,
 } from '../../../systems/readiness/section5Adapters.js';
-import { buildLiveRunCompassSurfaceV2 } from '../../../systems/ui/runCompass/index.js';
+import {
+  applyDaoMandateVisibility,
+  buildLiveDaoMandateSurfaceV1,
+  createDaoMandateFixture,
+  pickDaoMandateGuidanceSettings,
+  resolveDaoMandateEffectiveMotionMode,
+  type DaoMandateGuidanceSettings,
+} from '../../../systems/ui/daoMandate/index.js';
+import {
+  applyLocalMandateLensVisibility,
+  buildLocalMandateLensSurface,
+} from '../../../systems/world/localMandateLensSurface.js';
 import { buildFailureReflectionSurface, useFailureReflectionStore } from '../../../systems/failureReflection/index.js';
 import { buildLiveCombatAftermathSurface } from '../../combatAftermath/index.js';
 import { getTrialGateIndex } from '../../../services/diagnostics/balanceTelemetryService.js';
@@ -78,21 +90,52 @@ const LIVE_SOURCE = 'live' as const;
 const DEFAULT_CITY_ID = 'city_pinewind_hamlet';
 const CURRENCY_JOINER = ' \u00b7 ';
 
+function resolveGateTrialMandateLensVariant(
+  settings: DaoMandateGuidanceSettings,
+): NonNullable<GateTrialExactSurfaceV1['mandateLens']>['variant'] {
+  return settings.guidanceOath === 'sealed' || settings.localLensBanners === 'compact'
+    ? 'compact'
+    : settings.localLensBanners === 'full' ? 'full' : 'default';
+}
+
 export interface BuildGateTrialExactSurfaceFromStoresOptions {
   mode?: 'fixture' | 'live';
   trialId?: string | null;
   nowMs?: number;
 }
 
-function buildGateTrialRunCompassProjection(): GateTrialExactSurfaceV1['runCompass'] {
-  const surface = buildLiveRunCompassSurfaceV2();
-  if (!surface) return null;
+function buildGateTrialMandateLensProjection(
+  cityId: string,
+  mode: GateTrialExactSurfaceV1['meta']['mode'],
+): GateTrialExactSurfaceV1['mandateLens'] {
+  const uiSettings = useUIStore.getState().settings;
+  const guidanceSettings = pickDaoMandateGuidanceSettings(uiSettings);
+  const mandateMotionMode = resolveDaoMandateEffectiveMotionMode({
+    mandateMotionMode: guidanceSettings.mandateMotionMode,
+    storyMotionMode: uiSettings.storyMotionMode,
+  });
+  const rawMandate = mode === 'fixture'
+    ? createDaoMandateFixture('attemptable_gate', guidanceSettings.guidanceOath)
+    : buildLiveDaoMandateSurfaceV1({
+        currentScreen: 'gateTrial',
+        guidanceProfile: guidanceSettings.guidanceOath,
+      });
+  const visibleMandate = applyDaoMandateVisibility(rawMandate, { settings: guidanceSettings });
+  const rawLens = buildLocalMandateLensSurface({
+    mandate: rawMandate,
+    cityId,
+    moduleKey: 'gateTrial',
+    visibleModules: ['gateTrial'],
+  });
+  const lens = applyLocalMandateLensVisibility(rawLens, visibleMandate, guidanceSettings);
+  if (!lens) return null;
   return {
-    milestoneLabel: surface.milestone.label,
-    primaryBlockerLabel: surface.primaryBlocker.label,
-    primaryRouteLabel: surface.primaryRoute.label,
-    detail: surface.primaryRoute.detail,
-    recentDeltaLine: surface.recentDeltas[0]?.memoryLine ?? null,
+    lens,
+    compactLine: lens ? `${lens.label}: ${lens.detail}` : null,
+    sourceLine: lens && lens.evidenceIds.length > 0 ? `${lens.evidenceIds.length} evidence links` : null,
+    profile: guidanceSettings.guidanceOath,
+    variant: resolveGateTrialMandateLensVariant(guidanceSettings),
+    motionMode: mandateMotionMode,
   };
 }
 
@@ -655,6 +698,7 @@ export function createGateTrialExactMockupFixture(
       singleDominantCta: true,
       ornamentVariant: 'jade-gold',
     },
+    mandateLens: buildGateTrialMandateLensProjection('city_pinewind_hamlet', 'fixture'),
     debug: {
       regionOrder: GATE_TRIAL_EXACT_REGION_ORDER,
       missingDataFallbacks: [],
@@ -1864,7 +1908,7 @@ export function buildGateTrialExactSurfaceFromStores(
     trialSummary: activeTrialSummary,
     readinessRail: buildLiveReadinessRail(context),
     primaryAction: activePrimaryAction,
-    runCompass: buildGateTrialRunCompassProjection(),
+    mandateLens: buildGateTrialMandateLensProjection(resolvedCityId, 'live'),
     aftermath: buildLiveCombatAftermathSurface({
       kind: 'gate_trial',
       cityId: resolvedCityId,

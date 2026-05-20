@@ -2520,56 +2520,21 @@ button.gateTrialTacticalCell:disabled {
   min-width: 0;
 }
 
-.gateTrialRunCompassSlip {
+.gateTrialMandateLens.daoLocalMandateLensHeader {
   grid-area: top;
   align-self: end;
   justify-self: center;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(150px, 260px);
-  align-items: center;
-  gap: 14px;
   width: min(680px, 54vw);
-  padding: 12px 14px;
+  min-height: 64px;
   z-index: 8;
   color: #2f2518;
-  background: rgba(234, 220, 188, .82);
+  background:
+    linear-gradient(180deg, rgba(239, 228, 201, 0.9), rgba(214, 194, 154, 0.8));
+  border-color: rgba(126, 92, 47, 0.34);
 }
 
-.gateTrialRunCompassSlip__main strong,
-.gateTrialRunCompassSlip__main p,
-.gateTrialRunCompassSlip__main small,
-.gateTrialRunCompassSlip__detail {
-  overflow-wrap: anywhere;
-}
-
-.gateTrialRunCompassSlip__eyebrow {
-  display: block;
-  color: #815c2d;
-  font-size: 11px;
-  font-weight: 800;
-  text-transform: uppercase;
-}
-
-.gateTrialRunCompassSlip__main strong {
-  display: block;
-  margin-top: 2px;
-  font-size: 15px;
-}
-
-.gateTrialRunCompassSlip__main p,
-.gateTrialRunCompassSlip__main small {
-  display: block;
-  margin: 3px 0 0;
-  color: rgba(47, 37, 24, .78);
-  font-size: 12px;
-}
-
-.gateTrialRunCompassSlip__detail {
-  justify-self: end;
-  color: #65401d;
-  font-size: 12px;
-  font-weight: 700;
-  text-align: right;
+.gateTrialMandateLens .daoLocalMandateLensHeader__main {
+  min-width: 0;
 }
 
 .gateTrialExactPage__scenicSlot {

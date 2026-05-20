@@ -533,7 +533,7 @@ export function buildOutskirtsMockupSurface(
   } as const;
 
   const notes = [isActiveLikeMode
-    ? 'Active Outskirts center stage now renders quiet victory, defeat, and auto-repeat transition seals inside the combat painting; full result summaries remain deferred.'
+    ? 'Active Outskirts center stage now renders quiet victory, defeat, and auto-repeat transition seals inside the combat painting; full result summaries stay with the combat aftermath surface.'
     : 'Planning exact surface is a review fixture and does not change baseline live-screen ownership in P0.'];
   const activeChainBadge = isActiveLikeMode
     ? buildOutskirtsActiveChainBadge({

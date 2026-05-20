@@ -7,13 +7,14 @@ function read(relPath: string): string {
   return readFileSync(resolve(process.cwd(), relPath), 'utf8');
 }
 
-test('World mounts the overlay ribbon and inspector from the shared Run Compass-derived command surface', () => {
+test('World mounts the overlay ribbon and inspector from the shared Mandate-derived command surface', () => {
   const file = read('src/components/screens/WorldScreen.tsx');
   assert.match(file, /<WorldOverlayRibbon/);
   assert.match(file, /<WorldOverlayInspector/);
   assert.match(file, /buildWorldModuleRoutingSurface\(\{/);
-  assert.match(file, /runCompassPrimaryModuleKey: runCompassModuleKeys\.primary/);
-  assert.match(file, /runCompassSecondaryModuleKey: runCompassModuleKeys\.secondary/);
+  assert.match(file, /mandatePrimaryModuleKey: mandateRoutingLens\?\.primaryModuleKey/);
+  assert.match(file, /mandateSecondaryModuleKeys: mandateRoutingLens\?\.secondaryModuleKeys/);
+  assert.doesNotMatch(file, /useRunCompassSurface/);
   assert.doesNotMatch(file, /<TopRibbon/);
   assert.doesNotMatch(file, /worldScreenCommandBand/);
 });

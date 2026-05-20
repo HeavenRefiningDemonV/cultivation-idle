@@ -44,7 +44,7 @@ test('Status and Cultivation render projections of the same Run Compass V2 truth
   assert.equal(cultivation.runCompassCompact?.actionLine.includes(v2.primaryRoute.label), true);
 });
 
-test('Gate Trial and Prestige exact surfaces expose compact Run Compass V2 projections', async () => {
+test('Gate Trial uses a Dao Mandate local lens while Prestige keeps its compact Run Compass hint', async () => {
   const content = await primeRuntime();
   const v2 = buildLiveRunCompassSurfaceV2();
   assert.ok(v2);
@@ -88,18 +88,20 @@ test('Gate Trial and Prestige exact surfaces expose compact Run Compass V2 proje
     },
   });
 
-  assert.equal(gateTrial.runCompass?.milestoneLabel, v2.milestone.label);
-  assert.equal(gateTrial.runCompass?.primaryRouteLabel, v2.primaryRoute.label);
+  assert.ok(gateTrial.mandateLens?.lens);
+  assert.match(gateTrial.mandateLens?.lens.label ?? '', /Gate|Threshold/i);
+  assert.equal((gateTrial as { runCompass?: unknown }).runCompass, undefined);
   assert.equal(prestige.runCompassHint?.milestoneLabel, v2.milestone.label);
 });
 
-test('World screen wires Run Compass route keys into the world routing surface', () => {
+test('World screen wires Dao Mandate route keys into the world routing surface', () => {
   const source = read('src/components/screens/WorldScreen.tsx');
 
-  assert.match(source, /useRunCompassSurface/);
-  assert.match(source, /runCompassPrimaryModuleKey/);
-  assert.doesNotMatch(source, /runCompassPrimaryModuleKey:\s*null/);
-  assert.match(source, /const secondary = primaryTarget\?\.kind === 'world_module'/);
+  assert.match(source, /buildLiveDaoMandateSurfaceV1/);
+  assert.match(source, /buildWorldMandateRoutingLensSurface/);
+  assert.match(source, /mandatePrimaryModuleKey/);
+  assert.doesNotMatch(source, /useRunCompassSurface/);
+  assert.doesNotMatch(source, /inspectorRunCompassLine/);
   assert.match(source, /allowWorldRecommendationFallback/);
   assert.match(source, /economicModuleKeys:\s*allowWorldRecommendationFallback/);
   assert.match(source, /trackedBountyModuleKey:\s*allowWorldRecommendationFallback/);

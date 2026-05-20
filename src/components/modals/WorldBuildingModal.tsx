@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, type ReactNode } from 'react';
+import type { LiveWorldModuleKey } from '../../content/index.js';
 import { useContentStore } from '../../stores/contentStore.js';
 import { useUIStore, type WorldBuildingKey } from '../../stores/uiStore.js';
 import { resolveModuleRef } from '../screens/world/worldUtils.js';
@@ -6,7 +7,7 @@ import { ManualPavilionPanel } from '../screens/ManualPavilionPanel.js';
 import { ForgeWorkshop } from '../../features/professions/forge/ForgeWorkshop.js';
 import { BountyBoardPanel } from '../screens/BountyBoardPanel.js';
 import { ExpeditionBoardPanel } from '../screens/ExpeditionBoardPanel.js';
-import { isCombatModule, openWorldModule } from '../../systems/world/openWorldModule.js';
+import { isCombatModule } from '../../systems/world/openWorldModule.js';
 import { GameIcon } from '../../ui/icons/index.js';
 import hammer from '../../assets/onscreen/hammer.png';
 import './WorldBuildingModal.scss';
@@ -22,9 +23,19 @@ import { ForgeExactScreenOwner } from '../../features/professions/forgeExact/ind
 import { BountiesExactScreenOwner } from '../../features/world/bountiesExact/index.js';
 import { ExpeditionsExactScreenOwner } from '../../features/world/expeditionsExact/index.js';
 import { ManualPavilionScreenOwner } from '../../features/world/manualPavilionExact/index.js';
-import { ModuleRoleBanner } from '../../ui/world/ModuleRoleBanner.js';
-import { buildLiveModuleRoleBannerSurface, type ModuleRoleRouteButton } from '../../systems/world/moduleRoleBannerSurface.js';
-import type { P3ModuleKey } from '../../systems/world/p3SurfaceTypes.js';
+import { LocalMandateLensHeader } from '../../ui/daoMandate/index.js';
+import {
+  applyDaoMandateVisibility,
+  buildLiveDaoMandateSurfaceV1,
+  performDaoMandateRouteAction,
+  pickDaoMandateGuidanceSettings,
+  resolveDaoMandateEffectiveMotionMode,
+  type DaoMandateRoute,
+} from '../../systems/ui/daoMandate/index.js';
+import {
+  applyLocalMandateLensVisibility,
+  buildLocalMandateLensSurface,
+} from '../../systems/world/localMandateLensSurface.js';
 
 export interface WorldBuildingModalProps {
   open?: boolean;
@@ -48,7 +59,7 @@ const WORLD_MODAL_LIVE_KEYS: ReadonlyArray<WorldBuildingKey> = [
   'ruins',
 ];
 
-function normalizeP3RoleModuleKey(buildingKey: WorldBuildingKey | null | undefined): P3ModuleKey | null {
+function normalizeMandateModuleKey(buildingKey: WorldBuildingKey | null | undefined): LiveWorldModuleKey | null {
   switch (buildingKey) {
     case 'alchemy':
     case 'apothecary':
@@ -77,8 +88,9 @@ export function WorldBuildingModal({
   const storeCityId = useUIStore((state) => state.worldBuildingModalCityId);
   const storeBuildingKey = useUIStore((state) => state.worldBuildingModalKey);
   const closeFromStore = useUIStore((state) => state.closeWorldBuildingModal);
-  const setActiveTab = useUIStore((state) => state.setActiveTab);
   const storeModalIntent = useUIStore((state) => state.worldBuildingModalIntent);
+  const uiSettings = useUIStore((state) => state.settings);
+  const addNotification = useUIStore((state) => state.addNotification);
   const city = useContentStore((state) => (storeCityId ? state.maps.citiesById[storeCityId] : undefined));
   const moduleRefId = useMemo(() => resolveModuleRef(city ?? null, storeBuildingKey ?? null), [city, storeBuildingKey]);
 
@@ -89,7 +101,12 @@ export function WorldBuildingModal({
     () => (isStoreMode ? closeFromStore : controlledOnClose ?? NOOP_CLOSE),
     [closeFromStore, controlledOnClose, isStoreMode],
   );
-  const roleModuleKey = normalizeP3RoleModuleKey(buildingKey ?? null);
+  const mandateModuleKey = normalizeMandateModuleKey(buildingKey ?? null);
+  const guidanceSettings = useMemo(() => pickDaoMandateGuidanceSettings(uiSettings), [uiSettings]);
+  const mandateMotionMode = useMemo(() => resolveDaoMandateEffectiveMotionMode({
+    mandateMotionMode: guidanceSettings.mandateMotionMode,
+    storyMotionMode: uiSettings.storyMotionMode,
+  }), [guidanceSettings.mandateMotionMode, uiSettings.storyMotionMode]);
   const buildingAudit = useMemo(
     () => (isStoreMode ? inspectWorldFacingModuleTarget(buildingKey ?? null) : { ok: true, moduleKey: buildingKey ?? null, reason: 'ok' }),
     [buildingKey, isStoreMode],
@@ -116,30 +133,41 @@ export function WorldBuildingModal({
     }),
     [buildingKey, city?.name, controlledTitle, isStoreMode, storeModalIntent],
   );
-  const roleBannerSurface = useMemo(
+  const localMandateLens = useMemo(
     () => {
-      if (!isStoreMode || !open || !storeCityId || !roleModuleKey) return null;
-      try {
-        return buildLiveModuleRoleBannerSurface(roleModuleKey, storeCityId);
-      } catch {
-        return null;
-      }
+      if (!isStoreMode || !open || !storeCityId || !mandateModuleKey || !city) return null;
+      const raw = buildLiveDaoMandateSurfaceV1({
+        currentScreen: `world:${mandateModuleKey}`,
+        guidanceProfile: guidanceSettings.guidanceOath,
+      });
+      const visibleMandate = applyDaoMandateVisibility(raw, { settings: guidanceSettings });
+      const lens = buildLocalMandateLensSurface({
+        mandate: visibleMandate,
+        cityId: storeCityId,
+        moduleKey: mandateModuleKey,
+        visibleModules: city.modules as readonly LiveWorldModuleKey[],
+        isModuleAvailable: city.modules.includes(mandateModuleKey),
+      });
+      return applyLocalMandateLensVisibility(lens, raw, guidanceSettings);
     },
-    [isStoreMode, open, roleModuleKey, storeCityId],
+    [city, guidanceSettings, isStoreMode, mandateModuleKey, open, storeCityId],
   );
-  const handleRoleBannerRoute = useCallback(
-    (route: ModuleRoleRouteButton) => {
-      const target = route.target;
-      if (target?.kind === 'world_module') {
-        openWorldModule({ cityId: target.cityId, moduleKey: target.moduleKey, source: 'module-role-banner' });
-        return;
-      }
-      if (target?.kind === 'tab') {
-        close();
-        setActiveTab(target.tab);
+  const localMandateVariant = guidanceSettings.guidanceOath === 'sealed' || guidanceSettings.localLensBanners === 'compact'
+    ? 'compact'
+    : guidanceSettings.localLensBanners === 'full'
+      ? 'full'
+      : 'default';
+  const handleMandateRouteAction = useCallback(
+    (route: DaoMandateRoute) => {
+      const result = performDaoMandateRouteAction(route);
+      if (!result.performed && result.reason) {
+        addNotification('warning', result.reason, {
+          source: 'dao-mandate-world-modal',
+          dedupeKey: `dao-mandate-world-modal-route-${route.id}`,
+        });
       }
     },
-    [close, setActiveTab],
+    [addNotification],
   );
 
   if (
@@ -260,11 +288,14 @@ export function WorldBuildingModal({
           {entrySurface.contextReason ? <p className="worldBuildingSubtitle">{entrySurface.contextReason}</p> : null}
         </div>
       ) : null}
-      {roleBannerSurface ? (
-        <ModuleRoleBanner
-          surface={roleBannerSurface}
-          className="worldBuildingP3Banner"
-          onRoute={handleRoleBannerRoute}
+      {localMandateLens && entrySurface.shellMode !== 'screen-owned' ? (
+        <LocalMandateLensHeader
+          lens={localMandateLens}
+          profile={guidanceSettings.guidanceOath}
+          variant={localMandateVariant}
+          motionMode={mandateMotionMode}
+          className="worldBuildingMandateLens"
+          onRouteAction={handleMandateRouteAction}
         />
       ) : null}
       <div className={`worldBuildingBody worldBuildingBody--${entrySurface.backgroundVariant} worldBuildingBody--${entrySurface.shellFamily} worldBuildingBody--${entrySurface.shellMode}`}>{content}</div>

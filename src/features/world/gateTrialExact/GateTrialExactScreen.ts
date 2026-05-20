@@ -18,6 +18,7 @@ import {
   GATE_TRIAL_EXACT_TOP_REGION_CONTRACT,
 } from './gateTrialExactPresentation.js';
 import { GateTrialExactIcon } from './GateTrialExactIcon.js';
+import { LocalMandateLensHeader } from '../../../ui/daoMandate/index.js';
 
 type GateTrialRailRowSurface =
   | GateTrialExactSurfaceV1['minimumChecklist']['rows'][number]
@@ -440,6 +441,17 @@ function renderGateTrialReadinessRail(
   );
 }
 
+function renderGateTrialMandateLens(surface: GateTrialExactSurfaceV1): React.ReactElement | null {
+  if (!surface.mandateLens?.lens) return null;
+  return el(LocalMandateLensHeader, {
+    lens: { ...surface.mandateLens.lens, route: null },
+    profile: surface.mandateLens.profile,
+    variant: surface.mandateLens.variant,
+    motionMode: surface.mandateLens.motionMode,
+    className: 'gateTrialMandateLens',
+  });
+}
+
 function renderGateTrialPrimaryCta(
   surface: GateTrialExactSurfaceV1,
   onPrimaryAction?: () => void,
@@ -803,19 +815,7 @@ function GateTrialExactScreen(props: GateTrialExactScreenProps) {
           el('span', { className: 'gateTrialGateHeader__chipLabel' }, chip.label),
         ))),
       )),
-    surface.runCompass ? el('section', {
-      className: 'gateTrialRunCompassSlip gateTrialExactCard',
-      'data-testid': 'gate-trial-run-compass',
-      'aria-label': 'Run Compass',
-    },
-      el('div', { className: 'gateTrialRunCompassSlip__main' },
-        el('span', { className: 'gateTrialRunCompassSlip__eyebrow' }, surface.runCompass.primaryRouteLabel),
-        el('strong', {}, surface.runCompass.milestoneLabel),
-        el('p', {}, surface.runCompass.primaryBlockerLabel),
-        surface.runCompass.recentDeltaLine ? el('small', {}, surface.runCompass.recentDeltaLine) : null,
-      ),
-      el('span', { className: 'gateTrialRunCompassSlip__detail' }, surface.runCompass.detail),
-    ) : null,
+    renderGateTrialMandateLens(surface),
     el('aside', {
       className: 'gateTrialExactPage__leftRail',
       'data-testid': 'gate-trial-exact-left-rail',
