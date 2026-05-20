@@ -1,0 +1,70 @@
+@import './DaoMandateTokens.scss';
+
+.daoJadeSlipHelp {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--dao-ledger-gap);
+  align-items: center;
+  padding: 10px;
+  border: 1px solid rgba(94, 165, 128, 0.42);
+  border-radius: var(--dao-card-radius);
+  background:
+    linear-gradient(180deg, rgba(240, 227, 200, 0.88), rgba(94, 165, 128, 0.1)),
+    var(--dao-parchment);
+}
+
+.daoJadeSlipHelp__main {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.daoJadeSlipHelp__eyebrow,
+.daoJadeSlipHelp__trigger,
+.daoJadeSlipHelp__main p {
+  margin: 0;
+  color: var(--dao-ink-muted);
+  font-size: var(--ui-type-meta, 12px);
+  line-height: 1.35;
+}
+
+.daoJadeSlipHelp__eyebrow {
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.daoJadeSlipHelp__main strong {
+  color: var(--dao-ink);
+}
+
+.daoJadeSlipHelp__actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.daoJadeSlipHelp__dismiss {
+  min-height: 30px;
+  padding: 5px 9px;
+  border: 1px solid rgba(143, 91, 46, 0.42);
+  border-radius: 8px;
+  color: var(--dao-ink);
+  background: rgba(240, 227, 200, 0.62);
+  font: inherit;
+  font-size: var(--ui-type-meta, 12px);
+  cursor: pointer;
+}
+
+.daoJadeSlipHelp__dismiss:hover {
+  border-color: var(--dao-bronze);
+}
+
+.daoJadeSlipHelp--compact {
+  grid-template-columns: 1fr;
+}
+
+@media (max-width: 760px) {
+  .daoJadeSlipHelp {
+    grid-template-columns: 1fr;
+  }
+}

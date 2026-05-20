@@ -1,0 +1,109 @@
+@import './DaoMandateTokens.scss';
+
+.daoMandateStatusSeal {
+  min-height: var(--dao-chip-height);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  padding: 4px 8px;
+  border: 1px solid var(--dao-bronze);
+  border-radius: 999px;
+  color: var(--dao-ink);
+  background: rgba(240, 227, 200, 0.74);
+  box-shadow: inset 0 0 0 1px rgba(255, 248, 230, 0.24);
+  font-size: var(--ui-type-meta, 12px);
+  line-height: 1.2;
+}
+
+.daoMandateStatusSeal--compact {
+  width: max-content;
+  min-width: var(--dao-row-icon-size);
+  justify-content: center;
+  padding: 4px 7px;
+}
+
+.daoMandateStatusSeal__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+.daoMandateStatusSeal__text {
+  min-width: 0;
+  display: inline-flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.daoMandateStatusSeal__label {
+  overflow: hidden;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.daoMandateStatusSeal__detail {
+  color: var(--dao-ink-muted);
+  font-weight: 500;
+}
+
+.daoMandateStatusSeal--success {
+  border-color: rgba(94, 165, 128, 0.58);
+  background: rgba(94, 165, 128, 0.16);
+}
+
+.daoMandateStatusSeal--warning {
+  border-color: rgba(201, 154, 61, 0.62);
+  background: rgba(201, 154, 61, 0.16);
+}
+
+.daoMandateStatusSeal--danger {
+  border-color: rgba(155, 47, 39, 0.58);
+  background: rgba(155, 47, 39, 0.14);
+}
+
+.daoMandateStatusSeal--info {
+  border-color: rgba(94, 165, 128, 0.45);
+  background: rgba(240, 227, 200, 0.78);
+}
+
+.daoMandateStatusSeal--muted {
+  border-color: rgba(111, 87, 63, 0.34);
+  background: rgba(240, 227, 200, 0.5);
+  color: var(--dao-ink-muted);
+}
+
+.daoMandateStatusSeal--animated {
+  animation: daoMandateStamp var(--dao-motion-stamp-duration) var(--dao-motion-ease) 1;
+}
+
+.daoMandateMotion--reduced.daoMandateStatusSeal--animated,
+.daoMandateMotion--reduced .daoMandateStatusSeal--animated,
+[data-dao-motion='reduced'].daoMandateStatusSeal--animated,
+[data-dao-motion='reduced'] .daoMandateStatusSeal--animated {
+  animation: none;
+  filter: none;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .daoMandateStatusSeal--animated {
+    animation: none;
+    filter: none;
+    transform: none;
+  }
+}
+
+@keyframes daoMandateStamp {
+  from {
+    filter: saturate(0.9);
+    transform: scale(0.98);
+  }
+
+  to {
+    filter: saturate(1);
+    transform: scale(1);
+  }
+}

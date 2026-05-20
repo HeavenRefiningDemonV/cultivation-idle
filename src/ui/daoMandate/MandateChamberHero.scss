@@ -1,0 +1,113 @@
+@import './DaoMandateTokens.scss';
+
+.daoMandateChamberHero {
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+  border: 2px solid var(--dao-parchment-deep);
+  border-radius: var(--dao-card-radius);
+  background:
+    radial-gradient(circle at top right, rgba(201, 154, 61, 0.18), transparent 32%),
+    linear-gradient(180deg, rgba(250, 242, 226, 0.98), rgba(228, 211, 183, 0.92)),
+    var(--dao-parchment-soft);
+  box-shadow: var(--paper-shadow-ritual, 0 16px 30px rgba(22, 12, 4, 0.32));
+}
+
+.daoMandateChamberHero__header,
+.daoMandateChamberHero__grid,
+.daoMandateChamberHero__secondary {
+  min-width: 0;
+}
+
+.daoMandateChamberHero__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.daoMandateChamberHero__titleBlock {
+  min-width: 0;
+}
+
+.daoMandateChamberHero__eyebrow,
+.daoMandateChamberHero__label,
+.daoMandateChamberHero__profile,
+.daoMandateChamberHero__footer {
+  color: var(--dao-ink-muted);
+  font-size: var(--ui-type-meta, 12px);
+  line-height: 1.35;
+}
+
+.daoMandateChamberHero__eyebrow,
+.daoMandateChamberHero__label {
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.daoMandateChamberHero__title {
+  margin: 0;
+  color: var(--dao-ink);
+  font-size: 1.45rem;
+  line-height: 1.12;
+}
+
+.daoMandateChamberHero__profile,
+.daoMandateChamberHero__milestone p,
+.daoMandateChamberHero__obstruction p,
+.daoMandateChamberHero__delta {
+  margin: 0;
+}
+
+.daoMandateChamberHero__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) minmax(14rem, 0.9fr);
+  gap: var(--dao-ledger-gap);
+  align-items: stretch;
+}
+
+.daoMandateChamberHero__milestone,
+.daoMandateChamberHero__obstruction,
+.daoMandateChamberHero__route {
+  min-width: 0;
+  display: grid;
+  align-content: start;
+  gap: 7px;
+  min-height: 9rem;
+  padding: 12px;
+  border: 1px solid rgba(143, 91, 46, 0.32);
+  border-radius: var(--dao-card-radius);
+  background: rgba(240, 227, 200, 0.62);
+}
+
+.daoMandateChamberHero__milestone strong,
+.daoMandateChamberHero__obstruction strong {
+  color: var(--dao-ink);
+  font-size: var(--ui-type-card-title, 16px);
+}
+
+.daoMandateChamberHero__milestone p,
+.daoMandateChamberHero__obstruction p,
+.daoMandateChamberHero__milestone span,
+.daoMandateChamberHero__delta {
+  color: var(--dao-ink-muted);
+  line-height: 1.4;
+}
+
+.daoMandateChamberHero__delta {
+  color: var(--dao-jade-text);
+  font-weight: 700;
+}
+
+.daoMandateChamberHero__secondary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: 8px;
+}
+
+@media (max-width: 880px) {
+  .daoMandateChamberHero__header,
+  .daoMandateChamberHero__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+}
