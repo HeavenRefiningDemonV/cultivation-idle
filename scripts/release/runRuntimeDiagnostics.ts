@@ -1,4 +1,10 @@
-import { buildRuntimeDiagnosticsReport, renderRuntimeDiagnosticsReport } from '../../src/services/diagnostics/release/runtimeDiagnosticsReport.js';
+import {
+  buildRuntimeDiagnosticsReport,
+  classifyRuntimeDiagnosticsScenario,
+  renderRuntimeDiagnosticsReport,
+  type RuntimeDiagnosticsReport,
+  type RuntimeDiagnosticsScenarioClassification,
+} from '../../src/services/diagnostics/release/runtimeDiagnosticsReport.js';
 import { useInventoryStore } from '../../src/stores/inventoryStore.js';
 import { useManualSatchelStore } from '../../src/stores/manualSatchelStore.js';
 import { useTechCollectionStore } from '../../src/stores/techCollectionStore.js';
@@ -11,6 +17,28 @@ interface CliOptions {
   failOnErrors: boolean;
   help: boolean;
 }
+
+type ScenarioName = 'clean_baseline' | 'seeded_runtime_residue' | 'content_failure_snapshot';
+
+type RuntimeDiagnosticsScenarioEntry = RuntimeDiagnosticsReport & RuntimeDiagnosticsScenarioClassification;
+
+const SCENARIO_EXPECTATIONS: Record<ScenarioName, { expectedNegative: boolean; expectedIssueIds: readonly string[]; intent: string }> = {
+  clean_baseline: {
+    expectedNegative: false,
+    expectedIssueIds: [],
+    intent: 'Loaded clean runtime state should produce no error-level diagnostics.',
+  },
+  seeded_runtime_residue: {
+    expectedNegative: true,
+    expectedIssueIds: ['fragment_invalid_bad_tech', 'inventory_item_invalid_bad_item', 'manual_missing_tech_0'],
+    intent: 'Seeded residue fixture proves safe-repair diagnostics catch known repairable save residue.',
+  },
+  content_failure_snapshot: {
+    expectedNegative: true,
+    expectedIssueIds: ['content_not_loaded', 'manual_missing_tech_0'],
+    intent: 'Content-failure fixture proves startup/content diagnostics surface missing loaded content and invalid manual residue.',
+  },
+};
 
 function parseArgs(argv: string[]): CliOptions {
   return {
@@ -31,11 +59,29 @@ async function seedBaseline() {
   primeContentStore(content);
 }
 
-async function buildScenarioReports(options: CliOptions) {
-  const reports: Record<string, ReturnType<typeof buildRuntimeDiagnosticsReport>> = {};
+function withScenarioClassification(
+  scenarioName: ScenarioName,
+  report: RuntimeDiagnosticsReport,
+): RuntimeDiagnosticsScenarioEntry {
+  const expectation = SCENARIO_EXPECTATIONS[scenarioName];
+  return {
+    ...report,
+    ...classifyRuntimeDiagnosticsScenario(report, expectation),
+    notes: [
+      ...report.notes,
+      `Scenario intent: ${expectation.intent}`,
+    ],
+  };
+}
+
+async function buildScenarioReports(options: CliOptions): Promise<Record<ScenarioName, RuntimeDiagnosticsScenarioEntry>> {
+  const reports = {} as Record<ScenarioName, RuntimeDiagnosticsScenarioEntry>;
 
   await seedBaseline();
-  reports.clean_baseline = buildRuntimeDiagnosticsReport({ applyRepairs: options.applySafeRepairs });
+  reports.clean_baseline = withScenarioClassification(
+    'clean_baseline',
+    buildRuntimeDiagnosticsReport({ applyRepairs: options.applySafeRepairs }),
+  );
 
   await seedBaseline();
   useInventoryStore.setState((state) => {
@@ -47,11 +93,17 @@ async function buildScenarioReports(options: CliOptions) {
   useManualSatchelStore.setState((state) => {
     state.manuals.push({ id: 'bad_manual', techId: '' as never, grade: 'mortal', rarity: 'common', stackCount: 1, earnedAt: Date.now(), source: 'debug' } as never);
   });
-  reports.seeded_runtime_residue = buildRuntimeDiagnosticsReport({ applyRepairs: options.applySafeRepairs });
+  reports.seeded_runtime_residue = withScenarioClassification(
+    'seeded_runtime_residue',
+    buildRuntimeDiagnosticsReport({ applyRepairs: options.applySafeRepairs }),
+  );
 
   await seedBaseline();
   useContentStore.setState({ isLoaded: false });
-  reports.content_failure_snapshot = buildRuntimeDiagnosticsReport({ applyRepairs: false });
+  reports.content_failure_snapshot = withScenarioClassification(
+    'content_failure_snapshot',
+    buildRuntimeDiagnosticsReport({ applyRepairs: false }),
+  );
 
   return reports;
 }
@@ -68,6 +120,7 @@ async function run() {
     schemaVersion: '7.4c-runtime-cli',
     generatedAt: Date.now(),
     scenarios: scenarioReports,
+    blockerScenarioCount: Object.values(scenarioReports).filter((report) => report.scenarioStatus === 'BLOCKER').length,
   };
 
   if (options.json) {
@@ -77,13 +130,16 @@ async function run() {
     for (const [name, report] of Object.entries(scenarioReports)) {
       console.log('');
       console.log(`Scenario: ${name}`);
+      console.log(`Classification: ${report.scenarioStatus}`);
+      console.log(`Release-gate blocking: ${report.releaseGateBlocking ? 'yes' : 'no'}`);
+      console.log(`Expectation: ${report.summary}`);
       console.log(renderRuntimeDiagnosticsReport(report));
     }
   }
 
   if (options.failOnErrors) {
-    const hasErrors = Object.values(scenarioReports).some((report) => report.errorCount > 0);
-    if (hasErrors) process.exit(2);
+    const hasBlockingScenario = Object.values(scenarioReports).some((report) => report.scenarioStatus === 'BLOCKER');
+    if (hasBlockingScenario) process.exit(2);
   }
 }
 

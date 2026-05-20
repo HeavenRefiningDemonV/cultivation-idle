@@ -217,7 +217,7 @@ function TrialProgressContent({ trialId }: { trialId: string }) {
       </div>
 
       <div className="trial-progress__controls-note">
-        {GATE_SUPPORT_LABELS.support}: {lifecycle.failSafe.status === 'resolved' ? 'Resolved' : lifecycle.failSafe.canPurchase ? 'Available' : `Locked (${lifecycle.failSafe.eligibleFailures}/${lifecycle.failSafe.threshold} Eligible Failures)`}
+        {GATE_SUPPORT_LABELS.support}: {lifecycle.failSafe.status === 'resolved' ? 'Resolved' : lifecycle.failSafe.canPurchase ? 'Available' : `Locked (${lifecycle.failSafe.eligibleFailures}/${lifecycle.failSafe.threshold} tracked failures)`}
       </div>
 
       {gateReadinessSurface ? (

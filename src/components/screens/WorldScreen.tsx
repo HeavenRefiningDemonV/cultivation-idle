@@ -201,12 +201,6 @@ function LoadedWorldScreen({ citiesSorted, rawContent }: LoadedWorldScreenProps)
   }, [closeWorldBuildingModal, selectedCity, showWorldBuildingModal, worldModalCityId]);
 
   useEffect(() => {
-    if (!selectedCity || !lockedModuleKey) return;
-    if (selectedModuleByCity[selectedCity.id] === lockedModuleKey) return;
-    setSelectedModule(selectedCity.id, lockedModuleKey);
-  }, [lockedModuleKey, selectedCity, selectedModuleByCity, setSelectedModule]);
-
-  useEffect(() => {
     if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return;
     const media = window.matchMedia('(max-width: 860px)');
     const update = () => {

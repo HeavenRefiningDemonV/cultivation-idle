@@ -14,8 +14,8 @@
 - binary decision: NO_GO
 - cleanPass: false
 - acceptedWaivers: 0
-- unresolvedBlockers: 5
-- pendingManual: 1
+- unresolvedBlockers: 1
+- pendingManual: 0
 
 ## Command map
 - `npm run release:gate`

@@ -23,6 +23,19 @@ export type RuntimeDiagnosticsReport = {
   notes: string[];
 };
 
+export type RuntimeDiagnosticsScenarioStatus = 'PASS' | 'EXPECTED_NEGATIVE_PASS' | 'BLOCKER';
+
+export type RuntimeDiagnosticsScenarioClassification = {
+  scenarioStatus: RuntimeDiagnosticsScenarioStatus;
+  expectedNegative: boolean;
+  expectedIssueIds: string[];
+  actualIssueIds: string[];
+  unexpectedIssueIds: string[];
+  missingExpectedIssueIds: string[];
+  releaseGateBlocking: boolean;
+  summary: string;
+};
+
 const DOMAIN_ORDER: RuntimeDiagnosticsDomain[] = [
   'content',
   'progression',
@@ -82,6 +95,48 @@ export function buildRuntimeDiagnosticsReport(options: { applyRepairs?: boolean 
     groupedSections: groupIssues(issues),
     issues,
     notes,
+  };
+}
+
+export function classifyRuntimeDiagnosticsScenario(
+  report: RuntimeDiagnosticsReport,
+  expectation: { expectedNegative: boolean; expectedIssueIds?: readonly string[] },
+): RuntimeDiagnosticsScenarioClassification {
+  const actualIssueIds = report.issues.map((issue) => issue.id).sort();
+  const expectedIssueIds = [...(expectation.expectedIssueIds ?? [])].sort();
+  const expectedSet = new Set(expectedIssueIds);
+  const actualSet = new Set(actualIssueIds);
+  const unexpectedIssueIds = actualIssueIds.filter((id) => !expectedSet.has(id));
+  const missingExpectedIssueIds = expectedIssueIds.filter((id) => !actualSet.has(id));
+
+  if (!expectation.expectedNegative) {
+    const pass = report.errorCount === 0;
+    return {
+      scenarioStatus: pass ? 'PASS' : 'BLOCKER',
+      expectedNegative: false,
+      expectedIssueIds,
+      actualIssueIds,
+      unexpectedIssueIds: actualIssueIds,
+      missingExpectedIssueIds: [],
+      releaseGateBlocking: !pass,
+      summary: pass
+        ? 'Clean runtime scenario produced no error-level diagnostics.'
+        : `Clean runtime scenario produced ${report.errorCount} unexpected error-level diagnostic(s).`,
+    };
+  }
+
+  const expectedNegativePass = unexpectedIssueIds.length === 0 && missingExpectedIssueIds.length === 0 && report.errorCount > 0;
+  return {
+    scenarioStatus: expectedNegativePass ? 'EXPECTED_NEGATIVE_PASS' : 'BLOCKER',
+    expectedNegative: true,
+    expectedIssueIds,
+    actualIssueIds,
+    unexpectedIssueIds,
+    missingExpectedIssueIds,
+    releaseGateBlocking: !expectedNegativePass,
+    summary: expectedNegativePass
+      ? 'Expected-negative runtime scenario emitted only the documented diagnostics.'
+      : `Expected-negative runtime scenario drifted: unexpected=${unexpectedIssueIds.join(', ') || 'none'} missing=${missingExpectedIssueIds.join(', ') || 'none'}.`,
   };
 }
 

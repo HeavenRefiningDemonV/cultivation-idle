@@ -8,13 +8,13 @@ function read(relPath: string): string {
 }
 
 test('WR-07 world support-art usage wires only approved light integrations', () => {
-  const worldScreen = read('src/components/screens/WorldScreen.tsx');
+  const worldOverlayRibbon = read('src/ui/world/WorldOverlayRibbon.tsx');
   const cityArrivalBanner = read('src/components/system/CityArrivalBanner.tsx');
   const worldRouteChip = read('src/ui/world/WorldRouteChip.tsx');
   const manifest = read('src/assets/ui/chrome/world_labels/index.ts');
 
   assert.match(manifest, /WORLD_SUPPORT_ART_ASSET_URLS/);
-  assert.match(worldScreen, /WORLD_SUPPORT_ART_ASSET_URLS\.currentCityPlate/);
+  assert.match(worldOverlayRibbon, /WORLD_SUPPORT_ART_ASSET_URLS\.currentCityPlate/);
   assert.match(cityArrivalBanner, /WORLD_SUPPORT_ART_ASSET_URLS\.cityArrivalBanner/);
   assert.match(worldRouteChip, /WORLD_SUPPORT_ART_ASSET_URLS\.routeHintPlaque/);
 });

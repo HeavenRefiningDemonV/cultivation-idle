@@ -10,7 +10,7 @@ import type { ReleaseGateReport } from '../../src/services/diagnostics/release/r
 const runScript = (args: string[], env: NodeJS.ProcessEnv = {}) =>
   spawnSync(
     'node',
-    ['--experimental-strip-types', 'scripts/release/buildReleaseHandoffBundle.ts', ...args],
+    ['--loader=./scripts/relativeJsLoader.mjs', '--experimental-strip-types', 'scripts/release/buildReleaseHandoffBundle.ts', ...args],
     { cwd: process.cwd(), encoding: 'utf8', env: { ...process.env, ...env } },
   );
 

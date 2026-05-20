@@ -1,12 +1,13 @@
 # Runtime Content Manifest
 
-Generated: 2026-05-19T14:58:39.191Z
+Generated: 2026-05-19T19:37:22.471Z
 
 ## Result
 PASS
 
 ## Required directory
 - Source: `public/cultivation_idle_content_bible_v1_config`
+- Built: `dist/cultivation_idle_content_bible_v1_config`
 
 ## Required files
 - economy.json
@@ -31,6 +32,33 @@ PASS
 
 ## Source content
 - Path: `public/cultivation_idle_content_bible_v1_config`
+- Status: PASS
+- Directory exists: yes
+
+| File | Status |
+| --- | --- |
+| economy.json | present |
+| cities.json | present |
+| items.json | present |
+| techniques.json | present |
+| pavilions.json | present |
+| outskirts.json | present |
+| enemies.json | present |
+| trials.json | present |
+| ruins.json | present |
+| alchemy_recipes.json | present |
+| forge_blueprints.json | present |
+| runes.json | present |
+| talisman_recipes.json | present |
+| apothecary_shops.json | present |
+| expeditions.json | present |
+| bounties.json | present |
+| heart_laws.json | present |
+| prestige_store.json | present |
+| pavilion_records.json | present |
+
+## Built content
+- Path: `dist/cultivation_idle_content_bible_v1_config`
 - Status: PASS
 - Directory exists: yes
 

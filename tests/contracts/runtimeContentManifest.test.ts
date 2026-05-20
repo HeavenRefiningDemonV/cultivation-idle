@@ -9,6 +9,7 @@ import {
   RUNTIME_CONTENT_FILE_BY_KEY,
   RUNTIME_CONTENT_FILES,
 } from '../../src/content/runtimeContentManifest.js';
+import { loadRawProgressionContent } from '../fixtures/progression/loadFixtureContext.js';
 import { buildRuntimeContentManifestReport } from '../../src/services/diagnostics/release/runtimeContentManifestReport.js';
 
 test('runtime content manifest declares the exact loader file set once', () => {
@@ -48,3 +49,10 @@ test('runtime content manifest report fails by exact filenames when source direc
   assert.equal(report.blockers.some((entry) => entry.includes('economy.json')), true);
 });
 
+test('progression fixture loader reads the same runtime content keys as the manifest', async () => {
+  const rawContent = await loadRawProgressionContent();
+  assert.deepEqual(
+    Object.keys(rawContent).sort(),
+    Object.keys(RUNTIME_CONTENT_FILE_BY_KEY).sort(),
+  );
+});

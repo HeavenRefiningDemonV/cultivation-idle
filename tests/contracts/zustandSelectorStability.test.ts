@@ -165,17 +165,16 @@ test('touched onboarding guidance copy avoids stale vocabulary leaks', async () 
 test('WorldScreen no longer contains the old visible-module writeback loop pattern', async () => {
   const source = await readSource('src/components/screens/WorldScreen.tsx');
 
-  const writesSelectedModule = /setSelectedModule\s*\(/.test(source);
-  if (!writesSelectedModule) {
-    assert.equal(writesSelectedModule, false);
-    return;
-  }
-
-  assert.equal(/visibleCityModules\.includes\s*\(/.test(source), false);
+  assert.equal(
+    /useEffect\s*\(\s*\(\)\s*=>[\s\S]*?setSelectedModule\s*\(\s*selectedCity\.id\s*,\s*lockedModuleKey\s*\)/.test(source),
+    false,
+    'WorldScreen should not write the fallback locked module back into city store from an effect.',
+  );
+  assert.match(source, /if \(!visibleCityModules\.includes\(moduleKey\)\) return;/);
   assert.match(
     source,
-    /selectedCity\.modules\.includes\s*\(|city\.modules\.includes\s*\(/,
-    'If WorldScreen writes a selected module, it must validate against the full city module set.',
+    /setSelectedModule\(selectedCity\.id, moduleKey\)/,
+    'User-driven module selection should remain the only selected-module write in WorldScreen.',
   );
 });
 

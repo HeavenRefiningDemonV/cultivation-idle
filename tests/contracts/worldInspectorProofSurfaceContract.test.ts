@@ -9,84 +9,108 @@ function read(relPath: string): string {
 
 test('WorldScreen centralizes inspector fallback breakpoint and keeps wide/narrow inspector paths', () => {
   const file = read('src/components/screens/WorldScreen.tsx');
-  assert.match(file, /WORLD_INSPECTOR_NARROW_QUERY = '\(max-width: 1180px\)'/);
-  assert.match(file, /<InspectorPanel/);
+  assert.match(file, /window\.matchMedia\('\(max-width: 860px\)'\)/);
+  assert.match(file, /<WorldOverlayInspector/);
   assert.match(file, /<InspectorDrawer/);
 });
 
-test('WorldScreen uses a shared world inspector body for both wide and narrow paths', () => {
+test('WorldScreen splits loading wrappers from LoadedWorldScreen so hook order stays safe', () => {
   const file = read('src/components/screens/WorldScreen.tsx');
-  assert.match(file, /const worldInspectorBody = selectedCity \?/);
-  assert.match(file, /const worldCommandBandCitySummary = selectedCity \?/);
-  assert.match(file, /const selectedInspectorSubject = useMemo\(\(\) =>/);
-  const occurrences = Array.from(file.matchAll(/\{worldInspectorBody\}/g)).length;
-  assert.equal(occurrences, 2, 'worldInspectorBody should be rendered in wide and narrow inspector paths');
+  assert.match(file, /export function WorldScreen\(\)/);
+  assert.match(file, /return <LoadedWorldScreen citiesSorted=\{citiesSorted\} rawContent=\{rawContent\} \/>/);
+  assert.match(file, /function LoadedWorldScreen\(\{ citiesSorted, rawContent \}: LoadedWorldScreenProps\)/);
+  const wrapperStart = file.indexOf('export function WorldScreen()');
+  const loadedStart = file.indexOf('function LoadedWorldScreen');
+  const wrapperBlock = file.slice(wrapperStart, loadedStart);
+  assert.doesNotMatch(wrapperBlock, /useMemo\(/);
+  assert.doesNotMatch(wrapperBlock, /useCallback\(/);
 });
 
-test('WorldScreen preserves map-owns-page composition with subordinate command deck and shared inspector architecture', () => {
+test('WorldScreen preserves map-owned page composition with overlay ribbon and inspector layers', () => {
   const file = read('src/components/screens/WorldScreen.tsx');
-  assert.match(file, /worldScreenHubPanel/);
-  assert.match(file, /worldSupportRail/);
-  assert.match(file, /worldScreenInspectorRegion/);
+  assert.match(file, /<CityMapHub/);
+  assert.match(file, /<WorldOverlayRibbon/);
+  assert.match(file, /<WorldOverlayInspector/);
+  assert.match(file, /worldScreenCanvas/);
+  assert.match(file, /worldScreenMapLayer/);
+  assert.match(file, /worldScreenRibbonLayer/);
+  assert.match(file, /worldScreenInspectorLayer/);
 });
 
-test('Narrow world drawer removes duplicate visible title ownership while keeping InspectorPanel hierarchy', () => {
+test('Narrow world drawer reuses overlay inspector with close-only drawer chrome', () => {
   const file = read('src/components/screens/WorldScreen.tsx');
-  assert.match(file, /title="World Details"/);
+  assert.match(file, /title=\{`\$\{sanitizeLiveCityName\(selectedCity\.name\)\} .* \$\{inspectorLabel\}`\}/);
   assert.match(file, /headerMode="close-only"/);
-  assert.match(file, /title="World Details"/);
+  assert.match(file, /className="worldOverlayInspector--drawer"/);
 });
 
-test('World inspector selected-building anatomy is first-class and routes directly to selected module', () => {
+test('CityMapHub receives module metadata, cues, recommendation, and glint keys', () => {
   const file = read('src/components/screens/WorldScreen.tsx');
-  assert.match(file, /const cards = worldCommandSurface\.groups\.flatMap\(\(group\) => group\.cards\)/);
-  assert.match(file, /Selected building/);
-  assert.match(file, /worldCommandSummary--selectedModule/);
-  assert.match(file, /worldCommandSummaryLine--primary/);
-  assert.match(file, /worldCommandSummaryOutputs/);
-  assert.match(file, /onClick=\{\(\) => handleRouteToModule\(selectedInspectorSubject\.moduleKey\)\}/);
+  const cityMapStart = file.indexOf('<CityMapHub');
+  const cityMapEnd = file.indexOf('/>', cityMapStart);
+  assert.ok(cityMapStart >= 0 && cityMapEnd > cityMapStart, 'Expected CityMapHub render block');
+  const cityMapBlock = file.slice(cityMapStart, cityMapEnd);
+  assert.match(cityMapBlock, /moduleMetadataByKey=\{moduleMetadataByKey\}/);
+  assert.match(cityMapBlock, /moduleCueByKey=\{moduleCueByKey\}/);
+  assert.match(cityMapBlock, /recommendedModuleKey=\{worldCommandSurface\.strongRecommendationModuleKey\}/);
+  assert.match(cityMapBlock, /glintModuleKey=\{strongestRecommendationModuleKey\}/);
 });
 
-test('World inspector keeps alerts as secondary support surfaces', () => {
+test('WorldOverlayRibbon receives city phase and pressure lines', () => {
   const file = read('src/components/screens/WorldScreen.tsx');
-  assert.match(file, /Shortcut alerts stay in the command band above the map\./);
-  assert.match(file, /worldScreenCommandBand/);
-  assert.match(file, /aria-label="World support alerts"/);
+  const ribbonStart = file.indexOf('<WorldOverlayRibbon');
+  const ribbonEnd = file.indexOf('/>', ribbonStart);
+  assert.ok(ribbonStart >= 0 && ribbonEnd > ribbonStart, 'Expected WorldOverlayRibbon render block');
+  const ribbonBlock = file.slice(ribbonStart, ribbonEnd);
+  assert.match(ribbonBlock, /phaseLine=\{phaseLine\}/);
+  assert.match(ribbonBlock, /pressureLine=\{pressureLine\}/);
+  assert.match(file, /buildCityPhaseSurfaceFromSnapshot/);
 });
 
-test('World inspector no longer owns the full RunCompass surface', () => {
+test('WorldOverlayInspector receives role, use case, outputs, boundary, state, and route action', () => {
   const file = read('src/components/screens/WorldScreen.tsx');
-  const inspectorBodyStart = file.indexOf('const worldInspectorBody = selectedCity ?');
-  const inspectorBodyEnd = file.indexOf('const handleSelectCity =');
-  assert.ok(inspectorBodyStart >= 0 && inspectorBodyEnd > inspectorBodyStart, 'Expected world inspector body block in WorldScreen');
-  const inspectorBodyBlock = file.slice(inspectorBodyStart, inspectorBodyEnd);
-  assert.doesNotMatch(inspectorBodyBlock, /<RunCompass/);
-  assert.match(file, /<section className="worldScreenCommandBand" aria-label="World command band">/);
+  const inspectorStart = file.indexOf('<WorldOverlayInspector');
+  const inspectorEnd = file.indexOf('/>', inspectorStart);
+  assert.ok(inspectorStart >= 0 && inspectorEnd > inspectorStart, 'Expected WorldOverlayInspector render block');
+  const inspectorBlock = file.slice(inspectorStart, inspectorEnd);
+  assert.match(inspectorBlock, /roleTag=\{inspectorRoleTag\}/);
+  assert.match(inspectorBlock, /bestUsedWhen=\{inspectorBestUsedWhen\}/);
+  assert.match(inspectorBlock, /boundaryLine=\{inspectorBoundaryLine\}/);
+  assert.match(inspectorBlock, /outputs=\{inspectorOutputs\}/);
+  assert.match(inspectorBlock, /stateLine=\{inspectorStateLine\}/);
+  assert.match(inspectorBlock, /openLabel=\{inspectorOpenLabel\}/);
+  assert.match(inspectorBlock, /onOpen=\{\(\) => handleRouteToModule\(inspectorModuleKey\)\}/);
 });
 
-test('World inspector keeps selected-building first and city context secondary in shared body', () => {
+test('World recommendations derive from Run Compass before economic fallback routes', () => {
   const file = read('src/components/screens/WorldScreen.tsx');
-  const selectedIndex = file.indexOf('worldCommandSummary--selectedModule');
-  const cityIndex = file.indexOf('worldCommandSummary--cityContextSecondary');
-  assert.ok(selectedIndex >= 0 && cityIndex > selectedIndex, 'selected-building block should render before city context');
-  assert.match(file, /density="compact"/);
-  assert.match(file, /emptyZoneBehavior="collapse"/);
+  assert.match(file, /const runCompassModuleKeys = useMemo\(\(\) =>/);
+  assert.match(file, /runCompass\.v2\?\.primaryRoute\.target/);
+  assert.match(file, /runCompass\.v2\?\.secondaryRoutes/);
+  assert.match(file, /runCompassPrimaryModuleKey: runCompassModuleKeys\.primary/);
+  assert.match(file, /runCompassSecondaryModuleKey: runCompassModuleKeys\.secondary/);
+  assert.match(file, /const allowWorldRecommendationFallback = !runCompass\.v2/);
+  assert.match(file, /economicModuleKeys: allowWorldRecommendationFallback/);
+  assert.doesNotMatch(file, /runCompassPrimaryModuleKey: null/);
+  assert.doesNotMatch(file, /runCompassSecondaryModuleKey: null/);
 });
 
-test('WorldScreen resolves city support identity labels from the city package registry source of truth', () => {
+test('World module route buttons delegate to openWorldModule through handleRouteToModule', () => {
   const file = read('src/components/screens/WorldScreen.tsx');
-  assert.match(file, /getSupportIdentityLabel/);
-  assert.doesNotMatch(file, /systems\/ui\/world\/worldCommandSurface\.js/);
+  assert.match(file, /const handleRouteToModule = useCallback/);
+  assert.match(file, /openWorldModule\(\{ cityId: selectedCity\.id, moduleKey, source: 'world-map' \}\)/);
+  assert.doesNotMatch(file, /grantRewards\(/);
+  assert.doesNotMatch(file, /resolveCombat/);
 });
 
-test('World city selector exposes locked requirements in-chip and keeps locked entries keyboard-reviewable', () => {
+test('World city selector exposes locked requirements without vague progress copy', () => {
   const file = read('src/components/screens/WorldScreen.tsx');
-  assert.match(file, /aria-disabled=\{!isUnlocked \? 'true' : undefined\}/);
+  assert.match(file, /requirementText: requirementText \?\? deriveCityRequirementText\(city\) \?\? LOCK_REQUIREMENT_UNAVAILABLE/);
   assert.doesNotMatch(file, /Progress required/);
 });
 
 test('No new inspector consumers were added outside the world proof surface', () => {
   const liveLayout = read('src/components/GameLayout.tsx');
-  assert.doesNotMatch(liveLayout, /InspectorPanel/);
+  assert.doesNotMatch(liveLayout, /WorldOverlayInspector/);
   assert.doesNotMatch(liveLayout, /InspectorDrawer/);
 });

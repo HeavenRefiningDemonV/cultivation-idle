@@ -36,7 +36,7 @@ const defaultRunner = (command: string, args: string[]): CommandResult => {
   };
 };
 
-const slug = (value: string) => value.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '').slice(0, 80);
+const slug = (value: string) => String(value ?? 'unknown').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '').slice(0, 80);
 
 const makeFinding = (checkId: ReleaseGateCheckId, title: string, message: string, severity: ReleaseGateFindingSeverity, sourceKind: ReleaseGateFinding['sourceKind'], waivable: boolean, evidenceRef?: string): ReleaseGateFinding => ({
   findingId: `${checkId}_${slug(title)}_${slug(message).slice(0, 20)}`,
@@ -296,23 +296,56 @@ export async function runReleaseGateAdapter(checkId: ReleaseGateCheckId, context
   }
 
   if (checkId === 'route_comparison' && rawPayload && typeof rawPayload === 'object') {
-    const payload = rawPayload as { overallPass?: boolean; finalTruthSummary?: Record<string, boolean>; warnings?: Array<{ summary: string }> };
+    const payload = rawPayload as { overallPass?: boolean; finalTruthSummary?: Record<string, boolean>; warnings?: Array<string | { summary?: string }> };
     const failedTruth = Object.entries(payload.finalTruthSummary ?? {}).filter(([, value]) => value === false);
     if (!payload.overallPass || failedTruth.length > 0) {
       findings.push(makeFinding(checkId, 'route_comparison_failed', `Route comparison failed truth keys: ${failedTruth.map(([key]) => key).join(', ') || 'unknown'}.`, 'blocker', 'builder', false, commandLabel));
     }
-    (payload.warnings ?? []).forEach((warning, index) => findings.push(makeFinding(checkId, `route_warning_${index + 1}`, warning.summary, 'waiver_candidate', 'builder', true, commandLabel)));
+    (payload.warnings ?? []).forEach((warning, index) => {
+      const message = typeof warning === 'string' ? warning : warning.summary ?? 'Route comparison report emitted an unspecified warning.';
+      findings.push(makeFinding(checkId, `route_warning_${index + 1}`, message, 'waiver_candidate', 'builder', true, commandLabel));
+    });
   }
 
   if (checkId === 'runtime_diagnostics' && rawPayload && typeof rawPayload === 'object') {
-    const payload = rawPayload as { scenarios?: Record<string, { errorCount?: number; warningCount?: number }> };
-    const scenarios = Object.values(payload.scenarios ?? {});
-    const errorCount = scenarios.reduce((sum, row) => sum + (row.errorCount ?? 0), 0);
-    const warningCount = scenarios.reduce((sum, row) => sum + (row.warningCount ?? 0), 0);
-    if (errorCount > 0) {
-      findings.push(makeFinding(checkId, 'runtime_diagnostics_errors', `Runtime diagnostics reported ${errorCount} error-level findings.`, 'blocker', 'builder', false, commandLabel));
-    } else if (warningCount > 0) {
-      findings.push(makeFinding(checkId, 'runtime_diagnostics_warnings', `Runtime diagnostics reported ${warningCount} warning-level findings.`, 'waiver_candidate', 'builder', true, commandLabel));
+    const payload = rawPayload as {
+      scenarios?: Record<string, {
+        errorCount?: number;
+        warningCount?: number;
+        scenarioStatus?: 'PASS' | 'EXPECTED_NEGATIVE_PASS' | 'BLOCKER';
+        releaseGateBlocking?: boolean;
+        summary?: string;
+      }>;
+    };
+    const entries = Object.entries(payload.scenarios ?? {});
+    const hasClassifiedScenarios = entries.some(([, row]) => typeof row.scenarioStatus === 'string');
+    if (hasClassifiedScenarios) {
+      const blocking = entries.filter(([, row]) => row.scenarioStatus === 'BLOCKER' || row.releaseGateBlocking === true);
+      const warningCount = entries
+        .filter(([, row]) => row.scenarioStatus !== 'EXPECTED_NEGATIVE_PASS')
+        .reduce((sum, [, row]) => sum + (row.warningCount ?? 0), 0);
+      if (blocking.length > 0) {
+        findings.push(makeFinding(
+          checkId,
+          'runtime_diagnostics_blocking_scenarios',
+          `Runtime diagnostics blocking scenarios: ${blocking.map(([name]) => name).join(', ')}.`,
+          'blocker',
+          'builder',
+          false,
+          commandLabel,
+        ));
+      } else if (warningCount > 0) {
+        findings.push(makeFinding(checkId, 'runtime_diagnostics_warnings', `Runtime diagnostics reported ${warningCount} warning-level findings in non-negative scenarios.`, 'waiver_candidate', 'builder', true, commandLabel));
+      }
+    } else {
+      const scenarios = entries.map(([, row]) => row);
+      const errorCount = scenarios.reduce((sum, row) => sum + (row.errorCount ?? 0), 0);
+      const warningCount = scenarios.reduce((sum, row) => sum + (row.warningCount ?? 0), 0);
+      if (errorCount > 0) {
+        findings.push(makeFinding(checkId, 'runtime_diagnostics_errors', `Runtime diagnostics reported ${errorCount} error-level findings.`, 'blocker', 'builder', false, commandLabel));
+      } else if (warningCount > 0) {
+        findings.push(makeFinding(checkId, 'runtime_diagnostics_warnings', `Runtime diagnostics reported ${warningCount} warning-level findings.`, 'waiver_candidate', 'builder', true, commandLabel));
+      }
     }
   }
 

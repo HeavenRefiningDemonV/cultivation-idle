@@ -7,19 +7,25 @@ function read(relPath: string): string {
   return readFileSync(resolve(process.cwd(), relPath), 'utf8');
 }
 
-test('World keeps TopRibbon and mounts full RunCompass in main flow command band', () => {
+test('World mounts the overlay ribbon and inspector from the shared Run Compass-derived command surface', () => {
   const file = read('src/components/screens/WorldScreen.tsx');
-  assert.match(file, /<TopRibbon/);
-  assert.match(file, /worldScreenCommandBand/);
-  assert.match(file, /<RunCompass surface=\{runCompass\.full\}/);
-  assert.match(file, /aria-label="World command band"/);
+  assert.match(file, /<WorldOverlayRibbon/);
+  assert.match(file, /<WorldOverlayInspector/);
+  assert.match(file, /buildWorldModuleRoutingSurface\(\{/);
+  assert.match(file, /runCompassPrimaryModuleKey: runCompassModuleKeys\.primary/);
+  assert.match(file, /runCompassSecondaryModuleKey: runCompassModuleKeys\.secondary/);
+  assert.doesNotMatch(file, /<TopRibbon/);
+  assert.doesNotMatch(file, /worldScreenCommandBand/);
 });
 
-test('World above-the-fold command truth does not depend on the narrow inspector drawer', () => {
+test('World command truth is available before the narrow inspector drawer fallback', () => {
   const file = read('src/components/screens/WorldScreen.tsx');
-  const commandBandIndex = file.indexOf('worldScreenCommandBand');
+  const ribbonIndex = file.indexOf('<WorldOverlayRibbon');
+  const wideInspectorIndex = file.indexOf('<WorldOverlayInspector');
   const drawerIndex = file.indexOf('<InspectorDrawer');
-  assert.ok(commandBandIndex >= 0, 'worldScreenCommandBand should exist');
+  assert.ok(ribbonIndex >= 0, 'WorldOverlayRibbon should exist');
+  assert.ok(wideInspectorIndex >= 0, 'WorldOverlayInspector should exist');
   assert.ok(drawerIndex >= 0, 'InspectorDrawer should exist');
-  assert.ok(commandBandIndex < drawerIndex, 'command band should be mounted before the drawer fallback');
+  assert.ok(ribbonIndex < drawerIndex, 'ribbon should be mounted before the drawer fallback');
+  assert.ok(wideInspectorIndex < drawerIndex, 'wide inspector should be mounted before the drawer fallback');
 });

@@ -7,23 +7,29 @@ function read(relPath: string): string {
   return readFileSync(resolve(process.cwd(), relPath), 'utf8');
 }
 
-test('WR-02 world above-the-fold anatomy keeps command band before map + inspector shell', () => {
+test('WR-02 world above-the-fold anatomy keeps map, ribbon, and inspector overlay layers', () => {
   const worldScreen = read('src/components/screens/WorldScreen.tsx');
-  const commandBandIndex = worldScreen.indexOf('worldScreenCommandBand" aria-label="World command band"');
-  const shellLayoutIndex = worldScreen.indexOf('worldScreenShellLayout');
-  const mapPanelIndex = worldScreen.indexOf('worldScreenHubPanel');
-  const inspectorRegionIndex = worldScreen.indexOf('worldScreenInspectorRegion');
+  const canvasIndex = worldScreen.indexOf('worldScreenCanvas');
+  const mapLayerIndex = worldScreen.indexOf('worldScreenMapLayer');
+  const ribbonLayerIndex = worldScreen.indexOf('worldScreenRibbonLayer');
+  const inspectorLayerIndex = worldScreen.indexOf('worldScreenInspectorLayer');
+  const drawerIndex = worldScreen.indexOf('<InspectorDrawer');
 
-  assert.ok(commandBandIndex >= 0, 'World command band should exist.');
-  assert.ok(shellLayoutIndex > commandBandIndex, 'Shell layout should follow the command band in render order.');
-  assert.ok(mapPanelIndex > shellLayoutIndex, 'Map panel should be inside the shell layout after command band.');
-  assert.ok(inspectorRegionIndex > shellLayoutIndex, 'Inspector region should remain in shell layout.');
+  assert.ok(canvasIndex >= 0, 'World canvas should own the exact-screen composition.');
+  assert.ok(mapLayerIndex > canvasIndex, 'Map layer should be inside the world canvas.');
+  assert.ok(ribbonLayerIndex > mapLayerIndex, 'Overlay ribbon should be rendered after the map layer.');
+  assert.ok(inspectorLayerIndex > ribbonLayerIndex, 'Wide inspector layer should follow the overlay ribbon.');
+  assert.ok(drawerIndex > inspectorLayerIndex, 'Narrow inspector drawer should remain a fallback after the wide layer.');
 });
 
-test('WR-02 keeps full run compass in main flow and keeps support slot subordinate', () => {
+test('WR-02 routes Run Compass truth into the world routing surface instead of duplicating command UI', () => {
   const worldScreen = read('src/components/screens/WorldScreen.tsx');
-  assert.match(worldScreen, /<RunCompass surface=\{runCompass\.full\}/);
-  assert.match(worldScreen, /worldScreenSupportSlot/);
-  assert.match(worldScreen, /worldSupportRail/);
+  assert.match(worldScreen, /const runCompass = useRunCompassSurface\(\)/);
+  assert.match(worldScreen, /runCompassPrimaryModuleKey: runCompassModuleKeys\.primary/);
+  assert.match(worldScreen, /runCompassSecondaryModuleKey: runCompassModuleKeys\.secondary/);
+  assert.match(worldScreen, /<WorldOverlayRibbon/);
+  assert.match(worldScreen, /<WorldOverlayInspector/);
+  assert.match(worldScreen, /<InspectorDrawer/);
   assert.doesNotMatch(worldScreen, /worldScreenHubShellHeader/);
+  assert.doesNotMatch(worldScreen, /<RunCompass surface=\{runCompass\.full\}/);
 });

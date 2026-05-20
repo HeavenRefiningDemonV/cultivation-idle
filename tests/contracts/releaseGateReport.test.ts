@@ -94,6 +94,62 @@ void test('release gate adapter parses JSON payload when npm banner noise is pre
   assert.equal(result.warningCount, 0);
 });
 
+void test('runtime diagnostics adapter accepts expected-negative scenario classifications', async () => {
+  const result = await runReleaseGateAdapter('runtime_diagnostics', {
+    runCommand: () => ({
+      exitCode: 0,
+      stdout: JSON.stringify({
+        scenarios: {
+          clean_baseline: { scenarioStatus: 'PASS', errorCount: 0, warningCount: 0, releaseGateBlocking: false },
+          seeded_runtime_residue: { scenarioStatus: 'EXPECTED_NEGATIVE_PASS', errorCount: 3, warningCount: 0, releaseGateBlocking: false },
+          content_failure_snapshot: { scenarioStatus: 'EXPECTED_NEGATIVE_PASS', errorCount: 2, warningCount: 0, releaseGateBlocking: false },
+        },
+      }),
+      stderr: '',
+    }),
+  });
+
+  assert.equal(result.status, 'pass');
+  assert.equal(result.blockerCount, 0);
+});
+
+void test('runtime diagnostics adapter blocks drifted scenario classifications', async () => {
+  const result = await runReleaseGateAdapter('runtime_diagnostics', {
+    runCommand: () => ({
+      exitCode: 0,
+      stdout: JSON.stringify({
+        scenarios: {
+          clean_baseline: { scenarioStatus: 'PASS', errorCount: 0, warningCount: 0, releaseGateBlocking: false },
+          seeded_runtime_residue: { scenarioStatus: 'BLOCKER', errorCount: 4, warningCount: 0, releaseGateBlocking: true },
+        },
+      }),
+      stderr: '',
+    }),
+  });
+
+  assert.equal(result.status, 'fail');
+  assert.equal(result.blockerCount, 1);
+});
+
+void test('route comparison adapter accepts string warnings without converting them to blockers', async () => {
+  const result = await runReleaseGateAdapter('route_comparison', {
+    runCommand: () => ({
+      exitCode: 0,
+      stdout: JSON.stringify({
+        overallPass: true,
+        finalTruthSummary: { noFakeCitySixAcrossRoutes: true },
+        warnings: ['high_skill:timing_outside_locked_envelope'],
+      }),
+      stderr: '',
+    }),
+  });
+
+  assert.equal(result.status, 'warning');
+  assert.equal(result.blockerCount, 0);
+  assert.equal(result.warningCount, 1);
+  assert.equal(result.findings[0]?.message, 'high_skill:timing_outside_locked_envelope');
+});
+
 void test('known issues markdown classifies waivers/debt by matched ledger entries and keeps unmatched findings untracked', async () => {
   const overrides = Object.fromEntries(
     RELEASE_GATE_MANIFEST.map((entry) => [entry.checkId, async () => stubResult(entry.checkId, 'pass')]),

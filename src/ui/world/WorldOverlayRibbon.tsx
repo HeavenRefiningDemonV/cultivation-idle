@@ -1,4 +1,5 @@
 import './WorldOverlayRibbon.scss';
+import { WORLD_SUPPORT_ART_ASSET_URLS } from '../../assets/ui/chrome/world_labels/index.js';
 
 export interface WorldOverlayRibbonCityOption {
   cityId: string;
@@ -43,6 +44,7 @@ export function WorldOverlayRibbon({
           className="worldOverlayRibbon__citySelect uiNoShift"
           value={selectedCityId ?? ''}
           onChange={(event) => onSelectCity(event.target.value)}
+          style={{ backgroundImage: `linear-gradient(180deg, rgba(255, 252, 246, 0.92), rgba(255, 252, 246, 0.92)), url(${WORLD_SUPPORT_ART_ASSET_URLS.currentCityPlate})` }}
         >
           {cityOptions.map((option) => (
             <option key={option.cityId} value={option.cityId} disabled={!option.isUnlocked}>

@@ -2,6 +2,7 @@ import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { buildRuntimeContentManifestReport } from '../../src/services/diagnostics/release/runtimeContentManifestReport.ts';
+import { RUNTIME_CONTENT_FILE_BY_KEY } from '../../src/content/runtimeContentManifest.ts';
 
 type BaselineStatus = 'pass' | 'fail' | 'warning' | 'info';
 
@@ -63,6 +64,27 @@ const RELEASE_CAPTURE_SCRIPT_IDS = [
   'release:reclaim-route-report',
 ] as const;
 
+const ROOT_PROJECT_FILES = [
+  'AGENTS.md',
+  'index.html',
+  'package.json',
+  'package-lock.json',
+  'vite.config.ts',
+  'playwright.config.ts',
+  'tsconfig.app.json',
+  'tsconfig.json',
+  'tsconfig.node.json',
+  'tsconfig.tests.json',
+  'tsconfig.progression-fixtures.json',
+  'eslint.config.js',
+  'postcss.config.js',
+] as const;
+
+const REQUIRED_ROOT_SCRIPT_FILES = [
+  'scripts/relativeJsLoader.mjs',
+  'scripts/checkNoEmojiIcons.ts',
+] as const;
+
 function parseArgs(argv: string[]): CliOptions {
   const rootArg = argv.find((arg) => arg.startsWith('--root='));
   return {
@@ -79,6 +101,16 @@ function printHelp() {
 
 function exists(root: string, relativePath: string): boolean {
   return fs.existsSync(path.resolve(root, relativePath));
+}
+
+function isFile(root: string, relativePath: string): boolean {
+  const target = path.resolve(root, relativePath);
+  return fs.existsSync(target) && fs.statSync(target).isFile();
+}
+
+function isDirectory(root: string, relativePath: string): boolean {
+  const target = path.resolve(root, relativePath);
+  return fs.existsSync(target) && fs.statSync(target).isDirectory();
 }
 
 function countFiles(root: string, dir: string, extension: string): number {
@@ -188,6 +220,122 @@ function buildScriptCheck(
   };
 }
 
+function normalizeLocalEntryPath(src: string): string | null {
+  const withoutFragment = src.split('#')[0]?.split('?')[0]?.trim() ?? '';
+  if (!withoutFragment || /^[a-z]+:\/\//i.test(withoutFragment) || withoutFragment.startsWith('//')) return null;
+  return withoutFragment.replace(/^\/+/, '').replace(/\\/g, '/');
+}
+
+function extractModuleScriptSrc(indexHtml: string): string | null {
+  const scriptTags = indexHtml.match(/<script\b[^>]*>/gi) ?? [];
+  for (const tag of scriptTags) {
+    if (!/\btype\s*=\s*["']module["']/i.test(tag)) continue;
+    const srcMatch = tag.match(/\bsrc\s*=\s*["']([^"']+)["']/i);
+    if (srcMatch?.[1]) return srcMatch[1];
+  }
+  return null;
+}
+
+function buildViteEntryCheck(root: string): BaselineCheck {
+  const indexPath = path.resolve(root, 'index.html');
+  if (!fs.existsSync(indexPath)) {
+    return {
+      id: 'vite_entry',
+      title: 'Vite app entry',
+      status: 'fail',
+      summary: 'Root index.html is missing; Vite cannot resolve the app entry from an exported bundle.',
+      evidence: ['index.html: missing'],
+    };
+  }
+
+  let html = '';
+  try {
+    html = fs.readFileSync(indexPath, 'utf8');
+  } catch (error) {
+    return {
+      id: 'vite_entry',
+      title: 'Vite app entry',
+      status: 'fail',
+      summary: `Root index.html could not be read: ${error instanceof Error ? error.message : String(error)}`,
+      evidence: ['index.html: unreadable'],
+    };
+  }
+
+  const moduleSrc = extractModuleScriptSrc(html);
+  const entryPath = moduleSrc ? normalizeLocalEntryPath(moduleSrc) : null;
+  if (!entryPath) {
+    return {
+      id: 'vite_entry',
+      title: 'Vite app entry',
+      status: 'fail',
+      summary: 'Root index.html does not reference a local module script entry.',
+      evidence: ['index.html: present', `moduleScript=${moduleSrc ?? 'missing'}`],
+    };
+  }
+
+  const entryExists = isFile(root, entryPath);
+  return {
+    id: 'vite_entry',
+    title: 'Vite app entry',
+    status: entryExists ? 'pass' : 'fail',
+    summary: entryExists
+      ? `Root index.html references existing Vite entry ${entryPath}.`
+      : `Root index.html references missing Vite entry ${entryPath}.`,
+    evidence: [
+      'index.html: present',
+      `moduleScript=${moduleSrc}`,
+      `${entryPath}: ${entryExists ? 'present' : 'missing'}`,
+    ],
+  };
+}
+
+function buildRequiredFilesCheck(root: string): BaselineCheck {
+  const missing = ROOT_PROJECT_FILES.filter((file) => !isFile(root, file));
+  return {
+    id: 'root_project_files',
+    title: 'Root project files',
+    status: missing.length === 0 ? 'pass' : 'warning',
+    summary: missing.length === 0
+      ? 'All expected root project/config files are present.'
+      : `Missing optional/required root files for review bundles: ${missing.join(', ')}`,
+    evidence: ROOT_PROJECT_FILES.map((file) => `${file}: ${isFile(root, file) ? 'present' : 'missing'}`),
+  };
+}
+
+function buildRequiredScriptFilesCheck(root: string): BaselineCheck {
+  const missing = REQUIRED_ROOT_SCRIPT_FILES.filter((file) => !isFile(root, file));
+  return {
+    id: 'root_script_files',
+    title: 'Root script files',
+    status: missing.length === 0 ? 'pass' : 'fail',
+    summary: missing.length === 0
+      ? 'Required root helper scripts are present.'
+      : `Missing required root helper scripts: ${missing.join(', ')}`,
+    evidence: REQUIRED_ROOT_SCRIPT_FILES.map((file) => `${file}: ${isFile(root, file) ? 'present' : 'missing'}`),
+  };
+}
+
+function buildRuntimeContentDirectoryCheck(root: string): BaselineCheck {
+  const contentDir = 'public/cultivation_idle_content_bible_v1_config';
+  const missingFiles = Object.values(RUNTIME_CONTENT_FILE_BY_KEY).filter((fileName) => !isFile(root, path.join(contentDir, fileName)));
+  return {
+    id: 'runtime_content_files',
+    title: 'Runtime content source files',
+    status: isDirectory(root, contentDir) && missingFiles.length === 0 ? 'pass' : 'fail',
+    summary: !isDirectory(root, contentDir)
+      ? 'Runtime content source directory is missing.'
+      : missingFiles.length > 0
+        ? `Missing runtime content files: ${missingFiles.join(', ')}`
+        : `All ${Object.keys(RUNTIME_CONTENT_FILE_BY_KEY).length} runtime content files are present.`,
+    evidence: [
+      `${contentDir}: ${isDirectory(root, contentDir) ? 'present' : 'missing'}`,
+      `requiredFiles=${Object.keys(RUNTIME_CONTENT_FILE_BY_KEY).length}`,
+      `missingFiles=${missingFiles.length}`,
+      ...missingFiles.slice(0, 8).map((fileName) => `${fileName}: missing`),
+    ],
+  };
+}
+
 function buildBaselineReport(root: string): ImplementationBaselineReport {
   const { raw: packageJson, scripts, check: packageCheck } = readPackageJson(root);
   const npmVersion = runPreview('npm', ['-v'], root);
@@ -199,6 +347,9 @@ function buildBaselineReport(root: string): ImplementationBaselineReport {
 
   const checks: BaselineCheck[] = [
     packageCheck,
+    buildViteEntryCheck(root),
+    buildRequiredFilesCheck(root),
+    buildRequiredScriptFilesCheck(root),
     {
       id: 'node_modules',
       title: 'Dependencies',
@@ -238,6 +389,7 @@ function buildBaselineReport(root: string): ImplementationBaselineReport {
         `emptyFiles=${contentManifest.source.emptyFiles.length}`,
       ],
     },
+    buildRuntimeContentDirectoryCheck(root),
     {
       id: 'test_sources',
       title: 'Test sources',

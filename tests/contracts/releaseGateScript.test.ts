@@ -8,7 +8,7 @@ import { spawnSync } from 'node:child_process';
 const runScript = (args: string[], env: NodeJS.ProcessEnv = {}) =>
   spawnSync(
     'node',
-    ['--experimental-strip-types', 'scripts/release/runReleaseGate.ts', ...args],
+    ['--loader=./scripts/relativeJsLoader.mjs', '--experimental-strip-types', 'scripts/release/runReleaseGate.ts', ...args],
     { cwd: process.cwd(), encoding: 'utf8', env: { ...process.env, ...env } },
   );
 

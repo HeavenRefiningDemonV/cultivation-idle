@@ -1,25 +1,19 @@
 # Known Issues Ledger
 
-- Generated: 2026-05-19T15:05:56.867Z
-- Release gate headline: NO_GO
+- Generated: 2026-05-19T20:03:47.160Z
+- Release gate headline: PASS
 
 ## Open blockers
 - None
 
 ## Accepted waivers
-- [build_audit] build_waiver_match: http-proxy
-  - Severity: waiver_candidate
-  - Message: http-proxy warning
+- None
 
 ## Post-semester debt
-- [progression_contract] progression_debt_match: OFFLINE_PIPELINE_SPLIT
-  - Severity: post_semester_debt
-  - Message: offline split warning
+- None
 
 ## Untracked findings (must classify)
-- [build_audit] build_waiver_untracked: unknown_warning
-  - Severity: waiver_candidate
-  - Message: unknown warning
+- None
 
 ## Typed ledger entries
 - waiver_build_npm_env_http_proxy_warning [accepted_waiver] (accepted)
