@@ -25,8 +25,8 @@ import type {
   DaoReincarnationCounselSurface,
   DaoSafetyNetSurface,
   DaoSourceMapEntry,
-  DaoSourceOption,
 } from './daoMandateTypes.js';
+import { buildDaoMandateSourceMap } from './daoMandateSourceMap.js';
 
 export interface BuildDaoMandateSurfaceOptions {
   guidanceProfile?: DaoMandateGuidanceProfile;
@@ -325,47 +325,6 @@ function toRecentOmen(delta: RunCompassDeltaSummaryV2): DaoRecentOmen {
   };
 }
 
-function sourceOptionFromRoute(route: DaoMandateRoute, activityMode: DaoSourceOption['activityMode']): DaoSourceOption {
-  return {
-    id: `source-${route.id}`,
-    label: route.label,
-    detail: route.detail,
-    route,
-    lockedReason: route.blocked ? route.blockedReason ?? 'Route is blocked.' : null,
-    activityMode,
-    confidence: route.blocked ? 'medium' : 'high',
-  };
-}
-
-function buildSourceMap(
-  surface: RunCompassSurfaceV2,
-  primaryRoute: DaoMandateRoute,
-  secondaryRoutes: DaoMandateRoute[],
-): DaoSourceMapEntry[] {
-  const routeCanExplainSource =
-    primaryRoute.source === 'economy' ||
-    primaryRoute.source === 'readiness' ||
-    primaryRoute.source === 'build';
-  if (!routeCanExplainSource) return [];
-
-  const fallbackSources = secondaryRoutes
-    .filter((route) => route.source === 'economy' || route.source === 'readiness' || route.source === 'build')
-    .slice(0, 3)
-    .map((route) => sourceOptionFromRoute(route, 'background'));
-
-  return [{
-    id: `source-map-${primaryRoute.id}`,
-    neededThingLabel: surface.readiness.primaryShortfallLabel ?? surface.primaryBlocker.label,
-    neededThingId: null,
-    problemKind: surface.primaryBlocker.kind,
-    sinkLabel: surface.currentGate?.gateLabel ?? surface.milestone.label,
-    expectedImpactLabel: primaryRoute.expectedDeltaLabel,
-    bestSources: [sourceOptionFromRoute(primaryRoute, primaryRoute.target?.kind === 'world_module' ? 'active' : 'passive')],
-    fallbackSources,
-    route: primaryRoute,
-  }];
-}
-
 function buildCurrentWork(primaryRoute: DaoMandateRoute): DaoCurrentWorkSurface {
   return {
     foreground: {
@@ -432,7 +391,7 @@ function createFallbackDaoMandateSurface(args: {
     milestone: {
       id: 'fallback:continue-cultivation',
       label: 'Continue cultivation',
-      detail: 'Dao Mandate could not read Run Compass truth for this moment.',
+      detail: 'Dao Mandate could not read the current guidance truth for this moment.',
       state: 'fallback',
       currentRealmLabel: 'Unknown realm',
       nextRealmLabel: null,
@@ -443,7 +402,7 @@ function createFallbackDaoMandateSurface(args: {
     obstruction: {
       kind: 'unknown',
       label: 'Guidance source unavailable',
-      detail: 'Run Compass V2 did not return a readable surface.',
+      detail: 'The guidance resolver did not return a readable surface.',
       severity: 'warning',
       source: 'fallback',
       confidence: 'low',
@@ -456,7 +415,7 @@ function createFallbackDaoMandateSurface(args: {
         id: 'fallback-guidance-unavailable',
         bucket: 'hard_gate',
         label: 'Guidance source unavailable',
-        detail: 'Run Compass V2 did not return a readable surface.',
+        detail: 'The guidance resolver did not return a readable surface.',
         currentLabel: null,
         targetLabel: null,
         state: 'unknown',
@@ -520,11 +479,11 @@ export function buildDaoMandateSurfaceFromRunCompassV2(
       now: options.now ?? Date.now(),
       guidanceProfile,
       currentScreen: options.currentScreen,
-      debugNote: 'Run Compass V2 returned no surface while building Dao Mandate.',
+      debugNote: 'Guidance resolver returned no surface while building Dao Mandate.',
     });
   }
 
-  const debugNotes = [...runCompass.debugNotes, 'Dao Mandate adapted from Run Compass V2.'];
+  const debugNotes = [...runCompass.debugNotes, 'Dao Mandate adapted from the current guidance resolver.'];
   const primaryRoute = toDaoRoute(runCompass.primaryRoute, runCompass, debugNotes);
   const secondaryRoutes = runCompass.secondaryRoutes
     .map((route) => toDaoRoute(route, runCompass, debugNotes))
@@ -532,7 +491,7 @@ export function buildDaoMandateSurfaceFromRunCompassV2(
   const obstruction = toDaoObstruction(runCompass.primaryBlocker);
   const readiness = buildReadinessLedger(runCompass, primaryRoute);
   const recentOmens = runCompass.recentDeltas.map(toRecentOmen);
-  const sourceMap = buildSourceMap(runCompass, primaryRoute, secondaryRoutes);
+  const sourceMap = buildDaoMandateSourceMap({ runCompass, primaryRoute, secondaryRoutes });
   const safetyNet = toSafetyNetSurface(runCompass.safetyNet, runCompass, debugNotes);
   const prestige = toPrestigeSurface(runCompass.prestigeHint);
   const requirementLedger = buildDaoRequirementLedgerFromRunCompass(runCompass, {
@@ -582,7 +541,7 @@ export function buildLiveDaoMandateSurfaceV1(options: BuildDaoMandateSurfaceOpti
       now: options.now ?? Date.now(),
       guidanceProfile,
       currentScreen: options.currentScreen,
-      debugNote: `Run Compass V2 failed while building Dao Mandate: ${error instanceof Error ? error.message : String(error)}`,
+      debugNote: `Guidance resolver failed while building Dao Mandate: ${error instanceof Error ? error.message : String(error)}`,
     });
   }
 }

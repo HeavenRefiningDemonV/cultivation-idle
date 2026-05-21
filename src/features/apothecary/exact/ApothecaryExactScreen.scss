@@ -224,6 +224,24 @@
   border-right: 2px solid rgba(94, 72, 44, 0.5);
 }
 
+.apothecaryExactMandateSourceSink {
+  position: absolute;
+  left: 548px;
+  top: 24px;
+  width: 750px;
+  max-height: 88px;
+  z-index: 9;
+  overflow: auto;
+}
+
+.apothecaryExactMandateSourceSink .daoModuleSourceSinkPanel__header {
+  grid-template-columns: minmax(84px, auto) minmax(0, 1fr);
+}
+
+.apothecaryExactMandateSourceSink .daoSourceRouteSlip {
+  padding: 8px;
+}
+
 .apothecaryExactPrepStrip {
   position: absolute;
   left: 74px;

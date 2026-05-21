@@ -1,4 +1,5 @@
 import type { ItemDef, LiveWorldModuleKey, ValidatedContent } from '../../content/index.js';
+import type { DaoMandateSurfaceV1 } from '../ui/daoMandate/index.js';
 import { getWorldModuleLabel, sanitizeLiveCityName } from '../../ui/text/playerFacingLabels.js';
 import { buildBestSourceIndex, type BestSourceIndex, type BestSourceIndexEntry, type BestSourceOption } from './bestSourceIndex.js';
 import {
@@ -130,38 +131,74 @@ function buildSurfaceFromIndexEntry(
   };
 }
 
-function buildItemPurpose(item: ItemDef, itemId: string, context: PurposeSourceContext): Pick<PurposeSourceSurface, 'purposeTag' | 'purposeLine' | 'boundaryLine'> {
+function mandateNeedsTarget(mandate: DaoMandateSurfaceV1 | null | undefined, targetId: string): boolean {
+  if (!mandate) return false;
+  if (mandate.sourceMap.some((entry) => entry.neededThingId === targetId)) return true;
+  const rows = [
+    ...mandate.requirementLedger.hardGates,
+    ...mandate.requirementLedger.readinessFloors,
+    ...mandate.requirementLedger.supportReserves,
+    ...mandate.requirementLedger.sourceRoutes,
+  ];
+  return rows.some((row) => row.sourceLine === targetId || row.currentLabel === targetId || row.targetLabel === targetId);
+}
+
+function buildItemPurpose(
+  item: ItemDef,
+  itemId: string,
+  context: PurposeSourceContext,
+  mandate?: DaoMandateSurfaceV1 | null,
+): Pick<PurposeSourceSurface, 'purposeTag' | 'purposeLine' | 'boundaryLine'> {
+  if (mandateNeedsTarget(mandate, itemId)) {
+    const matchingEntry = mandate?.sourceMap.find((entry) => entry.neededThingId === itemId);
+    return {
+      purposeTag: 'Needed Now',
+      purposeLine: matchingEntry
+        ? `Sink: ${matchingEntry.sinkLabel}. ${matchingEntry.expectedImpactLabel ?? 'This item belongs to the current Mandate.'}`
+        : 'This item belongs to the current Mandate.',
+      boundaryLine: matchingEntry?.bestSources[0]
+        ? `Known Source: ${matchingEntry.bestSources[0].label}.`
+        : 'Known Source: follow the current Mandate source route.',
+    };
+  }
   if (itemId === 'mat_technique_fragment') {
     return {
-      purposeTag: 'Technique Progression',
+      purposeTag: 'Keep',
       purposeLine: 'Used to rank techniques and convert duplicate manuals into lasting build progress.',
       boundaryLine: 'Keep fragments for rank-ups instead of treating them like generic material overflow.',
     };
   }
-  if (context.prepItemIds.has(itemId) || itemId.startsWith('gate_')) {
+  if (itemId.startsWith('gate_')) {
     return {
-      purposeTag: 'Immediate Readiness',
+      purposeTag: 'Future Gate',
+      purposeLine: 'Known gate proof or breakthrough catalyst. Keep it unless the current Mandate names it directly.',
+      boundaryLine: 'Future Gate is not the same as Needed Now.',
+    };
+  }
+  if (context.prepItemIds.has(itemId)) {
+    return {
+      purposeTag: 'Craft Input',
       purposeLine: 'Used to cover breakthrough and gate package requirements for the current progression band.',
       boundaryLine: 'If today\'s shop caps out, use brew or fallback routes only for the honest remainder.',
     };
   }
   if (context.forgeInputItemIds.has(itemId)) {
     return {
-      purposeTag: 'Permanent Power',
+      purposeTag: 'Craft Input',
       purposeLine: 'Used in Forge recipes, rune work, and other permanent power-floor upgrades.',
       boundaryLine: 'Do not burn core forge mats on throwaway spending when a floor upgrade is waiting.',
     };
   }
   if (item.usage === 'combat_only' || item.usage === 'combat_or_world' || item.usage === 'cultivate_only') {
     return {
-      purposeTag: 'Consumable',
+      purposeTag: 'Keep',
       purposeLine: item.usage === 'cultivate_only'
         ? 'Used to accelerate cultivation-side prep and breakthrough pressure.'
         : 'Used to stabilize runs, refill readiness, or cover moment-to-moment combat prep.',
     };
   }
   return {
-    purposeTag: item.category === 'material' ? 'Material' : 'General Use',
+    purposeTag: item.category === 'material' ? 'Quiet' : 'Keep',
     purposeLine: item.description ?? `Used within the ${item.category} loop when that path is active.`,
   };
 }
@@ -171,17 +208,18 @@ export function buildItemPurposeSourceSurface(
   context: PurposeSourceContext,
   itemId: string,
   currentCityId?: string | null,
+  mandate?: DaoMandateSurfaceV1 | null,
 ): PurposeSourceSurface | null {
   const item = content.items.find((entry) => entry.id === itemId);
   if (!item) return null;
   const entry = context.bestSourceIndex.entriesByTargetId[itemId] ?? null;
-  const purpose = buildItemPurpose(item, itemId, context);
+  const purpose = buildItemPurpose(item, itemId, context, mandate);
 
   if (!entry) {
     return {
-      purposeTag: purpose.purposeTag,
+      purposeTag: purpose.purposeTag === 'Quiet' ? 'Unknown Source' : purpose.purposeTag,
       purposeLine: purpose.purposeLine,
-      boundaryLine: purpose.boundaryLine,
+      boundaryLine: purpose.boundaryLine ?? 'No direct source has been discovered for this item yet.',
     };
   }
 
@@ -193,9 +231,17 @@ export function buildCurrencyPurposeSourceSurface(
   context: PurposeSourceContext,
   currencyId: 'gold' | 'merit' | 'spiritStones',
   currentCityId?: string | null,
+  mandate?: DaoMandateSurfaceV1 | null,
 ): PurposeSourceSurface | null {
   const entry = context.bestSourceIndex.entriesByTargetId[currencyId] ?? null;
-  const purpose = CURRENCY_PURPOSES[currencyId];
+  const mandateEntry = mandate?.sourceMap.find((source) => source.neededThingId === currencyId) ?? null;
+  const purpose = mandateEntry
+    ? {
+      purposeTag: 'Needed Now',
+      purposeLine: `Sink: ${mandateEntry.sinkLabel}. ${mandateEntry.expectedImpactLabel ?? 'This currency belongs to the current Mandate.'}`,
+      boundaryLine: mandateEntry.bestSources[0] ? `Known Source: ${mandateEntry.bestSources[0].label}.` : undefined,
+    }
+    : CURRENCY_PURPOSES[currencyId];
   if (!entry) {
     return purpose;
   }

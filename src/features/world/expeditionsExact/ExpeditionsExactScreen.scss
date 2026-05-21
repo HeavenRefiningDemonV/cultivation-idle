@@ -63,11 +63,20 @@
 
 .expeditionsExactHeader { position: absolute; left: 54px; top: 27px; width: 560px; height: 86px; }
 .expeditionsExactStatusPlaque { position: absolute; left: 1384px; top: 28px; width: 647px; height: 58px; }
+.expeditionsExactMandateSourceSink { position: absolute; left: 650px; top: 24px; width: 700px; max-height: 88px; z-index: 12; overflow: auto; }
 .expeditionsExactSlots { position: absolute; left: 55px; top: 135px; width: 1935px; height: 241px; }
 .expeditionsExactRouteMap { position: absolute; left: 55px; top: 397px; width: 594px; height: 597px; }
 .expeditionsExactRoutes { position: absolute; left: 668px; top: 397px; width: 794px; height: 597px; }
 .expeditionsExactLedger { position: absolute; left: 1482px; top: 397px; width: 500px; height: 597px; }
 .expeditionsExactBottomActions { position: absolute; left: 500px; top: 1010px; width: 1050px; height: 104px; display: grid; grid-template-columns: 1fr 1fr; gap: 60px; }
+
+.expeditionsExactMandateSourceSink .daoModuleSourceSinkPanel__header {
+  grid-template-columns: minmax(92px, auto) minmax(0, 1fr);
+}
+
+.expeditionsExactMandateSourceSink .daoSourceRouteSlip {
+  padding: 7px;
+}
 
 .expeditionsExactHeader__titleRow {
   display: flex;

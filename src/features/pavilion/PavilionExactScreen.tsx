@@ -1,4 +1,5 @@
 import type { RefObject } from 'react';
+import { ModuleSourceSinkPanel } from '../../ui/daoMandate/index.js';
 import { GameIcon } from '../../ui/icons/index.js';
 import type {
   PavilionActionChipSurface,
@@ -380,6 +381,12 @@ export function PavilionExactScreen(props: PavilionExactScreenProps) {
       <div className="pavilionExact__runRibbon" data-testid="pavilion-run-ribbon">
         {surface.currentLifeRibbon.display}
       </div>
+
+      <ModuleSourceSinkPanel
+        projection={surface.mandateSourceSink}
+        className="pavilionExact__mandateSourceSink"
+        title="Source memory"
+      />
 
       <div className="pavilionExact__searchCluster" data-testid="pavilion-search-cluster">
         <label className="pavilionExact__searchBox">

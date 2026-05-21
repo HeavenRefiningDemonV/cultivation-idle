@@ -23,7 +23,7 @@ const ironbloodPellet = new URL('../../../assets/apothecaryExact/remedies/ironbl
 const qiElixir = new URL('../../../assets/apothecaryExact/remedies/qi_elixir.png', import.meta.url).href;
 const spiritLeaf = new URL('../../../assets/apothecaryExact/remedies/spirit_leaf.png', import.meta.url).href;
 const bluePotionBottle = new URL('../../../assets/apothecaryExact/remedies/blue_potion_bottle.png', import.meta.url).href;
-const powderPacket = new URL('../../../assets/apothecaryExact/remedies/powder_packet.png', import.meta.url).href;
+const powderParcel = new URL('../../../assets/apothecaryExact/remedies/powder_packet.png', import.meta.url).href;
 const sourceCityMarket = new URL('../../../assets/apothecaryExact/sources/source_city_market.png', import.meta.url).href;
 const sourceApothecaryShelf = new URL('../../../assets/apothecaryExact/sources/source_apothecary_shelf.png', import.meta.url).href;
 const sourceBrewCauldron = new URL('../../../assets/apothecaryExact/sources/source_brew_cauldron.png', import.meta.url).href;
@@ -81,7 +81,7 @@ export const APOTHECARY_EXACT_ASSETS: ApothecaryExactAssetMap = {
   'remedies.qiElixir': asset('remedies.qiElixir', qiElixir, 'Qi Elixir live fallback icon', 'src/assets/apothecaryExact/remedies/qi_elixir.png', true),
   'remedies.spiritLeaf': asset('remedies.spiritLeaf', spiritLeaf, 'Spirit Leaf ingredient icon', 'src/assets/apothecaryExact/remedies/spirit_leaf.png', true),
   'remedies.moonDew': asset('remedies.moonDew', bluePotionBottle, 'Moon Dew ingredient icon fallback', 'src/assets/apothecaryExact/remedies/blue_potion_bottle.png'),
-  'remedies.genericPowder': asset('remedies.genericPowder', powderPacket, 'generic missing material packet icon', 'src/assets/apothecaryExact/remedies/powder_packet.png'),
+  'remedies.genericPowder': asset('remedies.genericPowder', powderParcel, 'generic missing material pouch icon', 'src/assets/apothecaryExact/remedies/powder_packet.png'),
   'sources.buy': asset('sources.buy', sourceCityMarket, 'buy route source icon', 'src/assets/apothecaryExact/sources/source_city_market.png', true),
   'sources.apothecaryShelf': asset('sources.apothecaryShelf', sourceApothecaryShelf, 'apothecary shelf source icon', 'src/assets/apothecaryExact/sources/source_apothecary_shelf.png'),
   'sources.brew': asset('sources.brew', sourceBrewCauldron, 'brew route source icon', 'src/assets/apothecaryExact/sources/source_brew_cauldron.png', true),

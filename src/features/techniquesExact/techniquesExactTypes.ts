@@ -3,6 +3,7 @@ import type {
   CastingPolicy,
   TechniqueSlotType,
 } from '../../types/index.js';
+import type { DaoMandateModuleSourceSinkProjection } from '../../systems/ui/daoMandate/index.js';
 import type { GameTab, WorldBuildingKey, WorldBuildingModalIntent } from '../../stores/uiStore.js';
 import type {
   TechniqueGradeTone,
@@ -228,6 +229,7 @@ export interface TechniquesExactSurfaceV1 {
     applyLoadoutButton: TechniquesExactButtonSurface;
     goToManualPavilionButton: TechniquesExactButtonSurface;
   };
+  mandateSourceSink?: DaoMandateModuleSourceSinkProjection | null;
   debug?: {
     missingDataFallbacks: string[];
     warnings: string[];

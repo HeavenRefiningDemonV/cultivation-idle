@@ -3,6 +3,7 @@ import { useBountyStore } from '../../../stores/bountyStore.js';
 import { useCityStore } from '../../../stores/cityStore.js';
 import { useContentStore } from '../../../stores/contentStore.js';
 import { useExpeditionStore, type ExpeditionRun } from '../../../stores/expeditionStore.js';
+import { buildLiveDaoMandateModuleSourceSinkProjection } from '../../../systems/ui/daoMandate/index.js';
 import { getLiveExpeditionRoutePurpose } from '../../../systems/world/expeditionRouteContract.js';
 import { sanitizeLiveCityName } from '../../../ui/text/playerFacingLabels.js';
 import { normalizeItemList } from '../../../utils/itemList.js';
@@ -565,6 +566,11 @@ export function buildExpeditionsExactSurfaceFromStores(
         reason: readyRuns.length > 0 ? null : 'No expedition is ready to claim.',
       }),
     },
+    mandateSourceSink: buildLiveDaoMandateModuleSourceSinkProjection({
+      currentCityId: resolvedCityId,
+      currentModuleKey: 'expeditions',
+      currentScreen: 'expeditions',
+    }),
     debug: {
       notes: [
         'Live Expeditions Exact surface is built from ExpeditionStore, content routes/durations, route-purpose contract, and tracked bounty recommendation hints.',

@@ -1,4 +1,5 @@
 import type React from 'react';
+import { ModuleSourceSinkPanel } from '../../../ui/daoMandate/index.js';
 import { GameIcon, ICONS, type IconId } from '../../../ui/icons/index.js';
 import { VisualIdentityBadge } from '../../../ui/techniques/VisualIdentityBadge.js';
 import type {
@@ -309,6 +310,12 @@ export function ManualPavilionExactScreen({
           </div>
           <ChipList chips={surface.buildGapBanner.chips} />
         </section>
+
+        <ModuleSourceSinkPanel
+          projection={surface.mandateSourceSink}
+          className="manualPavilionMandateSourceSink"
+          title="Doctrine source"
+        />
 
         <aside className="manualPavilionLedger" data-region="left-ledger" data-testid="manual-pavilion-left-ledger" aria-label="Manual Pavilion support ledger">
           <h2>{surface.leftLedger.title}</h2>

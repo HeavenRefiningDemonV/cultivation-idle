@@ -4,6 +4,7 @@ import type {
   ApothecaryExactButtonSurface,
   ApothecaryExactSurfaceV1,
 } from './apothecaryExactTypes.js';
+import { ModuleSourceSinkPanel } from '../../../ui/daoMandate/index.js';
 
 export interface ApothecaryExactScreenProps {
   surface: ApothecaryExactSurfaceV1;
@@ -286,6 +287,11 @@ export function ApothecaryExactScreen({ surface, scale = 1, onAction }: Apotheca
           <p>{surface.pageHeader.purpose}</p>
         </header>
         <div className="apothecaryExactCityChip" data-testid="apothecary-exact-city-chip">{surface.pageHeader.cityStatus}</div>
+        <ModuleSourceSinkPanel
+          projection={surface.mandateSourceSink}
+          className="apothecaryExactMandateSourceSink"
+          title="Medicine reserve"
+        />
         <PrepStrip surface={surface} />
         <Prescription surface={surface} onAction={onAction} />
         <WarningStrip surface={surface} />

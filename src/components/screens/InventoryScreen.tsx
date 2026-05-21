@@ -15,6 +15,11 @@ import { GameIcon } from '../../ui/icons/index.js';
 import { consumeConsumable } from '../../systems/consumables/consumeConsumable.js';
 import './InventoryScreen.scss';
 import { buildCurrencyPurposeSourceSurface, buildItemPurposeSourceSurface, buildPurposeSourceContext } from '../../systems/economy/purposeSourceSurface.js';
+import {
+  applyDaoMandateVisibility,
+  buildLiveDaoMandateSurfaceV1,
+  pickDaoMandateGuidanceSettings,
+} from '../../systems/ui/daoMandate/index.js';
 import { PurposeSourceCallout } from '../../ui/ink/index.js';
 
 type InventorySlot =
@@ -87,6 +92,7 @@ export default function InventoryScreen() {
   const activateTalisman = useBuffStore((state) => state.activateTalisman);
   const openManualSatchel = useUIStore((state) => state.openManualSatchel);
   const addNotification = useUIStore((state) => state.addNotification);
+  const uiSettings = useUIStore((state) => state.settings);
   const satchelCount = useManualSatchelStore((state) => state.manuals.length + (state.activeStudy ? 1 : 0));
   const [activePocketId, setActivePocketId] = useState(DEFAULT_FILTERS.activePocketId);
   const [searchQuery, setSearchQuery] = useState(DEFAULT_FILTERS.searchQuery);
@@ -507,19 +513,28 @@ export default function InventoryScreen() {
     [rawContent],
   );
 
+  const visibleDaoMandate = useMemo(() => {
+    const guidanceSettings = pickDaoMandateGuidanceSettings(uiSettings);
+    const rawMandate = buildLiveDaoMandateSurfaceV1({
+      currentScreen: 'inventory',
+      guidanceProfile: guidanceSettings.guidanceOath,
+    });
+    return applyDaoMandateVisibility(rawMandate, { settings: guidanceSettings });
+  }, [uiSettings]);
+
   const selectedItemPurpose = useMemo(() => {
     if (!rawContent || !purposeSourceContext || !selectedStack) return null;
-    return buildItemPurposeSourceSurface(rawContent, purposeSourceContext, selectedStack.itemId, currentCityId);
-  }, [currentCityId, purposeSourceContext, rawContent, selectedStack]);
+    return buildItemPurposeSourceSurface(rawContent, purposeSourceContext, selectedStack.itemId, currentCityId, visibleDaoMandate);
+  }, [currentCityId, purposeSourceContext, rawContent, selectedStack, visibleDaoMandate]);
 
   const currencyGuidance = useMemo(() => {
     if (!rawContent || !purposeSourceContext) return [];
     return [
-      { id: 'gold', label: 'Gold', surface: buildCurrencyPurposeSourceSurface(rawContent, purposeSourceContext, 'gold', currentCityId) },
-      { id: 'spiritStones', label: 'Spirit Stones', surface: buildCurrencyPurposeSourceSurface(rawContent, purposeSourceContext, 'spiritStones', currentCityId) },
-      { id: 'merit', label: 'Merit', surface: buildCurrencyPurposeSourceSurface(rawContent, purposeSourceContext, 'merit', currentCityId) },
+      { id: 'gold', label: 'Gold', surface: buildCurrencyPurposeSourceSurface(rawContent, purposeSourceContext, 'gold', currentCityId, visibleDaoMandate) },
+      { id: 'spiritStones', label: 'Spirit Stones', surface: buildCurrencyPurposeSourceSurface(rawContent, purposeSourceContext, 'spiritStones', currentCityId, visibleDaoMandate) },
+      { id: 'merit', label: 'Merit', surface: buildCurrencyPurposeSourceSurface(rawContent, purposeSourceContext, 'merit', currentCityId, visibleDaoMandate) },
     ].filter((entry) => entry.surface);
-  }, [currentCityId, purposeSourceContext, rawContent]);
+  }, [currentCityId, purposeSourceContext, rawContent, visibleDaoMandate]);
 
   const selectedItemInfo = useMemo(() => {
     if (!selectedStackId) return { id: null, type: null, name: null };

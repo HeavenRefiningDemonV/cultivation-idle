@@ -31,6 +31,7 @@ export { MandateSeal, type MandateSealProps } from './MandateSeal.js';
 export { MandateChamberHero, type MandateChamberHeroProps } from './MandateChamberHero.js';
 export { RequirementLedger, type RequirementLedgerProps } from './RequirementLedger.js';
 export { SourceRouteSlip, type SourceRouteSlipProps } from './SourceRouteSlip.js';
+export { ModuleSourceSinkPanel, type ModuleSourceSinkPanelProps } from './ModuleSourceSinkPanel.js';
 export { ReadinessLedger, type ReadinessLedgerProps } from './ReadinessLedger.js';
 export { SafetyNetPlaque, type SafetyNetPlaqueProps } from './SafetyNetPlaque.js';
 export { RecentOmensFeed, type RecentOmensFeedProps } from './RecentOmensFeed.js';

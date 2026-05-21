@@ -37,6 +37,7 @@ import { buildPavilionElderNote, createFallbackPavilionRuntimeSnapshot } from '.
 import { collectUnresolvedRelations, resolvePavilionRelatedEntries } from './pavilionRelations.js';
 import { resolvePavilionRouteButton } from './pavilionRouteActions.js';
 import { searchPavilionRecords } from './pavilionSearch.js';
+import { buildLiveDaoMandateModuleSourceSinkProjection } from '../../systems/ui/daoMandate/index.js';
 
 export interface BuildPavilionSurfaceArgs {
   mode: 'fixture' | 'live';
@@ -172,7 +173,7 @@ function buildSourceUse(record: PavilionRecord, mode: 'fixture' | 'live'): Pavil
   }
   if (record.sourceUse && record.sourceUse.length > 0) return record.sourceUse;
   return [
-    { id: 'source', label: 'Known From', value: record.implementation, kind: record.debug.generated ? 'source' : 'debug' },
+    { id: 'source', label: 'Known From', value: record.debug.generated ? 'Generated record' : 'Authored record', kind: 'source' },
   ];
 }
 
@@ -1056,6 +1057,13 @@ export function buildPavilionSurface(args: BuildPavilionSurfaceArgs): PavilionSu
     selectedEntry,
     rightRail: buildRightRail(selectedEntry, runtime, args.mode),
     elderNote: buildPavilionElderNote(runtime, args.mode),
+    mandateSourceSink: args.mode === 'live'
+      ? buildLiveDaoMandateModuleSourceSinkProjection({
+        currentCityId: runtime.currentCityId,
+        currentModuleKey: 'records',
+        currentScreen: 'records',
+      })
+      : null,
     recordStatesLegend: buildPavilionRecordStateLegend(args.manifest.global_labels.states),
     footer: {
       breadcrumbs: ['Pavilion of Ten Thousand Records', selectedCategoryId === 'gate-trials' ? 'Gate Trials' : selectedRecord.categoryLabel, selectedRecord.title],

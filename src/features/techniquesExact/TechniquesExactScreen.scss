@@ -71,7 +71,7 @@
 .techniquesExactTop {
   grid-area: top;
   display: grid;
-  grid-template-columns: minmax(270px, 0.7fr) minmax(0, 1.55fr) minmax(270px, 0.75fr);
+  grid-template-columns: minmax(230px, 0.52fr) minmax(260px, 0.74fr) minmax(0, 1.1fr) minmax(245px, 0.64fr);
   gap: var(--tech-gap);
   align-items: stretch;
   min-height: 0;
@@ -97,6 +97,25 @@
   margin: 8px 0 0;
   color: #1e1610;
   font-size: clamp(15px, 1.1vw, 20px);
+}
+
+.techniquesExactMandateSourceSink {
+  min-width: 0;
+  max-height: calc(var(--tech-top-height) - 24px);
+  overflow: auto;
+}
+
+.techniquesExactMandateSourceSink .daoModuleSourceSinkPanel__header {
+  grid-template-columns: 1fr;
+  gap: 0.35rem;
+}
+
+.techniquesExactMandateSourceSink .daoModuleSourceSinkPanel__relation {
+  width: max-content;
+}
+
+.techniquesExactMandateSourceSink .daoSourceRouteSlip {
+  padding: 7px;
 }
 
 .techniquesExactDiagnosis {

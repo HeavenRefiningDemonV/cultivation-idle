@@ -1,3 +1,5 @@
+import type { DaoMandateModuleSourceSinkProjection } from '../../../systems/ui/daoMandate/index.js';
+
 export type ExpeditionsExactSurfaceMode = 'fixture' | 'live';
 
 export type ExactButtonSurface = {
@@ -116,6 +118,7 @@ export type ExpeditionsExactSurfaceV1 = {
     dispatch: ExactButtonSurface;
     claimAllReady: ExactButtonSurface;
   };
+  mandateSourceSink?: DaoMandateModuleSourceSinkProjection | null;
   debug?: {
     notes: string[];
     regionOrder: string[];

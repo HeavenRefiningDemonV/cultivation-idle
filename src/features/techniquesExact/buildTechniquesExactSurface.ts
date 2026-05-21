@@ -20,6 +20,7 @@ import { getPathAlignmentStrengthForTechnique, getTechniqueTaxonomyProfile } fro
 import type { TechniqueFamily } from '../../systems/builds/techniqueFamilies.js';
 import type { TechniqueProgressionSnapshot } from '../../systems/builds/index.js';
 import { buildCurrentGateEconomyContext } from '../../systems/progression/currentGateEconomyContext.js';
+import { buildLiveDaoMandateModuleSourceSinkProjection } from '../../systems/ui/daoMandate/index.js';
 import {
   resolveTechniqueVisualIdentity,
   type TechniqueVisualIdentity,
@@ -775,6 +776,11 @@ export function buildTechniquesExactSurfaceFromStores(
         manualCityId ? undefined : 'No city with Manual Pavilion is available.',
       ),
     },
+    mandateSourceSink: buildLiveDaoMandateModuleSourceSinkProjection({
+      currentCityId: cityState.currentCityId,
+      currentModuleKey: 'techniques',
+      currentScreen: 'techniques',
+    }),
     debug,
   };
 }

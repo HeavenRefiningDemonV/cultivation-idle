@@ -28,7 +28,7 @@ test('Dao Mandate ledger classifies hard gate blockers into hardGates', () => {
     assert.equal(surface.requirementLedger.hardGates.some((row) => row.id.includes(kind)), true);
     assert.equal(surface.requirementLedger.hardGates[0].bucket, 'hard_gate');
     assert.equal(surface.requirementLedger.hardGates[0].source, 'progression');
-    assert.ok(surface.requirementLedger.hardGates[0].proofLine?.includes('Run Compass V2'));
+    assert.ok(surface.requirementLedger.hardGates[0].proofLine?.includes('Dao Mandate resolver'));
   }
 });
 

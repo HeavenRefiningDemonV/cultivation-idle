@@ -1,4 +1,5 @@
 import type React from 'react';
+import { ModuleSourceSinkPanel } from '../../../ui/daoMandate/index.js';
 import { getExpeditionsExactAssetSrc } from './expeditionsExactAssetRegistry.js';
 import { ExpeditionsExactIcon } from './ExpeditionsExactIcon.js';
 import type {
@@ -272,6 +273,11 @@ export function ExpeditionsExactScreen({
           <strong>{surface.page.statusPlaque}</strong>
           <span className="expeditionsExactSeal expeditionsExactSeal--small" aria-hidden="true" />
         </div>
+        <ModuleSourceSinkPanel
+          projection={surface.mandateSourceSink}
+          className="expeditionsExactMandateSourceSink"
+          title="Background support"
+        />
         <Slots surface={surface} onSlotAction={onSlotAction} />
         <RouteMap surface={surface} />
         <Routes surface={surface} onSelectRoute={onSelectRoute} />

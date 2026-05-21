@@ -1,4 +1,5 @@
 import type React from 'react';
+import { ModuleSourceSinkPanel } from '../../../ui/daoMandate/index.js';
 import { getBountiesExactAssetSrc } from './bountiesExactAssetRegistry.js';
 import { BountiesExactIcon } from './BountiesExactIcon.js';
 import type {
@@ -338,6 +339,11 @@ export function BountiesExactScreen({
           <span className="bountiesExactSeal bountiesExactSeal--small" aria-hidden="true" />
         </div>
         <StatStrip surface={surface} />
+        <ModuleSourceSinkPanel
+          projection={surface.mandateSourceSink}
+          className="bountiesExactMandateSourceSink"
+          title="Merit route"
+        />
         <TrackedRail surface={surface} onRouteNotice={onRouteNotice} onTrackSelected={onTrackSelected} />
         <PostedOrders surface={surface} onSelectOrder={onSelectOrder} onNotePrimaryAction={onNotePrimaryAction} />
         <Office surface={surface} onClaimAllReady={onClaimAllReady} onRefreshBoard={onRefreshBoard} />

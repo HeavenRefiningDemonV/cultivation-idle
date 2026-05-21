@@ -134,7 +134,7 @@ function primaryObstructionRow(context: DaoLedgerBuildContext): DaoRequirementRo
     tone: obstructionTone(context.obstruction),
     route: context.primaryRoute,
     source: context.obstruction.source,
-    proofLine: `Source: Run Compass V2 / ${context.obstruction.source}`,
+    proofLine: `Source: Dao Mandate resolver / ${context.obstruction.source}`,
     sourceLine: `Primary obstruction: ${context.obstruction.kind}`,
     priority: 1,
   };
@@ -165,7 +165,7 @@ function readinessLedgerRows(surface: RunCompassSurfaceV2, context: DaoLedgerBui
       tone,
       route,
       source: sourceForReadinessRow(row),
-      proofLine: `Source: Run Compass V2 readiness / ${row.id}`,
+      proofLine: `Source: Dao Mandate readiness / ${row.id}`,
       sourceLine: surface.readiness.primaryShortfallLabel,
       priority: 20 + index,
     };
@@ -202,7 +202,7 @@ function currentGateRows(surface: RunCompassSurfaceV2, context: DaoLedgerBuildCo
       tone: gate.resolved || gate.canAttempt ? 'success' : 'warning',
       route: gate.resolved ? directBreakthroughRoute : gate.canAttempt ? directGateRoute : null,
       source: 'trial_lifecycle',
-      proofLine: 'Source: Run Compass V2 currentGate.lifecycleState',
+      proofLine: 'Source: Dao Mandate gate lifecycle',
       sourceLine: gate.trialId,
       priority: 5,
     },
@@ -220,7 +220,7 @@ function currentGateRows(surface: RunCompassSurfaceV2, context: DaoLedgerBuildCo
       tone: gate.resolved || gate.canBreakthrough ? 'success' : gate.canAttempt ? 'info' : 'warning',
       route: gate.resolved || gate.canBreakthrough ? directBreakthroughRoute : gate.canAttempt ? directGateRoute : null,
       source: 'trial_lifecycle',
-      proofLine: 'Source: Run Compass V2 currentGate.gateProofItemId',
+      proofLine: 'Source: Dao Mandate gate proof',
       sourceLine: gate.gateProofItemId,
       priority: 6,
     });
@@ -238,7 +238,7 @@ function currentGateRows(surface: RunCompassSurfaceV2, context: DaoLedgerBuildCo
       tone: 'success',
       route: directBreakthroughRoute,
       source: 'progression',
-      proofLine: 'Source: Run Compass V2 currentGate.canBreakthrough',
+      proofLine: 'Source: Dao Mandate breakthrough proof',
       sourceLine: gate.trialId,
       priority: 7,
     });
@@ -261,7 +261,7 @@ function safetyNetRows(surface: RunCompassSurfaceV2, context: DaoLedgerBuildCont
     tone: safetyNet.state === 'available' ? 'success' : safetyNet.state === 'blocked' ? 'warning' : 'info',
     route: context.safetyNetRoute ?? null,
     source: 'trial_lifecycle',
-    proofLine: 'Source: Run Compass V2 safetyNet',
+    proofLine: 'Source: Dao Mandate safety net',
     sourceLine: safetyNet.progressLine,
     priority: 30,
   }];
@@ -279,7 +279,7 @@ function sourceMapRows(context: DaoLedgerBuildContext): DaoRequirementRow[] {
     tone: entry.bestSources.length > 0 ? 'info' : 'muted',
     route: entry.route,
     source: entry.route?.source ?? 'economy',
-    proofLine: 'Source: Dao Mandate source map scaffold',
+    proofLine: 'Source: Dao Mandate source map',
     sourceLine: entry.problemKind,
     priority: 50 + index,
   }));
@@ -304,7 +304,7 @@ function optionalRouteRows(context: DaoLedgerBuildContext): DaoRequirementRow[] 
       tone: route.blocked ? 'muted' : 'info',
       route,
       source: route.source,
-      proofLine: 'Source: Run Compass V2 secondaryRoutes',
+      proofLine: 'Source: Dao Mandate secondary routes',
       sourceLine: route.id,
       priority: 70 + index,
     }));
@@ -322,7 +322,7 @@ function recentOmenRows(context: DaoLedgerBuildContext): DaoRequirementRow[] {
     tone: omen.tone,
     route: null,
     source: 'run_delta',
-    proofLine: `Source: Run Compass V2 recentDeltas / ${omen.source}`,
+    proofLine: `Source: Dao Mandate recent omens / ${omen.source}`,
     sourceLine: omen.id,
     priority: 90 + index,
   }));

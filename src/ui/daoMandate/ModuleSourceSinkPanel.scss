@@ -1,0 +1,61 @@
+.daoModuleSourceSinkPanel {
+  display: grid;
+  gap: 0.55rem;
+  padding: 0.75rem;
+  border: 1px solid rgba(126, 92, 48, 0.38);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(252, 244, 218, 0.96), rgba(226, 204, 156, 0.88)),
+    rgba(252, 244, 218, 0.92);
+  color: #2f2418;
+  box-shadow: 0 12px 26px rgba(47, 36, 24, 0.18);
+}
+
+.daoModuleSourceSinkPanel__header {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.65rem;
+  align-items: start;
+}
+
+.daoModuleSourceSinkPanel__relation {
+  min-width: 5.5rem;
+  padding: 0.18rem 0.45rem;
+  border: 1px solid rgba(105, 77, 40, 0.4);
+  border-radius: 999px;
+  background: rgba(109, 76, 36, 0.12);
+  color: #5c3e19;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.daoModuleSourceSinkPanel__header h2 {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.2;
+}
+
+.daoModuleSourceSinkPanel__header p,
+.daoModuleSourceSinkPanel__impact {
+  margin: 0.2rem 0 0;
+  color: rgba(47, 36, 24, 0.78);
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+.daoModuleSourceSinkPanel__slip {
+  box-shadow: none;
+}
+
+@media (max-width: 760px) {
+  .daoModuleSourceSinkPanel__header {
+    grid-template-columns: 1fr;
+  }
+
+  .daoModuleSourceSinkPanel__relation {
+    width: max-content;
+  }
+}

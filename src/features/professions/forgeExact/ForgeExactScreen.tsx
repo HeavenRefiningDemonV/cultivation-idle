@@ -1,5 +1,6 @@
 import type React from 'react';
 import { GameIcon } from '../../../ui/icons/index.js';
+import { ModuleSourceSinkPanel } from '../../../ui/daoMandate/index.js';
 import { getForgeExactAssetSrc } from './forgeExactAssetRegistry.js';
 import type {
   ForgeExactButtonSurface,
@@ -349,6 +350,11 @@ export function ForgeExactScreen({ surface, scale = 1, activeSessionNode, onActi
       <div className="forgeExactPlane" data-testid="forge-exact-plane">
         <TitleBlock surface={surface} />
         <TopStrip surface={surface} />
+        <ModuleSourceSinkPanel
+          projection={surface.mandateSourceSink}
+          className="forgeExactMandateSourceSink"
+          title="Power floor"
+        />
         <LeftRail surface={surface} scale={scale} onAction={onAction} />
         <CenterHeader surface={surface} />
         <CenterStage surface={surface} scale={scale} activeSessionNode={activeSessionNode} onAction={onAction} />

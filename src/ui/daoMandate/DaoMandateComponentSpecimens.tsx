@@ -54,7 +54,7 @@ export function DaoMandateComponentSpecimens() {
       <header className="daoMandateComponentSpecimens__header">
         <span>Dao Mandate UI specimens</span>
         <h2>Shared Mandate component board</h2>
-        <p>Fixture-only board for P4/P5/P6 import and visual smoke. It is not wired to production navigation.</p>
+        <p>Fixture-only board for staged imports and visual smoke. It is excluded from production navigation.</p>
       </header>
 
       <section className="daoMandateComponentSpecimens__section" aria-label="Mandate Seal profiles">

@@ -20,6 +20,7 @@ import {
   sanitizeDaoMandateGuidanceSettings,
   type DaoMandateGuidanceSettings,
 } from './daoMandateGuidanceSettings.js';
+import { applyDaoMandateSourceMapProfileVisibility } from './daoMandateSourceMap.js';
 
 export interface DaoMandateVisibilityOptions {
   profile?: DaoMandateGuidanceProfile;
@@ -55,6 +56,7 @@ const SOURCE_OBVIOUS_OBSTRUCTION_KINDS: DaoMandateObstructionKind[] = [
   'apothecary_prep_shortfall',
   'forge_floor_shortfall',
   'manual_pavilion_gap',
+  'expedition_shortage_smoothing',
 ];
 
 function cloneRoute(route: DaoMandateRoute): DaoMandateRoute {
@@ -276,6 +278,10 @@ function buildElderLedger(surface: DaoMandateSurfaceV1): DaoRequirementLedger {
     add({ bucket: 'hardGates', row });
   }
 
+  if (surfaceNeedsSourceRouteDetail(surface)) {
+    add(surface.requirementLedger.sourceRoutes[0] ? { bucket: 'sourceRoutes', row: surface.requirementLedger.sourceRoutes[0] } : null);
+  }
+
   const additionalRows = allLedgerRowsWithBucket(surface.requirementLedger)
     .filter((entry) => !selectedKeys.has(selectedKey(entry)))
     .filter((entry) => {
@@ -305,7 +311,9 @@ function applySealed(surface: DaoMandateSurfaceV1): void {
     ...surface.readiness,
     rows: surface.readiness.rows.slice(0, 1),
   };
-  surface.sourceMap = [];
+  surface.sourceMap = surfaceNeedsSourceRouteDetail(surface)
+    ? applyDaoMandateSourceMapProfileVisibility(surface.sourceMap, 'sealed')
+    : [];
   surface.backgroundPlan = { ...surface.backgroundPlan, routes: [] };
   surface.lessonSlips = [];
 }
@@ -317,10 +325,7 @@ function applyElder(surface: DaoMandateSurfaceV1): void {
     ...surface.readiness,
     rows: surface.readiness.rows.slice(0, 3),
   };
-  surface.sourceMap = surface.sourceMap.slice(0, 1).map((entry) => ({
-    ...entry,
-    fallbackSources: entry.fallbackSources.slice(0, 1),
-  }));
+  surface.sourceMap = applyDaoMandateSourceMapProfileVisibility(surface.sourceMap, 'elder');
   surface.backgroundPlan = {
     ...surface.backgroundPlan,
     routes: surface.backgroundPlan.routes.slice(0, 1),

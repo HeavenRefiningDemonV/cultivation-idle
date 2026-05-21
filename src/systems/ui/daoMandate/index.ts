@@ -51,3 +51,18 @@ export {
   buildDaoMandateCompactSurfaceV1,
   type DaoMandateCompactSurfaceV1,
 } from './daoMandateCompact.js';
+export {
+  applyDaoMandateSourceMapProfileVisibility,
+  buildDaoMandateModuleSourceSinkSurface,
+  buildDaoMandateSourceMap,
+  type BuildDaoMandateModuleSourceSinkSurfaceArgs,
+  type BuildDaoMandateSourceMapArgs,
+  type DaoMandateModuleSourceSinkSurface,
+  type DaoMandateSourceModuleKey,
+  type DaoSourceNeedKind,
+} from './daoMandateSourceMap.js';
+export {
+  buildLiveDaoMandateModuleSourceSinkProjection,
+  type BuildLiveDaoMandateModuleSourceSinkProjectionArgs,
+  type DaoMandateModuleSourceSinkProjection,
+} from './daoMandateModuleProjection.js';
