@@ -271,9 +271,11 @@ export interface DaoRecentOmen {
 
 export interface DaoJadeSlip {
   id: string;
+  conceptId: string;
   title: string;
   detail: string;
   trigger: string;
+  triggerHash: string;
   relatedRowId: string | null;
   route: DaoMandateRoute | null;
   profile: DaoMandateGuidanceProfile | 'all';

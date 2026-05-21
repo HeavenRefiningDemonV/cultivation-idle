@@ -39,6 +39,7 @@ import {
   pickDaoMandateGuidanceSettings,
   sanitizeDaoMandateGuidanceSettings,
 } from '../systems/ui/daoMandate/daoMandateGuidanceSettings.js';
+import { sanitizeDaoMandateLessonMemory } from '../systems/ui/daoMandate/daoMandateLessons.js';
 
 /**
  * Save system constants
@@ -243,6 +244,7 @@ function gatherGameState(): SaveData {
     uiSettings: {
       storyMotionMode: uiState.settings.storyMotionMode,
       ...pickDaoMandateGuidanceSettings(uiState.settings),
+      daoMandateLessonMemory: sanitizeDaoMandateLessonMemory(uiState.daoMandateLessonMemory),
     },
 
     zoneState: {
@@ -1178,6 +1180,7 @@ function applySaveData(saveData: SaveData): void {
       storyMotionMode: restoredStoryMotionMode,
       ...sanitizeDaoMandateGuidanceSettings(saveData.uiSettings),
     });
+    useUIStore.getState().hydrateDaoMandateLessonMemory(saveData.uiSettings?.daoMandateLessonMemory);
 
     // Apply zone state (if exists)
     useZoneStore.setState({

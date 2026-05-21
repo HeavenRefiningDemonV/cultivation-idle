@@ -13,6 +13,7 @@ import type {
   DaoSourceRouteDetailSetting,
 } from "../systems/ui/daoMandate/daoMandateGuidanceSettings.js";
 import type { DaoMandateGuidanceProfile } from "../systems/ui/daoMandate/daoMandateTypes.js";
+import type { DaoMandateLessonMemory } from "../systems/ui/daoMandate/daoMandateLessons.js";
 
 /**
  * Cultivation path types
@@ -500,6 +501,7 @@ export interface SaveData {
     backgroundReminders?: DaoBackgroundRemindersSetting;
     recentOmensFeed?: DaoRecentOmensFeedSetting;
     mandateMotionMode?: DaoMandateMotionModeSetting;
+    daoMandateLessonMemory?: DaoMandateLessonMemory;
   };
 
   // Zone progression

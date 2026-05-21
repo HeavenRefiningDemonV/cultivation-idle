@@ -68,10 +68,10 @@ export function PrestigeLedgerExactScreen({
       {surface.runCompassHint ? (
         <section
           className={`prestigeLedgerRunCompass parchmentPanel ${surface.runCompassHint.active ? 'prestigeLedgerRunCompass--active' : ''}`}
-          aria-label="Run Compass"
+          aria-label="Mandate context"
         >
           <div>
-            <span>{surface.runCompassHint.active ? 'Primary Route' : 'Run Compass'}</span>
+            <span>{surface.runCompassHint.active ? 'Primary Route' : 'Mandate Context'}</span>
             <strong>{surface.runCompassHint.milestoneLabel}</strong>
             <p>{surface.runCompassHint.blockerLabel}</p>
             {surface.runCompassHint.recentDeltaLine ? <small>{surface.runCompassHint.recentDeltaLine}</small> : null}

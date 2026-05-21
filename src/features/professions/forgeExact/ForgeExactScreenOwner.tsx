@@ -8,6 +8,7 @@ import { useEquipmentStore } from '../../../stores/equipmentStore.js';
 import { useActivityStore } from '../../../stores/activityStore.js';
 import { useCraftSessionStore } from '../../../stores/craftSessionStore.js';
 import { useCityStore } from '../../../stores/cityStore.js';
+import { useDaoMandateRouteActionHandler } from '../../../systems/ui/daoMandate/index.js';
 import { ForgeExactScreen } from './ForgeExactScreen.js';
 import { buildForgeExactSurfaceFromStores } from './buildForgeExactSurface.js';
 import { useForgeExactActionController } from './useForgeExactActionController.js';
@@ -151,6 +152,7 @@ export function ForgeExactScreenOwner({ cityId, forceFixture = false }: ForgeExa
     onSelectSlot: setSelectedTargetSlot,
     onResult: setActionResult,
   });
+  const onMandateRouteAction = useDaoMandateRouteActionHandler('dao-mandate-forge-source');
 
   const activeForgeSession = activeSession?.station === 'forge' ? activeSession : null;
   const activeBlueprint = activeForgeSession?.sourceId ? getForgeBlueprint(activeForgeSession.sourceId) : undefined;
@@ -176,6 +178,7 @@ export function ForgeExactScreenOwner({ cityId, forceFixture = false }: ForgeExa
         scale={scale}
         activeSessionNode={activeSessionNode}
         onAction={actions.onAction}
+        onMandateRouteAction={onMandateRouteAction}
       />
     </div>
   );

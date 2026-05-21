@@ -52,6 +52,10 @@ import {
   pickDaoMandateGuidanceSettings,
   sanitizeDaoMandateGuidanceSettings,
 } from '../systems/ui/daoMandate/daoMandateGuidanceSettings.js';
+import {
+  createDefaultDaoMandateLessonMemory,
+  sanitizeDaoMandateLessonMemory,
+} from '../systems/ui/daoMandate/daoMandateLessons.js';
 
 import { CURRENT_SAVE_VERSION, migrateIncomingSaveForHydration } from './migrations/index.js';
 import { normalizeCitySaveState } from './cityStateNormalization.js';
@@ -228,6 +232,7 @@ export function buildDefaultSaveState(): SaveData {
     uiSettings: {
       storyMotionMode: uiState.settings.storyMotionMode,
       ...pickDaoMandateGuidanceSettings(uiState.settings),
+      daoMandateLessonMemory: sanitizeDaoMandateLessonMemory(uiState.daoMandateLessonMemory),
     },
     zoneState: {
       unlockedZones: zoneState.unlockedZones,
@@ -715,6 +720,7 @@ function sanitizeUiSettingsState(raw: unknown, defaults: SaveUiSettingsState): S
     ...defaults,
     storyMotionMode,
     ...sanitizeDaoMandateGuidanceSettings(raw),
+    daoMandateLessonMemory: sanitizeDaoMandateLessonMemory(raw.daoMandateLessonMemory),
   };
 }
 
@@ -1178,6 +1184,7 @@ export function mergeWithDefaults(partialSave: unknown): SaveData {
   const baseUiSettings: SaveUiSettingsState = {
     storyMotionMode: 'full',
     ...createDefaultDaoMandateGuidanceSettings(),
+    daoMandateLessonMemory: createDefaultDaoMandateLessonMemory(),
   };
 
   const merged: SaveData & Record<string, unknown> = {

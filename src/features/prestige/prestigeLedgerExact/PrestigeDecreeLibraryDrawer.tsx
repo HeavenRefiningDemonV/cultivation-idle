@@ -97,7 +97,7 @@ export function PrestigeDecreeLibraryDrawer({
         <header className="prestigeLedgerDrawer__header">
           <div>
             <h2 id={titleId}>Full Decree Library</h2>
-            <p>Runtime-backed permanent decrees only. Hidden or deferred edicts are absent from this ledger.</p>
+            <p>Runtime-backed permanent decrees only. Hidden or unsupported edicts are absent from this ledger.</p>
           </div>
           <button type="button" className="prestigeLedgerDrawer__close" onClick={onClose} aria-label="Close decree library">
             Close

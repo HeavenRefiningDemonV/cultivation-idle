@@ -6,7 +6,14 @@ import {
   createDefaultDaoMandateGuidanceSettings,
   type DaoMandateGuidanceSettings,
 } from '../systems/ui/daoMandate/daoMandateGuidanceSettings.js';
-import type { DaoMandateGuidanceProfile } from '../systems/ui/daoMandate/daoMandateTypes.js';
+import {
+  createDefaultDaoMandateLessonMemory,
+  isDaoMandateLessonConceptId,
+  sanitizeDaoMandateLessonMemory,
+  type DaoMandateLessonConceptId,
+  type DaoMandateLessonMemory,
+} from '../systems/ui/daoMandate/daoMandateLessons.js';
+import type { DaoJadeSlip, DaoMandateGuidanceProfile } from '../systems/ui/daoMandate/daoMandateTypes.js';
 import { useActivityStore } from './activityStore.js';
 import { useCombatStore } from './combatStore.js';
 import { useOutskirtsStore } from './outskirtsStore.js';
@@ -191,6 +198,7 @@ interface UIStateBase {
 
   // UI Settings
   settings: UISettingsState;
+  daoMandateLessonMemory: DaoMandateLessonMemory;
 
   // Save + offline transparency
   lastSaveAt: number | null;
@@ -240,6 +248,9 @@ export interface UIState extends UIStateBase {
     value: DaoMandateGuidanceSettings[K],
   ) => void;
   resetGuidanceSettings: () => void;
+  hydrateDaoMandateLessonMemory: (memory: unknown) => void;
+  dismissDaoMandateLesson: (lesson: Pick<DaoJadeSlip, 'conceptId' | 'triggerHash'>) => void;
+  markDaoMandateLessonLearned: (lesson: Pick<DaoJadeSlip, 'conceptId' | 'triggerHash'>) => void;
   toggleCombatMinibarExpanded: () => void;
   openCombatPreview: (context: CombatPresentationContext) => void;
   startCombatFromPreview: () => void;
@@ -342,6 +353,7 @@ const INITIAL_UI_STATE: UIStateBase = {
     storyMotionMode: 'full',
     ...createDefaultDaoMandateGuidanceSettings(),
   },
+  daoMandateLessonMemory: createDefaultDaoMandateLessonMemory(),
   lastSaveAt: null,
   lastOfflineSummary: null,
   tooltipVisible: false,
@@ -382,6 +394,32 @@ const ONBOARDING_PRIORITY_WEIGHT: Record<OnboardingPromptPriority, number> = {
   medium: 2,
   low: 1,
 };
+
+function updateDaoMandateLessonMemory(
+  current: DaoMandateLessonMemory,
+  lesson: Pick<DaoJadeSlip, 'conceptId' | 'triggerHash'>,
+  apply: (entry: DaoMandateLessonMemory['byConceptId'][DaoMandateLessonConceptId], now: number) => void,
+): DaoMandateLessonMemory {
+  if (!isDaoMandateLessonConceptId(lesson.conceptId)) {
+    return sanitizeDaoMandateLessonMemory(current);
+  }
+
+  const now = Date.now();
+  const next = sanitizeDaoMandateLessonMemory(current);
+  const existing = next.byConceptId[lesson.conceptId];
+  const triggerChanged = existing?.lastTriggerHash !== lesson.triggerHash;
+  const entry = {
+    seenCount: existing ? (triggerChanged ? existing.seenCount + 1 : Math.max(1, existing.seenCount)) : 1,
+    firstSeenAt: existing?.firstSeenAt ?? now,
+    lastSeenAt: now,
+    ...(existing?.dismissedAt ? { dismissedAt: existing.dismissedAt } : {}),
+    ...(existing?.learnedAt ? { learnedAt: existing.learnedAt } : {}),
+    lastTriggerHash: lesson.triggerHash,
+  };
+  apply(entry, now);
+  next.byConceptId[lesson.conceptId] = entry;
+  return sanitizeDaoMandateLessonMemory(next);
+}
 
 /**
  * UI store for managing interface state
@@ -705,6 +743,38 @@ export const useUIStore = create<UIState>()(
           ...state.settings,
           ...createDefaultDaoMandateGuidanceSettings(),
         };
+      });
+    },
+
+    hydrateDaoMandateLessonMemory: (memory) => {
+      set((state) => {
+        state.daoMandateLessonMemory = sanitizeDaoMandateLessonMemory(memory);
+      });
+    },
+
+    dismissDaoMandateLesson: (lesson) => {
+      set((state) => {
+        state.daoMandateLessonMemory = updateDaoMandateLessonMemory(
+          state.daoMandateLessonMemory,
+          lesson,
+          (entry, now) => {
+            if (entry) entry.dismissedAt = now;
+          },
+        );
+      });
+    },
+
+    markDaoMandateLessonLearned: (lesson) => {
+      set((state) => {
+        state.daoMandateLessonMemory = updateDaoMandateLessonMemory(
+          state.daoMandateLessonMemory,
+          lesson,
+          (entry, now) => {
+            if (!entry) return;
+            entry.dismissedAt = entry.dismissedAt ?? now;
+            entry.learnedAt = now;
+          },
+        );
       });
     },
 

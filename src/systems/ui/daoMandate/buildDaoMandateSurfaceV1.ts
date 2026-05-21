@@ -1,4 +1,10 @@
 import { isLiveWorldModule } from '../../world/liveWorldSchema.js';
+import { captureDaoImpressionAwards } from '../../daoImpressions/index.js';
+import { useFailureReflectionStore } from '../../failureReflection/index.js';
+import type { DaoImpressionAward } from '../../daoImpressions/types.js';
+import type { FailureReflectionRecord } from '../../failureReflection/types.js';
+import { buildPrestigeForecastSurfaceV2 } from '../../../features/prestige/prestigeForecastSurface.js';
+import { useUIStore } from '../../../stores/uiStore.js';
 import { buildLiveRunCompassSurfaceV2 } from '../runCompass/buildRunCompassSurfaceV2.js';
 import type {
   RunCompassBlockerV2,
@@ -27,14 +33,34 @@ import type {
   DaoSourceMapEntry,
 } from './daoMandateTypes.js';
 import { buildDaoMandateSourceMap } from './daoMandateSourceMap.js';
+import {
+  createDefaultDaoMandateGuidanceSettings,
+  sanitizeDaoMandateGuidanceSettings,
+  type DaoMandateGuidanceSettings,
+} from './daoMandateGuidanceSettings.js';
+import { buildDaoMandateRecentOmens } from './daoMandateRecentOmens.js';
+import { buildDaoMandateFailureCoaching } from './daoMandateFailureCoaching.js';
+import { buildDaoMandateLessons, type DaoMandateLessonMemory } from './daoMandateLessons.js';
+import { buildDaoReincarnationCounsel } from './daoMandateReincarnationCounsel.js';
+import type { DaoOfflineMandateReturnSurface } from './daoMandateOfflineReturn.js';
 
 export interface BuildDaoMandateSurfaceOptions {
   guidanceProfile?: DaoMandateGuidanceProfile;
   currentScreen?: string;
   now?: number;
+  settings?: Partial<DaoMandateGuidanceSettings>;
+  lessonMemory?: DaoMandateLessonMemory | null;
+  eventContext?: DaoMandateEventContext;
+  prestigeCounsel?: DaoReincarnationCounselSurface | null;
 }
 
 type DebugNotes = string[];
+
+export interface DaoMandateEventContext {
+  failureReflections?: readonly FailureReflectionRecord[];
+  daoImpressions?: readonly DaoImpressionAward[];
+  offlineReturn?: DaoOfflineMandateReturnSurface | null;
+}
 
 function resolveGuidanceProfile(profile?: DaoMandateGuidanceProfile): DaoMandateGuidanceProfile {
   return profile ?? 'elder';
@@ -288,11 +314,7 @@ function toPrestigeSurface(prestigeHint: RunCompassPrestigeHintV2 | null): DaoRe
       ? 'viable'
       : prestigeHint.state;
 
-  return {
-    state,
-    label: prestigeHint.label,
-    detail: prestigeHint.detail,
-    route: routeFromTarget({
+  const route = routeFromTarget({
       id: `prestige-${state}`,
       label: prestigeHint.label,
       actionLabel: 'Open Reincarnation',
@@ -302,9 +324,13 @@ function toPrestigeSurface(prestigeHint: RunCompassPrestigeHintV2 | null): DaoRe
       source: 'prestige',
       priority: 5,
       expectedDeltaLabel: 'Reincarnation counsel can be reviewed.',
-    }),
+    });
+  return buildDaoReincarnationCounsel({
+    advisorState: state,
+    route,
     forecastLine: prestigeHint.detail,
-  };
+    blockedDetail: prestigeHint.detail,
+  });
 }
 
 function toRecentOmen(delta: RunCompassDeltaSummaryV2): DaoRecentOmen {
@@ -340,7 +366,10 @@ function buildCurrentWork(primaryRoute: DaoMandateRoute): DaoCurrentWorkSurface 
   };
 }
 
-function buildBackgroundPlan(secondaryRoutes: DaoMandateRoute[]): DaoBackgroundPlanSurface {
+function buildBackgroundPlan(
+  secondaryRoutes: DaoMandateRoute[],
+  offlineReturn?: DaoOfflineMandateReturnSurface | null,
+): DaoBackgroundPlanSurface {
   const backgroundRoutes = secondaryRoutes
     .filter((route) => !route.blocked && (route.source === 'economy' || route.source === 'readiness' || route.source === 'build'))
     .slice(0, 2);
@@ -353,7 +382,82 @@ function buildBackgroundPlan(secondaryRoutes: DaoMandateRoute[]): DaoBackgroundP
       ? 'Secondary routes can support the primary Mandate without replacing it.'
       : 'No background support route is needed right now.',
     routes: backgroundRoutes,
-    offlineProjectionLabel: null,
+    offlineProjectionLabel: offlineReturn && offlineReturn.state !== 'unavailable'
+      ? offlineReturn.detail
+      : null,
+  };
+}
+
+function resolveBuildSettings(
+  guidanceProfile: DaoMandateGuidanceProfile,
+  settings?: Partial<DaoMandateGuidanceSettings>,
+): DaoMandateGuidanceSettings {
+  return {
+    ...createDefaultDaoMandateGuidanceSettings(),
+    ...sanitizeDaoMandateGuidanceSettings(settings ?? {}),
+    guidanceOath: guidanceProfile,
+  };
+}
+
+function addUniqueRoute(routes: DaoMandateRoute[], route: DaoMandateRoute, afterId?: string): DaoMandateRoute[] {
+  const without = routes.filter((entry) => entry.id !== route.id);
+  if (afterId) {
+    const index = without.findIndex((entry) => entry.id === afterId);
+    if (index >= 0) {
+      return [...without.slice(0, index + 1), route, ...without.slice(index + 1)]
+        .sort((left, right) => left.priority - right.priority);
+    }
+  }
+  return [route, ...without].sort((left, right) => left.priority - right.priority);
+}
+
+function applyFailureCoachingEnhancement(args: {
+  surface: DaoMandateSurfaceV1;
+  runCompass: RunCompassSurfaceV2;
+  settings: DaoMandateGuidanceSettings;
+  failureReflections?: readonly FailureReflectionRecord[];
+}): DaoMandateSurfaceV1 {
+  const coaching = buildDaoMandateFailureCoaching({
+    surface: args.surface,
+    settings: args.settings,
+    failureReflections: args.failureReflections,
+  });
+  if (!coaching) return args.surface;
+
+  const priorPrimary = args.surface.primaryRoute;
+  const recentOmens = args.surface.recentOmens.some((omen) => omen.id === coaching.omen.id)
+    ? args.surface.recentOmens
+    : [coaching.omen, ...args.surface.recentOmens].slice(0, 12);
+  const primaryRoute = coaching.shouldPromotePrimary ? coaching.correctionRoute : args.surface.primaryRoute;
+  const obstruction = coaching.shouldPromotePrimary
+    ? {
+      ...args.surface.obstruction,
+      kind: 'gate_recent_failure' as const,
+      label: 'Gate Reflection correction',
+      detail: coaching.correctionRoute.detail,
+      source: 'failure_reflection' as const,
+      evidenceIds: [...args.surface.obstruction.evidenceIds, coaching.omen.id],
+    }
+    : args.surface.obstruction;
+  const secondaryRoutes = coaching.shouldPromotePrimary
+    ? addUniqueRoute(args.surface.secondaryRoutes, priorPrimary, coaching.correctionRoute.id)
+    : addUniqueRoute(args.surface.secondaryRoutes, coaching.correctionRoute);
+  const requirementLedger = buildDaoRequirementLedgerFromRunCompass(args.runCompass, {
+    obstruction,
+    primaryRoute,
+    secondaryRoutes,
+    recentOmens,
+    sourceMap: args.surface.sourceMap,
+    safetyNetRoute: args.surface.safetyNet?.route ?? null,
+  });
+
+  return {
+    ...args.surface,
+    obstruction,
+    primaryRoute,
+    secondaryRoutes,
+    recentOmens,
+    requirementLedger,
   };
 }
 
@@ -474,6 +578,7 @@ export function buildDaoMandateSurfaceFromRunCompassV2(
   options: BuildDaoMandateSurfaceOptions = {},
 ): DaoMandateSurfaceV1 {
   const guidanceProfile = resolveGuidanceProfile(options.guidanceProfile);
+  const settings = resolveBuildSettings(guidanceProfile, options.settings);
   if (!runCompass) {
     return createFallbackDaoMandateSurface({
       now: options.now ?? Date.now(),
@@ -490,10 +595,16 @@ export function buildDaoMandateSurfaceFromRunCompassV2(
     .sort((left, right) => left.priority - right.priority);
   const obstruction = toDaoObstruction(runCompass.primaryBlocker);
   const readiness = buildReadinessLedger(runCompass, primaryRoute);
-  const recentOmens = runCompass.recentDeltas.map(toRecentOmen);
+  const recentOmens = buildDaoMandateRecentOmens({
+    now: options.now ?? runCompass.generatedAt,
+    runDeltas: runCompass.recentDeltas,
+    failureReflections: options.eventContext?.failureReflections,
+    daoImpressions: options.eventContext?.daoImpressions,
+    offlineReturn: options.eventContext?.offlineReturn,
+  });
   const sourceMap = buildDaoMandateSourceMap({ runCompass, primaryRoute, secondaryRoutes });
   const safetyNet = toSafetyNetSurface(runCompass.safetyNet, runCompass, debugNotes);
-  const prestige = toPrestigeSurface(runCompass.prestigeHint);
+  const prestige = options.prestigeCounsel ?? toPrestigeSurface(runCompass.prestigeHint);
   const requirementLedger = buildDaoRequirementLedgerFromRunCompass(runCompass, {
     obstruction,
     primaryRoute,
@@ -503,7 +614,7 @@ export function buildDaoMandateSurfaceFromRunCompassV2(
     safetyNetRoute: safetyNet?.route ?? null,
   });
 
-  return {
+  const baseSurface: DaoMandateSurfaceV1 = {
     meta: {
       version: 1,
       generatedAt: runCompass.generatedAt,
@@ -522,12 +633,28 @@ export function buildDaoMandateSurfaceFromRunCompassV2(
     readiness,
     sourceMap,
     currentWork: buildCurrentWork(primaryRoute),
-    backgroundPlan: buildBackgroundPlan(secondaryRoutes),
+    backgroundPlan: buildBackgroundPlan(secondaryRoutes, options.eventContext?.offlineReturn),
     safetyNet,
     prestige,
     recentOmens,
     lessonSlips: [],
     localLens: null,
+  };
+
+  const eventEnhanced = applyFailureCoachingEnhancement({
+    surface: baseSurface,
+    runCompass,
+    settings,
+    failureReflections: options.eventContext?.failureReflections,
+  });
+
+  return {
+    ...eventEnhanced,
+    lessonSlips: buildDaoMandateLessons({
+      surface: eventEnhanced,
+      settings,
+      memory: options.lessonMemory,
+    }),
   };
 }
 
@@ -535,7 +662,43 @@ export function buildLiveDaoMandateSurfaceV1(options: BuildDaoMandateSurfaceOpti
   const guidanceProfile = resolveGuidanceProfile(options.guidanceProfile);
   try {
     const runCompass = buildLiveRunCompassSurfaceV2();
-    return buildDaoMandateSurfaceFromRunCompassV2(runCompass, { ...options, guidanceProfile });
+    const uiState = useUIStore.getState();
+    const settings = {
+      ...sanitizeDaoMandateGuidanceSettings(uiState.settings),
+      ...options.settings,
+      guidanceOath: guidanceProfile,
+    };
+    const forecast = buildPrestigeForecastSurfaceV2();
+    const prestigeRoute = (runCompass ? toPrestigeSurface(runCompass.prestigeHint)?.route : null) ?? routeFromTarget({
+      id: 'prestige-counsel',
+      label: 'Review Reincarnation',
+      actionLabel: 'Open Reincarnation',
+      detail: forecast.advisorDetail,
+      destinationLabel: 'Prestige',
+      target: { kind: 'tab', tab: 'prestige' },
+      source: 'prestige',
+      priority: 5,
+      expectedDeltaLabel: 'Reincarnation counsel can be reviewed.',
+    });
+    const prestigeCounsel = buildDaoReincarnationCounsel({
+      advisorState: forecast.advisorState,
+      route: prestigeRoute,
+      potentialApGain: forecast.ap.potentialGain,
+      forecastLine: forecast.ap.potentialGain > 0 ? `Potential AP on reincarnation: +${forecast.ap.potentialGain}.` : null,
+      blockedDetail: forecast.advisorDetail,
+    });
+    return buildDaoMandateSurfaceFromRunCompassV2(runCompass, {
+      ...options,
+      guidanceProfile,
+      settings,
+      eventContext: {
+        failureReflections: useFailureReflectionStore.getState().reflections,
+        daoImpressions: captureDaoImpressionAwards(5),
+        offlineReturn: options.eventContext?.offlineReturn ?? null,
+      },
+      prestigeCounsel,
+      lessonMemory: options.lessonMemory ?? uiState.daoMandateLessonMemory,
+    });
   } catch (error) {
     return createFallbackDaoMandateSurface({
       now: options.now ?? Date.now(),

@@ -1,5 +1,5 @@
 import type { AiProfile, CastingPolicy, TechniqueSlotType } from '../../types/index.js';
-import { ModuleSourceSinkPanel } from '../../ui/daoMandate/index.js';
+import { ModuleSourceSinkPanel, type DaoMandateRouteActionHandler } from '../../ui/daoMandate/index.js';
 import { GameIcon } from '../../ui/icons/index.js';
 import { SemanticTechniqueName } from '../../ui/techniques/SemanticTechniqueName.js';
 import { VisualIdentityBadge } from '../../ui/techniques/VisualIdentityBadge.js';
@@ -27,6 +27,7 @@ export interface TechniquesExactScreenProps {
   onApplyLoadout?: () => void;
   onGoToManualPavilion?: () => void;
   onOpenAdvancedFilters?: () => void;
+  onMandateRouteAction?: DaoMandateRouteActionHandler;
   roleBanner?: unknown;
   onRoleBannerRoute?: unknown;
 }
@@ -51,6 +52,7 @@ export function TechniquesExactScreen({
   onApplyLoadout,
   onGoToManualPavilion,
   onOpenAdvancedFilters,
+  onMandateRouteAction,
 }: TechniquesExactScreenProps) {
   const selectedTechniqueId = surface.meta.selectedTechniqueId;
 
@@ -73,6 +75,7 @@ export function TechniquesExactScreen({
           projection={surface.mandateSourceSink}
           className="techniquesExactMandateSourceSink"
           title="Build expression"
+          onRouteAction={onMandateRouteAction}
         />
         <section className="techniquesExactDiagnosis" aria-labelledby="techniques-exact-diagnosis-title">
           <span className="techniquesExactDiagnosis__seal" aria-hidden="true">診</span>

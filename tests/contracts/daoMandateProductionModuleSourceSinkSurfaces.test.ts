@@ -62,7 +62,7 @@ test('P6 exact screens render one shared source/sink panel instead of local dupl
 
   const sharedPanel = read('src/ui/daoMandate/ModuleSourceSinkPanel.tsx');
   assert.match(sharedPanel, /SourceRouteSlip/);
-  assert.match(sharedPanel, /performDaoMandateRouteAction/);
+  assert.match(sharedPanel, /onRouteAction/);
 });
 
 test('P6 Inventory purpose callouts receive visible Mandate source/sink truth and conservative tags', () => {

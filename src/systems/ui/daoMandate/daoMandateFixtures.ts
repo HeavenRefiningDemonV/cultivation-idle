@@ -199,9 +199,11 @@ function baseSurface(args: {
     recentOmens: args.recentOmens ?? [],
     lessonSlips: [{
       id: `fixture-slip-${args.stateId}`,
+      conceptId: 'mandate.primary_route',
       title: 'Mandate context',
       detail: 'Fixture-only lesson slip for density and profile tests.',
       trigger: args.obstruction.kind,
+      triggerHash: `fixture:${args.stateId}:${args.obstruction.kind}`,
       relatedRowId: args.rows[0]?.id ?? null,
       route: args.primaryRoute,
       profile: 'jade',

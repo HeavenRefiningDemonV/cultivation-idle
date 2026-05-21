@@ -13,6 +13,7 @@ import { useTechniqueStore, type SlotType } from '../../stores/techniqueStore.js
 import { useUIStore } from '../../stores/uiStore.js';
 import { useCityStore } from '../../stores/cityStore.js';
 import { openWorldModule } from '../../systems/world/openWorldModule.js';
+import { useDaoMandateRouteActionHandler } from '../../systems/ui/daoMandate/index.js';
 import { buildLiveModuleRoleBannerSurface, type ModuleRoleRouteButton } from '../../systems/world/moduleRoleBannerSurface.js';
 import type {
   TechniquesExactDetailIntent,
@@ -89,6 +90,7 @@ export function TechniquesScreenOwner({ forceFixture = false }: TechniquesScreen
   const clearTechniqueLibraryIntent = useUIStore((state) => state.clearTechniqueLibraryIntent);
   const clearTechniqueFocusRequest = useUIStore((state) => state.clearTechniqueFocusRequest);
   const currentCityId = useCityStore((state) => state.currentCityId);
+  const onMandateRouteAction = useDaoMandateRouteActionHandler('dao-mandate-techniques-source');
 
   const surface = useMemo(() => buildTechniquesExactSurfaceFromStores({
     mode: forceFixture ? 'fixture' : 'live',
@@ -208,6 +210,7 @@ export function TechniquesScreenOwner({ forceFixture = false }: TechniquesScreen
         onApplyLoadout={controller.applyLoadout}
         onGoToManualPavilion={controller.goToManualPavilion}
         onOpenAdvancedFilters={() => setFilterDrawerOpen(true)}
+        onMandateRouteAction={onMandateRouteAction}
       />
       <TechniqueDetailModal
         open={detailOpen}

@@ -1,6 +1,6 @@
 import type React from 'react';
 import { GameIcon } from '../../../ui/icons/index.js';
-import { ModuleSourceSinkPanel } from '../../../ui/daoMandate/index.js';
+import { ModuleSourceSinkPanel, type DaoMandateRouteActionHandler } from '../../../ui/daoMandate/index.js';
 import { getForgeExactAssetSrc } from './forgeExactAssetRegistry.js';
 import type {
   ForgeExactButtonSurface,
@@ -16,6 +16,7 @@ export interface ForgeExactScreenProps {
   scale?: number;
   activeSessionNode?: React.ReactNode;
   onAction?: (action: ForgeExactButtonSurface) => void;
+  onMandateRouteAction?: DaoMandateRouteActionHandler;
 }
 
 function buttonClass(action: ForgeExactButtonSurface, extra = ''): string {
@@ -333,7 +334,7 @@ function Actions({ surface, onAction }: ForgeExactScreenProps) {
   );
 }
 
-export function ForgeExactScreen({ surface, scale = 1, activeSessionNode, onAction }: ForgeExactScreenProps) {
+export function ForgeExactScreen({ surface, scale = 1, activeSessionNode, onAction, onMandateRouteAction }: ForgeExactScreenProps) {
   const paper = getForgeExactAssetSrc('paperBackground', surface.assets);
   return (
     <article
@@ -354,6 +355,7 @@ export function ForgeExactScreen({ surface, scale = 1, activeSessionNode, onActi
           projection={surface.mandateSourceSink}
           className="forgeExactMandateSourceSink"
           title="Power floor"
+          onRouteAction={onMandateRouteAction}
         />
         <LeftRail surface={surface} scale={scale} onAction={onAction} />
         <CenterHeader surface={surface} />

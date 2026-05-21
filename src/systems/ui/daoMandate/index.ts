@@ -43,6 +43,37 @@ export {
   type PerformDaoMandateRouteResult,
 } from './daoMandateRouteAdapter.js';
 export {
+  useDaoMandateRouteActionHandler,
+} from './useDaoMandateRouteActionHandler.js';
+export {
+  buildDaoMandateRecentOmens,
+  type BuildDaoMandateRecentOmensArgs,
+} from './daoMandateRecentOmens.js';
+export {
+  buildDaoMandateLessons,
+  createDefaultDaoMandateLessonMemory,
+  isDaoMandateLessonConceptId,
+  sanitizeDaoMandateLessonMemory,
+  type DaoMandateLessonConceptId,
+  type DaoMandateLessonMemory,
+  type DaoMandateLessonMemoryEntry,
+} from './daoMandateLessons.js';
+export {
+  buildDaoMandateFailureCoaching,
+  type BuildDaoMandateFailureCoachingArgs,
+  type DaoMandateFailureCoachingSurface,
+} from './daoMandateFailureCoaching.js';
+export {
+  buildDaoOfflineMandateReturnSurface,
+  type DaoOfflineMandateReturnState,
+  type DaoOfflineMandateReturnSurface,
+} from './daoMandateOfflineReturn.js';
+export {
+  buildDaoReincarnationCounsel,
+  type BuildDaoReincarnationCounselArgs,
+  type DaoReincarnationAdvisorState,
+} from './daoMandateReincarnationCounsel.js';
+export {
   DAO_MANDATE_FIXTURE_STATES,
   createDaoMandateFixture,
   type DaoMandateFixtureState,

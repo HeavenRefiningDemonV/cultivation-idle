@@ -30,6 +30,7 @@ test('default saves serialize Dao Mandate guidance settings', () => {
     backgroundReminders: 'full_optimization',
     recentOmensFeed: 'full',
     mandateMotionMode: 'low',
+    daoMandateLessonMemory: { byConceptId: {} },
   });
 });
 

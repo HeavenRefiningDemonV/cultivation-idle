@@ -4,6 +4,7 @@ import { useBountyStore } from '../../../stores/bountyStore.js';
 import { useCityStore } from '../../../stores/cityStore.js';
 import { useContentStore } from '../../../stores/contentStore.js';
 import { useInventoryStore } from '../../../stores/inventoryStore.js';
+import { useDaoMandateRouteActionHandler } from '../../../systems/ui/daoMandate/index.js';
 import { BountiesExactScreen } from './BountiesExactScreen.js';
 import { buildBountiesExactSurfaceFromStores } from './buildBountiesExactSurface.js';
 import { useBountiesExactActionController } from './useBountiesExactActionController.js';
@@ -106,6 +107,7 @@ export function BountiesExactScreenOwner({ cityId, forceFixture = false }: Bount
     setSelectedOrderId,
     now,
   });
+  const onMandateRouteAction = useDaoMandateRouteActionHandler('dao-mandate-bounties-source');
 
   return (
     <div
@@ -126,6 +128,7 @@ export function BountiesExactScreenOwner({ cityId, forceFixture = false }: Bount
         onRouteNotice={actions.routeTrackedNotice}
         onRefreshBoard={actions.refreshBoard}
         onNotePrimaryAction={actions.notePrimaryAction}
+        onMandateRouteAction={onMandateRouteAction}
       />
     </div>
   );

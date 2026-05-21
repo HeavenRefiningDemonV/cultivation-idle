@@ -1,12 +1,9 @@
-import { useCallback } from 'react';
 import classNames from 'classnames';
 
 import {
-  performDaoMandateRouteAction,
   type DaoMandateModuleSourceSinkProjection,
-  type DaoMandateRoute,
 } from '../../systems/ui/daoMandate/index.js';
-import { useUIStore } from '../../stores/uiStore.js';
+import type { DaoMandateRouteActionHandler } from './daoMandateComponentTypes.js';
 import { SourceRouteSlip } from './SourceRouteSlip.js';
 import './ModuleSourceSinkPanel.scss';
 
@@ -14,21 +11,15 @@ export interface ModuleSourceSinkPanelProps {
   projection: DaoMandateModuleSourceSinkProjection | null | undefined;
   className?: string;
   title?: string;
+  onRouteAction?: DaoMandateRouteActionHandler;
 }
 
 export function ModuleSourceSinkPanel({
   projection,
   className,
   title,
+  onRouteAction,
 }: ModuleSourceSinkPanelProps) {
-  const addNotification = useUIStore((state) => state.addNotification);
-  const handleRouteAction = useCallback((route: DaoMandateRoute) => {
-    const result = performDaoMandateRouteAction(route);
-    if (!result.performed) {
-      addNotification('warning', result.reason ?? 'This route is blocked from the current screen.');
-    }
-  }, [addNotification]);
-
   if (!projection) return null;
   const { sourceSink } = projection;
 
@@ -52,7 +43,7 @@ export function ModuleSourceSinkPanel({
           profile={projection.profile}
           variant={projection.variant}
           motionMode={projection.motionMode}
-          onRouteAction={handleRouteAction}
+          onRouteAction={onRouteAction}
           className="daoModuleSourceSinkPanel__slip"
         />
       ) : sourceSink.impactLabel ? (

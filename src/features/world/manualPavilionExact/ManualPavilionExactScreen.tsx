@@ -1,5 +1,5 @@
 import type React from 'react';
-import { ModuleSourceSinkPanel } from '../../../ui/daoMandate/index.js';
+import { ModuleSourceSinkPanel, type DaoMandateRouteActionHandler } from '../../../ui/daoMandate/index.js';
 import { GameIcon, ICONS, type IconId } from '../../../ui/icons/index.js';
 import { VisualIdentityBadge } from '../../../ui/techniques/VisualIdentityBadge.js';
 import type {
@@ -21,6 +21,7 @@ export interface ManualPavilionExactScreenProps {
   onStudyLater?: () => void;
   onViewTechniques?: () => void;
   onOpenSatchel?: () => void;
+  onMandateRouteAction?: DaoMandateRouteActionHandler;
 }
 
 function isKnownIcon(iconKey: string | undefined): iconKey is IconId {
@@ -265,6 +266,7 @@ export function ManualPavilionExactScreen({
   onStudyLater,
   onViewTechniques,
   onOpenSatchel,
+  onMandateRouteAction,
 }: ManualPavilionExactScreenProps) {
   const style = {
     '--manual-pavilion-exact-scale': String(scale),
@@ -315,6 +317,7 @@ export function ManualPavilionExactScreen({
           projection={surface.mandateSourceSink}
           className="manualPavilionMandateSourceSink"
           title="Doctrine source"
+          onRouteAction={onMandateRouteAction}
         />
 
         <aside className="manualPavilionLedger" data-region="left-ledger" data-testid="manual-pavilion-left-ledger" aria-label="Manual Pavilion support ledger">

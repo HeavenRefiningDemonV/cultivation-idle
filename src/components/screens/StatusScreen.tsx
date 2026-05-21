@@ -257,6 +257,8 @@ export function StatusScreen() {
   const surface = useStatusDashboardSurface();
   const addNotification = useUIStore((state) => state.addNotification);
   const setActiveTab = useUIStore((state) => state.setActiveTab);
+  const dismissDaoMandateLesson = useUIStore((state) => state.dismissDaoMandateLesson);
+  const markDaoMandateLessonLearned = useUIStore((state) => state.markDaoMandateLessonLearned);
   const currentWorkRows = buildCurrentWorkRows(surface);
   const elementKey = surface.identity.spiritRootTone;
   const mandate = surface.mandate.visible;
@@ -273,6 +275,16 @@ export function StatusScreen() {
       });
     }
   }, [addNotification]);
+
+  const handleJadeSlipDismiss = useCallback((slipId: string) => {
+    const slip = mandate.lessonSlips.find((entry) => entry.id === slipId);
+    if (slip) dismissDaoMandateLesson(slip);
+  }, [dismissDaoMandateLesson, mandate.lessonSlips]);
+
+  const handleJadeSlipLearned = useCallback((slipId: string) => {
+    const slip = mandate.lessonSlips.find((entry) => entry.id === slipId);
+    if (slip) markDaoMandateLessonLearned(slip);
+  }, [mandate.lessonSlips, markDaoMandateLessonLearned]);
 
   const handleSupportingStatusAction = useCallback((action: StatusActionSurface) => {
     performStatusDashboardAction(action, setActiveTab);
@@ -376,6 +388,8 @@ export function StatusScreen() {
                 variant={profile === 'jade' ? 'card' : 'compact'}
                 motionMode={motionMode}
                 onRouteAction={handleMandateRoute}
+                onDismiss={handleJadeSlipDismiss}
+                onLearned={handleJadeSlipLearned}
               />
             ))}
           </div>

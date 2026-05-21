@@ -4,12 +4,13 @@ import type {
   ApothecaryExactButtonSurface,
   ApothecaryExactSurfaceV1,
 } from './apothecaryExactTypes.js';
-import { ModuleSourceSinkPanel } from '../../../ui/daoMandate/index.js';
+import { ModuleSourceSinkPanel, type DaoMandateRouteActionHandler } from '../../../ui/daoMandate/index.js';
 
 export interface ApothecaryExactScreenProps {
   surface: ApothecaryExactSurfaceV1;
   scale?: number;
   onAction?: (action: ApothecaryExactButtonSurface) => void;
+  onMandateRouteAction?: DaoMandateRouteActionHandler;
 }
 
 function assetSrc(surface: ApothecaryExactSurfaceV1, key: ApothecaryExactAssetKey): string {
@@ -267,7 +268,7 @@ function BottomRail(props: ApothecaryExactScreenProps) {
   );
 }
 
-export function ApothecaryExactScreen({ surface, scale = 1, onAction }: ApothecaryExactScreenProps) {
+export function ApothecaryExactScreen({ surface, scale = 1, onAction, onMandateRouteAction }: ApothecaryExactScreenProps) {
   return (
     <div
       className="apothecaryExactPage"
@@ -291,6 +292,7 @@ export function ApothecaryExactScreen({ surface, scale = 1, onAction }: Apotheca
           projection={surface.mandateSourceSink}
           className="apothecaryExactMandateSourceSink"
           title="Medicine reserve"
+          onRouteAction={onMandateRouteAction}
         />
         <PrepStrip surface={surface} />
         <Prescription surface={surface} onAction={onAction} />

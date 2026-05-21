@@ -84,6 +84,51 @@
   padding: 8px;
 }
 
+.offlineProgressModalMandate {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  min-height: 96px;
+  border: 1px solid rgba(94, 165, 128, 0.42);
+  border-radius: 10px;
+  background: rgba(255, 249, 238, 0.92);
+  padding: 10px;
+}
+
+.offlineProgressModalMandate--capped {
+  border-color: rgba(181, 133, 43, 0.52);
+}
+
+.offlineProgressModalMandate__copy {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+  color: #000000;
+}
+
+.offlineProgressModalMandate__copy span {
+  color: rgba(24, 24, 24, 0.72);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.offlineProgressModalMandate__copy strong {
+  color: #1f3b2e;
+  font-size: 14px;
+}
+
+.offlineProgressModalMandate__copy p,
+.offlineProgressModalMandate__copy small {
+  margin: 0;
+  color: rgba(24, 24, 24, 0.78);
+  font-size: 12px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
 .offlineProgressModalTrustList {
   display: grid;
   gap: 8px;
@@ -139,4 +184,16 @@
 
 .offlineProgressModalContinueButton:hover {
   filter: brightness(1.1);
+}
+
+@media (max-width: 760px) {
+  .offlineProgressModalMandate {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .offlineProgressModalContinueButton {
+    transition: none;
+  }
 }

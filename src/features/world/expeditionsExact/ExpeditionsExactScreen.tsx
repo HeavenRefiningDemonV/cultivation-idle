@@ -1,5 +1,5 @@
 import type React from 'react';
-import { ModuleSourceSinkPanel } from '../../../ui/daoMandate/index.js';
+import { ModuleSourceSinkPanel, type DaoMandateRouteActionHandler } from '../../../ui/daoMandate/index.js';
 import { getExpeditionsExactAssetSrc } from './expeditionsExactAssetRegistry.js';
 import { ExpeditionsExactIcon } from './ExpeditionsExactIcon.js';
 import type {
@@ -18,6 +18,7 @@ export type ExpeditionsExactScreenProps = {
   onClaimAllReady?: () => void;
   onAutoFillRecommended?: () => void;
   onSlotAction?: (visualIndex: number) => void;
+  onMandateRouteAction?: DaoMandateRouteActionHandler;
 };
 
 function Button({
@@ -254,6 +255,7 @@ export function ExpeditionsExactScreen({
   onClaimAllReady,
   onAutoFillRecommended,
   onSlotAction,
+  onMandateRouteAction,
 }: ExpeditionsExactScreenProps) {
   const paper = getExpeditionsExactAssetSrc('paperUnderlay', surface.assets);
   return (
@@ -277,6 +279,7 @@ export function ExpeditionsExactScreen({
           projection={surface.mandateSourceSink}
           className="expeditionsExactMandateSourceSink"
           title="Background support"
+          onRouteAction={onMandateRouteAction}
         />
         <Slots surface={surface} onSlotAction={onSlotAction} />
         <RouteMap surface={surface} />

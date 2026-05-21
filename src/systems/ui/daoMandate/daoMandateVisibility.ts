@@ -363,7 +363,9 @@ function applyJadeSlipLessons(surface: DaoMandateSurfaceV1, settings: DaoMandate
   }
   if (settings.jadeSlipLessons === 'first_time') {
     surface.lessonSlips = surface.lessonSlips.slice(0, 1);
+    return;
   }
+  surface.lessonSlips = surface.lessonSlips.slice(0, settings.guidanceOath === 'jade' ? 3 : 1);
 }
 
 function shouldKeepLocalLens(surface: DaoMandateSurfaceV1, settings: DaoMandateGuidanceSettings): boolean {
@@ -429,7 +431,30 @@ function applyBackgroundReminders(surface: DaoMandateSurfaceV1, settings: DaoMan
 }
 
 function applyRecentOmensFeed(surface: DaoMandateSurfaceV1, settings: DaoMandateGuidanceSettings): void {
-  if (settings.recentOmensFeed === 'full') return;
+  if (settings.guidanceOath === 'sealed') {
+    const critical = surface.recentOmens.find((omen) => (
+      omen.tone === 'danger' ||
+      omen.tone === 'warning' ||
+      omen.source === 'failure_reflection' ||
+      omen.source === 'offline' ||
+      /gate|safety|cap|reincarnation|blocked|shifted/i.test(`${omen.label} ${omen.detail}`)
+    ));
+    surface.recentOmens = critical ? [critical] : [];
+    surface.requirementLedger = {
+      ...surface.requirementLedger,
+      recentOmens: surface.requirementLedger.recentOmens.slice(0, critical ? 1 : 0),
+    };
+    return;
+  }
+  if (settings.recentOmensFeed === 'full') {
+    const cap = settings.guidanceOath === 'jade' ? 5 : 3;
+    surface.recentOmens = surface.recentOmens.slice(0, cap);
+    surface.requirementLedger = {
+      ...surface.requirementLedger,
+      recentOmens: surface.requirementLedger.recentOmens.slice(0, cap),
+    };
+    return;
+  }
   if (settings.recentOmensFeed === 'hidden') {
     surface.recentOmens = [];
     surface.requirementLedger = {
@@ -438,11 +463,28 @@ function applyRecentOmensFeed(surface: DaoMandateSurfaceV1, settings: DaoMandate
     };
     return;
   }
-  surface.recentOmens = surface.recentOmens.slice(0, 1);
+  surface.recentOmens = surface.recentOmens.slice(0, 3);
   surface.requirementLedger = {
     ...surface.requirementLedger,
-    recentOmens: surface.requirementLedger.recentOmens.slice(0, 1),
+    recentOmens: surface.requirementLedger.recentOmens.slice(0, 3),
   };
+}
+
+function applyPrestigeCounsel(surface: DaoMandateSurfaceV1, settings: DaoMandateGuidanceSettings): void {
+  if (!surface.prestige) return;
+  if (settings.guidanceOath === 'sealed') {
+    if (
+      surface.prestige.state !== 'recommended' &&
+      surface.prestige.state !== 'cap_recommended' &&
+      surface.prestige.state !== 'blocked'
+    ) {
+      surface.prestige = null;
+    }
+    return;
+  }
+  if (settings.guidanceOath === 'elder' && surface.prestige.state === 'too_early') {
+    surface.prestige = null;
+  }
 }
 
 function applyGranularSettings(surface: DaoMandateSurfaceV1, settings: DaoMandateGuidanceSettings): void {
@@ -453,6 +495,7 @@ function applyGranularSettings(surface: DaoMandateSurfaceV1, settings: DaoMandat
   applyFailureCoaching(surface, settings);
   applyBackgroundReminders(surface, settings);
   applyRecentOmensFeed(surface, settings);
+  applyPrestigeCounsel(surface, settings);
 }
 
 export function applyDaoMandateVisibility(

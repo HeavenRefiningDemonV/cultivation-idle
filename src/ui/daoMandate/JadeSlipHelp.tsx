@@ -17,6 +17,7 @@ export interface JadeSlipHelpProps {
   variant?: 'inline' | 'card' | 'compact';
   dismissed?: boolean;
   onDismiss?: DaoMandateDismissHandler;
+  onLearned?: DaoMandateDismissHandler;
   onRouteAction?: DaoMandateRouteActionHandler;
   motionMode?: DaoMandateEffectiveMotionMode;
   className?: string;
@@ -27,6 +28,7 @@ export function JadeSlipHelp({
   variant = 'card',
   dismissed = false,
   onDismiss,
+  onLearned,
   onRouteAction,
   motionMode = 'medium',
   className,
@@ -49,7 +51,7 @@ export function JadeSlipHelp({
         <span className="daoJadeSlipHelp__eyebrow">Jade slip</span>
         <strong>{slip.title}</strong>
         <p>{slip.detail}</p>
-        {variant !== 'compact' ? <span className="daoJadeSlipHelp__trigger">Triggered by {slip.trigger}</span> : null}
+        {variant !== 'compact' ? <span className="daoJadeSlipHelp__trigger">Contextual counsel</span> : null}
       </div>
       <div className="daoJadeSlipHelp__actions">
         {slip.route ? (
@@ -64,9 +66,20 @@ export function JadeSlipHelp({
           <button
             type="button"
             className="daoJadeSlipHelp__dismiss"
+            aria-label={`Dismiss Jade Slip: ${slip.title}`}
             onClick={() => onDismiss(slip.id)}
           >
             Dismiss
+          </button>
+        ) : null}
+        {onLearned ? (
+          <button
+            type="button"
+            className="daoJadeSlipHelp__dismiss"
+            aria-label={`Mark Jade Slip understood: ${slip.title}`}
+            onClick={() => onLearned(slip.id)}
+          >
+            I understand
           </button>
         ) : null}
       </div>
