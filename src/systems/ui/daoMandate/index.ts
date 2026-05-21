@@ -83,6 +83,25 @@ export {
   type BuildDaoOmenProjectionOptions,
 } from './buildDaoOmenProjectionV1.js';
 export {
+  DAO_OMEN_DEFAULT_COPY,
+  DAO_OMEN_FORBIDDEN_DEFAULT_COPY_PATTERNS,
+  DAO_OMEN_KIND_LIST,
+  assertDaoOmenCopyBudget,
+  containsDaoOmenForbiddenDefaultCopy,
+  getDaoOmenDefaultCopy,
+  type DaoOmenCopyEntry,
+} from './daoOmenCopy.js';
+export {
+  DAO_OMEN_PRIORITY,
+  daoOmenRouteTargetsGateTrial,
+  decideDaoOmenDirectRoute,
+  getDaoOmenPriority,
+  isDaoOmenOrdinaryPressure,
+  normalizeDaoOmenExposedRoute,
+  type DaoOmenDirectRouteContext,
+  type DaoOmenDirectRouteDecision,
+} from './daoOmenPriority.js';
+export {
   DAO_OMEN_PROJECTION_FIXTURE_STATES,
   createDaoOmenProjectionRawFixture,
   type DaoOmenProjectionFixtureState,

@@ -10,7 +10,6 @@ import type {
 } from './daoMandateTypes.js';
 import type {
   DaoCurrentOmenV1,
-  DaoOmenDirectRouteReason,
   DaoOmenKind,
   DaoOmenLifeStage,
   DaoOmenProjectionV1,
@@ -28,11 +27,18 @@ import type {
   DaoSourceThreadRouteVisibility,
   DaoSourceThreadV1,
 } from './daoOmenProjectionTypes.js';
+import { getDaoOmenDefaultCopy } from './daoOmenCopy.js';
+import {
+  decideDaoOmenDirectRoute,
+  getDaoOmenPriority,
+  normalizeDaoOmenExposedRoute,
+} from './daoOmenPriority.js';
 
 export interface BuildDaoOmenProjectionOptions {
   currentScreen?: DaoMandateScreenId;
   now?: number;
   includeDebug?: boolean;
+  routeContext?: 'default' | 'player_expanded';
 }
 
 interface OmenCandidate {
@@ -73,111 +79,26 @@ const OBSTRUCTION_TO_OMEN_KIND: Partial<Record<DaoMandateObstructionKind, DaoOme
   none: 'quiet',
 };
 
-const OMEN_PRIORITY: Record<DaoOmenKind, number> = {
-  life_setup: 10,
-  content_cap: 20,
-  reincarnation_viable: 30,
-  breakthrough_ready: 40,
-  proof_missing: 50,
-  threshold_unreached: 60,
-  reflection: 70,
-  safety_net_ready: 80,
-  reserve_thin: 90,
-  gear_floor_strained: 91,
-  doctrine_uncertain: 92,
-  currency_reserve_low: 100,
-  support_reserve_low: 101,
-  source_drought: 102,
-  risky_attempt: 110,
-  attemptable: 120,
-  quiet: 999,
-};
-
-const OMEN_COPY: Record<DaoOmenKind, { title: string; detail: string }> = {
-  quiet: {
-    title: 'No pressure gathered',
-    detail: 'No pressure has gathered.',
-  },
-  life_setup: {
-    title: 'Doctrine anchor missing',
-    detail: 'This life has no doctrine anchor.',
-  },
-  threshold_unreached: {
-    title: 'Realm edge silent',
-    detail: 'The gate remains silent until this realm reaches its edge.',
-  },
-  proof_missing: {
-    title: 'Gate proof unsealed',
-    detail: 'The gate proof has not been sealed.',
-  },
-  reserve_thin: {
-    title: 'Survival reserve thin',
-    detail: 'Survival reserve looks thin.',
-  },
-  gear_floor_strained: {
-    title: 'Weapon floor pressured',
-    detail: 'The weapon floor is under pressure.',
-  },
-  doctrine_uncertain: {
-    title: 'Doctrine expression incomplete',
-    detail: 'Doctrine expression looks incomplete.',
-  },
-  support_reserve_low: {
-    title: 'Background support thin',
-    detail: 'Background support looks thin.',
-  },
-  currency_reserve_low: {
-    title: 'Mercy reserve low',
-    detail: 'The mercy reserve is low.',
-  },
-  source_drought: {
-    title: 'Source thread dry',
-    detail: 'A needed source thread has run dry.',
-  },
-  attemptable: {
-    title: 'Gate open',
-    detail: 'The gate is open to an attempt.',
-  },
-  risky_attempt: {
-    title: 'Gate open, proof thin',
-    detail: 'The gate is open, but one proof feels thin.',
-  },
-  reflection: {
-    title: 'Pattern repeated',
-    detail: 'The same pattern has appeared again.',
-  },
-  safety_net_ready: {
-    title: 'Mercy proof ready',
-    detail: 'A mercy proof can now be sealed.',
-  },
-  breakthrough_ready: {
-    title: 'Breakthrough proof sealed',
-    detail: 'Qi and proof are sealed.',
-  },
-  reincarnation_viable: {
-    title: 'Reincarnation viable',
-    detail: 'This life can become permanent progress.',
-  },
-  content_cap: {
-    title: 'Authored chapter complete',
-    detail: 'The authored chapter is complete.',
-  },
-};
-
 export function buildDaoOmenProjectionV1(
   surface: DaoMandateSurfaceV1,
   options: BuildDaoOmenProjectionOptions = {},
 ): DaoOmenProjectionV1 {
   const notes: string[] = [];
   const selected = selectCurrentOmen(surface, notes);
-  const directRouteReason = directRouteReasonFor(selected.kind, surface.primaryRoute);
-  const exposedRoute = directRouteReason ? cloneRoute(surface.primaryRoute) : undefined;
+  const routeDecision = decideDaoOmenDirectRoute(selected.kind, surface.primaryRoute, {
+    currentScreen: options.currentScreen,
+    playerExpanded: options.routeContext === 'player_expanded',
+  });
+  notes.push(routeDecision.note);
+  const exposedRoute = routeDecision.exposeRoute && routeDecision.reason
+    ? cloneRoute(normalizeDaoOmenExposedRoute(surface.primaryRoute, routeDecision.reason, selected.kind))
+    : undefined;
   const suppressedRouteIds = exposedRoute ? [] : suppressableRouteIds(surface);
   if (suppressedRouteIds.length > 0) {
     notes.push(`suppressed raw routes for non-hard omen ${selected.kind}: ${suppressedRouteIds.join(',')}`);
   }
 
-  const currentOmen = buildCurrentOmen(surface, selected, directRouteReason, exposedRoute);
+  const currentOmen = buildCurrentOmen(surface, selected, routeDecision.reason, exposedRoute);
   const proofSeals = buildProofSeals(surface, currentOmen, notes);
   const pressureBadges = buildPressureBadges(surface, currentOmen);
   const sourceThreads = buildSourceThreads(surface, currentOmen, options.currentScreen);
@@ -262,7 +183,7 @@ function selectCurrentOmen(surface: DaoMandateSurfaceV1, notes: string[]): OmenC
 function candidate(surface: DaoMandateSurfaceV1, kind: DaoOmenKind, selectedFrom: string): OmenCandidate {
   return {
     kind,
-    priority: OMEN_PRIORITY[kind],
+    priority: getDaoOmenPriority(kind),
     evidenceIds: evidenceIds(surface, selectedFrom),
     selectedFrom,
   };
@@ -280,10 +201,10 @@ function evidenceIds(surface: DaoMandateSurfaceV1, selectedFrom: string): string
 function buildCurrentOmen(
   surface: DaoMandateSurfaceV1,
   selected: OmenCandidate,
-  directRouteReason: DaoOmenDirectRouteReason | null,
+  directRouteReason: DaoCurrentOmenV1['directRouteReason'],
   route: DaoMandateRoute | undefined,
 ): DaoCurrentOmenV1 {
-  const copy = OMEN_COPY[selected.kind];
+  const copy = getDaoOmenDefaultCopy(selected.kind);
   return {
     id: stableId(`omen:${surface.milestone.id}:${selected.kind}`),
     kind: selected.kind,
@@ -292,40 +213,11 @@ function buildCurrentOmen(
     severity: severityForOmen(selected.kind),
     iconId: iconForOmen(selected.kind),
     tone: toneForOmen(selected.kind),
-    allowDirectRoute: directRouteReason !== null,
+    allowDirectRoute: directRouteReason !== undefined,
     ...(directRouteReason ? { directRouteReason } : {}),
     ...(route ? { route } : {}),
     evidenceIds: selected.evidenceIds,
   };
-}
-
-function directRouteReasonFor(kind: DaoOmenKind, route: DaoMandateRoute): DaoOmenDirectRouteReason | null {
-  switch (kind) {
-    case 'life_setup':
-      return 'setup';
-    case 'proof_missing':
-      return 'hard_lock';
-    case 'reflection':
-      return 'repeated_failure';
-    case 'safety_net_ready':
-      return 'safety_net';
-    case 'breakthrough_ready':
-      return 'breakthrough';
-    case 'reincarnation_viable':
-      return 'reincarnation';
-    case 'content_cap':
-      return 'content_cap';
-    case 'attemptable':
-    case 'risky_attempt':
-      return routeTargetsGateTrial(route) ? 'hard_lock' : null;
-    default:
-      return null;
-  }
-}
-
-function routeTargetsGateTrial(route: DaoMandateRoute): boolean {
-  if (route.target?.kind === 'world_module' && route.target.moduleKey === 'gateTrial') return true;
-  return /gate/i.test(`${route.id} ${route.label} ${route.actionLabel} ${route.destinationLabel} ${route.source}`);
 }
 
 function suppressableRouteIds(surface: DaoMandateSurfaceV1): string[] {
