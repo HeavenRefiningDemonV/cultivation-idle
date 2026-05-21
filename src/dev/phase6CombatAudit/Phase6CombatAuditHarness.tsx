@@ -629,7 +629,7 @@ function buildGateTrialAuditSurface(slot: AuditSlot, mode: GateTrialExactMode): 
           tone: 'warning',
           detailLines: [
             { id: 'failures', label: 'Fail-Safe', value: '3 / 5 eligible failures', tone: 'warning', source: 'synthetic' },
-            { id: 'fix', label: 'Top Fix', value: 'Stock healing before retrying', tone: 'warning', source: 'synthetic' },
+            { id: 'fix', label: 'Gate Correction', value: 'Stock healing before retrying', tone: 'warning', source: 'synthetic' },
           ],
           rewardLines: [],
           ctaHint: 'Return to Apothecary or continue fail-safe progress.',

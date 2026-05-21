@@ -4,15 +4,13 @@ export type WorldCombatExactModuleKey =
   | 'ruins';
 
 export type WorldCombatExactOwnershipStatus =
-  | 'exact-owner-complete'
-  | 'legacy-preserved-for-future-cutover';
+  | 'exact-owner-complete';
 
 export type WorldCombatExactFutureShellMode =
   | 'screen-owned';
 
 export type WorldCombatExactCurrentShellMode =
-  | 'screen-owned'
-  | 'combat-path-close-only';
+  | 'screen-owned';
 
 export type WorldCombatExactInformationDensity =
   | 'light'
@@ -241,13 +239,13 @@ export const WORLD_COMBAT_EXACT_PATTERN_REGISTRY: Record<
   gateTrial: {
     moduleKey: 'gateTrial',
     displayName: 'Gate Trial',
-    currentOwnershipStatus: 'legacy-preserved-for-future-cutover',
-    currentOwnerFile: 'src/components/screens/world/buildings/GateTrialBuildingPanel.tsx',
-    currentRootTestId: null,
+    currentOwnershipStatus: 'exact-owner-complete',
+    currentOwnerFile: 'src/features/world/gateTrialExact/GateTrialScreenOwner.tsx',
+    currentRootTestId: 'gate-trial-exact-page',
     futureOwnerName: 'GateTrialScreenOwner',
     futureExactScreenName: 'GateTrialExactScreen',
     futureRootTestId: 'gate-trial-exact-page',
-    currentShellMode: 'combat-path-close-only',
+    currentShellMode: 'screen-owned',
     futureShellMode: 'screen-owned',
     activeNoScreenSwapRequired: true,
     exactTheaterLayerIds: [...SHARED_THEATER_LAYERS],
@@ -287,13 +285,13 @@ export const WORLD_COMBAT_EXACT_PATTERN_REGISTRY: Record<
   ruins: {
     moduleKey: 'ruins',
     displayName: 'Ruins',
-    currentOwnershipStatus: 'legacy-preserved-for-future-cutover',
-    currentOwnerFile: 'src/components/screens/world/buildings/RuinsBuildingPanel.tsx',
-    currentRootTestId: null,
+    currentOwnershipStatus: 'exact-owner-complete',
+    currentOwnerFile: 'src/features/world/ruinsExact/RuinsScreenOwner.tsx',
+    currentRootTestId: 'ruins-exact-page',
     futureOwnerName: 'RuinsScreenOwner',
     futureExactScreenName: 'RuinsExactScreen',
     futureRootTestId: 'ruins-exact-page',
-    currentShellMode: 'combat-path-close-only',
+    currentShellMode: 'screen-owned',
     futureShellMode: 'screen-owned',
     activeNoScreenSwapRequired: true,
     exactTheaterLayerIds: [...SHARED_THEATER_LAYERS],

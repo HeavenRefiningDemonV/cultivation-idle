@@ -332,7 +332,7 @@ export interface GateTrialRecommendedPanelSurface {
   failSafeTitle: 'Fail-Safe';
   failSafeRows: ReadonlyArray<GateTrialFactRowSurface>;
   safetyNetButton: GateTrialButtonSurface;
-  topFixesTitle: 'Top Fixes';
+  topFixesTitle: 'Gate Corrections';
   topFixes: ReadonlyArray<GateTrialFixSurface>;
 }
 

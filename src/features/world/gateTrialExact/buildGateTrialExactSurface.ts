@@ -663,7 +663,7 @@ export function createGateTrialExactMockupFixture(
       failSafeTitle: 'Fail-Safe',
       failSafeRows: GATE_TRIAL_FIXTURE_FAIL_SAFE_ROWS.map(toFactRow),
       safetyNetButton: disabledSafetyNetButton(),
-      topFixesTitle: 'Top Fixes',
+      topFixesTitle: 'Gate Corrections',
       topFixes,
     },
     trialSummary: {
@@ -717,7 +717,7 @@ export function createGateTrialExactMockupFixture(
       ],
       visualContractNotes: [
         'Gate Trial is a ceremonial threshold, not a farm lane or ruins route.',
-        'Minimum Checklist remains the left rail; Recommended, Fail-Safe, and Top Fixes remain the right rail.',
+        'Minimum Checklist remains the left rail; Recommended, Fail-Safe, and Gate Corrections remain the right rail.',
         'Safety Net stays locked in this fixture even though the primary Attempt Gate CTA is enabled.',
       ],
     },
@@ -869,7 +869,7 @@ function safePostFailureSuggestionCount(trialId: string, missingDataFallbacks: s
     const suggestions = (surface as { suggestions?: unknown[] } | null)?.suggestions;
     return Array.isArray(suggestions) ? suggestions.length : 0;
   } catch {
-    missingDataFallbacks.push('Post-failure surface unavailable; top fixes used readiness gaps.');
+    missingDataFallbacks.push('Post-failure surface unavailable; gate corrections used readiness gaps.');
     return 0;
   }
 }
@@ -1319,7 +1319,7 @@ function buildLiveRecommendedPanel(context: LiveResolvedContext): GateTrialExact
       makeFactRow('reserve', 'Reserve', formatCurrencyReserve(cost, inventory), canAfford ? 'positive' : 'warning', canAfford ? 'reserveSeal' : 'statusWarning'),
     ],
     safetyNetButton,
-    topFixesTitle: 'Top Fixes',
+    topFixesTitle: 'Gate Corrections',
     topFixes,
   };
 }
@@ -1530,7 +1530,7 @@ function buildGateTrialResultTransitionSurface(
       rewardLines: summary.suggestions.slice(0, 2),
       ctaHint: failSafe.canPurchase
         ? 'Safety Net is available if reserves allow.'
-        : 'Review top fixes before the next attempt.',
+        : 'Review gate corrections before the next attempt.',
       source: LIVE_SOURCE,
     };
   }
@@ -1927,7 +1927,7 @@ export function buildGateTrialExactSurfaceFromStores(
         'Lifecycle sourced from getTrialLifecycleSnapshot.',
         'Gate reward sourced from getTrialGateItemId.',
         'Readiness score adapted from buildGateTrialReadinessSurface.',
-        'Top fixes use deterministic readiness-gap fallback until action-controller packets.',
+        'Gate corrections use deterministic readiness-gap fallback while richer route evidence is absent.',
         'Ruins support row reads lastRunSummary and ruins progress when present.',
         'Approved Foundation Gate scenic plate bound from src/assets/world/gateTrial/foundation-gate-scene-approved-plate.png.',
         `Post-failure suggestion count observed: ${context.postFailureSuggestionCount}.`,

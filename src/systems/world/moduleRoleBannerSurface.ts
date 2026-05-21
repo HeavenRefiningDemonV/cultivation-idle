@@ -186,7 +186,7 @@ function currentFit(args: BuildModuleRoleBannerSurfaceArgs): ModuleCurrentFit {
 function actualBlockerRoute(runCompass: RunCompassSurfaceV2 | null, cityId: string | null): P3Route | null {
   const moduleKey = targetModule(runCompass?.primaryRoute.target ?? null);
   if (!moduleKey) return null;
-  return p3ModuleRoute(moduleKey, runCompass?.primaryRoute.detail ?? 'Current Run Compass route.', cityId);
+  return p3ModuleRoute(moduleKey, runCompass?.primaryRoute.detail ?? 'Current Mandate route.', cityId);
 }
 
 export function buildModuleRoleBannerSurface(args: BuildModuleRoleBannerSurfaceArgs): ModuleRoleBannerSurfaceV1 {

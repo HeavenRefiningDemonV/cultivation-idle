@@ -87,7 +87,7 @@ void test('Gate Trial Exact G4 renders the five minimum checklist rows in exact 
   assert.equal(html.includes('data-status="warning"'), true, 'healing warning status should render');
 });
 
-void test('Gate Trial Exact G4 renders recommended prep, fail-safe, and top fixes in exact fixture order', () => {
+void test('Gate Trial Exact G4 renders recommended prep, fail-safe, and Gate Corrections in exact fixture order', () => {
   const html = renderToStaticMarkup(
     React.createElement(GateTrialExactScreen, { surface: createGateTrialExactMockupFixture() }),
   );
@@ -111,9 +111,9 @@ void test('Gate Trial Exact G4 renders recommended prep, fail-safe, and top fixe
   const fixOrder = ['forgeWeapon', 'stockHealing', 'upgradeTechnique'];
   const fixPositions = fixOrder.map((id) => html.indexOf(`data-testid="gate-trial-top-fix-${id}"`));
 
-  assert.equal(fixPositions.every((position) => position >= 0), true, 'all top fixes must render');
+  assert.equal(fixPositions.every((position) => position >= 0), true, 'all Gate Corrections must render');
   for (let i = 1; i < fixPositions.length; i += 1) {
-    assert.equal(fixPositions[i] > fixPositions[i - 1], true, `${fixOrder[i]} top fix rendered out of order`);
+    assert.equal(fixPositions[i] > fixPositions[i - 1], true, `${fixOrder[i]} Gate Correction rendered out of order`);
   }
 
   for (const copy of [
@@ -131,7 +131,7 @@ void test('Gate Trial Exact G4 renders recommended prep, fail-safe, and top fixe
     'Reserve',
     '12 Merit · 610 Gold',
     'Safety Net Locked',
-    'Top Fixes',
+    'Gate Corrections',
     'Forge Weapon +5',
     'Stock Healing',
     'Upgrade Iron Palm',

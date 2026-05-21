@@ -32,7 +32,7 @@ void test('ruins resolves to dedicated scenic screen-owned host without shell co
   assert.equal(surface.showShellClose, false);
 });
 
-void test('gateTrial remains on existing combat-path host contract', () => {
+void test('gateTrial resolves to dedicated exact scenic screen-owned host', () => {
   const surface = resolveWorldModalEntrySurface({
     buildingKey: 'gateTrial',
     cityName: 'Spirit Cavern',
@@ -40,19 +40,19 @@ void test('gateTrial remains on existing combat-path host contract', () => {
     isStoreMode: true,
   });
 
-  assert.equal(surface.backgroundVariant, 'inside-dungeon');
-  assert.equal(surface.shellFamily, 'combat-path');
-  assert.equal(surface.shellMode, 'close-only');
+  assert.equal(surface.backgroundVariant, 'gate-trial-exact');
+  assert.equal(surface.shellFamily, 'gate-trial-scenic');
+  assert.equal(surface.shellMode, 'screen-owned');
   assert.equal(surface.showContextStrip, false);
-  assert.equal(surface.showShellClose, false, 'gateTrial should keep close ownership in panel chrome');
+  assert.equal(surface.showShellClose, false, 'gateTrial owns close behavior inside the exact surface');
 });
 
 
-void test('non-outskirts modules that use context-strip mode still expose shell context/close semantics', () => {
+void test('legacy-intent modules that use context-strip mode still expose shell context/close semantics', () => {
   const surface = resolveWorldModalEntrySurface({
-    buildingKey: 'apothecary',
+    buildingKey: 'manualPavilion',
     cityName: 'Spirit Cavern',
-    intent: { apothecarySurface: 'buy' },
+    intent: { manualPavilionExactMode: 'legacy' },
     isStoreMode: true,
   });
 

@@ -89,14 +89,16 @@ void test('C9 Test E/F/G: active, transition, and planning exact outputs remain 
   for (const forbidden of ['data-testid="outskirts-combat-theater"', 'data-testid="outskirts-active-chain-badge"', 'data-testid="outskirts-live-summary"', 'Stop Hunt']) assert.equal(planningHtml.includes(forbidden), false);
 });
 
-void test('C9 Test H: modal entry keeps Outskirts screen-owned and Gate/Ruins combat-path', async () => {
+void test('C9 Test H: modal entry keeps combat-world exact modules screen-owned', async () => {
   const source = await readFile('src/systems/ui/world/worldBuildingModalEntrySurface.ts', 'utf8');
   assert.match(source, /case 'outskirts':[\s\S]*backgroundVariant = 'outskirts-exact'/);
   assert.match(source, /case 'outskirts':[\s\S]*shellFamily = 'outskirts-scenic'/);
   assert.match(source, /case 'outskirts':[\s\S]*shellMode = 'screen-owned'/);
   assert.match(source, /case 'outskirts':[\s\S]*showShellClose = false/);
-  assert.match(source, /case 'gateTrial':[\s\S]*shellFamily = 'combat-path'/);
-  assert.match(source, /case 'ruins':[\s\S]*shellFamily = 'combat-path'/);
+  assert.match(source, /case 'gateTrial':[\s\S]*shellFamily = 'gate-trial-scenic'/);
+  assert.match(source, /case 'gateTrial':[\s\S]*shellMode = 'screen-owned'/);
+  assert.match(source, /case 'ruins':[\s\S]*shellFamily = 'ruins-scenic'/);
+  assert.match(source, /case 'ruins':[\s\S]*shellMode = 'screen-owned'/);
 });
 
 void test('C9 Test I: shared combat infrastructure remains available', () => {

@@ -1,4 +1,18 @@
 export async function resolve(specifier, context, defaultResolve) {
+  if (/\.(?:css|scss)$/.test(specifier)) {
+    return {
+      url: 'data:text/javascript,export%20default%20%7B%7D%3B',
+      shortCircuit: true,
+    };
+  }
+
+  if (/\.(?:avif|gif|jpe?g|png|svg|webp)$/.test(specifier)) {
+    return {
+      url: 'data:text/javascript,export%20default%20%22%22%3B',
+      shortCircuit: true,
+    };
+  }
+
   try {
     return await defaultResolve(specifier, context, defaultResolve);
   } catch (error) {

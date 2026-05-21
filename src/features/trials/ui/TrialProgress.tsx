@@ -234,7 +234,7 @@ function TrialProgressContent({ trialId }: { trialId: string }) {
           <InlineOnboardingCallout
             className="trial-progress__failure-strap"
             title="Defeat is feedback"
-            body="Read the diagnosis and take the top fix before retrying. The gate is teaching you what this life is missing."
+            body="Read the diagnosis and follow the Mandate correction before retrying. The gate is teaching you what this life is missing."
             actionLabel="Got it"
             onAction={() => dismissOnboardingLifeKey(ONBOARDING_INLINE_LIFE_KEYS.firstFailureStrap)}
             onDismiss={() => dismissOnboardingLifeKey(ONBOARDING_INLINE_LIFE_KEYS.firstFailureStrap)}

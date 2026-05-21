@@ -37,7 +37,7 @@ export function formatRealmLesson(toRealmName: string): { lessonTitle: string; l
   return {
     lessonTitle: 'Realm crossed',
     lessonDetail: 'The world phase updated around the new realm.',
-    primaryModuleLabel: 'Run Compass',
+    primaryModuleLabel: 'Mandate Route',
   };
 }
 

@@ -75,7 +75,7 @@ test('status troubleshooting runtime surface returns locked shortfall line and s
   const surface = buildStatusTroubleshootingSurface();
 
   assert.match(`${surface.shortfall.diagnosisLabel} — ${surface.shortfall.reason}`, /—/);
-  assert.match(surface.shortfall.headline, /^Biggest Shortfall:\s/);
+  assert.match(surface.shortfall.headline, /^Primary Obstruction:\s/);
   if (surface.shortfall.topFix) {
     assert.equal(/Raise Forge Floor|Stabilize Preparation|Tune Build Slots|Resolve Current Gate/.test(surface.shortfall.topFix), false);
   }

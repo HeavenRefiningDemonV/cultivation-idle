@@ -32,10 +32,10 @@ function renderActionButton(action: RunCompassActionLine, onAction?: (action: Ru
 
 export function RunCompass({ surface, tone = 'paper', density = 'regular', className, onAction }: RunCompassProps) {
   const content = !surface ? (
-    <div className="runCompassFallback">Run Compass unavailable.</div>
+    <div className="runCompassFallback">Mandate route unavailable.</div>
   ) : (
     <>
-      <RunCompassSection title="Next Milestone">
+      <RunCompassSection title="Mandate Milestone">
         <div className="runCompassMilestone">
           <div className="runCompassMilestone__header">
             <div>
@@ -68,7 +68,7 @@ export function RunCompass({ surface, tone = 'paper', density = 'regular', class
         </div>
       </RunCompassSection>
 
-      <RunCompassSection title="Missing Requirements">
+      <RunCompassSection title="Proof Ledger">
         <div className="runCompassInfoList runCompassInfoList--fixed3">
           {surface.missingRequirements.map((row) => (
             <div key={row.id} className={classNames('runCompassInfoRow', { 'is-placeholder': Boolean(row.placeholder) })}>
@@ -82,7 +82,7 @@ export function RunCompass({ surface, tone = 'paper', density = 'regular', class
         </div>
       </RunCompassSection>
 
-      <RunCompassSection title="Best Next Actions">
+      <RunCompassSection title="Mandate Routes">
         <div className="runCompassActionList runCompassActionList--fixed3">
           {surface.bestNextActions.map((action) => (
             <div key={action.id} className={classNames('runCompassAction', { 'is-blocked': action.blocked })}>

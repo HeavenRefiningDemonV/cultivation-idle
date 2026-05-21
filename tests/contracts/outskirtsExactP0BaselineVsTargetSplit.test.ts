@@ -24,15 +24,14 @@ void test('P0 docs explicitly separate baseline evidence truth and target fixtur
   assert.match(fixtureJson, /"legacyConceptPolicy": "context-only-not-exact-authority"/);
 });
 
-void test('P0 does not modify live host/layout owner files', async () => {
+void test('P0 target now reflects screen-owned exact host/layout owner files', async () => {
   const [scss, modalSurface, panel] = await Promise.all([
     readFile('src/components/modals/WorldBuildingModal.scss', 'utf8'),
     readFile('src/systems/ui/world/worldBuildingModalEntrySurface.ts', 'utf8'),
     readFile('src/components/screens/world/buildings/OutskirtsBuildingPanel.tsx', 'utf8'),
   ]);
 
-  assert.match(scss, /width:\s*80rem;/);
-  assert.match(scss, /height:\s*45rem;/);
-  assert.match(modalSurface, /shellFamily\s*=\s*'combat-path'/);
+  assert.match(scss, /\.worldBuildingModal--outskirts-exact\.worldBuildingModal--screen-owned/);
+  assert.match(modalSurface, /case 'outskirts':[\s\S]*shellFamily\s*=\s*'outskirts-scenic';[\s\S]*shellMode\s*=\s*'screen-owned';/);
   assert.match(panel, /OutskirtsExactMockupScreen/);
 });

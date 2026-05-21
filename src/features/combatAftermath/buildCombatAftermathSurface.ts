@@ -330,12 +330,12 @@ function diagnosisDefaults(code: string): { label: string; explanation: string; 
     case 'underprepared':
       return { label: 'Underprepared', explanation: 'The guardian exposed an underprepared pouch.', topFixLabel: 'Stock medicine pouch' };
     case 'close':
-      return { label: 'Close', explanation: 'The attempt was near enough that one top fix or retry may resolve it.', topFixLabel: 'Retry Gate Trial' };
+      return { label: 'Close', explanation: 'The attempt was near enough that one Mandate correction or retry may resolve it.', topFixLabel: 'Retry Gate Trial' };
     case 'bypassAvailable':
     case 'bypass_available':
       return { label: 'Safety Net Available', explanation: 'Earned fallback can secure the proof.', topFixLabel: 'Use Safety Net' };
     default:
-      return { label: titleCaseWords(code), explanation: 'No precise diagnosis surfaced.', topFixLabel: 'Follow Run Compass' };
+      return { label: titleCaseWords(code), explanation: 'No precise diagnosis surfaced.', topFixLabel: 'Follow the Mandate route' };
   }
 }
 
@@ -489,7 +489,7 @@ function diagnosisFromTrialSummary(trialId: string | null | undefined): CombatAf
   if (!trialId) return null;
   const summary = useTrialStore.getState().getProgress(trialId).lastAttemptSummary;
   if (!summary) return null;
-  const suggestion = summary.suggestions[0] ?? 'Follow Run Compass.';
+  const suggestion = summary.suggestions[0] ?? 'Follow the current Mandate route.';
   let code = 'close';
   if (/medicine|pouch|healing|apothecary/i.test(suggestion)) code = 'underprepared';
   if (/forge|weapon|gear/i.test(suggestion)) code = 'underforged';
@@ -574,7 +574,7 @@ export function buildLiveCombatAftermathSurface(
     itemNamesById: content.maps.itemsById,
     sourceEventIds: eventMemory.sourceEventIds,
     debugNotes: [
-      ...(recentDeltas.length === 0 ? ['No matching recent P1 delta; aftermath is conservative.'] : []),
+      ...(recentDeltas.length === 0 ? ['No matching recent event; aftermath is conservative.'] : []),
       ...eventMemory.debugNotes,
     ],
   });

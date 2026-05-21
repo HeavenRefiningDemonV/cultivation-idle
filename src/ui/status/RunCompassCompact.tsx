@@ -16,7 +16,7 @@ export function RunCompassCompact({ surface, tone = 'paper', className }: RunCom
   return (
     <div className={classNames('runCompassCompact', `runCompassCompact--${tone}`, className)}>
       {!surface ? (
-        <div className="runCompassCompact__fallback">Run Compass unavailable.</div>
+        <div className="runCompassCompact__fallback">Mandate route unavailable.</div>
       ) : (
         <>
           <div className="runCompassCompact__line runCompassCompact__line--headline">

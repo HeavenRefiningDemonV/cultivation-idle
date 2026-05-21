@@ -86,8 +86,8 @@ export const MODULE_ROLE_REGISTRY: readonly EconomicModuleRoleEntry[] = [
   },
   {
     moduleKey: 'gateTrial',
-    roleTag: 'Gate Progress',
-    bestUsedWhen: 'You are ready to resolve the current milestone gate.',
+    roleTag: 'Gate Proof',
+    bestUsedWhen: 'The current gate proof is ready for judgment.',
     economicCategory: 'milestone',
     moduleKind: 'milestone_step',
     activityMode: 'foreground',

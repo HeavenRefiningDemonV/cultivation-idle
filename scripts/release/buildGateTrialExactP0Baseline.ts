@@ -224,10 +224,10 @@ export function buildGateTrialExactP0Baseline(rootDir: string): GateTrialExactP0
         'Gate Guardian',
         'Gate Foundation Pill',
         'Safety Net',
-        'Top Fixes',
+        'Gate Corrections',
       ],
       forbiddenLegacyMarkers: [
-        'Run Compass unavailable.',
+        'Mandate route unavailable.',
         'Best used when you are ready',
         'Minimum Floor',
         'Recommended Floor',

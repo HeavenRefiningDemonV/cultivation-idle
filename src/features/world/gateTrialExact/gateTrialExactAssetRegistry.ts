@@ -122,8 +122,8 @@ export const GATE_TRIAL_EXACT_ASSETS = {
   },
   icons: {
     foundationPill: { key: 'foundationPill', role: 'reward-icon', path: 'src/assets/icons/foundationpill.png', availability: 'available-existing', allowedAsFinalScene: false, note: 'Reward icon fallback for Gate Foundation Pill.' },
-    weapon: { key: 'weapon', role: 'status-icon', path: 'src/assets/icons/rustysword.png', availability: 'available-existing', allowedAsFinalScene: false, note: 'Weapon/top fix icon fallback.' },
-    technique: { key: 'technique', role: 'status-icon', path: 'src/assets/icons/book_martial.png', availability: 'available-existing', allowedAsFinalScene: false, note: 'Technique/top fix icon fallback.' },
+    weapon: { key: 'weapon', role: 'status-icon', path: 'src/assets/icons/rustysword.png', availability: 'available-existing', allowedAsFinalScene: false, note: 'Weapon correction icon fallback.' },
+    technique: { key: 'technique', role: 'status-icon', path: 'src/assets/icons/book_martial.png', availability: 'available-existing', allowedAsFinalScene: false, note: 'Technique correction icon fallback.' },
     healing: { key: 'healing', role: 'status-icon', path: 'src/assets/icons/hourglass_progress.png', availability: 'available-existing', allowedAsFinalScene: false, note: 'Healing/pouch icon fallback.' },
     taskComplete: { key: 'taskComplete', role: 'status-icon', path: 'src/assets/icons/task_complete.png', availability: 'available-existing', allowedAsFinalScene: false, note: 'Generic completion icon fallback.' },
   },

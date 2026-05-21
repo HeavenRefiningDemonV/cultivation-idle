@@ -134,7 +134,7 @@ void test('Gate Trial Exact G7 live surface keeps compact tactical cells free of
     'No medicine pouch configured',
     'No tracked bounty selected',
     'No expedition overlap',
-    'Run Compass unavailable',
+    'Mandate route unavailable',
     'Best used when you are ready',
     'Minimum Floor',
     'Recommended Floor',
@@ -166,13 +166,16 @@ void test('Gate Trial Exact G7 live builder uses authoritative lifecycle, reward
     'getTrialGateRewardBundle',
     'buildGateTrialReadinessSurface',
     'buildSection5PostFailureSurface',
+    'useUIStore',
+    'buildLiveDaoMandateSurfaceV1',
+    'applyDaoMandateVisibility',
+    'buildLocalMandateLensSurface',
   ]) {
     assert.equal(source.includes(required), true, `G7 live builder must reference ${required}`);
   }
 
   for (const forbidden of [
     'RewardService',
-    'useUIStore',
     'GateTrialBuildingPanel',
     'GateTrialWorldLayout',
     'GateTrialReadinessCard',

@@ -8,7 +8,7 @@ import { createGateTrialExactMockupFixture } from '../../src/features/world/gate
 import { GateTrialExactScreen } from '../../src/features/world/gateTrialExact/GateTrialExactScreen.js';
 import { resolveWorldModalEntrySurface } from '../../src/systems/ui/world/worldBuildingModalEntrySurface.js';
 
-void test('Gate Trial Exact G2 fixture host remains screen-owned before top parity work', () => {
+void test('Gate Trial Exact G2 host remains screen-owned for fixture and live intent', () => {
   const fixtureSurface = resolveWorldModalEntrySurface({
     buildingKey: 'gateTrial',
     cityName: 'Pinewind Hamlet',
@@ -22,16 +22,16 @@ void test('Gate Trial Exact G2 fixture host remains screen-owned before top pari
   assert.equal(fixtureSurface.showShellClose, false);
   assert.equal(fixtureSurface.showContextStrip, false);
 
-  const legacySurface = resolveWorldModalEntrySurface({
+  const defaultSurface = resolveWorldModalEntrySurface({
     buildingKey: 'gateTrial',
     cityName: 'Pinewind Hamlet',
     intent: null,
     isStoreMode: true,
   });
 
-  assert.equal(legacySurface.backgroundVariant, 'inside-dungeon');
-  assert.equal(legacySurface.shellFamily, 'combat-path');
-  assert.equal(legacySurface.shellMode, 'close-only');
+  assert.equal(defaultSurface.backgroundVariant, 'gate-trial-exact');
+  assert.equal(defaultSurface.shellFamily, 'gate-trial-scenic');
+  assert.equal(defaultSurface.shellMode, 'screen-owned');
 
   const liveIntentSurface = resolveWorldModalEntrySurface({
     buildingKey: 'gateTrial',
@@ -40,9 +40,9 @@ void test('Gate Trial Exact G2 fixture host remains screen-owned before top pari
     isStoreMode: true,
   });
 
-  assert.equal(liveIntentSurface.backgroundVariant, 'inside-dungeon');
-  assert.equal(liveIntentSurface.shellFamily, 'combat-path');
-  assert.equal(liveIntentSurface.shellMode, 'close-only');
+  assert.equal(liveIntentSurface.backgroundVariant, 'gate-trial-exact');
+  assert.equal(liveIntentSurface.shellFamily, 'gate-trial-scenic');
+  assert.equal(liveIntentSurface.shellMode, 'screen-owned');
 });
 
 void test('Gate Trial Exact top region renders title, status, macro ribbon, and seven tactical cells', () => {

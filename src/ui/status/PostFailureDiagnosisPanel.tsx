@@ -22,7 +22,7 @@ export function PostFailureDiagnosisPanel({
       primaryLabel: null,
       secondaryBadgeLabel: null,
       headline: 'No recent defeat summary yet.',
-      explanation: 'Attempt this gate once to surface focused diagnosis and fixes.',
+      explanation: 'Attempt this gate once to surface focused diagnosis and Mandate corrections.',
       reasons: [],
       fixes: [],
       attemptRecap: null,
@@ -79,7 +79,7 @@ export function PostFailureDiagnosisPanel({
             </div>
           ))
         ) : (
-          <div className="postFailureDiagnosisPanel__fix postFailureDiagnosisPanel__fix--quiet">No active top fixes.</div>
+          <div className="postFailureDiagnosisPanel__fix postFailureDiagnosisPanel__fix--quiet">No active Mandate corrections.</div>
         )}
       </div>
 

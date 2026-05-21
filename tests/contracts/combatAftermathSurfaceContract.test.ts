@@ -157,7 +157,7 @@ test('Outskirts victory groups spendable gold and gate prep conservatively', () 
   assert.equal(surface.primaryRoute?.target?.kind, 'world_module');
 });
 
-test('Gate Trial defeat maps diagnosis to one top fix', () => {
+test('Gate Trial defeat maps diagnosis to one Mandate correction', () => {
   const surface = buildCombatAftermathSurfaceFromSnapshot({
     id: 'gate-defeat',
     createdAt: 300,

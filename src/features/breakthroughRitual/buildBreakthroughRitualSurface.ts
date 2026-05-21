@@ -194,7 +194,7 @@ function buildLiveSnapshotBase(mode: 'preview' | 'result'): BreakthroughRitualBu
   const runCompass = buildLiveRunCompassSurfaceV2();
   const fallbackRoute = {
     title: toRealmIndex > game.realm.index ? `Enter ${toRealm.name}` : 'Continue Cultivating',
-    detail: 'Run Compass route is unavailable; continue from Cultivation.',
+    detail: 'The Mandate route is sealed here; continue from Cultivation.',
     primaryRouteLabel: 'Continue Cultivating',
     target: { kind: 'tab' as const, tab: 'cultivation' as const },
   };

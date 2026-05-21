@@ -94,7 +94,7 @@ test('world command surface fallback metadata uses canonical world-facing role t
 
   const cards = surface.groups.flatMap((group) => group.cards);
   assert.equal(cards.some((card) => card.roleTag === 'Gold & Common Mats'), true);
-  assert.equal(cards.some((card) => card.roleTag === 'Gate Progress'), true);
+  assert.equal(cards.some((card) => card.roleTag === 'Gate Proof'), true);
   assert.equal(cards.some((card) => card.roleTag === 'Merit & Routing'), true);
   assert.equal(cards.some((card) => card.roleTag === 'Passive Support'), true);
   cards.forEach((card) => {

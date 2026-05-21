@@ -49,7 +49,7 @@ test('top region and tactical strip match the mockup fixture', () => {
   assert.equal(surface.gateHeader.chips.map((chip) => chip.label).join('|'), 'Milestone Gate|Readiness Check|Safety Net Tracked');
 });
 
-test('checklist, recommended panel, fail-safe, and top fixes match the mockup fixture', () => {
+test('checklist, recommended panel, fail-safe, and Gate Corrections match the mockup fixture', () => {
   const surface = createGateTrialExactMockupFixture();
   assert.equal(surface.minimumChecklist.title, 'Minimum Checklist');
   assert.equal(surface.minimumChecklist.stamp.label, 'Viable');
@@ -68,7 +68,7 @@ test('checklist, recommended panel, fail-safe, and top fixes match the mockup fi
   assert.match(surface.recommendedPanel.safetyNetButton.disabledReason ?? '', /3 \/ 5/);
   assert.match(surface.recommendedPanel.safetyNetButton.disabledReason ?? '', /15 Merit · 800 Gold/);
   assert.match(surface.recommendedPanel.safetyNetButton.disabledReason ?? '', /12 Merit · 610 Gold/);
-  assert.equal(surface.recommendedPanel.topFixesTitle, 'Top Fixes');
+  assert.equal(surface.recommendedPanel.topFixesTitle, 'Gate Corrections');
   assert.equal(surface.recommendedPanel.topFixes.map((fix) => `${fix.label}:${fix.routeTarget}:${fix.button.intent}`).join('|'), 'Forge Weapon +5:forge:route-to-forge|Stock Healing:apothecary:route-to-apothecary|Upgrade Iron Palm:techniques:route-to-techniques');
 });
 

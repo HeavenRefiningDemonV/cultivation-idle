@@ -156,7 +156,7 @@ export function resolveStatusShortfallReason(code: FailureDiagnosisCode | null, 
 }
 
 function toShortfallHeadline(diagnosisLabel: string, reason: string): string {
-  return `Biggest Shortfall: ${diagnosisLabel} — ${reason}`;
+  return `Primary Obstruction: ${diagnosisLabel} — ${reason}`;
 }
 
 function toEconomicTopFixLabel(actionKind: string, destinationModuleKey: string): string {
@@ -316,8 +316,8 @@ export function buildStatusTroubleshootingSurface(): StatusTroubleshootingSurfac
                   blockedReason: null,
                 }
                 : {
-                  label: 'Follow the best next action from Run Compass',
-                  destinationLabel: 'Run Compass',
+                  label: 'Follow the current Mandate route',
+                  destinationLabel: 'Mandate Chamber',
                   blockedReason: null,
                 };
 

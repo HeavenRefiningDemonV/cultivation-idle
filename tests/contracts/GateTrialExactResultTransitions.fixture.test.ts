@@ -167,7 +167,7 @@ void test('Gate Trial Exact G10 renders defeat transition without hiding exact p
           { id: 'duration', label: 'Attempt Time', value: '13s', tone: 'neutral', source: 'live' },
         ],
         rewardLines: ['Need more sustain to survive longer.', 'Review build for more burst and survival tools.'],
-        ctaHint: 'Review top fixes before the next attempt.',
+        ctaHint: 'Review Gate Corrections before the next attempt.',
         emphasizedFixId: 'stockHealing',
         failureLabel: '3 / 5',
         source: 'live',
@@ -190,7 +190,7 @@ void test('Gate Trial Exact G10 renders defeat transition without hiding exact p
     'Attempt Time',
     '13s',
     'Need more sustain to survive longer.',
-    'Review top fixes before the next attempt.',
+    'Review Gate Corrections before the next attempt.',
   ]) {
     assert.equal(html.includes(copy), true, `missing defeat transition copy ${copy}`);
   }

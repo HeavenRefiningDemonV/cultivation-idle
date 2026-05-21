@@ -1,0 +1,54 @@
+{
+  "schemaVersion": "dao-mandate-p8-browser-smoke.v1",
+  "generatedAt": "2026-05-21",
+  "baseUrl": "http://127.0.0.1:5174",
+  "notes": [
+    "In-app Browser smoke used audit routes to avoid startup offline/migration overlays.",
+    "Forbidden old-label checks covered Run Compass, Follow Run Compass, Biggest Shortfall, Best Next Actions, Mission Requirements, Prestige Advisor, ModuleRoleBanner, Top Fixes, Gate Progress, Best used when you are ready, owner not wired, and not wired.",
+    "Live Settings navigation was blocked by startup overlays during Browser smoke; Settings remains covered by source contracts and targeted tests."
+  ],
+  "screens": [
+    {
+      "screen": "Cultivation",
+      "route": "/?uiAudit=phase-0&surface=cultivation&slot=base&fx=high&controls=0",
+      "screenshot": "cultivation-audit.png",
+      "forbiddenOldLabelHits": []
+    },
+    {
+      "screen": "Status",
+      "route": "/?uiAudit=phase-0&surface=status&slot=base&fx=high&controls=0",
+      "screenshot": "status-audit.png",
+      "forbiddenOldLabelHits": []
+    },
+    {
+      "screen": "Status reduced motion",
+      "route": "/?uiAudit=phase-0&surface=status&slot=reduced-motion&fx=reduced&controls=0",
+      "screenshot": "status-reduced-motion-audit.png",
+      "forbiddenOldLabelHits": []
+    },
+    {
+      "screen": "World",
+      "route": "/?uiAudit=phase-0&surface=world&slot=base&fx=high&controls=0",
+      "screenshot": "world-audit.png",
+      "forbiddenOldLabelHits": []
+    },
+    {
+      "screen": "Techniques",
+      "route": "/?uiAudit=phase-0&surface=techniques&slot=base&fx=high&controls=0",
+      "screenshot": "techniques-audit.png",
+      "forbiddenOldLabelHits": []
+    },
+    {
+      "screen": "Prestige",
+      "route": "/?uiAudit=phase-0&surface=prestige&slot=base&fx=high&controls=0",
+      "screenshot": "prestige-audit.png",
+      "forbiddenOldLabelHits": []
+    },
+    {
+      "screen": "Gate Trial exact",
+      "route": "/?uiAudit=phase-6-combat&surface=gate-trial&fx=high&slot=base&controls=0&gateTrialExactMode=fixture",
+      "screenshot": "gate-trial-exact-audit.png",
+      "forbiddenOldLabelHits": []
+    }
+  ]
+}

@@ -41,7 +41,7 @@ void test('Gate Trial Exact G11 DOM audit has required text markers', () => {
     'Gate Guardian',
     'Gate Foundation Pill',
     'Safety Net',
-    'Top Fixes',
+    'Gate Corrections',
   ]) {
     assert.equal(source.includes(marker), true, `missing Gate Trial text marker ${marker}`);
   }
@@ -51,7 +51,7 @@ void test('Gate Trial Exact G11 DOM audit forbids old shell and cross-surface le
   const source = readFileSync('scripts/release/capturePhase6CombatEvidence.ts', 'utf8');
 
   for (const forbiddenMarker of [
-    'Run Compass unavailable.',
+    'Mandate route unavailable.',
     'Best used when you are ready',
     'Minimum Floor',
     'Recommended Floor',

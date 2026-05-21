@@ -25,8 +25,15 @@ void test('C10 Test B/C: ownership statuses and future owner plans are explicit'
   assert.match(registry.outskirts.currentOwnerFile, /OutskirtsScreenOwner/);
   assert.equal(registry.outskirts.currentRootTestId, 'outskirts-exact-page');
 
-  assert.equal(registry.gateTrial.currentOwnershipStatus, 'legacy-preserved-for-future-cutover');
-  assert.equal(registry.ruins.currentOwnershipStatus, 'legacy-preserved-for-future-cutover');
+  assert.equal(registry.gateTrial.currentOwnershipStatus, 'exact-owner-complete');
+  assert.equal(registry.gateTrial.currentShellMode, 'screen-owned');
+  assert.equal(registry.gateTrial.currentOwnerFile, 'src/features/world/gateTrialExact/GateTrialScreenOwner.tsx');
+  assert.equal(registry.gateTrial.currentRootTestId, 'gate-trial-exact-page');
+
+  assert.equal(registry.ruins.currentOwnershipStatus, 'exact-owner-complete');
+  assert.equal(registry.ruins.currentShellMode, 'screen-owned');
+  assert.equal(registry.ruins.currentOwnerFile, 'src/features/world/ruinsExact/RuinsScreenOwner.tsx');
+  assert.equal(registry.ruins.currentRootTestId, 'ruins-exact-page');
 
   assert.equal(registry.gateTrial.futureOwnerName, 'GateTrialScreenOwner');
   assert.equal(registry.gateTrial.futureExactScreenName, 'GateTrialExactScreen');
@@ -86,17 +93,17 @@ void test('C10 Test E/F: module visual identities are distinct and borrowing rul
   assert.equal(ruins.visualIdentity.forbiddenVisualBorrowing.some((line) => /single boss threshold/i.test(line)), true);
 });
 
-void test('C10 Test G/H/I/J: runtime ownership unchanged and no premature Gate/Ruins exact rendering ids', async () => {
+void test('C10 Test G/H/I/J: runtime ownership records Gate/Ruins exact cutover and wrapper handoff', async () => {
   const modalEntry = await readFile('src/systems/ui/world/worldBuildingModalEntrySurface.ts', 'utf8');
   assert.match(modalEntry, /case 'outskirts':[\s\S]*backgroundVariant = 'outskirts-exact'/);
   assert.match(modalEntry, /case 'outskirts':[\s\S]*shellFamily = 'outskirts-scenic'/);
   assert.match(modalEntry, /case 'outskirts':[\s\S]*shellMode = 'screen-owned'/);
-  assert.match(modalEntry, /case 'gateTrial':[\s\S]*backgroundVariant = 'inside-dungeon'/);
-  assert.match(modalEntry, /case 'gateTrial':[\s\S]*shellFamily = 'combat-path'/);
-  assert.match(modalEntry, /case 'gateTrial':[\s\S]*shellMode = 'close-only'/);
-  assert.match(modalEntry, /case 'ruins':[\s\S]*backgroundVariant = 'inside-dungeon'/);
-  assert.match(modalEntry, /case 'ruins':[\s\S]*shellFamily = 'combat-path'/);
-  assert.match(modalEntry, /case 'ruins':[\s\S]*shellMode = 'close-only'/);
+  assert.match(modalEntry, /case 'gateTrial':[\s\S]*backgroundVariant = 'gate-trial-exact'/);
+  assert.match(modalEntry, /case 'gateTrial':[\s\S]*shellFamily = 'gate-trial-scenic'/);
+  assert.match(modalEntry, /case 'gateTrial':[\s\S]*shellMode = 'screen-owned'/);
+  assert.match(modalEntry, /case 'ruins':[\s\S]*backgroundVariant = 'ruins-exact'/);
+  assert.match(modalEntry, /case 'ruins':[\s\S]*shellFamily = 'ruins-scenic'/);
+  assert.match(modalEntry, /case 'ruins':[\s\S]*shellMode = 'screen-owned'/);
 
   for (const existsPath of [
     'src/components/screens/world/buildings/GateTrialBuildingPanel.tsx',
@@ -114,6 +121,13 @@ void test('C10 Test G/H/I/J: runtime ownership unchanged and no premature Gate/R
 
   const gatePanel = await readFile('src/components/screens/world/buildings/GateTrialBuildingPanel.tsx', 'utf8');
   const ruinsPanel = await readFile('src/components/screens/world/buildings/RuinsBuildingPanel.tsx', 'utf8');
+  const worldModal = await readFile('src/components/modals/WorldBuildingModal.tsx', 'utf8');
+  assert.match(worldModal, /<GateTrialScreenOwner[\s\S]*forceFixture=\{storeModalIntent\?\.gateTrialExactMode === 'fixture'\}/);
+  assert.match(gatePanel, /GateTrialBuildingPanel/);
+  assert.match(gatePanel, /GateTrialWorldLayout/);
+  assert.match(ruinsPanel, /RuinsScreenOwner/);
+  assert.match(ruinsPanel, /forceFixture=\{forceFixture\}/);
+
   for (const source of [gatePanel, ruinsPanel]) {
     for (const forbidden of [
       'features/world/outskirts',
@@ -129,12 +143,6 @@ void test('C10 Test G/H/I/J: runtime ownership unchanged and no premature Gate/R
       'OutskirtsActiveChainBadge',
       'outskirtsExactPage',
       'outskirtsCombatTheater',
-      'gate-trial-exact-page',
-      'gate-trial-combat-theater',
-      'gate-trial-combat-result-overlay',
-      'ruins-exact-page',
-      'ruins-combat-theater',
-      'ruins-combat-result-overlay',
     ]) {
       assert.equal(source.includes(forbidden), false);
     }
@@ -144,12 +152,10 @@ void test('C10 Test G/H/I/J: runtime ownership unchanged and no premature Gate/R
 void test('C10 Test K/L: README and future packet sequences are explicit', async () => {
   const readme = await readFile('src/features/world/combatExactPattern/README.md', 'utf8');
   assert.equal(readme.includes('The shared pattern is ownership and active-state grammar, not identical visual layout.'), true);
-  assert.equal(readme.includes('Gate Trial and Ruins remain legacy-preserved until their own future packet series performs a module-specific cutover.'), true);
+  assert.equal(readme.includes('Gate Trial and Ruins are now screen-owned exact surfaces.'), true);
   assert.equal(readme.includes('Outskirts: open-field'), true);
   assert.equal(readme.includes('Gate Trial: ritual-threshold'), true);
   assert.equal(readme.includes('Ruins: sealed-ruin'), true);
-  assert.equal(readme.includes('C10 does not migrate Gate Trial.'), true);
-  assert.equal(readme.includes('C10 does not migrate Ruins.'), true);
   assert.equal(readme.includes('C10 does not refactor Outskirts.'), true);
 
   const gate = WORLD_COMBAT_EXACT_PATTERN_REGISTRY.gateTrial.futurePacketSequence.join(' ');

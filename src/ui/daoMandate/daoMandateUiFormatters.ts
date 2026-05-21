@@ -21,6 +21,14 @@ export interface DaoMandateRouteButtonViewModel {
   ariaLabel: string;
 }
 
+const PLAYER_SAFE_ROUTE_UNAVAILABLE = 'This route cannot be opened from here yet.';
+const UNSAFE_ROUTE_REASON_PATTERN = /owner not wired|not wired|debug|adapter|placeholder|stub|mock|route target unavailable|no route target/i;
+
+function sanitizeRouteReason(reason: string | null | undefined): string | null {
+  if (!reason) return null;
+  return UNSAFE_ROUTE_REASON_PATTERN.test(reason) ? PLAYER_SAFE_ROUTE_UNAVAILABLE : reason;
+}
+
 export function getDaoMandateToneIconId(tone: DaoMandateTone): IconId {
   switch (tone) {
     case 'success':
@@ -140,7 +148,7 @@ function resolveRouteTarget(value: DaoMandateRoute | DaoMandateRouteTarget | nul
 
 export function describeDaoRouteTarget(value: DaoMandateRoute | DaoMandateRouteTarget | null): string {
   const target = resolveRouteTarget(value);
-  if (!target) return 'No route target';
+  if (!target) return PLAYER_SAFE_ROUTE_UNAVAILABLE;
 
   switch (target.kind) {
     case 'tab':
@@ -158,10 +166,10 @@ export function getDaoRouteDisabledReason(
   route: DaoMandateRoute | null,
   explicitReason?: string | null,
 ): string | null {
-  if (explicitReason) return explicitReason;
+  if (explicitReason) return sanitizeRouteReason(explicitReason);
   if (!route) return 'No route is available.';
-  if (route.blocked) return route.blockedReason ?? 'This route is currently blocked.';
-  if (!route.target) return 'Route target unavailable.';
+  if (route.blocked) return sanitizeRouteReason(route.blockedReason) ?? 'This route is currently blocked.';
+  if (!route.target) return PLAYER_SAFE_ROUTE_UNAVAILABLE;
   return null;
 }
 
@@ -242,7 +250,7 @@ export function getDaoRouteButtonViewModel(args: {
   }
 
   if (!route.target) {
-    const reason = routeReason ?? 'Route target unavailable.';
+    const reason = routeReason ?? PLAYER_SAFE_ROUTE_UNAVAILABLE;
     return {
       kind: 'no-target',
       enabled: false,

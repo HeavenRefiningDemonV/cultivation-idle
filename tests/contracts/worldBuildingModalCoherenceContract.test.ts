@@ -29,6 +29,7 @@ test('world building modal keeps centralized entry surface model and explicit li
     assert.match(modalSource, new RegExp(`case '${moduleKey}'\\s*:`));
   });
 
-  assert.match(entrySurfaceSource, /case 'apothecary':\s+case 'alchemy':\s+backgroundVariant = 'apothecary'/s);
+  assert.match(entrySurfaceSource, /case 'apothecary':\s+case 'alchemy':\s+backgroundVariant = 'apothecary-exact'/s);
+  assert.match(entrySurfaceSource, /case 'apothecary':[\s\S]*shellFamily = 'apothecary-scenic';[\s\S]*shellMode = 'screen-owned';/);
   assert.match(modalSource, /default:\s+content = isCombatModule\(buildingKey\)\s+\? null/s);
 });

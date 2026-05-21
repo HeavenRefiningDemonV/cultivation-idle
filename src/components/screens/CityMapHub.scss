@@ -83,6 +83,16 @@
     0 9px 16px rgba(28, 23, 16, 0.24);
 }
 
+.cityMapHubHotspot:focus-visible {
+  outline: 2px solid var(--paper-focus-ring, rgba(185, 127, 50, 0.9));
+  outline-offset: 3px;
+  border-color: rgba(120, 72, 33, 0.7);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 250, 235, 0.6),
+    0 0 0 3px rgba(255, 244, 205, 0.32),
+    0 9px 16px rgba(28, 23, 16, 0.24);
+}
+
 .cityMapHubHotspot--active {
   border-color: rgba(139, 48, 40, 0.66);
   background:
@@ -150,6 +160,20 @@
   letter-spacing: 0;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.cityMapHubMap[data-reduced-motion='1'] .cityMapHubHotspot,
+.cityMapHubMap[data-reduced-motion='1'] .cityMapHubHotspot:hover {
+  transform: translate(-50%, -50%);
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cityMapHubHotspot,
+  .cityMapHubHotspot:hover {
+    transform: translate(-50%, -50%);
+    transition: none;
+  }
 }
 
 .cityMapHubSrOnly {

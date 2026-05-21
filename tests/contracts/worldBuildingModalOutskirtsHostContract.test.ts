@@ -21,9 +21,9 @@ void test('WorldBuildingModal Outskirts host uses stretch screen-owned sizing', 
   assert.match(scss, /\.worldBuildingBody--outskirts-exact,[\s\S]*\.worldBuildingBody--outskirts-scenic,[\s\S]*\.worldBuildingBody--screen-owned\s*\{[\s\S]*height:\s*100%;[\s\S]*min-height:\s*0;[\s\S]*overflow:\s*hidden;/);
 });
 
-void test('World routing stays World -> WorldBuildingModal -> OutskirtsBuildingPanel', async () => {
+void test('World routing keeps exact owners behind the WorldBuildingModal host', async () => {
   const source = await fs.readFile('src/components/modals/WorldBuildingModal.tsx', 'utf8');
   assert.match(source, /case 'outskirts':\s*content = <OutskirtsBuildingPanel cityId=\{storeCityId\} \/>/);
-  assert.match(source, /case 'gateTrial':\s*content = <GateTrialBuildingPanel cityId=\{storeCityId\} \/>/);
-  assert.match(source, /case 'ruins':\s*content = <RuinsBuildingPanel cityId=\{storeCityId\} \/>/);
+  assert.match(source, /case 'gateTrial':[\s\S]*<GateTrialScreenOwner[\s\S]*cityId=\{storeCityId\}/);
+  assert.match(source, /case 'ruins':[\s\S]*<RuinsBuildingPanel cityId=\{storeCityId\}/);
 });

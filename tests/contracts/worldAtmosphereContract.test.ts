@@ -7,17 +7,17 @@ function read(relPath: string): string {
   return readFileSync(resolve(process.cwd(), relPath), 'utf8');
 }
 
-test('WorldScreen keeps atmosphere optional and subordinate to map-owned DOM command surfaces', () => {
+test('WorldScreen keeps map-owned DOM command surfaces layered under overlay guidance', () => {
   const worldScreen = read('src/components/screens/WorldScreen.tsx');
   const worldStyles = read('src/components/screens/WorldScreen.scss');
 
-  assert.match(worldScreen, /<WorldFxScene/);
   assert.match(worldScreen, /<CityMapHub/);
-  assert.match(worldScreen, /<RunCompass surface=\{runCompass\.full\}/);
-  assert.match(worldScreen, /worldScreenHubAtmosphere/);
-  assert.match(worldStyles, /pointer-events: none;/);
-  assert.match(worldStyles, /\.worldScreenHubAtmosphere \{[\s\S]*z-index: 1;/);
-  assert.match(worldStyles, /\.worldScreenHubPanel > \* \{[\s\S]*z-index: 2;/);
+  assert.match(worldScreen, /<WorldOverlayRibbon/);
+  assert.match(worldScreen, /<WorldOverlayInspector/);
+  assert.match(worldScreen, /buildWorldMandateRoutingLensSurface/);
+  assert.match(worldStyles, /\.worldScreenMapLayer \{[\s\S]*z-index: 10;/);
+  assert.match(worldStyles, /\.worldScreenRibbonLayer \{[\s\S]*z-index: 30;[\s\S]*pointer-events: none;/);
+  assert.match(worldStyles, /\.worldScreenInspectorLayer \{[\s\S]*z-index: 40;[\s\S]*pointer-events: none;/);
 });
 
 test('World atmosphere honors quality and reduced-motion fallback semantics', () => {
@@ -29,6 +29,6 @@ test('World atmosphere honors quality and reduced-motion fallback semantics', ()
   assert.match(worldFxScene, /if \(prefersReducedMotion \|\| effectiveQuality === 'reducedMotion'\) return 0/);
   assert.match(cityMapHub, /data-atmosphere-quality=\{atmosphereQuality\}/);
   assert.match(cityMapHub, /data-reduced-motion=\{prefersReducedMotion \? '1' : '0'\}/);
-  assert.match(cityMapHub, /cityMapHubHotspotGlint--active/);
-  assert.match(cityMapHub, /cityMapHubHotspotGlint--recommended/);
+  assert.match(cityMapHub, /isGlinting \? 'cityMapHubHotspot--glint'/);
+  assert.match(cityMapHub, /isRecommended \? 'cityMapHubHotspot--recommended'/);
 });

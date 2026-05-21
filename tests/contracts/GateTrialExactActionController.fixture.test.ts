@@ -105,7 +105,7 @@ void test('Gate Trial Exact G8 safety net action uses RewardService and markBypa
   }
 });
 
-void test('Gate Trial Exact G8 routes top fixes and tactical cells to existing systems only', () => {
+void test('Gate Trial Exact G8 routes Gate Corrections and tactical cells to existing systems only', () => {
   const source = readFileSync('src/features/world/gateTrialExact/useGateTrialExactActionController.ts', 'utf8');
 
   for (const required of [

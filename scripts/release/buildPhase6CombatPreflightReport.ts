@@ -168,7 +168,7 @@ export function buildPhase6CombatPreflightReport(rootDir: string): PreflightRepo
       sidePanelTruthSurfaces: ['GateTrialAttemptCluster', 'GateTrialReadinessCard', 'GateTrialChecklist (minimum/recommended)', 'GateTrialSafetyNetCard', 'GateTrialTopFixes/PostFailureDiagnosisPanel'],
       primaryCta: 'Attempt cluster primary action (Challenge / Break Through), optional Stop / Buy Safety Net',
       trackedBountyLine: 'No tracked bounty line in gate panel',
-      aiPostureHint: 'Indirect via top fixes and combat options section; no dedicated posture hint row',
+      aiPostureHint: 'Indirect via Gate Corrections and combat options section; no dedicated posture hint row',
       deterministicAnchorVisibility: 'Gate reward label shown in readiness card',
       pityVisibility: 'No pity system in gate panel',
       minimumChecklistVisibility: 'Visible in GateTrialChecklist "Minimum Floor"',
@@ -323,7 +323,7 @@ export function buildPhase6CombatPreflightReport(rootDir: string): PreflightRepo
     mustPreserve: {
       outskirts: ['HP bars + active enemy in interaction state', 'Outskirts role/best-used/boundary copy lines', 'Tracked bounty and AI hint affordances'],
       ruins: ['Targeted Materials card keeps lead-material + anchor + pity truth set', 'Top strip + route strip + summary dock preserve run-state and route context', 'Gold-secondary boundary framing remains explicit in right-card footer'],
-      'gate-trial': ['Readiness card + minimum/recommended checklists', 'Fail-safe progress and support reserve lines', 'Post-failure diagnosis + top fixes integration'],
+      'gate-trial': ['Readiness card + minimum/recommended checklists', 'Fail-safe progress and support reserve lines', 'Post-failure diagnosis + Gate Corrections integration'],
     },
     screenshotCoverage,
     ownerFileMatrix: Object.entries({

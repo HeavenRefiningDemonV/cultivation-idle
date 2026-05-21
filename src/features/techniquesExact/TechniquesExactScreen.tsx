@@ -28,8 +28,6 @@ export interface TechniquesExactScreenProps {
   onGoToManualPavilion?: () => void;
   onOpenAdvancedFilters?: () => void;
   onMandateRouteAction?: DaoMandateRouteActionHandler;
-  roleBanner?: unknown;
-  onRoleBannerRoute?: unknown;
 }
 
 const icon = (iconId?: string, size = 18) => (

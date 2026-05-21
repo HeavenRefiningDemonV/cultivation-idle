@@ -104,8 +104,8 @@ export function buildCityRecognitionSurface(args: BuildCityRecognitionSurfaceArg
     title: state === 'gate_challenger' ? 'Gate Challenger' : state === 'realm_successor' ? 'Realm Successor' : 'City Recognition',
     noticeLine: city ? `${city.name} records your current standing as ${state.replace(/_/g, ' ')}.` : 'City recognition unavailable.',
     unlockedBenefits: [],
-    futureBenefits: [{ label: 'Recognition benefits are notice-only in P3 unless an existing runtime sink consumes them.', state: 'future' }],
-    debugNotes: ['P3 keeps recognition as a notice layer.'],
+    futureBenefits: [{ label: 'Future city honors remain quiet until another hall can use them.', state: 'future' }],
+    debugNotes: ['Recognition remains a notice layer.'],
   };
 }
 

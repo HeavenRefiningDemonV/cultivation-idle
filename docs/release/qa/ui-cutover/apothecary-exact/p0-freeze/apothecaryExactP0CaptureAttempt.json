@@ -1,11 +1,11 @@
 {
   "schemaVersion": "apothecary-exact-p0-capture.v1",
-  "generatedAt": "2026-05-08T21:47:16.844Z",
+  "generatedAt": "2026-05-21T12:25:45.215Z",
   "ok": true,
   "browserPath": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
   "htmlPath": "docs\\release\\qa\\ui-cutover\\apothecary-exact\\p0-freeze\\01-fixture.html",
   "screenshotPath": "docs\\release\\qa\\ui-cutover\\apothecary-exact\\p0-freeze\\01-fixture.png",
   "domAuditPath": "docs\\release\\qa\\ui-cutover\\apothecary-exact\\p0-freeze\\01-fixture.dom.json",
-  "stderr": "\r\nDevTools listening on ws://127.0.0.1:43710/devtools/browser/97c0516a-804f-4328-a4a1-12d2b9cbf8f6\r\n",
+  "stderr": "\r\nDevTools listening on ws://127.0.0.1:43275/devtools/browser/0ab4d8f4-0525-48cd-9283-6583bfac6bb3\r\n",
   "stdout": ""
 }

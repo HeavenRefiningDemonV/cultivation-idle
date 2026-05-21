@@ -775,7 +775,7 @@ export function buildLiveRunCompassSurfaceV2(): RunCompassSurfaceV2 | null {
           : moduleRoute({
             id: 'failure-gate-review',
             label: 'Review Gate Trial',
-            detail: 'Review the last gate rejection and apply the top fix.',
+            detail: 'Review the last gate rejection and apply the Mandate correction.',
             cityId: currentCityDef?.id ?? null,
             moduleKey: 'gateTrial',
             source: 'readiness',

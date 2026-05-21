@@ -139,7 +139,7 @@ export function useGateTrialExactActionController(
   const isLiveSurface = surface.meta.mode === 'live';
 
   const notifyFixturePreview = useCallback(() => {
-    addNotification('info', 'Gate Trial Exact is in fixture preview mode.');
+    addNotification('info', 'This gate vision cannot start a real attempt from here.');
   }, [addNotification]);
 
   const startGateTrialAttempt = useCallback(() => {
