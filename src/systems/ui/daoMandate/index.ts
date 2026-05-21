@@ -79,6 +79,35 @@ export {
   type DaoMandateFixtureState,
 } from './daoMandateFixtures.js';
 export {
+  buildDaoOmenProjectionV1,
+  type BuildDaoOmenProjectionOptions,
+} from './buildDaoOmenProjectionV1.js';
+export {
+  DAO_OMEN_PROJECTION_FIXTURE_STATES,
+  createDaoOmenProjectionRawFixture,
+  type DaoOmenProjectionFixtureState,
+} from './daoOmenProjectionFixtures.js';
+export type {
+  DaoCurrentOmenV1,
+  DaoOmenDirectRouteReason,
+  DaoOmenKind,
+  DaoOmenLifeStage,
+  DaoOmenProjectionV1,
+  DaoOmenSeverity,
+  DaoOmenTone,
+  DaoPressureBadgeKind,
+  DaoPressureBadgeState,
+  DaoPressureBadgeV1,
+  DaoProofSealKind,
+  DaoProofSealState,
+  DaoProofSealV1,
+  DaoReflectionKind,
+  DaoReflectionV1,
+  DaoSourceThreadOptionV1,
+  DaoSourceThreadRouteVisibility,
+  DaoSourceThreadV1,
+} from './daoOmenProjectionTypes.js';
+export {
   buildDaoMandateCompactSurfaceV1,
   type DaoMandateCompactSurfaceV1,
 } from './daoMandateCompact.js';
