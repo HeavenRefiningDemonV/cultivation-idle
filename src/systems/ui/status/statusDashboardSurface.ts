@@ -29,6 +29,7 @@ import {
   type DaoMandateSurfaceV1,
 } from '../daoMandate/index.js';
 import { buildStatusTroubleshootingSurface, type StatusTroubleshootingSurface } from './statusTroubleshootingSurface.js';
+import { buildStatusV2Surface, type StatusV2Surface } from './statusV2Surface.js';
 import { D, formatNumber, formatPercentFromValue } from '../../../utils/numbers.js';
 
 export type StatusRouteTarget =
@@ -132,6 +133,7 @@ export interface StatusDashboardSurfaceV1 {
     motionMode: DaoMandateEffectiveMotionMode;
     generatedAt: number;
   };
+  statusV2: StatusV2Surface;
   hero: {
     realmName: string;
     stageText: string;
@@ -969,15 +971,35 @@ export function buildStatusDashboardSurface(now = Date.now()): StatusDashboardSu
   const expeditions = buildExpeditionRow();
   const queues = buildQueueRows();
   const foregroundActivity = formatActivity(useActivityStore.getState().active, currentCityId, primaryAction);
-
-  void now;
+  const currentWork: StatusCurrentWorkSurface = {
+    foregroundActivity,
+    activeCombat,
+    trackedBounty,
+    expeditions,
+    queues,
+  };
+  const metrics = buildMetrics();
+  const cityLabel = currentCityId
+    ? contentStore.maps.citiesById[currentCityId]?.name ?? visibleMandate.milestone.currentCityName ?? currentCityId
+    : visibleMandate.milestone.currentCityName ?? 'No city anchored';
+  const generatedAt = now;
+  const statusV2 = buildStatusV2Surface({
+    rawMandate,
+    troubleshooting,
+    metrics,
+    currentWork,
+    cityLabel,
+    contentLoaded: contentStore.isLoaded,
+    generatedAt,
+    debugNotes,
+  });
 
   return {
     meta: {
       rootTestId: 'status-dashboard',
       mode: 'live',
       contentLoaded: contentStore.isLoaded,
-      generatedAt: Date.now(),
+      generatedAt,
       debugNotes,
     },
     mandate: {
@@ -988,6 +1010,7 @@ export function buildStatusDashboardSurface(now = Date.now()): StatusDashboardSu
       motionMode,
       generatedAt: rawMandate.meta.generatedAt,
     },
+    statusV2,
     hero: {
       realmName: troubleshooting.realmName,
       stageText: troubleshooting.stageText,
@@ -1000,7 +1023,7 @@ export function buildStatusDashboardSurface(now = Date.now()): StatusDashboardSu
       biggestShortfallLabel: runCompassV2?.primaryBlocker.label ?? troubleshooting.shortfall.headline,
       primaryAction,
     },
-    metrics: buildMetrics(),
+    metrics,
     milestone: {
       title: nextGoal,
       detail: nextGoalDetail,
@@ -1013,13 +1036,7 @@ export function buildStatusDashboardSurface(now = Date.now()): StatusDashboardSu
         contentLoaded: contentStore.isLoaded,
       }),
     },
-    currentWork: {
-      foregroundActivity,
-      activeCombat,
-      trackedBounty,
-      expeditions,
-      queues,
-    },
+    currentWork,
     readiness: {
       title: 'Gate Proof Readiness',
       stateLabel: troubleshooting.readiness.readinessLabel,

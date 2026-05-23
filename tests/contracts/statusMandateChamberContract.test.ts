@@ -6,89 +6,105 @@ function readSource(path: string): string {
   return readFileSync(path, 'utf8');
 }
 
-const statusScreenSource = readSource('src/components/screens/StatusScreen.tsx');
-const statusSurfaceSource = readSource('src/systems/ui/status/statusDashboardSurface.ts');
-const daoMandateBuilderSource = readSource('src/systems/ui/daoMandate/buildDaoMandateSurfaceV1.ts');
-const cultivationScreenSource = readSource('src/features/cultivation/exact/CultivationExactScreen.tsx');
-const cultivationSurfaceSource = readSource('src/features/cultivation/exact/buildCultivationExactSurface.ts');
-
-function quotedText(source: string): string {
-  return source
-    .match(/(["'`])(?:\\.|(?!\1)[\s\S])*\1/g)?.join('\n') ?? '';
+function readSourceIfExists(path: string): string {
+  try {
+    return readFileSync(path, 'utf8');
+  } catch (error) {
+    if ((error as { code?: string }).code === 'ENOENT') return '';
+    throw error;
+  }
 }
 
-test('P4 Status renders the Dao Mandate Chamber as the first guidance authority', () => {
-  assert.match(statusScreenSource, /MandateChamberHero/);
-  assert.match(statusScreenSource, /RequirementLedger/);
-  assert.match(
-    statusScreenSource,
-    /ReadinessLedger|SourceRouteSlip|BackgroundSupportStrip|SafetyNetPlaque|RecentOmensFeed|ReincarnationCounsel/,
-  );
-  assert.match(statusScreenSource, /performDaoMandateRouteAction/);
+const statusScreenSource = readSource('src/components/screens/StatusScreen.tsx');
+const statusSurfaceSource = readSource('src/systems/ui/status/statusDashboardSurface.ts');
+const statusV2SurfaceSource = readSourceIfExists('src/systems/ui/status/statusV2Surface.ts');
+const statusScss = readSource('src/components/screens/StatusScreen.scss');
 
-  const heroIndex = statusScreenSource.indexOf('<MandateChamberHero');
-  const mainIndex = statusScreenSource.indexOf('<main');
-  assert.ok(heroIndex > -1, 'StatusScreen should render MandateChamberHero');
-  assert.ok(mainIndex === -1 || heroIndex < mainIndex, 'MandateChamberHero should appear before the supporting grid');
-});
+function quotedText(source: string): string {
+  return source.match(/(["'`])(?:\\.|(?!\1)[\s\S])*\1/g)?.join('\n') ?? '';
+}
 
-test('P4 Status removes old public peer-guide vocabulary from the active screen', () => {
-  for (const forbidden of [
-    'Run Compass',
-    'Biggest Shortfall',
-    'Best Next Actions',
-    'Recent Changes',
-    'Mission Requirements',
-    'Missions',
+test('V2-5 Status retires the Mandate Chamber stack from default Status', () => {
+  for (const oldComponent of [
+    'MandateChamberHero',
+    'RequirementLedger',
+    'ReadinessLedger',
+    'SourceRouteSlip',
   ]) {
     assert.equal(
-      statusScreenSource.includes(forbidden),
+      statusScreenSource.includes(oldComponent),
       false,
-      `StatusScreen should not expose old public guide label: ${forbidden}`,
+      `Default Status must not import or render ${oldComponent}.`,
     );
   }
 
-  for (const required of [
-    'Mandate Chamber',
-    'Mandate Ledger',
-    'Primary Route',
-    'Recent Omens',
+  assert.match(statusScreenSource, /status-v2-root/);
+  assert.match(statusScreenSource, /status-v2-grid/);
+  assert.match(statusScreenSource, /status-v2-card-current-omen/);
+});
+
+test('V2-5 Status surface consumes Omen Projection instead of raw route-led fields', () => {
+  assert.match(statusV2SurfaceSource, /DaoOmenProjectionV1/);
+  assert.match(statusV2SurfaceSource, /buildDaoOmenProjectionV1/);
+  assert.match(statusV2SurfaceSource, /currentScreen:\s*'status'/);
+  assert.match(statusSurfaceSource, /statusV2/);
+
+  for (const forbiddenPublicField of [
+    'bestNextActions',
+    'primaryRouteLabel',
+    'biggestShortfallLabel',
   ]) {
-    assert.match(statusScreenSource, new RegExp(required));
+    assert.doesNotMatch(
+      statusScreenSource,
+      new RegExp(forbiddenPublicField),
+      `StatusScreen must not render old public guide field ${forbiddenPublicField}.`,
+    );
   }
 });
 
-test('P4 Status surface carries visible Dao Mandate truth filtered by Guidance Oath', () => {
-  assert.match(statusSurfaceSource, /DaoMandateSurfaceV1/);
-  assert.match(statusSurfaceSource, /buildLiveDaoMandateSurfaceV1/);
-  assert.match(statusSurfaceSource, /currentScreen:\s*'status'/);
-  assert.match(statusSurfaceSource, /pickDaoMandateGuidanceSettings/);
-  assert.match(statusSurfaceSource, /applyDaoMandateVisibility/);
-  assert.match(statusSurfaceSource, /resolveDaoMandateEffectiveMotionMode/);
-  assert.match(statusSurfaceSource, /mandate:\s*\{/);
-  assert.doesNotMatch(statusSurfaceSource, /title:\s*'Mission Requirements'/);
-  assert.doesNotMatch(statusSurfaceSource, /title:\s*'Readiness Overview'/);
-});
-
-test('P4.1 active Mandate surfaces do not expose packet or developer placeholder copy', () => {
-  const publicCopy = [
+test('V2-5 Status public vocabulary is Omen/Proof/Health/Work, not Chamber/Route/Ledger', () => {
+  const publicStatusCopy = [
     quotedText(statusScreenSource),
-    quotedText(statusSurfaceSource),
-    quotedText(daoMandateBuilderSource),
-    quotedText(cultivationScreenSource),
-    quotedText(cultivationSurfaceSource),
+    quotedText(statusV2SurfaceSource),
   ].join('\n');
 
-  assert.doesNotMatch(
-    publicCopy,
-    /Packet\s*\d*|later Mandate packets|not expanded|cut over|TODO|placeholder/i,
-  );
+  for (const forbidden of [
+    'Mandate Chamber',
+    'Mandate Ledger',
+    'Primary Route',
+    'Best Next Action',
+    'Biggest Shortfall',
+    'Run Compass',
+    'Requirement Ledger',
+    'Readiness Ledger',
+    'Source Route',
+    'Source Map',
+    'Guidance Oath',
+    'Open Apothecary',
+    'Open Forge',
+    'Tune Techniques',
+    'Cultivate Qi',
+    'Mandate points elsewhere',
+  ]) {
+    assert.equal(publicStatusCopy.includes(forbidden), false, `Forbidden Status V2 copy leaked: ${forbidden}`);
+  }
+
+  for (const required of [
+    'Current Omen',
+    'Gate Proof',
+    'Life Identity',
+    'Preparation Health',
+    'Current Work',
+    'Recent Omens',
+  ]) {
+    assert.equal(publicStatusCopy.includes(required), true, `Status V2 should expose ${required}.`);
+  }
 });
 
-test('P4.1 Status hides empty background support instead of showing it by profile alone', () => {
-  assert.match(statusScreenSource, /hasMeaningfulBackgroundSupport/);
-  assert.doesNotMatch(statusScreenSource, /profile\s*!==\s*'sealed'\s*\|\|/);
-  assert.match(statusScreenSource, /backgroundPlan\.routes\.length\s*>\s*0/);
-  assert.match(statusScreenSource, /backgroundPlan\.idleSlotCount/);
-  assert.match(statusScreenSource, /backgroundPlan\.offlineProjectionLabel/);
+test('V2-5 Status details are drawer-based, not permanent ledger/source tables', () => {
+  assert.match(statusScreenSource, /statusV2DrawerLayer/);
+  assert.match(statusScreenSource, /SourceThreadDrawer/);
+  assert.match(statusScreenSource, /ReflectionPlaque/);
+  assert.match(statusScss, /\.statusV2DrawerLayer/);
+  assert.doesNotMatch(statusScss, /statusMandateChamber__primaryColumn|daoRequirementLedger|daoReadinessLedger|daoSourceRouteSlip/);
 });

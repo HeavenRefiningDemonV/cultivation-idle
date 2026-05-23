@@ -8,6 +8,53 @@ import {
   type StatusDashboardSurfaceV1,
 } from '../../src/systems/ui/status/statusDashboardSurface.js';
 import { useActivityStore } from '../../src/stores/activityStore.js';
+import { useTrialStore } from '../../src/stores/trialStore.js';
+
+type RuntimeStatusV2Surface = {
+  meta: {
+    rootTestId: string;
+  };
+  projection: {
+    projectionVersion: number;
+    currentOmen: {
+      title: string;
+      detail: string;
+      allowDirectRoute: boolean;
+      route?: unknown;
+    };
+    proofSeals: unknown[];
+    pressureBadges: unknown[];
+    recentOmens: unknown[];
+    reflections: unknown[];
+    sourceThreads: unknown[];
+  };
+  hero: {
+    realmName: string;
+    stageText: string;
+    pathLabel: string;
+    heartLawLabel: string;
+    spiritRootLabel: string;
+    cityLabel: string;
+  };
+  metrics: unknown[];
+  cards: {
+    currentOmen: { title: string };
+    gateProof: { title: string; seals: unknown[] };
+    lifeIdentity: { title: string; rows: unknown[] };
+    preparationHealth: { title: string; badges: unknown[] };
+    currentWork: { title: string; rows: Array<{ label: string; detail: string }> };
+    recentOmens: { title: string; rows: unknown[]; reflections: unknown[] };
+  };
+  drawers: {
+    proofDetails: unknown[];
+    sourceThreads: unknown[];
+    reflections: unknown[];
+  };
+};
+
+type SurfaceWithStatusV2 = StatusDashboardSurfaceV1 & {
+  statusV2?: RuntimeStatusV2Surface;
+};
 
 const FORBIDDEN_FILLER = [
   'Waiting',
@@ -38,6 +85,34 @@ function assertNoFiller(surface: StatusDashboardSurfaceV1) {
   }
 }
 
+function assertNoForbiddenStatusV2Copy(statusV2: RuntimeStatusV2Surface) {
+  const text = flattenText({
+    meta: statusV2.meta,
+    hero: statusV2.hero,
+    metrics: statusV2.metrics,
+    cards: statusV2.cards,
+  });
+  for (const forbidden of [
+    'Primary Route',
+    'Best Next Action',
+    'Biggest Shortfall',
+    'Run Compass',
+    'Guidance Oath',
+    'Open Apothecary',
+    'Open Forge',
+    'Tune Techniques',
+    'Raise Forge Floor',
+    'Cultivate Qi',
+    'Mandate points elsewhere',
+  ]) {
+    assert.equal(
+      text.some((entry) => entry.includes(forbidden)),
+      false,
+      `Status V2 surface must not expose forbidden copy: ${forbidden}`,
+    );
+  }
+}
+
 function read(relPath: string): string {
   return readFileSync(resolve(process.cwd(), relPath), 'utf8');
 }
@@ -59,6 +134,63 @@ test('status dashboard surface exposes live current work and no filler rows', ()
   assertNoFiller(trialSurface);
 
   useActivityStore.getState().hardResetActivity();
+});
+
+test('status dashboard surface includes Status V2 projection, cards, and bounded first-layer rows', () => {
+  const surface = buildStatusDashboardSurface() as SurfaceWithStatusV2;
+  const statusV2 = surface.statusV2;
+
+  assert.ok(statusV2, 'buildStatusDashboardSurface should expose a Status V2 section.');
+  assert.equal(statusV2.meta.rootTestId, 'status-v2-root');
+  assert.equal(statusV2.projection.projectionVersion, 1);
+  assert.ok(statusV2.projection.currentOmen.title.length > 0);
+  assert.ok(statusV2.projection.currentOmen.detail.length <= 160);
+  assert.equal(statusV2.projection.proofSeals.length <= 4, true);
+  assert.equal(statusV2.projection.pressureBadges.length <= 4, true);
+  assert.equal(statusV2.projection.recentOmens.length <= 3, true);
+
+  assert.ok(statusV2.hero.realmName.length > 0);
+  assert.ok(statusV2.hero.stageText.length > 0);
+  assert.ok(statusV2.hero.pathLabel.length > 0);
+  assert.ok(statusV2.hero.heartLawLabel.length > 0);
+  assert.ok(statusV2.hero.spiritRootLabel.length > 0);
+  assert.ok(statusV2.hero.cityLabel.length > 0);
+  assert.ok(statusV2.metrics.length >= 4);
+
+  assert.equal(statusV2.cards.currentOmen.title, 'Current Omen');
+  assert.equal(statusV2.cards.gateProof.title, 'Gate Proof');
+  assert.equal(statusV2.cards.lifeIdentity.title, 'Life Identity');
+  assert.equal(statusV2.cards.preparationHealth.title, 'Preparation Health');
+  assert.equal(statusV2.cards.currentWork.title, 'Current Work');
+  assert.equal(statusV2.cards.recentOmens.title, 'Recent Omens');
+  assert.equal(statusV2.cards.gateProof.seals.length <= 4, true);
+  assert.equal(statusV2.cards.preparationHealth.badges.length <= 4, true);
+  assert.equal(statusV2.cards.lifeIdentity.rows.length <= 6, true);
+  assert.equal(statusV2.cards.currentWork.rows.length <= 4, true);
+  assert.equal(statusV2.cards.recentOmens.rows.length <= 3, true);
+
+  assert.deepEqual(statusV2.drawers.proofDetails, statusV2.projection.proofSeals);
+  assert.deepEqual(statusV2.drawers.sourceThreads, statusV2.projection.sourceThreads);
+  assert.deepEqual(statusV2.drawers.reflections, statusV2.projection.reflections);
+
+  if (!statusV2.projection.currentOmen.allowDirectRoute) {
+    assert.equal(statusV2.projection.currentOmen.route, undefined);
+  }
+
+  assertNoForbiddenStatusV2Copy(statusV2);
+});
+
+test('status dashboard surface reads trial progress without creating store entries', () => {
+  useTrialStore.getState().hardResetTrials();
+  assert.deepEqual(useTrialStore.getState().progressByTrialId, {});
+
+  buildStatusDashboardSurface();
+
+  assert.deepEqual(
+    useTrialStore.getState().progressByTrialId,
+    {},
+    'Status display builders should not initialize TrialStore progress during render.',
+  );
 });
 
 test('status dashboard milestone and requirement rows are typed, routeable, and not mockup rails', () => {

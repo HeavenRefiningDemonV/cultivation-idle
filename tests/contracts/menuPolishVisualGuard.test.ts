@@ -34,8 +34,10 @@ test('Status desktop surface uses broad diagnostic width instead of a narrow doc
   const scss = readRepoFile('src/components/screens/StatusScreen.scss');
 
   assert.doesNotMatch(scss, /max-width:\s*1240px/);
-  assert.match(scss, /min\(1760px,\s*calc\(100vw - 56px\)\)/);
-  assert.match(scss, /statusActionStrip::before/);
+  assert.match(scss, /min\(1900px,\s*calc\(100vw - clamp\(28px,\s*3\.5vw,\s*72px\)\)\)/);
+  assert.match(scss, /\.statusV2Canvas/);
+  assert.match(scss, /\.statusV2Grid/);
+  assert.doesNotMatch(scss, /statusActionStrip::before/);
 });
 
 test('World map labels use parchment seal treatment instead of raw green glow chips', () => {

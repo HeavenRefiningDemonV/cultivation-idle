@@ -5,7 +5,7 @@ import { useGameStore } from '../../../stores/gameStore.js';
 import { useInventoryStore } from '../../../stores/inventoryStore.js';
 import { useMedicinePouchStore } from '../../../stores/medicinePouchStore.js';
 import { usePrestigeStore } from '../../../stores/prestigeStore.js';
-import { useTrialStore } from '../../../stores/trialStore.js';
+import { normalizeTrialProgress, useTrialStore } from '../../../stores/trialStore.js';
 import { useUIStore } from '../../../stores/uiStore.js';
 import { formatNumber, formatPercentFromValue } from '../../../utils/numbers.js';
 import { getAffinityStatus } from '../../heartLaw/heartLawLogic.js';
@@ -196,6 +196,10 @@ export function buildStatusTroubleshootingSurface(): StatusTroubleshootingSurfac
   const support = buildSupportEconomyReadModelFromState({ content, currencies: inventory.currencies });
   const currentGateTrialId = getCurrentGateTrialId();
   const gateTrial = currentGateTrialId ? content?.trials.find((trial) => trial.id === currentGateTrialId) ?? null : null;
+  const trialState = useTrialStore.getState();
+  const currentGateProgress = currentGateTrialId
+    ? normalizeTrialProgress(trialState.progressByTrialId[currentGateTrialId] ?? null)
+    : null;
   const heartLaw = cultivation.selectedHeartLawId
     ? content?.heart_laws.find((entry) => entry.id === cultivation.selectedHeartLawId) ?? null
     : null;
@@ -206,7 +210,7 @@ export function buildStatusTroubleshootingSurface(): StatusTroubleshootingSurfac
   const lifecycle = getTrialLifecycleSnapshot({
     content,
     trial: gateTrial,
-    progress: currentGateTrialId ? useTrialStore.getState().getProgress(currentGateTrialId) : null,
+    progress: currentGateProgress,
     realm: game.realm,
     qi: game.qi,
     breakthroughRequirement: game.getBreakthroughRequirement(),
@@ -215,11 +219,10 @@ export function buildStatusTroubleshootingSurface(): StatusTroubleshootingSurfac
 
   let diagnosis: FailureDiagnosis | null = null;
   if (currentGateTrialId && readiness) {
-    const trialProgress = useTrialStore.getState().getProgress(currentGateTrialId);
-    if (trialProgress.lastAttemptSummary) {
+    if (currentGateProgress?.lastAttemptSummary) {
       diagnosis = diagnoseTrialFailure({
         trialId: currentGateTrialId,
-        summary: trialProgress.lastAttemptSummary,
+        summary: currentGateProgress.lastAttemptSummary,
         readiness,
         build,
         bypassAvailable: lifecycle.failSafe.canPurchase,

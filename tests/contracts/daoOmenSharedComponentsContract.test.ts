@@ -134,7 +134,7 @@ test('V2-4 SCSS defines shared Dao tokens, focus-visible rules, and reduced-moti
   assert.match(css, /\.daoReflectionPlaque/, 'ReflectionPlaque selectors should be styled.');
 });
 
-test('V2-4 production screens do not import the new shared Omen components yet', () => {
+test('V2-4 shared Omen components are only consumed by the V2-5 Status cutover path', () => {
   const productionFiles = [
     ...walkSourceFiles(path.join(repoRoot, 'src', 'components')),
     ...walkSourceFiles(path.join(repoRoot, 'src', 'features')),
@@ -149,12 +149,15 @@ test('V2-4 production screens do not import the new shared Omen components yet',
   ] as const;
 
   for (const filePath of productionFiles) {
+    const relativePath = path.relative(repoRoot, filePath);
+    if (relativePath === path.join('src', 'components', 'screens', 'StatusScreen.tsx')) continue;
+
     const source = readFileSync(filePath, 'utf8');
     for (const name of bannedNames) {
       assert.equal(
         source.includes(name),
         false,
-        `${path.relative(repoRoot, filePath)} should not import/use ${name} during V2-4.`,
+        `${relativePath} should not import/use ${name} outside the V2-5 Status cutover.`,
       );
     }
   }

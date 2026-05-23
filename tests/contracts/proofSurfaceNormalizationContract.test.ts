@@ -48,10 +48,12 @@ void test('world, cultivate, status, prestige remain legally wired to frozen she
   assert.match(cultivateScreen, /data-region="left-milestone-seals"/);
   assert.match(cultivateScreen, /data-region="right-doctrine-rail"/);
 
-  assert.match(status, /<ScreenFxStage/);
-  assert.match(status, /<FxStagePortal/);
-  assert.match(status, /<RunCompass/);
-  assert.match(status, /<StatusSummaryHeader/);
+  assert.match(status, /statusV2Root/);
+  assert.match(status, /OmenSeal/);
+  assert.match(status, /ProofSealRow/);
+  assert.match(status, /PressureBadgeRow/);
+  assert.doesNotMatch(status, /<RunCompass/);
+  assert.doesNotMatch(status, /<StatusSummaryHeader/);
 
   assert.match(prestige, /<PrestigeLedgerScreenOwner/);
   assert.match(prestigeOwner, /PrestigeLedgerExactScreen/);

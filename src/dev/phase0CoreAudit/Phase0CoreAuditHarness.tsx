@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { LifeStartWizardModal } from '../../components/modals/LifeStartWizardModal.js';
+import { STORY_CUTSCENES } from '../../features/story/storyData.js';
+import { useStoryStore } from '../../features/story/storyStore.js';
 import { useGameStore } from '../../stores/gameStore.js';
 import { useHeartLawStore } from '../../stores/heartLawStore.js';
 import { useUIStore, type WorldBuildingKey } from '../../stores/uiStore.js';
@@ -20,6 +22,7 @@ type AuditSlot = (typeof PHASE0_CORE_CAPTURE_SLOT_BY_FILE)[Phase0CoreCaptureSlot
 const DEFAULT_SURFACE: Phase0CoreSurfaceId = 'path-life-start';
 const DEFAULT_SLOT: AuditSlot = 'base';
 const DEFAULT_CITY_ID = 'city_pinewind_hamlet';
+const DEFAULT_HEART_LAW_ID = 'heart_quiet_breath_method';
 
 function parseSurfaceFromQuery(): Phase0CoreSurfaceId {
   const surface = new URLSearchParams(window.location.search).get('surface');
@@ -60,6 +63,17 @@ function setQuery(next: { surface?: Phase0CoreSurfaceId; fx?: AuditFxMode; slot?
 }
 
 function sanitizeUiOverlays() {
+  useStoryStore.setState((state) => ({
+    ...state,
+    activeCutsceneId: null,
+    queuedCutsceneIds: [],
+    slideIndex: 0,
+    isReplay: false,
+    seenFlags: {
+      ...state.seenFlags,
+      ...Object.fromEntries(Object.values(STORY_CUTSCENES).map((cutscene) => [cutscene.storyFlag, true])),
+    },
+  }));
   useUIStore.setState((state) => ({
     ...state,
     showOfflineProgressModal: false,
@@ -111,7 +125,10 @@ function applySurfaceState(surface: Phase0CoreSurfaceId, slot: AuditSlot) {
   }
 
   useGameStore.setState((state) => ({ ...state, selectedPath: 'heaven' }));
-  useHeartLawStore.setState((state) => ({ ...state, selectedHeartLawId: slotIsInteraction ? null : state.selectedHeartLawId }));
+  useHeartLawStore.setState((state) => ({
+    ...state,
+    selectedHeartLawId: slotIsInteraction ? null : state.selectedHeartLawId ?? DEFAULT_HEART_LAW_ID,
+  }));
 
   if (surface === 'cultivation') {
     useUIStore.setState((state) => ({ ...state, activeTab: 'cultivation' }));

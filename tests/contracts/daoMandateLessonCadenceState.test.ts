@@ -133,10 +133,12 @@ test('repeat-until-learned lessons suppress dismissed same trigger and learned c
   );
 });
 
-test('Status Mandate Chamber wires Jade Slip dismiss and learned handlers', () => {
+test('Status V2 retires the persistent Jade Slip wall from default Status', () => {
   const source = readFileSync('src/components/screens/StatusScreen.tsx', 'utf8');
-  assert.match(source, /dismissDaoMandateLesson/);
-  assert.match(source, /markDaoMandateLessonLearned/);
-  assert.match(source, /onDismiss=\{handleJadeSlipDismiss\}/);
-  assert.match(source, /onLearned=\{handleJadeSlipLearned\}/);
+  assert.match(source, /statusV2Root/);
+  assert.doesNotMatch(source, /JadeSlipHelp/);
+  assert.doesNotMatch(source, /dismissDaoMandateLesson/);
+  assert.doesNotMatch(source, /markDaoMandateLessonLearned/);
+  assert.doesNotMatch(source, /handleJadeSlipDismiss/);
+  assert.doesNotMatch(source, /handleJadeSlipLearned/);
 });
