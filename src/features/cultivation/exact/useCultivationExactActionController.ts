@@ -43,27 +43,20 @@ function performActionIfAvailable(action: RunCompassActionLine | null | undefine
   return true;
 }
 
-function collectCommandMandateRoutes(surface: CultivationExactSurfaceV1): DaoMandateRoute[] {
-  const mandate = surface.mandateLens?.surface;
-  if (!mandate) return [];
+function collectCommandOmenRoutes(surface: CultivationExactSurfaceV1): DaoMandateRoute[] {
+  const projection = surface.compactOmen?.projection;
+  if (!projection) return [];
   return [
-    mandate.primaryRoute,
-    ...mandate.secondaryRoutes,
-    ...mandate.backgroundPlan.routes,
-    ...(mandate.safetyNet?.route ? [mandate.safetyNet.route] : []),
-    ...(mandate.prestige?.route ? [mandate.prestige.route] : []),
-    ...mandate.requirementLedger.hardGates.map((row) => row.route).filter((route): route is DaoMandateRoute => Boolean(route)),
-    ...mandate.requirementLedger.readinessFloors.map((row) => row.route).filter((route): route is DaoMandateRoute => Boolean(route)),
-    ...mandate.requirementLedger.supportReserves.map((row) => row.route).filter((route): route is DaoMandateRoute => Boolean(route)),
-    ...mandate.requirementLedger.sourceRoutes.map((row) => row.route).filter((route): route is DaoMandateRoute => Boolean(route)),
-  ];
+    projection.currentOmen.allowDirectRoute ? projection.currentOmen.route : null,
+    ...projection.hardRoutes,
+  ].filter((route): route is DaoMandateRoute => Boolean(route));
 }
 
-function findCommandMandateRoute(
+function findCommandOmenRoute(
   surface: CultivationExactSurfaceV1,
   predicate: (route: DaoMandateRoute) => boolean,
 ): DaoMandateRoute | null {
-  return collectCommandMandateRoutes(surface).find(predicate) ?? null;
+  return collectCommandOmenRoutes(surface).find(predicate) ?? null;
 }
 
 function performMandateRouteIfAvailable(
@@ -145,7 +138,7 @@ export function useCultivationExactActionController(surface: CultivationExactSur
   }, [addNotification, isBreakingThrough]);
 
   const openGateTrial = useCallback((button: CultivationButtonSurface) => {
-    const mandateResult = performMandateRouteIfAvailable(findCommandMandateRoute(
+    const mandateResult = performMandateRouteIfAvailable(findCommandOmenRoute(
       surface,
       (route) => route.target?.kind === 'world_module' && route.target.moduleKey === 'gateTrial',
     ));
@@ -156,7 +149,7 @@ export function useCultivationExactActionController(surface: CultivationExactSur
   }, [addNotification, surface]);
 
   const openPrestige = useCallback((button: CultivationButtonSurface) => {
-    const mandateResult = performMandateRouteIfAvailable(findCommandMandateRoute(
+    const mandateResult = performMandateRouteIfAvailable(findCommandOmenRoute(
       surface,
       (route) => route.target?.kind === 'tab' && route.target.tab === 'prestige',
     ));

@@ -1,0 +1,12 @@
+{
+  "compactOmen": true,
+  "omenSeal": true,
+  "proofSealRow": true,
+  "proofSealCount": 3,
+  "centerAltar": true,
+  "qiRail": true,
+  "commandDeck": true,
+  "breakthroughSeal": true,
+  "reducedMotionClass": true,
+  "forbiddenFound": []
+}

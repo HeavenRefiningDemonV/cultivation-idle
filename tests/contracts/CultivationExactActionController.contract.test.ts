@@ -12,6 +12,8 @@ void test('Cultivation Exact action controller routes gameplay through existing 
     'window.setTimeout',
     '2000',
     'performRunCompassAction(action)',
+    'collectCommandOmenRoutes',
+    'projection.currentOmen.allowDirectRoute',
     "setActiveTab('prestige')",
   ]) {
     assert.equal(source.includes(required), true, `missing action controller contract ${required}`);
@@ -21,6 +23,13 @@ void test('Cultivation Exact action controller routes gameplay through existing 
     'RewardService',
     'grantRewards',
     'useCombatStore',
+    'surface.mandateLens?.surface',
+    'mandate.primaryRoute',
+    'backgroundPlan.routes',
+    'requirementLedger.hardGates',
+    'requirementLedger.readinessFloors',
+    'requirementLedger.supportReserves',
+    'requirementLedger.sourceRoutes',
     '.setState({ qi',
     '.setState({ items',
     'performPrestigeReset',
@@ -29,4 +38,3 @@ void test('Cultivation Exact action controller routes gameplay through existing 
     assert.equal(source.includes(forbidden), false, `controller must not bypass systems with ${forbidden}`);
   }
 });
-

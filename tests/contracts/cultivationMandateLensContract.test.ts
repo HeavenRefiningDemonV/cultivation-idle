@@ -3,12 +3,7 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 import { buildCultivationExactSurfaceFromSnapshots } from '../../src/features/cultivation/exact/buildCultivationExactSurface.js';
-import type {
-  CultivationExactBuildSnapshot,
-  CultivationMandateLensSurface,
-} from '../../src/features/cultivation/exact/cultivationExactTypes.js';
-import { createDaoMandateFixture } from '../../src/systems/ui/daoMandate/daoMandateFixtures.js';
-import type { DaoMandateRoute } from '../../src/systems/ui/daoMandate/index.js';
+import type { CultivationExactBuildSnapshot } from '../../src/features/cultivation/exact/cultivationExactTypes.js';
 
 function readSource(path: string): string {
   return readFileSync(path, 'utf8');
@@ -17,8 +12,8 @@ function readSource(path: string): string {
 const cultivationScreenSource = readSource('src/features/cultivation/exact/CultivationExactScreen.tsx');
 const cultivationSurfaceSource = readSource('src/features/cultivation/exact/buildCultivationExactSurface.ts');
 const cultivationTypesSource = readSource('src/features/cultivation/exact/cultivationExactTypes.ts');
-const cultivationOwnerSource = readSource('src/features/cultivation/exact/CultivationExactScreenOwner.tsx');
 const cultivationControllerSource = readSource('src/features/cultivation/exact/useCultivationExactActionController.ts');
+const defaultViewSource = cultivationScreenSource.split('function CultivationExactDrawerLayer')[0] ?? cultivationScreenSource;
 
 const baseSnapshot = {
   realm: { index: 0, substage: 4, name: 'Qi Condensation' },
@@ -61,123 +56,103 @@ function buildSurface(overrides: Partial<CultivationExactBuildSnapshot> = {}) {
   return buildCultivationExactSurfaceFromSnapshots({
     ...baseSnapshot,
     ...overrides,
-  });
+  }) as any;
 }
 
-function makeMandateLensWithRoute(route: DaoMandateRoute): CultivationMandateLensSurface {
-  const surface = createDaoMandateFixture('attemptable_gate', 'elder');
-  return {
-    surface: {
-      ...surface,
-      primaryRoute: route,
-      secondaryRoutes: [route],
-    },
-    profile: 'elder',
-    motionMode: 'medium',
-    regionLabel: 'Threshold Mandate',
-  };
-}
+test('V2-6 Cultivation retires the default raw Mandate lens without becoming public Run Compass', () => {
+  assert.match(cultivationScreenSource, /OmenSeal/);
+  assert.match(cultivationScreenSource, /ProofSealRow/);
+  assert.match(cultivationScreenSource, /data-region="cultivation-compact-omen"/);
+  assert.match(cultivationScreenSource, /Threshold Omen/);
 
-test('P4 Cultivation renders a compact Dao Mandate threshold lens instead of public Run Compass', () => {
-  assert.match(cultivationScreenSource, /MandateSeal/);
-  assert.match(cultivationScreenSource, /data-region="dao-mandate-threshold-lens"/);
-  assert.match(cultivationScreenSource, /Threshold Mandate/);
-  assert.match(cultivationScreenSource, /Breakthrough Proof/);
-  assert.match(cultivationScreenSource, /RequirementLedger/);
-
-  assert.doesNotMatch(cultivationScreenSource, /aria-label="Run Compass"/);
-  assert.doesNotMatch(cultivationScreenSource, /data-region="run-compass-v2"/);
-  assert.doesNotMatch(cultivationScreenSource, /from ['"][^'"]*RunCompass/);
-  assert.doesNotMatch(cultivationScreenSource, /<RunCompass/);
-  assert.doesNotMatch(cultivationScreenSource, /MandateChamberHero/);
+  for (const forbidden of [
+    '<MandateSeal',
+    '<RequirementLedger',
+    '<SourceRouteSlip',
+    'data-region="dao-mandate-threshold-lens"',
+    'Threshold Mandate',
+    'Breakthrough Proof',
+    'aria-label="Run Compass"',
+    'data-region="run-compass-v2"',
+    '<RunCompass',
+    'MandateChamberHero',
+  ]) {
+    assert.equal(defaultViewSource.includes(forbidden), false, `default Cultivation must not render ${forbidden}`);
+  }
 });
 
-test('P4 Cultivation surface exposes Mandate lens and breakthrough proof ledger from Dao Mandate truth', () => {
-  assert.match(cultivationTypesSource, /mandateLens/);
-  assert.match(cultivationTypesSource, /breakthroughProofLedger/);
-  assert.match(cultivationTypesSource, /DaoMandateSurfaceV1/);
-  assert.match(cultivationTypesSource, /DaoRequirementLedger/);
+test('V2-6 Cultivation surface exposes compact Omen projection, not visible raw Mandate profile density', () => {
+  assert.match(cultivationTypesSource, /compactOmen/);
+  assert.match(cultivationTypesSource, /CultivationCompactOmenSurfaceV1/);
+  assert.match(cultivationTypesSource, /DaoOmenProjectionV1/);
+  assert.doesNotMatch(cultivationTypesSource, /profile:\s*DaoMandateGuidanceProfile/);
+  assert.doesNotMatch(cultivationTypesSource, /mandateLens:\s*CultivationMandateLensSurface/);
 
-  assert.match(cultivationSurfaceSource, /buildLiveDaoMandateSurfaceV1/);
-  assert.match(cultivationSurfaceSource, /currentScreen:\s*'cultivation'/);
-  assert.match(cultivationSurfaceSource, /applyDaoMandateVisibility/);
-  assert.match(cultivationSurfaceSource, /buildCultivationBreakthroughProofLedger/);
-  assert.match(cultivationSurfaceSource, /Qi Reservoir/);
-  assert.match(cultivationSurfaceSource, /Realm Edge/);
-  assert.match(cultivationSurfaceSource, /Gate Proof/);
+  assert.match(cultivationSurfaceSource, /buildDaoOmenProjectionV1/);
+  assert.match(cultivationSurfaceSource, /buildCultivationCompactOmenSurface/);
+  assert.match(cultivationSurfaceSource, /pickCultivationThresholdProofSeals/);
+  assert.match(cultivationSurfaceSource, /Qi Threshold|qi_threshold/);
+  assert.match(cultivationSurfaceSource, /Realm Edge|realm_edge/);
+  assert.match(cultivationSurfaceSource, /Gate Proof|gate_proof/);
 });
 
-test('P4 Cultivation rerenders on Guidance Oath changes and routes through the Dao Mandate adapter', () => {
-  assert.match(cultivationOwnerSource, /guidanceOath/);
-  assert.match(cultivationOwnerSource, /mandateMotionMode/);
-  assert.match(cultivationOwnerSource, /storyMotionMode/);
-  assert.match(cultivationOwnerSource, /onMandateRouteAction=\{actions\.onMandateRouteAction\}/);
-
-  assert.match(cultivationControllerSource, /performDaoMandateRouteAction/);
-  assert.match(cultivationControllerSource, /onMandateRouteAction/);
-});
-
-test('P4.1 normal substage breakthrough proof does not mark Realm Edge as an unmet hard gate', () => {
+test('V2-6 normal substage proof uses compact threshold seals and keeps Break Through sacred', () => {
   const surface = buildSurface();
-  const hardRows = surface.breakthroughProofLedger?.hardGates ?? [];
-  const qiRow = hardRows.find((row) => row.label === 'Qi Reservoir');
-  const realmEdgeRow = hardRows.find((row) => row.label === 'Realm Edge');
+  const proofKinds = surface.compactOmen?.proofSeals.map((seal: any) => seal.kind) ?? [];
 
   assert.equal(surface.meta.activityState, 'breakthrough_ready');
   assert.equal(surface.commandDeck.primary.actionKey, 'breakThrough');
   assert.equal(surface.commandDeck.primary.label, 'Break Through');
-  assert.equal(qiRow?.state, 'met');
-  assert.notEqual(realmEdgeRow?.state, 'unmet');
+  assert.equal(surface.compactOmen?.currentOmen.kind, 'breakthrough_ready');
+  assert.equal(surface.compactOmen?.proofSeals.length, 3);
+  assert.deepEqual(proofKinds, ['realm_edge', 'qi_threshold', 'gate_proof']);
 });
 
-test('P4.1 major realm transition keeps Realm Edge and routes missing Gate Proof to Gate Trial', () => {
-  const gateRoute: DaoMandateRoute = {
-    id: 'test-open-gate-trial',
-    label: 'Open Gate Trial',
-    actionLabel: 'Open Gate Trial',
-    detail: 'Earn the missing gate proof.',
-    destinationLabel: 'Gate Trial',
-    target: { kind: 'world_module', cityId: 'city_pinewind_hamlet', moduleKey: 'gateTrial' },
-    blocked: false,
-    blockedReason: null,
-    expectedDeltaLabel: 'Gate proof can be earned here.',
-    source: 'readiness',
-    priority: 1,
-  };
+test('V2-6 major realm transition keeps Gate Proof compact and legal Gate Trial handoff only', () => {
   const surface = buildCultivationExactSurfaceFromSnapshots({
     ...baseSnapshot,
     realm: { index: 0, substage: 9, name: 'Qi Condensation' },
     requiredGateItemId: 'gate_foundation_pill',
     requiredGateItemName: 'Foundation Pill',
     requiredGateItemCount: 0,
-  }, {
-    mandateLens: makeMandateLensWithRoute(gateRoute),
-  });
-  const hardRows = surface.breakthroughProofLedger?.hardGates ?? [];
-  const realmEdgeRow = hardRows.find((row) => row.label === 'Realm Edge');
-  const gateProofRow = hardRows.find((row) => row.label === 'Gate Proof');
+    runCompassActions: [{
+      id: 'gate',
+      label: 'Challenge the Gate Trial',
+      why: 'Gate proof is missing.',
+      destinationLabel: 'Gate Trial',
+      blocked: false,
+      blockedReason: null,
+      target: { kind: 'world_module', cityId: 'city_pinewind_hamlet', moduleKey: 'gateTrial' },
+    }],
+  }) as any;
+  const gateProofSeal = surface.compactOmen?.proofSeals.find((seal: any) => seal.kind === 'gate_proof');
 
   assert.equal(surface.meta.activityState, 'gate_blocked');
-  assert.equal(realmEdgeRow?.state, 'met');
-  assert.equal(gateProofRow?.state, 'unmet');
-  assert.equal(gateProofRow?.tone, 'warning');
-  assert.equal(gateProofRow?.route?.target?.kind, 'world_module');
+  assert.equal(surface.compactOmen?.currentOmen.kind, 'proof_missing');
+  assert.equal(gateProofSeal?.state, 'unsealed');
+  assert.equal(surface.compactOmen?.allowedDirectRoute?.target?.kind, 'world_module');
   assert.equal(
-    gateProofRow?.route?.target?.kind === 'world_module' ? gateProofRow.route.target.moduleKey : null,
+    surface.compactOmen?.allowedDirectRoute?.target?.kind === 'world_module'
+      ? surface.compactOmen.allowedDirectRoute.target.moduleKey
+      : null,
     'gateTrial',
   );
 });
 
-test('P4.1 Cultivation command routing prefers Dao Mandate routes before Run Compass fallback', () => {
-  assert.match(cultivationControllerSource, /findCommandMandateRoute/);
+test('V2-6 Cultivation command routing uses allowed Omen Projection routes before Run Compass fallback', () => {
+  assert.match(cultivationControllerSource, /findCommandOmenRoute/);
   assert.match(cultivationControllerSource, /performMandateRouteIfAvailable/);
+  assert.doesNotMatch(cultivationControllerSource, /mandate\.primaryRoute/);
+  assert.doesNotMatch(cultivationControllerSource, /mandate\.secondaryRoutes/);
+  assert.doesNotMatch(cultivationControllerSource, /backgroundPlan\.routes/);
+  assert.doesNotMatch(cultivationControllerSource, /requirementLedger\.(hardGates|readinessFloors|supportReserves|sourceRoutes)/);
 
   const gateHandler = cultivationControllerSource.match(/const openGateTrial[\s\S]*?\n  \}, \[/)?.[0] ?? '';
   assert.ok(gateHandler.includes('performMandateRouteIfAvailable'));
   assert.ok(gateHandler.includes('performActionIfAvailable'));
   assert.ok(
     gateHandler.indexOf('performMandateRouteIfAvailable') < gateHandler.indexOf('performActionIfAvailable'),
-    'Gate command should try Dao Mandate route before Run Compass fallback.',
+    'Gate command should try allowed Omen route before Run Compass fallback.',
   );
 
   const prestigeHandler = cultivationControllerSource.match(/const openPrestige[\s\S]*?\n  \}, \[/)?.[0] ?? '';
@@ -185,6 +160,6 @@ test('P4.1 Cultivation command routing prefers Dao Mandate routes before Run Com
   assert.ok(prestigeHandler.includes('performActionIfAvailable'));
   assert.ok(
     prestigeHandler.indexOf('performMandateRouteIfAvailable') < prestigeHandler.indexOf('performActionIfAvailable'),
-    'Prestige command should try Dao Mandate route before Run Compass fallback.',
+    'Prestige command should try allowed Omen route before Run Compass fallback.',
   );
 });

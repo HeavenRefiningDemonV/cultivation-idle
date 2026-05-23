@@ -282,11 +282,16 @@ test('projection builder does not mutate raw surfaces', () => {
   assert.equal(JSON.stringify(raw), before);
 });
 
-test('V2-2 projection remains unconsumed by production screens', () => {
+test('V2 projection production consumers keep direct-route policy bounded', () => {
   const productionSource = [
-    readTextFilesRecursively('src/components'),
-    readTextFilesRecursively('src/features'),
+    readFileSync('src/components/screens/StatusScreen.tsx', 'utf8'),
+    readFileSync('src/systems/ui/status/statusV2Surface.ts', 'utf8'),
+    readFileSync('src/features/cultivation/exact/buildCultivationExactSurface.ts', 'utf8'),
+    readFileSync('src/features/cultivation/exact/useCultivationExactActionController.ts', 'utf8'),
   ].join('\n');
 
-  assert.doesNotMatch(productionSource, /buildDaoOmenProjectionV1|DaoOmenProjectionV1|daoOmenProjection/);
+  assert.match(productionSource, /buildDaoOmenProjectionV1/);
+  assert.match(productionSource, /allowDirectRoute/);
+  assert.doesNotMatch(productionSource, /Open Apothecary|Open Forge|Tune Techniques|Cultivate Qi|Mandate points elsewhere/);
+  assert.doesNotMatch(productionSource, /requirementLedger\.(hardGates|readinessFloors|supportReserves|sourceRoutes)/);
 });

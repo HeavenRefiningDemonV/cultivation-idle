@@ -17,15 +17,16 @@ import { getAffinityStatus } from '../../../systems/heartLaw/heartLawLogic.js';
 import { buildCultivationConsumableReadModel } from '../../../systems/consumables/cultivationConsumableEffects.js';
 import { CULTIVATION_CONSUMABLE_FAMILY_REGISTRY } from '../../../systems/consumables/cultivationConsumableTypes.js';
 import {
-  applyDaoMandateVisibility,
+  buildDaoOmenProjectionV1,
   buildLiveDaoMandateSurfaceV1,
   createDaoMandateFixture,
+  createDaoOmenProjectionRawFixture,
   pickDaoMandateGuidanceSettings,
   resolveDaoMandateEffectiveMotionMode,
   type DaoMandateRoute,
-  type DaoRequirementLedger,
-  type DaoRequirementRow,
-  type DaoRequirementState,
+  type DaoOmenProjectionFixtureState,
+  type DaoOmenProjectionV1,
+  type DaoProofSealV1,
 } from '../../../systems/ui/daoMandate/index.js';
 import { buildLiveRunCompassSurface, buildRunCompassCompactSurface } from '../../../systems/ui/runCompass/index.js';
 import type { RunCompassActionLine } from '../../../systems/ui/runCompass/index.js';
@@ -49,6 +50,7 @@ import {
 import type {
   BuildCultivationExactSurfaceOptions,
   CultivationButtonSurface,
+  CultivationCompactOmenSurfaceV1,
   CultivationDrawerSurface,
   CultivationExactActivityState,
   CultivationExactBuildSnapshot,
@@ -56,7 +58,6 @@ import type {
   CultivationExactFxQuality,
   CultivationExactSurfaceMode,
   CultivationExactSurfaceV1,
-  CultivationMandateLensSurface,
   CultivationRibbonCellSurface,
 } from './cultivationExactTypes.js';
 
@@ -171,234 +172,214 @@ function findPrestigeAction(actions: RunCompassActionLine[]): RunCompassActionLi
   return actions.find((action) => action.target?.kind === 'tab' && action.target.tab === 'prestige' && !action.blocked) ?? null;
 }
 
-function createEmptyProofLedger(): DaoRequirementLedger {
-  return {
-    hardGates: [],
-    readinessFloors: [],
-    supportReserves: [],
-    sourceRoutes: [],
-    optionalOptimizations: [],
-    recentOmens: [],
-  };
-}
-
-function collectMandateRoutes(lens: CultivationMandateLensSurface | null): DaoMandateRoute[] {
-  if (!lens) return [];
-  const surface = lens.surface;
-  return [
-    surface.primaryRoute,
-    ...surface.secondaryRoutes,
-    ...surface.backgroundPlan.routes,
-    ...(surface.safetyNet?.route ? [surface.safetyNet.route] : []),
-    ...(surface.prestige?.route ? [surface.prestige.route] : []),
-    ...surface.requirementLedger.hardGates.map((row) => row.route).filter((route): route is DaoMandateRoute => Boolean(route)),
-    ...surface.requirementLedger.readinessFloors.map((row) => row.route).filter((route): route is DaoMandateRoute => Boolean(route)),
-    ...surface.requirementLedger.supportReserves.map((row) => row.route).filter((route): route is DaoMandateRoute => Boolean(route)),
-    ...surface.requirementLedger.sourceRoutes.map((row) => row.route).filter((route): route is DaoMandateRoute => Boolean(route)),
-    ...surface.sourceMap.flatMap((entry) => [
-      entry.route,
-      ...entry.bestSources.map((source) => source.route),
-      ...entry.fallbackSources.map((source) => source.route),
-    ]).filter((route): route is DaoMandateRoute => Boolean(route)),
-  ];
-}
-
-function findMandateRoute(
-  lens: CultivationMandateLensSurface | null,
-  predicate: (route: DaoMandateRoute) => boolean,
-): DaoMandateRoute | null {
-  return collectMandateRoutes(lens).find(predicate) ?? null;
-}
-
-function rowState(isMet: boolean, unknown = false): DaoRequirementState {
-  if (unknown) return 'unknown';
-  return isMet ? 'met' : 'unmet';
-}
-
-function buildProofRow(
-  args: Omit<DaoRequirementRow, 'source' | 'priority'> & {
-    source?: DaoRequirementRow['source'];
-    priority?: number;
-  },
-): DaoRequirementRow {
-  return {
-    ...args,
-    source: args.source ?? 'progression',
-    priority: args.priority ?? 50,
-  };
-}
-
-function buildCultivationMandateLens(mode: CultivationExactSurfaceMode): CultivationMandateLensSurface {
+function buildCultivationRawOmenSurface(
+  snapshot: CultivationExactBuildSnapshot,
+  mode: CultivationExactSurfaceMode,
+  projectionMode: 'snapshot' | 'live',
+) {
   const uiSettings = useUIStore.getState().settings;
   const guidanceSettings = pickDaoMandateGuidanceSettings(uiSettings);
-  const raw = mode === 'fixture'
-    ? createDaoMandateFixture('cultivating_qi_short', guidanceSettings.guidanceOath)
-    : buildLiveDaoMandateSurfaceV1({
+
+  if (projectionMode === 'live' && mode !== 'fixture') {
+    return buildLiveDaoMandateSurfaceV1({
         currentScreen: 'cultivation',
         guidanceProfile: guidanceSettings.guidanceOath,
       });
-  const visible = applyDaoMandateVisibility(raw, { settings: guidanceSettings });
+  }
+
+  if (mode === 'fixture') {
+    return createDaoMandateFixture('cultivating_qi_short', guidanceSettings.guidanceOath);
+  }
+
+  return createDaoOmenProjectionRawFixture(resolveCultivationProjectionFixtureState(snapshot), guidanceSettings.guidanceOath);
+}
+
+function buildCultivationOmenProjection(
+  snapshot: CultivationExactBuildSnapshot,
+  mode: CultivationExactSurfaceMode,
+  projectionMode: 'snapshot' | 'live',
+): DaoOmenProjectionV1 {
+  return buildDaoOmenProjectionV1(buildCultivationRawOmenSurface(snapshot, mode, projectionMode), {
+    currentScreen: 'cultivation',
+    routeContext: 'default',
+  });
+}
+
+function resolveCultivationProjectionFixtureState(snapshot: CultivationExactBuildSnapshot): DaoOmenProjectionFixtureState {
+  const activityState = resolveActivityState(snapshot);
+
+  if (activityState === 'content_cap') return 'content_cap_reached';
+  if (activityState === 'breakthrough_ready') return 'breakthrough_ready';
+  if (activityState === 'gate_blocked') return 'gate_proof_missing_attemptable';
+  return 'qi_short_before_realm_edge';
+}
+
+function buildCultivationCompactOmenSurface(
+  snapshot: CultivationExactBuildSnapshot,
+  mode: CultivationExactSurfaceMode,
+  projectionMode: 'snapshot' | 'live',
+): CultivationCompactOmenSurfaceV1 {
+  const uiSettings = useUIStore.getState().settings;
+  const guidanceSettings = pickDaoMandateGuidanceSettings(uiSettings);
   const motionMode = resolveDaoMandateEffectiveMotionMode({
     mandateMotionMode: guidanceSettings.mandateMotionMode,
     storyMotionMode: uiSettings.storyMotionMode,
   });
+  const projection = buildCultivationOmenProjection(snapshot, mode, projectionMode);
+  const proofSeals = pickCultivationThresholdProofSeals(projection, snapshot);
 
   return {
-    surface: visible,
-    profile: guidanceSettings.guidanceOath,
+    projection,
+    currentOmen: projection.currentOmen,
+    proofSeals,
+    sourceThreads: projection.sourceThreads,
+    reflections: projection.reflections,
     motionMode,
-    regionLabel: 'Threshold Mandate',
+    regionLabel: 'Threshold Omen',
+    detailSummary: projection.currentOmen.detail,
+    detailActionLabel: 'Inspect proof',
+    allowedDirectRoute: getCultivationAllowedDirectRoute(projection),
+    defaultCopyPolicy: 'symptom_proof_first',
+    sourceThreadsOpenByDefault: false,
   };
 }
 
-function buildCultivationBreakthroughProofLedger(
+function pickCultivationThresholdProofSeals(
+  projection: DaoOmenProjectionV1,
   snapshot: CultivationExactBuildSnapshot,
-  mandateLens: CultivationMandateLensSurface | null,
-): DaoRequirementLedger {
-  const ledger = createEmptyProofLedger();
-  const currentQi = D(snapshot.qi || '0');
-  const requiredQi = D(snapshot.breakthroughRequirement || '0');
-  const qiReady = hasEnoughQi(snapshot);
-  const majorRealmTransition = isMajorRealmTransition(snapshot);
-  const realmEdgeReady = isRealmEdge(snapshot) || snapshot.atContentCap;
-  const gateReady = hasGateToken(snapshot);
-  const cultivationRoute = findMandateRoute(
-    mandateLens,
-    (route) => route.target?.kind === 'tab' && route.target.tab === 'cultivation',
-  ) ?? (mandateLens?.surface.primaryRoute ?? null);
-  const gateRoute = findMandateRoute(
-    mandateLens,
-    (route) => route.target?.kind === 'world_module' && route.target.moduleKey === 'gateTrial',
-  );
-  const prestigeRoute = findMandateRoute(
-    mandateLens,
-    (route) => route.target?.kind === 'tab' && route.target.tab === 'prestige',
-  );
-  const gateProofName = snapshot.requiredGateItemName ?? 'Gate Proof';
+): DaoProofSealV1[] {
+  const allowedKinds = new Set<DaoProofSealV1['kind']>([
+    'realm_edge',
+    'qi_threshold',
+    'gate_proof',
+    'mercy_seal',
+    'reincarnation',
+  ]);
+  const cap = 3;
+  const fallbackSeals = buildFallbackCultivationProofSeals(snapshot, projection);
+  const seenKinds = new Set<DaoProofSealV1['kind']>();
+  const selected: DaoProofSealV1[] = [];
 
-  ledger.hardGates.push(buildProofRow({
-    id: 'cultivation-proof-qi-reservoir',
-    bucket: 'hard_gate',
-    label: 'Qi Reservoir',
-    detail: qiReady
-      ? 'Reservoir full enough for the next threshold.'
-      : 'Keep cultivating to fill the reservoir.',
-    currentLabel: formatNumber(currentQi),
-    targetLabel: formatNumber(requiredQi),
-    state: rowState(qiReady),
-    tone: qiReady ? 'success' : 'warning',
-    route: qiReady ? null : cultivationRoute,
-    proofLine: `Current Qi ${formatNumber(currentQi)} of ${formatNumber(requiredQi)} required.`,
-    sourceLine: 'Source: cultivation breakthrough requirement.',
-    priority: 10,
-  }));
-
-  if (majorRealmTransition) {
-    ledger.hardGates.push(buildProofRow({
-      id: 'cultivation-proof-realm-edge',
-      bucket: 'hard_gate',
-      label: 'Realm Edge',
-      detail: realmEdgeReady
-        ? 'Realm edge reached.'
-        : 'Advance through the current substage first.',
-      currentLabel: `Stage ${snapshot.realm.substage}`,
-      targetLabel: `Stage ${snapshot.realmSubstages}`,
-      state: rowState(realmEdgeReady),
-      tone: realmEdgeReady ? 'success' : 'warning',
-      route: realmEdgeReady ? null : cultivationRoute,
-      proofLine: `${snapshot.realmName} stage ${snapshot.realm.substage} of ${snapshot.realmSubstages}.`,
-      sourceLine: 'Source: live realm projection.',
-      priority: 20,
-    }));
-  } else {
-    ledger.readinessFloors.push(buildProofRow({
-      id: 'cultivation-proof-current-threshold',
-      bucket: 'readiness_floor',
-      label: 'Current Threshold',
-      detail: qiReady
-        ? 'This substage step is ready once you choose to break through.'
-        : 'Fill the Qi reservoir before this substage step.',
-      currentLabel: `Stage ${snapshot.realm.substage}`,
-      targetLabel: `Stage ${snapshot.realm.substage + 1}`,
-      state: qiReady ? 'met' : 'partial',
-      tone: qiReady ? 'success' : 'info',
-      route: qiReady ? null : cultivationRoute,
-      proofLine: `${snapshot.realmName} stage ${snapshot.realm.substage} is not a major realm gate.`,
-      sourceLine: 'Source: live realm projection.',
-      priority: 20,
-    }));
+  for (const seal of [...projection.proofSeals, ...fallbackSeals]) {
+    if (!allowedKinds.has(seal.kind) || seenKinds.has(seal.kind)) continue;
+    if ((seal.kind === 'mercy_seal' || seal.kind === 'reincarnation') && !isMetaOrMercyOmen(projection.currentOmen.kind)) continue;
+    selected.push(seal);
+    seenKinds.add(seal.kind);
+    if (selected.length >= cap) break;
   }
 
-  ledger.hardGates.push(buildProofRow({
+  return selected;
+}
+
+function isMetaOrMercyOmen(kind: DaoOmenProjectionV1['currentOmen']['kind']): boolean {
+  return kind === 'safety_net_ready' || kind === 'content_cap' || kind === 'reincarnation_viable';
+}
+
+function buildFallbackCultivationProofSeals(
+  snapshot: CultivationExactBuildSnapshot,
+  projection: DaoOmenProjectionV1,
+): DaoProofSealV1[] {
+  const qiReady = hasEnoughQi(snapshot);
+  const realmEdgeReady = isRealmEdge(snapshot) || snapshot.atContentCap || !isMajorRealmTransition(snapshot);
+  const gateReady = hasGateToken(snapshot);
+  const gateProofName = snapshot.requiredGateItemName ?? 'Gate Proof';
+  const gateRoute = projection.hardRoutes.find((route) => route.target?.kind === 'world_module' && route.target.moduleKey === 'gateTrial')
+    ?? (projection.currentOmen.route?.target?.kind === 'world_module' && projection.currentOmen.route.target.moduleKey === 'gateTrial'
+      ? projection.currentOmen.route
+      : null);
+
+  const qiSeal: DaoProofSealV1 = {
+    id: 'cultivation-proof-qi-threshold',
+    kind: 'qi_threshold',
+    label: 'Qi Reservoir',
+    state: qiReady ? 'sealed' : 'thin',
+    tone: qiReady ? 'jade' : 'cinnabar',
+    iconId: 'qi',
+    detail: qiReady
+      ? 'Qi threshold proof is sealed.'
+      : `The dantian is ${missingQiLabel(snapshot)} Qi short.`,
+    ownerScreen: 'cultivation',
+    evidenceIds: [`qi:${snapshot.qi}/${snapshot.breakthroughRequirement}`],
+    routePolicy: 'hidden',
+  };
+
+  const realmSeal: DaoProofSealV1 = {
+    id: 'cultivation-proof-realm-edge',
+    kind: 'realm_edge',
+    label: isMajorRealmTransition(snapshot) ? 'Realm Edge' : 'Current Threshold',
+    state: realmEdgeReady ? 'sealed' : 'unsealed',
+    tone: realmEdgeReady ? 'jade' : 'cinnabar',
+    iconId: 'mountain',
+    detail: realmEdgeReady
+      ? 'The realm edge is known.'
+      : `Stage ${snapshot.realm.substage} of ${snapshot.realmSubstages} has not reached the edge.`,
+    ownerScreen: 'cultivation',
+    evidenceIds: [`realm:${snapshot.realm.index}:${snapshot.realm.substage}/${snapshot.realmSubstages}`],
+    routePolicy: 'hidden',
+  };
+
+  const gateSeal: DaoProofSealV1 = {
     id: 'cultivation-proof-gate-proof',
-    bucket: 'hard_gate',
+    kind: 'gate_proof',
     label: 'Gate Proof',
+    state: snapshot.requiredGateItemId ? (gateReady ? 'sealed' : 'unsealed') : 'quiet',
+    tone: snapshot.requiredGateItemId ? (gateReady ? 'jade' : 'cinnabar') : 'ink',
+    iconId: 'seal',
     detail: snapshot.requiredGateItemId
       ? gateReady
-        ? 'Proof seal held.'
-        : `Win or bypass the Gate Trial to earn ${gateProofName}.`
-      : 'No gate proof required for this threshold.',
-    currentLabel: snapshot.requiredGateItemId ? `${snapshot.requiredGateItemCount}` : 'Ready',
-    targetLabel: snapshot.requiredGateItemId ? '1' : 'None',
-    state: snapshot.requiredGateItemId ? rowState(gateReady) : 'resolved',
-    tone: snapshot.requiredGateItemId ? (gateReady ? 'success' : 'warning') : 'muted',
-    route: snapshot.requiredGateItemId && !gateReady ? gateRoute : null,
-    proofLine: snapshot.requiredGateItemId
-      ? `${gateProofName} ${snapshot.requiredGateItemCount}/1.`
-      : 'Current threshold does not ask for a gate proof item.',
-    sourceLine: 'Source: progression gate resolver and inventory.',
-    priority: 30,
-  }));
+        ? `${gateProofName} is sealed.`
+        : `${gateProofName} remains unsealed.`
+      : 'No gate proof is required for this threshold.',
+    ownerScreen: 'gateTrial',
+    evidenceIds: snapshot.requiredGateItemId
+      ? [`gate-proof:${snapshot.requiredGateItemId}:${snapshot.requiredGateItemCount}/1`]
+      : ['gate-proof:none'],
+    ...(snapshot.requiredGateItemId && !gateReady && gateRoute ? { route: gateRoute } : {}),
+    routePolicy: snapshot.requiredGateItemId && !gateReady ? 'direct' : 'hidden',
+  };
 
-  const safetyNet = mandateLens?.surface.safetyNet ?? null;
-  if (safetyNet && safetyNet.state !== 'hidden') {
-    const safetyResolved = safetyNet.state === 'available' || safetyNet.state === 'progressing' || safetyNet.state === 'resolved';
-    ledger.supportReserves.push(buildProofRow({
-      id: 'cultivation-proof-safety-net',
-      bucket: 'support_reserve',
-      label: 'Safety Net / Bypass Proof',
-      detail: safetyNet.detail,
-      currentLabel: safetyNet.progressLine,
-      targetLabel: safetyNet.costLine ?? safetyNet.reserveLine,
-      state: safetyNet.state === 'blocked' ? 'blocked' : safetyResolved ? 'partial' : 'unknown',
-      tone: safetyNet.state === 'blocked' ? 'danger' : safetyResolved ? 'info' : 'muted',
-      route: safetyNet.route,
-      proofLine: safetyNet.reserveLine,
-      sourceLine: 'Source: trial lifecycle safety net.',
-      priority: 40,
-    }));
+  const seals = [realmSeal, qiSeal, gateSeal];
+  if (snapshot.atContentCap) {
+    seals.unshift({
+      id: 'cultivation-proof-reincarnation',
+      kind: 'reincarnation',
+      label: 'Reincarnation',
+      state: 'cap',
+      tone: 'gold',
+      iconId: 'circle',
+      detail: 'This chapter has reached its authored handoff.',
+      ownerScreen: 'prestige',
+      evidenceIds: ['content-cap'],
+      ...(projection.currentOmen.route ? { route: projection.currentOmen.route } : {}),
+      routePolicy: projection.currentOmen.route ? 'direct' : 'inspect',
+    });
   }
 
-  if (snapshot.atContentCap || mandateLens?.surface.prestige?.state === 'recommended' || mandateLens?.surface.prestige?.state === 'cap_recommended') {
-    ledger.optionalOptimizations.push(buildProofRow({
-      id: 'cultivation-proof-current-chapter-cap',
-      bucket: 'optional_optimization',
-      label: 'Current Chapter Cap',
-      detail: snapshot.atContentCap
-        ? 'No higher authored gate is available in this slice.'
-        : mandateLens?.surface.prestige?.detail ?? 'Reincarnation counsel is available.',
-      currentLabel: snapshot.atContentCap ? 'Reached' : mandateLens?.surface.prestige?.state ?? 'Visible',
-      targetLabel: 'Prestige',
-      state: snapshot.atContentCap ? 'resolved' : 'partial',
-      tone: snapshot.atContentCap ? 'info' : 'success',
-      route: prestigeRoute ?? mandateLens?.surface.prestige?.route ?? null,
-      proofLine: mandateLens?.surface.prestige?.forecastLine ?? null,
-      sourceLine: 'Source: Dao Mandate reincarnation counsel.',
-      priority: 50,
-    }));
-  }
+  return seals;
+}
 
-  if (mandateLens?.profile === 'sealed') {
-    const firstMissing = ledger.hardGates.find((row) => row.state === 'unmet' || row.state === 'blocked');
-    ledger.hardGates = firstMissing ? [firstMissing] : ledger.hardGates.slice(0, 1);
-    ledger.supportReserves = [];
-    ledger.optionalOptimizations = ledger.optionalOptimizations.slice(0, snapshot.atContentCap ? 1 : 0);
-  } else if (mandateLens?.profile === 'elder') {
-    ledger.supportReserves = ledger.supportReserves.slice(0, 1);
-    ledger.optionalOptimizations = ledger.optionalOptimizations.slice(0, 1);
+function getCultivationAllowedDirectRoute(projection: DaoOmenProjectionV1): DaoMandateRoute | null {
+  if (projection.currentOmen.allowDirectRoute && projection.currentOmen.route) {
+    return projection.currentOmen.route;
   }
+  return projection.hardRoutes.find((route) => Boolean(route.target)) ?? null;
+}
 
-  return ledger;
+function buildCultivationOmenDrawerRows(compactOmen: CultivationCompactOmenSurfaceV1): CultivationDrawerSurface['rows'] {
+  return [
+    {
+      id: 'omen',
+      label: compactOmen.currentOmen.title,
+      value: compactOmen.currentOmen.detail,
+      tone: compactOmen.currentOmen.tone === 'cinnabar' ? 'warning' : compactOmen.currentOmen.tone === 'gold' ? 'gold' : 'jade',
+    },
+    ...compactOmen.proofSeals.map((seal): CultivationDrawerSurface['rows'][number] => ({
+      id: seal.id,
+      label: seal.label,
+      value: seal.detail,
+      tone: seal.tone === 'cinnabar' ? 'warning' : seal.tone === 'gold' ? 'gold' : seal.tone === 'jade' ? 'jade' : 'neutral',
+    })),
+  ];
 }
 
 function cultivateToggleButton(snapshot: CultivationExactBuildSnapshot): CultivationButtonSurface {
@@ -591,8 +572,25 @@ function createBreakthroughSeal(
 function createDrawers(
   snapshot: CultivationExactBuildSnapshot,
   commandDeck: CultivationExactSurfaceV1['commandDeck'],
+  compactOmen: CultivationCompactOmenSurfaceV1,
 ): CultivationExactSurfaceV1['drawers'] {
   const gateProofName = snapshot.requiredGateItemName ?? 'Gate Proof';
+  const omen: CultivationDrawerSurface = {
+    id: 'omen',
+    side: 'left',
+    title: compactOmen.regionLabel,
+    subtitle: compactOmen.detailSummary,
+    rows: buildCultivationOmenDrawerRows(compactOmen),
+    action: compactOmen.allowedDirectRoute?.target?.kind === 'world_module'
+      && compactOmen.allowedDirectRoute.target.moduleKey === 'gateTrial'
+      && commandDeck.primary.actionKey === 'openGateTrial'
+      ? commandDeck.primary
+      : compactOmen.allowedDirectRoute?.target?.kind === 'tab'
+        && compactOmen.allowedDirectRoute.target.tab === 'prestige'
+        && commandDeck.primary.actionKey === 'openPrestige'
+          ? commandDeck.primary
+          : undefined,
+  };
   const milestone: CultivationDrawerSurface = {
     id: 'milestone',
     side: 'left',
@@ -666,7 +664,7 @@ function createDrawers(
     action: commandDeck.primary.actionKey === 'openPrestige' ? commandDeck.primary : undefined,
   };
 
-  return { milestone, doctrine, gate, buffs, lifeCycle };
+  return { omen, milestone, doctrine, gate, buffs, lifeCycle };
 }
 
 function createSurface(
@@ -674,9 +672,8 @@ function createSurface(
   options: Required<Pick<BuildCultivationExactSurfaceOptions, 'selectedDrawer' | 'reducedMotion' | 'fxQuality'>> & {
     mode: CultivationExactSurfaceMode;
     source: 'fixture' | 'stores';
+    projectionMode: 'snapshot' | 'live';
     fixtureDisplayPercent?: number;
-    mandateLens?: CultivationMandateLensSurface | null;
-    breakthroughProofLedger?: DaoRequirementLedger | null;
   },
 ): CultivationExactSurfaceV1 {
   const activityState = options.mode === 'fixture' ? 'cultivating' : resolveActivityState(snapshot);
@@ -684,9 +681,7 @@ function createSurface(
   const rate = formatRateLabel(snapshot.qiPerSecond, snapshot.breathQiRateMultiplier);
   const commandDeck = resolveCommandDeck(snapshot, activityState);
   const lotus = lotusForState(activityState);
-  const mandateLens = options.mandateLens ?? buildCultivationMandateLens(options.mode);
-  const breakthroughProofLedger = options.breakthroughProofLedger
-    ?? buildCultivationBreakthroughProofLedger(snapshot, mandateLens);
+  const compactOmen = buildCultivationCompactOmenSurface(snapshot, options.mode, options.projectionMode);
   return {
     meta: {
       surfaceId: CULTIVATION_EXACT_SURFACE_ID,
@@ -741,8 +736,7 @@ function createSurface(
       state: activityState === 'breakthrough_ready' ? 'ready' : activityState === 'near_edge' ? 'near_edge' : 'normal',
     },
     commandDeck,
-    mandateLens,
-    breakthroughProofLedger,
+    compactOmen,
     runCompassCompact: snapshot.runCompassCompact ?? buildRunCompassCompactSurface(snapshot.runCompassFull ?? null),
     lifeCycleWhisper: {
       visible: false,
@@ -751,7 +745,7 @@ function createSurface(
       route: { kind: 'tab', tab: 'prestige' },
       runCompassAction: null,
     },
-    drawers: createDrawers(snapshot, commandDeck),
+    drawers: createDrawers(snapshot, commandDeck, compactOmen),
     debug: {
       notes: [],
       sourceSummary: [
@@ -807,11 +801,11 @@ export function createCultivationExactMockupFixture(): CultivationExactSurfaceV1
   return createSurface(snapshot, {
     mode: 'fixture',
     source: 'fixture',
+    projectionMode: 'snapshot',
     selectedDrawer: 'none',
     reducedMotion: false,
     fxQuality: 'high',
     fixtureDisplayPercent: 35,
-    mandateLens: buildCultivationMandateLens('fixture'),
   });
 }
 
@@ -822,11 +816,10 @@ export function buildCultivationExactSurfaceFromSnapshots(
   return createSurface(snapshot, {
     mode: options.mode ?? 'live',
     source: 'stores',
+    projectionMode: 'snapshot',
     selectedDrawer: options.selectedDrawer ?? 'none',
     reducedMotion: options.reducedMotion ?? false,
     fxQuality: options.fxQuality ?? 'medium',
-    mandateLens: options.mandateLens,
-    breakthroughProofLedger: options.breakthroughProofLedger,
   });
 }
 
@@ -957,8 +950,10 @@ export function buildCultivationExactSurfaceFromStores(
   }
 
   const snapshot = buildCultivationExactSnapshotFromStores(options);
-  return buildCultivationExactSurfaceFromSnapshots(snapshot, {
+  return createSurface(snapshot, {
     mode: 'live',
+    source: 'stores',
+    projectionMode: 'live',
     selectedDrawer: options.selectedDrawer ?? ('none' satisfies CultivationExactDrawerId),
     reducedMotion: options.reducedMotion ?? false,
     fxQuality: options.fxQuality ?? ('medium' satisfies CultivationExactFxQuality),

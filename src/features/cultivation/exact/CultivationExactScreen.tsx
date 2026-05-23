@@ -2,7 +2,7 @@ import { useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
 import { DantianOrb } from '../../../ui/cultivation/DantianOrb.js';
 import { QiLotusIcon } from '../../../ui/cultivation/QiLotusIcon.js';
 import { VerseMiniBar } from '../../../ui/cultivation/VerseMiniBar.js';
-import { MandateSeal, RequirementLedger, SourceRouteSlip } from '../../../ui/daoMandate/index.js';
+import { OmenSeal, ProofSealRow, SourceThreadDrawer } from '../../../ui/daoMandate/index.js';
 import type { DaoMandateRoute } from '../../../systems/ui/daoMandate/index.js';
 import type {
   CultivationButtonSurface,
@@ -302,38 +302,42 @@ export function CultivationExactScreen({
           <strong className="cultivationExactBreakthroughSeal__value">{surface.breakthroughSeal.value}</strong>
         </section>
 
-        {surface.mandateLens ? (
+        {surface.compactOmen ? (
           <section
-            className="cultivationExactMandateLens"
-            data-region="dao-mandate-threshold-lens"
-            aria-label="Threshold Mandate"
+            className="cultivationExactCompactOmen"
+            data-region="cultivation-compact-omen"
+            data-testid="cultivation-compact-omen"
+            aria-label="Threshold Omen"
           >
-            <MandateSeal
-              surface={surface.mandateLens.surface}
-              profile={surface.mandateLens.profile}
-              motionMode={surface.mandateLens.motionMode}
-              variant="compact"
-              onRouteAction={onMandateRouteAction}
-              className="cultivationExactMandateLens__seal"
+            <OmenSeal
+              omen={surface.compactOmen.currentOmen}
+              compact
+              showEvidenceCount
+              detailAction={{
+                label: surface.compactOmen.detailActionLabel,
+                ariaLabel: 'Inspect threshold proof',
+                onClick: () => onOpenDrawer?.('omen'),
+              }}
+              action={surface.compactOmen.allowedDirectRoute && surface.compactOmen.currentOmen.directRouteReason !== 'breakthrough'
+                ? {
+                    label: surface.compactOmen.allowedDirectRoute.actionLabel,
+                    ariaLabel: surface.compactOmen.allowedDirectRoute.actionLabel,
+                    disabled: surface.compactOmen.allowedDirectRoute.blocked,
+                    disabledReason: surface.compactOmen.allowedDirectRoute.blockedReason ?? undefined,
+                    onClick: () => onMandateRouteAction?.(surface.compactOmen?.allowedDirectRoute as DaoMandateRoute),
+                  }
+                : undefined}
+              testId="cultivation-compact-omen-seal"
+              className="cultivationExactCompactOmen__seal"
             />
-            {surface.breakthroughProofLedger ? (
-              <details
-                className="cultivationExactMandateLens__proof"
-                data-region="breakthrough-proof-ledger"
-                open={surface.mandateLens.profile !== 'sealed'}
-              >
-                <summary>Breakthrough Proof</summary>
-                <RequirementLedger
-                  ledger={surface.breakthroughProofLedger}
-                  title="Breakthrough Proof"
-                  profile={surface.mandateLens.profile}
-                  variant="compact"
-                  motionMode={surface.mandateLens.motionMode}
-                  onRouteAction={onMandateRouteAction}
-                  className="cultivationExactProofLedger"
-                />
-              </details>
-            ) : null}
+            <ProofSealRow
+              seals={surface.compactOmen.proofSeals}
+              maxVisible={3}
+              compact
+              onSealInspect={() => onOpenDrawer?.('omen')}
+              testId="cultivation-threshold-proof-seals"
+              className="cultivationExactCompactOmen__proofSeals"
+            />
           </section>
         ) : null}
 
@@ -431,27 +435,14 @@ function CultivationExactDrawerLayer({
             className="cultivationExactDrawer__verse"
           />
         ) : null}
-        {surface.breakthroughProofLedger && (selected === 'milestone' || selected === 'gate') ? (
-          <RequirementLedger
-            ledger={surface.breakthroughProofLedger}
-            title="Breakthrough Proof"
-            subtitle={surface.mandateLens?.surface.obstruction.detail}
-            profile={surface.mandateLens?.profile ?? 'elder'}
-            variant={surface.mandateLens?.profile === 'jade' ? 'default' : 'compact'}
-            motionMode={surface.mandateLens?.motionMode ?? 'medium'}
-            onRouteAction={onMandateRouteAction}
-            className="cultivationExactDrawer__proofLedger"
-          />
-        ) : null}
-        {surface.mandateLens?.profile === 'jade' && surface.mandateLens.surface.sourceMap.length > 0 && (selected === 'milestone' || selected === 'gate') ? (
-          <SourceRouteSlip
-            entries={surface.mandateLens.surface.sourceMap}
-            title="Mandate Evidence"
-            profile={surface.mandateLens.profile}
-            variant="compact"
-            motionMode={surface.mandateLens.motionMode}
-            onRouteAction={onMandateRouteAction}
-            className="cultivationExactDrawer__mandateEvidence"
+        {surface.compactOmen && selected === 'omen' ? (
+          <SourceThreadDrawer
+            threads={surface.compactOmen.sourceThreads}
+            initiallyOpen={surface.compactOmen.sourceThreadsOpenByDefault}
+            title="Omen evidence"
+            summary={`${surface.compactOmen.sourceThreads.length} folded source threads`}
+            className="cultivationExactDrawer__sourceThreads"
+            testId="cultivation-compact-omen-source-threads"
           />
         ) : null}
         {drawer.action ? <CommandButton button={drawer.action} kind="drawer" onCommandAction={onCommandAction} /> : null}

@@ -788,94 +788,56 @@ button.cultivationExactSealCard,
   color: #6b351f;
 }
 
-.cultivationExactMandateLens {
+.cultivationExactCompactOmen {
   display: grid;
-  gap: 7px;
-  width: min(var(--cult-exact-qi-w), 620px);
+  gap: clamp(6px, .7vh, 10px);
+  width: min(var(--cult-exact-qi-w), 660px);
   margin-top: 8px;
-  padding: 8px 12px;
-  border: 1px solid rgba(88, 68, 42, .32);
+  padding: clamp(8px, .9vh, 12px);
+  border: 1px solid color-mix(in srgb, var(--cult-exact-bronze) 46%, transparent);
   border-radius: 8px;
   color: #352819;
-  background: rgba(229, 216, 187, .74);
-  box-shadow: 0 10px 18px rgba(37, 28, 18, .14);
+  background: color-mix(in srgb, var(--cult-exact-card-light) 82%, transparent);
+  box-shadow: 0 12px 24px rgba(37, 28, 18, .14);
 }
 
-.cultivationExactMandateLens__seal.daoMandateSeal {
+.cultivationExactCompactOmen__seal.daoOmenSeal {
   padding: 0;
   border: 0;
   background: transparent;
   box-shadow: none;
 }
 
-.cultivationExactMandateLens__seal .daoMandateSeal__header {
-  gap: 8px;
-}
-
-.cultivationExactMandateLens__seal .daoMandateSeal__title {
+.cultivationExactCompactOmen__seal .daoOmenSeal__title {
   font-size: clamp(13px, .9vw, 16px);
 }
 
-.cultivationExactMandateLens__seal .daoMandateSeal__body {
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 10px;
-}
-
-.cultivationExactMandateLens__seal .daoMandateSeal__milestone,
-.cultivationExactMandateLens__seal .daoMandateSeal__obstruction {
+.cultivationExactCompactOmen__seal .daoOmenSeal__detail,
+.cultivationExactCompactOmen__seal .daoOmenSeal__meta {
   font-size: 11px;
-  line-height: 1.2;
+  line-height: 1.25;
 }
 
-.cultivationExactMandateLens__proof {
-  border-top: 1px solid rgba(91, 70, 43, .22);
-  padding-top: 5px;
+.cultivationExactCompactOmen__proofSeals.daoProofSealRow {
+  max-width: 100%;
 }
 
-.cultivationExactMandateLens__proof > summary {
-  cursor: pointer;
-  color: #5f3d1f;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0;
-  list-style-position: inside;
+.cultivationExactCompactOmen__proofSeals .daoProofSealRow__list {
+  gap: 6px;
 }
 
-.cultivationExactMandateLens__proof > summary:focus-visible {
-  outline: 2px solid rgba(118, 139, 121, .5);
+.cultivationExactCompactOmen__proofSeals .daoProofSeal {
+  min-height: 44px;
+}
+
+.cultivationExactCompactOmen :where(.daoOmenSeal__action, .daoProofSeal__inspect):focus-visible,
+.cultivationExactDrawer__sourceThreads .daoSourceThreadDrawer__toggle:focus-visible {
+  outline: 2px solid rgba(118, 139, 121, .62);
   outline-offset: 2px;
 }
 
-.cultivationExactProofLedger.daoRequirementLedger {
-  margin-top: 5px;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  box-shadow: none;
-}
-
-.cultivationExactProofLedger .daoRequirementLedger__header {
-  display: none;
-}
-
-.cultivationExactProofLedger .daoRequirementLedger__buckets {
-  gap: 4px;
-}
-
-.cultivationExactProofLedger .daoRequirementLedger__bucketHeader {
-  min-height: 20px;
-  font-size: 10px;
-}
-
-.cultivationExactProofLedger .daoRequirementLedgerRow {
-  min-height: 34px;
-  grid-template-columns: 34px minmax(0, 1fr) minmax(48px, auto) minmax(48px, auto) minmax(80px, auto);
-  padding: 4px 6px;
-}
-
-.cultivationExactProofLedger .daoRequirementLedgerRow__detail,
-.cultivationExactProofLedger .daoRequirementLedgerRow__valueLabel {
-  font-size: 10px;
+.cultivationExactDrawer__sourceThreads {
+  margin-top: 10px;
 }
 
 .cultivationExactQiRail {
@@ -1219,8 +1181,7 @@ button.cultivationExactSealCard,
   margin-top: 12px;
 }
 
-.cultivationExactDrawer__proofLedger,
-.cultivationExactDrawer__mandateEvidence {
+.cultivationExactDrawer__sourceThreads {
   max-height: 330px;
   overflow: auto;
 }
@@ -1239,8 +1200,12 @@ button.cultivationExactSealCard,
 }
 
 .cultivationExactPage[data-reduced-motion="true"] .cultivationExactRingLayer,
-.cultivationExactPage[data-reduced-motion="true"] .cultivationExactQiMote {
+.cultivationExactPage[data-reduced-motion="true"] .cultivationExactQiMote,
+.cultivationExactPage[data-reduced-motion="true"] .cultivationExactCompactOmen *,
+.cultivationExactPage[data-reduced-motion="true"] .cultivationExactCompactOmen *::before,
+.cultivationExactPage[data-reduced-motion="true"] .cultivationExactCompactOmen *::after {
   animation: none;
+  transition-duration: 1ms;
 }
 
 @keyframes cultivationExactRingBreath {

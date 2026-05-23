@@ -230,10 +230,15 @@ test('DaoOmenProjectionV1 current truth does not change by old Guidance Oath pro
   }
 });
 
-test('DaoOmenProjectionV1 is not consumed by production screens in V2-1', () => {
-  const statusScreen = readFileSync('src/components/screens/StatusScreen.tsx', 'utf8');
+test('DaoOmenProjectionV1 production consumers stay on V2 projection surfaces', () => {
+  const statusSurface = readFileSync('src/systems/ui/status/statusV2Surface.ts', 'utf8');
+  const cultivationSurface = readFileSync('src/features/cultivation/exact/buildCultivationExactSurface.ts', 'utf8');
+  const cultivationScreen = readFileSync('src/features/cultivation/exact/CultivationExactScreen.tsx', 'utf8');
 
-  assert.doesNotMatch(statusScreen, /buildDaoOmenProjectionV1|DaoOmenProjectionV1/);
+  assert.match(statusSurface, /buildDaoOmenProjectionV1/);
+  assert.match(cultivationSurface, /buildDaoOmenProjectionV1/);
+  assert.match(cultivationScreen, /OmenSeal/);
+  assert.doesNotMatch(cultivationScreen, /<MandateSeal|<RequirementLedger|<SourceRouteSlip/);
 });
 
 test('DaoOmenProjectionV1 builder and types stay model-only', () => {

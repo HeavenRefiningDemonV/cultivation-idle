@@ -44,8 +44,31 @@ void test('Cultivation Exact pure screen owns exact regions and keeps legacy pan
   }
 
   const defaultViewSource = source.split('function CultivationExactDrawerLayer')[0] ?? source;
-  for (const legacyDefault of ['<RunCompass', '<CultivationBreakthroughPanel', '<CultivationDoctrineSummary']) {
+  for (const legacyDefault of [
+    '<RunCompass',
+    '<CultivationBreakthroughPanel',
+    '<CultivationDoctrineSummary',
+    '<MandateSeal',
+    '<RequirementLedger',
+    '<ReadinessLedger',
+    '<SourceRouteSlip',
+    'Threshold Mandate',
+    'Breakthrough Proof',
+    'Primary Route',
+    'Best Next Action',
+    'Biggest Shortfall',
+  ]) {
     assert.equal(defaultViewSource.includes(legacyDefault), false, `default exact view must not permanently render ${legacyDefault}`);
+  }
+
+  for (const required of [
+    'OmenSeal',
+    'ProofSealRow',
+    'data-region="cultivation-compact-omen"',
+    'testId="cultivation-compact-omen-seal"',
+    'testId="cultivation-threshold-proof-seals"',
+  ]) {
+    assert.equal(defaultViewSource.includes(required), true, `default exact view must include V2 compact omen token ${required}`);
   }
 });
 

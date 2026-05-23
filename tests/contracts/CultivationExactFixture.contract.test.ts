@@ -57,6 +57,12 @@ void test('Cultivation Exact fixture locks the Lotus Meditation Terrace default 
   assert.equal(surface.commandDeck.secondary?.disabled, true);
   assert.equal(surface.commandDeck.secondary?.tone, 'quiet');
   assert.equal(surface.commandDeck.supportLine, 'Qi Cap 24.4M');
+  assert.equal(surface.compactOmen?.regionLabel, 'Threshold Omen');
+  assert.equal(surface.compactOmen?.currentOmen.kind, 'threshold_unreached');
+  assert.equal(surface.compactOmen?.currentOmen.allowDirectRoute, false);
+  assert.ok((surface.compactOmen?.proofSeals.length ?? 0) >= 2);
+  assert.ok((surface.compactOmen?.proofSeals.length ?? 0) <= 3);
+  assert.equal(surface.compactOmen?.sourceThreadsOpenByDefault, false);
 
   assert.equal(surface.shell.preserveHeroArt, true);
   assert.equal(surface.shell.showLegacySidePanels, false);

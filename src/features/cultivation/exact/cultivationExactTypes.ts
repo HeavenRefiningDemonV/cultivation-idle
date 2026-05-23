@@ -6,9 +6,12 @@ import type {
 } from '../../../systems/ui/runCompass/index.js';
 import type {
   DaoMandateEffectiveMotionMode,
-  DaoMandateGuidanceProfile,
-  DaoMandateSurfaceV1,
-  DaoRequirementLedger,
+  DaoMandateRoute,
+  DaoCurrentOmenV1,
+  DaoOmenProjectionV1,
+  DaoProofSealV1,
+  DaoReflectionV1,
+  DaoSourceThreadV1,
 } from '../../../systems/ui/daoMandate/index.js';
 import type { SpiritRootElement } from '../../../types/index.js';
 
@@ -24,6 +27,7 @@ export type CultivationExactActivityState =
 
 export type CultivationExactDrawerId =
   | 'none'
+  | 'omen'
   | 'milestone'
   | 'doctrine'
   | 'gate'
@@ -127,11 +131,19 @@ export interface CultivationDrawerSurface {
   verse?: CultivationVerseDetailSurface;
 }
 
-export interface CultivationMandateLensSurface {
-  surface: DaoMandateSurfaceV1;
-  profile: DaoMandateGuidanceProfile;
+export interface CultivationCompactOmenSurfaceV1 {
+  projection: DaoOmenProjectionV1;
+  currentOmen: DaoCurrentOmenV1;
+  proofSeals: DaoProofSealV1[];
+  sourceThreads: DaoSourceThreadV1[];
+  reflections: DaoReflectionV1[];
   motionMode: DaoMandateEffectiveMotionMode;
-  regionLabel: 'Threshold Mandate';
+  regionLabel: 'Threshold Omen';
+  detailSummary: string;
+  detailActionLabel: 'Inspect proof';
+  allowedDirectRoute: DaoMandateRoute | null;
+  defaultCopyPolicy: 'symptom_proof_first';
+  sourceThreadsOpenByDefault: false;
 }
 
 export interface CultivationExactSurfaceV1 {
@@ -205,8 +217,7 @@ export interface CultivationExactSurfaceV1 {
     secondary?: CultivationButtonSurface;
     supportLine: string;
   };
-  mandateLens: CultivationMandateLensSurface | null;
-  breakthroughProofLedger: DaoRequirementLedger | null;
+  compactOmen: CultivationCompactOmenSurfaceV1 | null;
   runCompassCompact?: RunCompassCompactSurface | null;
 
   lifeCycleWhisper: {
@@ -219,6 +230,7 @@ export interface CultivationExactSurfaceV1 {
   };
 
   drawers: {
+    omen: CultivationDrawerSurface;
     milestone: CultivationDrawerSurface;
     doctrine: CultivationDrawerSurface;
     gate: CultivationDrawerSurface;
@@ -278,7 +290,5 @@ export interface BuildCultivationExactSurfaceOptions {
   reducedMotion?: boolean;
   fxQuality?: CultivationExactFxQuality;
   runCompassFull?: RunCompassSurface | null;
-  mandateLens?: CultivationMandateLensSurface | null;
-  breakthroughProofLedger?: DaoRequirementLedger | null;
   nowMs?: number;
 }
