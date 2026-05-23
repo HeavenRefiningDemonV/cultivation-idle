@@ -1,7 +1,6 @@
 import type { DaoMandateGuidanceSettings } from './daoMandateGuidanceSettings.js';
 import type {
   DaoJadeSlip,
-  DaoMandateGuidanceProfile,
   DaoMandateRoute,
   DaoMandateSurfaceV1,
   DaoRequirementRow,
@@ -42,7 +41,6 @@ interface LessonCandidate {
   triggerHash: string;
   relatedRowId: string | null;
   route: DaoMandateRoute | null;
-  minProfile: DaoMandateGuidanceProfile;
   priority: number;
 }
 
@@ -51,12 +49,6 @@ export interface BuildDaoMandateLessonsArgs {
   settings: Pick<DaoMandateGuidanceSettings, 'guidanceOath' | 'jadeSlipLessons'>;
   memory?: DaoMandateLessonMemory | null;
 }
-
-const PROFILE_RANK: Record<DaoMandateGuidanceProfile, number> = {
-  sealed: 0,
-  elder: 1,
-  jade: 2,
-};
 
 const DAO_MANDATE_LESSON_CONCEPT_IDS = [
   'mandate.primary_route',
@@ -154,7 +146,6 @@ function primaryRouteLesson(surface: DaoMandateSurfaceV1): LessonCandidate {
     triggerHash: `primary:${surface.obstruction.kind}:${surface.primaryRoute.id}`,
     relatedRowId: row?.id ?? null,
     route: surface.primaryRoute,
-    minProfile: 'elder',
     priority: 10,
   };
 }
@@ -170,7 +161,6 @@ function sourceRouteLesson(surface: DaoMandateSurfaceV1): LessonCandidate | null
     triggerHash: `source:${entry.id}:${entry.bestSources[0]?.id ?? 'none'}`,
     relatedRowId: `source-route-${entry.id}`,
     route: entry.route ?? entry.bestSources[0]?.route ?? null,
-    minProfile: 'elder',
     priority: 20,
   };
 }
@@ -186,7 +176,6 @@ function failureLesson(surface: DaoMandateSurfaceV1): LessonCandidate | null {
     triggerHash: `failure:${failureOmen?.id ?? surface.primaryRoute.id}`,
     relatedRowId: rowForRoute(surface, surface.primaryRoute)?.id ?? null,
     route: surface.primaryRoute,
-    minProfile: 'elder',
     priority: 5,
   };
 }
@@ -201,7 +190,6 @@ function safetyNetLesson(surface: DaoMandateSurfaceV1): LessonCandidate | null {
     triggerHash: `safety:${surface.safetyNet.state}:${surface.safetyNet.progressLine}`,
     relatedRowId: `safety-net-${surface.safetyNet.state}`,
     route: surface.safetyNet.route,
-    minProfile: 'elder',
     priority: 8,
   };
 }
@@ -222,7 +210,6 @@ function prestigeLesson(surface: DaoMandateSurfaceV1): LessonCandidate | null {
     triggerHash: `prestige:${prestige.state}:${prestige.forecastLine ?? 'no-forecast'}`,
     relatedRowId: null,
     route: prestige.route,
-    minProfile: prestige.state === 'too_early' ? 'jade' : 'elder',
     priority: prestige.state === 'cap_recommended' || prestige.state === 'recommended' ? 6 : 30,
   };
 }
@@ -238,7 +225,6 @@ function offlineLesson(surface: DaoMandateSurfaceV1): LessonCandidate | null {
     triggerHash: `offline:${label}`,
     relatedRowId: null,
     route: surface.primaryRoute,
-    minProfile: 'elder',
     priority: 25,
   };
 }
@@ -253,13 +239,6 @@ function buildCandidates(surface: DaoMandateSurfaceV1): LessonCandidate[] {
     prestigeLesson(surface),
   ].filter((candidate): candidate is LessonCandidate => Boolean(candidate))
     .sort((left, right) => left.priority - right.priority || left.conceptId.localeCompare(right.conceptId));
-}
-
-function profileAllows(candidate: LessonCandidate, profile: DaoMandateGuidanceProfile): boolean {
-  if (profile === 'sealed') {
-    return candidate.conceptId === 'gate.failure_diagnosis' || candidate.conceptId === 'prestige.cap_recommended';
-  }
-  return PROFILE_RANK[profile] >= PROFILE_RANK[candidate.minProfile];
 }
 
 function cadenceAllows(candidate: LessonCandidate, args: BuildDaoMandateLessonsArgs): boolean {
@@ -290,17 +269,15 @@ function slipFromCandidate(candidate: LessonCandidate): DaoJadeSlip {
 }
 
 export function buildDaoMandateLessons(args: BuildDaoMandateLessonsArgs): DaoJadeSlip[] {
-  const profile = args.settings.guidanceOath;
-  const cap = profile === 'jade' ? 3 : profile === 'elder' ? 1 : 0;
-  if (cap === 0 && args.settings.jadeSlipLessons !== 'repeat_until_learned') return [];
-  const candidates = buildCandidates(args.surface)
-    .filter((candidate) => profileAllows(candidate, profile));
+  if (args.settings.jadeSlipLessons === 'off') return [];
+  const cap = args.settings.jadeSlipLessons === 'repeat_until_learned' ? 3 : 1;
+  const candidates = buildCandidates(args.surface);
   if (args.settings.jadeSlipLessons === 'first_time') {
     const first = candidates[0];
     return first && cadenceAllows(first, args) ? [slipFromCandidate(first)] : [];
   }
   return candidates
     .filter((candidate) => cadenceAllows(candidate, args))
-    .slice(0, profile === 'sealed' ? 1 : cap)
+    .slice(0, cap)
     .map(slipFromCandidate);
 }

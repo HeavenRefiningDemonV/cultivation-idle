@@ -121,7 +121,7 @@ test('world strong recommendation priority is Mandate first, then economy and tr
   }), 'bounties');
 });
 
-test('world Mandate lens exposes raw relations but hides quiet inspector lines by profile', () => {
+test('world Mandate lens exposes raw relations but hides quiet inspector lines by granular setting', () => {
   const visibleModules = ['outskirts', 'ruins', 'gateTrial', 'apothecary', 'forge', 'bounties'] as const;
   const world = buildWorldMandateRoutingLensSurface({
     mandate: gateTrialMandate(),
@@ -136,7 +136,7 @@ test('world Mandate lens exposes raw relations but hides quiet inspector lines b
   assert.equal(world.visibleRelationByModuleKey.gateTrial?.relation, 'primary');
 });
 
-test('world inspector visibility keeps Elder and Jade support detail without promoting quiet modules', () => {
+test('world inspector visibility keeps support detail profile-invariant without promoting quiet modules', () => {
   const visibleModules = ['outskirts', 'ruins', 'gateTrial', 'apothecary', 'forge', 'bounties'] as const;
   const mandate = gateTrialMandate();
   const elder = buildWorldMandateRoutingLensSurface({
@@ -151,7 +151,14 @@ test('world inspector visibility keeps Elder and Jade support detail without pro
     visibleModules,
     guidanceSettings: { guidanceOath: 'jade', localLensBanners: 'full' },
   });
+  const sealed = buildWorldMandateRoutingLensSurface({
+    mandate,
+    cityId: 'city_pinewind_hamlet',
+    visibleModules,
+    guidanceSettings: { guidanceOath: 'sealed', localLensBanners: 'compact' },
+  });
 
+  assert.equal(sealed.visibleRelationByModuleKey.outskirts?.relation, 'support');
   assert.equal(elder.visibleRelationByModuleKey.outskirts?.relation, 'support');
   assert.equal(elder.visibleRelationByModuleKey.ruins ?? null, null);
   assert.equal(jade.visibleRelationByModuleKey.outskirts?.relation, 'support');

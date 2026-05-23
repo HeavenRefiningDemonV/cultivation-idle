@@ -103,18 +103,36 @@ function makeApothecarySourceSurface(): DaoMandateSurfaceV1 {
   );
 }
 
-test('P6 Source Map visibility follows Sealed, Elder, and Jade density rules', () => {
+test('P6 Source Map visibility follows source detail setting rather than legacy profile', () => {
   const raw = makeApothecarySourceSurface();
-  const sealed = applyDaoMandateVisibility(raw, { profile: 'sealed' });
-  const elder = applyDaoMandateVisibility(raw, { profile: 'elder' });
-  const jade = applyDaoMandateVisibility(raw, { profile: 'jade' });
+  const sealed = applyDaoMandateVisibility(raw, {
+    profile: 'sealed',
+    settings: { sourceRouteDetail: 'needed_only' },
+  });
+  const jade = applyDaoMandateVisibility(raw, {
+    profile: 'jade',
+    settings: { sourceRouteDetail: 'needed_only' },
+  });
+  const hidden = applyDaoMandateVisibility(raw, {
+    profile: 'elder',
+    settings: { sourceRouteDetail: 'never' },
+  });
+  const expanded = applyDaoMandateVisibility(raw, {
+    profile: 'elder',
+    settings: { sourceRouteDetail: 'always' },
+  });
 
   assert.equal(raw.sourceMap.length > 0, true, 'raw surface should include source map data');
-  assert.equal(sealed.sourceMap.length <= 1, true, 'Sealed should keep at most one critical source row');
-  assert.equal(sealed.sourceMap[0]?.fallbackSources.length ?? 0, 0, 'Sealed should hide fallback source detail');
-  assert.equal(elder.sourceMap.length <= 1, true, 'Elder should stay concise');
-  assert.equal(elder.sourceMap[0]?.fallbackSources.length ?? 0, 1, 'Elder should show one fallback when relevant');
-  assert.equal((jade.sourceMap[0]?.fallbackSources.length ?? 0) >= (elder.sourceMap[0]?.fallbackSources.length ?? 0), true);
+  assert.deepEqual(
+    sealed.sourceMap.map((entry) => [entry.id, entry.bestSources.length, entry.fallbackSources.length]),
+    jade.sourceMap.map((entry) => [entry.id, entry.bestSources.length, entry.fallbackSources.length]),
+  );
+  assert.equal(hidden.sourceMap.length, 0);
+  assert.equal(expanded.sourceMap.length, raw.sourceMap.length);
+  assert.equal(
+    (expanded.sourceMap[0]?.fallbackSources.length ?? 0) >= (sealed.sourceMap[0]?.fallbackSources.length ?? 0),
+    true,
+  );
 });
 
 test('P6 needed-only source detail includes expedition shortage smoothing', () => {

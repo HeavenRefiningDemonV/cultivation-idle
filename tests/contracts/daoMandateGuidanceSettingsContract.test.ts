@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 import {
-  DAO_GUIDANCE_OATH_OPTIONS,
   createDefaultDaoMandateGuidanceSettings,
   resolveDaoMandateEffectiveMotionMode,
   sanitizeDaoMandateGuidanceSettings,
@@ -24,19 +24,13 @@ test('Dao Mandate guidance defaults use Elder profile and documented granular va
   });
 });
 
-test('Dao Mandate guidance option metadata includes flavor name, plain subtitle, and description', () => {
-  assert.deepEqual(
-    DAO_GUIDANCE_OATH_OPTIONS.map((option) => [option.id, option.title, option.subtitle]),
-    [
-      ['sealed', 'Sealed Counsel', 'Low guidance'],
-      ['elder', "Elder's Counsel", 'Default guidance'],
-      ['jade', 'Jade Slip Tutor', 'Maximum guidance'],
-    ],
-  );
+test('Dao Mandate guidance settings no longer export public strategy option cards', () => {
+  const indexSource = readFileSync('src/systems/ui/daoMandate/index.ts', 'utf8');
+  const settingsSource = readFileSync('src/systems/ui/daoMandate/daoMandateGuidanceSettings.ts', 'utf8');
 
-  for (const option of DAO_GUIDANCE_OATH_OPTIONS) {
-    assert.equal(option.description.length > 24, true, `${option.id} should explain behavior in plain text`);
-  }
+  assert.doesNotMatch(indexSource, /DAO_GUIDANCE_OATH_OPTIONS/);
+  assert.doesNotMatch(settingsSource, /Sealed Counsel|Elder's Counsel|Jade Slip Tutor/);
+  assert.doesNotMatch(settingsSource, /Low guidance|Default guidance|Maximum guidance/);
 });
 
 test('Dao Mandate guidance sanitizer defaults malformed inputs', () => {
@@ -60,7 +54,7 @@ test('Dao Mandate guidance sanitizer preserves valid fields and defaults invalid
     mandateMotionMode: 'low',
   });
 
-  assert.equal(settings.guidanceOath, 'jade');
+  assert.equal(settings.guidanceOath, 'elder');
   assert.equal(settings.jadeSlipLessons, 'first_time');
   assert.equal(settings.localLensBanners, 'full');
   assert.equal(settings.sourceRouteDetail, 'needed_only');
@@ -69,6 +63,13 @@ test('Dao Mandate guidance sanitizer preserves valid fields and defaults invalid
   assert.equal(settings.backgroundReminders, 'full_optimization');
   assert.equal(settings.recentOmensFeed, 'compact');
   assert.equal(settings.mandateMotionMode, 'low');
+});
+
+test('legacy Guidance Oath values normalize to the standard sparse compatibility profile', () => {
+  for (const guidanceOath of ['sealed', 'elder', 'jade'] as const) {
+    const settings = sanitizeDaoMandateGuidanceSettings({ guidanceOath });
+    assert.equal(settings.guidanceOath, 'elder');
+  }
 });
 
 test('Dao Mandate effective motion follows story motion unless overridden or reduced by preference', () => {

@@ -7,7 +7,7 @@ import {
   type DaoMandateSurfaceV1,
 } from '../../src/systems/ui/daoMandate/index.js';
 
-function visibleLedgerCount(surface: DaoMandateSurfaceV1): number {
+function visibleLedgerKeys(surface: DaoMandateSurfaceV1): string[] {
   return [
     ...surface.requirementLedger.hardGates,
     ...surface.requirementLedger.readinessFloors,
@@ -15,10 +15,10 @@ function visibleLedgerCount(surface: DaoMandateSurfaceV1): number {
     ...surface.requirementLedger.sourceRoutes,
     ...surface.requirementLedger.optionalOptimizations,
     ...surface.requirementLedger.recentOmens,
-  ].length;
+  ].map((row) => `${row.id}:${row.bucket}:${row.state}:${row.route?.id ?? 'none'}`);
 }
 
-test('P8 Guidance Oath profiles change visible density without mutating Mandate truth', () => {
+test('legacy Guidance Oath profiles no longer change visible density or Mandate truth', () => {
   const raw = createDaoMandateFixture('gate_failed', 'jade');
   const rawSnapshot = JSON.stringify(raw);
   const sealed = applyDaoMandateVisibility(raw, { settings: { guidanceOath: 'sealed' } });
@@ -37,8 +37,10 @@ test('P8 Guidance Oath profiles change visible density without mutating Mandate 
     assert.equal(filtered.prestige?.state ?? null, raw.prestige?.state ?? null);
   }
 
-  assert.ok(visibleLedgerCount(sealed) <= visibleLedgerCount(elder));
-  assert.ok(visibleLedgerCount(elder) <= visibleLedgerCount(jade));
-  assert.ok(sealed.lessonSlips.length <= elder.lessonSlips.length);
-  assert.ok(elder.lessonSlips.length <= jade.lessonSlips.length);
+  assert.deepEqual(visibleLedgerKeys(sealed), visibleLedgerKeys(elder));
+  assert.deepEqual(visibleLedgerKeys(elder), visibleLedgerKeys(jade));
+  assert.deepEqual(sealed.lessonSlips.map((slip) => slip.id), elder.lessonSlips.map((slip) => slip.id));
+  assert.deepEqual(elder.lessonSlips.map((slip) => slip.id), jade.lessonSlips.map((slip) => slip.id));
+  assert.deepEqual(sealed.sourceMap.map((entry) => entry.id), jade.sourceMap.map((entry) => entry.id));
+  assert.deepEqual(sealed.backgroundPlan.routes.map((route) => route.id), jade.backgroundPlan.routes.map((route) => route.id));
 });

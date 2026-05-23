@@ -13,7 +13,7 @@ export {
   getDefaultDaoMandateGuidanceProfile,
 } from './daoMandateVisibility.js';
 export {
-  DAO_GUIDANCE_OATH_OPTIONS,
+  DAO_MANDATE_STANDARD_SPARSE_GUIDANCE_PROFILE,
   createDefaultDaoMandateGuidanceSettings,
   isDaoAdvancedReadinessMathSetting,
   isDaoBackgroundRemindersSetting,

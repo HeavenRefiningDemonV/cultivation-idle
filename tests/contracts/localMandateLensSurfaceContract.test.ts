@@ -224,7 +224,7 @@ test('World Mandate routing lens resolves one strongest visible module and ignor
   assert.equal(hiddenPrimary.strongestModuleKey, 'outskirts');
 });
 
-test('local Mandate lens visibility uses Dao Mandate profile filtering', () => {
+test('local Mandate lens visibility uses granular Mandate stamp filtering', () => {
   const mandate = mandateWithRoutes({
     primary: worldRoute('attempt-gate', 'gateTrial', { priority: 1 }),
     secondary: [worldRoute('field-support', 'outskirts', { priority: 30 })],
@@ -250,11 +250,11 @@ test('local Mandate lens visibility uses Dao Mandate profile filtering', () => {
   });
 
   assert.equal(applyLocalMandateLensVisibility(primaryLens, mandate, { guidanceOath: 'sealed', localLensBanners: 'compact' })?.relation, 'primary');
-  assert.equal(applyLocalMandateLensVisibility(supportLens, mandate, { guidanceOath: 'sealed', localLensBanners: 'compact' }), null);
+  assert.equal(applyLocalMandateLensVisibility(supportLens, mandate, { guidanceOath: 'sealed', localLensBanners: 'compact' })?.relation, 'support');
   assert.equal(applyLocalMandateLensVisibility(rawSupportLens, mandate, { guidanceOath: 'jade', localLensBanners: 'full' })?.relation, 'support');
 });
 
-test('local Mandate lens visibility hides quiet modules while preserving relevant profile detail', () => {
+test('local Mandate lens visibility hides quiet modules while preserving granular detail', () => {
   const mandate = mandateWithRoutes({
     primary: worldRoute('attempt-gate', 'gateTrial', { priority: 1 }),
     secondary: [worldRoute('field-support', 'outskirts', { priority: 30 })],
@@ -282,6 +282,7 @@ test('local Mandate lens visibility hides quiet modules while preserving relevan
   assert.equal(applyLocalMandateLensVisibility(quietLens, mandate, { guidanceOath: 'sealed', localLensBanners: 'compact' }), null);
   assert.equal(applyLocalMandateLensVisibility(quietLens, mandate, { guidanceOath: 'elder', localLensBanners: 'compact' }), null);
   assert.equal(applyLocalMandateLensVisibility(primaryLens, mandate, { guidanceOath: 'sealed', localLensBanners: 'compact' })?.relation, 'primary');
+  assert.equal(applyLocalMandateLensVisibility(supportLens, mandate, { guidanceOath: 'sealed', localLensBanners: 'compact' })?.relation, 'support');
   assert.equal(applyLocalMandateLensVisibility(supportLens, mandate, { guidanceOath: 'elder', localLensBanners: 'compact' })?.relation, 'support');
   assert.equal(applyLocalMandateLensVisibility(supportLens, mandate, { guidanceOath: 'jade', localLensBanners: 'full' })?.relation, 'support');
 });

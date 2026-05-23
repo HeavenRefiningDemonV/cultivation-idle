@@ -8,6 +8,7 @@ import {
 import {
   pickDaoMandateGuidanceSettings,
   resolveDaoMandateEffectiveMotionMode,
+  type DaoMandateGuidanceSettings,
   type DaoMandateEffectiveMotionMode,
 } from './daoMandateGuidanceSettings.js';
 import {
@@ -30,9 +31,11 @@ export interface BuildLiveDaoMandateModuleSourceSinkProjectionArgs {
   currentScreen: string;
 }
 
-function variantForProfile(profile: DaoMandateGuidanceProfile): DaoMandateModuleSourceSinkProjection['variant'] {
-  if (profile === 'sealed') return 'compact';
-  if (profile === 'jade') return 'expanded';
+function variantForSourceRouteDetail(
+  sourceRouteDetail: DaoMandateGuidanceSettings['sourceRouteDetail'],
+): DaoMandateModuleSourceSinkProjection['variant'] {
+  if (sourceRouteDetail === 'never') return 'compact';
+  if (sourceRouteDetail === 'always') return 'expanded';
   return 'default';
 }
 
@@ -53,18 +56,14 @@ export function buildLiveDaoMandateModuleSourceSinkProjection(
     guidanceProfile: guidanceSettings.guidanceOath,
   });
   if (!sourceSink) return null;
-  if (
-    guidanceSettings.guidanceOath === 'sealed'
-    && sourceSink.relation === 'quiet'
-    && sourceSink.entries.length === 0
-  ) {
+  if (sourceSink.relation === 'quiet' && sourceSink.entries.length === 0) {
     return null;
   }
 
   return {
     sourceSink,
     profile: guidanceSettings.guidanceOath,
-    variant: variantForProfile(guidanceSettings.guidanceOath),
+    variant: variantForSourceRouteDetail(guidanceSettings.sourceRouteDetail),
     motionMode: resolveDaoMandateEffectiveMotionMode({
       mandateMotionMode: guidanceSettings.mandateMotionMode,
       storyMotionMode: uiSettings.storyMotionMode,

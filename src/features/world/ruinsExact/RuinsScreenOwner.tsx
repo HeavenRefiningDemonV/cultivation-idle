@@ -58,7 +58,7 @@ export function RuinsScreenOwner(props: { cityId: string; ruinId?: string | null
       lens: visibleLens,
       profile: guidanceSettings.guidanceOath,
       motionMode: mandateMotionMode,
-      variant: guidanceSettings.guidanceOath === 'sealed' || guidanceSettings.localLensBanners === 'compact'
+      variant: guidanceSettings.localLensBanners === 'compact'
         ? 'compact'
         : guidanceSettings.localLensBanners === 'full' ? 'full' : 'default',
     };

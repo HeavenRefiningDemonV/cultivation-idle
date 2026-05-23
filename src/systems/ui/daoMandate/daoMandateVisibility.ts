@@ -16,6 +16,7 @@ import type {
   DaoSourceOption,
 } from './daoMandateTypes.js';
 import {
+  DAO_MANDATE_STANDARD_SPARSE_GUIDANCE_PROFILE,
   createDefaultDaoMandateGuidanceSettings,
   sanitizeDaoMandateGuidanceSettings,
   type DaoMandateGuidanceSettings,
@@ -23,12 +24,13 @@ import {
 import { applyDaoMandateSourceMapProfileVisibility } from './daoMandateSourceMap.js';
 
 export interface DaoMandateVisibilityOptions {
+  /** @deprecated V2-3 accepts legacy Guidance Oath profiles only as inert compatibility input. */
   profile?: DaoMandateGuidanceProfile;
   settings?: Partial<DaoMandateGuidanceSettings>;
 }
 
 export function getDefaultDaoMandateGuidanceProfile(): DaoMandateGuidanceProfile {
-  return createDefaultDaoMandateGuidanceSettings().guidanceOath;
+  return DAO_MANDATE_STANDARD_SPARSE_GUIDANCE_PROFILE;
 }
 
 type LedgerBucketKey = keyof DaoRequirementLedger;
@@ -259,7 +261,7 @@ function selectedKey(entry: SelectedLedgerRow): string {
   return `${entry.bucket}:${entry.row.id}`;
 }
 
-function buildElderLedger(surface: DaoMandateSurfaceV1): DaoRequirementLedger {
+function buildStandardSparseLedger(surface: DaoMandateSurfaceV1): DaoRequirementLedger {
   const ledger = createEmptyLedger();
   const selectedKeys = new Set<string>();
 
@@ -304,41 +306,17 @@ function buildElderLedger(surface: DaoMandateSurfaceV1): DaoRequirementLedger {
   return ledger;
 }
 
-function applySealed(surface: DaoMandateSurfaceV1): void {
-  surface.secondaryRoutes = surface.primaryRoute.blocked ? surface.secondaryRoutes.slice(0, 1) : [];
-  surface.requirementLedger = ledgerWithOnly(findSealedLedgerRow(surface));
-  surface.readiness = {
-    ...surface.readiness,
-    rows: surface.readiness.rows.slice(0, 1),
-  };
-  surface.sourceMap = surfaceNeedsSourceRouteDetail(surface)
-    ? applyDaoMandateSourceMapProfileVisibility(surface.sourceMap, 'sealed')
-    : [];
-  surface.backgroundPlan = { ...surface.backgroundPlan, routes: [] };
-  surface.lessonSlips = [];
-}
-
-function applyElder(surface: DaoMandateSurfaceV1): void {
+function applyStandardSparseVisibility(surface: DaoMandateSurfaceV1): void {
   surface.secondaryRoutes = surface.secondaryRoutes.slice(0, 2);
-  surface.requirementLedger = buildElderLedger(surface);
-  surface.readiness = {
-    ...surface.readiness,
-    rows: surface.readiness.rows.slice(0, 3),
-  };
-  surface.sourceMap = applyDaoMandateSourceMapProfileVisibility(surface.sourceMap, 'elder');
-  surface.backgroundPlan = {
-    ...surface.backgroundPlan,
-    routes: surface.backgroundPlan.routes.slice(0, 1),
-  };
-  surface.lessonSlips = surface.lessonSlips.slice(0, 1);
+  surface.requirementLedger = buildStandardSparseLedger(surface);
 }
 
 function resolveVisibilitySettings(options: DaoMandateVisibilityOptions): DaoMandateGuidanceSettings {
-  const settings = sanitizeDaoMandateGuidanceSettings(options.settings ?? {});
-  return {
-    ...settings,
-    guidanceOath: options.profile ?? settings.guidanceOath,
-  };
+  return sanitizeDaoMandateGuidanceSettings({
+    ...createDefaultDaoMandateGuidanceSettings(),
+    ...(options.profile ? { guidanceOath: options.profile } : {}),
+    ...(options.settings ?? {}),
+  });
 }
 
 function hideSourceRouteDetails(surface: DaoMandateSurfaceV1): void {
@@ -353,10 +331,15 @@ function applySourceRouteDetail(surface: DaoMandateSurfaceV1, settings: DaoManda
   if (settings.sourceRouteDetail === 'always') return;
   if (settings.sourceRouteDetail === 'never' || !surfaceNeedsSourceRouteDetail(surface)) {
     hideSourceRouteDetails(surface);
+    return;
   }
+  surface.sourceMap = applyDaoMandateSourceMapProfileVisibility(
+    surface.sourceMap,
+    DAO_MANDATE_STANDARD_SPARSE_GUIDANCE_PROFILE,
+  );
 }
 
-function applyJadeSlipLessons(surface: DaoMandateSurfaceV1, settings: DaoMandateGuidanceSettings): void {
+function applyLessonCadence(surface: DaoMandateSurfaceV1, settings: DaoMandateGuidanceSettings): void {
   if (settings.jadeSlipLessons === 'off') {
     surface.lessonSlips = [];
     return;
@@ -365,15 +348,15 @@ function applyJadeSlipLessons(surface: DaoMandateSurfaceV1, settings: DaoMandate
     surface.lessonSlips = surface.lessonSlips.slice(0, 1);
     return;
   }
-  surface.lessonSlips = surface.lessonSlips.slice(0, settings.guidanceOath === 'jade' ? 3 : 1);
+  surface.lessonSlips = surface.lessonSlips.slice(0, 3);
 }
 
 function shouldKeepLocalLens(surface: DaoMandateSurfaceV1, settings: DaoMandateGuidanceSettings): boolean {
   if (!surface.localLens) return false;
+  if (surface.localLens.relation === 'quiet') return false;
   if (settings.localLensBanners === 'hidden') return false;
   if (settings.localLensBanners === 'full') return true;
-  if (settings.guidanceOath !== 'sealed') return true;
-  return surface.localLens.relation === 'primary' || surface.localLens.relation === 'blocked';
+  return true;
 }
 
 function applyLocalLensBanners(surface: DaoMandateSurfaceV1, settings: DaoMandateGuidanceSettings): void {
@@ -387,6 +370,13 @@ function applyAdvancedReadinessMath(surface: DaoMandateSurfaceV1, settings: DaoM
     surface.readiness = {
       ...surface.readiness,
       rows: [],
+    };
+    return;
+  }
+  if (settings.advancedReadinessMath === 'collapsed') {
+    surface.readiness = {
+      ...surface.readiness,
+      rows: surface.readiness.rows.slice(0, 3),
     };
   }
 }
@@ -426,28 +416,13 @@ function applyBackgroundReminders(surface: DaoMandateSurfaceV1, settings: DaoMan
   const hasIdleSlots = (surface.backgroundPlan.idleSlotCount ?? 0) > 0;
   surface.backgroundPlan = {
     ...surface.backgroundPlan,
-    routes: blockedRoute ? [blockedRoute] : hasIdleSlots && settings.guidanceOath !== 'sealed' ? routes.slice(0, 1) : [],
+    routes: blockedRoute ? [blockedRoute] : hasIdleSlots ? routes.slice(0, 1) : [],
   };
 }
 
 function applyRecentOmensFeed(surface: DaoMandateSurfaceV1, settings: DaoMandateGuidanceSettings): void {
-  if (settings.guidanceOath === 'sealed') {
-    const critical = surface.recentOmens.find((omen) => (
-      omen.tone === 'danger' ||
-      omen.tone === 'warning' ||
-      omen.source === 'failure_reflection' ||
-      omen.source === 'offline' ||
-      /gate|safety|cap|reincarnation|blocked|shifted/i.test(`${omen.label} ${omen.detail}`)
-    ));
-    surface.recentOmens = critical ? [critical] : [];
-    surface.requirementLedger = {
-      ...surface.requirementLedger,
-      recentOmens: surface.requirementLedger.recentOmens.slice(0, critical ? 1 : 0),
-    };
-    return;
-  }
   if (settings.recentOmensFeed === 'full') {
-    const cap = settings.guidanceOath === 'jade' ? 5 : 3;
+    const cap = 5;
     surface.recentOmens = surface.recentOmens.slice(0, cap);
     surface.requirementLedger = {
       ...surface.requirementLedger,
@@ -472,24 +447,14 @@ function applyRecentOmensFeed(surface: DaoMandateSurfaceV1, settings: DaoMandate
 
 function applyPrestigeCounsel(surface: DaoMandateSurfaceV1, settings: DaoMandateGuidanceSettings): void {
   if (!surface.prestige) return;
-  if (settings.guidanceOath === 'sealed') {
-    if (
-      surface.prestige.state !== 'recommended' &&
-      surface.prestige.state !== 'cap_recommended' &&
-      surface.prestige.state !== 'blocked'
-    ) {
-      surface.prestige = null;
-    }
-    return;
-  }
-  if (settings.guidanceOath === 'elder' && surface.prestige.state === 'too_early') {
+  if (surface.prestige.state === 'too_early') {
     surface.prestige = null;
   }
 }
 
 function applyGranularSettings(surface: DaoMandateSurfaceV1, settings: DaoMandateGuidanceSettings): void {
   applySourceRouteDetail(surface, settings);
-  applyJadeSlipLessons(surface, settings);
+  applyLessonCadence(surface, settings);
   applyLocalLensBanners(surface, settings);
   applyAdvancedReadinessMath(surface, settings);
   applyFailureCoaching(surface, settings);
@@ -500,17 +465,13 @@ function applyGranularSettings(surface: DaoMandateSurfaceV1, settings: DaoMandat
 
 export function applyDaoMandateVisibility(
   surface: DaoMandateSurfaceV1,
-  options: DaoMandateVisibilityOptions,
+  options: DaoMandateVisibilityOptions = {},
 ): DaoMandateSurfaceV1 {
   const settings = resolveVisibilitySettings(options);
   const next = cloneSurface(surface);
-  next.meta.guidanceProfile = settings.guidanceOath;
+  next.meta.guidanceProfile = DAO_MANDATE_STANDARD_SPARSE_GUIDANCE_PROFILE;
 
-  if (settings.guidanceOath === 'sealed') {
-    applySealed(next);
-  } else if (settings.guidanceOath === 'elder') {
-    applyElder(next);
-  }
+  applyStandardSparseVisibility(next);
   applyGranularSettings(next, settings);
 
   return next;

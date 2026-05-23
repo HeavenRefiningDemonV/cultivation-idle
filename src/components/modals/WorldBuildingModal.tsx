@@ -152,7 +152,7 @@ export function WorldBuildingModal({
     },
     [city, guidanceSettings, isStoreMode, mandateModuleKey, open, storeCityId],
   );
-  const localMandateVariant = guidanceSettings.guidanceOath === 'sealed' || guidanceSettings.localLensBanners === 'compact'
+  const localMandateVariant = guidanceSettings.localLensBanners === 'compact'
     ? 'compact'
     : guidanceSettings.localLensBanners === 'full'
       ? 'full'

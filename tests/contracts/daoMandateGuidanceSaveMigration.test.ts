@@ -21,7 +21,7 @@ test('default saves serialize Dao Mandate guidance settings', () => {
 
   assert.deepEqual(save.uiSettings, {
     storyMotionMode: 'full',
-    guidanceOath: 'jade',
+    guidanceOath: 'elder',
     jadeSlipLessons: 'repeat_until_learned',
     localLensBanners: 'full',
     sourceRouteDetail: 'always',
@@ -34,7 +34,7 @@ test('default saves serialize Dao Mandate guidance settings', () => {
   });
 });
 
-test('old saves without uiSettings receive Elder guidance defaults', () => {
+test('old saves without uiSettings receive standard sparse compatibility defaults', () => {
   const merged = mergeWithDefaults({});
 
   assert.equal(merged.uiSettings?.storyMotionMode, 'full');
@@ -73,4 +73,32 @@ test('malformed guidance save fields default individually without wiping valid s
   assert.equal(merged.uiSettings?.sourceRouteDetail, 'always');
   assert.equal(merged.uiSettings?.localLensBanners, 'full');
   assert.equal(merged.uiSettings?.recentOmensFeed, 'compact');
+});
+
+test('legacy Guidance Oath save values normalize while preserving valid granular controls', () => {
+  for (const guidanceOath of ['sealed', 'elder', 'jade'] as const) {
+    const merged = mergeWithDefaults({
+      uiSettings: {
+        guidanceOath,
+        jadeSlipLessons: 'off',
+        localLensBanners: 'full',
+        sourceRouteDetail: 'always',
+        advancedReadinessMath: 'expanded',
+        failureCoaching: 'critical_only',
+        backgroundReminders: 'full_optimization',
+        recentOmensFeed: 'full',
+        mandateMotionMode: 'reduced',
+      },
+    });
+
+    assert.equal(merged.uiSettings?.guidanceOath, 'elder');
+    assert.equal(merged.uiSettings?.jadeSlipLessons, 'off');
+    assert.equal(merged.uiSettings?.localLensBanners, 'full');
+    assert.equal(merged.uiSettings?.sourceRouteDetail, 'always');
+    assert.equal(merged.uiSettings?.advancedReadinessMath, 'expanded');
+    assert.equal(merged.uiSettings?.failureCoaching, 'critical_only');
+    assert.equal(merged.uiSettings?.backgroundReminders, 'full_optimization');
+    assert.equal(merged.uiSettings?.recentOmensFeed, 'full');
+    assert.equal(merged.uiSettings?.mandateMotionMode, 'reduced');
+  }
 });

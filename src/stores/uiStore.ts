@@ -4,6 +4,7 @@ import type { OfflineCatchupResult } from '../services/time/OfflineCatchup.js';
 import type { StoryMotionMode } from '../features/story/storyTypes.js';
 import {
   createDefaultDaoMandateGuidanceSettings,
+  sanitizeDaoMandateGuidanceSettings,
   type DaoMandateGuidanceSettings,
 } from '../systems/ui/daoMandate/daoMandateGuidanceSettings.js';
 import {
@@ -718,21 +719,29 @@ export const useUIStore = create<UIState>()(
      */
     setSettings: (partial: Partial<UISettingsState>) => {
       set((state) => {
-        state.settings = { ...state.settings, ...partial };
+        const merged = { ...state.settings, ...partial };
+        state.settings = {
+          ...merged,
+          ...sanitizeDaoMandateGuidanceSettings(merged),
+        };
       });
     },
 
     setGuidanceOath: (oath) => {
       set((state) => {
-        state.settings.guidanceOath = oath;
+        state.settings.guidanceOath = sanitizeDaoMandateGuidanceSettings({ guidanceOath: oath }).guidanceOath;
       });
     },
 
     setGuidanceSetting: (key, value) => {
       set((state) => {
-        state.settings = {
+        const merged = {
           ...state.settings,
           [key]: value,
+        };
+        state.settings = {
+          ...merged,
+          ...sanitizeDaoMandateGuidanceSettings(merged),
         };
       });
     },

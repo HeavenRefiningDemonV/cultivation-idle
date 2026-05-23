@@ -85,7 +85,7 @@ export function OutskirtsScreenOwner({ cityId }: OutskirtsScreenOwnerProps) {
       lens: visibleLens,
       profile: guidanceSettings.guidanceOath,
       motionMode: mandateMotionMode,
-      variant: guidanceSettings.guidanceOath === 'sealed' || guidanceSettings.localLensBanners === 'compact'
+      variant: guidanceSettings.localLensBanners === 'compact'
         ? 'compact'
         : guidanceSettings.localLensBanners === 'full' ? 'full' : 'default',
     };

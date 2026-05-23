@@ -24,6 +24,32 @@ function visibleLedgerRows(surface: DaoMandateSurfaceV1) {
   ];
 }
 
+function routeKey(route: DaoMandateSurfaceV1['primaryRoute'] | null | undefined): string | null {
+  if (!route) return null;
+  return [
+    route.id,
+    route.label,
+    route.destinationLabel,
+    route.target?.kind,
+    route.blocked ? 'blocked' : 'open',
+  ].filter(Boolean).join('::');
+}
+
+function strategicFingerprint(surface: DaoMandateSurfaceV1) {
+  return {
+    guidanceProfile: surface.meta.guidanceProfile,
+    secondaryRoutes: surface.secondaryRoutes.map(routeKey),
+    ledgerRows: visibleLedgerRows(surface).map((row) => `${row.id}:${row.bucket}:${row.state}:${routeKey(row.route)}`),
+    readinessRows: surface.readiness.rows.map((row) => `${row.id}:${row.label}:${row.tone}:${routeKey(row.route)}`),
+    sourceMap: surface.sourceMap.map((entry) => `${entry.id}:${entry.bestSources.length}:${entry.fallbackSources.length}`),
+    backgroundRoutes: surface.backgroundPlan.routes.map(routeKey),
+    recentOmens: surface.recentOmens.map((omen) => `${omen.id}:${omen.source}:${omen.tone}`),
+    lessonSlips: surface.lessonSlips.map((slip) => `${slip.conceptId}:${slip.trigger}`),
+    localLens: surface.localLens?.relation ?? null,
+    prestige: surface.prestige?.state ?? null,
+  };
+}
+
 function assertTruthInvariant(raw: DaoMandateSurfaceV1, filtered: DaoMandateSurfaceV1) {
   assert.equal(filtered.milestone.id, raw.milestone.id);
   assert.equal(filtered.milestone.state, raw.milestone.state);
@@ -132,11 +158,11 @@ test('Dao Mandate visibility accepts profile compatibility and settings objects'
 
   assertTruthInvariant(raw, fromProfile);
   assertTruthInvariant(raw, fromSettings);
-  assert.equal(visibleLedgerRows(fromSettings).length, visibleLedgerRows(fromProfile).length);
-  assert.equal(fromSettings.meta.guidanceProfile, 'sealed');
+  assert.deepEqual(strategicFingerprint(fromSettings), strategicFingerprint(fromProfile));
+  assert.equal(fromSettings.meta.guidanceProfile, 'elder');
 });
 
-test('Guidance Oath profiles reveal increasing detail without changing Mandate truth', () => {
+test('legacy Guidance Oath profiles do not change visible Mandate strategy', () => {
   const raw = createDaoMandateFixture('gate_failed', 'jade');
   const sealed = applyDaoMandateVisibility(raw, { settings: { guidanceOath: 'sealed' } });
   const elder = applyDaoMandateVisibility(raw, { settings: { guidanceOath: 'elder' } });
@@ -145,10 +171,8 @@ test('Guidance Oath profiles reveal increasing detail without changing Mandate t
   assertTruthInvariant(raw, sealed);
   assertTruthInvariant(raw, elder);
   assertTruthInvariant(raw, jade);
-  assert.equal(visibleLedgerRows(sealed).length <= visibleLedgerRows(elder).length, true);
-  assert.equal(visibleLedgerRows(elder).length <= visibleLedgerRows(jade).length, true);
-  assert.equal(sealed.lessonSlips.length <= elder.lessonSlips.length, true);
-  assert.equal(elder.lessonSlips.length <= jade.lessonSlips.length, true);
+  assert.deepEqual(strategicFingerprint(sealed), strategicFingerprint(elder));
+  assert.deepEqual(strategicFingerprint(elder), strategicFingerprint(jade));
 });
 
 test('Dao Mandate granular visibility settings filter optional detail deterministically', () => {
@@ -176,18 +200,23 @@ test('Dao Mandate granular visibility settings filter optional detail determinis
   assert.equal(hidden.requirementLedger.recentOmens.length, 0);
 });
 
-test('Sealed compact local lens keeps primary and blocked lenses only', () => {
-  for (const relation of ['primary', 'blocked'] as const) {
+test('compact local lens visibility is granular and profile-invariant', () => {
+  for (const relation of ['primary', 'blocked', 'support', 'future'] as const) {
     const raw = withLocalLens(createDaoMandateFixture('cultivating_qi_short', 'jade'), relation);
-    const filtered = applyDaoMandateVisibility(raw, {
+    const sealed = applyDaoMandateVisibility(raw, {
       settings: { guidanceOath: 'sealed', localLensBanners: 'compact' },
     });
+    const jade = applyDaoMandateVisibility(raw, {
+      settings: { guidanceOath: 'jade', localLensBanners: 'compact' },
+    });
 
-    assertTruthInvariant(raw, filtered);
-    assert.equal(filtered.localLens?.relation, relation);
+    assertTruthInvariant(raw, sealed);
+    assertTruthInvariant(raw, jade);
+    assert.equal(sealed.localLens?.relation, relation);
+    assert.equal(jade.localLens?.relation, relation);
   }
 
-  for (const relation of ['support', 'future', 'quiet'] as const) {
+  for (const relation of ['quiet'] as const) {
     const raw = withLocalLens(createDaoMandateFixture('cultivating_qi_short', 'jade'), relation);
     const filtered = applyDaoMandateVisibility(raw, {
       settings: { guidanceOath: 'sealed', localLensBanners: 'compact' },
@@ -215,9 +244,13 @@ test('Local lens banner settings override profile density deterministically', ()
   const elderCompact = applyDaoMandateVisibility(raw, {
     settings: { guidanceOath: 'elder', localLensBanners: 'compact' },
   });
+  const sealedCompact = applyDaoMandateVisibility(raw, {
+    settings: { guidanceOath: 'sealed', localLensBanners: 'compact' },
+  });
 
   assert.equal(sealedFull.localLens?.relation, 'support');
   assert.equal(elderCompact.localLens?.relation, 'support');
+  assert.equal(sealedCompact.localLens?.relation, 'support');
 });
 
 test('Dao Mandate source and background toggles preserve or cap detail by setting', () => {

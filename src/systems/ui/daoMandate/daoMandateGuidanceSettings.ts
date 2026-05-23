@@ -12,6 +12,11 @@ export type DaoMandateMotionModeSetting = 'follow_story' | 'full' | 'medium' | '
 export type DaoMandateEffectiveMotionMode = 'full' | 'medium' | 'low' | 'reduced';
 
 export interface DaoMandateGuidanceSettings {
+  /**
+   * Legacy compatibility field for saves created before Dao Mandate V2-3.
+   * V2 no longer exposes Guidance Oath as a player-facing strategy profile.
+   * All legacy values resolve to the same sparse Omen/Proof visibility model.
+   */
   guidanceOath: DaoMandateGuidanceProfile;
   jadeSlipLessons: DaoJadeSlipLessonsSetting;
   localLensBanners: DaoLocalLensBannersSetting;
@@ -33,26 +38,7 @@ const BACKGROUND_REMINDER_VALUES = ['critical_idle_only', 'normal', 'full_optimi
 const RECENT_OMENS_FEED_VALUES = ['hidden', 'compact', 'full'] as const;
 const MANDATE_MOTION_MODE_VALUES = ['follow_story', 'full', 'medium', 'low', 'reduced'] as const;
 
-export const DAO_GUIDANCE_OATH_OPTIONS = [
-  {
-    id: 'sealed',
-    title: 'Sealed Counsel',
-    subtitle: 'Low guidance',
-    description: 'A quiet Mandate for discovery. Shows the current obstruction and one direct route, while hiding most lessons, source maps, optional optimizations, and background reminders.',
-  },
-  {
-    id: 'elder',
-    title: "Elder's Counsel",
-    subtitle: 'Default guidance',
-    description: 'A balanced Mandate for normal play. Shows the main route, concise proof rows, relevant local hints, short failure guidance, and useful background reminders.',
-  },
-  {
-    id: 'jade',
-    title: 'Jade Slip Tutor',
-    subtitle: 'Maximum guidance',
-    description: 'A teaching Mandate for new, returning, or testing players. Shows full ledgers, source and fallback routes, advanced readiness evidence, repeated lessons, and richer failure coaching.',
-  },
-] as const;
+export const DAO_MANDATE_STANDARD_SPARSE_GUIDANCE_PROFILE: DaoMandateGuidanceProfile = 'elder';
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   !!value && typeof value === 'object' && !Array.isArray(value);
@@ -98,7 +84,7 @@ export function isDaoMandateMotionModeSetting(value: unknown): value is DaoManda
 
 export function createDefaultDaoMandateGuidanceSettings(): DaoMandateGuidanceSettings {
   return {
-    guidanceOath: 'elder',
+    guidanceOath: DAO_MANDATE_STANDARD_SPARSE_GUIDANCE_PROFILE,
     jadeSlipLessons: 'first_time',
     localLensBanners: 'compact',
     sourceRouteDetail: 'needed_only',
@@ -115,9 +101,7 @@ export function sanitizeDaoMandateGuidanceSettings(input: unknown): DaoMandateGu
   if (!isRecord(input)) return defaults;
 
   return {
-    guidanceOath: isDaoMandateGuidanceProfile(input.guidanceOath)
-      ? input.guidanceOath
-      : defaults.guidanceOath,
+    guidanceOath: DAO_MANDATE_STANDARD_SPARSE_GUIDANCE_PROFILE,
     jadeSlipLessons: isDaoJadeSlipLessonsSetting(input.jadeSlipLessons)
       ? input.jadeSlipLessons
       : defaults.jadeSlipLessons,

@@ -93,7 +93,7 @@ const CURRENCY_JOINER = ' \u00b7 ';
 function resolveGateTrialMandateLensVariant(
   settings: DaoMandateGuidanceSettings,
 ): NonNullable<GateTrialExactSurfaceV1['mandateLens']>['variant'] {
-  return settings.guidanceOath === 'sealed' || settings.localLensBanners === 'compact'
+  return settings.localLensBanners === 'compact'
     ? 'compact'
     : settings.localLensBanners === 'full' ? 'full' : 'default';
 }

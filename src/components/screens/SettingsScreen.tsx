@@ -6,7 +6,6 @@ import { RewardService } from '../../services/rewards/index.js';
 import { buildMegaRewardBundle } from '../../debug/buildMegaRewardBundle.js';
 import { useUIStore } from '../../stores/uiStore.js';
 import {
-  DAO_GUIDANCE_OATH_OPTIONS,
   type DaoAdvancedReadinessMathSetting,
   type DaoBackgroundRemindersSetting,
   type DaoFailureCoachingSetting,
@@ -44,8 +43,8 @@ type GuidanceSelectOption<T extends string> = {
 
 const JADE_SLIP_LESSON_OPTIONS: GuidanceSelectOption<DaoJadeSlipLessonsSetting>[] = [
   { value: 'off', label: 'Off' },
-  { value: 'first_time', label: 'First time only' },
-  { value: 'repeat_until_learned', label: 'Repeat until learned' },
+  { value: 'first_time', label: 'First encounter' },
+  { value: 'repeat_until_learned', label: 'Repeat on demand' },
 ];
 
 const LOCAL_LENS_BANNER_OPTIONS: GuidanceSelectOption<DaoLocalLensBannersSetting>[] = [
@@ -55,8 +54,8 @@ const LOCAL_LENS_BANNER_OPTIONS: GuidanceSelectOption<DaoLocalLensBannersSetting
 ];
 
 const SOURCE_ROUTE_DETAIL_OPTIONS: GuidanceSelectOption<DaoSourceRouteDetailSetting>[] = [
-  { value: 'needed_only', label: 'Needed only' },
-  { value: 'always', label: 'Always' },
+  { value: 'needed_only', label: 'When needed' },
+  { value: 'always', label: 'Expanded when inspected' },
   { value: 'never', label: 'Never' },
 ];
 
@@ -75,7 +74,7 @@ const FAILURE_COACHING_OPTIONS: GuidanceSelectOption<DaoFailureCoachingSetting>[
 const BACKGROUND_REMINDER_OPTIONS: GuidanceSelectOption<DaoBackgroundRemindersSetting>[] = [
   { value: 'critical_idle_only', label: 'Critical idle only' },
   { value: 'normal', label: 'Normal' },
-  { value: 'full_optimization', label: 'Full optimization' },
+  { value: 'full_optimization', label: 'Expanded support' },
 ];
 
 const RECENT_OMENS_FEED_OPTIONS: GuidanceSelectOption<DaoRecentOmensFeedSetting>[] = [
@@ -149,7 +148,6 @@ export function SettingsScreen() {
   const requirePrestigeConfirm = useUIStore((state) => state.settings.requirePrestigeConfirm);
   const showSystemStatusPanel = useUIStore((state) => state.settings.showSystemStatusPanel);
   const storyMotionMode = useUIStore((state) => state.settings.storyMotionMode);
-  const guidanceOath = useUIStore((state) => state.settings.guidanceOath);
   const jadeSlipLessons = useUIStore((state) => state.settings.jadeSlipLessons);
   const localLensBanners = useUIStore((state) => state.settings.localLensBanners);
   const sourceRouteDetail = useUIStore((state) => state.settings.sourceRouteDetail);
@@ -159,7 +157,6 @@ export function SettingsScreen() {
   const recentOmensFeed = useUIStore((state) => state.settings.recentOmensFeed);
   const mandateMotionMode = useUIStore((state) => state.settings.mandateMotionMode);
   const setSettings = useUIStore((state) => state.setSettings);
-  const setGuidanceOath = useUIStore((state) => state.setGuidanceOath);
   const setGuidanceSetting = useUIStore((state) => state.setGuidanceSetting);
   const setHeaderTitles = useUIStore((state) => state.setHeaderTitles);
   const addNotification = useUIStore((state) => state.addNotification);
@@ -384,55 +381,29 @@ export function SettingsScreen() {
             <h2 className={'settingsScreenPanelTitle'}>Gameplay &amp; UI</h2>
             <p className={'settingsScreenPanelSubtitle'}>Toggle interface elements and confirmations.</p>
             <div className={'settingsScreenOptionList'}>
-              <section className={'settingsGuidanceOath'} aria-labelledby="settingsGuidanceOathTitle">
-                <div className={'settingsGuidanceOathHeader'}>
-                  <h3 id="settingsGuidanceOathTitle" className={'settingsGuidanceOathTitle'}>Guidance Oath</h3>
-                  <p className={'settingsGuidanceOathIntro'}>
-                    Choose how openly the Dao Mandate counsels this life. This changes only displayed help and
-                    explanations, never rewards, power, or progression.
+              <section className={'settingsMandateInterface'} aria-labelledby="settingsMandateInterfaceTitle">
+                <div className={'settingsMandateInterfaceHeader'}>
+                  <h3 id="settingsMandateInterfaceTitle" className={'settingsMandateInterfaceTitle'}>
+                    Dao Mandate Interface
+                  </h3>
+                  <p className={'settingsMandateInterfaceIntro'}>
+                    The Mandate uses one sparse omen-and-proof model for every player. These controls only change
+                    optional explanations, detail drawers, lesson cadence, and motion. They never change rewards, power, route truth, or progression.
                   </p>
                 </div>
 
-                <div className={'settingsGuidanceOathCards'} role="radiogroup" aria-label="Guidance Oath">
-                  {DAO_GUIDANCE_OATH_OPTIONS.map((option) => {
-                    const selected = guidanceOath === option.id;
-                    return (
-                      <label
-                        key={option.id}
-                        className={`settingsGuidanceOathCard ${selected ? 'settingsGuidanceOathCardSelected' : ''}`}
-                      >
-                        <input
-                          type="radio"
-                          name="guidanceOath"
-                          value={option.id}
-                          checked={selected}
-                          onChange={() => setGuidanceOath(option.id)}
-                          aria-label={`${option.title}, ${option.subtitle}`}
-                          className={'settingsGuidanceOathInput'}
-                        />
-                        <span className={'settingsGuidanceOathSeal'} aria-hidden="true">
-                          {selected ? 'Selected' : 'Select'}
-                        </span>
-                        <span className={'settingsGuidanceOathCardTitle'}>{option.title}</span>
-                        <span className={'settingsGuidanceOathSubtitle'}>{option.subtitle}</span>
-                        <span className={'settingsGuidanceOathDescription'}>{option.description}</span>
-                      </label>
-                    );
-                  })}
-                </div>
-
-                <details className={'settingsGuidanceAdvanced'}>
-                  <summary className={'settingsGuidanceAdvancedSummary'}>Advanced guidance details</summary>
-                  <p className={'settingsGuidanceAdvancedIntro'}>
-                    Fine-tune how much the Mandate explains after the main Oath has chosen the broad density.
+                <details className={'settingsMandateExplanation'} open>
+                  <summary className={'settingsMandateExplanationSummary'}>Explanation and accessibility</summary>
+                  <p className={'settingsMandateExplanationIntro'}>
+                    Adjust supporting explanation after the first layer without changing the decree, proof, or route truth.
                   </p>
 
-                  <div className={'settingsGuidanceAdvancedGrid'}>
-                    <label className={'settingsGuidanceAdvancedRow'}>
+                  <div className={'settingsMandateExplanationGrid'}>
+                    <label className={'settingsMandateExplanationRow'}>
                       <span>
-                        <span className={'settingsGuidanceAdvancedLabel'}>Jade Slip lessons</span>
-                        <span className={'settingsGuidanceAdvancedDescription'}>
-                          Controls tutorial-like lesson slips that explain why a Mandate row or route matters.
+                        <span className={'settingsMandateExplanationLabel'}>Jade Slip lessons</span>
+                        <span className={'settingsMandateExplanationDescription'}>
+                          Contextual teaching slips that explain a concept when it becomes relevant.
                         </span>
                       </span>
                       <select
@@ -447,11 +418,11 @@ export function SettingsScreen() {
                       </select>
                     </label>
 
-                    <label className={'settingsGuidanceAdvancedRow'}>
+                    <label className={'settingsMandateExplanationRow'}>
                       <span>
-                        <span className={'settingsGuidanceAdvancedLabel'}>Local module lens banners</span>
-                        <span className={'settingsGuidanceAdvancedDescription'}>
-                          Controls whether each module explains its relationship to the current Mandate when you visit it.
+                        <span className={'settingsMandateExplanationLabel'}>Room relation stamps</span>
+                        <span className={'settingsMandateExplanationDescription'}>
+                          Controls small local stamps that explain whether a room is relevant when you visit it.
                         </span>
                       </span>
                       <select
@@ -466,11 +437,11 @@ export function SettingsScreen() {
                       </select>
                     </label>
 
-                    <label className={'settingsGuidanceAdvancedRow'}>
+                    <label className={'settingsMandateExplanationRow'}>
                       <span>
-                        <span className={'settingsGuidanceAdvancedLabel'}>Source route detail</span>
-                        <span className={'settingsGuidanceAdvancedDescription'}>
-                          Controls whether the Mandate explains where missing materials, currencies, and proof items come from.
+                        <span className={'settingsMandateExplanationLabel'}>Source provenance</span>
+                        <span className={'settingsMandateExplanationDescription'}>
+                          Controls whether inspected proof and reserve details show where materials or proof can come from.
                         </span>
                       </span>
                       <select
@@ -485,11 +456,11 @@ export function SettingsScreen() {
                       </select>
                     </label>
 
-                    <label className={'settingsGuidanceAdvancedRow'}>
+                    <label className={'settingsMandateExplanationRow'}>
                       <span>
-                        <span className={'settingsGuidanceAdvancedLabel'}>Advanced readiness math</span>
-                        <span className={'settingsGuidanceAdvancedDescription'}>
-                          Controls detailed readiness rows such as weapon floor, medicine reserve, loadout coverage, and mastery targets.
+                        <span className={'settingsMandateExplanationLabel'}>Formula/detail rows</span>
+                        <span className={'settingsMandateExplanationDescription'}>
+                          Controls numeric evidence rows in detail views and owner screens.
                         </span>
                       </span>
                       <select
@@ -504,11 +475,11 @@ export function SettingsScreen() {
                       </select>
                     </label>
 
-                    <label className={'settingsGuidanceAdvancedRow'}>
+                    <label className={'settingsMandateExplanationRow'}>
                       <span>
-                        <span className={'settingsGuidanceAdvancedLabel'}>Failure coaching</span>
-                        <span className={'settingsGuidanceAdvancedDescription'}>
-                          Controls how much the Mandate explains after gate losses or repeated combat failures.
+                        <span className={'settingsMandateExplanationLabel'}>Failure reflections</span>
+                        <span className={'settingsMandateExplanationDescription'}>
+                          Controls how much detail appears after meaningful or repeated failures.
                         </span>
                       </span>
                       <select
@@ -523,11 +494,11 @@ export function SettingsScreen() {
                       </select>
                     </label>
 
-                    <label className={'settingsGuidanceAdvancedRow'}>
+                    <label className={'settingsMandateExplanationRow'}>
                       <span>
-                        <span className={'settingsGuidanceAdvancedLabel'}>Background reminders</span>
-                        <span className={'settingsGuidanceAdvancedDescription'}>
-                          Controls reminders for passive support such as expeditions, bounties, and queues while the main route continues.
+                        <span className={'settingsMandateExplanationLabel'}>Background support reminders</span>
+                        <span className={'settingsMandateExplanationDescription'}>
+                          Controls reminders for passive support such as expeditions, bounties, and queues.
                         </span>
                       </span>
                       <select
@@ -542,11 +513,11 @@ export function SettingsScreen() {
                       </select>
                     </label>
 
-                    <label className={'settingsGuidanceAdvancedRow'}>
+                    <label className={'settingsMandateExplanationRow'}>
                       <span>
-                        <span className={'settingsGuidanceAdvancedLabel'}>Recent omens feed</span>
-                        <span className={'settingsGuidanceAdvancedDescription'}>
-                          Controls whether recent events such as offline gains, gate losses, clears, and unlocks appear in Mandate memory.
+                        <span className={'settingsMandateExplanationLabel'}>Recent omen memory</span>
+                        <span className={'settingsMandateExplanationDescription'}>
+                          Controls how much recent-event memory appears in Mandate detail.
                         </span>
                       </span>
                       <select
@@ -561,10 +532,10 @@ export function SettingsScreen() {
                       </select>
                     </label>
 
-                    <label className={'settingsGuidanceAdvancedRow'}>
+                    <label className={'settingsMandateExplanationRow'}>
                       <span>
-                        <span className={'settingsGuidanceAdvancedLabel'}>Mandate motion</span>
-                        <span className={'settingsGuidanceAdvancedDescription'}>
+                        <span className={'settingsMandateExplanationLabel'}>Mandate motion</span>
+                        <span className={'settingsMandateExplanationDescription'}>
                           Controls only Mandate ceremony, reveals, glints, and seals. Reduced motion keeps the meaning but removes nonessential movement.
                         </span>
                       </span>
