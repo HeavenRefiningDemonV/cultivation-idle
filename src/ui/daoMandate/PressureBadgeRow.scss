@@ -1,0 +1,162 @@
+@import './DaoMandateTokens.scss';
+
+.daoPressureBadgeRow {
+  color: var(--dao-ink);
+}
+
+.daoPressureBadgeRow__empty {
+  margin: 0;
+  padding: 0.65rem 0.75rem;
+  color: var(--dao-ink-muted);
+  background: rgba(255, 244, 218, 0.34);
+  border: 1px dashed var(--dao-paper-border);
+  border-radius: var(--dao-card-radius);
+}
+
+.daoPressureBadgeRow__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: stretch;
+}
+
+.daoPressureBadge {
+  --dao-state-color: var(--dao-ink-muted);
+  --dao-state-fill: rgba(111, 87, 63, 0.12);
+  display: grid;
+  grid-template-columns: 1.55rem minmax(8rem, 1fr) minmax(0, auto);
+  gap: 0.48rem;
+  align-items: center;
+  min-width: min(100%, 12rem);
+  max-width: 20rem;
+  min-height: 3.45rem;
+  padding: 0.55rem 0.65rem;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(75, 45, 15, 0.04)),
+    var(--dao-parchment-soft);
+  border: 1px solid var(--dao-paper-border);
+  border-radius: 999px;
+  box-shadow: 0 5px 12px rgba(44, 28, 12, 0.12);
+}
+
+.daoPressureBadge--stable,
+.daoPressureBadge--ready,
+.daoPressureBadge--tone-jade {
+  --dao-state-color: var(--dao-jade-dark);
+  --dao-state-fill: rgba(94, 165, 128, 0.18);
+}
+
+.daoPressureBadge--thin,
+.daoPressureBadge--strained,
+.daoPressureBadge--low,
+.daoPressureBadge--tone-bronze {
+  --dao-state-color: var(--dao-bronze);
+  --dao-state-fill: rgba(143, 91, 46, 0.16);
+}
+
+.daoPressureBadge--tone-cinnabar {
+  --dao-state-color: var(--dao-cinnabar);
+  --dao-state-fill: rgba(155, 47, 39, 0.14);
+}
+
+.daoPressureBadge--tone-gold {
+  --dao-state-color: var(--dao-gold);
+  --dao-state-fill: rgba(201, 154, 61, 0.18);
+}
+
+.daoPressureBadge__icon {
+  display: grid;
+  place-items: center;
+  width: 1.55rem;
+  height: 1.55rem;
+  color: var(--dao-state-color);
+  background: var(--dao-state-fill);
+  border: 1px solid currentColor;
+  border-radius: 999px;
+}
+
+.daoPressureBadge__glyph {
+  width: 0.58rem;
+  height: 0.58rem;
+  border: 2px solid currentColor;
+  border-radius: 999px 999px 999px 0;
+  transform: rotate(-45deg);
+}
+
+.daoPressureBadge__body {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.08rem 0.35rem;
+  align-items: center;
+}
+
+.daoPressureBadge__label {
+  color: var(--dao-ink);
+  font-size: 0.82rem;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.daoPressureBadge__state {
+  justify-self: end;
+  min-width: 3.8rem;
+  padding: 0.16rem 0.4rem;
+  color: var(--dao-state-color);
+  background: var(--dao-state-fill);
+  border: 1px solid color-mix(in srgb, var(--dao-state-color) 45%, transparent);
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.daoPressureBadge__detail {
+  grid-column: 1 / -1;
+  color: var(--dao-ink-muted);
+  font-size: 0.74rem;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.daoPressureBadge__inspect {
+  min-height: 2rem;
+  padding: 0.22rem 0.52rem;
+  color: var(--dao-ink);
+  background: var(--dao-paper-highlight);
+  border: 1px solid var(--dao-paper-border);
+  border-radius: 999px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.daoPressureBadge__inspect:focus-visible {
+  outline: 2px solid var(--dao-focus);
+  outline-offset: 2px;
+  box-shadow: var(--dao-focus-ring-shadow);
+}
+
+.daoPressureBadgeRow__overflow {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--dao-chip-height);
+  padding: 0.3rem 0.6rem;
+  color: var(--dao-ink-muted);
+  background: rgba(255, 244, 218, 0.34);
+  border: 1px solid var(--dao-paper-border);
+  border-radius: 999px;
+  font-weight: 800;
+}
+
+.daoPressureBadgeRow--compact .daoPressureBadge {
+  min-height: 2.75rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .daoPressureBadge,
+  .daoPressureBadge * {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

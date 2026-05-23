@@ -1,0 +1,140 @@
+@import './DaoMandateTokens.scss';
+
+.daoReflectionPlaque {
+  --dao-state-color: var(--dao-cinnabar);
+  --dao-state-fill: rgba(155, 47, 39, 0.13);
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr) minmax(7rem, auto);
+  gap: 0.7rem;
+  align-items: center;
+  min-height: 5rem;
+  padding: 0.85rem;
+  color: var(--dao-ink);
+  background:
+    linear-gradient(135deg, rgba(155, 47, 39, 0.08), transparent 42%),
+    var(--dao-parchment);
+  border: 1px solid var(--dao-paper-border);
+  border-left: 0.32rem solid var(--dao-state-color);
+  border-radius: var(--dao-card-radius);
+  box-shadow: 0 8px 18px rgba(44, 28, 12, 0.14);
+}
+
+.daoReflectionPlaque--tone-jade {
+  --dao-state-color: var(--dao-jade-dark);
+  --dao-state-fill: rgba(94, 165, 128, 0.18);
+}
+
+.daoReflectionPlaque--tone-bronze {
+  --dao-state-color: var(--dao-bronze);
+  --dao-state-fill: rgba(143, 91, 46, 0.16);
+}
+
+.daoReflectionPlaque--tone-gold {
+  --dao-state-color: var(--dao-gold);
+  --dao-state-fill: rgba(201, 154, 61, 0.18);
+}
+
+.daoReflectionPlaque__icon {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  color: var(--dao-state-color);
+  background: var(--dao-state-fill);
+  border: 1px solid currentColor;
+  border-radius: 0.45rem;
+}
+
+.daoReflectionPlaque__glyph {
+  width: 0.78rem;
+  height: 0.78rem;
+  border: 2px solid currentColor;
+  border-radius: 50% 50% 20% 50%;
+  transform: rotate(45deg);
+}
+
+.daoReflectionPlaque__body {
+  display: grid;
+  min-width: 0;
+  gap: 0.18rem;
+}
+
+.daoReflectionPlaque__kicker {
+  color: var(--dao-state-color);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.daoReflectionPlaque__title {
+  color: var(--dao-ink);
+  font-size: 0.94rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.daoReflectionPlaque__detail {
+  color: var(--dao-ink-muted);
+  font-size: 0.84rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.daoReflectionPlaque__actionWrap {
+  display: grid;
+  gap: 0.25rem;
+  min-height: 2.4rem;
+}
+
+.daoReflectionPlaque__action {
+  min-height: 2.25rem;
+  padding: 0.32rem 0.7rem;
+  color: #fffaf0;
+  background: var(--dao-state-color);
+  border: 1px solid var(--dao-state-color);
+  border-radius: 999px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.daoReflectionPlaque__action:focus-visible {
+  outline: 2px solid var(--dao-focus);
+  outline-offset: 2px;
+  box-shadow: var(--dao-focus-ring-shadow);
+}
+
+.daoReflectionPlaque__action:disabled {
+  cursor: not-allowed;
+  opacity: 0.62;
+}
+
+.daoReflectionPlaque__disabledReason {
+  color: var(--dao-ink-muted);
+  font-size: 0.76rem;
+  line-height: 1.25;
+}
+
+.daoReflectionPlaque--compact {
+  min-height: 3.8rem;
+  padding: 0.65rem;
+}
+
+@media (max-width: 680px) {
+  .daoReflectionPlaque {
+    grid-template-columns: 2rem minmax(0, 1fr);
+  }
+
+  .daoReflectionPlaque__actionWrap {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .daoReflectionPlaque,
+  .daoReflectionPlaque * {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

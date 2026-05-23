@@ -1,0 +1,226 @@
+@import './DaoMandateTokens.scss';
+
+.daoOmenSeal {
+  --dao-state-color: var(--dao-ink-muted);
+  --dao-state-fill: rgba(111, 87, 63, 0.12);
+  display: grid;
+  grid-template-columns: var(--dao-row-icon-size) minmax(0, 1fr) minmax(7.5rem, auto);
+  gap: 0.85rem;
+  align-items: center;
+  min-height: 6rem;
+  padding: var(--dao-card-padding);
+  color: var(--dao-ink);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(75, 45, 15, 0.04)),
+    var(--dao-parchment);
+  border: 1px solid var(--dao-paper-border);
+  border-left: 0.38rem solid var(--dao-state-color);
+  border-radius: var(--dao-card-radius);
+  box-shadow: var(--dao-shadow);
+  animation: daoOmenSealStamp var(--dao-motion-stamp) var(--dao-motion-ease) both;
+}
+
+.daoOmenSeal--compact {
+  min-height: 4.8rem;
+  padding: var(--dao-card-padding-compact);
+}
+
+.daoOmenSeal--tone-jade,
+.daoOmenSeal--severity-ready {
+  --dao-state-color: var(--dao-jade-dark);
+  --dao-state-fill: rgba(94, 165, 128, 0.18);
+}
+
+.daoOmenSeal--tone-bronze,
+.daoOmenSeal--severity-thin,
+.daoOmenSeal--severity-observed {
+  --dao-state-color: var(--dao-bronze);
+  --dao-state-fill: rgba(143, 91, 46, 0.16);
+}
+
+.daoOmenSeal--tone-cinnabar,
+.daoOmenSeal--severity-locked,
+.daoOmenSeal--severity-reflection {
+  --dao-state-color: var(--dao-cinnabar);
+  --dao-state-fill: rgba(155, 47, 39, 0.14);
+}
+
+.daoOmenSeal--tone-gold,
+.daoOmenSeal--severity-cap {
+  --dao-state-color: var(--dao-gold);
+  --dao-state-fill: rgba(201, 154, 61, 0.18);
+}
+
+.daoOmenSeal__icon {
+  display: grid;
+  place-items: center;
+  width: var(--dao-row-icon-size);
+  height: var(--dao-row-icon-size);
+  color: var(--dao-state-color);
+  background:
+    radial-gradient(circle at 50% 45%, var(--dao-state-fill), transparent 68%),
+    var(--dao-parchment-soft);
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 3px rgba(255, 244, 218, 0.42);
+}
+
+.daoOmenSeal__glyph {
+  width: 0.72rem;
+  height: 0.72rem;
+  border: 2px solid currentColor;
+  border-radius: 35% 65% 45% 55%;
+  transform: rotate(45deg);
+}
+
+.daoOmenSeal__body {
+  min-width: 0;
+}
+
+.daoOmenSeal__kicker {
+  display: block;
+  margin-bottom: 0.2rem;
+  color: var(--dao-ink-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.daoOmenSeal__title {
+  margin: 0;
+  color: var(--dao-ink);
+  font-size: 1rem;
+  line-height: 1.2;
+}
+
+.daoOmenSeal__detail {
+  max-width: 42rem;
+  margin: 0.3rem 0 0;
+  color: var(--dao-ink-muted);
+  font-size: 0.88rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.daoOmenSeal__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  min-height: var(--dao-chip-height);
+  margin-top: 0.55rem;
+}
+
+.daoOmenSeal__state,
+.daoOmenSeal__tone,
+.daoOmenSeal__evidence {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--dao-chip-height);
+  padding: 0 0.55rem;
+  color: var(--dao-state-color);
+  background: var(--dao-state-fill);
+  border: 1px solid color-mix(in srgb, var(--dao-state-color) 45%, transparent);
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.daoOmenSeal__tone,
+.daoOmenSeal__evidence {
+  color: var(--dao-ink-muted);
+  background: rgba(255, 244, 218, 0.34);
+  border-color: rgba(74, 46, 24, 0.18);
+}
+
+.daoOmenSeal__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: 0.4rem;
+  min-width: 7.5rem;
+  min-height: 2.4rem;
+}
+
+.daoOmenSeal__actionWrap {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.daoOmenSeal__action {
+  min-height: 2.25rem;
+  padding: 0.35rem 0.7rem;
+  color: var(--dao-ink);
+  background: var(--dao-paper-highlight);
+  border: 1px solid var(--dao-paper-border);
+  border-radius: 999px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform var(--dao-motion-hover-duration) var(--dao-motion-ease), border-color var(--dao-motion-hover-duration) var(--dao-motion-ease);
+}
+
+.daoOmenSeal__action--primary {
+  color: #fffaf0;
+  background: var(--dao-state-color);
+  border-color: var(--dao-state-color);
+}
+
+.daoOmenSeal__action:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.daoOmenSeal__action:focus-visible {
+  outline: 2px solid var(--dao-focus);
+  outline-offset: 2px;
+  box-shadow: var(--dao-focus-ring-shadow);
+}
+
+.daoOmenSeal__action:disabled {
+  cursor: not-allowed;
+  opacity: 0.62;
+}
+
+.daoOmenSeal__disabledReason {
+  min-height: 1.2em;
+  color: var(--dao-ink-muted);
+  font-size: 0.74rem;
+  line-height: 1.25;
+}
+
+@keyframes daoOmenSealStamp {
+  from {
+    opacity: 0.82;
+    transform: translateY(2px) scale(0.99);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 680px) {
+  .daoOmenSeal {
+    grid-template-columns: var(--dao-row-icon-size) minmax(0, 1fr);
+  }
+
+  .daoOmenSeal__actions {
+    grid-column: 1 / -1;
+    min-width: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .daoOmenSeal,
+  .daoOmenSeal * {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .daoOmenSeal__action:hover:not(:disabled) {
+    transform: none;
+  }
+}

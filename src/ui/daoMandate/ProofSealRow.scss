@@ -1,0 +1,175 @@
+@import './DaoMandateTokens.scss';
+
+.daoProofSealRow {
+  display: grid;
+  gap: 0.55rem;
+  color: var(--dao-ink);
+}
+
+.daoProofSealRow__empty {
+  margin: 0;
+  padding: 0.75rem 0.85rem;
+  color: var(--dao-ink-muted);
+  background: rgba(255, 244, 218, 0.34);
+  border: 1px dashed var(--dao-paper-border);
+  border-radius: var(--dao-card-radius);
+}
+
+.daoProofSealRow__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 0.55rem;
+  align-items: stretch;
+}
+
+.daoProofSeal {
+  --dao-state-color: var(--dao-ink-muted);
+  --dao-state-fill: rgba(111, 87, 63, 0.12);
+  display: grid;
+  grid-template-columns: 1.8rem minmax(0, 1fr) minmax(4.8rem, auto);
+  gap: 0.55rem;
+  align-items: center;
+  min-height: var(--dao-row-min-height);
+  padding: 0.65rem;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(75, 45, 15, 0.04)),
+    var(--dao-parchment-soft);
+  border: 1px solid var(--dao-paper-border);
+  border-top: 0.22rem solid var(--dao-state-color);
+  border-radius: var(--dao-card-radius);
+  box-shadow: 0 6px 14px rgba(44, 28, 12, 0.14);
+}
+
+.daoProofSeal--sealed,
+.daoProofSeal--ready,
+.daoProofSeal--tone-jade {
+  --dao-state-color: var(--dao-jade-dark);
+  --dao-state-fill: rgba(94, 165, 128, 0.18);
+}
+
+.daoProofSeal--thin,
+.daoProofSeal--strained,
+.daoProofSeal--tone-bronze {
+  --dao-state-color: var(--dao-bronze);
+  --dao-state-fill: rgba(143, 91, 46, 0.16);
+}
+
+.daoProofSeal--unsealed,
+.daoProofSeal--locked,
+.daoProofSeal--reflected,
+.daoProofSeal--tone-cinnabar {
+  --dao-state-color: var(--dao-cinnabar);
+  --dao-state-fill: rgba(155, 47, 39, 0.14);
+}
+
+.daoProofSeal--cap,
+.daoProofSeal--tone-gold {
+  --dao-state-color: var(--dao-gold);
+  --dao-state-fill: rgba(201, 154, 61, 0.18);
+}
+
+.daoProofSeal__icon {
+  display: grid;
+  place-items: center;
+  width: 1.8rem;
+  height: 1.8rem;
+  color: var(--dao-state-color);
+  background: var(--dao-state-fill);
+  border: 1px solid currentColor;
+  border-radius: 999px;
+}
+
+.daoProofSeal__glyph {
+  width: 0.65rem;
+  height: 0.65rem;
+  border: 2px solid currentColor;
+  transform: rotate(45deg);
+}
+
+.daoProofSeal__text {
+  display: grid;
+  min-width: 0;
+  gap: 0.18rem;
+}
+
+.daoProofSeal__label {
+  color: var(--dao-ink);
+  font-size: 0.86rem;
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.daoProofSeal__detail {
+  color: var(--dao-ink-muted);
+  font-size: 0.76rem;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.daoProofSeal__state {
+  justify-self: end;
+  min-width: 4.8rem;
+  padding: 0.25rem 0.45rem;
+  color: var(--dao-state-color);
+  background: var(--dao-state-fill);
+  border: 1px solid color-mix(in srgb, var(--dao-state-color) 45%, transparent);
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.daoProofSeal__actions {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  min-height: 0.1rem;
+}
+
+.daoProofSeal__inspect {
+  min-height: 2rem;
+  padding: 0.25rem 0.55rem;
+  color: var(--dao-ink);
+  background: var(--dao-paper-highlight);
+  border: 1px solid var(--dao-paper-border);
+  border-radius: 999px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.daoProofSeal__inspect:focus-visible {
+  outline: 2px solid var(--dao-focus);
+  outline-offset: 2px;
+  box-shadow: var(--dao-focus-ring-shadow);
+}
+
+.daoProofSealRow__overflow {
+  align-self: center;
+  justify-self: start;
+  min-height: var(--dao-chip-height);
+  padding: 0.3rem 0.6rem;
+  color: var(--dao-ink-muted);
+  background: rgba(255, 244, 218, 0.34);
+  border: 1px solid var(--dao-paper-border);
+  border-radius: 999px;
+  font-weight: 800;
+}
+
+.daoProofSealRow--compact .daoProofSeal {
+  min-height: 3.6rem;
+  padding: 0.52rem;
+}
+
+.daoProofSealRow--compact .daoProofSeal__detail {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .daoProofSeal,
+  .daoProofSeal * {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

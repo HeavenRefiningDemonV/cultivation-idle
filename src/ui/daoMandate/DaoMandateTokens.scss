@@ -14,7 +14,14 @@
 .daoLocalMandateLensHeader,
 .daoBackgroundSupportStrip,
 .daoReincarnationCounsel,
-.daoMandateComponentSpecimens {
+.daoMandateComponentSpecimens,
+.daoOmenSeal,
+.daoProofSealRow,
+.daoProofSeal,
+.daoPressureBadgeRow,
+.daoPressureBadge,
+.daoSourceThreadDrawer,
+.daoReflectionPlaque {
   --dao-parchment: var(--paper-shell-surface, #e4d3b7);
   --dao-parchment-deep: var(--paper-shell-border-strong, #c2aa82);
   --dao-parchment-soft: var(--paper-parchment-soft, #f0e3c8);
@@ -30,9 +37,14 @@
   --dao-bronze-text: var(--paper-bronze-text, #6c4a22);
   --dao-cinnabar: var(--paper-stamp, #9b2f27);
   --dao-cinnabar-dark: var(--paper-danger, #6f1e19);
+  --dao-focus: var(--paper-complete, #1f5e4a);
   --dao-shadow: var(--paper-shadow-surface, 0 8px 18px rgba(44, 28, 12, 0.35));
   --dao-focus-ring: rgba(155, 47, 39, 0.72);
   --dao-focus-ring-shadow: 0 0 0 3px rgba(155, 47, 39, 0.18);
+  --dao-paper-border: rgba(74, 46, 24, 0.35);
+  --dao-paper-highlight: rgba(255, 244, 218, 0.7);
+  --dao-state-fill: rgba(111, 87, 63, 0.12);
+  --dao-state-color: var(--dao-ink-muted);
   --dao-route-glow: rgba(201, 154, 61, 0.42);
   --dao-jade-glow: rgba(94, 165, 128, 0.36);
   --dao-card-radius: 8px;
@@ -45,6 +57,8 @@
   --dao-ledger-gap: var(--ui-layout-card-gap, 12px);
   --dao-chip-height: 1.6rem;
   --dao-motion-hover-duration: var(--ui-motion-hover-duration, 140ms);
+  --dao-motion-stamp: 220ms;
+  --dao-motion-soft: 420ms;
   --dao-motion-stamp-duration: 260ms;
   --dao-motion-route-glow-duration: 900ms;
   --dao-motion-ease: var(--ui-motion-hover-ease, cubic-bezier(0.2, 0.75, 0.25, 1));
@@ -78,10 +92,17 @@
   .daoJadeSlipHelp,
   .daoLocalMandateLensHeader,
   .daoBackgroundSupportStrip,
-  .daoReincarnationCounsel {
+  .daoReincarnationCounsel,
+  .daoOmenSeal,
+  .daoProofSeal,
+  .daoPressureBadge,
+  .daoSourceThreadDrawer,
+  .daoReflectionPlaque {
     --dao-motion-hover-duration: 0ms;
     --dao-motion-route-glow-duration: 0ms;
     --dao-motion-stamp-duration: 0ms;
+    --dao-motion-stamp: 0ms;
+    --dao-motion-soft: 0ms;
   }
 
   .daoMandateScope *,
@@ -95,10 +116,21 @@
   .daoJadeSlipHelp *,
   .daoLocalMandateLensHeader *,
   .daoBackgroundSupportStrip *,
-  .daoReincarnationCounsel * {
+  .daoReincarnationCounsel *,
+  .daoOmenSeal,
+  .daoProofSeal,
+  .daoPressureBadge,
+  .daoSourceThreadDrawer,
+  .daoReflectionPlaque,
+  .daoOmenSeal *,
+  .daoProofSeal *,
+  .daoPressureBadge *,
+  .daoSourceThreadDrawer *,
+  .daoReflectionPlaque * {
     animation-duration: 0ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0ms !important;
+    scroll-behavior: auto !important;
   }
 
   .daoMandateRouteButton:hover:not(:disabled),

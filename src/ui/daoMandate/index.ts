@@ -40,3 +40,12 @@ export { LocalMandateLensHeader, type LocalMandateLensHeaderProps } from './Loca
 export { BackgroundSupportStrip, type BackgroundSupportStripProps } from './BackgroundSupportStrip.js';
 export { ReincarnationCounsel, type ReincarnationCounselProps } from './ReincarnationCounsel.js';
 export { DaoMandateComponentSpecimens } from './DaoMandateComponentSpecimens.js';
+export { OmenSeal, type OmenSealAction, type OmenSealProps } from './OmenSeal.js';
+export { ProofSealRow, type ProofSealAction, type ProofSealRowProps } from './ProofSealRow.js';
+export { PressureBadgeRow, type PressureBadgeRowProps } from './PressureBadgeRow.js';
+export { SourceThreadDrawer, type SourceThreadAction, type SourceThreadDrawerProps } from './SourceThreadDrawer.js';
+export { ReflectionPlaque, type ReflectionPlaqueAction, type ReflectionPlaqueProps } from './ReflectionPlaque.js';
+export {
+  DAO_MANDATE_COMPONENT_FIXTURES,
+  type DaoMandateComponentFixtures,
+} from './daoMandateComponentFixtures.js';

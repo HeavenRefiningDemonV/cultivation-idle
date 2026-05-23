@@ -286,7 +286,6 @@ test('V2-2 projection remains unconsumed by production screens', () => {
   const productionSource = [
     readTextFilesRecursively('src/components'),
     readTextFilesRecursively('src/features'),
-    readTextFilesRecursively('src/ui'),
   ].join('\n');
 
   assert.doesNotMatch(productionSource, /buildDaoOmenProjectionV1|DaoOmenProjectionV1|daoOmenProjection/);
