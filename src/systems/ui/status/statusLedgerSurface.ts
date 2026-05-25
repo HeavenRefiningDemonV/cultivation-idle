@@ -25,12 +25,16 @@ import {
   toLedgerTone,
 } from './statusLedgerRows.js';
 import type {
+  StatusBuildPrepGroupSurface,
   StatusLedgerActionSurface,
+  StatusDoctrineTileSurface,
   StatusLedgerFactRow,
   StatusLedgerMilestoneNode,
   StatusLedgerRequirementRow,
   StatusLedgerSurfaceV1,
   StatusLedgerTone,
+  StatusSpiritRootElement,
+  StatusSpiritRootSurface,
 } from './statusLedgerTypes.js';
 
 export interface StatusLedgerBuildContext {
@@ -113,6 +117,168 @@ function emptyFactRow(id: string, label: string, detail: string, sourceLabel: st
     sourceLabel,
     action: null,
   });
+}
+
+function normalizedElementLabel(element: StatusSpiritRootElement): string {
+  if (element === 'dormant') return 'Dormant';
+  return `${element.slice(0, 1).toUpperCase()}${element.slice(1)}`;
+}
+
+function normalizeSpiritRootElement(input: string | null | undefined): StatusSpiritRootElement {
+  const normalized = (input ?? '').trim().toLowerCase();
+  if (
+    normalized === 'fire' ||
+    normalized === 'water' ||
+    normalized === 'earth' ||
+    normalized === 'metal' ||
+    normalized === 'wood'
+  ) {
+    return normalized;
+  }
+  return 'dormant';
+}
+
+function iconForSpiritRootElement(element: StatusSpiritRootElement): StatusSpiritRootSurface['icon'] {
+  switch (element) {
+    case 'fire':
+      return 'inkBurst';
+    case 'water':
+      return 'inkSwirl';
+    case 'earth':
+      return 'bookEarth';
+    case 'metal':
+      return 'metalChunk';
+    case 'wood':
+      return 'spiritGrass';
+    case 'dormant':
+      return 'placeholderRingSmall';
+  }
+}
+
+function rowById(rows: StatusFactRow[], id: string): StatusFactRow | null {
+  return rows.find((row) => row.id === id) ?? null;
+}
+
+function doctrineTile(args: {
+  id: string;
+  label: string;
+  value: string | null | undefined;
+  detail: string | null | undefined;
+  icon: StatusDoctrineTileSurface['icon'];
+  tone?: StatusLedgerTone;
+  accent: NonNullable<StatusDoctrineTileSurface['accent']>;
+}): StatusDoctrineTileSurface {
+  const value = args.value && args.value.trim().length > 0 ? args.value : 'Unavailable';
+  const detail = args.detail && args.detail.trim().length > 0 ? args.detail : value;
+  return {
+    id: args.id,
+    label: sanitizeStatusLedgerCopy(args.label),
+    value: sanitizeStatusLedgerCopy(value),
+    detail: sanitizeStatusLedgerCopy(detail),
+    icon: args.icon,
+    tone: args.tone ?? toLedgerTone(`${args.label} ${value} ${detail}`),
+    accent: args.accent,
+  };
+}
+
+function buildSpiritRootSurface(dashboard: Omit<StatusDashboardSurfaceV1, 'statusLedger'>): StatusSpiritRootSurface {
+  const element = normalizeSpiritRootElement(dashboard.identity.spiritRootElement);
+  const elementLabel = normalizedElementLabel(element);
+  const spiritRootParts = dashboard.hero.spiritRootLabel.split(/[-/]/);
+  const gradeLabel = dashboard.identity.spiritRootGrade?.trim()
+    ? dashboard.identity.spiritRootGrade
+    : spiritRootParts[1]?.trim() ?? 'Dormant';
+  const resonance = rowById(dashboard.identity.rows, 'resonance')?.value ?? null;
+
+  return {
+    element,
+    elementLabel: sanitizeStatusLedgerCopy(elementLabel),
+    gradeLabel: sanitizeStatusLedgerCopy(gradeLabel),
+    purityLabel: dashboard.identity.spiritRootPurityLabel
+      ? sanitizeStatusLedgerCopy(dashboard.identity.spiritRootPurityLabel)
+      : null,
+    totalMultiplierLabel: dashboard.identity.spiritRootTotalMultiplierLabel
+      ? sanitizeStatusLedgerCopy(dashboard.identity.spiritRootTotalMultiplierLabel)
+      : null,
+    resonanceLabel: resonance ? sanitizeStatusLedgerCopy(resonance) : null,
+    icon: iconForSpiritRootElement(element),
+    tone: element === 'dormant' ? 'muted' : 'jade',
+  };
+}
+
+function buildDoctrineTiles(
+  dashboard: Omit<StatusDashboardSurfaceV1, 'statusLedger'>,
+  context: StatusLedgerBuildContext,
+): {
+  pathTile: StatusDoctrineTileSurface;
+  heartLawTile: StatusDoctrineTileSurface;
+  focusTile: StatusDoctrineTileSurface;
+  breathTile: StatusDoctrineTileSurface;
+  cityTile: StatusDoctrineTileSurface;
+  resonanceTile: StatusDoctrineTileSurface;
+} {
+  const path = rowById(dashboard.identity.rows, 'path');
+  const heartLaw = rowById(dashboard.identity.rows, 'heart-law');
+  const focus = rowById(dashboard.identity.rows, 'focus');
+  const breath = rowById(dashboard.identity.rows, 'breath');
+  const resonance = rowById(dashboard.identity.rows, 'resonance');
+
+  return {
+    pathTile: doctrineTile({
+      id: 'doctrine-path',
+      label: 'Path',
+      value: path?.value ?? dashboard.hero.pathLabel,
+      detail: path?.detail ?? 'Selected cultivation path.',
+      icon: 'bookHeaven',
+      tone: 'gold',
+      accent: 'path',
+    }),
+    heartLawTile: doctrineTile({
+      id: 'doctrine-heart-law',
+      label: 'Heart Law',
+      value: heartLaw?.value ?? dashboard.hero.heartLawLabel,
+      detail: heartLaw?.detail ?? `Chapter ${context.cultivation.chapter}`,
+      icon: 'bookMartial',
+      tone: 'jade',
+      accent: 'heartLaw',
+    }),
+    focusTile: doctrineTile({
+      id: 'doctrine-focus',
+      label: 'Focus',
+      value: focus?.value ?? context.game.focusMode,
+      detail: focus?.detail ?? 'Current focus posture.',
+      icon: 'inkBolt',
+      tone: toLedgerTone(focus?.value ?? context.game.focusMode),
+      accent: 'focus',
+    }),
+    breathTile: doctrineTile({
+      id: 'doctrine-breath',
+      label: 'Breath',
+      value: breath?.value ?? context.cultivation.breathMode,
+      detail: breath?.detail ?? 'Current breath posture.',
+      icon: 'inkHeart',
+      tone: toLedgerTone(breath?.value ?? context.cultivation.breathMode),
+      accent: 'breath',
+    }),
+    cityTile: doctrineTile({
+      id: 'doctrine-city',
+      label: 'City Anchor',
+      value: context.cityLabel,
+      detail: 'Current city for services and route availability.',
+      icon: 'artifactBundle',
+      tone: 'muted',
+      accent: 'city',
+    }),
+    resonanceTile: doctrineTile({
+      id: 'doctrine-resonance',
+      label: 'Resonance',
+      value: resonance?.value ?? 'Unavailable',
+      detail: resonance?.detail ?? 'Spirit-root affinity against the current Heart Law.',
+      icon: 'inkSwirl',
+      tone: toLedgerTone(resonance?.value ?? resonance?.detail),
+      accent: 'spiritRoot',
+    }),
+  };
 }
 
 function actionSource(source: StatusActionSurface['source']): StatusLedgerActionSurface['source'] {
@@ -548,15 +714,21 @@ function buildIdentityDoctrine(
   dashboard: Omit<StatusDashboardSurfaceV1, 'statusLedger'>,
   context: StatusLedgerBuildContext,
 ): StatusLedgerSurfaceV1['identityDoctrine'] {
+  const spiritRoot = buildSpiritRootSurface(dashboard);
+  const doctrineTiles = buildDoctrineTiles(dashboard, context);
   const rows = [
     ...dashboard.identity.rows.map((row) => rowFromDashboard(row, `identity-${row.id}`, 'Identity & Doctrine')),
     factRow({
       id: 'identity-spirit-root',
       label: 'Spirit Root',
-      value: dashboard.hero.spiritRootLabel,
-      detail: 'Root element, grade, and purity shape doctrine fit.',
+      value: `${spiritRoot.elementLabel} - ${spiritRoot.gradeLabel}`,
+      detail: [
+        spiritRoot.purityLabel ? `${spiritRoot.purityLabel} purity` : null,
+        spiritRoot.totalMultiplierLabel ? `${spiritRoot.totalMultiplierLabel} total multiplier` : null,
+        'Root element, grade, and purity shape doctrine fit.',
+      ].filter(Boolean).join('; '),
       tone: 'jade',
-      icon: 'inkSwirl',
+      icon: spiritRoot.icon,
       sourceLabel: 'Identity & Doctrine',
       action: null,
     }),
@@ -578,11 +750,70 @@ function buildIdentityDoctrine(
     rows: capRows(dedupeFactRows(rows), STATUS_LEDGER_ROW_BUDGETS.identityDoctrineRowsMax),
     spiritRootElement: sanitizeStatusLedgerCopy(dashboard.identity.spiritRootElement),
     spiritRootTone: sanitizeStatusLedgerCopy(dashboard.identity.spiritRootTone),
+    spiritRoot,
+    pathTile: doctrineTiles.pathTile,
+    heartLawTile: doctrineTiles.heartLawTile,
+    resonanceTile: doctrineTiles.resonanceTile,
+    focusTile: doctrineTiles.focusTile,
+    breathTile: doctrineTiles.breathTile,
+    cityTile: doctrineTiles.cityTile,
   };
 }
 
 function buildCurrentWork(dashboard: Omit<StatusDashboardSurfaceV1, 'statusLedger'>): StatusLedgerSurfaceV1['currentWork'] {
   const foreground = dashboard.currentWork.foregroundActivity;
+  const activityTiles: StatusLedgerFactRow[] = [
+    factRow({
+      id: 'work-tile-foreground',
+      label: 'State',
+      value: foreground.label === 'No foreground activity' ? 'Idle' : foreground.label,
+      detail: foreground.label === 'No foreground activity'
+        ? 'No foreground activity is running.'
+        : foreground.detail,
+      tone: foreground.label === 'No foreground activity' ? 'muted' : toLedgerTone(foreground.tone),
+      icon: foreground.icon,
+      sourceLabel: 'Current Work',
+      action: null,
+      display: 'tile',
+      importance: 'primary',
+    }),
+    factRow({
+      id: 'work-tile-combat',
+      label: 'Combat',
+      value: dashboard.currentWork.activeCombat?.value ?? dashboard.currentWork.activeCombat?.label ?? 'Idle',
+      detail: dashboard.currentWork.activeCombat?.detail ?? 'No combat is running.',
+      tone: dashboard.currentWork.activeCombat ? toLedgerTone(dashboard.currentWork.activeCombat.tone) : 'muted',
+      icon: dashboard.currentWork.activeCombat?.icon ?? 'hourglassEmpty',
+      sourceLabel: 'Combat',
+      action: null,
+      display: 'tile',
+      importance: 'secondary',
+    }),
+    factRow({
+      id: 'work-tile-bounty',
+      label: 'Bounty',
+      value: dashboard.currentWork.trackedBounty?.value ?? dashboard.currentWork.trackedBounty?.label ?? 'None tracked',
+      detail: dashboard.currentWork.trackedBounty?.detail ?? 'No bounty target is tracked.',
+      tone: dashboard.currentWork.trackedBounty ? toLedgerTone(dashboard.currentWork.trackedBounty.tone) : 'muted',
+      icon: dashboard.currentWork.trackedBounty?.icon ?? 'recordSlip',
+      sourceLabel: 'Bounty Board',
+      action: null,
+      display: 'tile',
+      importance: 'secondary',
+    }),
+    factRow({
+      id: 'work-tile-expeditions',
+      label: 'Expeditions',
+      value: dashboard.currentWork.expeditions?.value ?? dashboard.currentWork.expeditions?.label ?? 'Idle',
+      detail: dashboard.currentWork.expeditions?.detail ?? 'No expedition is active.',
+      tone: dashboard.currentWork.expeditions ? toLedgerTone(dashboard.currentWork.expeditions.tone) : 'muted',
+      icon: dashboard.currentWork.expeditions?.icon ?? 'hourglassEmpty',
+      sourceLabel: 'Expedition Support',
+      action: null,
+      display: 'tile',
+      importance: 'secondary',
+    }),
+  ];
   const rows: StatusLedgerFactRow[] = [
     factRow({
       id: 'work-foreground',
@@ -606,7 +837,68 @@ function buildCurrentWork(dashboard: Omit<StatusDashboardSurfaceV1, 'statusLedge
   return {
     id: 'current_work',
     title: STATUS_LEDGER_TITLES.currentWork,
+    activityTiles,
     rows: capRows(dedupeFactRows(rows), STATUS_LEDGER_ROW_BUDGETS.currentWorkRowsMax),
+  };
+}
+
+function toneRank(tone: StatusLedgerTone): number {
+  switch (tone) {
+    case 'danger':
+      return 0;
+    case 'warning':
+      return 1;
+    case 'gold':
+      return 2;
+    case 'info':
+      return 3;
+    case 'jade':
+      return 4;
+    case 'success':
+      return 5;
+    case 'muted':
+      return 6;
+  }
+}
+
+function strongestTone(rows: StatusLedgerFactRow[]): StatusLedgerTone {
+  return rows.reduce<StatusLedgerTone>((strongest, row) => (
+    toneRank(row.tone) < toneRank(strongest) ? row.tone : strongest
+  ), 'muted');
+}
+
+function rowIsConcern(row: StatusLedgerFactRow): boolean {
+  return row.tone === 'danger' || row.tone === 'warning' || /bad|below|disabled|risky|under-supported|empty/i.test(`${row.value ?? ''} ${row.detail}`);
+}
+
+function buildBuildPrepGroup(args: {
+  title: string;
+  icon: StatusBuildPrepGroupSurface['icon'];
+  rows: StatusLedgerFactRow[];
+  preferredTileIds: string[];
+  stableHeadline: string;
+}): StatusBuildPrepGroupSurface {
+  const preferred = new Set(args.preferredTileIds);
+  const tiles = capRows(
+    args.rows
+      .filter((row) => preferred.has(row.id))
+      .map((row): StatusLedgerFactRow => factRow({
+        ...row,
+        display: 'tile',
+        importance: rowIsConcern(row) ? 'primary' : 'secondary',
+        maxLines: 2,
+      })),
+    6,
+  );
+  const headlineRow = args.rows.find(rowIsConcern) ?? args.rows[0] ?? null;
+
+  return {
+    title: args.title,
+    headline: sanitizeStatusLedgerCopy(headlineRow?.detail ?? headlineRow?.value ?? args.stableHeadline),
+    tone: strongestTone(args.rows),
+    icon: args.icon,
+    tiles,
+    detailRows: args.rows.map((row) => factRow({ ...row, display: 'row', importance: 'detail' })),
   };
 }
 
@@ -625,13 +917,50 @@ function buildBuildPreparation(
     row.id === 'reserve-top-warning' &&
     !/no major preparation warning|unavailable/i.test(`${row.value ?? ''} ${row.detail}`)
   )) ?? buildRows.find((row) => row.id === 'build-top-gap' && !/no top build gap|unavailable/i.test(`${row.value ?? ''} ${row.detail}`)) ?? null;
+  const warningAction = toLedgerAction(dashboard.hero.primaryAction, { primary: true })
+    ?? toLedgerAction(dashboard.bestNextActions[0] ?? null);
+  const topWarning = warningSource
+    ? factRow({
+      ...warningSource,
+      action: warningAction,
+      display: 'callout',
+      importance: 'primary',
+      maxLines: 2,
+    })
+    : null;
 
   return {
     id: 'build_preparation',
     title: STATUS_LEDGER_TITLES.buildPreparation,
+    build: buildBuildPrepGroup({
+      title: 'Build Readiness',
+      icon: 'jadeSword',
+      rows: buildRows,
+      preferredTileIds: [
+        'build-path-alignment',
+        'build-empty-slots',
+        'build-mastery-floor',
+        'build-rank-floor',
+        'build-rune-floor',
+        'build-policy-fit',
+      ],
+      stableHeadline: 'Build floors are stable.',
+    }),
+    preparation: buildBuildPrepGroup({
+      title: 'Preparation Reserves',
+      icon: 'herbBundle',
+      rows: reserveRows,
+      preferredTileIds: [
+        'reserve-merit-reserve',
+        'reserve-spirit-stones-reserve',
+        'reserve-pouch',
+        'reserve-pouch-fit',
+      ],
+      stableHeadline: 'Preparation reserves are stable.',
+    }),
     buildRows,
     reserveRows,
-    topWarning: warningSource,
+    topWarning,
   };
 }
 
@@ -742,6 +1071,8 @@ export function buildStatusLedgerSurfaceFromDashboard(
   const missionRequirements = buildMissionRequirements(dashboard);
   const focusLabel = dashboard.identity.rows.find((row) => row.id === 'focus')?.value ?? context.game.focusMode;
   const breathLabel = dashboard.identity.rows.find((row) => row.id === 'breath')?.value ?? context.cultivation.breathMode;
+  const spiritRoot = buildSpiritRootSurface(dashboard);
+  const doctrineTiles = buildDoctrineTiles(dashboard, context);
 
   return {
     meta: {
@@ -766,6 +1097,12 @@ export function buildStatusLedgerSurfaceFromDashboard(
       mainBottleneckLabel: sanitizeStatusLedgerCopy(dashboard.hero.biggestShortfallLabel),
       mainBottleneckDetail: sanitizeStatusLedgerCopy(primaryAction?.detail ?? dashboard.runCompass.primaryBlockerLabel),
       primaryAction,
+      pathTile: doctrineTiles.pathTile,
+      heartLawTile: doctrineTiles.heartLawTile,
+      spiritRoot,
+      focusTile: doctrineTiles.focusTile,
+      breathTile: doctrineTiles.breathTile,
+      cityTile: doctrineTiles.cityTile,
     },
     metrics: buildMetrics(dashboard, context),
     milestone: buildMilestone(dashboard, context),

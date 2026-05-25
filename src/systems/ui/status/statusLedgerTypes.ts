@@ -3,6 +3,8 @@ import type { StatusRequirementKind, StatusRouteTarget } from './statusDashboard
 
 export type StatusLedgerTone = 'success' | 'info' | 'warning' | 'danger' | 'muted' | 'jade' | 'gold';
 
+export type StatusSpiritRootElement = 'fire' | 'water' | 'earth' | 'metal' | 'wood' | 'dormant';
+
 export type StatusLedgerCardId =
   | 'milestone'
   | 'cultivation_base'
@@ -37,6 +39,39 @@ export interface StatusLedgerFactRow {
   icon: IconId;
   sourceLabel: string;
   action?: StatusLedgerActionSurface | null;
+  importance?: 'primary' | 'secondary' | 'detail';
+  display?: 'row' | 'tile' | 'callout' | 'metric';
+  maxLines?: 1 | 2 | 3;
+}
+
+export interface StatusDoctrineTileSurface {
+  id: string;
+  label: string;
+  value: string;
+  detail: string;
+  icon: IconId;
+  tone: StatusLedgerTone;
+  accent?: 'path' | 'heartLaw' | 'spiritRoot' | 'focus' | 'breath' | 'city';
+}
+
+export interface StatusSpiritRootSurface {
+  element: StatusSpiritRootElement;
+  elementLabel: string;
+  gradeLabel: string;
+  purityLabel: string | null;
+  totalMultiplierLabel: string | null;
+  resonanceLabel: string | null;
+  icon: IconId;
+  tone: StatusLedgerTone;
+}
+
+export interface StatusBuildPrepGroupSurface {
+  title: string;
+  headline: string;
+  tone: StatusLedgerTone;
+  icon: IconId;
+  tiles: StatusLedgerFactRow[];
+  detailRows: StatusLedgerFactRow[];
 }
 
 export interface StatusLedgerRequirementRow extends StatusLedgerFactRow {
@@ -85,6 +120,12 @@ export interface StatusLedgerSurfaceV1 {
     mainBottleneckLabel: string;
     mainBottleneckDetail: string;
     primaryAction: StatusLedgerActionSurface | null;
+    pathTile: StatusDoctrineTileSurface;
+    heartLawTile: StatusDoctrineTileSurface;
+    spiritRoot: StatusSpiritRootSurface;
+    focusTile: StatusDoctrineTileSurface;
+    breathTile: StatusDoctrineTileSurface;
+    cityTile: StatusDoctrineTileSurface;
   };
   metrics: StatusLedgerFactRow[];
   milestone: {
@@ -126,15 +167,25 @@ export interface StatusLedgerSurfaceV1 {
     rows: StatusLedgerFactRow[];
     spiritRootElement: string;
     spiritRootTone: string;
+    spiritRoot: StatusSpiritRootSurface;
+    pathTile: StatusDoctrineTileSurface;
+    heartLawTile: StatusDoctrineTileSurface;
+    resonanceTile: StatusDoctrineTileSurface;
+    focusTile: StatusDoctrineTileSurface;
+    breathTile: StatusDoctrineTileSurface;
+    cityTile: StatusDoctrineTileSurface;
   };
   currentWork: {
     id: 'current_work';
     title: 'Current Work';
+    activityTiles: StatusLedgerFactRow[];
     rows: StatusLedgerFactRow[];
   };
   buildPreparation: {
     id: 'build_preparation';
     title: 'Build & Preparation';
+    build: StatusBuildPrepGroupSurface;
+    preparation: StatusBuildPrepGroupSurface;
     buildRows: StatusLedgerFactRow[];
     reserveRows: StatusLedgerFactRow[];
     topWarning: StatusLedgerFactRow | null;

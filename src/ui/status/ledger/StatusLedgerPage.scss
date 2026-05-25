@@ -1,4 +1,14 @@
 .statusLedgerRoot {
+  --status-paper-pearl: rgba(255, 255, 250, 0.78);
+  --status-paper-pearl-strong: rgba(255, 255, 252, 0.9);
+  --status-paper-slip: rgba(255, 255, 252, 0.48);
+  --status-paper-warm-under: rgba(231, 218, 190, 0.18);
+  --status-ink-line: rgba(96, 70, 38, 0.18);
+  --status-fire: #a44731;
+  --status-water: #2a668d;
+  --status-wood: #2d7844;
+  --status-metal: #69717c;
+  --status-earth: #8d642d;
   --status-ledger-paper: rgba(255, 253, 245, 0.84);
   --status-ledger-paper-deep: rgba(232, 222, 202, 0.62);
   --status-ledger-card: rgba(255, 253, 244, 0.74);
@@ -41,7 +51,7 @@
 .statusLedgerCanvas {
   position: relative;
   z-index: 1;
-  width: min(1500px, calc(100vw - 48px));
+  width: min(1720px, calc(100vw - clamp(36px, 4.5vw, 96px)));
   margin: 0 auto;
   padding: clamp(14px, 1.6vh, 22px) 0 88px;
 }
@@ -69,7 +79,7 @@
   border: 1px solid var(--status-ledger-border);
   border-radius: 12px;
   background:
-    linear-gradient(135deg, rgba(255, 253, 246, 0.88), rgba(240, 232, 214, 0.66)),
+    linear-gradient(135deg, var(--status-paper-pearl-strong), rgba(250, 248, 240, 0.68)),
     radial-gradient(circle at 88% 12%, rgba(119, 183, 155, 0.12), transparent 32%);
   box-shadow:
     0 12px 32px var(--status-ledger-shadow),
@@ -130,7 +140,10 @@
 .statusLedgerRow__label,
 .statusLedgerRequirement__label,
 .statusLedgerActionRow__label,
-.statusLedgerSplitRows h3 {
+.statusDoctrineTile__label,
+.statusBuildPrepGroup__header h3,
+.statusBuildPrepTile__copy > span,
+.statusCurrentWorkTile span > span {
   text-transform: uppercase;
   font-size: 11px;
   line-height: 1.1;
@@ -171,36 +184,8 @@
 
 .statusLedgerHero__doctrine {
   min-width: 0;
-  margin: 0;
   padding: 0 18px;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 7px 14px;
   border-inline: 1px solid rgba(91, 63, 32, 0.18);
-}
-
-.statusLedgerHero__doctrine div {
-  min-width: 0;
-  padding-top: 5px;
-  border-top: 1px solid rgba(91, 63, 32, 0.14);
-}
-
-.statusLedgerHero__doctrine dt {
-  font-size: 10px;
-  line-height: 1.1;
-  font-weight: 850;
-  text-transform: uppercase;
-  color: rgba(65, 48, 31, 0.62);
-}
-
-.statusLedgerHero__doctrine dd {
-  min-width: 0;
-  margin: 3px 0 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-weight: 780;
-  font-size: 13px;
 }
 
 .statusLedgerHero__goal {
@@ -258,7 +243,7 @@
   border-radius: 9px;
   overflow: hidden;
   background:
-    linear-gradient(180deg, rgba(255, 253, 246, 0.8), rgba(244, 236, 218, 0.62)),
+    linear-gradient(180deg, rgba(255, 255, 252, 0.78), rgba(248, 246, 238, 0.54)),
     radial-gradient(circle at 96% 12%, rgba(255, 255, 255, 0.34), transparent 24%);
   box-shadow:
     0 8px 18px rgba(72, 50, 24, 0.08),
@@ -324,11 +309,12 @@
   min-width: 0;
   margin-top: 12px;
   display: grid;
-  grid-template-columns: minmax(320px, 0.95fr) minmax(380px, 1.05fr) minmax(380px, 0.95fr);
+  grid-template-columns: minmax(360px, 0.92fr) minmax(460px, 1.08fr) minmax(420px, 1fr);
   grid-template-areas:
     "milestone cultivation requirements"
     "improvements safety requirements"
-    "identity work buildprep";
+    "identity work requirements"
+    "buildprep buildprep buildprep";
   gap: clamp(12px, 1vw, 18px);
   align-items: stretch;
 }
@@ -342,8 +328,8 @@
   border: 1px solid var(--status-ledger-border);
   border-radius: 12px;
   background:
-    linear-gradient(180deg, rgba(255, 253, 246, 0.84), rgba(244, 236, 218, 0.66)),
-    radial-gradient(circle at 90% 12%, rgba(170, 137, 72, 0.055), transparent 32%);
+    linear-gradient(180deg, var(--status-paper-pearl), rgba(248, 246, 238, 0.58)),
+    radial-gradient(circle at 90% 12%, rgba(255, 255, 255, 0.24), transparent 32%);
   box-shadow:
     0 10px 26px rgba(72, 50, 24, 0.1),
     inset 0 1px 0 var(--status-ledger-pearl-edge),
@@ -373,12 +359,12 @@
   grid-area: requirements;
   min-height: 410px;
   background:
-    linear-gradient(180deg, rgba(255, 253, 246, 0.88), rgba(246, 238, 222, 0.7)),
+    linear-gradient(180deg, rgba(255, 255, 252, 0.84), rgba(248, 244, 235, 0.62)),
     radial-gradient(circle at 92% 18%, rgba(169, 72, 53, 0.05), transparent 34%);
 }
 .statusLedgerCard--cultivation-base {
   background:
-    linear-gradient(180deg, rgba(255, 253, 246, 0.88), rgba(241, 236, 220, 0.68)),
+    linear-gradient(180deg, rgba(255, 255, 252, 0.84), rgba(246, 246, 238, 0.6)),
     radial-gradient(circle at 8% 14%, rgba(44, 132, 107, 0.08), transparent 30%);
 }
 .statusLedgerCard--best-improvements { grid-area: improvements; }
@@ -469,7 +455,7 @@
   padding: 8px 10px;
   border-radius: 10px;
   background:
-    linear-gradient(180deg, rgba(255, 255, 250, 0.58), rgba(245, 236, 218, 0.38));
+    linear-gradient(180deg, var(--status-paper-slip), rgba(246, 242, 230, 0.28));
   border: 1px solid rgba(92, 66, 32, 0.12);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.36);
 }
@@ -540,7 +526,9 @@
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
-  overflow-wrap: anywhere;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
 }
 
 .statusLedgerRow__detail,
@@ -575,7 +563,7 @@
 }
 
 .statusLedgerChip {
-  max-width: 100%;
+  max-width: 18ch;
   min-height: 18px;
   display: inline-flex;
   align-items: center;
@@ -672,6 +660,36 @@
   color: #5f341e;
   background: rgba(169, 72, 53, 0.11);
   border-bottom: 1px solid rgba(169, 72, 53, 0.24);
+}
+
+.statusLedgerRich--element-fire {
+  color: var(--status-fire);
+  background: rgba(164, 71, 49, 0.12);
+  border-bottom: 1px solid rgba(164, 71, 49, 0.26);
+}
+
+.statusLedgerRich--element-water {
+  color: var(--status-water);
+  background: rgba(42, 102, 141, 0.12);
+  border-bottom: 1px solid rgba(42, 102, 141, 0.26);
+}
+
+.statusLedgerRich--element-wood {
+  color: var(--status-wood);
+  background: rgba(45, 120, 68, 0.12);
+  border-bottom: 1px solid rgba(45, 120, 68, 0.24);
+}
+
+.statusLedgerRich--element-metal {
+  color: var(--status-metal);
+  background: rgba(105, 113, 124, 0.14);
+  border-bottom: 1px solid rgba(105, 113, 124, 0.24);
+}
+
+.statusLedgerRich--element-earth {
+  color: var(--status-earth);
+  background: rgba(141, 100, 45, 0.12);
+  border-bottom: 1px solid rgba(141, 100, 45, 0.24);
 }
 
 .statusLedgerActionRow--primary {
@@ -928,52 +946,445 @@
   color: var(--status-ledger-muted);
 }
 
-.statusLedgerSpiritRoot {
+.statusDoctrineTileGrid {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.statusDoctrineTile {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 8px;
+  align-items: center;
+  padding: 8px 9px;
+  border-radius: 10px;
+  border: 1px solid var(--status-ink-line);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 252, 0.58), rgba(246, 242, 230, 0.24));
+}
+
+.statusDoctrineTile--spirit-root {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.statusDoctrineTile__icon {
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  color: var(--status-ledger-gold);
+  background: rgba(255, 252, 244, 0.62);
+  border: 1px solid rgba(91, 63, 32, 0.16);
+}
+
+.statusDoctrineTile__copy {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.statusDoctrineTile__copy strong,
+.statusDoctrineTile__copy small {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.statusDoctrineTile__copy strong {
+  color: var(--status-ledger-ink);
+  font-size: 13px;
+  line-height: 1.15;
+}
+
+.statusDoctrineTile__copy small {
+  color: var(--status-ledger-muted);
+  font-size: 11px;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.statusDoctrineTile--path .statusDoctrineTile__icon,
+.statusDoctrineTile--heartLaw .statusDoctrineTile__icon {
+  color: var(--status-ledger-gold);
+}
+
+.statusDoctrineTile--city .statusDoctrineTile__icon {
+  color: var(--status-ledger-jade);
+}
+
+.statusSpiritRootBadge {
+  --root-accent: var(--status-ledger-jade);
+  --root-accent-soft: rgba(44, 132, 107, 0.12);
+  min-width: 0;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   gap: 10px;
   align-items: center;
-  padding: 8px 9px;
-  border-radius: 10px;
-  border: 1px solid rgba(44, 132, 107, 0.28);
-  background: rgba(44, 132, 107, 0.08);
-}
-
-.statusLedgerSpiritRoot__mark {
-  width: 34px;
-  height: 34px;
-  border-radius: 999px;
+  padding: 10px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--root-accent) 32%, transparent);
   background:
-    radial-gradient(circle at 40% 35%, rgba(255, 252, 230, 0.78), transparent 42%),
-    linear-gradient(180deg, rgba(44, 132, 107, 0.82), rgba(15, 111, 90, 0.86));
+    radial-gradient(circle at 8% 22%, var(--root-accent-soft), transparent 42%),
+    linear-gradient(180deg, rgba(255, 255, 252, 0.64), rgba(246, 242, 230, 0.32));
 }
 
-.statusLedgerSpiritRoot strong,
-.statusLedgerSpiritRoot small {
-  display: block;
+.statusSpiritRootBadge[data-compact="true"] {
+  padding: 8px 9px;
 }
 
-.statusLedgerSpiritRoot small {
-  color: var(--status-ledger-muted);
-  font-weight: 750;
+.statusSpiritRootBadge[data-element="fire"] {
+  --root-accent: var(--status-fire);
+  --root-accent-soft: rgba(164, 71, 49, 0.14);
 }
 
-.statusLedgerSplitRows {
+.statusSpiritRootBadge[data-element="water"] {
+  --root-accent: var(--status-water);
+  --root-accent-soft: rgba(42, 102, 141, 0.14);
+}
+
+.statusSpiritRootBadge[data-element="wood"] {
+  --root-accent: var(--status-wood);
+  --root-accent-soft: rgba(45, 120, 68, 0.14);
+}
+
+.statusSpiritRootBadge[data-element="metal"] {
+  --root-accent: var(--status-metal);
+  --root-accent-soft: rgba(105, 113, 124, 0.16);
+}
+
+.statusSpiritRootBadge[data-element="earth"] {
+  --root-accent: var(--status-earth);
+  --root-accent-soft: rgba(141, 100, 45, 0.15);
+}
+
+.statusSpiritRootBadge[data-element="dormant"] {
+  --root-accent: rgba(86, 78, 64, 0.88);
+  --root-accent-soft: rgba(86, 78, 64, 0.12);
+}
+
+.statusSpiritRootBadge__medallion {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  color: var(--root-accent);
+  border: 1px solid color-mix(in srgb, var(--root-accent) 38%, transparent);
+  background:
+    radial-gradient(circle at 38% 32%, rgba(255, 255, 255, 0.78), transparent 42%),
+    radial-gradient(circle at 50% 50%, var(--root-accent-soft), transparent 72%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.44),
+    0 0 18px var(--root-accent-soft);
+}
+
+.statusSpiritRootBadge__copy {
   min-width: 0;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2px;
+}
+
+.statusSpiritRootBadge__copy strong,
+.statusSpiritRootBadge__copy small,
+.statusSpiritRootBadge__copy em {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.statusSpiritRootBadge__copy strong {
+  color: var(--root-accent);
+  font-size: 18px;
+  line-height: 1.08;
+}
+
+.statusSpiritRootBadge__copy small,
+.statusSpiritRootBadge__copy em {
+  color: var(--status-ledger-muted);
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 750;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.statusIdentityDoctrinePanel {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(170px, 0.9fr) minmax(150px, 0.75fr);
   gap: 10px;
 }
 
-.statusLedgerSplitRows section {
+.statusIdentityDoctrinePanel__crest,
+.statusIdentityDoctrinePanel__sideTiles,
+.statusIdentityDoctrinePanel__facts {
   min-width: 0;
-  display: grid;
-  gap: 7px;
 }
 
-.statusLedgerSplitRows h3 {
-  padding-bottom: 5px;
-  border-bottom: 1px solid rgba(91, 63, 32, 0.15);
+.statusIdentityDoctrinePanel__sideTiles,
+.statusIdentityDoctrinePanel__facts {
+  display: grid;
+  gap: 8px;
+}
+
+.statusIdentityDoctrinePanel__facts {
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.statusCurrentWorkPanel {
+  min-width: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.statusCurrentWorkLane {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.statusCurrentWorkTile {
+  min-width: 0;
+  min-height: 68px;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 5px;
+  padding: 8px;
+  text-align: center;
+  border-radius: 10px;
+  border: 1px solid var(--status-ink-line);
+  background: rgba(255, 255, 252, 0.44);
+}
+
+.statusCurrentWorkTile__icon {
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  color: var(--status-ledger-gold);
+}
+
+.statusCurrentWorkTile span {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.statusCurrentWorkTile strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--status-ledger-ink);
+  font-size: 11px;
+  line-height: 1.15;
+}
+
+.statusBuildPrepPanel {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(12px, 1.1vw, 20px);
+}
+
+.statusBuildPrepPanel__warning {
+  grid-column: 1 / -1;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 11px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(169, 72, 53, 0.28);
+  background:
+    linear-gradient(90deg, rgba(169, 72, 53, 0.12), transparent 22%),
+    linear-gradient(180deg, rgba(255, 255, 252, 0.72), rgba(248, 244, 235, 0.42));
+}
+
+.statusBuildPrepPanel__warningCopy {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.statusBuildPrepPanel__warningCopy > span {
+  color: var(--status-ledger-cinnabar);
+  font-size: 11px;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.statusBuildPrepPanel__warningCopy strong,
+.statusBuildPrepPanel__warningCopy small {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.statusBuildPrepPanel__warningCopy strong {
+  color: var(--status-ledger-ink);
+  font-size: 14px;
+  line-height: 1.18;
+}
+
+.statusBuildPrepPanel__warningCopy small {
+  color: var(--status-ledger-muted);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  font-size: 12px;
+  line-height: 1.28;
+}
+
+.statusBuildPrepGroup {
+  min-width: 0;
+  display: grid;
+  gap: 10px;
+  align-content: start;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid var(--status-ink-line);
+  background:
+    radial-gradient(circle at 92% 10%, rgba(255, 255, 255, 0.28), transparent 28%),
+    linear-gradient(180deg, rgba(255, 255, 252, 0.58), rgba(246, 242, 230, 0.3));
+}
+
+.statusBuildPrepGroup__header {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 9px;
+  align-items: start;
+}
+
+.statusBuildPrepGroup__icon {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  color: var(--status-ledger-gold);
+}
+
+.statusBuildPrepGroup__header span:last-child {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.statusBuildPrepGroup__header h3,
+.statusBuildPrepGroup__header p {
+  margin: 0;
+}
+
+.statusBuildPrepGroup__header p {
+  min-width: 0;
+  color: var(--status-ledger-muted);
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  font-size: 12px;
+  line-height: 1.25;
+  font-weight: 700;
+}
+
+.statusBuildPrepSummaryGrid {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
+  gap: 8px;
+}
+
+.statusBuildPrepTile {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 8px;
+  align-items: start;
+  padding: 8px;
+  border-radius: 10px;
+  border: 1px solid rgba(92, 66, 32, 0.12);
+  background: rgba(255, 255, 252, 0.46);
+}
+
+.statusBuildPrepTile__icon {
+  width: 25px;
+  height: 25px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  color: var(--status-ledger-jade);
+  background: rgba(255, 252, 244, 0.62);
+  border: 1px solid rgba(91, 63, 32, 0.16);
+}
+
+.statusBuildPrepTile--danger .statusBuildPrepTile__icon { color: var(--status-ledger-cinnabar); }
+.statusBuildPrepTile--warning .statusBuildPrepTile__icon { color: var(--status-ledger-amber); }
+.statusBuildPrepTile--gold .statusBuildPrepTile__icon { color: var(--status-ledger-gold); }
+
+.statusBuildPrepTile__copy {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.statusBuildPrepTile__copy strong,
+.statusBuildPrepTile__copy small {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.statusBuildPrepTile__copy strong {
+  color: var(--status-ledger-ink);
+  font-size: 13px;
+  line-height: 1.12;
+  white-space: nowrap;
+}
+
+.statusBuildPrepTile__copy small {
+  color: var(--status-ledger-muted);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  font-size: 11px;
+  line-height: 1.2;
+}
+
+.statusBuildPrepGroup__details {
+  min-width: 0;
+  display: grid;
+  gap: 5px;
+  padding-top: 2px;
+}
+
+.statusBuildPrepGroup__details p {
+  min-width: 0;
+  margin: 0;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  color: var(--status-ledger-muted);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.statusBuildPrepGroup__details strong,
+.statusBuildPrepGroup__details span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .statusLedgerDetails {
@@ -1077,6 +1488,10 @@
     border-right: 0;
   }
 
+  .statusCurrentWorkLane {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .statusLedgerGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-areas:
@@ -1100,10 +1515,14 @@
 
   .statusLedgerHero,
   .statusLedgerHero__doctrine,
+  .statusDoctrineTileGrid,
   .statusLedgerMetrics,
   .statusLedgerGrid,
   .statusLedgerDetails__body,
-  .statusLedgerSplitRows {
+  .statusIdentityDoctrinePanel,
+  .statusIdentityDoctrinePanel__facts,
+  .statusCurrentWorkLane,
+  .statusBuildPrepPanel {
     grid-template-columns: 1fr;
   }
 
@@ -1133,6 +1552,14 @@
   .statusLedgerActionButton {
     grid-column: 2;
     justify-self: start;
+  }
+
+  .statusBuildPrepPanel__warning {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .statusBuildPrepPanel__warning .statusLedgerActionButton {
+    grid-column: 2;
   }
 }
 

@@ -2,7 +2,9 @@ import type {
   StatusLedgerActionSurface,
   StatusLedgerSurfaceV1,
 } from '../../../systems/ui/status/statusLedgerTypes.js';
+import { StatusDoctrineTile, StatusDoctrineTileGrid } from './StatusDoctrineTiles.js';
 import { SafeStatusIcon, StatusActionButton } from './StatusLedgerRows.js';
+import { StatusSpiritRootBadge } from './StatusSpiritRootBadge.js';
 
 interface StatusLedgerHeroProps {
   hero: StatusLedgerSurfaceV1['hero'];
@@ -24,28 +26,15 @@ export function StatusLedgerHero({ hero, onAction }: StatusLedgerHeroProps) {
         </span>
       </div>
 
-      <dl className="statusLedgerHero__doctrine" data-testid="status-ledger-hero-doctrine" aria-label="Identity & Doctrine">
-        <div>
-          <dt>Path</dt>
-          <dd>{hero.pathLabel}</dd>
-        </div>
-        <div>
-          <dt>Heart Law</dt>
-          <dd>{hero.heartLawLabel}</dd>
-        </div>
-        <div>
-          <dt>Spirit Root</dt>
-          <dd>{hero.spiritRootLabel}</dd>
-        </div>
-        <div>
-          <dt>Focus</dt>
-          <dd>{hero.focusLabel}</dd>
-        </div>
-        <div>
-          <dt>Breath</dt>
-          <dd>{hero.breathLabel}</dd>
-        </div>
-      </dl>
+      <div className="statusLedgerHero__doctrine" data-testid="status-ledger-hero-doctrine" aria-label="Identity & Doctrine">
+        <StatusDoctrineTileGrid tiles={[hero.pathTile, hero.heartLawTile]} compact>
+          <div className="statusDoctrineTile statusDoctrineTile--spirit-root">
+            <StatusSpiritRootBadge spiritRoot={hero.spiritRoot} compact />
+          </div>
+          <StatusDoctrineTile tile={hero.focusTile} compact />
+          <StatusDoctrineTile tile={hero.breathTile} compact />
+        </StatusDoctrineTileGrid>
+      </div>
 
       <div className="statusLedgerHero__goal" data-testid="status-ledger-hero-goal">
         <span className="statusLedgerEyebrow">Next Major Goal</span>
@@ -65,4 +54,3 @@ export function StatusLedgerHero({ hero, onAction }: StatusLedgerHeroProps) {
     </section>
   );
 }
-

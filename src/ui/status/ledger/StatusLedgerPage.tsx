@@ -3,6 +3,9 @@ import type {
   StatusLedgerSurfaceV1,
 } from '../../../systems/ui/status/statusLedgerTypes.js';
 import { StatusDetailsDrawer } from './StatusDetailsDrawer.js';
+import { StatusBuildPreparationPanel } from './StatusBuildPreparationPanel.js';
+import { StatusCurrentWorkPanel } from './StatusCurrentWorkPanel.js';
+import { StatusIdentityDoctrinePanel } from './StatusIdentityDoctrinePanel.js';
 import { StatusLedgerCard } from './StatusLedgerCard.js';
 import { StatusLedgerHero } from './StatusLedgerHero.js';
 import {
@@ -122,17 +125,10 @@ function IdentityDoctrineCard({ surface, onAction }: StatusLedgerPageProps) {
       title={surface.identityDoctrine.title || CARD_LABELS.identityDoctrine}
       modifier="identity-doctrine"
       icon="bookHeaven"
-      subtitle={`${surface.identityDoctrine.spiritRootElement} - ${surface.identityDoctrine.spiritRootTone}`}
+      subtitle={`${surface.identityDoctrine.spiritRoot.elementLabel} - ${surface.identityDoctrine.spiritRoot.gradeLabel}`}
       testId="status-ledger-card-identity-doctrine"
     >
-      <div className={`statusLedgerSpiritRoot statusLedgerSpiritRoot--${surface.identityDoctrine.spiritRootTone.toLowerCase()}`}>
-        <span className="statusLedgerSpiritRoot__mark" aria-hidden="true" />
-        <span>
-          <strong>{surface.identityDoctrine.spiritRootElement}</strong>
-          <small>{surface.identityDoctrine.spiritRootTone}</small>
-        </span>
-      </div>
-      <StatusFactRows rows={surface.identityDoctrine.rows} onAction={onAction} compact />
+      <StatusIdentityDoctrinePanel identity={surface.identityDoctrine} />
     </StatusLedgerCard>
   );
 }
@@ -145,7 +141,7 @@ function CurrentWorkCard({ surface, onAction }: StatusLedgerPageProps) {
       icon="hourglassProgress"
       testId="status-ledger-card-current-work"
     >
-      <StatusFactRows rows={surface.currentWork.rows} onAction={onAction} />
+      <StatusCurrentWorkPanel currentWork={surface.currentWork} onAction={onAction} />
     </StatusLedgerCard>
   );
 }
@@ -158,19 +154,7 @@ function BuildPreparationCard({ surface, onAction }: StatusLedgerPageProps) {
       icon="jadeSword"
       testId="status-ledger-card-build-preparation"
     >
-      {surface.buildPreparation.topWarning ? (
-        <StatusFactRows rows={[surface.buildPreparation.topWarning]} onAction={onAction} />
-      ) : null}
-      <div className="statusLedgerSplitRows">
-        <section aria-label="Build">
-          <h3>Build</h3>
-          <StatusFactRows rows={surface.buildPreparation.buildRows} onAction={onAction} compact />
-        </section>
-        <section aria-label="Preparation">
-          <h3>Preparation</h3>
-          <StatusFactRows rows={surface.buildPreparation.reserveRows} onAction={onAction} compact />
-        </section>
-      </div>
+      <StatusBuildPreparationPanel buildPreparation={surface.buildPreparation} onAction={onAction} />
     </StatusLedgerCard>
   );
 }
@@ -209,4 +193,3 @@ export function StatusLedgerPage({ surface, onAction }: StatusLedgerPageProps) {
     </div>
   );
 }
-

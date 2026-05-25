@@ -13,6 +13,10 @@ const STATUS_LEDGER_FILES = [
   'src/ui/status/ledger/StatusMetricStrip.tsx',
   'src/ui/status/ledger/StatusLedgerCard.tsx',
   'src/ui/status/ledger/StatusLedgerRows.tsx',
+  'src/ui/status/ledger/StatusDoctrineTiles.tsx',
+  'src/ui/status/ledger/StatusSpiritRootBadge.tsx',
+  'src/ui/status/ledger/StatusBuildPreparationPanel.tsx',
+  'src/ui/status/ledger/StatusCurrentWorkPanel.tsx',
   'src/ui/status/ledger/StatusDetailsDrawer.tsx',
   'src/ui/status/ledger/StatusLedgerPage.scss',
   'src/ui/status/ledger/index.ts',
@@ -78,6 +82,27 @@ test('Status Ledger exposes required public test ids', () => {
   }
 });
 
+test('Status Ledger recovers specialized Status interiors instead of generic row dumps', () => {
+  const src = STATUS_LEDGER_FILES.map((file) => readIfExists(file)).join('\n');
+
+  for (const componentName of [
+    'StatusDoctrineTileGrid',
+    'StatusSpiritRootBadge',
+    'StatusIdentityDoctrinePanel',
+    'StatusBuildPreparationPanel',
+    'StatusCurrentWorkPanel',
+  ]) {
+    assert.match(src, new RegExp(componentName), `${componentName} should be present in Status Ledger render files.`);
+  }
+
+  const page = read('src/ui/status/ledger/StatusLedgerPage.tsx');
+  assert.doesNotMatch(
+    page,
+    /className="statusLedgerSplitRows"[\s\S]*surface\.buildPreparation\.buildRows[\s\S]*surface\.buildPreparation\.reserveRows/,
+    'Build & Preparation must not render nested compact row lists inside one narrow card.',
+  );
+});
+
 test('Status Ledger SCSS owns V3 structure, parchment layout, and reduced motion', () => {
   const screenScss = read('src/components/screens/StatusScreen.scss');
   const ledgerScss = readIfExists('src/ui/status/ledger/StatusLedgerPage.scss');
@@ -97,4 +122,3 @@ test('Status Ledger SCSS owns V3 structure, parchment layout, and reduced motion
   assert.match(scss, /prefers-reduced-motion:\s*reduce/, 'Status Ledger styles should honor reduced motion.');
   assert.doesNotMatch(scss, /DaoMandateTokens|statusV2|--dao-/, 'Status V3 public styles should not depend on V2 Dao tokens.');
 });
-

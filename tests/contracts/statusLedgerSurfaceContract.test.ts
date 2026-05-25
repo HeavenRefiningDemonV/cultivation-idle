@@ -73,6 +73,50 @@ test('Status Ledger includes cultivation state and current work state', () => {
   );
 });
 
+test('Status Ledger exposes structured doctrine, spirit root, and build preparation surfaces', () => {
+  const ledger = buildStatusDashboardSurface().statusLedger;
+
+  for (const [label, tile] of [
+    ['hero.pathTile', ledger.hero.pathTile],
+    ['hero.heartLawTile', ledger.hero.heartLawTile],
+    ['hero.focusTile', ledger.hero.focusTile],
+    ['hero.breathTile', ledger.hero.breathTile],
+    ['hero.cityTile', ledger.hero.cityTile],
+  ] as const) {
+    assert.ok(tile, `${label} should exist.`);
+    expectNonEmpty(tile.label, `${label}.label`);
+    expectNonEmpty(tile.value, `${label}.value`);
+    expectNonEmpty(tile.icon, `${label}.icon`);
+  }
+
+  assert.ok(ledger.hero.spiritRoot, 'hero.spiritRoot should exist.');
+  assert.match(
+    ledger.hero.spiritRoot.element,
+    /^(fire|water|earth|metal|wood|dormant)$/,
+    'hero spiritRoot should expose a normalized element key.',
+  );
+  assert.equal(ledger.hero.spiritRoot.elementLabel.toLowerCase(), ledger.hero.spiritRoot.element);
+  expectNonEmpty(ledger.hero.spiritRoot.gradeLabel, 'hero.spiritRoot.gradeLabel');
+  expectNonEmpty(ledger.identityDoctrine.spiritRoot.elementLabel, 'identityDoctrine.spiritRoot.elementLabel');
+  assert.equal(
+    ledger.identityDoctrine.spiritRoot.element,
+    ledger.hero.spiritRoot.element,
+    'hero and identity spirit root element keys should match.',
+  );
+
+  assert.ok(ledger.identityDoctrine.resonanceTile, 'Identity & Doctrine should expose a resonance tile.');
+  assert.ok(ledger.identityDoctrine.focusTile, 'Identity & Doctrine should expose a focus tile.');
+  assert.ok(ledger.identityDoctrine.cityTile, 'Identity & Doctrine should expose a city tile.');
+
+  assert.ok(ledger.currentWork.activityTiles.length >= 4, 'Current Work should expose an activity lane.');
+  assert.ok(ledger.buildPreparation.build.tiles.length > 0, 'Build readiness should expose summary tiles.');
+  assert.ok(ledger.buildPreparation.preparation.tiles.length > 0, 'Preparation reserves should expose summary tiles.');
+  assert.ok(
+    ledger.buildPreparation.build.detailRows.length >= ledger.buildPreparation.build.tiles.length,
+    'Build detail rows should retain the full evidence behind summary tiles.',
+  );
+});
+
 test('Status Ledger build is read-only and does not initialize trial progress', () => {
   useTrialStore.getState().hardResetTrials();
   assert.deepEqual(useTrialStore.getState().progressByTrialId, {});

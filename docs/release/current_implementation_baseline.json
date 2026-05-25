@@ -1,6 +1,6 @@
 {
   "schemaVersion": "implementation-baseline-v1",
-  "generatedAt": "2026-05-21T12:15:25.654Z",
+  "generatedAt": "2026-05-25T15:25:41.230Z",
   "cwd": "C:\\Users\\abdul\\Desktop\\cultivation-idle",
   "packageName": "cultivation-idle",
   "packageVersion": "0.0.0",
@@ -10,26 +10,7 @@
     "branch": "Latest",
     "dirty": true,
     "statusPreview": [
-      "M docs/release/current_implementation_baseline.json",
-      " M docs/release/current_implementation_baseline.md",
-      " M docs/release/go_no_go_checklist.md",
-      " M docs/release/known_issues.md",
-      " M docs/release/runtime_content_manifest.md",
-      " M docs/release/signoff_sheet.md",
-      " M scripts/release/buildGateTrialExactP0Baseline.ts",
-      " M scripts/release/capturePhase6CombatEvidence.ts",
-      " M src/features/breakthroughRitual/breakthroughRitualPresentation.ts",
-      " M src/features/breakthroughRitual/buildBreakthroughRitualSurface.ts",
-      " M src/features/combatAftermath/buildCombatAftermathSurface.ts",
-      " M src/features/techniquesExact/TechniquesExactScreen.tsx",
-      " M src/features/techniquesExact/TechniquesScreenOwner.tsx",
-      " M src/features/world/bountiesExact/bountyRouteSurface.ts",
-      " M src/features/world/gateTrialExact/buildGateTrialExactSurface.ts",
-      " M src/features/world/gateTrialExact/gateTrialExactPresentation.ts",
-      " M src/features/world/gateTrialExact/gateTrialExactTypes.ts",
-      " M src/features/world/gateTrialExact/useGateTrialExactActionController.ts",
-      " M src/systems/ui/status/statusTroubleshootingSurface.ts",
-      " M src/systems/ui/world/worldCommandSurface.ts"
+      "M docs/release/runtime_content_manifest.md"
     ]
   },
   "checks": [
@@ -139,7 +120,7 @@
       "id": "test_sources",
       "title": "Test sources",
       "status": "pass",
-      "summary": "661 TypeScript test source files found under tests/.",
+      "summary": "680 TypeScript test source files found under tests/.",
       "evidence": [
         "tests/**/*.ts"
       ]

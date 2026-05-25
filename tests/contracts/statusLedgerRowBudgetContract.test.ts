@@ -31,8 +31,11 @@ test('Status Ledger row budgets remain bounded for old-look Status density', () 
   assert.equal(ledger.safetyNet.rows.length <= 5, true, 'safety net rows should be bounded.');
   assert.equal(ledger.identityDoctrine.rows.length <= 7, true, 'identity/doctrine rows should be bounded.');
   assert.equal(ledger.currentWork.rows.length <= 6, true, 'current work rows should be bounded.');
-  assert.equal(ledger.buildPreparation.buildRows.length <= 7, true, 'build rows should be bounded.');
-  assert.equal(ledger.buildPreparation.reserveRows.length <= 6, true, 'reserve rows should be bounded.');
+  assert.equal(ledger.currentWork.activityTiles.length <= 4, true, 'current work activity lane should stay glanceable.');
+  assert.equal(ledger.buildPreparation.build.tiles.length <= 6, true, 'build summary tiles should be bounded.');
+  assert.equal(ledger.buildPreparation.preparation.tiles.length <= 6, true, 'preparation summary tiles should be bounded.');
+  assert.equal(ledger.buildPreparation.build.detailRows.length <= 7, true, 'build detail rows should be bounded.');
+  assert.equal(ledger.buildPreparation.preparation.detailRows.length <= 6, true, 'reserve detail rows should be bounded.');
   assert.equal(ledger.recentChanges.rows.length <= 4, true, 'recent changes should be bounded.');
   assert.equal(ledger.details.rows.length <= 8, true, 'details rows should stay folded and bounded.');
 });

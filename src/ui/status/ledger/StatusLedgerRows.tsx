@@ -14,7 +14,7 @@ function safeIconId(icon: IconId | null | undefined): IconId {
 }
 
 const STATUS_HIGHLIGHT_TOKEN_PATTERN =
-  /\b(Safety Net|Heart Law|Qi|Foundation|Gate|Apothecary|Healing|Pouch|Forge|Weapon|Refine|Temper|Technique|Techniques|Loadout|Doctrine|Bounty|Expedition|Prestige)\b/g;
+  /\b(Safety Net|Heart Law|Spirit Root|Cultivation Base|Mission Requirements|Qi Condensation|Foundation Establishment|Qi|Foundation|Gate|Apothecary|Healing|Pouch|Forge|Weapon|Refine|Temper|Rune|Rank|Mastery|Technique|Techniques|Loadout|Doctrine|Bounty|Expedition|Prestige|Path|Focus|Breath|Stability|Merit|Spirit Stones|City|Pinewind Hamlet|Manual Pavilion|Outskirts|Ruins|Fire|Water|Wood|Metal|Earth)\b/g;
 
 const STATUS_DISPLAY_REPLACEMENTS: ReadonlyArray<readonly [RegExp, string]> = [
   [/\bBAD\b/g, 'Bad'],
@@ -56,15 +56,32 @@ function statusRichClassName(term: string): string {
     return 'statusLedgerRich--cultivation';
   }
 
-  if (lower === 'apothecary' || lower === 'healing' || lower === 'pouch') {
+  if (lower === 'fire') return 'statusLedgerRich--element-fire';
+  if (lower === 'water') return 'statusLedgerRich--element-water';
+  if (lower === 'wood') return 'statusLedgerRich--element-wood';
+  if (lower === 'metal') return 'statusLedgerRich--element-metal';
+  if (lower === 'earth') return 'statusLedgerRich--element-earth';
+
+  if (lower === 'apothecary' || lower === 'healing' || lower === 'pouch' || lower === 'merit' || lower === 'spirit stones') {
     return 'statusLedgerRich--preparation';
   }
 
-  if (lower === 'forge' || lower === 'weapon' || lower === 'refine' || lower === 'temper') {
+  if (lower === 'forge' || lower === 'weapon' || lower === 'refine' || lower === 'temper' || lower === 'rune') {
     return 'statusLedgerRich--forge';
   }
 
-  if (lower === 'technique' || lower === 'techniques' || lower === 'loadout' || lower === 'doctrine') {
+  if (
+    lower === 'technique' ||
+    lower === 'techniques' ||
+    lower === 'loadout' ||
+    lower === 'doctrine' ||
+    lower === 'spirit root' ||
+    lower === 'path' ||
+    lower === 'focus' ||
+    lower === 'breath' ||
+    lower === 'mastery' ||
+    lower === 'rank'
+  ) {
     return 'statusLedgerRich--doctrine';
   }
 

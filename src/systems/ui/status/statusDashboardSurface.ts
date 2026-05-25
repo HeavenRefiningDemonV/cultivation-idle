@@ -189,6 +189,9 @@ export interface StatusDashboardSurfaceV1 {
     rows: StatusFactRow[];
     spiritRootElement: string;
     spiritRootTone: string;
+    spiritRootGrade: string;
+    spiritRootPurityLabel: string | null;
+    spiritRootTotalMultiplierLabel: string | null;
   };
   preparation: {
     rows: StatusFactRow[];
@@ -1079,6 +1082,9 @@ export function buildStatusDashboardSurface(now = Date.now()): StatusDashboardSu
       rows: buildIdentityRows(troubleshooting),
       spiritRootElement: troubleshooting.identity.spiritRootSummary.element,
       spiritRootTone: troubleshooting.identity.spiritRootSummary.element.toLowerCase(),
+      spiritRootGrade: troubleshooting.identity.spiritRootSummary.grade,
+      spiritRootPurityLabel: troubleshooting.identity.spiritRootSummary.purity,
+      spiritRootTotalMultiplierLabel: troubleshooting.identity.spiritRootSummary.totalMultiplier,
     },
     preparation,
   } satisfies Omit<StatusDashboardSurfaceV1, 'statusLedger'>;

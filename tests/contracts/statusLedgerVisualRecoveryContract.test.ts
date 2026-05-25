@@ -30,6 +30,8 @@ test('Status Ledger root does not paint a full beige screen wash', () => {
 });
 
 test('Status Ledger uses pearly row and chip display grammar', () => {
+  assert.match(scss, /--status-paper-pearl/);
+  assert.match(scss, /--status-paper-slip/);
   assert.match(scss, /--status-ledger-pearl-edge/);
   assert.match(scss, /statusLedgerChip/);
   assert.match(scss, /statusLedgerRowSeal/);
@@ -37,6 +39,22 @@ test('Status Ledger uses pearly row and chip display grammar', () => {
   assert.match(rows, /StatusRowSeal|statusLedgerRowSeal/);
   assert.match(rows, /StatusLedgerRichText/);
   assert.match(rows, /statusLedgerChip/);
+});
+
+test('Status Ledger prevents screenshot regressions for element identity and cramped rows', () => {
+  assert.match(scss, /\.statusSpiritRootBadge\[data-element="fire"\]/);
+  assert.match(scss, /\.statusSpiritRootBadge\[data-element="water"\]/);
+  assert.match(scss, /\.statusDoctrineTileGrid/);
+  assert.match(scss, /\.statusBuildPrepPanel/);
+  assert.match(scss, /\.statusBuildPrepPanel__warning/);
+  assert.match(scss, /grid-template-areas:[\s\S]*"buildprep buildprep buildprep"/);
+  assert.doesNotMatch(
+    scss,
+    /\.statusLedgerRow__label,\s*[\s\S]*?\.statusLedgerRequirement__label,\s*[\s\S]*?\.statusLedgerActionRow__label\s*\{[\s\S]*?overflow-wrap:\s*anywhere/,
+    'Primary Status row labels must not use arbitrary one-letter wrapping.',
+  );
+  assert.match(scss, /overflow-wrap:\s*normal/);
+  assert.match(scss, /word-break:\s*normal/);
 });
 
 test('Status Ledger supports restrained VFX and reduced motion', () => {
