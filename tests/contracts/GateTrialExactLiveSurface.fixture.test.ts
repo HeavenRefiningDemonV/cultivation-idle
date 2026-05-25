@@ -166,15 +166,15 @@ void test('Gate Trial Exact G7 live builder uses authoritative lifecycle, reward
     'getTrialGateRewardBundle',
     'buildGateTrialReadinessSurface',
     'buildSection5PostFailureSurface',
-    'useUIStore',
-    'buildLiveDaoMandateSurfaceV1',
-    'applyDaoMandateVisibility',
-    'buildLocalMandateLensSurface',
   ]) {
     assert.equal(source.includes(required), true, `G7 live builder must reference ${required}`);
   }
 
   for (const forbidden of [
+    'buildLiveDaoMandateSurfaceV1',
+    'applyDaoMandateVisibility',
+    'buildLocalMandateLensSurface',
+    'mandateLens',
     'RewardService',
     'GateTrialBuildingPanel',
     'GateTrialWorldLayout',

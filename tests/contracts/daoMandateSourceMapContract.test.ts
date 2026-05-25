@@ -266,7 +266,7 @@ const CASES: ModuleNeedCase[] = [
   },
 ];
 
-test('P6 source map emits concrete source/sink entries for production module needs', () => {
+test('V2-9 source map emits concrete source/sink entries for production module needs', () => {
   for (const entryCase of CASES) {
     const surface = makeMandateSurface({
       kind: entryCase.kind,
@@ -286,7 +286,7 @@ test('P6 source map emits concrete source/sink entries for production module nee
   }
 });
 
-test('P6 source routes are deterministic and valid or safely blocked', () => {
+test('V2-9 source routes are deterministic and valid or safely blocked', () => {
   const first = makeMandateSurface({
     kind: 'forge_floor_shortfall',
     primaryRoute: worldRoute('forge', { id: 'primary-forge', priority: 10 }),
@@ -315,7 +315,7 @@ test('P6 source routes are deterministic and valid or safely blocked', () => {
   }
 });
 
-test('P6 source rows use final source-map proof copy instead of scaffold copy', () => {
+test('V2-9 source rows use provenance proof copy instead of source-map/scaffold copy', () => {
   const surface = makeMandateSurface({
     kind: 'apothecary_prep_shortfall',
     primaryRoute: worldRoute('apothecary', { id: 'primary-apothecary', source: 'economy', priority: 10 }),
@@ -324,12 +324,12 @@ test('P6 source rows use final source-map proof copy instead of scaffold copy', 
 
   assert.equal(proofLines.length > 0, true);
   for (const proofLine of proofLines) {
-    assert.match(proofLine, /Dao Mandate source map/i);
-    assert.doesNotMatch(proofLine, /scaffold|Packet|deferred|TODO|implementation/i);
+    assert.match(proofLine, /known source provenance/i);
+    assert.doesNotMatch(proofLine, /source map|scaffold|Packet|deferred|TODO|implementation/i);
   }
 });
 
-test('P6 module source/sink surfaces keep modules local instead of becoming Status', () => {
+test('V2-9 module source/sink surfaces keep modules local instead of becoming Status', () => {
   const surface = makeMandateSurface({
     kind: 'manual_pavilion_gap',
     primaryRoute: worldRoute('manualPavilion', {
@@ -359,11 +359,44 @@ test('P6 module source/sink surfaces keep modules local instead of becoming Stat
     guidanceProfile: 'jade',
   });
 
-  assert.equal(manual?.relation, 'primary');
+  assert.equal(manual?.relation, 'primary-evidence');
   assert.match(manual?.headline ?? '', /Doctrine|Manual/i);
   assert.equal(manual?.primaryEntry?.id, surface.sourceMap[0]?.id);
-  assert.equal(bounties?.relation, 'quiet');
-  assert.equal(bounties?.entries.length, 0, 'Sealed quiet modules should not show source/sink rows');
+  assert.equal(bounties, null, 'Sealed quiet modules should not show source/sink rows');
   assert.match(records?.headline ?? '', /Evidence|Source memory|Records/i);
   assert.doesNotMatch(`${records?.headline ?? ''} ${records?.detail ?? ''}`, /do this now|best next|primary guide/i);
+});
+
+test('V2-9 module source/sink surfaces do not branch on legacy Guidance Oath profile levels', () => {
+  const surface = makeMandateSurface({
+    kind: 'apothecary_prep_shortfall',
+    primaryRoute: worldRoute('apothecary', {
+      id: 'primary-apothecary',
+      label: 'Prepare medicine reserve',
+      destinationLabel: 'Apothecary',
+      priority: 10,
+    }),
+  });
+
+  const profileFingerprint = (profile: 'sealed' | 'elder' | 'jade') => {
+    const sourceSink = buildDaoMandateModuleSourceSinkSurface({
+      mandate: surface,
+      currentCityId: CITY_ID,
+      currentModuleKey: 'apothecary',
+      guidanceProfile: profile,
+    });
+    return {
+      relation: sourceSink?.relation ?? null,
+      headline: sourceSink?.headline ?? null,
+      primaryEntryId: sourceSink?.primaryEntry?.id ?? null,
+      entries: sourceSink?.entries.map((entry) => ({
+        id: entry.id,
+        bestSources: entry.bestSources.map((source) => source.id),
+        fallbackSources: entry.fallbackSources.map((source) => source.id),
+      })) ?? [],
+    };
+  };
+
+  assert.deepEqual(profileFingerprint('sealed'), profileFingerprint('elder'));
+  assert.deepEqual(profileFingerprint('elder'), profileFingerprint('jade'));
 });

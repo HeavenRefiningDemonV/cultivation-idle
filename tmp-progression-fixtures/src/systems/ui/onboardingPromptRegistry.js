@@ -94,7 +94,7 @@ export const createFirstPinewindArrivalPrompt = (cityId) => {
         surface: definition.surface,
         priority: definition.priority,
         title: 'Pinewind Hamlet',
-        body: 'World teaches the loop: Outskirts for gold/common mats, Ruins for targeted mats, Gate Trial for milestone progress.',
+        body: 'World teaches the loop: Outskirts for gold/common mats, Ruins for targeted mats, Gate Trial for gate proof.',
         eyebrow: 'First steps',
         badgeLabel: 'Starter Loop',
         cityId,
@@ -142,7 +142,7 @@ export const createFirstGateAvailablePrompt = (args) => {
         title: 'First Gate Available',
         body: 'This is your first real milestone wall. Check readiness before brute-forcing the gate.',
         eyebrow: args.cityName,
-        badgeLabel: 'Gate Progress',
+        badgeLabel: 'Gate Proof',
         cityId: args.cityId,
         primaryAction: {
             label: 'Open Gate Trial',
@@ -165,7 +165,7 @@ export const createFirstMajorFailurePrompt = (args) => {
         surface: definition.surface,
         priority: definition.priority,
         title: 'Defeat is feedback',
-        body: 'Read the diagnosis and take the top fix before retrying. The gate is teaching you what this life is missing.',
+        body: 'Read the diagnosis and follow the Mandate correction before retrying. The gate is teaching you what this life is missing.',
         badgeLabel: 'Gate Trial',
         cityId: args.cityId,
         primaryAction: {

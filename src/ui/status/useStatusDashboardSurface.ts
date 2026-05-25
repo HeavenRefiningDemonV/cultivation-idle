@@ -47,6 +47,8 @@ export function useStatusDashboardSurface() {
     selectedHeartLawId: state.selectedHeartLawId,
     chapter: state.chapter,
     breathMode: state.breathMode,
+    stability: state.stability,
+    stabilityCap: state.stabilityCap,
   })));
   const expedition = useExpeditionStore(useShallow((state) => ({
     slots: state.slots,

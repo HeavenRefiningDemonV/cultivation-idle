@@ -44,7 +44,7 @@ test('Status and Cultivation render projections of the same Run Compass V2 truth
   assert.equal(cultivation.runCompassCompact?.actionLine.includes(v2.primaryRoute.label), true);
 });
 
-test('Gate Trial uses a Dao Mandate local lens while Prestige keeps its compact Run Compass hint', async () => {
+test('Gate Trial uses native readiness while Prestige keeps live-run routes silent', async () => {
   const content = await primeRuntime();
   const v2 = buildLiveRunCompassSurfaceV2();
   assert.ok(v2);
@@ -78,31 +78,28 @@ test('Gate Trial uses a Dao Mandate local lens while Prestige keeps its compact 
     cityNamesReached: ['Pinewind Hamlet'],
     resolvedGateCount: 0,
     visibleUpgrades: [],
-    runCompassHint: {
-      milestoneLabel: v2.milestone.label,
-      blockerLabel: v2.primaryBlocker.label,
-      routeLabel: v2.primaryRoute.label,
-      detail: v2.prestigeHint?.detail ?? v2.primaryRoute.detail,
-      active: v2.primaryRoute.target?.kind === 'tab' && v2.primaryRoute.target.tab === 'prestige',
-      recentDeltaLine: null,
-    },
   });
 
-  assert.ok(gateTrial.mandateLens?.lens);
-  assert.match(gateTrial.mandateLens?.lens.label ?? '', /Gate|Threshold/i);
+  assert.equal('mandateLens' in gateTrial, false);
+  assert.ok(gateTrial.minimumChecklist.rows.length > 0);
+  assert.ok(gateTrial.readinessRail.nodes.length > 0);
   assert.equal((gateTrial as { runCompass?: unknown }).runCompass, undefined);
-  assert.equal(prestige.runCompassHint?.milestoneLabel, v2.milestone.label);
+  assert.equal('runCompassHint' in prestige, false);
+  assert.equal(prestige.reincarnationDecree.title, 'Reincarnation Decree');
+  assert.equal(prestige.reincarnationDecree.sealState, 'locked');
+  assert.equal(prestige.reincarnationDecree.primaryAction.label, 'Reincarnation Locked');
+  assert.doesNotMatch(JSON.stringify(prestige), new RegExp(v2.primaryRoute.label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
 });
 
-test('World screen wires Dao Mandate route keys into the world routing surface', () => {
+test('World screen keeps public module routing local after Dao Mandate route retirement', () => {
   const source = read('src/components/screens/WorldScreen.tsx');
 
-  assert.match(source, /buildLiveDaoMandateSurfaceV1/);
-  assert.match(source, /buildWorldMandateRoutingLensSurface/);
-  assert.match(source, /mandatePrimaryModuleKey/);
+  assert.doesNotMatch(source, /buildLiveDaoMandateSurfaceV1/);
+  assert.doesNotMatch(source, /buildWorldMandateRoutingLensSurface/);
+  assert.doesNotMatch(source, /mandatePrimaryModuleKey/);
   assert.doesNotMatch(source, /useRunCompassSurface/);
   assert.doesNotMatch(source, /inspectorRunCompassLine/);
-  assert.match(source, /allowWorldRecommendationFallback/);
-  assert.match(source, /economicModuleKeys:\s*allowWorldRecommendationFallback/);
-  assert.match(source, /trackedBountyModuleKey:\s*allowWorldRecommendationFallback/);
+  assert.doesNotMatch(source, /allowWorldRecommendationFallback/);
+  assert.match(source, /economicModuleKeys:\s*economicPrimary\?\.cityId/);
+  assert.match(source, /trackedBountyModuleKey:\s*trackedDestination\?\.kind === 'module'/);
 });

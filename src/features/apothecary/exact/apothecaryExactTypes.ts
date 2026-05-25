@@ -1,5 +1,3 @@
-import type { DaoMandateModuleSourceSinkProjection } from '../../../systems/ui/daoMandate/index.js';
-
 export type ApothecaryExactMode = 'fixture' | 'live' | 'live-content-parity';
 export type ApothecaryExactSource = 'fixture' | 'live' | 'fallback';
 export type ApothecaryExactTone = 'neutral' | 'ready' | 'warning' | 'danger' | 'gold' | 'muted';
@@ -269,7 +267,6 @@ export interface ApothecaryExactSurfaceV1 {
   primaryAction: ApothecaryExactButtonSurface;
   returnAction: ApothecaryExactButtonSurface;
   attemptFit: ApothecaryExactAttemptFitSurface;
-  mandateSourceSink?: DaoMandateModuleSourceSinkProjection | null;
   preparedState?: ApothecaryExactPreparedStateSurface;
   debug?: {
     notes: string[];

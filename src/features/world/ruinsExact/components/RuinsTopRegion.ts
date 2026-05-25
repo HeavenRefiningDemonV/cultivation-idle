@@ -2,30 +2,15 @@ import React from 'react';
 import { Settings, ChevronDown } from 'lucide-react';
 import type { RuinsExactSurfaceV1 } from '../types.js';
 import { RUINS_EXACT_ASSETS } from '../ruinsExactAssetRegistry.js';
-import { LocalMandateLensHeader } from '../../../../ui/daoMandate/index.js';
-import type {
-  DaoLocalLensSurface,
-  DaoMandateEffectiveMotionMode,
-  DaoMandateGuidanceProfile,
-} from '../../../../systems/ui/daoMandate/index.js';
-
-export interface RuinsMandateLensView {
-  lens: DaoLocalLensSurface | null;
-  profile: DaoMandateGuidanceProfile;
-  motionMode: DaoMandateEffectiveMotionMode;
-  variant: 'compact' | 'default' | 'full';
-}
 
 export interface RuinsTopRegionProps {
   surface: RuinsExactSurfaceV1;
-  mandateLens?: RuinsMandateLensView | null;
   onOpenSettings?: () => void;
   onOpenTacticalCell?: (cellId: RuinsExactSurfaceV1['tacticalStrip']['cells'][number]['id']) => void;
   onOpenAreaSelector?: () => void;
 }
 
-export function RuinsTopRegion({ surface, mandateLens, onOpenSettings, onOpenTacticalCell, onOpenAreaSelector }: RuinsTopRegionProps) {
-  const displayLens = mandateLens?.lens ? { ...mandateLens.lens, route: null } : null;
+export function RuinsTopRegion({ surface, onOpenSettings, onOpenTacticalCell, onOpenAreaSelector }: RuinsTopRegionProps) {
   const tacticalCells = surface.tacticalStrip.cells.map((cell) => React.createElement(
     'button',
     { key: cell.id, type: 'button', className: 'ruinsTopRegion__tacticalCell', 'data-testid': `ruins-tactical-cell-${cell.id}`, onClick: onOpenTacticalCell ? () => onOpenTacticalCell(cell.id) : undefined, disabled: !onOpenTacticalCell, 'aria-label': `${cell.label}: ${cell.primaryText}` },
@@ -48,16 +33,5 @@ export function RuinsTopRegion({ surface, mandateLens, onOpenSettings, onOpenTac
     ),
     React.createElement('section', { className: 'ruinsTopRegion__tacticalStrip', 'data-testid': 'ruins-tactical-strip', 'aria-label': surface.tacticalStrip.ariaLabel }, ...tacticalCells),
     React.createElement('section', { className: 'ruinsTopRegion__plaqueCluster', 'data-testid': 'ruins-exact-plaque-cluster' }, React.createElement(surface.areaHeader.hasGroundedSelector ? 'button' : 'div', { className: 'ruinsTopRegion__areaPlaque', 'data-testid': 'ruins-area-plaque', onClick: surface.areaHeader.hasGroundedSelector ? onOpenAreaSelector : undefined }, React.createElement('span', { className: 'ruinsTopRegion__plaqueLabel' }, surface.areaHeader.plaqueLabel), surface.areaHeader.showDropdownCaret ? React.createElement('span', { className: 'ruinsTopRegion__plaqueCaret', 'aria-hidden': 'true' }, React.createElement(ChevronDown, { size: 16 })) : null), React.createElement('p', { className: 'ruinsTopRegion__subtitle', 'data-testid': 'ruins-page-subtitle' }, surface.areaHeader.subtitle), React.createElement('div', { className: 'ruinsTopRegion__roleChips', 'data-testid': 'ruins-role-chips' }, ...roleChips)),
-    React.createElement(
-      'section',
-      { className: 'ruinsTopRegion__mandateSlot', 'aria-hidden': displayLens ? undefined : 'true' },
-      displayLens ? React.createElement(LocalMandateLensHeader, {
-        lens: displayLens,
-        profile: mandateLens?.profile ?? 'elder',
-        variant: mandateLens?.variant ?? 'compact',
-        motionMode: mandateLens?.motionMode ?? 'low',
-        className: 'ruinsMandateLens',
-      }) : null,
-    ),
   );
 }

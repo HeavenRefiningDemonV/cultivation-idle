@@ -1,5 +1,4 @@
 import type React from 'react';
-import { ModuleSourceSinkPanel, type DaoMandateRouteActionHandler } from '../../../ui/daoMandate/index.js';
 import { getBountiesExactAssetSrc } from './bountiesExactAssetRegistry.js';
 import { BountiesExactIcon } from './BountiesExactIcon.js';
 import type {
@@ -19,7 +18,6 @@ export type BountiesExactScreenProps = {
   onRouteNotice?: () => void;
   onRefreshBoard?: () => void;
   onNotePrimaryAction?: (orderId: string) => void;
-  onMandateRouteAction?: DaoMandateRouteActionHandler;
 };
 
 function Button({
@@ -318,7 +316,6 @@ export function BountiesExactScreen({
   onRouteNotice,
   onRefreshBoard,
   onNotePrimaryAction,
-  onMandateRouteAction,
 }: BountiesExactScreenProps) {
   const paper = getBountiesExactAssetSrc('paperUnderlay', surface.assets);
   const board = getBountiesExactAssetSrc('boardTexture', surface.assets);
@@ -341,12 +338,6 @@ export function BountiesExactScreen({
           <span className="bountiesExactSeal bountiesExactSeal--small" aria-hidden="true" />
         </div>
         <StatStrip surface={surface} />
-        <ModuleSourceSinkPanel
-          projection={surface.mandateSourceSink}
-          className="bountiesExactMandateSourceSink"
-          title="Merit route"
-          onRouteAction={onMandateRouteAction}
-        />
         <TrackedRail surface={surface} onRouteNotice={onRouteNotice} onTrackSelected={onTrackSelected} />
         <PostedOrders surface={surface} onSelectOrder={onSelectOrder} onNotePrimaryAction={onNotePrimaryAction} />
         <Office surface={surface} onClaimAllReady={onClaimAllReady} onRefreshBoard={onRefreshBoard} />

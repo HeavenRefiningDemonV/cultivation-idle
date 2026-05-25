@@ -25,7 +25,7 @@ export function BreakthroughRitualOverlay({ surface, onClose, onRoute }: Breakth
         <div className="breakthroughRitualPanel__grid">
           <section>
             <h3>Threshold Seal</h3>
-            <p>{proofItemSpent ? `${proofItemSpent.name} x${proofItemSpent.qty}` : 'No gate proof consumed for this substage.'}</p>
+            <p>{proofItemSpent ? `${proofItemSpent.name} x${proofItemSpent.qty}` : 'No gate item consumed for this substage.'}</p>
             <p>Qi spent: {surface.qi.spentLabel}</p>
             {surface.stabilityDelta ? <p>{surface.stabilityDelta.explanation}</p> : <p>Breath remains stable.</p>}
           </section>

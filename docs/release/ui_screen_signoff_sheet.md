@@ -2,6 +2,10 @@
 
 This file is the per-screen cutover approval template used before destructive UI cleanup.
 
+## Packet D decommission QA note - 2026-05-24
+
+Packet D did not perform destructive scenic/base-art cutover. It removed public Dao/Omen/Proof/Source/Mandate overlays from non-Status screens and preserved local screen ownership. No in-app Browser screenshots were captured because the Browser capability was unavailable in this run. Static and contract evidence should be paired with a follow-up screenshot pass before using this sheet as final visual approval.
+
 ## Companion docs
 
 - Operational cutover publication: `docs/ui/phase-0-p0-14-universal-cutover-gate.md`

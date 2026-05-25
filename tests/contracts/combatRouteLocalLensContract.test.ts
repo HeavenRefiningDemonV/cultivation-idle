@@ -81,25 +81,31 @@ test('combat route local lens copy keeps Gate Trial, Outskirts, and Ruins identi
   assert.doesNotMatch(`${ruins?.label} ${ruins?.detail}`, /low-risk field|proof ledger|Safety Net/i);
 });
 
-test('active P5 route screens replace public Run Compass and ModuleRoleBanner surfaces', () => {
+test('Packet D active route screens remove public local Mandate lens wiring', () => {
   const worldScreen = readFileSync(resolve(process.cwd(), 'src/components/screens/WorldScreen.tsx'), 'utf8');
   const worldModal = readFileSync(resolve(process.cwd(), 'src/components/modals/WorldBuildingModal.tsx'), 'utf8');
   const gateScreen = readFileSync(resolve(process.cwd(), 'src/features/world/gateTrialExact/GateTrialExactScreen.ts'), 'utf8');
   const gateTypes = readFileSync(resolve(process.cwd(), 'src/features/world/gateTrialExact/gateTrialExactTypes.ts'), 'utf8');
   const ruinsSurface = readFileSync(resolve(process.cwd(), 'src/features/world/ruinsExact/buildRuinsExactSurface.ts'), 'utf8');
+  const docs = [
+    readFileSync(resolve(process.cwd(), 'AGENTS.md'), 'utf8'),
+    readFileSync(resolve(process.cwd(), 'docs/release/status_v3_dao_decommission_plan.md'), 'utf8'),
+  ].join('\n');
 
   assert.doesNotMatch(worldScreen, /useRunCompassSurface/);
   assert.doesNotMatch(worldScreen, /inspectorRunCompassLine/);
-  assert.match(worldScreen, /buildLiveDaoMandateSurfaceV1/);
-  assert.match(worldScreen, /buildWorldMandateRoutingLensSurface/);
 
   assert.doesNotMatch(worldModal, /<ModuleRoleBanner/);
-  assert.match(worldModal, /LocalMandateLensHeader/);
+  assert.match(docs, /LocalMandateLensHeader/);
+  assert.match(docs, /must not render|Forbidden public components|decommission/i);
 
   assert.doesNotMatch(gateScreen, /aria-label': 'Run Compass'|gate-trial-run-compass|gateTrialRunCompassSlip/);
   assert.doesNotMatch(gateTypes, /runCompass\?: GateTrialRunCompassSurface/);
-  assert.match(gateTypes, /mandateLens\?: GateTrialMandateLensSurface/);
   assert.doesNotMatch(ruinsSurface, /Ruins Run Compass/);
+
+  for (const source of [worldScreen, worldModal, gateScreen, gateTypes, ruinsSurface]) {
+    assert.doesNotMatch(source, /LocalMandateLensHeader|buildLiveDaoMandateSurfaceV1|buildWorldMandateRoutingLensSurface|mandateLens\?:/);
+  }
 });
 
 test('active player-facing local lens copy avoids implementation-phase language', () => {

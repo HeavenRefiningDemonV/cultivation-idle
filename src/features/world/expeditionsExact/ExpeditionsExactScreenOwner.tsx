@@ -4,7 +4,6 @@ import { useBountyStore } from '../../../stores/bountyStore.js';
 import { useCityStore } from '../../../stores/cityStore.js';
 import { useContentStore } from '../../../stores/contentStore.js';
 import { useExpeditionStore } from '../../../stores/expeditionStore.js';
-import { useDaoMandateRouteActionHandler } from '../../../systems/ui/daoMandate/index.js';
 import { buildExpeditionsExactSurfaceFromStores } from './buildExpeditionsExactSurface.js';
 import { ExpeditionsExactScreen } from './ExpeditionsExactScreen.js';
 import { useExpeditionsExactActionController } from './useExpeditionsExactActionController.js';
@@ -123,7 +122,6 @@ export function ExpeditionsExactScreenOwner({ cityId, forceFixture = false }: Ex
     setSelectedDurationId,
     setSelectedSlotIndex,
   });
-  const onMandateRouteAction = useDaoMandateRouteActionHandler('dao-mandate-expeditions-source');
 
   return (
     <div
@@ -142,7 +140,6 @@ export function ExpeditionsExactScreenOwner({ cityId, forceFixture = false }: Ex
         onClaimAllReady={actions.claimAllReady}
         onAutoFillRecommended={actions.autoFillRecommended}
         onSlotAction={actions.slotAction}
-        onMandateRouteAction={onMandateRouteAction}
       />
     </div>
   );

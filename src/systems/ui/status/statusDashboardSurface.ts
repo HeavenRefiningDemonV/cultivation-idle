@@ -7,6 +7,7 @@ import { useBountyStore } from '../../../stores/bountyStore.js';
 import { useCityStore } from '../../../stores/cityStore.js';
 import { useCombatStore } from '../../../stores/combatStore.js';
 import { useContentStore } from '../../../stores/contentStore.js';
+import { useCultivationStore } from '../../../stores/cultivationStore.js';
 import { useGameStore } from '../../../stores/gameStore.js';
 import { useProfessionStore, type ForgeJob } from '../../../stores/professionStore.js';
 import { useExpeditionStore } from '../../../stores/expeditionStore.js';
@@ -30,6 +31,8 @@ import {
 } from '../daoMandate/index.js';
 import { buildStatusTroubleshootingSurface, type StatusTroubleshootingSurface } from './statusTroubleshootingSurface.js';
 import { buildStatusV2Surface, type StatusV2Surface } from './statusV2Surface.js';
+import { buildStatusLedgerSurfaceFromDashboard } from './statusLedgerSurface.js';
+import type { StatusLedgerSurfaceV1 } from './statusLedgerTypes.js';
 import { D, formatNumber, formatPercentFromValue } from '../../../utils/numbers.js';
 
 export type StatusRouteTarget =
@@ -134,6 +137,7 @@ export interface StatusDashboardSurfaceV1 {
     generatedAt: number;
   };
   statusV2: StatusV2Surface;
+  statusLedger: StatusLedgerSurfaceV1;
   hero: {
     realmName: string;
     stageText: string;
@@ -359,7 +363,7 @@ function deltaTone(tone: RunCompassSurfaceV2['recentDeltas'][number]['tone']): S
 
 function buildRunCompassStatusRows(v2: RunCompassSurfaceV2 | null): StatusDashboardSurfaceV1['runCompass'] {
   return {
-    milestoneLabel: v2?.milestone.label ?? 'Current Mandate unavailable',
+    milestoneLabel: v2?.milestone.label ?? 'Current milestone unavailable',
     primaryBlockerLabel: v2?.primaryBlocker.label ?? 'No command truth available',
     primaryRouteLabel: v2?.primaryRoute.label ?? 'No route available',
     recentDeltas: (v2?.recentDeltas ?? []).slice(0, 3).map((delta): StatusFactRow => ({
@@ -377,7 +381,7 @@ function buildRunCompassStatusRows(v2: RunCompassSurfaceV2 | null): StatusDashbo
 function inferRequirementKind(line: RunCompassInfoLine): StatusRequirementKind {
   const normalized = `${line.id} ${line.label} ${line.detail}`.toLowerCase();
   if (normalized.includes('qi')) return 'qi';
-  if (normalized.includes('gate-item') || normalized.includes('gate item') || normalized.includes('gate proof')) return 'gate_item';
+  if (normalized.includes('gate-item') || normalized.includes('gate item')) return 'gate_item';
   if (normalized.includes('healing') || normalized.includes('apothecary') || normalized.includes('tonic')) return 'healing';
   if (normalized.includes('forge') || normalized.includes('weapon') || normalized.includes('temper')) return 'forge';
   if (normalized.includes('technique') || normalized.includes('mastery') || normalized.includes('rank') || normalized.includes('rune')) return 'technique';
@@ -411,17 +415,17 @@ function iconForRequirement(kind: StatusRequirementKind): IconId {
 function actionForRequirement(kind: StatusRequirementKind, currentCityId: string | null): StatusActionSurface {
   switch (kind) {
     case 'qi':
-      return tabAction({ id: 'requirement-qi', label: 'Cultivate Qi', detail: 'Open cultivation to work toward the next Qi target.', tab: 'cultivation', source: 'readiness' });
+      return tabAction({ id: 'requirement-qi', label: 'Dantian proof is incomplete', detail: 'The dantian has not filled enough for the next threshold.', tab: 'cultivation', source: 'readiness' });
     case 'healing':
     case 'currency':
     case 'required_item':
-      return moduleAction({ id: `requirement-${kind}`, label: 'Open Apothecary', detail: 'Open the support shop that can close this preparation gap.', moduleKey: 'apothecary', cityId: currentCityId, source: 'economy' });
+      return moduleAction({ id: `requirement-${kind}`, label: 'Survival reserve looks thin', detail: 'Support reserve evidence points to a preparation gap.', moduleKey: 'apothecary', cityId: currentCityId, source: 'economy' });
     case 'forge':
-      return moduleAction({ id: 'requirement-forge', label: 'Open Forge', detail: 'Open forge work to raise the permanent equipment floor.', moduleKey: 'forge', cityId: currentCityId, source: 'economy' });
+      return moduleAction({ id: 'requirement-forge', label: 'Weapon floor is under pressure', detail: 'Forge proof shows the permanent equipment floor is behind this gate.', moduleKey: 'forge', cityId: currentCityId, source: 'economy' });
     case 'technique':
     case 'manual':
     case 'loadout':
-      return tabAction({ id: `requirement-${kind}`, label: 'Open Techniques', detail: 'Open techniques to close build and loadout gaps.', tab: 'techniques', source: 'readiness' });
+      return tabAction({ id: `requirement-${kind}`, label: 'Doctrine expression looks incomplete', detail: 'Technique or manual proof shows a loadout gap.', tab: 'techniques', source: 'readiness' });
     case 'safety_net':
     case 'gate_item':
       return moduleAction({ id: `requirement-${kind}`, label: 'Open Gate Trial', detail: 'Open the gate surface for this gate requirement.', moduleKey: 'gateTrial', cityId: currentCityId, source: 'readiness' });
@@ -431,7 +435,7 @@ function actionForRequirement(kind: StatusRequirementKind, currentCityId: string
     case 'city_unlock':
     case 'activity':
     case 'unknown':
-      return tabAction({ id: `requirement-${kind}`, label: 'Open World', detail: 'Open World to inspect the available route.', tab: 'adventure', source: 'fallback' });
+      return tabAction({ id: `requirement-${kind}`, label: 'World proof needs inspection', detail: 'Inspect the relevant world proof for this pressure.', tab: 'adventure', source: 'fallback' });
   }
 }
 
@@ -994,7 +998,7 @@ export function buildStatusDashboardSurface(now = Date.now()): StatusDashboardSu
     debugNotes,
   });
 
-  return {
+  const dashboardWithoutLedger = {
     meta: {
       rootTestId: 'status-dashboard',
       mode: 'live',
@@ -1038,7 +1042,7 @@ export function buildStatusDashboardSurface(now = Date.now()): StatusDashboardSu
     },
     currentWork,
     readiness: {
-      title: 'Gate Proof Readiness',
+      title: 'Gate Readiness',
       stateLabel: troubleshooting.readiness.readinessLabel,
       diagnosisLabel: troubleshooting.readiness.diagnosisLabel,
       postureLabel: troubleshooting.archetypeSummary,
@@ -1077,5 +1081,40 @@ export function buildStatusDashboardSurface(now = Date.now()): StatusDashboardSu
       spiritRootTone: troubleshooting.identity.spiritRootSummary.element.toLowerCase(),
     },
     preparation,
+  } satisfies Omit<StatusDashboardSurfaceV1, 'statusLedger'>;
+
+  const gameState = useGameStore.getState();
+  const cultivationState = useCultivationStore.getState();
+  const statusLedger = buildStatusLedgerSurfaceFromDashboard(dashboardWithoutLedger, {
+    generatedAt,
+    contentLoaded: contentStore.isLoaded,
+    cityLabel,
+    currentCityId,
+    debugNotes: [],
+    game: {
+      qi: gameState.qi,
+      qiPerSecond: gameState.qiPerSecond,
+      focusMode: gameState.focusMode,
+      realmIndex: gameState.realm.index,
+      substage: gameState.realm.substage,
+      stats: {
+        hp: gameState.stats.hp,
+        atk: gameState.stats.atk,
+        def: gameState.stats.def,
+        crit: gameState.stats.crit,
+      },
+      breakthroughRequirementLabel: formatNumber(gameState.getBreakthroughRequirement()),
+    },
+    cultivation: {
+      stability: cultivationState.stability,
+      stabilityCap: cultivationState.stabilityCap,
+      chapter: cultivationState.chapter,
+      breathMode: cultivationState.breathMode,
+    },
+  });
+
+  return {
+    ...dashboardWithoutLedger,
+    statusLedger,
   };
 }

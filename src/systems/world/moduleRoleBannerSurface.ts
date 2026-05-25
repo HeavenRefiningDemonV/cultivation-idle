@@ -179,27 +179,17 @@ function currentFit(args: BuildModuleRoleBannerSurfaceArgs): ModuleCurrentFit {
   if (phaseModule(cityId) === moduleKey) {
     return { state: 'long_term', reason: `${labelForP3Module(moduleKey)} is this city phase's durable lesson, even when another blocker is first.` };
   }
-  const blocker = runCompass?.primaryBlocker.label ?? 'the current blocker';
-  return { state: 'irrelevant_now', reason: `${labelForP3Module(moduleKey)} remains useful, but ${blocker} points elsewhere first.` };
-}
-
-function actualBlockerRoute(runCompass: RunCompassSurfaceV2 | null, cityId: string | null): P3Route | null {
-  const moduleKey = targetModule(runCompass?.primaryRoute.target ?? null);
-  if (!moduleKey) return null;
-  return p3ModuleRoute(moduleKey, runCompass?.primaryRoute.detail ?? 'Current Mandate route.', cityId);
+  return { state: 'irrelevant_now', reason: `${labelForP3Module(moduleKey)} remains useful as a normal hall.` };
 }
 
 export function buildModuleRoleBannerSurface(args: BuildModuleRoleBannerSurfaceArgs): ModuleRoleBannerSurfaceV1 {
   const definition = ROLE_DEFINITIONS[args.moduleKey];
   const fit = currentFit(args);
-  const blockerRoute = actualBlockerRoute(args.runCompass, args.cityId);
   const ownRoute = p3ModuleRoute(args.moduleKey, fit.reason, args.cityId);
+  const showLocalRoute = fit.state !== 'irrelevant_now';
   const expectedLabel = fit.state === 'primary'
     ? args.runCompass?.primaryRoute.expectedDeltaLabel ?? definition.payoff
     : definition.payoff;
-  const negative = fit.state === 'irrelevant_now' && blockerRoute?.moduleKey && blockerRoute.moduleKey !== args.moduleKey
-    ? `${definition.title} matters long-term, but your current blocker is ${labelForP3Module(blockerRoute.moduleKey)}. Open ${labelForP3Module(blockerRoute.moduleKey)} first.`
-    : undefined;
 
   return {
     version: 1,
@@ -208,21 +198,20 @@ export function buildModuleRoleBannerSurface(args: BuildModuleRoleBannerSurfaceA
     title: definition.title,
     normalRole: definition.normalRole,
     currentBlockerFit: fit,
-    recommendedAction: {
-      label: fit.state === 'primary' ? ownRoute.actionLabel : blockerRoute?.actionLabel ?? ownRoute.actionLabel,
-      detail: fit.state === 'primary' ? fit.reason : negative ?? fit.reason,
-      target: fit.state === 'primary' ? ownRoute.target : blockerRoute?.target ?? ownRoute.target,
-    },
+    recommendedAction: showLocalRoute ? {
+      label: ownRoute.actionLabel,
+      detail: fit.reason,
+      target: ownRoute.target,
+    } : undefined,
     expectedPayoff: {
       label: expectedLabel,
       confidence: fit.state === 'primary' ? 'high' : fit.state === 'secondary' ? 'medium' : 'unknown',
     },
     sourceTags: [...definition.sourceTags],
     sinkTags: [...definition.sinkTags],
-    routeButtons: [
-      { id: 'module-role-primary', ...(fit.state === 'primary' ? ownRoute : blockerRoute ?? ownRoute) },
-    ],
-    negativeRelevanceCopy: negative,
+    routeButtons: showLocalRoute ? [
+      { id: 'module-role-primary', ...ownRoute },
+    ] : [],
     debugNotes: [
       args.runCompass ? `runCompass.primary=${targetModule(args.runCompass.primaryRoute.target) ?? 'none'}` : 'runCompass unavailable',
     ],

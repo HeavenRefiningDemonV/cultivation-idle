@@ -56,7 +56,7 @@ function compassFor(moduleKey: string, blocker = 'Forge floor below recommended'
   };
 }
 
-test('ModuleRoleBannerSurfaceV1 marks recommended Forge primary and Apothecary not-now', async () => {
+test('legacy internal-only ModuleRoleBannerSurfaceV1 marks recommended Forge primary and keeps quiet modules silent', async () => {
   const content = await getValidatedEconomicContent();
   const runCompass = compassFor('forge');
 
@@ -77,10 +77,13 @@ test('ModuleRoleBannerSurfaceV1 marks recommended Forge primary and Apothecary n
   assert.equal(forge.currentBlockerFit.state, 'primary');
   assert.match(forge.expectedPayoff?.label ?? '', /floor|weapon|gear/i);
   assert.equal(apothecary.currentBlockerFit.state, 'irrelevant_now');
-  assert.match(apothecary.negativeRelevanceCopy ?? '', /Forge|floor|gear/i);
+  assert.equal(apothecary.negativeRelevanceCopy, undefined);
+  assert.equal(apothecary.recommendedAction, undefined);
+  assert.equal(apothecary.routeButtons.length, 0);
+  assert.doesNotMatch(apothecary.currentBlockerFit.reason, /points elsewhere|Open .* first/i);
 });
 
-test('ModuleRoleBannerSurfaceV1 gives every P3 module a distinct hard role', async () => {
+test('legacy internal-only ModuleRoleBannerSurfaceV1 gives every P3 module a distinct hard role', async () => {
   const content = await getValidatedEconomicContent();
   const modules = ['outskirts', 'ruins', 'gateTrial', 'apothecary', 'forge', 'manualPavilion', 'techniques', 'bounties', 'expeditions'] as const;
   const roles = modules.map((moduleKey) => buildModuleRoleBannerSurface({

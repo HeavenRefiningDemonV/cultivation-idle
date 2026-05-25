@@ -45,17 +45,6 @@ import { useFxQuality, useFxStageSnapshot } from '../../../../ui/fx/FxQualityPro
 import { buildFxSceneContract } from '../../../../ui/fx/runtime.js';
 import { GateTrialFxScene } from '../../../../ui/fx/scenes/GateTrialFxScene.js';
 import { listMissingGateTrialSupportArtFiles, resolveGateTrialSupportArt } from '../../../../assets/ui/chrome/gate_trial_support/index.js';
-import {
-  applyDaoMandateVisibility,
-  buildLiveDaoMandateSurfaceV1,
-  pickDaoMandateGuidanceSettings,
-  resolveDaoMandateEffectiveMotionMode,
-} from '../../../../systems/ui/daoMandate/index.js';
-import {
-  applyLocalMandateLensVisibility,
-  buildLocalMandateLensSurface,
-} from '../../../../systems/world/localMandateLensSurface.js';
-import { normalizeCityModulesForLiveSlice } from '../../../../systems/world/liveWorldSchema.js';
 
 interface GateTrialBuildingPanelProps {
   cityId: string;
@@ -91,7 +80,6 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
   const closeWorldBuildingModal = useUIStore((state) => state.closeWorldBuildingModal);
   const addNotification = useUIStore((state) => state.addNotification);
   const setSettings = useUIStore((state) => state.setSettings);
-  const uiSettings = useUIStore((state) => state.settings);
   const onboardingLifeKeys = useUIStore((state) => state.dismissedOnboardingLifeKeys);
   const dismissOnboardingLifeKey = useUIStore((state) => state.dismissOnboardingLifeKey);
   const fxStageSnapshot = useFxStageSnapshot(FX_STAGE_IDS.gateTrial);
@@ -121,31 +109,6 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
 
   const isTrialActive = activeActivity?.type === 'trial' && activeActivity.sourceId === trialRefId;
   const trialBossName = trialDef ? enemiesById[trialDef.bossId]?.name ?? trialDef.bossId : null;
-  const guidanceSettings = useMemo(() => pickDaoMandateGuidanceSettings(uiSettings), [uiSettings]);
-  const mandateMotionMode = useMemo(
-    () => resolveDaoMandateEffectiveMotionMode({
-      mandateMotionMode: guidanceSettings.mandateMotionMode,
-      storyMotionMode: uiSettings.storyMotionMode,
-    }),
-    [guidanceSettings.mandateMotionMode, uiSettings.storyMotionMode],
-  );
-  const gateMandateLens = useMemo(() => {
-    if (!city) return null;
-    const rawMandate = buildLiveDaoMandateSurfaceV1({
-      currentScreen: 'gateTrial',
-      guidanceProfile: guidanceSettings.guidanceOath,
-    });
-    const visibleMandate = applyDaoMandateVisibility(rawMandate, { settings: guidanceSettings });
-    const rawLens = buildLocalMandateLensSurface({
-      mandate: visibleMandate,
-      cityId,
-      moduleKey: 'gateTrial',
-      visibleModules: normalizeCityModulesForLiveSlice(city.modules),
-      isModuleAvailable: Boolean(trialDef),
-      hasActiveForegroundHere: isTrialActive,
-    });
-    return applyLocalMandateLensVisibility(rawLens, visibleMandate, guidanceSettings);
-  }, [city, cityId, guidanceSettings, isTrialActive, trialDef]);
 
   const isTrialCombat = combatContext.type === 'trial';
   const activeEnemy = isTrialCombat ? currentEnemy : null;
@@ -319,9 +282,6 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
             moduleName={gateTopLaneCopy.moduleName}
             roleTag={gateTopLaneCopy.roleTag}
             bestUsedWhen={gateTopLaneCopy.bestUsedWhen}
-            localMandateLens={gateMandateLens}
-            guidanceProfile={guidanceSettings.guidanceOath}
-            motionMode={mandateMotionMode}
             variant="gate-trial"
             onClose={closeWorldBuildingModal}
             chipRow={(
@@ -448,7 +408,7 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
               <InlineOnboardingCallout
                 className="gateTrialPanel__failure-strap"
                 title="Defeat is feedback"
-                body="Read the diagnosis and follow the Mandate correction before retrying. The gate is teaching you what this life is missing."
+                body="Read the diagnosis and follow the recommended correction before retrying. The gate is teaching you what this life is missing."
                 actionLabel="Got it"
                 onAction={() => dismissOnboardingLifeKey(ONBOARDING_INLINE_LIFE_KEYS.firstFailureStrap)}
                 onDismiss={() => dismissOnboardingLifeKey(ONBOARDING_INLINE_LIFE_KEYS.firstFailureStrap)}

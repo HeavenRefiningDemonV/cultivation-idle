@@ -1,5 +1,4 @@
 import type { ItemDef, LiveWorldModuleKey, ValidatedContent } from '../../content/index.js';
-import type { DaoMandateSurfaceV1 } from '../ui/daoMandate/index.js';
 import { getWorldModuleLabel, sanitizeLiveCityName } from '../../ui/text/playerFacingLabels.js';
 import { buildBestSourceIndex, type BestSourceIndex, type BestSourceIndexEntry, type BestSourceOption } from './bestSourceIndex.js';
 import {
@@ -40,19 +39,19 @@ export interface PurposeSourceContext {
 
 const CURRENCY_PURPOSES: Record<string, Pick<PurposeSourceSurface, 'purposeTag' | 'purposeLine' | 'boundaryLine'>> = {
   gold: {
-    purposeTag: 'Core Currency',
+    purposeTag: 'Reserve',
     purposeLine: 'Used for manuals, gear, and most city spending.',
-    boundaryLine: 'Use Outskirts first when you need a clean gold refill.',
+    boundaryLine: 'Known refill source: Outskirts when a clean gold reserve matters.',
   },
   merit: {
-    purposeTag: 'Merit & Routing',
+    purposeTag: 'Reserve',
     purposeLine: 'Used for Safety Net support and other bounded reserve spending.',
-    boundaryLine: 'Treat Bounties as the first Merit refill route.',
+    boundaryLine: 'Known refill source: Bounties when Merit reserve matters.',
   },
   spiritStones: {
-    purposeTag: 'Merit & Routing',
+    purposeTag: 'Reserve',
     purposeLine: 'Used for reserve-heavy support spending and late prep pressure.',
-    boundaryLine: 'Treat Bounties as the first spirit-stone refill route.',
+    boundaryLine: 'Known refill source: Bounties when spirit-stone reserve matters.',
   },
 };
 
@@ -114,6 +113,14 @@ function formatSourceLine(option: BestSourceOption): string {
   return option.routeDetail || option.reason || option.shortReason;
 }
 
+function formatBoundaryLine(line?: string): string | undefined {
+  if (!line) return undefined;
+  return line
+    .replace(/^Use current city ([^;.]+) first;?\s*/i, 'Known source: current city $1. ')
+    .replace(/^Use the current city ([^;.]+) first for ([^.]+)\./i, 'Known source: current city $1 for $2.')
+    .replace(/^Treat ([^.]+) as the first ([^.]+)\./i, 'Known source: $1 for $2.');
+}
+
 function buildSurfaceFromIndexEntry(
   entry: BestSourceIndexEntry,
   purpose: Pick<PurposeSourceSurface, 'purposeTag' | 'purposeLine' | 'boundaryLine'>,
@@ -127,40 +134,15 @@ function buildSurfaceFromIndexEntry(
     primarySourceLine: entry.primarySource ? formatSourceLine(entry.primarySource) : undefined,
     secondarySourceLabel: entry.secondarySource ? formatSourceLabel(entry.secondarySource, content, currentCityId) : undefined,
     secondarySourceLine: entry.secondarySource ? formatSourceLine(entry.secondarySource) : undefined,
-    boundaryLine: purpose.boundaryLine ?? entry.currentCityEligibilityRule,
+    boundaryLine: formatBoundaryLine(purpose.boundaryLine ?? entry.currentCityEligibilityRule),
   };
-}
-
-function mandateNeedsTarget(mandate: DaoMandateSurfaceV1 | null | undefined, targetId: string): boolean {
-  if (!mandate) return false;
-  if (mandate.sourceMap.some((entry) => entry.neededThingId === targetId)) return true;
-  const rows = [
-    ...mandate.requirementLedger.hardGates,
-    ...mandate.requirementLedger.readinessFloors,
-    ...mandate.requirementLedger.supportReserves,
-    ...mandate.requirementLedger.sourceRoutes,
-  ];
-  return rows.some((row) => row.sourceLine === targetId || row.currentLabel === targetId || row.targetLabel === targetId);
 }
 
 function buildItemPurpose(
   item: ItemDef,
   itemId: string,
   context: PurposeSourceContext,
-  mandate?: DaoMandateSurfaceV1 | null,
 ): Pick<PurposeSourceSurface, 'purposeTag' | 'purposeLine' | 'boundaryLine'> {
-  if (mandateNeedsTarget(mandate, itemId)) {
-    const matchingEntry = mandate?.sourceMap.find((entry) => entry.neededThingId === itemId);
-    return {
-      purposeTag: 'Needed Now',
-      purposeLine: matchingEntry
-        ? `Sink: ${matchingEntry.sinkLabel}. ${matchingEntry.expectedImpactLabel ?? 'This item belongs to the current Mandate.'}`
-        : 'This item belongs to the current Mandate.',
-      boundaryLine: matchingEntry?.bestSources[0]
-        ? `Known Source: ${matchingEntry.bestSources[0].label}.`
-        : 'Known Source: follow the current Mandate source route.',
-    };
-  }
   if (itemId === 'mat_technique_fragment') {
     return {
       purposeTag: 'Keep',
@@ -171,7 +153,7 @@ function buildItemPurpose(
   if (itemId.startsWith('gate_')) {
     return {
       purposeTag: 'Future Gate',
-      purposeLine: 'Known gate proof or breakthrough catalyst. Keep it unless the current Mandate names it directly.',
+      purposeLine: 'Known gate item or breakthrough catalyst. Keep it for the relevant breakthrough step.',
       boundaryLine: 'Future Gate is not the same as Needed Now.',
     };
   }
@@ -208,12 +190,11 @@ export function buildItemPurposeSourceSurface(
   context: PurposeSourceContext,
   itemId: string,
   currentCityId?: string | null,
-  mandate?: DaoMandateSurfaceV1 | null,
 ): PurposeSourceSurface | null {
   const item = content.items.find((entry) => entry.id === itemId);
   if (!item) return null;
   const entry = context.bestSourceIndex.entriesByTargetId[itemId] ?? null;
-  const purpose = buildItemPurpose(item, itemId, context, mandate);
+  const purpose = buildItemPurpose(item, itemId, context);
 
   if (!entry) {
     return {
@@ -231,17 +212,9 @@ export function buildCurrencyPurposeSourceSurface(
   context: PurposeSourceContext,
   currencyId: 'gold' | 'merit' | 'spiritStones',
   currentCityId?: string | null,
-  mandate?: DaoMandateSurfaceV1 | null,
 ): PurposeSourceSurface | null {
   const entry = context.bestSourceIndex.entriesByTargetId[currencyId] ?? null;
-  const mandateEntry = mandate?.sourceMap.find((source) => source.neededThingId === currencyId) ?? null;
-  const purpose = mandateEntry
-    ? {
-      purposeTag: 'Needed Now',
-      purposeLine: `Sink: ${mandateEntry.sinkLabel}. ${mandateEntry.expectedImpactLabel ?? 'This currency belongs to the current Mandate.'}`,
-      boundaryLine: mandateEntry.bestSources[0] ? `Known Source: ${mandateEntry.bestSources[0].label}.` : undefined,
-    }
-    : CURRENCY_PURPOSES[currencyId];
+  const purpose = CURRENCY_PURPOSES[currencyId];
   if (!entry) {
     return purpose;
   }

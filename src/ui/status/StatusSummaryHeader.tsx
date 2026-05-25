@@ -67,17 +67,17 @@ export function StatusSummaryHeader({
         <div className="statusSummaryRibbonCell statusSummaryRibbonCell--shortfall">
           <div className="statusSummaryLabelRow">
             <AlertCircle className="statusSummaryIcon" aria-hidden />
-            <span className="statusSummaryLabel">Primary Obstruction</span>
+            <span className="statusSummaryLabel">Current Pressure</span>
           </div>
           <p className="statusBiggestShortfallBody">{biggestShortfallLine}</p>
           <p className={`statusBiggestShortfallHint ${topFixLine ? '' : 'statusBiggestShortfallHint--empty'}`}>
-            {topFixLine ? `Correction Route: ${topFixLine}` : 'Correction Route: none'}
+            {topFixLine ? `Proof signal: ${topFixLine}` : 'Proof signal: quiet'}
           </p>
           <div className="statusBiggestShortfallActionLane">
             <BadgeSlot preset="rowEnd">
               {topFixAction ? (
                 <button type="button" className="statusBiggestShortfallAction uiNoShift" onClick={() => onRunCompassAction(topFixAction)}>
-                  Open Mandate route
+                  Inspect proof
                 </button>
               ) : null}
             </BadgeSlot>

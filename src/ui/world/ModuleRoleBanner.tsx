@@ -10,13 +10,13 @@ interface ModuleRoleBannerProps {
 function fitLabel(state: ModuleRoleBannerSurfaceV1['currentBlockerFit']['state']): string {
   switch (state) {
     case 'primary':
-      return 'Primary route';
+      return 'Current role';
     case 'secondary':
-      return 'Secondary route';
+      return 'Supporting role';
     case 'long_term':
       return 'City role';
     case 'irrelevant_now':
-      return 'Not first';
+      return 'Normal role';
   }
 }
 

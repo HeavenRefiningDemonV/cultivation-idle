@@ -1,6 +1,14 @@
 # Go / No-Go Checklist
 
-- generatedAt: 2026-05-21T13:30:14.278Z
+## Packet D public Dao decommission gate - 2026-05-24
+
+| checklist id | linked checkId(s) | question | status | evidence source(s) | waiver allowed? | owner role |
+| --- | --- | --- | --- | --- | --- | --- |
+| `copy_public_dao_decommission` | `vocabulary_audit`, `status_v3_public_root_scans`, `packet_d_focused_contracts` | Are default public non-Status roots free of Dao/Omen/Proof/Source/Mandate widgets and labels? | YES | `npm run release:vocab-audit:json`<br/>focused Packet D compiled contract runner<br/>public-root `rg` scans | NO | QA/Release |
+
+Packet D local evidence is packet-scoped. The generated release headline above may still reflect unrelated broader release-gate debt.
+
+- generatedAt: 2026-05-24T20:41:13.976Z
 - release gate status: NO_GO (gate headline: NO_GO)
 - cleanPass: false
 - acceptedWaivers: 0

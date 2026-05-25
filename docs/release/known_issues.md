@@ -1,6 +1,13 @@
 # Known Issues Ledger
 
-- Generated: 2026-05-21T13:30:14.732Z
+## Packet D note - 2026-05-24
+
+- Public Dao/Omen/Proof/Source/Mandate UI cleanup outside Status is resolved for default reachable public roots by focused contracts, vocabulary audit, and targeted `rg` scans.
+- Remaining old terminology in `src/systems/world/localMandateLensSurface.ts`, `src/systems/ui/daoMandate/**`, and `src/ui/daoMandate/**` is internal/debug compatibility, not default public UI.
+- In-app Browser screenshots were not captured for Packet D because the Browser capability was unavailable in this run; this is evidence debt only, not a known public Dao blocker.
+- Broad `npm run test:contracts -- --test-name-pattern ...` still pulls unrelated known suite debt already documented in prior evidence (`scenicLabelCityMapHubContract`, generated `statusToneUtils`, and `trialLifecycle` Pavilion manifest validation). Packet D focused contracts pass.
+
+- Generated: 2026-05-24T20:41:14.442Z
 - Release gate headline: PASS
 
 ## Open blockers

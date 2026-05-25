@@ -229,7 +229,6 @@ export function CultivationExactScreenOwner({ forceFixture = false }: Cultivatio
         onOpenDrawer={actions.onOpenDrawer}
         onCloseDrawer={actions.onCloseDrawer}
         onOpenDaoHeart={actions.onOpenDaoHeart}
-        onMandateRouteAction={actions.onMandateRouteAction}
         onDantianAnchorChange={setDantianFxAnchor}
       />
       {actions.showDaoHeart ? <DaoHeartModal onClose={actions.onCloseDaoHeart} /> : null}

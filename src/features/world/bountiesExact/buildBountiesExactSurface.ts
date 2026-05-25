@@ -7,7 +7,6 @@ import { useInventoryStore } from '../../../stores/inventoryStore.js';
 import { buildLiveCraftBountyRouteSupportState } from '../../../systems/bounties/liveCraftBountyRouteSupport.js';
 import { buildSupportEconomySurfaceModel } from '../../../systems/economy/supportEconomySurfaceModel.js';
 import { buildCurrentGateEconomyContext } from '../../../systems/progression/currentGateEconomyContext.js';
-import { buildLiveDaoMandateModuleSourceSinkProjection } from '../../../systems/ui/daoMandate/index.js';
 import { LIVE_BOUNTY_BOARD_SLOTS, type LiveBountyBoardRole } from '../../../systems/world/bountyBoardContract.js';
 import { getWorldModuleLabel, sanitizeLiveCityName } from '../../../ui/text/playerFacingLabels.js';
 import { normalizeItemList } from '../../../utils/itemList.js';
@@ -545,11 +544,6 @@ export function buildBountiesExactSurfaceFromStores(
         reason: selectedNote?.routeTarget || trackedNote?.routeTarget ? null : 'No route is available for the selected order.',
       }),
     },
-    mandateSourceSink: buildLiveDaoMandateModuleSourceSinkProjection({
-      currentCityId: resolvedCityId,
-      currentModuleKey: 'bounties',
-      currentScreen: 'bounties',
-    }),
     debug: {
       notes: [
         'Live Bounties Exact surface is built from BountyStore, content, inventory support economy, and bounty routing helpers.',

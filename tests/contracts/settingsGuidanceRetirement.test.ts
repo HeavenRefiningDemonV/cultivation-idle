@@ -164,7 +164,7 @@ function withSourceProvenance(surface: DaoMandateSurfaceV1): DaoMandateSurfaceV1
   };
 }
 
-test('Settings no longer exposes Guidance Oath strategy profile cards', () => {
+test('Settings target retires broad Dao Mandate Interface while preserving ordinary preferences', () => {
   const source = readFileSync('src/components/screens/SettingsScreen.tsx', 'utf8');
   const forbiddenPatterns = [
     /Guidance Oath/,
@@ -184,21 +184,24 @@ test('Settings no longer exposes Guidance Oath strategy profile cards', () => {
     assert.doesNotMatch(source, pattern);
   }
 
-  assert.match(source, /Dao Mandate Interface/);
-  assert.match(source, /Explanation and accessibility/);
-  assert.match(source, /one sparse omen-and-proof model/);
-  assert.match(source, /never change rewards, power, route truth, or progression/);
-  for (const expectedControl of [
-    'Jade Slip lessons',
-    'Room relation stamps',
-    'Source provenance',
-    'Formula/detail rows',
-    'Failure reflections',
-    'Background support reminders',
-    'Recent omen memory',
-    'Mandate motion',
+  const agents = readFileSync('AGENTS.md', 'utf8');
+  const releasePlan = readFileSync('docs/release/status_v3_dao_decommission_plan.md', 'utf8');
+  assert.match(`${agents}\n${releasePlan}`, /Settings explains ordinary preferences/i);
+  assert.match(`${agents}\n${releasePlan}`, /Dao Mandate Interface/i);
+
+  for (const forbidden of [
+    /Dao Mandate Interface/,
+    /Jade Slip lessons/,
+    /Room relation stamps/,
+    /Source provenance/,
+    /Formula\/detail rows/,
+    /Failure reflections/,
+    /Background support reminders/,
+    /Recent omen memory/,
+    /Mandate motion/,
+    /one sparse omen-and-proof model/,
   ]) {
-    assert.match(source, new RegExp(expectedControl));
+    assert.doesNotMatch(source, forbidden);
   }
 });
 

@@ -6,7 +6,6 @@ import { useManualSatchelStore } from '../../../stores/manualSatchelStore.js';
 import { useTechCollectionStore } from '../../../stores/techCollectionStore.js';
 import { analyzeSelectedBuild } from '../../../systems/builds/buildAnalysisService.js';
 import type { BuildAnalysis, BuildGapCode } from '../../../systems/builds/buildAnalysisTypes.js';
-import { buildLiveDaoMandateModuleSourceSinkProjection } from '../../../systems/ui/daoMandate/index.js';
 import { getTechniqueTaxonomyProfile } from '../../../systems/builds/techniqueTaxonomy.js';
 import { buildDoctrineSnapshot } from '../../../systems/doctrine/doctrineSnapshot.js';
 import {
@@ -370,7 +369,6 @@ function baseSurface(input: {
   satchelLabel: string;
   currencyRows: ManualPavilionFactRowSurface[];
   feedback?: ManualPavilionExactSurfaceV1['feedback'];
-  mandateSourceSink?: ManualPavilionExactSurfaceV1['mandateSourceSink'];
   debug?: ManualPavilionExactSurfaceV1['debug'];
 }): ManualPavilionExactSurfaceV1 {
   const selected = input.selectedSlot;
@@ -459,7 +457,6 @@ function baseSurface(input: {
       lastPurchaseMessage: null,
       lastErrorMessage: null,
     },
-    mandateSourceSink: input.mandateSourceSink ?? null,
     debug: input.debug,
   };
 }
@@ -1557,11 +1554,6 @@ export function buildManualPavilionExactSurfaceFromStores(
       lastPurchaseMessage: null,
       lastErrorMessage,
     },
-    mandateSourceSink: buildLiveDaoMandateModuleSourceSinkProjection({
-      currentCityId: resolvedCityId,
-      currentModuleKey: 'manualPavilion',
-      currentScreen: 'manualPavilion',
-    }),
     debug: {
       missingDataFallbacks,
       notes: [MANUAL_PAVILION_VISIBLE_SLOT_ORDER_NOTE],

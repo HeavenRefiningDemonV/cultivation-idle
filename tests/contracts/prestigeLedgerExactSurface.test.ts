@@ -31,6 +31,7 @@ const makeUpgrade = (id: string, name: string, costs: number[], effectPerLevel =
 test('fixture surface matches the locked Prestige ledger mockup values', () => {
   const surface = createPrestigeLedgerExactMockupFixture();
 
+  assert.equal('runCompassHint' in surface, false);
   assert.equal(surface.header.title, 'Prestige');
   assert.equal(surface.header.subtitle, 'Reincarnation Ledger');
   assert.deepEqual(surface.header.chips, [
@@ -99,6 +100,7 @@ test('live surface maps AP gain and receipt rows from supplied store truth', () 
     ],
   });
 
+  assert.equal('runCompassHint' in surface, false);
   assert.equal(surface.meta.mode, 'live');
   assert.equal(surface.reincarnationDecree.apValueLabel, '+17 AP');
   assert.notEqual(surface.reincarnationDecree.apValueLabel, '+21 AP');
@@ -154,6 +156,11 @@ test('live Too Early surface locks the seal and primary CTA', () => {
   assert.equal(surface.reincarnationDecree.apValueLabel, '+0 AP');
   assert.equal(surface.reincarnationDecree.primaryAction.enabled, false);
   assert.equal(surface.reincarnationDecree.primaryAction.label, 'Reincarnation Locked');
+  assert.match(
+    `${surface.reincarnationDecree.statusLine} ${surface.reincarnationDecree.advisorySentence} ${JSON.stringify(surface.currentLifeLedger)}`,
+    /Core Formation|Too early|Reincarnation/i,
+  );
+  assert.doesNotMatch(JSON.stringify(surface), /Primary Route|Mandate Context|Run Compass/);
 });
 
 test('live recommendations are a subset of visible runtime upgrade IDs and fill to exactly three cards', () => {
@@ -203,6 +210,57 @@ test('live recommendations are a subset of visible runtime upgrade IDs and fill 
     .map((card) => card.id);
   assert.equal(actionableIds.every((id) => visibleIds.has(id)), true);
   assert.equal(surface.nextLifeRail.recommendedDecrees.some((card) => card.id === 'ap_unlock_meridian_hall'), false);
+  assert.equal('runCompassHint' in surface, false);
+});
+
+test('live Recommended cap surface uses Reincarnation-owned counsel without route hint fields', () => {
+  const surface = buildPrestigeLedgerExactSurfaceFromStores({
+    mode: 'live',
+    prestige: {
+      totalAP: 9,
+      lifetimeAP: 19,
+      prestigeCount: 1,
+      apGain: 21,
+      canPrestige: true,
+      contentCapReached: true,
+      hasLastLifeSummary: true,
+      highestRealmReached: 2,
+      spiritRoot: { element: 'earth', grade: 3, purity: 93 },
+      breakdown: makeBreakdown(21, [
+        { key: 'realm', label: 'Realm advancement', value: 12 },
+        { key: 'gates', label: 'Resolved gate trials', value: 9 },
+      ]),
+      purchasesById: {},
+    },
+    game: {
+      selectedPath: 'heaven',
+      realm: { index: 2, substage: 4, name: 'Core Formation' },
+    },
+    advisor: {
+      stateLabel: 'Recommended',
+      stateDetail: 'This life has reached the authored chapter handoff.',
+      resetPreview: {
+        resetsThisLife: ['Realm progress'],
+        carriesForward: ['Ascension Points (AP)'],
+        rebuiltNextLife: ['City baseline (starter city)'],
+      },
+    },
+    heartLawName: 'Ember Thread Sutra',
+    cityNamesReached: ['Pinewind Hamlet', 'Stonewake Market'],
+    resolvedGateCount: 3,
+    visibleUpgrades: [
+      makeUpgrade('ap_idle_qi_mult', 'Idle Qi Multiplier', [5, 8]),
+      makeUpgrade('ap_combat_mult', 'Combat Power Multiplier', [5, 8], 0.08),
+    ],
+  });
+
+  assert.equal('runCompassHint' in surface, false);
+  assert.equal(surface.header.subtitle, 'Reincarnation Ledger');
+  assert.equal(surface.reincarnationDecree.title, 'Reincarnation Decree');
+  assert.equal(surface.reincarnationDecree.sealState, 'recommended');
+  assert.equal(surface.reincarnationDecree.primaryAction.label, 'Review & Reincarnate');
+  assert.equal(surface.currentLifeLedger.progressRows.some((row) => row.value === 'Chapter exhausted'), true);
+  assert.doesNotMatch(JSON.stringify(surface), /Primary Route|Mandate Context|Run Compass/);
 });
 
 test('primary action bridge opens ritual modal before calling performPrestige when confirmation is enabled', () => {

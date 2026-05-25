@@ -279,7 +279,7 @@ function sourceMapRows(context: DaoLedgerBuildContext): DaoRequirementRow[] {
     tone: entry.bestSources.length > 0 ? 'info' : 'muted',
     route: entry.route,
     source: entry.route?.source ?? 'economy',
-    proofLine: 'Source: Dao Mandate source map',
+    proofLine: 'Source: known source provenance',
     sourceLine: entry.problemKind,
     priority: 50 + index,
   }));

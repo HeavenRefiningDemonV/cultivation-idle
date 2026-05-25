@@ -9,13 +9,12 @@ import { RuinsRoomRouteStrip } from './components/RuinsRoomRouteStrip.js';
 import { RuinsPrimaryCta } from './components/RuinsPrimaryCta.js';
 import { RuinsExplorationSummaryCard } from './components/RuinsExplorationSummaryCard.js';
 import { CombatAftermathCard, type CombatAftermathRouteSurface } from '../../combatAftermath/index.js';
-import type { RuinsMandateLensView } from './components/RuinsTopRegion.js';
 
-export function RuinsExactMockupScreen(props: { surface: RuinsExactSurfaceV1; mandateLens?: RuinsMandateLensView | null; onPrimaryAction?: () => void; onToggleAutoRepeat?: () => void; onOpenSettings?: () => void; onOpenTacticalCell?: (cellId: RuinsExactSurfaceV1['tacticalStrip']['cells'][number]['id']) => void; onOpenAreaSelector?: () => void; onOpenMedicinePouch?: () => void; onOpenLoadout?: () => void; onOpenAiProfile?: () => void; onOpenEquipmentSlot?: (slotId: RuinsExactSurfaceV1['kitCard']['equipmentGrid'][number]['slotId']) => void; onAftermathRoute?: (route: CombatAftermathRouteSurface) => void }) {
-  const { surface, mandateLens, onPrimaryAction, onOpenSettings, onOpenTacticalCell, onOpenAreaSelector, onOpenMedicinePouch, onOpenLoadout, onOpenAiProfile, onOpenEquipmentSlot, onAftermathRoute } = props;
+export function RuinsExactMockupScreen(props: { surface: RuinsExactSurfaceV1; onPrimaryAction?: () => void; onToggleAutoRepeat?: () => void; onOpenSettings?: () => void; onOpenTacticalCell?: (cellId: RuinsExactSurfaceV1['tacticalStrip']['cells'][number]['id']) => void; onOpenAreaSelector?: () => void; onOpenMedicinePouch?: () => void; onOpenLoadout?: () => void; onOpenAiProfile?: () => void; onOpenEquipmentSlot?: (slotId: RuinsExactSurfaceV1['kitCard']['equipmentGrid'][number]['slotId']) => void; onAftermathRoute?: (route: CombatAftermathRouteSurface) => void }) {
+  const { surface, onPrimaryAction, onOpenSettings, onOpenTacticalCell, onOpenAreaSelector, onOpenMedicinePouch, onOpenLoadout, onOpenAiProfile, onOpenEquipmentSlot, onAftermathRoute } = props;
   return React.createElement('article', { className: 'ruinsExactPage', 'data-testid': 'ruins-exact-page', 'data-activity-mode': surface.meta.activityMode },
     React.createElement('div', { className: 'ruinsExactPage__underlay', 'aria-hidden': 'true' }),
-    React.createElement(RuinsTopRegion, { surface, mandateLens, onOpenSettings, onOpenTacticalCell, onOpenAreaSelector }),
+    React.createElement(RuinsTopRegion, { surface, onOpenSettings, onOpenTacticalCell, onOpenAreaSelector }),
     React.createElement('section', { className: 'ruinsExactPage__bodyCluster', 'data-testid': 'ruins-exact-body-grid' },
       React.createElement('aside', { className: 'ruinsExactPage__leftRail', 'data-testid': 'ruins-exact-left-rail' }, React.createElement(RuinsKitCard, { kit: surface.kitCard, onOpenMedicinePouch, onOpenLoadout, onOpenAiProfile, onOpenEquipmentSlot })),
       React.createElement('main', { className: 'ruinsExactPage__centerScenic', 'data-testid': 'ruins-exact-center-scenic-slot' }, React.createElement(RuinsScenicStage, { scenic: surface.scenicStage })),

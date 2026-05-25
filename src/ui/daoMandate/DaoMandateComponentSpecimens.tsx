@@ -25,27 +25,27 @@ export function DaoMandateComponentSpecimens() {
   const lensExamples: DaoLocalLensSurface[] = [
     {
       screenId: 'apothecary',
-      relation: 'primary',
-      label: 'Medicine preparation answers the current Mandate',
-      detail: 'This module is the strongest route for the visible obstruction.',
+      relation: 'primary-evidence',
+      label: 'Reserve evidence',
+      detail: 'Medicine preparation is part of the current omen evidence.',
       route: cultivating.secondaryRoutes[0] ?? cultivating.primaryRoute,
       evidenceIds: ['fixture.local.primary'],
     },
     {
       screenId: 'forge',
-      relation: 'support',
-      label: 'Forge supports the next attempt',
-      detail: 'The module improves readiness but does not replace the primary route.',
-      route: gateFailed.primaryRoute,
+      relation: 'supporting-source',
+      label: 'Forge support',
+      detail: 'The module improves readiness without replacing the proof owner.',
+      route: null,
       evidenceIds: ['fixture.local.support'],
     },
     {
       screenId: 'records',
-      relation: 'quiet',
-      label: 'Records are quiet for this Mandate',
-      detail: 'Useful context exists, but no immediate route is needed here.',
+      relation: 'completed',
+      label: 'Proof sealed',
+      detail: 'The relevant record is settled for now.',
       route: null,
-      evidenceIds: ['fixture.local.quiet'],
+      evidenceIds: ['fixture.local.completed'],
     },
   ];
 

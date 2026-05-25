@@ -5,7 +5,6 @@ import { useInventoryStore } from '../../../stores/inventoryStore.js';
 import { useManualPavilionStore } from '../../../stores/manualPavilionStore.js';
 import { useManualSatchelStore } from '../../../stores/manualSatchelStore.js';
 import { useTechCollectionStore } from '../../../stores/techCollectionStore.js';
-import { useDaoMandateRouteActionHandler } from '../../../systems/ui/daoMandate/index.js';
 import { ManualPavilionExactScreen } from './ManualPavilionExactScreen.js';
 import { buildManualPavilionExactSurfaceFromStores } from './buildManualPavilionExactSurface.js';
 import { useManualPavilionExactActionController } from './useManualPavilionExactActionController.js';
@@ -131,7 +130,6 @@ export function ManualPavilionScreenOwner({
     setSelectedSlotIndex,
     nowMs: now,
   });
-  const onMandateRouteAction = useDaoMandateRouteActionHandler('dao-mandate-manual-pavilion-source');
 
   return (
     <div
@@ -152,7 +150,6 @@ export function ManualPavilionScreenOwner({
         onStudyLater={actions.studyLater}
         onViewTechniques={actions.viewTechniques}
         onOpenSatchel={actions.openSatchel}
-        onMandateRouteAction={onMandateRouteAction}
       />
     </div>
   );

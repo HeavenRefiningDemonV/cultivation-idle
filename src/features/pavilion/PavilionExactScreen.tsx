@@ -1,5 +1,4 @@
 import type { RefObject } from 'react';
-import { ModuleSourceSinkPanel, type DaoMandateRouteActionHandler } from '../../ui/daoMandate/index.js';
 import { GameIcon } from '../../ui/icons/index.js';
 import type {
   PavilionActionChipSurface,
@@ -25,7 +24,6 @@ export interface PavilionExactScreenProps {
   onRoute?: (button: PavilionRouteButtonSurface) => void;
   onOpenJadeSlip?: (entryId: string) => void;
   onCloseJadeSlip?: () => void;
-  onMandateRouteAction?: DaoMandateRouteActionHandler;
 }
 
 function stateGlyphClass(kind: string): string {
@@ -382,13 +380,6 @@ export function PavilionExactScreen(props: PavilionExactScreenProps) {
       <div className="pavilionExact__runRibbon" data-testid="pavilion-run-ribbon">
         {surface.currentLifeRibbon.display}
       </div>
-
-      <ModuleSourceSinkPanel
-        projection={surface.mandateSourceSink}
-        className="pavilionExact__mandateSourceSink"
-        title="Source memory"
-        onRouteAction={props.onMandateRouteAction}
-      />
 
       <div className="pavilionExact__searchCluster" data-testid="pavilion-search-cluster">
         <label className="pavilionExact__searchBox">

@@ -3,10 +3,6 @@ import { useActivityStore } from '../../../stores/activityStore.js';
 import { useGameStore } from '../../../stores/gameStore.js';
 import { useUIStore } from '../../../stores/uiStore.js';
 import { GameEvents, type ProgressionBreakthroughCompletedEvent } from '../../../services/events/GameEvents.js';
-import {
-  performDaoMandateRouteAction,
-  type DaoMandateRoute,
-} from '../../../systems/ui/daoMandate/index.js';
 import { performRunCompassAction } from '../../../systems/ui/runCompass/performRunCompassAction.js';
 import type { RunCompassActionLine } from '../../../systems/ui/runCompass/index.js';
 import type { WorldBuildingKey } from '../../../stores/uiStore.js';
@@ -32,7 +28,6 @@ export interface CultivationExactActionController {
   onOpenDaoHeart: () => void;
   onCloseDaoHeart: () => void;
   onRunCompassAction: (action: RunCompassActionLine) => void;
-  onMandateRouteAction: (route: DaoMandateRoute) => void;
   onCloseRitual: () => void;
   onRitualRoute: () => void;
 }
@@ -41,34 +36,6 @@ function performActionIfAvailable(action: RunCompassActionLine | null | undefine
   if (!action || action.blocked) return false;
   performRunCompassAction(action);
   return true;
-}
-
-function collectCommandOmenRoutes(surface: CultivationExactSurfaceV1): DaoMandateRoute[] {
-  const projection = surface.compactOmen?.projection;
-  if (!projection) return [];
-  return [
-    projection.currentOmen.allowDirectRoute ? projection.currentOmen.route : null,
-    ...projection.hardRoutes,
-  ].filter((route): route is DaoMandateRoute => Boolean(route));
-}
-
-function findCommandOmenRoute(
-  surface: CultivationExactSurfaceV1,
-  predicate: (route: DaoMandateRoute) => boolean,
-): DaoMandateRoute | null {
-  return collectCommandOmenRoutes(surface).find(predicate) ?? null;
-}
-
-function performMandateRouteIfAvailable(
-  route: DaoMandateRoute | null | undefined,
-): { performed: boolean; reason: string | null } {
-  if (!route) return { performed: false, reason: null };
-  if (route.blocked) return { performed: false, reason: route.blockedReason };
-  const result = performDaoMandateRouteAction(route);
-  return {
-    performed: result.performed,
-    reason: result.reason ?? route.blockedReason,
-  };
 }
 
 export function useCultivationExactActionController(surface: CultivationExactSurfaceV1): CultivationExactActionController {
@@ -138,30 +105,16 @@ export function useCultivationExactActionController(surface: CultivationExactSur
   }, [addNotification, isBreakingThrough]);
 
   const openGateTrial = useCallback((button: CultivationButtonSurface) => {
-    const mandateResult = performMandateRouteIfAvailable(findCommandOmenRoute(
-      surface,
-      (route) => route.target?.kind === 'world_module' && route.target.moduleKey === 'gateTrial',
-    ));
-    if (mandateResult.performed) return;
     const action = button.runCompassAction ?? surface.drawers.gate.action?.runCompassAction ?? null;
     if (performActionIfAvailable(action)) return;
-    addNotification('warning', mandateResult.reason ?? button.reason ?? 'Gate Trial route is not available yet.');
+    addNotification('warning', button.reason ?? 'Gate Trial route is not available yet.');
   }, [addNotification, surface]);
 
   const openPrestige = useCallback((button: CultivationButtonSurface) => {
-    const mandateResult = performMandateRouteIfAvailable(findCommandOmenRoute(
-      surface,
-      (route) => route.target?.kind === 'tab' && route.target.tab === 'prestige',
-    ));
-    if (mandateResult.performed) return;
     const action = button.runCompassAction ?? surface.lifeCycleWhisper.runCompassAction ?? null;
     if (performActionIfAvailable(action)) return;
-    if (mandateResult.reason) {
-      addNotification('warning', mandateResult.reason);
-      return;
-    }
     useUIStore.getState().setActiveTab('prestige');
-  }, [addNotification, surface]);
+  }, [surface]);
 
   const onCommandAction = useCallback((button: CultivationButtonSurface) => {
     if (button.disabled) {
@@ -212,16 +165,6 @@ export function useCultivationExactActionController(surface: CultivationExactSur
     addNotification('warning', action.reason ?? 'That route is not available yet.');
   }, [addNotification]);
 
-  const onMandateRouteAction = useCallback((route: DaoMandateRoute) => {
-    const result = performDaoMandateRouteAction(route);
-    if (!result.performed && result.reason) {
-      addNotification('warning', result.reason, {
-        source: 'dao-mandate-cultivation',
-        dedupeKey: `dao-mandate-cultivation-route-${route.id}`,
-      });
-    }
-  }, [addNotification]);
-
   const onCloseRitual = useCallback(() => {
     setRitualSurface(null);
   }, []);
@@ -258,7 +201,6 @@ export function useCultivationExactActionController(surface: CultivationExactSur
     onOpenDaoHeart,
     onCloseDaoHeart,
     onRunCompassAction,
-    onMandateRouteAction,
     onCloseRitual,
     onRitualRoute,
   };

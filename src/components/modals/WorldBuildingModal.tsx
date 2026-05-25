@@ -1,5 +1,4 @@
-import { useCallback, useEffect, useMemo, type ReactNode } from 'react';
-import type { LiveWorldModuleKey } from '../../content/index.js';
+import { useEffect, useMemo, type ReactNode } from 'react';
 import { useContentStore } from '../../stores/contentStore.js';
 import { useUIStore, type WorldBuildingKey } from '../../stores/uiStore.js';
 import { resolveModuleRef } from '../screens/world/worldUtils.js';
@@ -23,19 +22,6 @@ import { ForgeExactScreenOwner } from '../../features/professions/forgeExact/ind
 import { BountiesExactScreenOwner } from '../../features/world/bountiesExact/index.js';
 import { ExpeditionsExactScreenOwner } from '../../features/world/expeditionsExact/index.js';
 import { ManualPavilionScreenOwner } from '../../features/world/manualPavilionExact/index.js';
-import { LocalMandateLensHeader } from '../../ui/daoMandate/index.js';
-import {
-  applyDaoMandateVisibility,
-  buildLiveDaoMandateSurfaceV1,
-  performDaoMandateRouteAction,
-  pickDaoMandateGuidanceSettings,
-  resolveDaoMandateEffectiveMotionMode,
-  type DaoMandateRoute,
-} from '../../systems/ui/daoMandate/index.js';
-import {
-  applyLocalMandateLensVisibility,
-  buildLocalMandateLensSurface,
-} from '../../systems/world/localMandateLensSurface.js';
 
 export interface WorldBuildingModalProps {
   open?: boolean;
@@ -59,24 +45,6 @@ const WORLD_MODAL_LIVE_KEYS: ReadonlyArray<WorldBuildingKey> = [
   'ruins',
 ];
 
-function normalizeMandateModuleKey(buildingKey: WorldBuildingKey | null | undefined): LiveWorldModuleKey | null {
-  switch (buildingKey) {
-    case 'alchemy':
-    case 'apothecary':
-      return 'apothecary';
-    case 'manualPavilion':
-    case 'forge':
-    case 'bounties':
-    case 'expeditions':
-    case 'outskirts':
-    case 'gateTrial':
-    case 'ruins':
-      return buildingKey;
-    default:
-      return null;
-  }
-}
-
 export function WorldBuildingModal({
   open: controlledOpen,
   title: controlledTitle,
@@ -89,8 +57,6 @@ export function WorldBuildingModal({
   const storeBuildingKey = useUIStore((state) => state.worldBuildingModalKey);
   const closeFromStore = useUIStore((state) => state.closeWorldBuildingModal);
   const storeModalIntent = useUIStore((state) => state.worldBuildingModalIntent);
-  const uiSettings = useUIStore((state) => state.settings);
-  const addNotification = useUIStore((state) => state.addNotification);
   const city = useContentStore((state) => (storeCityId ? state.maps.citiesById[storeCityId] : undefined));
   const moduleRefId = useMemo(() => resolveModuleRef(city ?? null, storeBuildingKey ?? null), [city, storeBuildingKey]);
 
@@ -101,12 +67,6 @@ export function WorldBuildingModal({
     () => (isStoreMode ? closeFromStore : controlledOnClose ?? NOOP_CLOSE),
     [closeFromStore, controlledOnClose, isStoreMode],
   );
-  const mandateModuleKey = normalizeMandateModuleKey(buildingKey ?? null);
-  const guidanceSettings = useMemo(() => pickDaoMandateGuidanceSettings(uiSettings), [uiSettings]);
-  const mandateMotionMode = useMemo(() => resolveDaoMandateEffectiveMotionMode({
-    mandateMotionMode: guidanceSettings.mandateMotionMode,
-    storyMotionMode: uiSettings.storyMotionMode,
-  }), [guidanceSettings.mandateMotionMode, uiSettings.storyMotionMode]);
   const buildingAudit = useMemo(
     () => (isStoreMode ? inspectWorldFacingModuleTarget(buildingKey ?? null) : { ok: true, moduleKey: buildingKey ?? null, reason: 'ok' }),
     [buildingKey, isStoreMode],
@@ -133,43 +93,6 @@ export function WorldBuildingModal({
     }),
     [buildingKey, city?.name, controlledTitle, isStoreMode, storeModalIntent],
   );
-  const localMandateLens = useMemo(
-    () => {
-      if (!isStoreMode || !open || !storeCityId || !mandateModuleKey || !city) return null;
-      const raw = buildLiveDaoMandateSurfaceV1({
-        currentScreen: `world:${mandateModuleKey}`,
-        guidanceProfile: guidanceSettings.guidanceOath,
-      });
-      const visibleMandate = applyDaoMandateVisibility(raw, { settings: guidanceSettings });
-      const lens = buildLocalMandateLensSurface({
-        mandate: visibleMandate,
-        cityId: storeCityId,
-        moduleKey: mandateModuleKey,
-        visibleModules: city.modules as readonly LiveWorldModuleKey[],
-        isModuleAvailable: city.modules.includes(mandateModuleKey),
-      });
-      return applyLocalMandateLensVisibility(lens, raw, guidanceSettings);
-    },
-    [city, guidanceSettings, isStoreMode, mandateModuleKey, open, storeCityId],
-  );
-  const localMandateVariant = guidanceSettings.localLensBanners === 'compact'
-    ? 'compact'
-    : guidanceSettings.localLensBanners === 'full'
-      ? 'full'
-      : 'default';
-  const handleMandateRouteAction = useCallback(
-    (route: DaoMandateRoute) => {
-      const result = performDaoMandateRouteAction(route);
-      if (!result.performed && result.reason) {
-        addNotification('warning', result.reason, {
-          source: 'dao-mandate-world-modal',
-          dedupeKey: `dao-mandate-world-modal-route-${route.id}`,
-        });
-      }
-    },
-    [addNotification],
-  );
-
   if (
     (isStoreMode && (!storeOpen || !storeCityId || !buildingKey || !buildingAudit.ok || !citySupportsBuilding))
     || (!isStoreMode && !open)
@@ -287,16 +210,6 @@ export function WorldBuildingModal({
           <p className="worldBuildingTitle">{entrySurface.cityLabel} — {entrySurface.moduleLabel}</p>
           {entrySurface.contextReason ? <p className="worldBuildingSubtitle">{entrySurface.contextReason}</p> : null}
         </div>
-      ) : null}
-      {localMandateLens && entrySurface.shellMode !== 'screen-owned' ? (
-        <LocalMandateLensHeader
-          lens={localMandateLens}
-          profile={guidanceSettings.guidanceOath}
-          variant={localMandateVariant}
-          motionMode={mandateMotionMode}
-          className="worldBuildingMandateLens"
-          onRouteAction={handleMandateRouteAction}
-        />
       ) : null}
       <div className={`worldBuildingBody worldBuildingBody--${entrySurface.backgroundVariant} worldBuildingBody--${entrySurface.shellFamily} worldBuildingBody--${entrySurface.shellMode}`}>{content}</div>
     </Modal>

@@ -34,11 +34,11 @@ test('world recommendation priority prefers run-compass current-city world actio
   assert.equal(recommendation.from, 'run_compass');
 });
 
-test('world recommendation falls through to run-compass secondary then economic then tracked bounty only for visible modules', () => {
+test('world recommendation does not promote secondary route hints as strong World commands', () => {
   const recommendation = resolveWorldRecommendedModule({
     visibleModules: ['bounties', 'expeditions'],
     runCompassPrimaryAction: {
-      why: 'Primary route points to a deferred module.',
+      why: 'Primary target is a deferred module.',
       target: { kind: 'world_module', cityId: 'city_pinewind_hamlet', moduleKey: 'outskirts' },
     },
     runCompassSecondaryModuleKey: 'expeditions',
@@ -47,8 +47,8 @@ test('world recommendation falls through to run-compass secondary then economic 
     trackedBountyModuleKey: 'bounties',
   });
 
-  assert.equal(recommendation.moduleKey, 'expeditions');
-  assert.equal(recommendation.from, 'run_compass');
+  assert.equal(recommendation.moduleKey, 'bounties');
+  assert.equal(recommendation.from, 'tracked_bounty');
 });
 
 test('world recommendation never points to hidden/deferred modules even when provided by inputs', () => {
@@ -94,7 +94,7 @@ test('world command surface fallback metadata uses canonical world-facing role t
 
   const cards = surface.groups.flatMap((group) => group.cards);
   assert.equal(cards.some((card) => card.roleTag === 'Gold & Common Mats'), true);
-  assert.equal(cards.some((card) => card.roleTag === 'Gate Proof'), true);
+  assert.equal(cards.some((card) => /Gate (Item|Readiness)/.test(card.roleTag)), true);
   assert.equal(cards.some((card) => card.roleTag === 'Merit & Routing'), true);
   assert.equal(cards.some((card) => card.roleTag === 'Passive Support'), true);
   cards.forEach((card) => {

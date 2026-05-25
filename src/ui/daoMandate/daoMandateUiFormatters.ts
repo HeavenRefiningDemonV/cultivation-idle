@@ -173,15 +173,8 @@ export function getDaoRouteDisabledReason(
   return null;
 }
 
-export function getDaoMandateProfileLabel(profile: DaoMandateGuidanceProfile): string {
-  switch (profile) {
-    case 'sealed':
-      return 'Sealed Counsel';
-    case 'elder':
-      return "Elder's Counsel";
-    case 'jade':
-      return 'Jade Slip Tutor';
-  }
+export function getDaoMandateProfileLabel(_profile: DaoMandateGuidanceProfile): string {
+  return 'Sparse compatibility';
 }
 
 export function getDaoMandateMotionClassName(motionMode: DaoMandateEffectiveMotionMode = 'medium'): string {

@@ -20,9 +20,13 @@ test('status fx scene keeps atmosphere-only DOM contract with explicit budget ga
   assert.doesNotMatch(source, /Biggest Shortfall|Readiness|Best Next Action|Safety Net/);
 });
 
-test('status atmosphere quality fallback rules keep low and reduced motion calm', () => {
-  const styles = read('src/components/screens/StatusScreen.scss');
-  assert.match(styles, /\.statusFxScene\[data-quality="low"\]\s+\.statusFxScene__mist,\n\.statusFxScene\[data-quality="low"\]\s+\.statusFxScene__glint\s+\{\n\s+display: none;/);
-  assert.match(styles, /\.statusFxScene\[data-quality="reducedMotion"\][\s\S]*\.statusFxScene__mist,\n\.statusFxScene\[data-quality="reducedMotion"\]\s+\.statusFxScene__glint\s+\{\n\s+display: none;/);
-  assert.match(styles, /@media \(prefers-reduced-motion: reduce\)[\s\S]*\.statusFxScene__mist,\n\s+\.statusFxScene__glint \{\n\s+display: none;/);
+test('Status Ledger owns reduced motion after Packet C visual cutover', () => {
+  const screenStyles = read('src/components/screens/StatusScreen.scss');
+  const ledgerStyles = read('src/ui/status/ledger/StatusLedgerPage.scss');
+
+  assert.doesNotMatch(screenStyles, /statusFxScene/);
+  assert.match(ledgerStyles, /@media \(prefers-reduced-motion: reduce\)/);
+  assert.match(ledgerStyles, /\.statusLedgerRoot \*,\n\s+\.statusLedgerRoot \*::before,\n\s+\.statusLedgerRoot \*::after/);
+  assert.match(ledgerStyles, /animation-duration: 0\.001ms !important/);
+  assert.match(ledgerStyles, /transition-duration: 0\.001ms !important/);
 });

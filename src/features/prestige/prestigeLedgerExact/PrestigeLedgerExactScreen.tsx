@@ -65,24 +65,6 @@ export function PrestigeLedgerExactScreen({
         </div>
       </header>
 
-      {surface.runCompassHint ? (
-        <section
-          className={`prestigeLedgerRunCompass parchmentPanel ${surface.runCompassHint.active ? 'prestigeLedgerRunCompass--active' : ''}`}
-          aria-label="Mandate context"
-        >
-          <div>
-            <span>{surface.runCompassHint.active ? 'Primary Route' : 'Mandate Context'}</span>
-            <strong>{surface.runCompassHint.milestoneLabel}</strong>
-            <p>{surface.runCompassHint.blockerLabel}</p>
-            {surface.runCompassHint.recentDeltaLine ? <small>{surface.runCompassHint.recentDeltaLine}</small> : null}
-          </div>
-          <div>
-            <span>{surface.runCompassHint.routeLabel}</span>
-            <p>{surface.runCompassHint.detail}</p>
-          </div>
-        </section>
-      ) : null}
-
       {reclaimObjective ? (
         <section className="prestigeLedgerReclaimBanner parchmentPanel" aria-label="Post-reset reclaim objective">
           <div className="prestigeLedgerReclaimBanner__copy">

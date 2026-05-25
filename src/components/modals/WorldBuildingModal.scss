@@ -342,25 +342,6 @@
   border-color: rgba(251, 244, 228, 0.32);
 }
 
-.worldBuildingMandateLens.daoLocalMandateLensHeader {
-  position: relative;
-  margin: 56px 18px 0;
-  width: min(42rem, calc(100% - 36px));
-  min-height: 52px;
-  border-radius: 8px;
-  color: #2f2419;
-  background:
-    linear-gradient(180deg, rgba(247, 239, 219, 0.94), rgba(223, 204, 165, 0.88));
-  border-color: rgba(98, 116, 77, 0.34);
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 250, 230, 0.36),
-    0 2px 8px rgba(35, 25, 15, 0.16);
-}
-
-.worldBuildingMandateLens .daoLocalMandateLensHeader__main {
-  align-items: center;
-}
-
 .worldBuildingTitle {
   margin: 0;
   font-size: 14px;

@@ -23,6 +23,7 @@ const BLOCKS = Object.freeze([
     { key: 'doctrine_build', title: 'Doctrine & Build' },
     { key: 'world_progress', title: 'World Progress' },
     { key: 'gate_trials', title: 'Gate Trials' },
+    { key: 'mandate_memory', title: 'Mandate Memory' },
     { key: 'ruins_supply', title: 'Ruins & Supply' },
     { key: 'economy_support', title: 'Economy Support' },
     { key: 'offline_background', title: 'Offline & Background' },
@@ -35,6 +36,24 @@ const clampLines = (lines, fallback) => {
         return [fallback];
     return deduped.slice(0, 5);
 };
+export function buildLifeSummaryMandateMemoryBlock(args) {
+    return {
+        key: 'mandate_memory',
+        title: 'Mandate Memory',
+        lines: clampLines([
+            args.gateProofLine ?? '',
+            args.reflectionLine ?? '',
+            args.daoImpressionLine ?? '',
+            args.sourceRouteLine ?? '',
+            args.offlineLine ?? '',
+            args.reincarnationLine ?? '',
+        ], 'No Mandate omens have settled into this life memory yet.'),
+    };
+}
+export function buildLifeSummaryNextLifeFocusLines(args) {
+    const focus = `${args.focusLabel}: ${args.focusDetail}`.trim();
+    return clampLines([focus], 'Hold a steady line and gather clearer signals before your next reset.').slice(0, 1);
+}
 const formatDuration = (ms) => {
     if (ms <= 0)
         return '0m';
@@ -162,6 +181,20 @@ const buildCurrentBlocks = () => {
         : null;
     const topPurchase = advisor.topRecommendedPurchase;
     const nextLifeFocus = buildPostResetObjectivePreview();
+    const mandateMemory = buildLifeSummaryMandateMemoryBlock({
+        gateProofLine: clearedTrials > 0 || bypassedTrials > 0
+            ? `Gate proof record: ${clearedTrials} cleared, ${bypassedTrials} bypassed.`
+            : status.currentGateTrialId ? `Gate proof focus: ${formatGateTrialLabel(status.currentGateTrialId)}.` : null,
+        reflectionLine: failureReflections[0]
+            ? `Gate Reflection: ${failureReflections[0].diagnosisCode} corrected through ${failureReflections[0].correctiveRoute.label}.`
+            : status.currentDiagnosis ? `Active Gate Reflection: ${formatDiagnosisLabel(status.currentDiagnosis.primary)}.` : null,
+        daoImpressionLine: daoImpressions[0]?.memoryLine ?? null,
+        sourceRouteLine: status.currentDiagnosis
+            ? `Source route memory: fix ${formatDiagnosisLabel(status.currentDiagnosis.primary)} before repeating the gate.`
+            : null,
+        offlineLine,
+        reincarnationLine: `Reincarnation Counsel: ${advisor.stateLabel}, +${advisor.apForecast.potentialGain} AP forecast.`,
+    });
     const linesByKey = {
         life_arc: clampLines([
             `Current realm: ${getLiveRealmNameByIndex(game.realm.index)}`,
@@ -190,6 +223,7 @@ const buildCurrentBlocks = () => {
             ...failureReflections.map((reflection) => `Resolved Inner Demon: ${reflection.diagnosisCode} corrected through ${reflection.correctiveRoute.label}.`),
             status.currentDiagnosis ? `Latest diagnosis: ${formatDiagnosisLabel(status.currentDiagnosis.primary)}` : 'No active gate diagnosis recorded.',
         ], 'No gate trial progress has been recorded yet.'),
+        mandate_memory: mandateMemory.lines,
         ruins_supply: clampLines([
             `Ruins runs: ${totalRuinsRuns}`,
             `Ruins rooms cleared: ${totalRuinsRooms}`,
@@ -210,12 +244,13 @@ const buildCurrentBlocks = () => {
             lastOffline?.parts.find((part) => part.kind === 'expeditions') ? 'Expeditions became ready while away.' : '',
             'Combat never progresses offline.',
         ], 'No offline background summary is available yet.'),
-        next_life_focus: clampLines([
-            `${nextLifeFocus.label}: ${nextLifeFocus.detail}`,
-            status.currentDiagnosis ? `Fix diagnosis first: ${formatDiagnosisLabel(status.currentDiagnosis.primary)}` : '',
-            status.currentGateTrialId ? `Center prep around ${formatGateTrialLabel(status.currentGateTrialId)} before your next reset.` : '',
-            topPurchase ? `${topPurchase.mode === 'buy_now' ? 'Buy now' : 'Save for'} ${topPurchase.name} (${topPurchase.nextCost} AP)` : '',
-        ], 'Hold a steady line and gather clearer signals before your next reset.').slice(0, 3),
+        next_life_focus: buildLifeSummaryNextLifeFocusLines({
+            focusLabel: nextLifeFocus.label,
+            focusDetail: nextLifeFocus.detail,
+            diagnosisLine: status.currentDiagnosis ? `Fix diagnosis first: ${formatDiagnosisLabel(status.currentDiagnosis.primary)}` : null,
+            gateLine: status.currentGateTrialId ? `Center prep around ${formatGateTrialLabel(status.currentGateTrialId)} before your next reset.` : null,
+            purchaseLine: topPurchase ? `${topPurchase.mode === 'buy_now' ? 'Buy now' : 'Save for'} ${topPurchase.name} (${topPurchase.nextCost} AP)` : null,
+        }),
     };
     return BLOCKS.map((block) => ({
         key: block.key,

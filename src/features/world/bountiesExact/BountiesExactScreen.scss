@@ -64,19 +64,10 @@
 .bountiesExactHeader { position: absolute; left: 64px; top: 24px; width: 520px; height: 86px; }
 .bountiesExactStatusPlaque { position: absolute; left: 1323px; top: 27px; width: 692px; height: 58px; }
 .bountiesExactStatStrip { position: absolute; left: 61px; top: 132px; width: 1929px; height: 83px; display: grid; grid-template-columns: repeat(7, 1fr); gap: 14px; }
-.bountiesExactMandateSourceSink { position: absolute; left: 640px; top: 24px; width: 666px; max-height: 88px; z-index: 12; overflow: auto; }
 .bountiesExactTrackedRail { position: absolute; left: 47px; top: 245px; width: 358px; height: 752px; }
 .bountiesExactBoard { position: absolute; left: 434px; top: 242px; width: 1186px; height: 752px; }
 .bountiesExactOffice { position: absolute; left: 1646px; top: 245px; width: 358px; height: 752px; }
 .bountiesExactBottomActions { position: absolute; left: 496px; top: 1028px; width: 1033px; height: 80px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
-
-.bountiesExactMandateSourceSink .daoModuleSourceSinkPanel__header {
-  grid-template-columns: minmax(82px, auto) minmax(0, 1fr);
-}
-
-.bountiesExactMandateSourceSink .daoSourceRouteSlip {
-  padding: 7px;
-}
 
 .bountiesExactHeader__titleRow {
   display: flex;

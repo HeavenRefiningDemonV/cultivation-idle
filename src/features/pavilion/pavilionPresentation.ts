@@ -88,7 +88,7 @@ export const PAVILION_FIXTURE_SECTIONS: PavilionEntrySectionSurface[] = [
       { id: 'apothecary', label: 'Stock healing and configure medicine pouch', value: 'Route to Apothecary', status: 'open', routeLabel: 'Route to Apothecary', routeAction: 'routeApothecary' },
       { id: 'forge', label: 'Raise weapon or armor floor if damage/survival is weak', value: 'Route to Forge', status: 'open', routeLabel: 'Route to Forge', routeAction: 'routeForge' },
       { id: 'manual-pavilion', label: 'Buy/study a role-filling manual if loadout is thin', value: 'Route to Manual Pavilion', status: 'open', routeLabel: 'Route to Manual Pavilion', routeAction: 'routeManualPavilion' },
-      { id: 'ruins', label: 'Run Ruins for support materials if inputs are missing', value: 'Route to Ruins', status: 'open', routeLabel: 'Route to Ruins', routeAction: 'routeRuins' },
+      { id: 'ruins', label: 'Ruins routes can show missing support materials', value: 'Route to Ruins', status: 'open', routeLabel: 'Route to Ruins', routeAction: 'routeRuins' },
     ],
   },
   {

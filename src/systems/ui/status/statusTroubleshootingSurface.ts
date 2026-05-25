@@ -156,27 +156,27 @@ export function resolveStatusShortfallReason(code: FailureDiagnosisCode | null, 
 }
 
 function toShortfallHeadline(diagnosisLabel: string, reason: string): string {
-  return `Primary Obstruction: ${diagnosisLabel} — ${reason}`;
+  return `Current pressure: ${diagnosisLabel} — ${reason}`;
 }
 
 function toEconomicTopFixLabel(actionKind: string, destinationModuleKey: string): string {
   switch (actionKind) {
     case 'run_ruins':
-      return `Run ${getWorldModuleLabel('ruins')} for missing materials`;
+      return `${getWorldModuleLabel('ruins')} route shows missing materials`;
     case 'farm_outskirts':
-      return `Farm ${getWorldModuleLabel('outskirts')} for missing materials`;
+      return `${getWorldModuleLabel('outskirts')} route shows missing materials`;
     case 'launch_expedition':
-      return `Launch ${getWorldModuleLabel('expeditions')} for materials`;
+      return `${getWorldModuleLabel('expeditions')} support shows material pressure`;
     case 'craft_forge':
-      return 'Raise forge floor';
+      return 'Weapon floor is under pressure';
     case 'route_manual_pavilion':
-      return `Tune build via ${getWorldModuleLabel('manualPavilion')}`;
+      return `Doctrine expression points to ${getWorldModuleLabel('manualPavilion')}`;
     case 'buy':
-      return `Restock via ${getWorldModuleLabel(destinationModuleKey)}`;
+      return `${getWorldModuleLabel(destinationModuleKey)} route shows reserve pressure`;
     case 'brew':
-      return `Brew support tonics at ${getWorldModuleLabel(destinationModuleKey)}`;
+      return `${getWorldModuleLabel(destinationModuleKey)} route shows support pressure`;
     default:
-      return `Open ${getWorldModuleLabel(destinationModuleKey)}`;
+      return `${getWorldModuleLabel(destinationModuleKey)} route needs inspection`;
   }
 }
 
@@ -278,7 +278,7 @@ export function buildStatusTroubleshootingSurface(): StatusTroubleshootingSurfac
 
   const topFixFallbackByDiagnosis = capReached
     ? {
-      label: 'Open Reincarnation for permanent progress',
+      label: 'Reincarnation decree can be reviewed',
       destinationLabel: 'Prestige',
       blockedReason: canPrestigeNow ? null : 'Too Early',
     }
@@ -290,37 +290,37 @@ export function buildStatusTroubleshootingSurface(): StatusTroubleshootingSurfac
       }
       : diagnosisCode === 'underforged'
         ? {
-          label: 'Refine your weapon toward the next gate floor',
-          destinationLabel: getWorldModuleLabel('forge'),
-          blockedReason: null,
-        }
-        : diagnosisCode === 'underprepared'
-          ? {
-            label: 'Open Apothecary and restore your prep package',
+        label: 'Weapon floor is under pressure',
+        destinationLabel: getWorldModuleLabel('forge'),
+        blockedReason: null,
+      }
+      : diagnosisCode === 'underprepared'
+        ? {
+            label: 'Survival reserve looks thin',
             destinationLabel: getWorldModuleLabel('apothecary'),
             blockedReason: null,
           }
           : diagnosisCode === 'underbuilt'
             ? {
-              label: 'Open Techniques and close your top build gap',
+              label: 'Doctrine expression looks incomplete',
               destinationLabel: 'Techniques',
               blockedReason: null,
             }
             : diagnosisCode === 'close'
               ? {
-                label: 'Open the Gate Trial and test a cleaner attempt',
+                label: 'Gate item can be inspected',
                 destinationLabel: getWorldModuleLabel('gateTrial'),
                 blockedReason: null,
               }
               : diagnosisCode === 'bypassAvailable'
                 ? {
-                  label: 'Use Safety Net to resolve this gate',
+                  label: 'Mercy proof is available',
                   destinationLabel: getWorldModuleLabel('gateTrial'),
                   blockedReason: null,
                 }
                 : {
-                  label: 'Follow the current Mandate route',
-                  destinationLabel: 'Mandate Chamber',
+                  label: 'No dominant omen is surfaced',
+                  destinationLabel: 'Status',
                   blockedReason: null,
                 };
 
@@ -433,7 +433,7 @@ export function buildStatusTroubleshootingSurface(): StatusTroubleshootingSurfac
             ? 'Viable'
             : 'Too Early',
       blockedReason: capReached
-        ? (canPrestigeNow ? 'Current Chapter Exhausted — Open Reincarnation.' : 'Current Chapter Exhausted — Too Early for Reincarnation.')
+        ? (canPrestigeNow ? 'Current Chapter Exhausted — Reincarnation decree can be reviewed.' : 'Current Chapter Exhausted — Too Early for Reincarnation.')
         : lifecycle.failSafe.status === 'resolved'
           ? 'Gate already resolved'
           : lifecycle.failSafe.blockedReason ?? 'Not available yet',

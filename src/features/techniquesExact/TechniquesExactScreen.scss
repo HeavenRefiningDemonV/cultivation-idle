@@ -99,25 +99,6 @@
   font-size: clamp(15px, 1.1vw, 20px);
 }
 
-.techniquesExactMandateSourceSink {
-  min-width: 0;
-  max-height: calc(var(--tech-top-height) - 24px);
-  overflow: auto;
-}
-
-.techniquesExactMandateSourceSink .daoModuleSourceSinkPanel__header {
-  grid-template-columns: 1fr;
-  gap: 0.35rem;
-}
-
-.techniquesExactMandateSourceSink .daoModuleSourceSinkPanel__relation {
-  width: max-content;
-}
-
-.techniquesExactMandateSourceSink .daoSourceRouteSlip {
-  padding: 7px;
-}
-
 .techniquesExactDiagnosis {
   min-width: 0;
   display: grid;

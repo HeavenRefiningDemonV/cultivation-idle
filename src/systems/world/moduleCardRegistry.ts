@@ -120,9 +120,9 @@ const DEFINITION_LIST: readonly WorldModuleCardDefinition[] = [
     label: getWorldModuleLabel('gateTrial'),
     group: 'combat',
     sortOrder: 3,
-    roleTag: 'Gate Proof',
-    bestUsedWhen: 'Use this hall when the current gate proof is ready for judgment.',
-    defaultOutputs: [{ key: 'gate_proof', label: 'Gate Proof' }, { key: 'breakthrough', label: 'Breakthrough' }],
+    roleTag: 'Gate Item',
+    bestUsedWhen: 'Use this hall when the current gate item is ready for judgment.',
+    defaultOutputs: [{ key: 'gate_proof', label: 'Gate Item' }, { key: 'breakthrough', label: 'Breakthrough' }],
     ctaLabel: 'Open Gate Trial',
     allowedChipKinds: ['recommended_now', 'gate_critical'],
     allowStrongRecommendation: true,
@@ -218,7 +218,7 @@ function buildGateTrialOutputHints(content: ValidatedContent, cityId: string): W
   const gateItemId = getTrialGateItemId(content, trial);
   const gateItemName = gateItemId ? content.items.find((entry) => entry.id === gateItemId)?.name ?? null : null;
   return [
-    { key: 'gate_proof', label: sanitizeLiveCityName(gateItemName ?? 'Gate Proof') },
+    { key: 'gate_proof', label: sanitizeLiveCityName(gateItemName ?? 'Gate Item') },
     { key: 'breakthrough', label: 'Breakthrough' },
   ];
 }

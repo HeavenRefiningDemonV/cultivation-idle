@@ -28,7 +28,6 @@ import {
   createPrestigeLedgerExactMockupFixture,
 } from './buildPrestigeLedgerExactSurface.js';
 import { usePrestigeLedgerActionController } from './usePrestigeLedgerActionController.js';
-import { useRunCompassSurface } from '../../../ui/status/useRunCompassSurface.js';
 
 const missingUpgradeMessage = 'This decree is no longer available.';
 
@@ -95,7 +94,6 @@ export function PrestigeLedgerScreenOwner() {
   const canPrestigeNow = canPrestige();
   const advisor = getPrestigeAdvisorSurface();
   const forecast = buildPrestigeForecastSurfaceV2();
-  const runCompass = useRunCompassSurface();
   const visibleUpgrades = useMemo(() => getVisiblePrestigeUpgrades(), [getVisiblePrestigeUpgrades, contentRaw]);
 
   const resolvedGateCount = useMemo(() => {
@@ -116,17 +114,6 @@ export function PrestigeLedgerScreenOwner() {
 
   const surface = useMemo(() => {
     if (fixtureMode) return createPrestigeLedgerExactMockupFixture();
-
-    const runCompassHint = runCompass.v2
-      ? {
-        milestoneLabel: runCompass.v2.milestone.label,
-        blockerLabel: runCompass.v2.primaryBlocker.label,
-        routeLabel: runCompass.v2.primaryRoute.label,
-        detail: runCompass.v2.prestigeHint?.detail ?? runCompass.v2.primaryRoute.detail,
-        active: runCompass.v2.primaryRoute.target?.kind === 'tab' && runCompass.v2.primaryRoute.target.tab === 'prestige',
-        recentDeltaLine: runCompass.v2.recentDeltas[0]?.memoryLine ?? null,
-      }
-      : null;
 
     return buildPrestigeLedgerExactSurfaceFromStores({
     mode: 'live',
@@ -157,7 +144,6 @@ export function PrestigeLedgerScreenOwner() {
     cityNamesReached,
     resolvedGateCount,
     visibleUpgrades,
-    runCompassHint,
     postResetReclaimObjective,
     });
   }, [
@@ -179,7 +165,6 @@ export function PrestigeLedgerScreenOwner() {
     postResetReclaimObjective,
     realm,
     resolvedGateCount,
-    runCompass.v2,
     selectedPath,
     spiritRoot,
     totalAP,

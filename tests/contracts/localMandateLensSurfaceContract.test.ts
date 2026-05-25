@@ -120,12 +120,12 @@ test('local Mandate lens marks Gate Trial primary without marking Outskirts or R
     visibleModules: PINEWIND_MODULES,
   });
 
-  assert.equal(gate?.relation, 'primary');
+  assert.equal(gate?.relation, 'primary-evidence');
   assert.match(gate?.label ?? '', /gate|threshold|proof/i);
   assert.match(gate?.detail ?? '', /gate|proof|readiness/i);
   assert.doesNotMatch(`${gate?.label} ${gate?.detail}`, /Run Compass|field route|low-risk/i);
-  assert.equal(outskirts?.relation, 'quiet');
-  assert.equal(ruins?.relation, 'quiet');
+  assert.equal(outskirts, null);
+  assert.equal(ruins, null);
 });
 
 test('local Mandate lens marks secondary and source-map module routes as support with stable evidence', () => {
@@ -167,9 +167,9 @@ test('local Mandate lens marks secondary and source-map module routes as support
     visibleModules: PINEWIND_MODULES,
   });
 
-  assert.equal(outskirts?.relation, 'support');
+  assert.equal(outskirts?.relation, 'supporting-source');
   assert.match(outskirts?.detail ?? '', /gold|common materials|safe combat/i);
-  assert.equal(ruins?.relation, 'support');
+  assert.equal(ruins?.relation, 'supporting-source');
   assert.match(ruins?.detail ?? '', /ruins|relief|drought|scarce/i);
   assert.equal((outskirts?.evidenceIds.length ?? 0) > 0, true);
   assert.equal((ruins?.evidenceIds.length ?? 0) > 0, true);
@@ -221,7 +221,7 @@ test('World Mandate routing lens resolves one strongest visible module and ignor
   assert.equal(allVisible.strongestModuleKey, 'gateTrial');
   assert.deepEqual(allVisible.secondaryModuleKeys, ['outskirts']);
   assert.equal(hiddenPrimary.primaryModuleKey, null);
-  assert.equal(hiddenPrimary.strongestModuleKey, 'outskirts');
+  assert.equal(hiddenPrimary.strongestModuleKey, null);
 });
 
 test('local Mandate lens visibility uses granular Mandate stamp filtering', () => {
@@ -249,9 +249,9 @@ test('local Mandate lens visibility uses granular Mandate stamp filtering', () =
     visibleModules: PINEWIND_MODULES,
   });
 
-  assert.equal(applyLocalMandateLensVisibility(primaryLens, mandate, { guidanceOath: 'sealed', localLensBanners: 'compact' })?.relation, 'primary');
-  assert.equal(applyLocalMandateLensVisibility(supportLens, mandate, { guidanceOath: 'sealed', localLensBanners: 'compact' })?.relation, 'support');
-  assert.equal(applyLocalMandateLensVisibility(rawSupportLens, mandate, { guidanceOath: 'jade', localLensBanners: 'full' })?.relation, 'support');
+  assert.equal(applyLocalMandateLensVisibility(primaryLens, mandate, { guidanceOath: 'sealed', localLensBanners: 'compact' })?.relation, 'primary-evidence');
+  assert.equal(applyLocalMandateLensVisibility(supportLens, mandate, { guidanceOath: 'sealed', localLensBanners: 'compact' })?.relation, 'supporting-source');
+  assert.equal(applyLocalMandateLensVisibility(rawSupportLens, mandate, { guidanceOath: 'jade', localLensBanners: 'full' })?.relation, 'supporting-source');
 });
 
 test('local Mandate lens visibility hides quiet modules while preserving granular detail', () => {
@@ -278,11 +278,11 @@ test('local Mandate lens visibility hides quiet modules while preserving granula
     visibleModules: PINEWIND_MODULES,
   });
 
-  assert.equal(quietLens?.relation, 'quiet');
+  assert.equal(quietLens, null);
   assert.equal(applyLocalMandateLensVisibility(quietLens, mandate, { guidanceOath: 'sealed', localLensBanners: 'compact' }), null);
   assert.equal(applyLocalMandateLensVisibility(quietLens, mandate, { guidanceOath: 'elder', localLensBanners: 'compact' }), null);
-  assert.equal(applyLocalMandateLensVisibility(primaryLens, mandate, { guidanceOath: 'sealed', localLensBanners: 'compact' })?.relation, 'primary');
-  assert.equal(applyLocalMandateLensVisibility(supportLens, mandate, { guidanceOath: 'sealed', localLensBanners: 'compact' })?.relation, 'support');
-  assert.equal(applyLocalMandateLensVisibility(supportLens, mandate, { guidanceOath: 'elder', localLensBanners: 'compact' })?.relation, 'support');
-  assert.equal(applyLocalMandateLensVisibility(supportLens, mandate, { guidanceOath: 'jade', localLensBanners: 'full' })?.relation, 'support');
+  assert.equal(applyLocalMandateLensVisibility(primaryLens, mandate, { guidanceOath: 'sealed', localLensBanners: 'compact' })?.relation, 'primary-evidence');
+  assert.equal(applyLocalMandateLensVisibility(supportLens, mandate, { guidanceOath: 'sealed', localLensBanners: 'compact' })?.relation, 'supporting-source');
+  assert.equal(applyLocalMandateLensVisibility(supportLens, mandate, { guidanceOath: 'elder', localLensBanners: 'compact' })?.relation, 'supporting-source');
+  assert.equal(applyLocalMandateLensVisibility(supportLens, mandate, { guidanceOath: 'jade', localLensBanners: 'full' })?.relation, 'supporting-source');
 });

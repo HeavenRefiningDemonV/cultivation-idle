@@ -12,13 +12,12 @@ test('WR-04 inspector hierarchy keeps selected module dominant and avoids old gu
 
   const inspectorModuleIndex = worldScreen.indexOf('const inspectorModuleKey = useMemo');
   const inspectorLabelIndex = worldScreen.indexOf('const inspectorLabel =');
-  const inspectorLocalLensIndex = worldScreen.indexOf('const inspectorLocalLens =');
   const inspectorRenderIndex = worldScreen.indexOf('<WorldOverlayInspector');
 
   assert.ok(inspectorModuleIndex >= 0, 'Selected module resolver should exist.');
   assert.ok(inspectorLabelIndex > inspectorModuleIndex, 'Inspector label should derive from selected module.');
-  assert.ok(inspectorLocalLensIndex > inspectorLabelIndex, 'Local Mandate lens should be subordinate to selected module truth.');
-  assert.ok(inspectorRenderIndex > inspectorLocalLensIndex, 'Inspector render should follow selected module and lens derivation.');
+  assert.ok(inspectorRenderIndex > inspectorLabelIndex, 'Inspector render should follow selected module derivation.');
+  assert.doesNotMatch(worldScreen, /const inspectorLocalLens =|LocalMandateLensHeader|buildLocalMandateLensSurface/);
   assert.match(worldScreen, /onOpen=\{\(\) => handleRouteToModule\(inspectorModuleKey\)\}/);
   const inspectorBodyStart = worldScreen.indexOf('const inspectorModuleKey = useMemo');
   const inspectorBodyEnd = worldScreen.indexOf('return (', inspectorBodyStart);

@@ -2,9 +2,8 @@ import { useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
 import { DantianOrb } from '../../../ui/cultivation/DantianOrb.js';
 import { QiLotusIcon } from '../../../ui/cultivation/QiLotusIcon.js';
 import { VerseMiniBar } from '../../../ui/cultivation/VerseMiniBar.js';
-import { OmenSeal, ProofSealRow, SourceThreadDrawer } from '../../../ui/daoMandate/index.js';
-import type { DaoMandateRoute } from '../../../systems/ui/daoMandate/index.js';
 import type {
+  CultivationBreakthroughReadinessSurfaceV1,
   CultivationButtonSurface,
   CultivationDrawerSurface,
   CultivationExactDrawerId,
@@ -22,7 +21,6 @@ export interface CultivationExactScreenProps {
   onOpenDrawer?: (drawerId: CultivationExactDrawerId) => void;
   onCloseDrawer?: () => void;
   onOpenDaoHeart?: () => void;
-  onMandateRouteAction?: (route: DaoMandateRoute) => void;
   onDantianAnchorChange?: (anchor: { x: number; y: number } | null) => void;
 }
 
@@ -125,13 +123,43 @@ function CommandButton({
   );
 }
 
+function BreakthroughReadinessPanel({
+  readiness,
+  onCommandAction,
+}: {
+  readiness: CultivationBreakthroughReadinessSurfaceV1;
+  onCommandAction?: (button: CultivationButtonSurface) => void;
+}) {
+  return (
+    <section
+      className={`cultivationExactBreakthroughReadiness cultivationExactBreakthroughReadiness--${readiness.state}`}
+      data-region="breakthrough-readiness"
+      data-testid="cultivation-breakthrough-readiness"
+      aria-label={readiness.title}
+    >
+      <span className="cultivationExactBreakthroughReadiness__title">{readiness.title}</span>
+      <strong className="cultivationExactBreakthroughReadiness__headline">{readiness.headline}</strong>
+      <div className="cultivationExactBreakthroughReadiness__rows" role="list">
+        {readiness.rows.map((row) => (
+          <span key={row.id} className={`cultivationExactBreakthroughReadiness__row cultivationExactBreakthroughReadiness__row--${row.tone ?? 'neutral'}`} role="listitem">
+            <span>{row.label}</span>
+            <strong>{row.value}</strong>
+          </span>
+        ))}
+      </div>
+      {readiness.primaryAction ? (
+        <CommandButton button={readiness.primaryAction} kind="drawer" onCommandAction={onCommandAction} />
+      ) : null}
+    </section>
+  );
+}
+
 export function CultivationExactScreen({
   surface,
   onCommandAction,
   onOpenDrawer,
   onCloseDrawer,
   onOpenDaoHeart,
-  onMandateRouteAction,
   onDantianAnchorChange,
 }: CultivationExactScreenProps) {
   const fillPercent = surface.qiRail.displayPercent ?? surface.qiRail.percent;
@@ -302,44 +330,10 @@ export function CultivationExactScreen({
           <strong className="cultivationExactBreakthroughSeal__value">{surface.breakthroughSeal.value}</strong>
         </section>
 
-        {surface.compactOmen ? (
-          <section
-            className="cultivationExactCompactOmen"
-            data-region="cultivation-compact-omen"
-            data-testid="cultivation-compact-omen"
-            aria-label="Threshold Omen"
-          >
-            <OmenSeal
-              omen={surface.compactOmen.currentOmen}
-              compact
-              showEvidenceCount
-              detailAction={{
-                label: surface.compactOmen.detailActionLabel,
-                ariaLabel: 'Inspect threshold proof',
-                onClick: () => onOpenDrawer?.('omen'),
-              }}
-              action={surface.compactOmen.allowedDirectRoute && surface.compactOmen.currentOmen.directRouteReason !== 'breakthrough'
-                ? {
-                    label: surface.compactOmen.allowedDirectRoute.actionLabel,
-                    ariaLabel: surface.compactOmen.allowedDirectRoute.actionLabel,
-                    disabled: surface.compactOmen.allowedDirectRoute.blocked,
-                    disabledReason: surface.compactOmen.allowedDirectRoute.blockedReason ?? undefined,
-                    onClick: () => onMandateRouteAction?.(surface.compactOmen?.allowedDirectRoute as DaoMandateRoute),
-                  }
-                : undefined}
-              testId="cultivation-compact-omen-seal"
-              className="cultivationExactCompactOmen__seal"
-            />
-            <ProofSealRow
-              seals={surface.compactOmen.proofSeals}
-              maxVisible={3}
-              compact
-              onSealInspect={() => onOpenDrawer?.('omen')}
-              testId="cultivation-threshold-proof-seals"
-              className="cultivationExactCompactOmen__proofSeals"
-            />
-          </section>
-        ) : null}
+        <BreakthroughReadinessPanel
+          readiness={surface.breakthroughReadiness}
+          onCommandAction={onCommandAction}
+        />
 
         <section
           className={`cultivationExactQiRail cultivationExactQiRail--${surface.qiRail.state}`}
@@ -373,7 +367,6 @@ export function CultivationExactScreen({
         selected={surface.meta.selectedDrawer}
         onCloseDrawer={onCloseDrawer}
         onCommandAction={onCommandAction}
-        onMandateRouteAction={onMandateRouteAction}
       />
     </div>
   );
@@ -397,13 +390,11 @@ function CultivationExactDrawerLayer({
   selected,
   onCloseDrawer,
   onCommandAction,
-  onMandateRouteAction,
 }: {
   surface: CultivationExactSurfaceV1;
   selected: CultivationExactDrawerId;
   onCloseDrawer?: () => void;
   onCommandAction?: (button: CultivationButtonSurface) => void;
-  onMandateRouteAction?: (route: DaoMandateRoute) => void;
 }) {
   if (selected === 'none') return null;
   const drawer = surface.drawers[selected];
@@ -433,16 +424,6 @@ function CultivationExactDrawerLayer({
             lotusState={surface.centerAltar.lotus.state}
             lotusLabel={surface.centerAltar.lotus.label}
             className="cultivationExactDrawer__verse"
-          />
-        ) : null}
-        {surface.compactOmen && selected === 'omen' ? (
-          <SourceThreadDrawer
-            threads={surface.compactOmen.sourceThreads}
-            initiallyOpen={surface.compactOmen.sourceThreadsOpenByDefault}
-            title="Omen evidence"
-            summary={`${surface.compactOmen.sourceThreads.length} folded source threads`}
-            className="cultivationExactDrawer__sourceThreads"
-            testId="cultivation-compact-omen-source-threads"
           />
         ) : null}
         {drawer.action ? <CommandButton button={drawer.action} kind="drawer" onCommandAction={onCommandAction} /> : null}

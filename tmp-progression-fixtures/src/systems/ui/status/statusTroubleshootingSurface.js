@@ -5,7 +5,7 @@ import { useGameStore } from '../../../stores/gameStore.js';
 import { useInventoryStore } from '../../../stores/inventoryStore.js';
 import { useMedicinePouchStore } from '../../../stores/medicinePouchStore.js';
 import { usePrestigeStore } from '../../../stores/prestigeStore.js';
-import { useTrialStore } from '../../../stores/trialStore.js';
+import { normalizeTrialProgress, useTrialStore } from '../../../stores/trialStore.js';
 import { useUIStore } from '../../../stores/uiStore.js';
 import { formatNumber, formatPercentFromValue } from '../../../utils/numbers.js';
 import { getAffinityStatus } from '../../heartLaw/heartLawLogic.js';
@@ -65,26 +65,26 @@ export function resolveStatusShortfallReason(code, capReached) {
     }
 }
 function toShortfallHeadline(diagnosisLabel, reason) {
-    return `Biggest Shortfall: ${diagnosisLabel} — ${reason}`;
+    return `Current pressure: ${diagnosisLabel} — ${reason}`;
 }
 function toEconomicTopFixLabel(actionKind, destinationModuleKey) {
     switch (actionKind) {
         case 'run_ruins':
-            return `Run ${getWorldModuleLabel('ruins')} for missing materials`;
+            return `${getWorldModuleLabel('ruins')} route shows missing materials`;
         case 'farm_outskirts':
-            return `Farm ${getWorldModuleLabel('outskirts')} for missing materials`;
+            return `${getWorldModuleLabel('outskirts')} route shows missing materials`;
         case 'launch_expedition':
-            return `Launch ${getWorldModuleLabel('expeditions')} for materials`;
+            return `${getWorldModuleLabel('expeditions')} support shows material pressure`;
         case 'craft_forge':
-            return 'Raise forge floor';
+            return 'Weapon floor is under pressure';
         case 'route_manual_pavilion':
-            return `Tune build via ${getWorldModuleLabel('manualPavilion')}`;
+            return `Doctrine expression points to ${getWorldModuleLabel('manualPavilion')}`;
         case 'buy':
-            return `Restock via ${getWorldModuleLabel(destinationModuleKey)}`;
+            return `${getWorldModuleLabel(destinationModuleKey)} route shows reserve pressure`;
         case 'brew':
-            return `Brew support tonics at ${getWorldModuleLabel(destinationModuleKey)}`;
+            return `${getWorldModuleLabel(destinationModuleKey)} route shows support pressure`;
         default:
-            return `Open ${getWorldModuleLabel(destinationModuleKey)}`;
+            return `${getWorldModuleLabel(destinationModuleKey)} route needs inspection`;
     }
 }
 export function buildStatusTroubleshootingSurface() {
@@ -103,6 +103,10 @@ export function buildStatusTroubleshootingSurface() {
     const support = buildSupportEconomyReadModelFromState({ content, currencies: inventory.currencies });
     const currentGateTrialId = getCurrentGateTrialId();
     const gateTrial = currentGateTrialId ? content?.trials.find((trial) => trial.id === currentGateTrialId) ?? null : null;
+    const trialState = useTrialStore.getState();
+    const currentGateProgress = currentGateTrialId
+        ? normalizeTrialProgress(trialState.progressByTrialId[currentGateTrialId] ?? null)
+        : null;
     const heartLaw = cultivation.selectedHeartLawId
         ? content?.heart_laws.find((entry) => entry.id === cultivation.selectedHeartLawId) ?? null
         : null;
@@ -112,7 +116,7 @@ export function buildStatusTroubleshootingSurface() {
     const lifecycle = getTrialLifecycleSnapshot({
         content,
         trial: gateTrial,
-        progress: currentGateTrialId ? useTrialStore.getState().getProgress(currentGateTrialId) : null,
+        progress: currentGateProgress,
         realm: game.realm,
         qi: game.qi,
         breakthroughRequirement: game.getBreakthroughRequirement(),
@@ -120,11 +124,10 @@ export function buildStatusTroubleshootingSurface() {
     });
     let diagnosis = null;
     if (currentGateTrialId && readiness) {
-        const trialProgress = useTrialStore.getState().getProgress(currentGateTrialId);
-        if (trialProgress.lastAttemptSummary) {
+        if (currentGateProgress?.lastAttemptSummary) {
             diagnosis = diagnoseTrialFailure({
                 trialId: currentGateTrialId,
-                summary: trialProgress.lastAttemptSummary,
+                summary: currentGateProgress.lastAttemptSummary,
                 readiness,
                 build,
                 bypassAvailable: lifecycle.failSafe.canPurchase,
@@ -175,7 +178,7 @@ export function buildStatusTroubleshootingSurface() {
         : economicTopFix;
     const topFixFallbackByDiagnosis = capReached
         ? {
-            label: 'Open Reincarnation for permanent progress',
+            label: 'Reincarnation decree can be reviewed',
             destinationLabel: 'Prestige',
             blockedReason: canPrestigeNow ? null : 'Too Early',
         }
@@ -187,37 +190,37 @@ export function buildStatusTroubleshootingSurface() {
             }
             : diagnosisCode === 'underforged'
                 ? {
-                    label: 'Refine your weapon toward the next gate floor',
+                    label: 'Weapon floor is under pressure',
                     destinationLabel: getWorldModuleLabel('forge'),
                     blockedReason: null,
                 }
                 : diagnosisCode === 'underprepared'
                     ? {
-                        label: 'Open Apothecary and restore your prep package',
+                        label: 'Survival reserve looks thin',
                         destinationLabel: getWorldModuleLabel('apothecary'),
                         blockedReason: null,
                     }
                     : diagnosisCode === 'underbuilt'
                         ? {
-                            label: 'Open Techniques and close your top build gap',
+                            label: 'Doctrine expression looks incomplete',
                             destinationLabel: 'Techniques',
                             blockedReason: null,
                         }
                         : diagnosisCode === 'close'
                             ? {
-                                label: 'Open the Gate Trial and test a cleaner attempt',
+                                label: 'Gate item can be inspected',
                                 destinationLabel: getWorldModuleLabel('gateTrial'),
                                 blockedReason: null,
                             }
                             : diagnosisCode === 'bypassAvailable'
                                 ? {
-                                    label: 'Use Safety Net to resolve this gate',
+                                    label: 'Mercy proof is available',
                                     destinationLabel: getWorldModuleLabel('gateTrial'),
                                     blockedReason: null,
                                 }
                                 : {
-                                    label: 'Follow the best next action from Run Compass',
-                                    destinationLabel: 'Run Compass',
+                                    label: 'No dominant omen is surfaced',
+                                    destinationLabel: 'Status',
                                     blockedReason: null,
                                 };
     const resolvedTopFixDetail = topFixDetail ?? topFixFallbackByDiagnosis;
@@ -327,7 +330,7 @@ export function buildStatusTroubleshootingSurface() {
                         ? 'Viable'
                         : 'Too Early',
             blockedReason: capReached
-                ? (canPrestigeNow ? 'Current Chapter Exhausted — Open Reincarnation.' : 'Current Chapter Exhausted — Too Early for Reincarnation.')
+                ? (canPrestigeNow ? 'Current Chapter Exhausted — Reincarnation decree can be reviewed.' : 'Current Chapter Exhausted — Too Early for Reincarnation.')
                 : lifecycle.failSafe.status === 'resolved'
                     ? 'Gate already resolved'
                     : lifecycle.failSafe.blockedReason ?? 'Not available yet',

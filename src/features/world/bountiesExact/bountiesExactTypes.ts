@@ -1,5 +1,3 @@
-import type { DaoMandateModuleSourceSinkProjection } from '../../../systems/ui/daoMandate/index.js';
-
 export type BountiesExactSurfaceMode = 'fixture' | 'live';
 
 export type ExactButtonSurface = {
@@ -144,7 +142,6 @@ export type BountiesExactSurfaceV1 = {
     claimReady: ExactButtonSurface;
     routeNow: ExactButtonSurface;
   };
-  mandateSourceSink?: DaoMandateModuleSourceSinkProjection | null;
   debug?: {
     notes: string[];
     regionOrder: string[];

@@ -16,18 +16,6 @@ import { adaptSpiritRootDoctrineToSemanticView } from '../../../systems/doctrine
 import { getAffinityStatus } from '../../../systems/heartLaw/heartLawLogic.js';
 import { buildCultivationConsumableReadModel } from '../../../systems/consumables/cultivationConsumableEffects.js';
 import { CULTIVATION_CONSUMABLE_FAMILY_REGISTRY } from '../../../systems/consumables/cultivationConsumableTypes.js';
-import {
-  buildDaoOmenProjectionV1,
-  buildLiveDaoMandateSurfaceV1,
-  createDaoMandateFixture,
-  createDaoOmenProjectionRawFixture,
-  pickDaoMandateGuidanceSettings,
-  resolveDaoMandateEffectiveMotionMode,
-  type DaoMandateRoute,
-  type DaoOmenProjectionFixtureState,
-  type DaoOmenProjectionV1,
-  type DaoProofSealV1,
-} from '../../../systems/ui/daoMandate/index.js';
 import { buildLiveRunCompassSurface, buildRunCompassCompactSurface } from '../../../systems/ui/runCompass/index.js';
 import type { RunCompassActionLine } from '../../../systems/ui/runCompass/index.js';
 import { useActivityStore } from '../../../stores/activityStore.js';
@@ -49,8 +37,8 @@ import {
 } from './cultivationExactPresentation.js';
 import type {
   BuildCultivationExactSurfaceOptions,
+  CultivationBreakthroughReadinessSurfaceV1,
   CultivationButtonSurface,
-  CultivationCompactOmenSurfaceV1,
   CultivationDrawerSurface,
   CultivationExactActivityState,
   CultivationExactBuildSnapshot,
@@ -172,216 +160,6 @@ function findPrestigeAction(actions: RunCompassActionLine[]): RunCompassActionLi
   return actions.find((action) => action.target?.kind === 'tab' && action.target.tab === 'prestige' && !action.blocked) ?? null;
 }
 
-function buildCultivationRawOmenSurface(
-  snapshot: CultivationExactBuildSnapshot,
-  mode: CultivationExactSurfaceMode,
-  projectionMode: 'snapshot' | 'live',
-) {
-  const uiSettings = useUIStore.getState().settings;
-  const guidanceSettings = pickDaoMandateGuidanceSettings(uiSettings);
-
-  if (projectionMode === 'live' && mode !== 'fixture') {
-    return buildLiveDaoMandateSurfaceV1({
-        currentScreen: 'cultivation',
-        guidanceProfile: guidanceSettings.guidanceOath,
-      });
-  }
-
-  if (mode === 'fixture') {
-    return createDaoMandateFixture('cultivating_qi_short', guidanceSettings.guidanceOath);
-  }
-
-  return createDaoOmenProjectionRawFixture(resolveCultivationProjectionFixtureState(snapshot), guidanceSettings.guidanceOath);
-}
-
-function buildCultivationOmenProjection(
-  snapshot: CultivationExactBuildSnapshot,
-  mode: CultivationExactSurfaceMode,
-  projectionMode: 'snapshot' | 'live',
-): DaoOmenProjectionV1 {
-  return buildDaoOmenProjectionV1(buildCultivationRawOmenSurface(snapshot, mode, projectionMode), {
-    currentScreen: 'cultivation',
-    routeContext: 'default',
-  });
-}
-
-function resolveCultivationProjectionFixtureState(snapshot: CultivationExactBuildSnapshot): DaoOmenProjectionFixtureState {
-  const activityState = resolveActivityState(snapshot);
-
-  if (activityState === 'content_cap') return 'content_cap_reached';
-  if (activityState === 'breakthrough_ready') return 'breakthrough_ready';
-  if (activityState === 'gate_blocked') return 'gate_proof_missing_attemptable';
-  return 'qi_short_before_realm_edge';
-}
-
-function buildCultivationCompactOmenSurface(
-  snapshot: CultivationExactBuildSnapshot,
-  mode: CultivationExactSurfaceMode,
-  projectionMode: 'snapshot' | 'live',
-): CultivationCompactOmenSurfaceV1 {
-  const uiSettings = useUIStore.getState().settings;
-  const guidanceSettings = pickDaoMandateGuidanceSettings(uiSettings);
-  const motionMode = resolveDaoMandateEffectiveMotionMode({
-    mandateMotionMode: guidanceSettings.mandateMotionMode,
-    storyMotionMode: uiSettings.storyMotionMode,
-  });
-  const projection = buildCultivationOmenProjection(snapshot, mode, projectionMode);
-  const proofSeals = pickCultivationThresholdProofSeals(projection, snapshot);
-
-  return {
-    projection,
-    currentOmen: projection.currentOmen,
-    proofSeals,
-    sourceThreads: projection.sourceThreads,
-    reflections: projection.reflections,
-    motionMode,
-    regionLabel: 'Threshold Omen',
-    detailSummary: projection.currentOmen.detail,
-    detailActionLabel: 'Inspect proof',
-    allowedDirectRoute: getCultivationAllowedDirectRoute(projection),
-    defaultCopyPolicy: 'symptom_proof_first',
-    sourceThreadsOpenByDefault: false,
-  };
-}
-
-function pickCultivationThresholdProofSeals(
-  projection: DaoOmenProjectionV1,
-  snapshot: CultivationExactBuildSnapshot,
-): DaoProofSealV1[] {
-  const allowedKinds = new Set<DaoProofSealV1['kind']>([
-    'realm_edge',
-    'qi_threshold',
-    'gate_proof',
-    'mercy_seal',
-    'reincarnation',
-  ]);
-  const cap = 3;
-  const fallbackSeals = buildFallbackCultivationProofSeals(snapshot, projection);
-  const seenKinds = new Set<DaoProofSealV1['kind']>();
-  const selected: DaoProofSealV1[] = [];
-
-  for (const seal of [...projection.proofSeals, ...fallbackSeals]) {
-    if (!allowedKinds.has(seal.kind) || seenKinds.has(seal.kind)) continue;
-    if ((seal.kind === 'mercy_seal' || seal.kind === 'reincarnation') && !isMetaOrMercyOmen(projection.currentOmen.kind)) continue;
-    selected.push(seal);
-    seenKinds.add(seal.kind);
-    if (selected.length >= cap) break;
-  }
-
-  return selected;
-}
-
-function isMetaOrMercyOmen(kind: DaoOmenProjectionV1['currentOmen']['kind']): boolean {
-  return kind === 'safety_net_ready' || kind === 'content_cap' || kind === 'reincarnation_viable';
-}
-
-function buildFallbackCultivationProofSeals(
-  snapshot: CultivationExactBuildSnapshot,
-  projection: DaoOmenProjectionV1,
-): DaoProofSealV1[] {
-  const qiReady = hasEnoughQi(snapshot);
-  const realmEdgeReady = isRealmEdge(snapshot) || snapshot.atContentCap || !isMajorRealmTransition(snapshot);
-  const gateReady = hasGateToken(snapshot);
-  const gateProofName = snapshot.requiredGateItemName ?? 'Gate Proof';
-  const gateRoute = projection.hardRoutes.find((route) => route.target?.kind === 'world_module' && route.target.moduleKey === 'gateTrial')
-    ?? (projection.currentOmen.route?.target?.kind === 'world_module' && projection.currentOmen.route.target.moduleKey === 'gateTrial'
-      ? projection.currentOmen.route
-      : null);
-
-  const qiSeal: DaoProofSealV1 = {
-    id: 'cultivation-proof-qi-threshold',
-    kind: 'qi_threshold',
-    label: 'Qi Reservoir',
-    state: qiReady ? 'sealed' : 'thin',
-    tone: qiReady ? 'jade' : 'cinnabar',
-    iconId: 'qi',
-    detail: qiReady
-      ? 'Qi threshold proof is sealed.'
-      : `The dantian is ${missingQiLabel(snapshot)} Qi short.`,
-    ownerScreen: 'cultivation',
-    evidenceIds: [`qi:${snapshot.qi}/${snapshot.breakthroughRequirement}`],
-    routePolicy: 'hidden',
-  };
-
-  const realmSeal: DaoProofSealV1 = {
-    id: 'cultivation-proof-realm-edge',
-    kind: 'realm_edge',
-    label: isMajorRealmTransition(snapshot) ? 'Realm Edge' : 'Current Threshold',
-    state: realmEdgeReady ? 'sealed' : 'unsealed',
-    tone: realmEdgeReady ? 'jade' : 'cinnabar',
-    iconId: 'mountain',
-    detail: realmEdgeReady
-      ? 'The realm edge is known.'
-      : `Stage ${snapshot.realm.substage} of ${snapshot.realmSubstages} has not reached the edge.`,
-    ownerScreen: 'cultivation',
-    evidenceIds: [`realm:${snapshot.realm.index}:${snapshot.realm.substage}/${snapshot.realmSubstages}`],
-    routePolicy: 'hidden',
-  };
-
-  const gateSeal: DaoProofSealV1 = {
-    id: 'cultivation-proof-gate-proof',
-    kind: 'gate_proof',
-    label: 'Gate Proof',
-    state: snapshot.requiredGateItemId ? (gateReady ? 'sealed' : 'unsealed') : 'quiet',
-    tone: snapshot.requiredGateItemId ? (gateReady ? 'jade' : 'cinnabar') : 'ink',
-    iconId: 'seal',
-    detail: snapshot.requiredGateItemId
-      ? gateReady
-        ? `${gateProofName} is sealed.`
-        : `${gateProofName} remains unsealed.`
-      : 'No gate proof is required for this threshold.',
-    ownerScreen: 'gateTrial',
-    evidenceIds: snapshot.requiredGateItemId
-      ? [`gate-proof:${snapshot.requiredGateItemId}:${snapshot.requiredGateItemCount}/1`]
-      : ['gate-proof:none'],
-    ...(snapshot.requiredGateItemId && !gateReady && gateRoute ? { route: gateRoute } : {}),
-    routePolicy: snapshot.requiredGateItemId && !gateReady ? 'direct' : 'hidden',
-  };
-
-  const seals = [realmSeal, qiSeal, gateSeal];
-  if (snapshot.atContentCap) {
-    seals.unshift({
-      id: 'cultivation-proof-reincarnation',
-      kind: 'reincarnation',
-      label: 'Reincarnation',
-      state: 'cap',
-      tone: 'gold',
-      iconId: 'circle',
-      detail: 'This chapter has reached its authored handoff.',
-      ownerScreen: 'prestige',
-      evidenceIds: ['content-cap'],
-      ...(projection.currentOmen.route ? { route: projection.currentOmen.route } : {}),
-      routePolicy: projection.currentOmen.route ? 'direct' : 'inspect',
-    });
-  }
-
-  return seals;
-}
-
-function getCultivationAllowedDirectRoute(projection: DaoOmenProjectionV1): DaoMandateRoute | null {
-  if (projection.currentOmen.allowDirectRoute && projection.currentOmen.route) {
-    return projection.currentOmen.route;
-  }
-  return projection.hardRoutes.find((route) => Boolean(route.target)) ?? null;
-}
-
-function buildCultivationOmenDrawerRows(compactOmen: CultivationCompactOmenSurfaceV1): CultivationDrawerSurface['rows'] {
-  return [
-    {
-      id: 'omen',
-      label: compactOmen.currentOmen.title,
-      value: compactOmen.currentOmen.detail,
-      tone: compactOmen.currentOmen.tone === 'cinnabar' ? 'warning' : compactOmen.currentOmen.tone === 'gold' ? 'gold' : 'jade',
-    },
-    ...compactOmen.proofSeals.map((seal): CultivationDrawerSurface['rows'][number] => ({
-      id: seal.id,
-      label: seal.label,
-      value: seal.detail,
-      tone: seal.tone === 'cinnabar' ? 'warning' : seal.tone === 'gold' ? 'gold' : seal.tone === 'jade' ? 'jade' : 'neutral',
-    })),
-  ];
-}
-
 function cultivateToggleButton(snapshot: CultivationExactBuildSnapshot): CultivationButtonSurface {
   const isCultivating = snapshot.activeActivityType === 'meditate';
   return {
@@ -400,7 +178,7 @@ function resolveCommandDeck(
   const gateAction = findGateAction(snapshot.runCompassActions);
   const prestigeAction = findPrestigeAction(snapshot.runCompassActions);
   const cultivateToggle = cultivateToggleButton(snapshot);
-  const gateProofName = snapshot.requiredGateItemName ?? 'Gate Proof';
+  const gateItemName = snapshot.requiredGateItemName ?? 'Gate item';
   const qiCapLine = `Qi Cap ${formatNumber(snapshot.breakthroughRequirement)}`;
 
   if (activityState === 'content_cap') {
@@ -426,12 +204,12 @@ function resolveCommandDeck(
         disabled: !gateAction,
         tone: 'gate',
         actionKey: 'openGateTrial',
-        reason: gateAction?.why ?? `${gateProofName} is required before breakthrough.`,
+        reason: gateAction?.why ?? `${gateItemName} is required before breakthrough.`,
         route: gateAction?.target ?? undefined,
         runCompassAction: gateAction,
       },
       secondary: cultivateToggle,
-      supportLine: `${gateProofName} ${snapshot.requiredGateItemCount}/1`,
+      supportLine: `${gateItemName} ${snapshot.requiredGateItemCount}/1`,
     };
   }
 
@@ -512,7 +290,7 @@ function createLeftSeals(
   if (activityState === 'gate_blocked') {
     return [
       { id: 'next', eyebrow: 'Next Milestone', title: 'Gate Seal', iconKey: 'mountain', tone: 'cinnabar', opensDrawer: 'gate' },
-      { id: 'need', eyebrow: 'Need', title: snapshot.requiredGateItemName ?? 'Gate Proof', value: `${snapshot.requiredGateItemCount}/1`, iconKey: 'gate', tone: 'gold', opensDrawer: 'gate' },
+      { id: 'need', eyebrow: 'Need', title: snapshot.requiredGateItemName ?? 'Gate item', value: `${snapshot.requiredGateItemCount}/1`, iconKey: 'gate', tone: 'gold', opensDrawer: 'gate' },
       { id: 'action', eyebrow: 'Action', title: 'Open Gate Trial', iconKey: 'meditate', tone: 'jade', opensDrawer: 'gate' },
     ];
   }
@@ -558,7 +336,7 @@ function createBreakthroughSeal(
     return { label: 'Chapter Cap', value: 'Reached', state: 'content_cap', routeLabel: 'Prestige' };
   }
   if (activityState === 'gate_blocked') {
-    return { label: 'Gate Seal', value: snapshot.requiredGateItemName ?? 'Gate Proof', state: 'gate_blocked', routeLabel: 'Gate Trial' };
+    return { label: 'Gate Seal', value: snapshot.requiredGateItemName ?? 'Gate item', state: 'gate_blocked', routeLabel: 'Gate Trial' };
   }
   if (activityState === 'breakthrough_ready') {
     return { label: 'Breakthrough', value: 'Ready', state: 'ready' };
@@ -569,28 +347,68 @@ function createBreakthroughSeal(
   return { label: 'Breakthrough', value: snapshot.activeActivityType === 'meditate' ? 'Cultivating' : 'Settled', state: 'cultivating' };
 }
 
+function createBreakthroughReadiness(
+  snapshot: CultivationExactBuildSnapshot,
+  activityState: CultivationExactActivityState,
+  commandDeck: CultivationExactSurfaceV1['commandDeck'],
+): CultivationBreakthroughReadinessSurfaceV1 {
+  const gateItemName = snapshot.requiredGateItemName ?? 'Gate item';
+  const qiReady = hasEnoughQi(snapshot);
+  const gateReady = hasGateToken(snapshot);
+  const realmEdgeReady = isRealmEdge(snapshot) || snapshot.atContentCap || !isMajorRealmTransition(snapshot);
+  const state: CultivationBreakthroughReadinessSurfaceV1['state'] =
+    activityState === 'content_cap' ? 'content_cap'
+      : activityState === 'gate_blocked' ? 'gate_required'
+        : activityState === 'breakthrough_ready' ? 'ready'
+          : snapshot.canPrestige ? 'prestige_recommended'
+            : snapshot.activeActivityType === 'meditate' ? 'cultivating'
+              : 'blocked';
+  const headline = state === 'ready'
+    ? 'Qi and gate requirements are ready.'
+    : state === 'gate_required'
+      ? `${gateItemName} is still needed.`
+      : state === 'content_cap'
+        ? 'This chapter has reached its authored cap.'
+        : state === 'cultivating'
+          ? 'Qi is still gathering toward the next threshold.'
+          : 'Reach the realm edge and fill the Qi reservoir.';
+
+  return {
+    title: 'Breakthrough Readiness',
+    state,
+    headline,
+    detail: commandDeck.supportLine,
+    rows: [
+      {
+        id: 'qi',
+        label: 'Qi',
+        value: qiReady ? 'Ready' : `${missingQiLabel(snapshot)} short`,
+        tone: qiReady ? 'jade' : 'warning',
+      },
+      {
+        id: 'realm-edge',
+        label: 'Realm edge',
+        value: realmEdgeReady ? 'Reached' : `Stage ${snapshot.realm.substage}/${snapshot.realmSubstages}`,
+        tone: realmEdgeReady ? 'jade' : 'neutral',
+      },
+      {
+        id: 'gate-item',
+        label: 'Gate item',
+        value: snapshot.requiredGateItemId ? `${gateItemName} ${snapshot.requiredGateItemCount}/1` : 'Not needed now',
+        tone: gateReady ? 'jade' : 'warning',
+      },
+    ],
+    primaryAction: commandDeck.primary.actionKey === 'openGateTrial' || commandDeck.primary.actionKey === 'openPrestige'
+      ? commandDeck.primary
+      : null,
+  };
+}
+
 function createDrawers(
   snapshot: CultivationExactBuildSnapshot,
   commandDeck: CultivationExactSurfaceV1['commandDeck'],
-  compactOmen: CultivationCompactOmenSurfaceV1,
 ): CultivationExactSurfaceV1['drawers'] {
-  const gateProofName = snapshot.requiredGateItemName ?? 'Gate Proof';
-  const omen: CultivationDrawerSurface = {
-    id: 'omen',
-    side: 'left',
-    title: compactOmen.regionLabel,
-    subtitle: compactOmen.detailSummary,
-    rows: buildCultivationOmenDrawerRows(compactOmen),
-    action: compactOmen.allowedDirectRoute?.target?.kind === 'world_module'
-      && compactOmen.allowedDirectRoute.target.moduleKey === 'gateTrial'
-      && commandDeck.primary.actionKey === 'openGateTrial'
-      ? commandDeck.primary
-      : compactOmen.allowedDirectRoute?.target?.kind === 'tab'
-        && compactOmen.allowedDirectRoute.target.tab === 'prestige'
-        && commandDeck.primary.actionKey === 'openPrestige'
-          ? commandDeck.primary
-          : undefined,
-  };
+  const gateItemName = snapshot.requiredGateItemName ?? 'Gate item';
   const milestone: CultivationDrawerSurface = {
     id: 'milestone',
     side: 'left',
@@ -599,7 +417,7 @@ function createDrawers(
     rows: [
       { id: 'realm', label: 'Realm', value: `${snapshot.realmName}, Stage ${snapshot.realm.substage}` },
       { id: 'qi', label: 'Qi', value: `${formatNumber(snapshot.qi)} / ${formatNumber(snapshot.breakthroughRequirement)}`, tone: hasEnoughQi(snapshot) ? 'jade' : 'neutral' },
-      { id: 'gate', label: 'Gate', value: snapshot.requiredGateItemId ? `${gateProofName} ${snapshot.requiredGateItemCount}/1` : 'No gate proof needed now', tone: hasGateToken(snapshot) ? 'jade' : 'warning' },
+      { id: 'gate', label: 'Gate item', value: snapshot.requiredGateItemId ? `${gateItemName} ${snapshot.requiredGateItemCount}/1` : 'No gate item is needed now', tone: hasGateToken(snapshot) ? 'jade' : 'warning' },
       { id: 'buffs', label: 'Cultivation buffs', value: snapshot.activeBuffSummary, tone: snapshot.activeBuffSummary === 'No active cultivation tonics.' ? 'muted' : 'gold' },
     ],
     runCompass: snapshot.runCompassFull ?? null,
@@ -626,7 +444,7 @@ function createDrawers(
         : `${snapshot.heartLawName} verse progress`,
       isComplete: snapshot.comprehensionRequirement <= 0 && snapshot.heartLawName !== 'No Heart Law selected',
       placeholderLabel: snapshot.heartLawName === 'No Heart Law selected' ? 'Heart Law Needed' : undefined,
-      placeholderValue: snapshot.heartLawName === 'No Heart Law selected' ? 'Choose a Heart Law in Dao to begin verse progress.' : undefined,
+      placeholderValue: snapshot.heartLawName === 'No Heart Law selected' ? 'Choose a Heart Law to begin verse progress.' : undefined,
     },
   };
 
@@ -634,9 +452,9 @@ function createDrawers(
     id: 'gate',
     side: 'left',
     title: 'Gate Seal',
-    subtitle: snapshot.requiredGateItemId ? `${gateProofName} required before breakthrough.` : 'No gate proof is required for this step.',
+    subtitle: snapshot.requiredGateItemId ? `${gateItemName} required before breakthrough.` : 'No gate item is required for this step.',
     rows: [
-      { id: 'proof', label: gateProofName, value: snapshot.requiredGateItemId ? `${snapshot.requiredGateItemCount}/1` : 'Ready', tone: hasGateToken(snapshot) ? 'jade' : 'warning' },
+      { id: 'gate-item', label: gateItemName, value: snapshot.requiredGateItemId ? `${snapshot.requiredGateItemCount}/1` : 'Ready', tone: hasGateToken(snapshot) ? 'jade' : 'warning' },
       { id: 'qi', label: 'Qi', value: hasEnoughQi(snapshot) ? 'Ready' : `${missingQiLabel(snapshot)} short`, tone: hasEnoughQi(snapshot) ? 'jade' : 'warning' },
     ],
     action: commandDeck.primary.actionKey === 'openGateTrial' ? commandDeck.primary : undefined,
@@ -664,7 +482,7 @@ function createDrawers(
     action: commandDeck.primary.actionKey === 'openPrestige' ? commandDeck.primary : undefined,
   };
 
-  return { omen, milestone, doctrine, gate, buffs, lifeCycle };
+  return { milestone, doctrine, gate, buffs, lifeCycle };
 }
 
 function createSurface(
@@ -672,7 +490,6 @@ function createSurface(
   options: Required<Pick<BuildCultivationExactSurfaceOptions, 'selectedDrawer' | 'reducedMotion' | 'fxQuality'>> & {
     mode: CultivationExactSurfaceMode;
     source: 'fixture' | 'stores';
-    projectionMode: 'snapshot' | 'live';
     fixtureDisplayPercent?: number;
   },
 ): CultivationExactSurfaceV1 {
@@ -681,7 +498,7 @@ function createSurface(
   const rate = formatRateLabel(snapshot.qiPerSecond, snapshot.breathQiRateMultiplier);
   const commandDeck = resolveCommandDeck(snapshot, activityState);
   const lotus = lotusForState(activityState);
-  const compactOmen = buildCultivationCompactOmenSurface(snapshot, options.mode, options.projectionMode);
+  const breakthroughReadiness = createBreakthroughReadiness(snapshot, activityState, commandDeck);
   return {
     meta: {
       surfaceId: CULTIVATION_EXACT_SURFACE_ID,
@@ -736,7 +553,7 @@ function createSurface(
       state: activityState === 'breakthrough_ready' ? 'ready' : activityState === 'near_edge' ? 'near_edge' : 'normal',
     },
     commandDeck,
-    compactOmen,
+    breakthroughReadiness,
     runCompassCompact: snapshot.runCompassCompact ?? buildRunCompassCompactSurface(snapshot.runCompassFull ?? null),
     lifeCycleWhisper: {
       visible: false,
@@ -745,7 +562,7 @@ function createSurface(
       route: { kind: 'tab', tab: 'prestige' },
       runCompassAction: null,
     },
-    drawers: createDrawers(snapshot, commandDeck, compactOmen),
+    drawers: createDrawers(snapshot, commandDeck),
     debug: {
       notes: [],
       sourceSummary: [
@@ -801,7 +618,6 @@ export function createCultivationExactMockupFixture(): CultivationExactSurfaceV1
   return createSurface(snapshot, {
     mode: 'fixture',
     source: 'fixture',
-    projectionMode: 'snapshot',
     selectedDrawer: 'none',
     reducedMotion: false,
     fxQuality: 'high',
@@ -816,7 +632,6 @@ export function buildCultivationExactSurfaceFromSnapshots(
   return createSurface(snapshot, {
     mode: options.mode ?? 'live',
     source: 'stores',
-    projectionMode: 'snapshot',
     selectedDrawer: options.selectedDrawer ?? 'none',
     reducedMotion: options.reducedMotion ?? false,
     fxQuality: options.fxQuality ?? 'medium',
@@ -953,7 +768,6 @@ export function buildCultivationExactSurfaceFromStores(
   return createSurface(snapshot, {
     mode: 'live',
     source: 'stores',
-    projectionMode: 'live',
     selectedDrawer: options.selectedDrawer ?? ('none' satisfies CultivationExactDrawerId),
     reducedMotion: options.reducedMotion ?? false,
     fxQuality: options.fxQuality ?? ('medium' satisfies CultivationExactFxQuality),

@@ -23,7 +23,7 @@ test('world-facing vocabulary sources keep canonical role tags and world tab lab
   assert.match(labels, /adventure:\s*'World'/);
   assert.match(moduleRegistry, /OUTSKIRTS_ROLE_TAG/);
   assert.match(moduleRegistry, /RUINS_ROLE_TAG/);
-  assert.match(moduleRegistry, /roleTag:\s*'Gate Proof'/);
+  assert.match(moduleRegistry, /roleTag:\s*'Gate (Item|Readiness)'/);
   assert.match(moduleRegistry, /roleTag:\s*'Build Correction'/);
   assert.match(moduleRegistry, /roleTag:\s*'Immediate Readiness'/);
   assert.match(moduleRegistry, /roleTag:\s*'Permanent Floor'/);

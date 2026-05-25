@@ -13,6 +13,7 @@ import type {
   GateTrialReadinessNodeId,
   GateTrialReadinessNodeSurface,
   GateTrialResultTransitionSurface,
+  GateTrialRouteTarget,
   GateTrialTacticalCellSurface,
   GateTrialSummaryRowSurface,
 } from './gateTrialExactTypes.js';
@@ -31,7 +32,6 @@ import { useMedicinePouchStore } from '../../../stores/medicinePouchStore.js';
 import { useRuinsStore } from '../../../stores/ruinsStore.js';
 import { useTechniqueStore } from '../../../stores/techniqueStore.js';
 import { useTrialStore, type TrialProgress } from '../../../stores/trialStore.js';
-import { useUIStore } from '../../../stores/uiStore.js';
 import { resolveModuleRef } from '../../../components/screens/world/worldUtils.js';
 import { getTrialGateItemId, getTrialGateRewardBundle } from '../../../systems/progression/runtime/gateResolver.js';
 import {
@@ -44,18 +44,6 @@ import {
   type GateTrialChecklistLine,
   type GateTrialReadinessSurface,
 } from '../../../systems/readiness/section5Adapters.js';
-import {
-  applyDaoMandateVisibility,
-  buildLiveDaoMandateSurfaceV1,
-  createDaoMandateFixture,
-  pickDaoMandateGuidanceSettings,
-  resolveDaoMandateEffectiveMotionMode,
-  type DaoMandateGuidanceSettings,
-} from '../../../systems/ui/daoMandate/index.js';
-import {
-  applyLocalMandateLensVisibility,
-  buildLocalMandateLensSurface,
-} from '../../../systems/world/localMandateLensSurface.js';
 import { buildFailureReflectionSurface, useFailureReflectionStore } from '../../../systems/failureReflection/index.js';
 import { buildLiveCombatAftermathSurface } from '../../combatAftermath/index.js';
 import { getTrialGateIndex } from '../../../services/diagnostics/balanceTelemetryService.js';
@@ -90,54 +78,12 @@ const LIVE_SOURCE = 'live' as const;
 const DEFAULT_CITY_ID = 'city_pinewind_hamlet';
 const CURRENCY_JOINER = ' \u00b7 ';
 
-function resolveGateTrialMandateLensVariant(
-  settings: DaoMandateGuidanceSettings,
-): NonNullable<GateTrialExactSurfaceV1['mandateLens']>['variant'] {
-  return settings.localLensBanners === 'compact'
-    ? 'compact'
-    : settings.localLensBanners === 'full' ? 'full' : 'default';
-}
-
 export interface BuildGateTrialExactSurfaceFromStoresOptions {
   mode?: 'fixture' | 'live';
   trialId?: string | null;
   nowMs?: number;
 }
 
-function buildGateTrialMandateLensProjection(
-  cityId: string,
-  mode: GateTrialExactSurfaceV1['meta']['mode'],
-): GateTrialExactSurfaceV1['mandateLens'] {
-  const uiSettings = useUIStore.getState().settings;
-  const guidanceSettings = pickDaoMandateGuidanceSettings(uiSettings);
-  const mandateMotionMode = resolveDaoMandateEffectiveMotionMode({
-    mandateMotionMode: guidanceSettings.mandateMotionMode,
-    storyMotionMode: uiSettings.storyMotionMode,
-  });
-  const rawMandate = mode === 'fixture'
-    ? createDaoMandateFixture('attemptable_gate', guidanceSettings.guidanceOath)
-    : buildLiveDaoMandateSurfaceV1({
-        currentScreen: 'gateTrial',
-        guidanceProfile: guidanceSettings.guidanceOath,
-      });
-  const visibleMandate = applyDaoMandateVisibility(rawMandate, { settings: guidanceSettings });
-  const rawLens = buildLocalMandateLensSurface({
-    mandate: rawMandate,
-    cityId,
-    moduleKey: 'gateTrial',
-    visibleModules: ['gateTrial'],
-  });
-  const lens = applyLocalMandateLensVisibility(rawLens, visibleMandate, guidanceSettings);
-  if (!lens) return null;
-  return {
-    lens,
-    compactLine: lens ? `${lens.label}: ${lens.detail}` : null,
-    sourceLine: lens && lens.evidenceIds.length > 0 ? `${lens.evidenceIds.length} evidence links` : null,
-    profile: guidanceSettings.guidanceOath,
-    variant: resolveGateTrialMandateLensVariant(guidanceSettings),
-    motionMode: mandateMotionMode,
-  };
-}
 
 interface LiveMetrics {
   activeEquippedCount: number;
@@ -698,7 +644,6 @@ export function createGateTrialExactMockupFixture(
       singleDominantCta: true,
       ornamentVariant: 'jade-gold',
     },
-    mandateLens: buildGateTrialMandateLensProjection('city_pinewind_hamlet', 'fixture'),
     debug: {
       regionOrder: GATE_TRIAL_EXACT_REGION_ORDER,
       missingDataFallbacks: [],
@@ -1220,7 +1165,7 @@ function buildGateTrialSupportRunSurface(
       title: matchingLastRun.victory ? 'Ruins support completed' : 'Ruins support partial',
       detail: matchingLastRun.victory
         ? `${matchingLastRun.roomsCleared} / ${matchingLastRun.roomCount} rooms cleared; targeted materials can relieve the gate package.`
-        : `${matchingLastRun.roomsCleared} / ${matchingLastRun.roomCount} rooms cleared; return to finish the support route.`,
+        : `${matchingLastRun.roomsCleared} / ${matchingLastRun.roomCount} rooms cleared; return to finish the support source.`,
       routeTarget: 'ruins',
       source: LIVE_SOURCE,
     };
@@ -1237,7 +1182,7 @@ function buildGateTrialSupportRunSurface(
   }
 
   return {
-    title: 'Ruins support route ready',
+    title: 'Ruins support source ready',
     detail: 'Target one ruins run if Forge or medicine stock remains the gate blocker.',
     routeTarget: 'ruins',
     source: 'derived',
@@ -1300,7 +1245,7 @@ function buildLiveRecommendedPanel(context: LiveResolvedContext): GateTrialExact
     title: 'Recommended',
     recommendedPrepTitle: 'Recommended Prep',
     prepRows: [
-      makeChecklistRow('refineGear', 'Refine or temper gear', refineGearMet ? 'Gear floor looks stable.' : 'Weapon refine is below +5.', statusFromBoolean(refineGearMet), refineGearMet ? 'statusCheck' : 'statusWarning', 'forge'),
+      makeChecklistRow('refineGear', 'Stabilize weapon floor', refineGearMet ? 'Gear floor looks stable.' : 'Weapon refine is below +5.', statusFromBoolean(refineGearMet), refineGearMet ? 'statusCheck' : 'statusWarning', 'forge'),
       makeChecklistRow('boostStats', 'Boost stats with pills', boostStatsMet ? 'Healing or support medicine prepared.' : 'Healing stock is below the recommended floor.', statusFromBoolean(boostStatsMet), boostStatsMet ? 'statusCheck' : 'statusWarning', 'apothecary'),
       makeChecklistRow('upgradeTechniques', 'Upgrade major techniques', loadoutComplete ? 'Loadout floor is filled.' : 'Fill at least two active and one passive slot.', statusFromBoolean(loadoutComplete), loadoutComplete ? 'statusCheck' : 'statusWarning', 'techniques'),
       makeChecklistRow('ruinSupportRun', 'Complete one Ruin support run', supportRun.detail, supportRun.source === LIVE_SOURCE ? 'success' : 'warning', supportRun.source === LIVE_SOURCE ? 'statusCheck' : 'statusWarning', 'ruins'),
@@ -1838,6 +1783,9 @@ export function buildGateTrialExactSurfaceFromStores(
   const suppressedFailureReflectionNote = activeFailureReflectionCandidate && !activeFailureReflection
     ? `Suppressed stale Inner Demon reflection for diagnosis ${activeFailureReflectionCandidate.diagnosisCode}; current diagnosis is ${currentDiagnosisCode ?? 'unavailable'}.`
     : null;
+  const failureReflectionSurface = activeFailureReflection ? buildFailureReflectionSurface(activeFailureReflection) : null;
+  const minimumChecklist = buildLiveMinimumChecklist(context);
+  const readinessRail = buildLiveReadinessRail(context);
 
   return {
     ...fixture,
@@ -1881,7 +1829,7 @@ export function buildGateTrialExactSurfaceFromStores(
       plaqueVariant: 'black-gold-foundation',
       chips: fixture.gateHeader.chips,
     },
-    minimumChecklist: buildLiveMinimumChecklist(context),
+    minimumChecklist,
     scenicStage: {
       ...fixture.scenicStage,
       sceneAssetId: GATE_TRIAL_EXACT_FOUNDATION_SCENIC_BINDING.key,
@@ -1906,9 +1854,8 @@ export function buildGateTrialExactSurfaceFromStores(
     },
     recommendedPanel,
     trialSummary: activeTrialSummary,
-    readinessRail: buildLiveReadinessRail(context),
+    readinessRail,
     primaryAction: activePrimaryAction,
-    mandateLens: buildGateTrialMandateLensProjection(resolvedCityId, 'live'),
     aftermath: buildLiveCombatAftermathSurface({
       kind: 'gate_trial',
       cityId: resolvedCityId,
@@ -1916,7 +1863,7 @@ export function buildGateTrialExactSurfaceFromStores(
       gateLabel: context.gateTitle,
       gateProofItemId: context.gateItemId,
     }),
-    failureReflection: activeFailureReflection ? buildFailureReflectionSurface(activeFailureReflection) : null,
+    failureReflection: failureReflectionSurface,
     debug: {
       ...fixture.debug,
       regionOrder: GATE_TRIAL_EXACT_REGION_ORDER,

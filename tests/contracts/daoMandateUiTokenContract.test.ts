@@ -99,8 +99,8 @@ test('Dao Mandate UI route helpers require actionable target and explain disable
     target: null,
   } satisfies DaoMandateRoute;
   assert.equal(isDaoRouteActionable(targetless), false);
-  assert.equal(getDaoRouteDisabledReason(targetless), 'Route target unavailable.');
-  assert.equal(describeDaoRouteTarget(null), 'No route target');
+  assert.equal(getDaoRouteDisabledReason(targetless), 'This route cannot be opened from here yet.');
+  assert.equal(describeDaoRouteTarget(null), 'This route cannot be opened from here yet.');
 });
 
 test('Dao Mandate route reason ids include both route id and React id for duplicate route safety', () => {
@@ -130,7 +130,7 @@ test('Dao Mandate route button view model uses player-safe unavailable copy', ()
 test('Dao Mandate UI profile, motion, and DOM id helpers stay stable', () => {
   assert.deepEqual(
     (['sealed', 'elder', 'jade'] as const).map(getDaoMandateProfileLabel),
-    ['Sealed Counsel', "Elder's Counsel", 'Jade Slip Tutor'],
+    ['Sparse compatibility', 'Sparse compatibility', 'Sparse compatibility'],
   );
 
   assert.equal(getDaoMandateMotionClassName(), 'daoMandateMotion--medium');

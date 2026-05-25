@@ -570,33 +570,34 @@ function relationForModule(
   moduleKey: DaoMandateSourceModuleKey,
 ): DaoLocalLensSurface['relation'] | null {
   if (routeTargetsModule(entry.route, moduleKey)) {
-    return entry.route?.blocked ? 'blocked' : 'primary';
+    return entry.route?.blocked ? 'blocked' : 'primary-evidence';
   }
   if (entry.bestSources.some((source) => routeTargetsModule(source.route, moduleKey))) {
     const blocked = entry.bestSources.find((source) => routeTargetsModule(source.route, moduleKey))?.route?.blocked;
-    return blocked ? 'blocked' : 'primary';
+    return blocked ? 'blocked' : 'supporting-source';
   }
   if (entry.fallbackSources.some((source) => routeTargetsModule(source.route, moduleKey))) {
     const blocked = entry.fallbackSources.find((source) => routeTargetsModule(source.route, moduleKey))?.route?.blocked;
-    return blocked ? 'blocked' : 'support';
+    return blocked ? 'blocked' : 'supporting-source';
   }
   return null;
 }
 
 function strongestRelation(relations: DaoLocalLensSurface['relation'][]): DaoLocalLensSurface['relation'] {
-  if (relations.includes('primary')) return 'primary';
+  if (relations.includes('primary-evidence')) return 'primary-evidence';
   if (relations.includes('blocked')) return 'blocked';
-  if (relations.includes('support')) return 'support';
-  if (relations.includes('future')) return 'future';
+  if (relations.includes('completed')) return 'completed';
+  if (relations.includes('supporting-source')) return 'supporting-source';
   return 'quiet';
 }
 
 function moduleHeadline(moduleKey: DaoMandateSourceModuleKey, relation: DaoLocalLensSurface['relation'], entry: DaoSourceMapEntry | null): string {
-  if (moduleKey === 'inventory') return entry ? 'Needed Now' : 'Quiet inventory';
-  if (moduleKey === 'records') return entry ? 'Source memory' : 'Quiet records';
+  if (moduleKey === 'inventory') return entry ? 'Needed Now' : 'Inventory record';
+  if (moduleKey === 'records') return entry ? 'Source memory' : 'Source record';
   if (entry) return entry.neededThingLabel;
-  if (relation === 'blocked') return `${MODULE_DESTINATION_LABELS[moduleKey]} route blocked`;
-  return `${MODULE_DESTINATION_LABELS[moduleKey]} quiet`;
+  if (relation === 'blocked') return `${MODULE_DESTINATION_LABELS[moduleKey]} source sealed`;
+  if (relation === 'completed') return `${MODULE_DESTINATION_LABELS[moduleKey]} source settled`;
+  return `${MODULE_DESTINATION_LABELS[moduleKey]} support`;
 }
 
 function moduleDetail(moduleKey: DaoMandateSourceModuleKey, relation: DaoLocalLensSurface['relation'], entry: DaoSourceMapEntry | null): string {
@@ -608,14 +609,14 @@ function moduleDetail(moduleKey: DaoMandateSourceModuleKey, relation: DaoLocalLe
   if (moduleKey === 'inventory') {
     return entry
       ? `Sink: ${entry.sinkLabel}. Source: ${entry.bestSources[0]?.label ?? 'Known source'}.`
-      : 'Inventory is available, but the current Mandate points elsewhere.';
+      : 'Inventory remains a normal storage surface when no local source entry is visible.';
   }
   if (entry) {
     const impact = entry.expectedImpactLabel ? ` ${entry.expectedImpactLabel}` : '';
     return `${entry.sinkLabel}.${impact}`.trim();
   }
   if (relation === 'blocked') return 'The source is known, but the route is blocked from this screen.';
-  return `${MODULE_DESTINATION_LABELS[moduleKey]} is available, but the current Mandate points elsewhere.`;
+  return 'No visible local source relation.';
 }
 
 function confidenceEvidence(entry: DaoSourceMapEntry | null): string[] {
@@ -630,23 +631,23 @@ function confidenceEvidence(entry: DaoSourceMapEntry | null): string[] {
 export function buildDaoMandateModuleSourceSinkSurface(
   args: BuildDaoMandateModuleSourceSinkSurfaceArgs,
 ): DaoMandateModuleSourceSinkSurface | null {
-  const profile = args.guidanceProfile ?? args.mandate.meta.guidanceProfile;
-  const visibleEntries = applyDaoMandateSourceMapProfileVisibility(args.mandate.sourceMap, profile);
+  const visibleEntries = args.mandate.sourceMap.map(cloneEntry);
   const relations = visibleEntries
     .map((entry) => relationForModule(entry, args.currentModuleKey))
     .filter((relation): relation is DaoLocalLensSurface['relation'] => relation !== null);
   const relation = args.currentModuleKey === 'records' && visibleEntries.length > 0
-    ? 'support'
+    ? 'supporting-source'
     : args.currentModuleKey === 'inventory' && visibleEntries.length > 0
-      ? 'support'
+      ? 'supporting-source'
       : strongestRelation(relations);
   const matchingEntries = visibleEntries.filter((entry) => {
     if (args.currentModuleKey === 'inventory') return relation !== 'quiet';
-    if (args.currentModuleKey === 'records') return profile === 'jade' && relation !== 'quiet';
+    if (args.currentModuleKey === 'records') return relation !== 'quiet';
     return relationForModule(entry, args.currentModuleKey) !== null;
   });
-  const entries = relation === 'quiet' && profile === 'sealed' ? [] : matchingEntries;
+  const entries = matchingEntries;
   const primaryEntry = entries[0] ?? null;
+  if (relation === 'quiet' && !primaryEntry) return null;
   const route = primaryEntry?.route
     ?? primaryEntry?.bestSources[0]?.route
     ?? null;

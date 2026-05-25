@@ -6,7 +6,6 @@ import {
   buildGateTrialExactSurfaceFromStores,
   createGateTrialExactMockupFixture,
 } from '../../src/features/world/gateTrialExact/buildGateTrialExactSurface.js';
-import { useUIStore, type UISettingsState } from '../../src/stores/uiStore.js';
 import {
   buildDaoMandateSurfaceFromRunCompassV2,
   type DaoMandateSurfaceV1,
@@ -18,16 +17,6 @@ import {
 import { makeRunCompassV2Fixture } from '../helpers/daoMandate/runCompassFixture.js';
 
 const VISIBLE = ['outskirts', 'ruins', 'gateTrial', 'apothecary', 'forge', 'manualPavilion', 'bounties', 'expeditions'] as const;
-
-function withUiSettings<T>(partial: Partial<UISettingsState>, run: () => T): T {
-  const previous = useUIStore.getState().settings;
-  useUIStore.setState({ settings: { ...previous, ...partial } });
-  try {
-    return run();
-  } finally {
-    useUIStore.setState({ settings: previous });
-  }
-}
 
 function gatePrimaryMandate(): DaoMandateSurfaceV1 {
   return buildDaoMandateSurfaceFromRunCompassV2(
@@ -50,7 +39,7 @@ function gatePrimaryMandate(): DaoMandateSurfaceV1 {
   );
 }
 
-test('Dao Mandate primary world route agrees across Status truth, World routing lens, and Gate Trial local lens', () => {
+test('internal Dao Mandate world route helpers still agree after public lens retirement', () => {
   const mandate = gatePrimaryMandate();
   assert.deepEqual(mandate.primaryRoute.target, {
     kind: 'world_module',
@@ -77,71 +66,33 @@ test('Dao Mandate primary world route agrees across Status truth, World routing 
   });
 
   assert.equal(world.strongestModuleKey, 'gateTrial');
-  assert.equal(world.relationByModuleKey.gateTrial?.relation, 'primary');
-  assert.equal(gateLens?.relation, 'primary');
+  assert.equal(world.relationByModuleKey.gateTrial?.relation, 'primary-evidence');
+  assert.equal(gateLens?.relation, 'primary-evidence');
   assert.equal(gateLens?.route?.target?.kind, 'world_module');
   assert.equal(gateLens?.route?.target?.kind === 'world_module' ? gateLens.route.target.moduleKey : null, 'gateTrial');
-  assert.equal(outskirtsLens?.relation, 'quiet');
+  assert.equal(outskirtsLens, null);
 });
 
-test('Gate Trial exact surface exposes Mandate lens while preserving readiness and action surfaces', () => {
+test('Gate Trial exact surface removes public Mandate lens while preserving readiness and action surfaces', () => {
   const surface = buildGateTrialExactSurfaceFromStores('city_pinewind_hamlet', { mode: 'fixture' });
 
   assert.equal(surface.minimumChecklist.title, 'Minimum Checklist');
   assert.equal(surface.recommendedPanel.failSafeTitle, 'Fail-Safe');
+  assert.ok(surface.minimumChecklist.rows.length > 0);
+  assert.ok(surface.readinessRail.nodes.length > 0);
   assert.equal(surface.primaryAction.visible, true);
   assert.equal(surface.shell.useScreenOwnedExactPage, true);
   assert.equal(surface.shell.showExternalCombatPreview, false);
-  assert.ok(surface.mandateLens);
+  assert.equal('mandateLens' in surface, false);
   assert.equal((surface as { runCompass?: unknown }).runCompass, undefined);
 });
 
-test('Gate Trial exact Mandate lens uses Guidance Oath profile, variant, and motion settings', () => {
-  withUiSettings({
-    guidanceOath: 'jade',
-    localLensBanners: 'full',
-    mandateMotionMode: 'full',
-    storyMotionMode: 'full',
-  }, () => {
-    const surface = buildGateTrialExactSurfaceFromStores('city_pinewind_hamlet', { mode: 'fixture' });
-    const mandateLens = surface.mandateLens as typeof surface.mandateLens & {
-      profile?: string;
-      variant?: string;
-      motionMode?: string;
-    };
-
-    assert.equal(mandateLens?.profile, 'jade');
-    assert.equal(mandateLens?.variant, 'full');
-    assert.equal(mandateLens?.motionMode, 'full');
-    assert.ok(mandateLens?.sourceLine);
-  });
-
-  withUiSettings({
-    guidanceOath: 'elder',
-    localLensBanners: 'compact',
-    mandateMotionMode: 'follow_story',
-    storyMotionMode: 'full',
-  }, () => {
-    const surface = buildGateTrialExactSurfaceFromStores('city_pinewind_hamlet', { mode: 'fixture' });
-    const mandateLens = surface.mandateLens as typeof surface.mandateLens & {
-      profile?: string;
-      variant?: string;
-      motionMode?: string;
-    };
-
-    assert.equal(mandateLens?.profile, 'elder');
-    assert.equal(mandateLens?.variant, 'compact');
-    assert.equal(mandateLens?.motionMode, 'full');
-    assert.match(mandateLens?.compactLine ?? '', /gate|proof|readiness/i);
-  });
-});
-
-test('Gate Trial exact screen accepts a filtered-hidden local lens without rendering a header', () => {
-  const surface = createGateTrialExactMockupFixture({ mandateLens: null });
+test('Gate Trial exact screen no longer accepts or renders a local lens header', () => {
+  const surface = createGateTrialExactMockupFixture();
   const source = readFileSync('src/features/world/gateTrialExact/GateTrialExactScreen.ts', 'utf8');
 
-  assert.equal(surface.mandateLens, null);
-  assert.match(source, /if \(!surface\.mandateLens\?\.lens\) return null;/);
+  assert.equal('mandateLens' in surface, false);
+  assert.doesNotMatch(source, /LocalMandateLensHeader|surface\.mandateLens|GateTrialMandateLens/);
 });
 
 test('Gate Trial exact screen does not hardcode local lens profile, variant, or motion', () => {
@@ -150,7 +101,7 @@ test('Gate Trial exact screen does not hardcode local lens profile, variant, or 
   assert.doesNotMatch(source, /profile:\s*'elder'/);
   assert.doesNotMatch(source, /variant:\s*'compact'/);
   assert.doesNotMatch(source, /motionMode:\s*'low'/);
-  assert.match(source, /surface\.mandateLens\.profile/);
-  assert.match(source, /surface\.mandateLens\.variant/);
-  assert.match(source, /surface\.mandateLens\.motionMode/);
+  assert.doesNotMatch(source, /surface\.mandateLens\.profile/);
+  assert.doesNotMatch(source, /surface\.mandateLens\.variant/);
+  assert.doesNotMatch(source, /surface\.mandateLens\.motionMode/);
 });

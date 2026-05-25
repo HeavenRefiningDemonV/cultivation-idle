@@ -23,26 +23,27 @@ export interface LocalMandateLensHeaderProps {
 
 function relationLabel(relation: DaoLocalLensSurface['relation']): string {
   switch (relation) {
-    case 'primary':
-      return 'Primary route';
-    case 'support':
-      return 'Support route';
-    case 'future':
-      return 'Future route';
+    case 'primary-evidence':
+      return 'Relevant proof';
+    case 'supporting-source':
+      return 'Supporting source';
+    case 'completed':
+      return 'Proof sealed';
     case 'quiet':
       return 'Quiet';
     case 'blocked':
-      return 'Blocked';
+      return 'Source sealed';
   }
 }
 
 function relationTone(relation: DaoLocalLensSurface['relation']): DaoMandateTone {
   switch (relation) {
-    case 'primary':
+    case 'primary-evidence':
       return 'success';
-    case 'support':
+    case 'supporting-source':
       return 'info';
-    case 'future':
+    case 'completed':
+      return 'success';
     case 'quiet':
       return 'muted';
     case 'blocked':
@@ -58,9 +59,12 @@ export function LocalMandateLensHeader({
   motionMode = 'medium',
   className,
 }: LocalMandateLensHeaderProps) {
-  if (!lens) return null;
+  if (!lens || lens.relation === 'quiet') return null;
   const showDetail = variant === 'full' || (variant !== 'compact' && profile !== 'sealed');
   const showEvidence = variant === 'full' || profile === 'jade';
+  const route = lens.route && (lens.relation === 'primary-evidence' || lens.relation === 'blocked')
+    ? lens.route
+    : null;
 
   return (
     <section
@@ -87,11 +91,11 @@ export function LocalMandateLensHeader({
           {showEvidence ? <span>{lens.evidenceIds.length} evidence links</span> : null}
         </div>
       </div>
-      {lens.route ? (
+      {route ? (
         <DaoMandateRouteButton
-          route={lens.route}
+          route={route}
           onRouteAction={onRouteAction}
-          variant={lens.relation === 'primary' ? 'primary' : 'secondary'}
+          variant={lens.relation === 'primary-evidence' ? 'primary' : 'secondary'}
           size={variant === 'compact' ? 'compact' : 'default'}
           showDestination={showDetail}
         />

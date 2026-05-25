@@ -8,7 +8,6 @@ import { useInventoryStore } from '../../../stores/inventoryStore.js';
 import { useMedicinePouchStore } from '../../../stores/medicinePouchStore.js';
 import { useProfessionStore } from '../../../stores/professionStore.js';
 import { useShopStore } from '../../../stores/shopStore.js';
-import { useDaoMandateRouteActionHandler } from '../../../systems/ui/daoMandate/index.js';
 import { ApothecaryExactScreen } from './ApothecaryExactScreen.js';
 import { buildApothecaryExactSurfaceFromStores } from './buildApothecaryExactSurface.js';
 import { isApothecaryExactFixtureRouteEnabled } from './apothecaryExactFixtureRoute.js';
@@ -103,7 +102,6 @@ export function ApothecaryExactScreenOwner(props: ApothecaryExactScreenOwnerProp
     surface,
     onOpenPouchModal: () => setPouchOpen(true),
   });
-  const onMandateRouteAction = useDaoMandateRouteActionHandler('dao-mandate-apothecary-source');
   const screenActions = surface.meta.mode === 'live' ? actions : { onAction: actions.onAction };
 
   return (
@@ -121,7 +119,6 @@ export function ApothecaryExactScreenOwner(props: ApothecaryExactScreenOwnerProp
         surface={surface}
         scale={scale}
         {...screenActions}
-        onMandateRouteAction={onMandateRouteAction}
       />
       <MedicinePouchModal open={pouchOpen} onClose={() => setPouchOpen(false)} anchorRef={pouchAnchorRef} />
     </div>

@@ -74,7 +74,7 @@ const baseRunCompass = {
   debugNotes: [],
 } satisfies NonNullable<CombatAftermathBuildSnapshot['runCompass']>;
 
-test('Gate Trial clear includes gate proof and breakthrough route without mutating reward data', () => {
+test('Gate Trial clear includes gate item and breakthrough route without mutating reward data', () => {
   const rewardResult = {
     appliedCurrencies: {},
     appliedItems: [{ itemId: 'gate_foundation_pill', qty: 1 }],
@@ -114,7 +114,7 @@ test('Gate Trial clear includes gate proof and breakthrough route without mutati
   const gateProof = surface.spoilsGroups.find((group) => group.id === 'gate_proof');
   assert.ok(gateProof);
   assert.equal(gateProof.empty, false);
-  assert.match(gateProof.summary, /proof/i);
+  assert.match(gateProof.summary, /Gate item/i);
   assert.equal(gateProof.lines[0]?.label, 'Gate Foundation Pill');
 
   assert.deepEqual(rewardResult.appliedItems, [{ itemId: 'gate_foundation_pill', qty: 1 }]);

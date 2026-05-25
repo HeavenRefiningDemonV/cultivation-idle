@@ -33,6 +33,8 @@ import { getLastMigrationReport } from '../save/migrations/index.js';
 import { buildOfflineContext } from '../systems/offline.js';
 import { normalizeCitySaveState } from '../save/cityStateNormalization.js';
 import { COMBAT_ACTIVITY_TYPES } from '../types/activity.js';
+import { pickDaoMandateGuidanceSettings, sanitizeDaoMandateGuidanceSettings, } from '../systems/ui/daoMandate/daoMandateGuidanceSettings.js';
+import { sanitizeDaoMandateLessonMemory } from '../systems/ui/daoMandate/daoMandateLessons.js';
 /**
  * Save system constants
  */
@@ -212,6 +214,8 @@ function gatherGameState() {
         },
         uiSettings: {
             storyMotionMode: uiState.settings.storyMotionMode,
+            ...pickDaoMandateGuidanceSettings(uiState.settings),
+            daoMandateLessonMemory: sanitizeDaoMandateLessonMemory(uiState.daoMandateLessonMemory),
         },
         zoneState: {
             unlockedZones: zoneState.unlockedZones,
@@ -1099,11 +1103,14 @@ function applySaveData(saveData) {
             autoCombatAI: saveData.combatSettings.autoCombatAI,
         });
         const savedStoryMotionMode = saveData.uiSettings?.storyMotionMode;
-        if (savedStoryMotionMode === 'full'
-            || savedStoryMotionMode === 'reduced'
-            || savedStoryMotionMode === 'off') {
-            useUIStore.getState().setSettings({ storyMotionMode: savedStoryMotionMode });
-        }
+        const restoredStoryMotionMode = savedStoryMotionMode === 'full' || savedStoryMotionMode === 'reduced' || savedStoryMotionMode === 'off'
+            ? savedStoryMotionMode
+            : 'full';
+        useUIStore.getState().setSettings({
+            storyMotionMode: restoredStoryMotionMode,
+            ...sanitizeDaoMandateGuidanceSettings(saveData.uiSettings),
+        });
+        useUIStore.getState().hydrateDaoMandateLessonMemory(saveData.uiSettings?.daoMandateLessonMemory);
         // Apply zone state (if exists)
         useZoneStore.setState({
             unlockedZones: saveData.zoneState.unlockedZones,

@@ -193,30 +193,6 @@
   text-overflow: ellipsis;
 }
 
-.pavilionExact__mandateSourceSink {
-  position: absolute;
-  left: 35.5vw;
-  top: var(--pavilion-title-top);
-  width: 17vw;
-  min-width: 286px;
-  max-height: 9.4vh;
-  z-index: 7;
-  overflow: auto;
-}
-
-.pavilionExact__mandateSourceSink .daoModuleSourceSinkPanel__header {
-  grid-template-columns: 1fr;
-  gap: 0.35rem;
-}
-
-.pavilionExact__mandateSourceSink .daoModuleSourceSinkPanel__relation {
-  width: max-content;
-}
-
-.pavilionExact__mandateSourceSink .daoSourceRouteSlip {
-  padding: 7px;
-}
-
 .pavilionExact__searchCluster {
   position: absolute;
   left: var(--pavilion-search-left);

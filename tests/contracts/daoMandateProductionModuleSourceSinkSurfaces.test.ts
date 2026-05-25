@@ -2,123 +2,67 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
-import { validateLoadedContent, type ValidatedContent } from '../../src/content/index.js';
-import {
-  buildDaoMandateSurfaceFromRunCompassV2,
-} from '../../src/systems/ui/daoMandate/index.js';
-import {
-  buildCurrencyPurposeSourceSurface,
-  buildPurposeSourceContext,
-} from '../../src/systems/economy/purposeSourceSurface.js';
-import { loadRawProgressionContent } from '../fixtures/progression/loadFixtureContext.js';
-
-const MODULE_BUILDERS: Array<[string, string]> = [
-  ['src/features/apothecary/exact/buildApothecaryExactSurface.ts', 'apothecary'],
-  ['src/features/professions/forgeExact/buildForgeExactSurface.ts', 'forge'],
-  ['src/features/world/manualPavilionExact/buildManualPavilionExactSurface.ts', 'manualPavilion'],
-  ['src/features/techniquesExact/buildTechniquesExactSurface.ts', 'techniques'],
-  ['src/features/world/bountiesExact/buildBountiesExactSurface.ts', 'bounties'],
-  ['src/features/world/expeditionsExact/buildExpeditionsExactSurface.ts', 'expeditions'],
-  ['src/features/pavilion/buildPavilionSurface.ts', 'records'],
-];
-
-const MODULE_SCREENS: string[] = [
-  'src/features/apothecary/exact/ApothecaryExactScreen.tsx',
-  'src/features/professions/forgeExact/ForgeExactScreen.tsx',
-  'src/features/world/manualPavilionExact/ManualPavilionExactScreen.tsx',
-  'src/features/techniquesExact/TechniquesExactScreen.tsx',
-  'src/features/world/bountiesExact/BountiesExactScreen.tsx',
-  'src/features/world/expeditionsExact/ExpeditionsExactScreen.tsx',
-  'src/features/pavilion/PavilionExactScreen.tsx',
-];
-
 function read(path: string): string {
   return readFileSync(path, 'utf8');
 }
 
-let validatedPromise: Promise<ValidatedContent> | null = null;
-async function getValidatedContent(): Promise<ValidatedContent> {
-  if (!validatedPromise) {
-    validatedPromise = loadRawProgressionContent().then((raw) => validateLoadedContent(raw as never));
-  }
-  return validatedPromise;
-}
+const MODULE_SCREENS = [
+  'src/features/apothecary/exact/ApothecaryExactScreen.tsx',
+  'src/features/professions/forgeExact/ForgeExactScreen.tsx',
+  'src/features/world/manualPavilionExact/ManualPavilionExactScreen.tsx',
+  'src/features/techniquesExact/TechniquesExactScreen.tsx',
+  'src/features/pavilion/PavilionExactScreen.tsx',
+  'src/features/world/bountiesExact/BountiesExactScreen.tsx',
+  'src/features/world/expeditionsExact/ExpeditionsExactScreen.tsx',
+];
 
-test('P6 exact surface builders consume the shared Dao Mandate module source/sink projection', () => {
-  for (const [path, moduleKey] of MODULE_BUILDERS) {
-    const source = read(path);
-    assert.match(source, /buildLiveDaoMandateModuleSourceSinkProjection/);
-    assert.match(source, new RegExp(`currentModuleKey:\\s*'${moduleKey}'`), `${path} should request ${moduleKey} source/sink data`);
-    assert.match(source, /mandateSourceSink/);
+test('module decommission target prefers local purpose panels over public Module Source-Sink UI', () => {
+  const agents = read('AGENTS.md');
+  const releasePlan = read('docs/release/status_v3_dao_decommission_plan.md');
+  const targetDocs = `${agents}\n${releasePlan}`;
+
+  for (const label of [
+    'Forge Floor',
+    'Healing Reserve',
+    'Doctrine Stock',
+    'Bounty Board',
+    'Expedition Support',
+    'Item Ledger',
+  ]) {
+    assert.match(targetDocs, new RegExp(label), `Packet A docs should reserve local panel label ${label}.`);
+  }
+
+  assert.match(targetDocs, /ModuleSourceSinkPanel|Module Source-Sink/i);
+  assert.match(targetDocs, /must not render|forbidden|decommission/i);
+});
+
+test('legacy module source/sink projection remains internal compatibility infrastructure', () => {
+  const projection = read('src/systems/ui/daoMandate/daoMandateModuleProjection.ts');
+  const sharedPanel = read('src/ui/daoMandate/ModuleSourceSinkPanel.tsx');
+
+  assert.match(projection, /buildLiveDaoMandateModuleSourceSinkProjection/);
+  assert.match(sharedPanel, /ModuleSourceSinkPanel/);
+
+  for (const source of [projection, sharedPanel]) {
+    assert.doesNotMatch(source, /RewardService|grantRewards|spendCurrency|startCombat|recordFailure|resetPrestige/);
   }
 });
 
-test('P6 exact screens render one shared source/sink panel instead of local duplicate widgets', () => {
+test('Packet D exact module screens remove public ModuleSourceSinkPanel and projection fields', () => {
   for (const path of MODULE_SCREENS) {
     const source = read(path);
-    assert.match(source, /ModuleSourceSinkPanel/);
-    assert.match(source, /surface\.mandateSourceSink/);
+    assert.doesNotMatch(source, /ModuleSourceSinkPanel|mandateSourceSink|buildLiveDaoMandateModuleSourceSinkProjection/, `${path} must use a local purpose panel.`);
   }
 
-  const sharedPanel = read('src/ui/daoMandate/ModuleSourceSinkPanel.tsx');
-  assert.match(sharedPanel, /SourceRouteSlip/);
-  assert.match(sharedPanel, /onRouteAction/);
-});
-
-test('P6 Inventory purpose callouts receive visible Mandate source/sink truth and conservative tags', () => {
-  const inventory = read('src/components/screens/InventoryScreen.tsx');
-  const purpose = read('src/systems/economy/purposeSourceSurface.ts');
-
-  assert.match(inventory, /buildLiveDaoMandateSurfaceV1/);
-  assert.match(inventory, /applyDaoMandateVisibility/);
-  assert.match(inventory, /visibleDaoMandate/);
-  assert.match(inventory, /buildItemPurposeSourceSurface\([\s\S]*visibleDaoMandate/);
-  assert.match(inventory, /buildCurrencyPurposeSourceSurface\([\s\S]*visibleDaoMandate/);
-
-  for (const label of ['Needed Now', 'Future Gate', 'Craft Input', 'Keep', 'Unknown Source', 'Quiet']) {
-    assert.match(purpose, new RegExp(label));
+  for (const path of [
+    'src/features/apothecary/exact/apothecaryExactTypes.ts',
+    'src/features/professions/forgeExact/forgeExactTypes.ts',
+    'src/features/world/manualPavilionExact/manualPavilionExactTypes.ts',
+    'src/features/techniquesExact/techniquesExactTypes.ts',
+    'src/features/pavilion/pavilionTypes.ts',
+    'src/features/world/bountiesExact/bountiesExactTypes.ts',
+    'src/features/world/expeditionsExact/expeditionsExactTypes.ts',
+  ]) {
+    assert.doesNotMatch(read(path), /mandateSourceSink|DaoMandateModuleSourceSinkProjection/, `${path} must not expose public source/sink projection data.`);
   }
-  assert.doesNotMatch(purpose, /Sellable'/, 'P6 should not add sellable advice without item-truth evidence');
-});
-
-test('P6 source/sink adapter stays below exact screens and keeps route failures player-safe', () => {
-  const adapter = read('src/systems/ui/daoMandate/daoMandateSourceMap.ts');
-
-  assert.doesNotMatch(adapter, /features\/.*Exact/i, 'central adapter must not import exact screen surfaces');
-  assert.match(adapter, /This source is not open in the current city\./);
-  assert.doesNotMatch(adapter, /owner not wired|Packet|deferred|TODO|implementation|scaffold/i);
-});
-
-test('P6 shared source/sink UI does not grant rewards, resolve combat, clear trials, or reset prestige', () => {
-  const files = [
-    'src/systems/ui/daoMandate/daoMandateSourceMap.ts',
-    'src/systems/ui/daoMandate/daoMandateModuleProjection.ts',
-    'src/ui/daoMandate/ModuleSourceSinkPanel.tsx',
-    'src/ui/daoMandate/ModuleSourceSinkPanel.scss',
-  ];
-  const forbidden = /RewardService|grantRewards|resolveCombat|recordFailure|recordClear|markCleared|performPrestigeReset|unlockCity|setState\(/;
-
-  for (const path of files) {
-    assert.doesNotMatch(read(path), forbidden, `${path} should remain display/routing only`);
-  }
-});
-
-test('P6 visible fallback and Merit source copy does not leak implementation vocabulary', async () => {
-  const fallback = buildDaoMandateSurfaceFromRunCompassV2(null, { now: 123 });
-  const fallbackVisibleText = JSON.stringify({
-    milestone: fallback.milestone,
-    obstruction: fallback.obstruction,
-    requirementLedger: fallback.requirementLedger,
-    currentWork: fallback.currentWork,
-    backgroundPlan: fallback.backgroundPlan,
-  });
-
-  assert.doesNotMatch(fallbackVisibleText, /Run Compass|Packet|packet truth|source map adapter|TODO|debug/i);
-
-  const content = await getValidatedContent();
-  const context = buildPurposeSourceContext(content);
-  const merit = buildCurrencyPurposeSourceSurface(content, context, 'merit');
-  const meritVisibleText = JSON.stringify(merit);
-
-  assert.doesNotMatch(meritVisibleText, /Run Compass|Packet|packet truth|source map adapter|TODO|debug/i);
 });

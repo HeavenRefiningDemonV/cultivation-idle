@@ -18,7 +18,6 @@ import {
   GATE_TRIAL_EXACT_TOP_REGION_CONTRACT,
 } from './gateTrialExactPresentation.js';
 import { GateTrialExactIcon } from './GateTrialExactIcon.js';
-import { LocalMandateLensHeader } from '../../../ui/daoMandate/index.js';
 
 type GateTrialRailRowSurface =
   | GateTrialExactSurfaceV1['minimumChecklist']['rows'][number]
@@ -441,17 +440,6 @@ function renderGateTrialReadinessRail(
   );
 }
 
-function renderGateTrialMandateLens(surface: GateTrialExactSurfaceV1): React.ReactElement | null {
-  if (!surface.mandateLens?.lens) return null;
-  return el(LocalMandateLensHeader, {
-    lens: { ...surface.mandateLens.lens, route: null },
-    profile: surface.mandateLens.profile,
-    variant: surface.mandateLens.variant,
-    motionMode: surface.mandateLens.motionMode,
-    className: 'gateTrialMandateLens',
-  });
-}
-
 function renderGateTrialPrimaryCta(
   surface: GateTrialExactSurfaceV1,
   onPrimaryAction?: () => void,
@@ -815,7 +803,6 @@ function GateTrialExactScreen(props: GateTrialExactScreenProps) {
           el('span', { className: 'gateTrialGateHeader__chipLabel' }, chip.label),
         ))),
       )),
-    renderGateTrialMandateLens(surface),
     el('aside', {
       className: 'gateTrialExactPage__leftRail',
       'data-testid': 'gate-trial-exact-left-rail',
@@ -843,7 +830,8 @@ function GateTrialExactScreen(props: GateTrialExactScreenProps) {
           'data-testid': 'gate-trial-minimum-rows',
         }, surface.minimumChecklist.rows.map((row) => el(GateTrialRailRowView, { key: row.id, row, variant: 'minimum' }))),
         el('span', { className: 'gateTrialMinimumChecklist__bottomWash', 'aria-hidden': 'true' }),
-      )),
+      ),
+    ),
     el('main', { className: 'gateTrialExactPage__scenicSlot', 'data-testid': 'gate-trial-exact-scenic-slot' },
       el('section', {
         className: [

@@ -9,7 +9,6 @@ import { useMedicinePouchStore } from '../../stores/medicinePouchStore.js';
 import { useTechniqueStore } from '../../stores/techniqueStore.js';
 import { useUIStore } from '../../stores/uiStore.js';
 import { usePavilionStore } from '../../stores/pavilionStore.js';
-import { useDaoMandateRouteActionHandler } from '../../systems/ui/daoMandate/index.js';
 import { buildPavilionSurface } from './buildPavilionSurface.js';
 import { getPavilionExactFixtureEntryId, isPavilionExactFixtureRouteEnabled, PAVILION_DEFAULT_ENTRY_ID } from './pavilionPresentation.js';
 import { PavilionExactScreen } from './PavilionExactScreen.js';
@@ -74,7 +73,6 @@ export function PavilionScreenOwner() {
   const setActiveTab = useUIStore((state) => state.setActiveTab);
   const openWorldBuildingModal = useUIStore((state) => state.openWorldBuildingModal);
   const addNotification = useUIStore((state) => state.addNotification);
-  const onMandateRouteAction = useDaoMandateRouteActionHandler('dao-mandate-pavilion-source');
   const mode = isPavilionExactFixtureRouteEnabled() ? 'fixture' : 'live';
   const fixtureEntryId = mode === 'fixture' ? getPavilionExactFixtureEntryId() : null;
 
@@ -205,7 +203,6 @@ export function PavilionScreenOwner() {
       onRoute={handleRoute}
       onOpenJadeSlip={openJadeSlip}
       onCloseJadeSlip={closeJadeSlip}
-      onMandateRouteAction={onMandateRouteAction}
     />
   );
 }

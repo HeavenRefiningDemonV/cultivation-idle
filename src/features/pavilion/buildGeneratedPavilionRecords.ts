@@ -722,7 +722,7 @@ export function buildGeneratedPavilionRecords(args: { content: any | null | unde
       categoryLabel: 'Activities',
       plain: `${shop.name ?? titleCaseId(id)} stocks medicine and preparation items: ${stocked.join(', ')}.`,
       why: 'Apothecaries are the archive-favored route for medicine weak or gate preparation notes.',
-      how: 'Open Apothecary from the current city when available.',
+      how: 'Inspect the city apothecary source when available.',
       used: stocked.join(', '),
       tags: ['apothecary', 'source', 'medicine'],
       related: stocked,

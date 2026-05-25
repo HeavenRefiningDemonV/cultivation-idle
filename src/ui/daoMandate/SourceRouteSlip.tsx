@@ -68,7 +68,7 @@ export function SourceRouteSlip({
 }: SourceRouteSlipProps) {
   const reactId = useId();
   const titleId = `dao-source-route-slip-${sanitizeDomIdPart(title)}-${sanitizeDomIdPart(reactId)}`;
-  const showFallbacks = profile === 'jade' || variant === 'expanded';
+  const showFallbacks = variant === 'expanded';
 
   return (
     <section

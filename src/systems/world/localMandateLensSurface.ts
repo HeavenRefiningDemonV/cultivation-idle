@@ -76,146 +76,146 @@ type ModuleCopy = {
 const MODULE_COPY: Record<string, ModuleCopy> = {
   gateTrial: {
     label: {
-      primary: 'Gate proof',
-      support: 'Gate authority',
-      future: 'Threshold route',
-      quiet: 'Quiet gate',
-      blocked: 'Gate proof blocked',
+      'primary-evidence': 'Gate proof',
+      'supporting-source': 'Gate record',
+      blocked: 'Gate sealed',
+      completed: 'Proof sealed',
+      quiet: 'Quiet',
     },
     detail: {
-      primary: 'The current Mandate points to this gate. Check the proof ledger, then attempt when readiness is viable.',
-      support: 'This gate records threshold proof. Return here when your preparation rows are sealed.',
-      future: 'This threshold will matter after the current preparation route matures.',
-      quiet: 'No gate attempt is needed for the current Mandate.',
-      blocked: 'The gate cannot be opened from this state. Resolve the listed proof before attempting.',
+      'primary-evidence': 'This threshold holds the proof behind the current omen. Review readiness here when the gate is involved.',
+      'supporting-source': 'Gate records preserve threshold evidence without replacing the current local work.',
+      blocked: 'The gate is relevant, but one proof condition still blocks it.',
+      completed: 'The gate proof is already held. Breakthrough belongs in Cultivation.',
+      quiet: 'No visible local Omen relation.',
     },
   },
   outskirts: {
     label: {
-      primary: 'Field route',
-      support: 'Field support',
-      future: 'Future field route',
-      quiet: 'Quiet field',
-      blocked: 'Field route blocked',
+      'primary-evidence': 'Field evidence',
+      'supporting-source': 'Field support',
+      blocked: 'Field closed',
+      completed: 'Field settled',
+      quiet: 'Quiet',
     },
     detail: {
-      primary: 'The Mandate needs broad gold, common materials, or combat reps. The Outskirts are the safest field route.',
-      support: 'Outskirts can keep gold, common materials, and safe combat reps moving while the main route matures.',
-      future: 'This field route may help the next preparation step, but it is not the current obstruction.',
-      quiet: 'Outskirts are available, but the current Mandate points elsewhere.',
-      blocked: 'Outskirts are unavailable from this city or current activity.',
+      'primary-evidence': 'The current omen is tied to broad field support such as gold, common materials, or safe combat reps.',
+      'supporting-source': 'Outskirts can support reserves with gold, common materials, and safe combat reps without replacing the main proof owner.',
+      blocked: 'This field support is relevant but not open from the current state.',
+      completed: 'This field support is settled for the current omen.',
+      quiet: 'No visible local Omen relation.',
     },
   },
   ruins: {
     label: {
-      primary: 'Relief route',
-      support: 'Ancient support',
-      future: 'Future relief route',
-      quiet: 'Silent ruin',
-      blocked: 'Sealed ruin',
+      'primary-evidence': 'Ruin evidence',
+      'supporting-source': 'Relief source',
+      blocked: 'Ruin sealed',
+      completed: 'Relief settled',
+      quiet: 'Quiet',
     },
     detail: {
-      primary: 'The Mandate needs a steadier relief route. Ruins can target scarce materials or relic support more directly.',
-      support: 'Ruins can patch droughts while your main preparation continues.',
-      future: 'Ruins may matter once the next scarcity appears.',
-      quiet: 'No ruin relief is needed for the current Mandate.',
-      blocked: 'This ruin route is not open from the current city or activity state.',
+      'primary-evidence': 'The current omen is tied to deterministic relief or scarce material proof.',
+      'supporting-source': 'Ruins can patch a known drought after the source thread has been inspected.',
+      blocked: 'This relief source is relevant but the ruin is not open from the current state.',
+      completed: 'The needed ruin support is settled for now.',
+      quiet: 'No visible local Omen relation.',
     },
   },
   forge: {
     label: {
-      primary: 'Power floor',
-      support: 'Power floor',
-      future: 'Future power floor',
-      quiet: 'Quiet forge',
-      blocked: 'Forge route blocked',
+      'primary-evidence': 'Forge evidence',
+      'supporting-source': 'Forge support',
+      blocked: 'Forge sealed',
+      completed: 'Floor sealed',
+      quiet: 'Quiet',
     },
     detail: {
-      primary: 'Forge work raises the build floor for the current Mandate.',
-      support: 'Forge work can raise the build floor for the next gate.',
-      future: 'Forge work may matter after the current route matures.',
-      quiet: 'Forge is available, but the current Mandate points elsewhere.',
-      blocked: 'Forge work is not open from this city or current activity.',
+      'primary-evidence': 'The weapon floor is part of the current omen evidence.',
+      'supporting-source': 'Forge work can strengthen the permanent floor when gear pressure is inspected.',
+      blocked: 'Forge support is relevant but this hall is not open from the current state.',
+      completed: 'The relevant forge floor proof is settled for now.',
+      quiet: 'No visible local Omen relation.',
     },
   },
   apothecary: {
     label: {
-      primary: 'Reserve route',
-      support: 'Reserve route',
-      future: 'Future reserve route',
-      quiet: 'Quiet apothecary',
-      blocked: 'Reserve route blocked',
+      'primary-evidence': 'Reserve evidence',
+      'supporting-source': 'Reserve support',
+      blocked: 'Reserve sealed',
+      completed: 'Reserve sealed',
+      quiet: 'Quiet',
     },
     detail: {
-      primary: 'Apothecary work prepares medicine and survival reserves for the current Mandate.',
-      support: 'Apothecary work prepares medicine and survival reserves for the next attempt.',
-      future: 'Medicine reserves may matter after the current route matures.',
-      quiet: 'Apothecary is available, but the current Mandate points elsewhere.',
-      blocked: 'Apothecary reserves are not open from this city or current activity.',
+      'primary-evidence': 'Medicine reserve is part of the current omen evidence.',
+      'supporting-source': 'Apothecary work can support survival reserve after reserve pressure is inspected.',
+      blocked: 'The reserve source is relevant but this hall is not open from the current state.',
+      completed: 'The relevant survival reserve proof is settled for now.',
+      quiet: 'No visible local Omen relation.',
     },
   },
   manualPavilion: {
     label: {
-      primary: 'Doctrine source',
-      support: 'Doctrine source',
-      future: 'Future doctrine source',
-      quiet: 'Quiet doctrine',
-      blocked: 'Doctrine route blocked',
+      'primary-evidence': 'Doctrine evidence',
+      'supporting-source': 'Doctrine source',
+      blocked: 'Doctrine sealed',
+      completed: 'Doctrine settled',
+      quiet: 'Quiet',
     },
     detail: {
-      primary: 'Manual study shapes the build required by the current Mandate.',
-      support: 'Manual study supports the current build path while the main Mandate points elsewhere.',
-      future: 'Doctrine study may matter after the current route matures.',
-      quiet: 'Manual Pavilion is available, but the current Mandate points elsewhere.',
-      blocked: 'Manual Pavilion is not open from this city or current activity.',
+      'primary-evidence': 'Manual study is part of the current doctrine evidence.',
+      'supporting-source': 'Manual study can support build expression without solving the whole path for the player.',
+      blocked: 'This doctrine source is relevant but not open from the current state.',
+      completed: 'The relevant doctrine source is settled for now.',
+      quiet: 'No visible local Omen relation.',
     },
   },
   techniques: {
     label: {
-      primary: 'Build expression',
-      support: 'Build expression',
-      future: 'Future build expression',
-      quiet: 'Quiet techniques',
-      blocked: 'Technique route blocked',
+      'primary-evidence': 'Expression evidence',
+      'supporting-source': 'Expression support',
+      blocked: 'Technique sealed',
+      completed: 'Expression settled',
+      quiet: 'Quiet',
     },
     detail: {
-      primary: 'Techniques express the build required by the current Mandate.',
-      support: 'Technique refinement can strengthen the current route while another hall carries the main Mandate.',
-      future: 'Technique work may matter after the current route matures.',
-      quiet: 'Techniques are available, but the current Mandate points elsewhere.',
-      blocked: 'Technique routing is not open from this city or current activity.',
+      'primary-evidence': 'Combat doctrine expression is part of the current omen evidence.',
+      'supporting-source': 'Technique work can support doctrine expression after the gap is inspected.',
+      blocked: 'This expression source is relevant but blocked from the current state.',
+      completed: 'The relevant technique expression proof is settled for now.',
+      quiet: 'No visible local Omen relation.',
     },
   },
   bounties: {
     label: {
-      primary: 'Merit route',
-      support: 'Merit route',
-      future: 'Future merit route',
-      quiet: 'Quiet bounty board',
-      blocked: 'Merit route blocked',
+      'primary-evidence': 'Merit evidence',
+      'supporting-source': 'Merit support',
+      blocked: 'Board sealed',
+      completed: 'Bounty ready',
+      quiet: 'Quiet',
     },
     detail: {
-      primary: 'Bounties can supply the merit support requested by the current Mandate.',
-      support: 'Bounties support the economy without replacing the main Mandate route.',
-      future: 'Merit work may matter after the current route matures.',
-      quiet: 'Bounties are available, but the current Mandate points elsewhere.',
-      blocked: 'Bounties are not open from this city or current activity.',
+      'primary-evidence': 'Merit reserve is part of the current omen evidence.',
+      'supporting-source': 'Bounties can support reserve or mercy proof when Merit pressure is inspected.',
+      blocked: 'The bounty source is relevant but unavailable from the current state.',
+      completed: 'A relevant board proof or claim is ready.',
+      quiet: 'No visible local Omen relation.',
     },
   },
   expeditions: {
     label: {
-      primary: 'Background support',
-      support: 'Background support',
-      future: 'Future background support',
-      quiet: 'Quiet expeditions',
-      blocked: 'Background route blocked',
+      'primary-evidence': 'Background evidence',
+      'supporting-source': 'Background support',
+      blocked: 'Route sealed',
+      completed: 'Route ready',
+      quiet: 'Quiet',
     },
     detail: {
-      primary: 'Expeditions can support the current Mandate in the background.',
-      support: 'Expeditions are passive support and should not replace the main Mandate route.',
-      future: 'Background support may matter after the current route matures.',
-      quiet: 'Expeditions are available, but the current Mandate points elsewhere.',
-      blocked: 'Expeditions are not open from this city or current activity.',
+      'primary-evidence': 'Passive support is part of the current omen evidence.',
+      'supporting-source': 'Expeditions can support the current shortage passively without replacing the main proof owner.',
+      blocked: 'This background source is relevant but unavailable from the current state.',
+      completed: 'A relevant expedition support result is ready.',
+      quiet: 'No visible local Omen relation.',
     },
   },
 };
@@ -223,18 +223,18 @@ const MODULE_COPY: Record<string, ModuleCopy> = {
 function fallbackCopy(moduleKey: LiveWorldModuleKey): ModuleCopy {
   return {
     label: {
-      primary: 'Mandate route',
-      support: 'Support route',
-      future: 'Future route',
-      quiet: 'Quiet route',
-      blocked: 'Route blocked',
+      'primary-evidence': 'Omen evidence',
+      'supporting-source': 'Supporting source',
+      blocked: 'Source sealed',
+      completed: 'Role settled',
+      quiet: 'Quiet',
     },
     detail: {
-      primary: `The Mandate points to ${moduleKey} for the current obstruction.`,
-      support: `${moduleKey} can support the current Mandate without replacing the main route.`,
-      future: `${moduleKey} may matter after the current route matures.`,
-      quiet: `${moduleKey} is available, but the current Mandate points elsewhere.`,
-      blocked: `This route is unavailable from the current city or activity state.`,
+      'primary-evidence': `${moduleKey} carries current omen evidence.`,
+      'supporting-source': `${moduleKey} can support the current omen without replacing the main proof owner.`,
+      blocked: 'This source is unavailable from the current city or activity state.',
+      completed: `${moduleKey} is settled for the current omen.`,
+      quiet: 'No visible local Omen relation.',
     },
   };
 }
@@ -324,11 +324,16 @@ function isVisibleInCity(
   return !visibleModules || visibleModules.includes(candidate.moduleKey);
 }
 
-function relationFromCandidate(candidate: LocalMandateRouteCandidate): DaoLocalLensSurface['relation'] {
-  if (candidate.blocked) return 'blocked';
-  if (candidate.origin === 'primary') return 'primary';
-  if (candidate.origin === 'lesson') return 'future';
-  return 'support';
+function relationFromCandidate(
+  candidate: LocalMandateRouteCandidate,
+  args: Pick<BuildLocalMandateLensSurfaceArgs, 'isModuleAvailable' | 'isModuleCompleted' | 'isClaimReady'>,
+): DaoLocalLensSurface['relation'] {
+  if (candidate.blocked || args.isModuleAvailable === false) return 'blocked';
+  if (args.isModuleCompleted || args.isClaimReady) return 'completed';
+  if (candidate.origin === 'primary' || candidate.origin === 'hard_gate' || candidate.origin === 'safety_net') {
+    return 'primary-evidence';
+  }
+  return 'supporting-source';
 }
 
 function routeWithBlockedReason(route: DaoMandateRoute, blockedReason: string): DaoMandateRoute {
@@ -353,22 +358,17 @@ export function buildLocalMandateLensSurface(args: BuildLocalMandateLensSurfaceA
     .filter((candidate) => isVisibleInCity(candidate, args.cityId, args.visibleModules))
     .filter((candidate) => candidate.moduleKey === args.moduleKey);
   const candidate = candidates[0] ?? null;
-  const moduleUnavailable = args.isModuleAvailable === false;
-  const relation: DaoLocalLensSurface['relation'] = moduleUnavailable
-    ? 'blocked'
-    : candidate
-      ? relationFromCandidate(candidate)
-      : 'quiet';
-  const blockedReason = moduleUnavailable
+  if (!candidate) return null;
+
+  const relation = relationFromCandidate(candidate, args);
+  const blockedReason = args.isModuleAvailable === false
     ? 'This building is not open in this city.'
     : candidate?.route.blockedReason ?? null;
   const copy = localCopy(args.moduleKey, relation);
   const detail = relation === 'blocked' && blockedReason
     ? `${copy.detail} ${blockedReason}`
-    : args.isModuleCompleted && relation === 'quiet'
-      ? `${copy.detail} This role is already resolved for now.`
-      : copy.detail;
-  const route = candidate?.route
+    : copy.detail;
+  const route = relation === 'primary-evidence' || relation === 'blocked'
     ? relation === 'blocked' && blockedReason
       ? routeWithBlockedReason(candidate.route, blockedReason)
       : candidate.route
@@ -422,10 +422,8 @@ export function buildWorldMandateRoutingLensSurface(args: {
   }
 
   const strongestModuleKey = [
-    primaryModuleKey,
     blockedModuleKeys[0] ?? null,
-    secondaryModuleKeys[0] ?? null,
-    supportModuleKeys[0] ?? null,
+    primaryModuleKey,
   ].find((moduleKey): moduleKey is LiveWorldModuleKey => moduleKey !== null && visibleSet.has(moduleKey)) ?? null;
 
   const relationByModuleKey: Partial<Record<LiveWorldModuleKey, DaoLocalLensSurface>> = {};

@@ -63,10 +63,10 @@ test('world module routing gives Mandate primary the only strong chip while keep
     cityId: city.id,
     visibleModules: city.modules as never,
     activeModuleKey: 'outskirts',
-    mandatePrimaryModuleKey: mandateRouting.primaryModuleKey,
-    mandateSecondaryModuleKeys: mandateRouting.secondaryModuleKeys,
-    mandateSupportModuleKeys: mandateRouting.supportModuleKeys,
-    mandateBlockedModuleKeys: mandateRouting.blockedModuleKeys,
+    primaryModuleKey: mandateRouting.primaryModuleKey,
+    secondaryModuleKeys: mandateRouting.secondaryModuleKeys,
+    supportModuleKeys: mandateRouting.supportModuleKeys,
+    blockedModuleKeys: mandateRouting.blockedModuleKeys,
     economicModuleKeys: ['forge'],
     economicPrimaryProblemKind: 'belowMinimumForgeFloor',
     trackedBountyModuleKey: 'bounties',
@@ -92,30 +92,30 @@ test('world strong recommendation priority is Mandate first, then economy and tr
 
   assert.equal(resolveWorldStrongRecommendationModuleKey({
     visibleModules,
-    mandatePrimaryModuleKey: 'gateTrial',
-    mandateSecondaryModuleKeys: ['outskirts'],
-    mandateSupportModuleKeys: ['forge'],
-    mandateBlockedModuleKeys: [],
+    primaryModuleKey: 'gateTrial',
+    secondaryModuleKeys: ['outskirts'],
+    supportModuleKeys: ['forge'],
+    blockedModuleKeys: [],
     economicModuleKeys: ['forge'],
     trackedBountyModuleKey: 'bounties',
   }), 'gateTrial');
 
   assert.equal(resolveWorldStrongRecommendationModuleKey({
     visibleModules,
-    mandatePrimaryModuleKey: null,
-    mandateSecondaryModuleKeys: [],
-    mandateSupportModuleKeys: [],
-    mandateBlockedModuleKeys: [],
+    primaryModuleKey: null,
+    secondaryModuleKeys: [],
+    supportModuleKeys: [],
+    blockedModuleKeys: [],
     economicModuleKeys: ['forge'],
     trackedBountyModuleKey: 'bounties',
   }), 'forge');
 
   assert.equal(resolveWorldStrongRecommendationModuleKey({
     visibleModules,
-    mandatePrimaryModuleKey: null,
-    mandateSecondaryModuleKeys: [],
-    mandateSupportModuleKeys: [],
-    mandateBlockedModuleKeys: [],
+    primaryModuleKey: null,
+    secondaryModuleKeys: [],
+    supportModuleKeys: [],
+    blockedModuleKeys: [],
     economicModuleKeys: [],
     trackedBountyModuleKey: 'bounties',
   }), 'bounties');
@@ -131,9 +131,9 @@ test('world Mandate lens exposes raw relations but hides quiet inspector lines b
   });
 
   assert.equal(world.strongestModuleKey, 'gateTrial');
-  assert.equal(world.relationByModuleKey.ruins?.relation, 'quiet');
+  assert.equal(world.relationByModuleKey.ruins ?? null, null);
   assert.equal(world.visibleRelationByModuleKey.ruins ?? null, null);
-  assert.equal(world.visibleRelationByModuleKey.gateTrial?.relation, 'primary');
+  assert.equal(world.visibleRelationByModuleKey.gateTrial?.relation, 'primary-evidence');
 });
 
 test('world inspector visibility keeps support detail profile-invariant without promoting quiet modules', () => {
@@ -158,9 +158,9 @@ test('world inspector visibility keeps support detail profile-invariant without 
     guidanceSettings: { guidanceOath: 'sealed', localLensBanners: 'compact' },
   });
 
-  assert.equal(sealed.visibleRelationByModuleKey.outskirts?.relation, 'support');
-  assert.equal(elder.visibleRelationByModuleKey.outskirts?.relation, 'support');
+  assert.equal(sealed.visibleRelationByModuleKey.outskirts?.relation, 'supporting-source');
+  assert.equal(elder.visibleRelationByModuleKey.outskirts?.relation, 'supporting-source');
   assert.equal(elder.visibleRelationByModuleKey.ruins ?? null, null);
-  assert.equal(jade.visibleRelationByModuleKey.outskirts?.relation, 'support');
+  assert.equal(jade.visibleRelationByModuleKey.outskirts?.relation, 'supporting-source');
   assert.equal(applyLocalMandateLensVisibility(jade.relationByModuleKey.ruins ?? null, mandate, { guidanceOath: 'jade', localLensBanners: 'full' }), null);
 });

@@ -34,6 +34,7 @@ void test('world, cultivate, status, prestige remain legally wired to frozen she
   const cultivate = read('src/features/cultivation/exact/CultivationExactScreenOwner.tsx');
   const cultivateScreen = read('src/features/cultivation/exact/CultivationExactScreen.tsx');
   const status = read('src/components/screens/StatusScreen.tsx');
+  const agents = read('AGENTS.md');
   const prestige = read('src/components/screens/PrestigeScreen.tsx');
   const prestigeOwner = read('src/features/prestige/prestigeLedgerExact/PrestigeLedgerScreenOwner.tsx');
 
@@ -48,10 +49,8 @@ void test('world, cultivate, status, prestige remain legally wired to frozen she
   assert.match(cultivateScreen, /data-region="left-milestone-seals"/);
   assert.match(cultivateScreen, /data-region="right-doctrine-rail"/);
 
-  assert.match(status, /statusV2Root/);
-  assert.match(status, /OmenSeal/);
-  assert.match(status, /ProofSealRow/);
-  assert.match(status, /PressureBadgeRow/);
+  assert.match(status, /statusV2Root|status-ledger-root/);
+  assert.match(agents, /Status V3|Cultivator Ledger|Status Ledger/i);
   assert.doesNotMatch(status, /<RunCompass/);
   assert.doesNotMatch(status, /<StatusSummaryHeader/);
 

@@ -149,24 +149,6 @@
   gap: 10px;
 }
 
-.forgeExactMandateSourceSink {
-  position: absolute;
-  left: 410px;
-  top: 23px;
-  width: 960px;
-  max-height: 76px;
-  z-index: 13;
-  overflow: auto;
-}
-
-.forgeExactMandateSourceSink .daoModuleSourceSinkPanel__header {
-  grid-template-columns: minmax(82px, auto) minmax(0, 1fr);
-}
-
-.forgeExactMandateSourceSink .daoSourceRouteSlip {
-  padding: 8px;
-}
-
 .forgeExactTruthCell {
   position: relative;
   min-width: 0;

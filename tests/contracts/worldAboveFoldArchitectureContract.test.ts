@@ -22,12 +22,13 @@ test('WR-02 world above-the-fold anatomy keeps map, ribbon, and inspector overla
   assert.ok(drawerIndex > inspectorLayerIndex, 'Narrow inspector drawer should remain a fallback after the wide layer.');
 });
 
-test('WR-02 routes Dao Mandate truth into the world routing surface instead of duplicating command UI', () => {
+test('WR-02 routes local module truth into the world routing surface instead of duplicating command UI', () => {
   const worldScreen = read('src/components/screens/WorldScreen.tsx');
-  assert.match(worldScreen, /buildLiveDaoMandateSurfaceV1/);
-  assert.match(worldScreen, /buildWorldMandateRoutingLensSurface/);
-  assert.match(worldScreen, /mandatePrimaryModuleKey: mandateRoutingLens\?\.primaryModuleKey/);
-  assert.match(worldScreen, /mandateSecondaryModuleKeys: mandateRoutingLens\?\.secondaryModuleKeys/);
+  assert.match(worldScreen, /buildWorldModuleRoutingSurface/);
+  assert.doesNotMatch(worldScreen, /buildLiveDaoMandateSurfaceV1/);
+  assert.doesNotMatch(worldScreen, /buildWorldMandateRoutingLensSurface/);
+  assert.doesNotMatch(worldScreen, /mandatePrimaryModuleKey/);
+  assert.doesNotMatch(worldScreen, /mandateSecondaryModuleKeys/);
   assert.match(worldScreen, /<WorldOverlayRibbon/);
   assert.match(worldScreen, /<WorldOverlayInspector/);
   assert.match(worldScreen, /<InspectorDrawer/);

@@ -1,0 +1,92 @@
+{
+  "packet": "V2-9",
+  "tool": "Browser plugin (in-app browser)",
+  "url": "http://127.0.0.1:5179/",
+  "date": "2026-05-23",
+  "status": {
+    "checked": true,
+    "result": "PASS",
+    "notes": [
+      "Default Status rendered the recovered sparse identity, metric, proof, current work, recent omens, and folded detail layout.",
+      "No ModuleSourceSinkPanel, SourceRouteSlip, Primary Route, Best Next Action, Biggest Shortfall, or local module source-map panel was visible in default Status.",
+      "The Source Thread drawer remained folded in the Status detail area."
+    ]
+  },
+  "world": {
+    "checked": true,
+    "result": "PASS_WITH_NOTES",
+    "notes": [
+      "World map and inspector rendered local role metadata such as Immediate Readiness, Permanent Floor, Merit & Routing, and Passive Support.",
+      "No Mandate points elsewhere, No current Mandate, No expedition overlap, Primary Route, or Best Next Action copy was visible.",
+      "The selected Apothecary inspector showed a subdued supporting-source sentence rather than a global route-board command."
+    ]
+  },
+  "apothecary": {
+    "checked": true,
+    "result": "PASS_WITH_NOTES",
+    "notes": [
+      "Exact room preserved buy, brew, medicine pouch, prescription, warning, and gate-fit regions.",
+      "No forbidden route-board copy or solved-victory copy was visible.",
+      "In this early/quiet browser state the shared source panel was not visible; source ingredient controls routed to source-owner inspection instead of granting items."
+    ]
+  },
+  "forge": {
+    "checked": true,
+    "result": "PASS_WITH_NOTES",
+    "notes": [
+      "Exact room preserved forge summary, refine/temper/rune controls, material inspector, permanent floor rail, and local forge actions.",
+      "No forbidden route-board copy or solved-victory copy was visible.",
+      "In this early/quiet browser state the shared source panel was not visible; the material inspector remained local and did not mutate rewards."
+    ]
+  },
+  "manualPavilion": {
+    "checked": "partial",
+    "result": "PARTIAL",
+    "notes": [
+      "World module inspector role metadata was visible and non-prescriptive.",
+      "Exact room visual confirmation was not completed before migration/onboarding overlays returned after reload.",
+      "Static and contract tests cover shared projection wiring and Doctrine source panel placement."
+    ]
+  },
+  "techniques": {
+    "checked": true,
+    "result": "PASS_WITH_REPAIR",
+    "notes": [
+      "Initial Browser pass preserved loadout, AI, casting, combat form, owned technique, and readiness regions with no global Primary Route or Best Next Action copy.",
+      "Browser pass surfaced local solved-copy risk: Best next loadout fix and Recommended Action.",
+      "The patch changed those to Loadout gap signal and Observed Gap, and targeted contracts/build passed afterward. Visual recheck after reload was blocked by migration/onboarding overlays."
+    ]
+  },
+  "bounties": {
+    "checked": "partial",
+    "result": "PARTIAL",
+    "notes": [
+      "World module inspector role metadata was visible and non-prescriptive.",
+      "Exact room visual confirmation was not completed before migration/onboarding overlays returned after reload.",
+      "Static and contract tests cover shared projection wiring and Merit reserve panel placement."
+    ]
+  },
+  "expeditions": {
+    "checked": "partial",
+    "result": "PARTIAL",
+    "notes": [
+      "World module inspector role metadata was visible and non-prescriptive.",
+      "Exact room visual confirmation was not completed before migration/onboarding overlays returned after reload.",
+      "Static and contract tests cover shared projection wiring and Background support panel placement."
+    ]
+  },
+  "inventory": {
+    "checked": true,
+    "result": "PASS",
+    "notes": [
+      "Inventory rendered currency purpose/source tags including Reserve and Known refill source.",
+      "Gold, Spirit Stones, and Merit stayed local inventory/currency provenance, not a global Status clone.",
+      "No Sellable, Trash this, Best Next Action, or Open X now advice was visible."
+    ]
+  },
+  "limitations": [
+    "The browser state used a fresh in-app save and then returned migration/onboarding overlays after reload.",
+    "No non-null shared ModuleSourceSinkPanel state was visually captured in local exact rooms; focused render/static contracts prove the non-null projection behavior.",
+    "Reduced-motion visual verification was not completed in Browser."
+  ]
+}

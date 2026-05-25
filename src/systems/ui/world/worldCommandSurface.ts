@@ -93,7 +93,7 @@ export function resolveWorldRecommendedModule(input: {
   if (moduleKey && moduleKey === runCompassSecondaryModuleKey) {
     return {
       moduleKey,
-      reason: 'Mandate support route points here.',
+      reason: 'Support route points here.',
       from: 'run_compass',
     };
   }

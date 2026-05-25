@@ -1,6 +1,4 @@
 import type { GameTab, WorldBuildingKey } from '../../stores/uiStore.js';
-import type { DaoMandateModuleSourceSinkProjection } from '../../systems/ui/daoMandate/index.js';
-
 export type PavilionSurfaceMode = 'fixture' | 'live';
 
 export type PavilionRecordState =
@@ -327,7 +325,6 @@ export interface PavilionSurfaceV1 {
   selectedEntry: PavilionEntrySurface;
   rightRail: PavilionThreadsSurface;
   elderNote: PavilionElderNoteSurface | null;
-  mandateSourceSink?: DaoMandateModuleSourceSinkProjection | null;
   recordStatesLegend: PavilionRecordStateLegendSurface[];
   footer: {
     breadcrumbs: string[];

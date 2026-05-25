@@ -1,0 +1,235 @@
+{
+  "packet": "V2-7",
+  "surface": "gate-trial",
+  "browserUsed": true,
+  "baseUrl": "http://127.0.0.1:5173/",
+  "screenshotMethod": "Browser screenshot timed out; Playwright fallback used for PNG files.",
+  "observations": [
+    {
+      "packet": "V2-7",
+      "surface": "gate-trial",
+      "name": "default",
+      "url": "http://127.0.0.1:5173/?uiAudit=phase-6-combat&surface=gate-trial&slot=base&fx=high&controls=0&gateTrialExactMode=fixture",
+      "clippingNotes": [
+        "[data-testid=\"gate-trial-primary-cta\"] outside viewport",
+        "[data-testid=\"gate-trial-readiness-rail\"] outside viewport"
+      ],
+      "ctaPresent": true,
+      "ctaRect": {
+        "bottom": 794,
+        "height": 68,
+        "right": 922,
+        "width": 540,
+        "x": 382,
+        "y": 726
+      },
+      "detailOwnershipPresent": true,
+      "detailRect": {
+        "bottom": 374,
+        "height": 168,
+        "right": 372,
+        "width": 201,
+        "x": 171,
+        "y": 206
+      },
+      "failSafePresent": true,
+      "failureReflectionPresentInFailureState": false,
+      "legacyCombatPreviewVisible": false,
+      "minimumChecklistPresent": true,
+      "readinessRailPresent": true,
+      "recommendedPanelPresent": true,
+      "reducedMotionPreservesMeaning": true,
+      "rootPresent": true,
+      "safetyNetVisible": true,
+      "topFixesPresent": true,
+      "trialSummaryPresent": true,
+      "viewport": {
+        "height": 720,
+        "width": 1280
+      },
+      "consoleErrors": []
+    },
+    {
+      "packet": "V2-7",
+      "surface": "gate-trial",
+      "name": "failureReflection",
+      "url": "http://127.0.0.1:5173/?uiAudit=phase-6-combat&surface=gate-trial&slot=truth-states&fx=high&controls=0&gateTrialExactMode=live",
+      "clippingNotes": [
+        "[data-testid=\"gate-trial-primary-cta\"] outside viewport",
+        "[data-testid=\"gate-trial-readiness-rail\"] outside viewport"
+      ],
+      "ctaPresent": true,
+      "ctaRect": {
+        "bottom": 794,
+        "height": 68,
+        "right": 922,
+        "width": 540,
+        "x": 382,
+        "y": 726
+      },
+      "detailOwnershipPresent": true,
+      "detailRect": {
+        "bottom": 374,
+        "height": 168,
+        "right": 372,
+        "width": 201,
+        "x": 171,
+        "y": 206
+      },
+      "failSafePresent": true,
+      "failureReflectionPresentInFailureState": true,
+      "legacyCombatPreviewVisible": false,
+      "minimumChecklistPresent": true,
+      "readinessRailPresent": true,
+      "recommendedPanelPresent": true,
+      "reducedMotionPreservesMeaning": true,
+      "rootPresent": true,
+      "safetyNetVisible": true,
+      "topFixesPresent": true,
+      "trialSummaryPresent": true,
+      "viewport": {
+        "height": 720,
+        "width": 1280
+      },
+      "consoleErrors": []
+    },
+    {
+      "packet": "V2-7",
+      "surface": "gate-trial",
+      "name": "safetyNet",
+      "url": "http://127.0.0.1:5173/?uiAudit=phase-6-combat&surface=gate-trial&slot=truth-states&fx=high&controls=0&gateTrialExactMode=live",
+      "clippingNotes": [
+        "[data-testid=\"gate-trial-primary-cta\"] outside viewport",
+        "[data-testid=\"gate-trial-readiness-rail\"] outside viewport"
+      ],
+      "ctaPresent": true,
+      "ctaRect": {
+        "bottom": 794,
+        "height": 68,
+        "right": 922,
+        "width": 540,
+        "x": 382,
+        "y": 726
+      },
+      "detailOwnershipPresent": true,
+      "detailRect": {
+        "bottom": 374,
+        "height": 168,
+        "right": 372,
+        "width": 201,
+        "x": 171,
+        "y": 206
+      },
+      "failSafePresent": true,
+      "failureReflectionPresentInFailureState": true,
+      "legacyCombatPreviewVisible": false,
+      "minimumChecklistPresent": true,
+      "readinessRailPresent": true,
+      "recommendedPanelPresent": true,
+      "reducedMotionPreservesMeaning": true,
+      "rootPresent": true,
+      "safetyNetVisible": true,
+      "topFixesPresent": true,
+      "trialSummaryPresent": true,
+      "viewport": {
+        "height": 720,
+        "width": 1280
+      },
+      "consoleErrors": []
+    },
+    {
+      "packet": "V2-7",
+      "surface": "gate-trial",
+      "name": "reducedMotion",
+      "url": "http://127.0.0.1:5173/?uiAudit=phase-6-combat&surface=gate-trial&slot=reduced-motion&fx=reduced&controls=0&gateTrialExactMode=fixture",
+      "clippingNotes": [
+        "[data-testid=\"gate-trial-primary-cta\"] outside viewport",
+        "[data-testid=\"gate-trial-readiness-rail\"] outside viewport"
+      ],
+      "ctaPresent": true,
+      "ctaRect": {
+        "bottom": 794,
+        "height": 68,
+        "right": 922,
+        "width": 540,
+        "x": 382,
+        "y": 726
+      },
+      "detailOwnershipPresent": true,
+      "detailRect": {
+        "bottom": 374,
+        "height": 168,
+        "right": 372,
+        "width": 201,
+        "x": 171,
+        "y": 206
+      },
+      "failSafePresent": true,
+      "failureReflectionPresentInFailureState": false,
+      "legacyCombatPreviewVisible": false,
+      "minimumChecklistPresent": true,
+      "readinessRailPresent": true,
+      "recommendedPanelPresent": true,
+      "reducedMotionPreservesMeaning": true,
+      "rootPresent": true,
+      "safetyNetVisible": true,
+      "topFixesPresent": true,
+      "trialSummaryPresent": true,
+      "viewport": {
+        "height": 720,
+        "width": 1280
+      },
+      "consoleErrors": []
+    }
+  ],
+  "statusDefaultFullGateLedgerVisible": false,
+  "cultivationDefaultFullGateLedgerVisible": false,
+  "screenshotFiles": [
+    "docs/release/qa/ui-cutover/gate-trial/after/v2-7-default-gate-trial.png",
+    "docs/release/qa/ui-cutover/gate-trial/after/v2-7-detail-thread-open.png",
+    "docs/release/qa/ui-cutover/gate-trial/after/v2-7-failure-reflection.png",
+    "docs/release/qa/ui-cutover/gate-trial/after/v2-7-safety-net.png",
+    "docs/release/qa/ui-cutover/gate-trial/after/v2-7-reduced-motion.png"
+  ],
+  "canonicalViewport": {
+    "clippingNotes": [],
+    "ctaPresent": true,
+    "ctaRect": {
+      "bottom": 1130,
+      "height": 78,
+      "right": 1302,
+      "width": 604,
+      "x": 698,
+      "y": 1051
+    },
+    "detailOwnershipPresent": true,
+    "detailRect": {
+      "bottom": 432,
+      "height": 207,
+      "right": 399,
+      "width": 210,
+      "x": 189,
+      "y": 225
+    },
+    "height": 1152,
+    "railRect": {
+      "bottom": 1049,
+      "height": 108,
+      "right": 1573,
+      "width": 1147,
+      "x": 427,
+      "y": 941
+    },
+    "readinessRailPresent": true,
+    "rootPresent": true,
+    "width": 2048,
+    "screenshotMethod": "Playwright fallback after Browser screenshot timeout"
+  },
+  "knownVisualLimitations": [
+    "In-app Browser default 1280x720 viewport clipped the pre-existing bottom CTA/readiness rail; canonical 2048x1152 Gate Trial exact audit viewport had no clipping."
+  ],
+  "notes": [
+    "Browser DOM verified Gate Trial exact ownership hooks and visible exact regions.",
+    "Status/Cultivation full-ledger absence is covered by focused contracts and source scans."
+  ]
+}

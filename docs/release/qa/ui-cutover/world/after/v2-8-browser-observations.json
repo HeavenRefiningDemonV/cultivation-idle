@@ -1,0 +1,69 @@
+{
+  "packet": "V2-8",
+  "date": "2026-05-23",
+  "method": "Headless Playwright fallback; Browser MCP tool was not exposed by tool discovery.",
+  "server": "http://127.0.0.1:5200",
+  "cases": [
+    {
+      "name": "World default",
+      "result": "PASS",
+      "observations": [
+        "No LocalMandateLensHeader rendered in the default World view.",
+        "No visible copy matched Mandate points elsewhere, available-but-current-Mandate, or old route labels.",
+        "Apothecary retained a non-Mandate recommendation/glint from ordinary World utility copy."
+      ]
+    },
+    {
+      "name": "Forge local entry",
+      "result": "PASS",
+      "observations": [
+        "Open Forge entry was reachable.",
+        "No local Mandate header rendered for the quiet Forge state.",
+        "No points-elsewhere or old route-label copy was visible."
+      ]
+    },
+    {
+      "name": "Apothecary local entry",
+      "result": "PASS",
+      "observations": [
+        "Open Apothecary entry was reachable.",
+        "No local Mandate header rendered for the quiet Apothecary state.",
+        "No points-elsewhere or old route-label copy was visible."
+      ]
+    },
+    {
+      "name": "Bounties local entry",
+      "result": "PASS",
+      "observations": [
+        "Open Bounties entry was reachable.",
+        "No local Mandate header rendered for the quiet Bounties state.",
+        "No points-elsewhere or old route-label copy was visible."
+      ]
+    },
+    {
+      "name": "Expeditions local entry",
+      "result": "PASS",
+      "observations": [
+        "Open Expeditions entry was reachable.",
+        "No local Mandate header rendered for the quiet Expeditions state.",
+        "No points-elsewhere or old route-label copy was visible."
+      ]
+    },
+    {
+      "name": "Gate Trial local entry",
+      "result": "PASS",
+      "observations": [
+        "Open Gate Trial entry was reachable.",
+        "The prior visible Gate Trial phrase 'Ruins support route ready' was removed after the smoke caught it.",
+        "No old route-label copy was visible after the copy-only repair."
+      ]
+    }
+  ],
+  "reducedMotion": {
+    "result": "PASS",
+    "observations": [
+      "World reduced-motion smoke loaded with no local Mandate header and no forbidden local Omen copy.",
+      "The only observed map glint remained the ordinary non-Mandate Apothecary recommendation."
+    ]
+  }
+}

@@ -261,29 +261,6 @@
   border-color: rgba(142, 47, 39, 0.42);
 }
 
-.manualPavilionMandateSourceSink {
-  position: absolute;
-  left: 56px;
-  top: 151px;
-  width: 286px;
-  max-height: 133px;
-  z-index: 5;
-  overflow: auto;
-}
-
-.manualPavilionMandateSourceSink .daoModuleSourceSinkPanel__header {
-  grid-template-columns: 1fr;
-  gap: 0.35rem;
-}
-
-.manualPavilionMandateSourceSink .daoModuleSourceSinkPanel__relation {
-  width: max-content;
-}
-
-.manualPavilionMandateSourceSink .daoSourceRouteSlip {
-  padding: 7px;
-}
-
 .manualPavilionLedger {
   position: absolute;
   left: 56px;

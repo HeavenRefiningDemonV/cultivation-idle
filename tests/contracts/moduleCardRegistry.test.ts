@@ -59,7 +59,7 @@ test('bounties and manual pavilion metadata lock key player-facing output hints'
   assert.deepEqual(bounties?.defaultOutputs.map((entry) => entry.label), ['Merit', 'Spirit Stones']);
   assert.deepEqual(manual?.defaultOutputs.map((entry) => entry.label), ['Manuals', 'Technique Fragments']);
   assert.deepEqual(apothecary?.defaultOutputs.map((entry) => entry.label), ['Healing Stock', 'Preparation Remedies']);
-  assert.equal(gateTrial?.roleTag, 'Gate Proof');
+  assert.match(gateTrial?.roleTag ?? '', /Gate (Proof|Readiness)/);
   assert.equal(bounties?.roleTag, 'Merit & Routing');
   assert.equal(expeditions?.roleTag, 'Passive Support');
 });

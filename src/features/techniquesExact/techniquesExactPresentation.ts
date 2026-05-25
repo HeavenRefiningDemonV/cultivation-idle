@@ -11,10 +11,10 @@ export const TECHNIQUES_EXACT_ROOT_TEST_ID = 'techniques-exact-page';
 export const TECHNIQUES_EXACT_COPY = {
   title: 'Techniques',
   subtitle: 'Inner Palace Combat Form',
-  diagnosisTitle: 'Best next loadout fix',
+  diagnosisTitle: 'Loadout gap signal',
   fixtureDiagnosisLine: 'fill one passive slot before the next Gate.',
   farmerWarning: 'Farmer is poor for Gate Trials',
-  missingKnowledge: 'Missing knowledge? Visit Manual Pavilion',
+  missingKnowledge: 'Inspect manual source',
   applyLoadout: 'Apply Loadout',
   manualPavilion: 'Go to Manual Pavilion',
 } as const;

@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
+import { createDefaultDaoMandateGuidanceSettings, sanitizeDaoMandateGuidanceSettings, } from '../systems/ui/daoMandate/daoMandateGuidanceSettings.js';
+import { createDefaultDaoMandateLessonMemory, isDaoMandateLessonConceptId, sanitizeDaoMandateLessonMemory, } from '../systems/ui/daoMandate/daoMandateLessons.js';
 import { useActivityStore } from './activityStore.js';
 import { useCombatStore } from './combatStore.js';
 import { useOutskirtsStore } from './outskirtsStore.js';
@@ -76,7 +78,9 @@ const INITIAL_UI_STATE = {
         useConsumablesInCombat: false,
         preferredTarget: 'boss',
         storyMotionMode: 'full',
+        ...createDefaultDaoMandateGuidanceSettings(),
     },
+    daoMandateLessonMemory: createDefaultDaoMandateLessonMemory(),
     lastSaveAt: null,
     lastOfflineSummary: null,
     tooltipVisible: false,
@@ -112,6 +116,26 @@ const ONBOARDING_PRIORITY_WEIGHT = {
     medium: 2,
     low: 1,
 };
+function updateDaoMandateLessonMemory(current, lesson, apply) {
+    if (!isDaoMandateLessonConceptId(lesson.conceptId)) {
+        return sanitizeDaoMandateLessonMemory(current);
+    }
+    const now = Date.now();
+    const next = sanitizeDaoMandateLessonMemory(current);
+    const existing = next.byConceptId[lesson.conceptId];
+    const triggerChanged = existing?.lastTriggerHash !== lesson.triggerHash;
+    const entry = {
+        seenCount: existing ? (triggerChanged ? existing.seenCount + 1 : Math.max(1, existing.seenCount)) : 1,
+        firstSeenAt: existing?.firstSeenAt ?? now,
+        lastSeenAt: now,
+        ...(existing?.dismissedAt ? { dismissedAt: existing.dismissedAt } : {}),
+        ...(existing?.learnedAt ? { learnedAt: existing.learnedAt } : {}),
+        lastTriggerHash: lesson.triggerHash,
+    };
+    apply(entry, now);
+    next.byConceptId[lesson.conceptId] = entry;
+    return sanitizeDaoMandateLessonMemory(next);
+}
 /**
  * UI store for managing interface state
  */
@@ -380,7 +404,59 @@ export const useUIStore = create()(immer((set, get) => ({
      */
     setSettings: (partial) => {
         set((state) => {
-            state.settings = { ...state.settings, ...partial };
+            const merged = { ...state.settings, ...partial };
+            state.settings = {
+                ...merged,
+                ...sanitizeDaoMandateGuidanceSettings(merged),
+            };
+        });
+    },
+    setGuidanceOath: (oath) => {
+        set((state) => {
+            state.settings.guidanceOath = sanitizeDaoMandateGuidanceSettings({ guidanceOath: oath }).guidanceOath;
+        });
+    },
+    setGuidanceSetting: (key, value) => {
+        set((state) => {
+            const merged = {
+                ...state.settings,
+                [key]: value,
+            };
+            state.settings = {
+                ...merged,
+                ...sanitizeDaoMandateGuidanceSettings(merged),
+            };
+        });
+    },
+    resetGuidanceSettings: () => {
+        set((state) => {
+            state.settings = {
+                ...state.settings,
+                ...createDefaultDaoMandateGuidanceSettings(),
+            };
+        });
+    },
+    hydrateDaoMandateLessonMemory: (memory) => {
+        set((state) => {
+            state.daoMandateLessonMemory = sanitizeDaoMandateLessonMemory(memory);
+        });
+    },
+    dismissDaoMandateLesson: (lesson) => {
+        set((state) => {
+            state.daoMandateLessonMemory = updateDaoMandateLessonMemory(state.daoMandateLessonMemory, lesson, (entry, now) => {
+                if (entry)
+                    entry.dismissedAt = now;
+            });
+        });
+    },
+    markDaoMandateLessonLearned: (lesson) => {
+        set((state) => {
+            state.daoMandateLessonMemory = updateDaoMandateLessonMemory(state.daoMandateLessonMemory, lesson, (entry, now) => {
+                if (!entry)
+                    return;
+                entry.dismissedAt = entry.dismissedAt ?? now;
+                entry.learnedAt = now;
+            });
         });
     },
     toggleCombatMinibarExpanded: () => {

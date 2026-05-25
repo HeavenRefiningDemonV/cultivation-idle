@@ -14,7 +14,8 @@ test('WorldScreen keeps map-owned DOM command surfaces layered under overlay gui
   assert.match(worldScreen, /<CityMapHub/);
   assert.match(worldScreen, /<WorldOverlayRibbon/);
   assert.match(worldScreen, /<WorldOverlayInspector/);
-  assert.match(worldScreen, /buildWorldMandateRoutingLensSurface/);
+  assert.match(worldScreen, /buildWorldModuleRoutingSurface/);
+  assert.doesNotMatch(worldScreen, /buildWorldMandateRoutingLensSurface/);
   assert.match(worldStyles, /\.worldScreenMapLayer \{[\s\S]*z-index: 10;/);
   assert.match(worldStyles, /\.worldScreenRibbonLayer \{[\s\S]*z-index: 30;[\s\S]*pointer-events: none;/);
   assert.match(worldStyles, /\.worldScreenInspectorLayer \{[\s\S]*z-index: 40;[\s\S]*pointer-events: none;/);

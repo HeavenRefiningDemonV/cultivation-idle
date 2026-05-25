@@ -15,8 +15,8 @@ test('world module routing surface groups cards and limits strong recommendation
     cityId: city.id,
     visibleModules: city.modules as any,
     activeModuleKey: 'ruins',
-    mandatePrimaryModuleKey: 'gateTrial',
-    mandateSecondaryModuleKeys: ['apothecary'],
+    primaryModuleKey: 'gateTrial',
+    secondaryModuleKeys: ['apothecary'],
     economicModuleKeys: ['apothecary', 'forge'],
     economicPrimaryProblemKind: 'belowMinimumForgeFloor',
     trackedBountyModuleKey: 'bounties',
@@ -32,8 +32,8 @@ test('world module routing surface groups cards and limits strong recommendation
   assert.equal(strongChipCount, 1);
   const expectedStrong = resolveWorldStrongRecommendationModuleKey({
     visibleModules: city.modules as any,
-    mandatePrimaryModuleKey: 'gateTrial',
-    mandateSecondaryModuleKeys: ['apothecary'],
+    primaryModuleKey: 'gateTrial',
+    secondaryModuleKeys: ['apothecary'],
     economicModuleKeys: ['apothecary', 'forge'],
     trackedBountyModuleKey: 'bounties',
   });

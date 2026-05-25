@@ -27,6 +27,8 @@ import { useUIStore } from '../stores/uiStore.js';
 import { usePavilionStore } from '../stores/pavilionStore.js';
 import { useStoryStore } from '../features/story/storyStore.js';
 import { sanitizePavilionSaveState } from '../features/pavilion/pavilionUnlocks.js';
+import { createDefaultDaoMandateGuidanceSettings, isDaoAdvancedReadinessMathSetting, isDaoBackgroundRemindersSetting, isDaoFailureCoachingSetting, isDaoJadeSlipLessonsSetting, isDaoLocalLensBannersSetting, isDaoMandateGuidanceProfile, isDaoMandateMotionModeSetting, isDaoRecentOmensFeedSetting, isDaoSourceRouteDetailSetting, pickDaoMandateGuidanceSettings, sanitizeDaoMandateGuidanceSettings, } from '../systems/ui/daoMandate/daoMandateGuidanceSettings.js';
+import { createDefaultDaoMandateLessonMemory, sanitizeDaoMandateLessonMemory, } from '../systems/ui/daoMandate/daoMandateLessons.js';
 import { CURRENT_SAVE_VERSION, migrateIncomingSaveForHydration } from './migrations/index.js';
 import { normalizeCitySaveState } from './cityStateNormalization.js';
 export const SAVE_VERSION = CURRENT_SAVE_VERSION;
@@ -201,6 +203,8 @@ export function buildDefaultSaveState() {
         },
         uiSettings: {
             storyMotionMode: uiState.settings.storyMotionMode,
+            ...pickDaoMandateGuidanceSettings(uiState.settings),
+            daoMandateLessonMemory: sanitizeDaoMandateLessonMemory(uiState.daoMandateLessonMemory),
         },
         zoneState: {
             unlockedZones: zoneState.unlockedZones,
@@ -710,7 +714,49 @@ function isValidUiSettingsState(value) {
         && value.storyMotionMode !== 'off') {
         return false;
     }
+    if ('guidanceOath' in value && value.guidanceOath !== undefined && !isDaoMandateGuidanceProfile(value.guidanceOath))
+        return false;
+    if ('jadeSlipLessons' in value && value.jadeSlipLessons !== undefined && !isDaoJadeSlipLessonsSetting(value.jadeSlipLessons))
+        return false;
+    if ('localLensBanners' in value && value.localLensBanners !== undefined && !isDaoLocalLensBannersSetting(value.localLensBanners))
+        return false;
+    if ('sourceRouteDetail' in value && value.sourceRouteDetail !== undefined && !isDaoSourceRouteDetailSetting(value.sourceRouteDetail))
+        return false;
+    if ('advancedReadinessMath' in value
+        && value.advancedReadinessMath !== undefined
+        && !isDaoAdvancedReadinessMathSetting(value.advancedReadinessMath))
+        return false;
+    if ('failureCoaching' in value && value.failureCoaching !== undefined && !isDaoFailureCoachingSetting(value.failureCoaching))
+        return false;
+    if ('backgroundReminders' in value
+        && value.backgroundReminders !== undefined
+        && !isDaoBackgroundRemindersSetting(value.backgroundReminders))
+        return false;
+    if ('recentOmensFeed' in value && value.recentOmensFeed !== undefined && !isDaoRecentOmensFeedSetting(value.recentOmensFeed))
+        return false;
+    if ('mandateMotionMode' in value && value.mandateMotionMode !== undefined && !isDaoMandateMotionModeSetting(value.mandateMotionMode))
+        return false;
     return true;
+}
+function sanitizeUiSettingsState(raw, defaults) {
+    if (raw === undefined || raw === null)
+        return defaults;
+    if (!isRecord(raw)) {
+        warnInvalidSlice('uiSettings');
+        return defaults;
+    }
+    if (!isValidUiSettingsState(raw)) {
+        console.warn('[SaveLoad] uiSettings contained malformed fields; defaulting invalid settings individually');
+    }
+    const storyMotionMode = raw.storyMotionMode === 'full' || raw.storyMotionMode === 'reduced' || raw.storyMotionMode === 'off'
+        ? raw.storyMotionMode
+        : defaults.storyMotionMode;
+    return {
+        ...defaults,
+        storyMotionMode,
+        ...sanitizeDaoMandateGuidanceSettings(raw),
+        daoMandateLessonMemory: sanitizeDaoMandateLessonMemory(raw.daoMandateLessonMemory),
+    };
 }
 function isValidHeartLawState(value) {
     if (!isRecord(value))
@@ -1160,7 +1206,11 @@ export function mergeWithDefaults(partialSave) {
     const baseCraftSessionState = defaults.craftSessionState ?? createDefaultCraftSessionState();
     const baseRecipeMasteryState = defaults.recipeMasteryState ?? createDefaultRecipeMasteryState();
     const baseStoryState = defaults.storyState ?? { seenFlags: {}, storyLog: [] };
-    const baseUiSettings = defaults.uiSettings ?? { storyMotionMode: 'full' };
+    const baseUiSettings = {
+        storyMotionMode: 'full',
+        ...createDefaultDaoMandateGuidanceSettings(),
+        daoMandateLessonMemory: createDefaultDaoMandateLessonMemory(),
+    };
     const merged = {
         ...defaults,
         ...record,
@@ -1184,7 +1234,7 @@ export function mergeWithDefaults(partialSave) {
         combatSettings: isRecord(record.combatSettings)
             ? { ...defaults.combatSettings, ...record.combatSettings }
             : defaults.combatSettings,
-        uiSettings: mergeSlice(record.uiSettings, baseUiSettings, isValidUiSettingsState, 'uiSettings'),
+        uiSettings: sanitizeUiSettingsState(record.uiSettings, baseUiSettings),
         zoneState: isRecord(record.zoneState) ? { ...defaults.zoneState, ...record.zoneState } : defaults.zoneState,
         cityState: normalizeCitySaveState({
             content: useContentStore.getState().raw,

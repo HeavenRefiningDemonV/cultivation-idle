@@ -526,7 +526,6 @@ export function buildPrestigeLedgerExactSurfaceFromStores(input: PrestigeLedgerE
       },
       warnings: forecast?.warnings ?? [],
     },
-    runCompassHint: input.runCompassHint ?? null,
     postResetReclaimObjective: input.postResetReclaimObjective ?? null,
     debug: {
       notes: [

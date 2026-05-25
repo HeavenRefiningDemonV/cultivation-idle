@@ -9,7 +9,6 @@ import { useMedicinePouchStore } from '../../../stores/medicinePouchStore.js';
 import { useProfessionStore } from '../../../stores/professionStore.js';
 import { useShopStore } from '../../../stores/shopStore.js';
 import { buildCurrentGateEconomyContext } from '../../../systems/progression/currentGateEconomyContext.js';
-import { buildLiveDaoMandateModuleSourceSinkProjection } from '../../../systems/ui/daoMandate/index.js';
 import { APOTHECARY_STOCK_FLOORS } from '../apothecaryStockFloors.js';
 import { buildApothecaryBuyReadModel } from '../apothecaryBuyReadModel.js';
 import { buildApothecaryPrepReadModel } from '../apothecaryPrepReadModel.js';
@@ -303,11 +302,6 @@ export function createApothecaryExactMockupFixture(
         { id: 'missing', label: 'Missing', value: `4 Healing \u00b7 2 Ward Salt \u00b7 Pouch Slots`, tone: 'warning' },
       ],
     },
-    mandateSourceSink: buildLiveDaoMandateModuleSourceSinkProjection({
-      currentCityId: DEFAULT_CITY_ID,
-      currentModuleKey: 'apothecary',
-      currentScreen: 'apothecary',
-    }),
     debug: {
       notes: ['Fixture values are locked to the approved Apothecary mockup and master plan v2.'],
       contentParityWarnings: [],
@@ -783,6 +777,5 @@ export function buildApothecaryExactSurfaceFromStores(
       enabled: plan.canExecuteSafely,
       disabledReason: plan.disabledReason,
     },
-    mandateSourceSink: baseSurface.mandateSourceSink,
   };
 }

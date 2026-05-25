@@ -12,8 +12,9 @@ void test('Cultivation Exact action controller routes gameplay through existing 
     'window.setTimeout',
     '2000',
     'performRunCompassAction(action)',
-    'collectCommandOmenRoutes',
-    'projection.currentOmen.allowDirectRoute',
+    'performActionIfAvailable(action)',
+    'openGateTrial',
+    'onRitualRoute',
     "setActiveTab('prestige')",
   ]) {
     assert.equal(source.includes(required), true, `missing action controller contract ${required}`);
@@ -23,6 +24,8 @@ void test('Cultivation Exact action controller routes gameplay through existing 
     'RewardService',
     'grantRewards',
     'useCombatStore',
+    'collectCommandOmenRoutes',
+    'projection.currentOmen.allowDirectRoute',
     'surface.mandateLens?.surface',
     'mandate.primaryRoute',
     'backgroundPlan.routes',

@@ -13,13 +13,13 @@ type ChipTone = 'strong' | 'support' | 'neutral';
 
 export interface WorldRoutingPriorityInput {
   visibleModules: readonly LiveWorldModuleKey[];
-  mandatePrimaryModuleKey?: LiveWorldModuleKey | null;
-  mandateSecondaryModuleKeys?: readonly LiveWorldModuleKey[];
-  mandateSupportModuleKeys?: readonly LiveWorldModuleKey[];
-  mandateBlockedModuleKeys?: readonly LiveWorldModuleKey[];
-  /** @deprecated Public World routing should use Dao Mandate keys. */
+  primaryModuleKey?: LiveWorldModuleKey | null;
+  secondaryModuleKeys?: readonly LiveWorldModuleKey[];
+  supportModuleKeys?: readonly LiveWorldModuleKey[];
+  blockedModuleKeys?: readonly LiveWorldModuleKey[];
+  /** @deprecated Public World routing should use local routing keys. */
   runCompassPrimaryModuleKey?: LiveWorldModuleKey | null;
-  /** @deprecated Public World routing should use Dao Mandate keys. */
+  /** @deprecated Public World routing should use local routing keys. */
   runCompassSecondaryModuleKey?: LiveWorldModuleKey | null;
   economicModuleKeys: LiveWorldModuleKey[];
   trackedBountyModuleKey: LiveWorldModuleKey | null;
@@ -61,15 +61,12 @@ function toStrongKind(problemKind: EconomicProblemKind | null): WorldRoutingChip
 
 export function resolveWorldStrongRecommendationModuleKey(input: WorldRoutingPriorityInput): LiveWorldModuleKey | null {
   const visibleSet = new Set(input.visibleModules);
-  const secondaryModuleKeys = input.mandateSecondaryModuleKeys ?? [
+  const secondaryModuleKeys = input.secondaryModuleKeys ?? [
     input.runCompassSecondaryModuleKey ?? null,
   ].filter((moduleKey): moduleKey is LiveWorldModuleKey => moduleKey !== null);
-  const supportModuleKeys = input.mandateSupportModuleKeys ?? [];
   return [
-    input.mandatePrimaryModuleKey ?? input.runCompassPrimaryModuleKey ?? null,
-    ...(input.mandateBlockedModuleKeys ?? []),
-    ...secondaryModuleKeys,
-    ...supportModuleKeys,
+    ...(input.blockedModuleKeys ?? []),
+    input.primaryModuleKey ?? input.runCompassPrimaryModuleKey ?? null,
     input.economicModuleKeys[0] ?? null,
     input.trackedBountyModuleKey,
   ].find((moduleKey): moduleKey is LiveWorldModuleKey => moduleKey !== null && visibleSet.has(moduleKey)) ?? null;
@@ -80,13 +77,13 @@ export function buildWorldModuleRoutingSurface(input: {
   cityId: string;
   visibleModules: readonly LiveWorldModuleKey[];
   activeModuleKey: string | null;
-  mandatePrimaryModuleKey?: LiveWorldModuleKey | null;
-  mandateSecondaryModuleKeys?: readonly LiveWorldModuleKey[];
-  mandateSupportModuleKeys?: readonly LiveWorldModuleKey[];
-  mandateBlockedModuleKeys?: readonly LiveWorldModuleKey[];
-  /** @deprecated Public World routing should use Dao Mandate keys. */
+  primaryModuleKey?: LiveWorldModuleKey | null;
+  secondaryModuleKeys?: readonly LiveWorldModuleKey[];
+  supportModuleKeys?: readonly LiveWorldModuleKey[];
+  blockedModuleKeys?: readonly LiveWorldModuleKey[];
+  /** @deprecated Public World routing should use local routing keys. */
   runCompassPrimaryModuleKey?: LiveWorldModuleKey | null;
-  /** @deprecated Public World routing should use Dao Mandate keys. */
+  /** @deprecated Public World routing should use local routing keys. */
   runCompassSecondaryModuleKey?: LiveWorldModuleKey | null;
   economicModuleKeys: LiveWorldModuleKey[];
   economicPrimaryProblemKind: EconomicProblemKind | null;
@@ -102,24 +99,24 @@ export function buildWorldModuleRoutingSurface(input: {
 } {
   const strongRecommendationModuleKey = resolveWorldStrongRecommendationModuleKey({
     visibleModules: input.visibleModules,
-    mandatePrimaryModuleKey: input.mandatePrimaryModuleKey,
-    mandateSecondaryModuleKeys: input.mandateSecondaryModuleKeys,
-    mandateSupportModuleKeys: input.mandateSupportModuleKeys,
-    mandateBlockedModuleKeys: input.mandateBlockedModuleKeys,
+    primaryModuleKey: input.primaryModuleKey,
+    secondaryModuleKeys: input.secondaryModuleKeys,
+    supportModuleKeys: input.supportModuleKeys,
+    blockedModuleKeys: input.blockedModuleKeys,
     runCompassPrimaryModuleKey: input.runCompassPrimaryModuleKey,
     runCompassSecondaryModuleKey: input.runCompassSecondaryModuleKey,
     economicModuleKeys: input.economicModuleKeys,
     trackedBountyModuleKey: input.trackedBountyModuleKey,
   });
 
-  const mandateSupportRecommendations = [
-    ...(input.mandateSecondaryModuleKeys ?? [
+  const localSupportRecommendations = [
+    ...(input.secondaryModuleKeys ?? [
       input.runCompassSecondaryModuleKey ?? null,
     ].filter((moduleKey): moduleKey is LiveWorldModuleKey => moduleKey !== null)),
-    ...(input.mandateSupportModuleKeys ?? []),
+    ...(input.supportModuleKeys ?? []),
   ];
   const supportingRecommendations = [
-    ...mandateSupportRecommendations,
+    ...localSupportRecommendations,
     ...input.economicModuleKeys,
   ]
     .filter((moduleKey) => moduleKey !== strongRecommendationModuleKey && input.visibleModules.includes(moduleKey))
@@ -133,14 +130,16 @@ export function buildWorldModuleRoutingSurface(input: {
       .map((surface) => {
         const chips: Array<{ kind: WorldRoutingChipKind; tone: ChipTone }> = [];
         if (surface.moduleKey === strongRecommendationModuleKey) {
-          const isBlockedMandate = (input.mandateBlockedModuleKeys ?? []).includes(surface.moduleKey);
-          const isMandatePrimary = surface.moduleKey === input.mandatePrimaryModuleKey || surface.moduleKey === input.runCompassPrimaryModuleKey;
+          const isBlockedRoute = (input.blockedModuleKeys ?? []).includes(surface.moduleKey);
+          const isPrimaryRoute = surface.moduleKey === input.primaryModuleKey || surface.moduleKey === input.runCompassPrimaryModuleKey;
           chips.push({
-            kind: isBlockedMandate || (isMandatePrimary && surface.moduleKey === 'gateTrial')
-              ? 'gate_critical'
-              : isMandatePrimary
-                ? 'recommended_now'
-                : toStrongKind(input.economicPrimaryProblemKind),
+            kind: isBlockedRoute
+              ? surface.moduleKey === 'gateTrial' ? 'gate_critical' : 'build_fix'
+              : (isPrimaryRoute && surface.moduleKey === 'gateTrial')
+                  ? 'gate_critical'
+                  : isPrimaryRoute
+                    ? 'recommended_now'
+                    : toStrongKind(input.economicPrimaryProblemKind),
             tone: 'strong',
           });
         } else if (supportingRecommendations.includes(surface.moduleKey)) {

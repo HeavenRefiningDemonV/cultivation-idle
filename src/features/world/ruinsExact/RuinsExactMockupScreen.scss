@@ -125,9 +125,6 @@
 .ruinsTopRegion__roleChips { display:inline-flex; align-items:center; justify-content:center; gap:clamp(6px,.48vw,10px); min-width:0; }
 .ruinsTopRegion__roleChip { display:inline-flex; align-items:center; gap:6px; min-height:24px; padding:3px 11px; border-radius:999px; border:1px solid rgba(96,77,48,.32); background:linear-gradient(180deg, rgba(247,239,218,.94), rgba(224,208,171,.86)); box-shadow:inset 0 0 0 1px rgba(255,250,232,.32); color:rgba(48,38,24,.88); font-size:clamp(11px,.72vw,13px); line-height:1; white-space:nowrap; }
 .ruinsTopRegion__roleChipDot { width:12px; height:12px; border-radius:999px; border:1px solid rgba(84,101,77,.34); background:radial-gradient(circle at 45% 42%, #d8ead4 0 28%, #7e9b75 32% 66%, #ede2bd 70% 100%); box-shadow:inset 0 0 0 1px rgba(255,250,230,.28); }
-.ruinsTopRegion__mandateSlot { grid-column:3; justify-self:center; width:min(100%,clamp(430px,30vw,500px)); min-height:clamp(38px,4.4vh,52px); display:grid; align-items:start; }
-.ruinsMandateLens.daoLocalMandateLensHeader { width:100%; min-height:clamp(36px,4vh,48px); border-radius:8px; border-color:rgba(116,88,51,.34); background:linear-gradient(180deg, rgba(239,228,201,.94), rgba(215,195,156,.88)); box-shadow:inset 0 0 0 1px rgba(255,246,220,.32), 0 1px 4px rgba(61,43,24,.1); }
-.ruinsMandateLens .daoLocalMandateLensHeader__main { align-items:center; }
 
 .ruinsKitCard, .ruinsTargetedMaterialsCard, .ruinsExplorationSummaryCard { border-radius: var(--ruins-card-radius); border: 1px solid var(--ruins-card-border); background: linear-gradient(180deg, var(--ruins-card-bg-top), var(--ruins-card-bg-bottom)); box-shadow: inset 0 1px 0 rgba(255,255,255,.45); }
 .ruinsExactPage img { display: block; max-width: 100%; max-height: 100%; }

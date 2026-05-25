@@ -38,63 +38,64 @@ React + TypeScript + Vite with Zustand for state, Headless UI for primitives, an
 - Avoid greenfield rewrites. Prefer adapters, typed surfaces, manifests, tests, and release checks over broad replacement.
 - No destructive art/UI cutover: do not remove old scenic/base art or exact-screen visual ownership until a completed replacement is visible, wired, and accepted for that exact screen.
 
-## Dao Mandate V2 implementation guardrails
-Cultivation Idle is implementing Dao Mandate V2. The current raw Dao Mandate / Run Compass engine may remain internally rich, but default player-facing UI must become sparse, omen/proof/reflection based, and non-prescriptive.
+## Status V3 old-look recovery and public Dao/Omen decommission guardrails
 
-### Core direction
-- Keep `DaoMandateSurfaceV1` / Run Compass style resolvers as internal truth where useful.
-- Do not render the raw resolver directly as default player UI.
-- Future public guidance should consume a sparse Omen Projection: one current omen, 2-4 proof seals, a few pressure badges, meaningful recent omens/reflections, and closed source threads.
-- Status must recover the old readable layout language: identity hero, metric strip, six-card diagnostic grid. Do not replace Status with a large Mandate Chamber dashboard.
-- Gate Trial owns full readiness, fail-safe details, failure diagnosis, and route-rich correction.
-- Local modules are quiet when irrelevant. Quiet relation renders no Mandate banner.
-- Prestige owns reincarnation/AP/reset/carry truth and should not show unrelated live-run route ribbons.
+The sparse Dao/Omen public UI rollout is superseded. The current implementation direction is Status V3: an old-look Cultivator Ledger plus public Dao/Omen/Proof/Source decommission outside internal diagnostics and compatibility code.
 
-### Forbidden reachable default UI
-Do not add or preserve these as default reachable UI in future Dao Mandate V2 packets:
+### Status target
+- Status owns whole-life synthesis and should render as a concrete Cultivator Ledger.
+- Status must recover the old Status page family: wide identity header, metric strip, three-column parchment grid, mission requirements rail, safety net, current work, build/prep cards, and limited improvement guidance.
+- Status should answer who the cultivator is, what realm/stage/Qi state they are in, what path/Heart Law/spirit root/city/focus/breath define the life, what current work is running, what the next milestone is, what blocks it, and which primary improvement plus up to three secondary improvements matter.
+- Future Status Ledger render targets are `status-ledger-root`, `status-ledger-hero`, `status-ledger-metrics`, `status-ledger-grid`, `status-ledger-mission-requirements`, `status-ledger-cultivation-base`, `status-ledger-current-work`, and `status-ledger-build-preparation`.
 
-- `MandateChamberHero` in default Status.
-- full `RequirementLedger`, `ReadinessLedger`, or `SourceRouteSlip` in default Status.
-- public strategy profiles named Guidance Oath / Sealed / Elder / Jade.
-- public Status labels such as `Primary Route`, `Best Next Action`, `Biggest Shortfall`, or peer `Run Compass` guide labels.
-- local copy such as `Mandate points elsewhere`.
-- default Status route commands for ordinary pressure states, including `Open Apothecary`, `Open Forge`, `Tune Techniques`, `Raise Forge Floor`, or `Cultivate Qi`.
+### Public Dao decommission
+- Dao Mandate / Run Compass internals may remain for compatibility, internal diagnosis, migration, historical evidence, debug/specimen components, and negative tests.
+- Public render paths must translate internal diagnosis into concrete game language rather than default Dao/Omen/Proof/Source/Mandate labels.
+- Public non-Status screens must not render `OmenSeal`, `ProofSealRow`, `PressureBadgeRow`, `ReflectionPlaque`, `SourceThreadDrawer`, `LocalMandateLensHeader`, `ModuleSourceSinkPanel`, or broad Dao route UI as default reachable UI.
+- Evidence/provenance/debug/calculation detail belongs behind `Details` / `How calculated` when exposed, not as default public labels.
 
-### Direct-route policy
-Direct routes are allowed only when one of these is true:
+### Forbidden default public UI
+Do not add or preserve these as default reachable labels: `Current Omen`, `Gate Proof`, `Recent Omens`, `Source Thread`, `Proof Detail`, `Preparation Health`, `Mandate Lens`, `Module Source-Sink`, `Threshold Omen`, `Omen evidence`, `Proof sealed`, `Source sealed`, `Mandate after return`, `Dao Mandate Interface`, `Mandate points elsewhere`, `Current Mandate`, `proof source handoff`, `status snapshot only`, or `cultivation compact only`.
 
-- setup repair: missing path, Heart Law, or other life anchor;
-- hard proof lock: the player needs to inspect legal gate/proof state;
-- repeated failure reflection: repeated evidence shows a correction route is needed;
-- safety net / mercy proof available or progressing;
-- breakthrough ready;
-- reincarnation/cap handoff;
-- the player explicitly opened an inspect/source/detail drawer.
+Do not render these as default reachable public UI components: `OmenSeal`, `ProofSealRow`, `PressureBadgeRow`, `ReflectionPlaque`, `SourceThreadDrawer`, `LocalMandateLensHeader`, `ModuleSourceSinkPanel`, `DaoMandateRouteButton`, `MandateChamberHero`, `RequirementLedger`, `ReadinessLedger`, or `SourceRouteSlip`.
 
-For ordinary medicine reserve, gear floor, doctrine/loadout, material drought, or support reserve pressure, default Status should describe the symptom and proof, not command a room route.
+### Required public language
+Use concrete xianxia-compatible terms such as `Cultivation Base`, `Mission Requirements`, `Gate Readiness`, `Current Bottleneck`, `Main Gap`, `Best Improvements`, `Safety Net`, `Current Work`, `Build & Preparation`, `Identity & Doctrine`, `Recent Changes`, `Details`, `How calculated`, `Healing Reserve`, `Pouch Fit`, `Forge Floor`, `Doctrine Stock`, `Expedition Support`, `Bounty Board`, `Item Ledger`, and `Return Report`.
 
-### Architecture and ownership rules
-- UI components are pure renderers unless explicitly documented otherwise.
-- Do not let render components grant rewards, spend currency, resolve combat, record failures, perform breakthrough, reset prestige, or mutate progression.
-- Gameplay owners remain `ActivityStore`, `CombatStore`, `RewardService`, `TrialStore`, progression runtime, prestige/reset services, and content contracts.
-- Preserve existing scenic/base art and working layout foundations. Additive enhancement beats destructive replacement.
-- Every behavior change needs tests. Every visual cutover needs screenshot evidence.
-- If broad tests are already red, document exact failures and separate pre-existing failures from packet-specific regressions.
+### Local screen ownership
+- Cultivation explains cultivation: Qi, realm, stage, stability, Heart Law, breath/focus, and breakthrough readiness.
+- Gate Trial explains gate readiness: minimum checklist, recommended prep, fail-safe, trial summary, readiness rail, attempt/result, and local failure diagnosis.
+- World explains city services, availability, ordinary service cues, active/idle hints, and travel context.
+- Forge explains forge floors, weapon/refine/temper/rune state, materials, next upgrade, and queue.
+- Apothecary explains healing reserve, pouch fit, craft/buy next, and ingredients.
+- Manual Pavilion and Techniques explain doctrine stock, path fit, study queue, fragments, and loadout fit.
+- Bounties and Expeditions explain support economy, tracked targets, Merit reward, route slots, expected yield, and shortage fit.
+- Inventory explains item purpose, source, sink, and reserved-by-goal state.
+- Offline Progress explains return gains: time away, Qi, craft/expedition gains, and claim/continue.
+- Settings explains ordinary preferences and accessibility; no broad `Dao Mandate Interface`.
 
-### Copy tone
-Use cultivation-world evidence language: omen, proof, seal, reserve, reflection, gate pressure, mercy proof, decree, elixir, ruins, manual, doctrine.
+### Preservation doctrine
+- Preserve-first, enhance-first, new-art-last.
+- Use parchment, ink, jade, gold, bronze, cinnabar, brushwork, seals, and existing hand-painted support assets.
+- Avoid generic blue/gray dashboard panels.
+- Do not remove old scenic/base art or useful layout foundation until the enhanced replacement is visible, wired, and accepted on that exact screen.
+- No hover-only truth, no motion-only meaning, and no hover/selection layout shift.
 
-Default copy should answer: what wall is appearing, what proof confirms it, and what changed. It should not solve the player's build on the first layer.
+### Packet order and reporting
+- Mega Packet A updates guardrails, tests, audits, and docs. It does not rebuild Status visually.
+- Mega Packet B creates `StatusLedgerSurfaceV1` and concrete Status Ledger rows.
+- Mega Packet C rebuilds the public Status UI as the old-look Status Ledger.
+- Mega Packet D removes public Dao UI outside Status and performs final QA.
+- Every packet must verify previous-packet/baseline state first, avoid stale-test appeasement, and leave evidence: changed files, commands run, tests added or updated, expected future-target failures, unavailable tools/plugins, blockers, and deferred items.
 
-## Review guidelines for Dao Mandate V2 PRs
-When reviewing Dao Mandate V2 changes, treat these as high-priority issues:
+## Review guidelines for Status V3 / Dao decommission PRs
+When reviewing Status V3 and public Dao decommission changes, treat these as high-priority issues:
 
-- Default Status renders raw route-led components or full ledgers.
+- Default Status renders sparse Omen/Proof/Source components instead of the Cultivator Ledger target.
+- Public non-Status screens render `OmenSeal`, `ProofSealRow`, `SourceThreadDrawer`, `LocalMandateLensHeader`, `ModuleSourceSinkPanel`, or broad Dao route UI.
+- Public UI exposes `Guidance Oath`, `Sealed`, `Elder`, or `Jade` as strategy levels.
+- Public screens use old labels such as `Current Omen`, `Gate Proof`, `Source Thread`, `Mandate Lens`, `Module Source-Sink`, `Threshold Omen`, or `Dao Mandate Interface`.
 - UI components mutate gameplay, rewards, combat, trial, prestige, or progression state.
-- Public UI exposes Guidance Oath / Sealed / Elder / Jade as strategy levels.
-- Default Status gives direct room commands for ordinary prep pressure.
-- Local quiet screens display "Mandate points elsewhere" style copy.
-- Prestige displays unrelated live-run route context while too early for reincarnation.
-- V2 changes remove existing scenic/base art or useful layout foundations without a complete replacement.
+- V3 changes remove existing scenic/base art or useful layout foundations without a complete replacement.
 - States rely on color only, hover-only truth, or motion-only meaning.
-- A behavior change lands without tests or a visual cutover lands without screenshot evidence.
+- A behavior change lands without tests, or a visual cutover lands without screenshot evidence.

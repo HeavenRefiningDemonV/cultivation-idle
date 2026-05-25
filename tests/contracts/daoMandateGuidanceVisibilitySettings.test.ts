@@ -68,7 +68,7 @@ function assertTruthInvariant(raw: DaoMandateSurfaceV1, filtered: DaoMandateSurf
 
 function withLocalLens(
   surface: DaoMandateSurfaceV1,
-  relation: DaoLocalLensSurface['relation'] = 'support',
+  relation: DaoLocalLensSurface['relation'] = 'supporting-source',
 ): DaoMandateSurfaceV1 {
   return {
     ...surface,
@@ -201,7 +201,7 @@ test('Dao Mandate granular visibility settings filter optional detail determinis
 });
 
 test('compact local lens visibility is granular and profile-invariant', () => {
-  for (const relation of ['primary', 'blocked', 'support', 'future'] as const) {
+  for (const relation of ['primary-evidence', 'blocked', 'supporting-source', 'completed'] as const) {
     const raw = withLocalLens(createDaoMandateFixture('cultivating_qi_short', 'jade'), relation);
     const sealed = applyDaoMandateVisibility(raw, {
       settings: { guidanceOath: 'sealed', localLensBanners: 'compact' },
@@ -228,7 +228,7 @@ test('compact local lens visibility is granular and profile-invariant', () => {
 });
 
 test('Local lens banner settings override profile density deterministically', () => {
-  const raw = withLocalLens(createDaoMandateFixture('cultivating_qi_short', 'jade'), 'support');
+  const raw = withLocalLens(createDaoMandateFixture('cultivating_qi_short', 'jade'), 'supporting-source');
 
   for (const guidanceOath of ['sealed', 'elder', 'jade'] as const) {
     const hidden = applyDaoMandateVisibility(raw, {
@@ -248,9 +248,9 @@ test('Local lens banner settings override profile density deterministically', ()
     settings: { guidanceOath: 'sealed', localLensBanners: 'compact' },
   });
 
-  assert.equal(sealedFull.localLens?.relation, 'support');
-  assert.equal(elderCompact.localLens?.relation, 'support');
-  assert.equal(sealedCompact.localLens?.relation, 'support');
+  assert.equal(sealedFull.localLens?.relation, 'supporting-source');
+  assert.equal(elderCompact.localLens?.relation, 'supporting-source');
+  assert.equal(sealedCompact.localLens?.relation, 'supporting-source');
 });
 
 test('Dao Mandate source and background toggles preserve or cap detail by setting', () => {

@@ -12,18 +12,6 @@ import { isSameOutskirtsActivitySource, isSameOutskirtsCombatSource } from './ge
 import { useOutskirtsActiveClock } from './hooks/useOutskirtsActiveClock.js';
 import { routeCombatAftermathTarget } from '../../combatAftermath/index.js';
 import type { OutskirtsSurfaceMode } from './types.js';
-import {
-  applyDaoMandateVisibility,
-  buildLiveDaoMandateSurfaceV1,
-  pickDaoMandateGuidanceSettings,
-  resolveDaoMandateEffectiveMotionMode,
-} from '../../../systems/ui/daoMandate/index.js';
-import {
-  applyLocalMandateLensVisibility,
-  buildLocalMandateLensSurface,
-} from '../../../systems/world/localMandateLensSurface.js';
-import { normalizeCityModulesForLiveSlice } from '../../../systems/world/liveWorldSchema.js';
-import type { OutskirtsMandateLensView } from './components/OutskirtsTopRegion.js';
 import './OutskirtsExactMockupScreen.scss';
 import '../../combatAftermath/CombatAftermathCard.scss';
 
@@ -44,7 +32,6 @@ export function OutskirtsScreenOwner({ cityId }: OutskirtsScreenOwnerProps) {
   const startCombat = useCombatStore((state) => state.startCombat);
   const exitCombat = useCombatStore((state) => state.exitCombat);
   const combatContext = useCombatStore((state) => state.combatContext);
-  const uiSettings = useUIStore((state) => state.settings);
   const closeWorldBuildingModal = useUIStore((state) => state.closeWorldBuildingModal);
   const openWorldBuildingModal = useUIStore((state) => state.openWorldBuildingModal);
   const [previewEncounterId, setPreviewEncounterId] = useState<string | null>(null);
@@ -56,40 +43,6 @@ export function OutskirtsScreenOwner({ cityId }: OutskirtsScreenOwnerProps) {
   const hasSameSourceCombat = isSameOutskirtsCombatSource(cityId, outskirtsDef?.id ?? null, combatContext);
   const activityMode: OutskirtsSurfaceMode = hasSameSourceActivity || hasSameSourceCombat ? 'active' : 'planning';
   const liveNowMs = useOutskirtsActiveClock(activityMode === 'active');
-  const guidanceSettings = useMemo(() => pickDaoMandateGuidanceSettings(uiSettings), [uiSettings]);
-  const mandateMotionMode = useMemo(
-    () => resolveDaoMandateEffectiveMotionMode({
-      mandateMotionMode: guidanceSettings.mandateMotionMode,
-      storyMotionMode: uiSettings.storyMotionMode,
-    }),
-    [guidanceSettings.mandateMotionMode, uiSettings.storyMotionMode],
-  );
-  const mandateLens = useMemo((): OutskirtsMandateLensView | null => {
-    if (!city) return null;
-    const rawMandate = buildLiveDaoMandateSurfaceV1({
-      currentScreen: 'outskirts',
-      guidanceProfile: guidanceSettings.guidanceOath,
-    });
-    const visibleMandate = applyDaoMandateVisibility(rawMandate, { settings: guidanceSettings });
-    const rawLens = buildLocalMandateLensSurface({
-      mandate: visibleMandate,
-      cityId,
-      moduleKey: 'outskirts',
-      visibleModules: normalizeCityModulesForLiveSlice(city.modules),
-      isModuleAvailable: Boolean(outskirtsDef),
-      hasActiveForegroundHere: activityMode === 'active',
-    });
-    const visibleLens = applyLocalMandateLensVisibility(rawLens, visibleMandate, guidanceSettings);
-    if (!visibleLens) return null;
-    return {
-      lens: visibleLens,
-      profile: guidanceSettings.guidanceOath,
-      motionMode: mandateMotionMode,
-      variant: guidanceSettings.localLensBanners === 'compact'
-        ? 'compact'
-        : guidanceSettings.localLensBanners === 'full' ? 'full' : 'default',
-    };
-  }, [activityMode, city, cityId, guidanceSettings, mandateMotionMode, outskirtsDef]);
 
   const handleStartOutskirts = useCallback(() => {
     if (!city || !outskirtsDef) return;
@@ -198,7 +151,6 @@ export function OutskirtsScreenOwner({ cityId }: OutskirtsScreenOwnerProps) {
         onOpenTacticalCell={actionController.onOpenTacticalCell}
         onOpenAreaSelector={actionController.onOpenAreaSelector}
         onAftermathRoute={routeCombatAftermathTarget}
-        mandateLens={mandateLens}
       />
     </div>
   );

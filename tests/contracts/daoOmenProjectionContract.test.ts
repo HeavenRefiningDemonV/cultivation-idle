@@ -230,15 +230,18 @@ test('DaoOmenProjectionV1 current truth does not change by old Guidance Oath pro
   }
 });
 
-test('DaoOmenProjectionV1 production consumers stay on V2 projection surfaces', () => {
+test('DaoOmenProjectionV1 remains internal while public consumers are decommission targets', () => {
   const statusSurface = readFileSync('src/systems/ui/status/statusV2Surface.ts', 'utf8');
   const cultivationSurface = readFileSync('src/features/cultivation/exact/buildCultivationExactSurface.ts', 'utf8');
-  const cultivationScreen = readFileSync('src/features/cultivation/exact/CultivationExactScreen.tsx', 'utf8');
+  const docs = [
+    readFileSync('AGENTS.md', 'utf8'),
+    readFileSync('docs/release/status_v3_dao_decommission_plan.md', 'utf8'),
+  ].join('\n');
 
   assert.match(statusSurface, /buildDaoOmenProjectionV1/);
   assert.match(cultivationSurface, /buildDaoOmenProjectionV1/);
-  assert.match(cultivationScreen, /OmenSeal/);
-  assert.doesNotMatch(cultivationScreen, /<MandateSeal|<RequirementLedger|<SourceRouteSlip/);
+  assert.match(docs, /Packet C[\s\S]*Status|Status[\s\S]*Packet C/i);
+  assert.match(docs, /Packet D[\s\S]*Cultivation|Cultivation[\s\S]*Packet D/i);
 });
 
 test('DaoOmenProjectionV1 builder and types stay model-only', () => {

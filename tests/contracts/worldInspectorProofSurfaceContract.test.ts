@@ -82,15 +82,14 @@ test('WorldOverlayInspector receives role, use case, outputs, boundary, state, a
   assert.match(inspectorBlock, /onOpen=\{\(\) => handleRouteToModule\(inspectorModuleKey\)\}/);
 });
 
-test('World recommendations derive from Dao Mandate before economic fallback routes', () => {
+test('World recommendations derive from local economy and tracked-route fallback routes', () => {
   const file = read('src/components/screens/WorldScreen.tsx');
-  assert.match(file, /const mandateRoutingLens = useMemo\(\(\) =>/);
-  assert.match(file, /buildLiveDaoMandateSurfaceV1/);
-  assert.match(file, /buildWorldMandateRoutingLensSurface/);
-  assert.match(file, /mandatePrimaryModuleKey: mandateRoutingLens\?\.primaryModuleKey/);
-  assert.match(file, /mandateSecondaryModuleKeys: mandateRoutingLens\?\.secondaryModuleKeys/);
-  assert.match(file, /const allowWorldRecommendationFallback = !mandateRoutingLens\?\.strongestModuleKey/);
-  assert.match(file, /economicModuleKeys: allowWorldRecommendationFallback/);
+  assert.doesNotMatch(file, /const mandateRoutingLens = useMemo\(\(\) =>/);
+  assert.doesNotMatch(file, /buildLiveDaoMandateSurfaceV1/);
+  assert.doesNotMatch(file, /buildWorldMandateRoutingLensSurface/);
+  assert.doesNotMatch(file, /mandatePrimaryModuleKey/);
+  assert.doesNotMatch(file, /mandateSecondaryModuleKeys/);
+  assert.match(file, /economicModuleKeys:/);
   assert.doesNotMatch(file, /inspectorRunCompassLine/);
   assert.doesNotMatch(file, /useRunCompassSurface/);
 });

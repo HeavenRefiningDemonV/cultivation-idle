@@ -95,14 +95,6 @@ export type PrestigeLedgerExactSurfaceV1 = {
     objective: PrestigeForecastSurfaceV2['postResetObjective'];
     warnings: string[];
   };
-  runCompassHint?: {
-    milestoneLabel: string;
-    blockerLabel: string;
-    routeLabel: string;
-    detail: string;
-    active: boolean;
-    recentDeltaLine: string | null;
-  } | null;
   postResetReclaimObjective?: PostResetReclaimObjectiveSurface | null;
   debug?: { notes: string[] };
 };
@@ -138,7 +130,6 @@ export type PrestigeLedgerExactLiveInput = {
   cityNamesReached: string[];
   resolvedGateCount: number;
   visibleUpgrades: PrestigeUpgradeDef[];
-  runCompassHint?: PrestigeLedgerExactSurfaceV1['runCompassHint'];
   postResetReclaimObjective?: PostResetReclaimObjectiveSurface | null;
 };
 

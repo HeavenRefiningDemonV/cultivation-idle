@@ -1,0 +1,742 @@
+import { getDaoOmenDefaultCopy } from './daoOmenCopy.js';
+import { decideDaoOmenDirectRoute, getDaoOmenPriority, normalizeDaoOmenExposedRoute, } from './daoOmenPriority.js';
+const PROOF_SEAL_LIMIT = 4;
+const PRESSURE_BADGE_LIMIT = 4;
+const RECENT_OMEN_LIMIT = 3;
+const OBSTRUCTION_TO_OMEN_KIND = {
+    life_setup_missing_path: 'life_setup',
+    life_setup_missing_heart_law: 'life_setup',
+    life_setup_missing_breath_focus: 'life_setup',
+    content_cap: 'content_cap',
+    prestige_recommended: 'reincarnation_viable',
+    breakthrough_qi_short: 'threshold_unreached',
+    breakthrough_gate_proof_missing: 'proof_missing',
+    gate_not_at_realm_edge: 'threshold_unreached',
+    gate_lifecycle_locked: 'proof_missing',
+    gate_recent_failure: 'reflection',
+    safety_net_available: 'safety_net_ready',
+    readiness_shortfall: 'risky_attempt',
+    forge_floor_shortfall: 'gear_floor_strained',
+    apothecary_prep_shortfall: 'reserve_thin',
+    build_correction_gap: 'doctrine_uncertain',
+    manual_pavilion_gap: 'doctrine_uncertain',
+    bounty_merit_shortfall: 'support_reserve_low',
+    expedition_shortage_smoothing: 'support_reserve_low',
+    attempt_gate_now: 'attemptable',
+    required_item_missing: 'proof_missing',
+    source_route_locked: 'source_drought',
+    invalid_state: 'life_setup',
+    unknown: 'quiet',
+    none: 'quiet',
+};
+export function buildDaoOmenProjectionV1(surface, options = {}) {
+    const notes = [];
+    const selected = selectCurrentOmen(surface, notes);
+    const routeDecision = decideDaoOmenDirectRoute(selected.kind, surface.primaryRoute, {
+        currentScreen: options.currentScreen,
+        playerExpanded: options.routeContext === 'player_expanded',
+    });
+    notes.push(routeDecision.note);
+    const exposedRoute = routeDecision.exposeRoute && routeDecision.reason
+        ? cloneRoute(normalizeDaoOmenExposedRoute(surface.primaryRoute, routeDecision.reason, selected.kind))
+        : undefined;
+    const suppressedRouteIds = exposedRoute ? [] : suppressableRouteIds(surface);
+    if (suppressedRouteIds.length > 0) {
+        notes.push(`suppressed raw routes for non-hard omen ${selected.kind}: ${suppressedRouteIds.join(',')}`);
+    }
+    const currentOmen = buildCurrentOmen(surface, selected, routeDecision.reason, exposedRoute);
+    const proofSeals = buildProofSeals(surface, currentOmen, notes);
+    const pressureBadges = buildPressureBadges(surface, currentOmen);
+    const sourceThreads = buildSourceThreads(surface, currentOmen, options.currentScreen);
+    const reflections = buildReflections(surface, currentOmen);
+    const hardRoutes = currentOmen.route ? [cloneRoute(currentOmen.route)] : [];
+    return {
+        projectionVersion: 1,
+        generatedAt: options.now ?? surface.meta.generatedAt,
+        lifeStage: resolveLifeStage(surface, currentOmen.kind),
+        sourceSurface: {
+            mode: surface.meta.mode,
+            generatedAt: surface.meta.generatedAt,
+            confidence: surface.meta.confidence,
+            sourceIds: [...surface.meta.sourceIds],
+            rawSurfaceId: surface.milestone.id,
+        },
+        currentOmen,
+        proofSeals,
+        pressureBadges,
+        recentOmens: surface.recentOmens.slice(0, RECENT_OMEN_LIMIT).map(cloneRecentOmen),
+        reflections,
+        sourceThreads,
+        hardRoutes,
+        debug: options.includeDebug ? {
+            notes,
+            selectedPriority: `${selected.priority}:${selected.kind}`,
+            suppressedRouteIds,
+            fixtureState: fixtureStateFromSurface(surface),
+        } : undefined,
+    };
+}
+function selectCurrentOmen(surface, notes) {
+    const candidates = [];
+    const obstructionKind = OBSTRUCTION_TO_OMEN_KIND[surface.obstruction.kind] ?? 'quiet';
+    if (obstructionKind !== 'quiet') {
+        candidates.push(candidate(surface, obstructionKind, `obstruction:${surface.obstruction.kind}`));
+    }
+    if (surface.milestone.state === 'content_cap' || surface.obstruction.kind === 'content_cap') {
+        candidates.push(candidate(surface, 'content_cap', 'milestone:content_cap'));
+    }
+    if (surface.prestige &&
+        ['viable', 'recommended', 'cap_recommended', 'blocked'].includes(surface.prestige.state)) {
+        candidates.push(candidate(surface, surface.prestige.state === 'cap_recommended' && surface.milestone.state === 'content_cap'
+            ? 'content_cap'
+            : 'reincarnation_viable', `prestige:${surface.prestige.state}`));
+    }
+    if (surface.milestone.state === 'breakthrough_pending') {
+        candidates.push(candidate(surface, 'breakthrough_ready', 'milestone:breakthrough_pending'));
+    }
+    if (surface.safetyNet && ['available', 'progressing'].includes(surface.safetyNet.state)) {
+        candidates.push(candidate(surface, 'safety_net_ready', `safety:${surface.safetyNet.state}`));
+    }
+    if (surface.milestone.state === 'attemptable') {
+        candidates.push(candidate(surface, surface.obstruction.kind === 'readiness_shortfall' || /risk|thin/i.test(`${surface.readiness.band} ${surface.readiness.label}`)
+            ? 'risky_attempt'
+            : 'attemptable', `milestone:${surface.milestone.state}`));
+    }
+    const selected = (candidates.length > 0 ? candidates : [candidate(surface, 'quiet', 'fallback:quiet')])
+        .sort((left, right) => left.priority - right.priority || left.kind.localeCompare(right.kind))[0];
+    notes.push(`selected omen from ${selected.selectedFrom}`);
+    return selected;
+}
+function candidate(surface, kind, selectedFrom) {
+    return {
+        kind,
+        priority: getDaoOmenPriority(kind),
+        evidenceIds: evidenceIds(surface, selectedFrom),
+        selectedFrom,
+    };
+}
+function evidenceIds(surface, selectedFrom) {
+    return [
+        selectedFrom,
+        `milestone:${surface.milestone.id}`,
+        `obstruction:${surface.obstruction.kind}`,
+        ...surface.obstruction.evidenceIds,
+    ];
+}
+function buildCurrentOmen(surface, selected, directRouteReason, route) {
+    const copy = getDaoOmenDefaultCopy(selected.kind);
+    return {
+        id: stableId(`omen:${surface.milestone.id}:${selected.kind}`),
+        kind: selected.kind,
+        title: copy.title,
+        detail: copy.detail,
+        severity: severityForOmen(selected.kind),
+        iconId: iconForOmen(selected.kind),
+        tone: toneForOmen(selected.kind),
+        allowDirectRoute: directRouteReason !== undefined,
+        ...(directRouteReason ? { directRouteReason } : {}),
+        ...(route ? { route } : {}),
+        evidenceIds: selected.evidenceIds,
+    };
+}
+function suppressableRouteIds(surface) {
+    return [
+        surface.primaryRoute,
+        ...surface.secondaryRoutes,
+    ]
+        .filter((route) => route.target !== null)
+        .map((route) => route.id);
+}
+function buildProofSeals(surface, currentOmen, notes) {
+    const seals = [];
+    const add = (kind, fallbackState, detail) => {
+        if (seals.some((seal) => seal.kind === kind))
+            return;
+        const matchedRow = findRowForProof(surface, kind);
+        const state = matchedRow ? proofSealStateFromRow(matchedRow) : fallbackState;
+        const routePolicy = routePolicyForProof(kind, currentOmen);
+        seals.push({
+            id: stableId(`proof:${surface.milestone.id}:${kind}`),
+            kind,
+            label: proofSealLabel(kind),
+            state,
+            tone: toneForProofState(state),
+            iconId: iconForProofSeal(kind),
+            detail,
+            ownerScreen: ownerScreenForProof(kind),
+            evidenceIds: matchedRow ? [matchedRow.id, ...currentOmen.evidenceIds] : currentOmen.evidenceIds,
+            ...(routePolicy === 'direct' && currentOmen.route ? { route: cloneRoute(currentOmen.route) } : {}),
+            routePolicy,
+        });
+    };
+    switch (currentOmen.kind) {
+        case 'life_setup':
+            add('path', 'unsealed', 'The path seal has not settled.');
+            add('heart_law', 'unsealed', 'The Heart Law seal has not settled.');
+            break;
+        case 'threshold_unreached':
+            add('realm_edge', 'unsealed', 'The realm edge has not been reached.');
+            add('qi_threshold', 'thin', 'Qi has not filled to the threshold.');
+            add('gate_proof', 'unknown', 'Gate proof is not the current wall yet.');
+            break;
+        case 'proof_missing':
+            add('realm_edge', 'sealed', 'The realm edge is known.');
+            add('qi_threshold', 'sealed', 'Qi threshold proof is known.');
+            add('gate_proof', 'unsealed', 'The gate proof has not been sealed.');
+            break;
+        case 'reserve_thin':
+            add('gate_proof', 'sealed', 'Gate proof context is stable enough to read reserve pressure.');
+            add('survival_reserve', 'thin', 'Survival reserve is thin.');
+            break;
+        case 'gear_floor_strained':
+            add('gate_proof', 'sealed', 'Gate proof context is stable enough to read gear pressure.');
+            add('forge_floor', 'strained', 'The forge floor is under pressure.');
+            break;
+        case 'doctrine_uncertain':
+            add('gate_proof', 'sealed', 'Gate proof context is stable enough to read doctrine pressure.');
+            add('doctrine_expression', 'thin', 'Doctrine expression is incomplete.');
+            break;
+        case 'support_reserve_low':
+        case 'currency_reserve_low':
+            add('support_reserve', 'thin', 'Support reserve is low.');
+            add('gate_proof', 'sealed', 'Gate proof context is stable enough to read support pressure.');
+            break;
+        case 'source_drought':
+            add('source_thread', 'locked', 'A source thread has run dry.');
+            add('survival_reserve', 'thin', 'A reserve sink is waiting on that source.');
+            break;
+        case 'attemptable':
+            add('realm_edge', 'sealed', 'The realm edge is sealed.');
+            add('qi_threshold', 'sealed', 'Qi threshold proof is sealed.');
+            add('gate_proof', 'ready', 'The gate proof is stable.');
+            break;
+        case 'risky_attempt':
+            add('realm_edge', 'sealed', 'The realm edge is sealed.');
+            add('gate_proof', 'ready', 'The gate proof is stable.');
+            add('survival_reserve', 'thin', 'One support proof feels thin.');
+            break;
+        case 'reflection':
+            add('failure_reflection', 'reflected', 'A repeated gate pattern has been recorded.');
+            add(reflectionPressureProof(surface), 'thin', 'The reflected pressure has a matching proof seal.');
+            break;
+        case 'safety_net_ready':
+            add('mercy_seal', 'ready', 'A mercy proof can be sealed.');
+            add('gate_proof', 'sealed', 'Gate proof context is available.');
+            break;
+        case 'breakthrough_ready':
+            add('realm_edge', 'sealed', 'The realm edge is sealed.');
+            add('qi_threshold', 'sealed', 'Qi threshold proof is sealed.');
+            add('gate_proof', 'sealed', 'Gate proof is sealed.');
+            break;
+        case 'reincarnation_viable':
+            add('reincarnation', 'ready', 'This life can become permanent progress.');
+            add('gate_proof', 'sealed', 'Current life proof is stable enough to review.');
+            break;
+        case 'content_cap':
+            add('reincarnation', 'cap', 'The authored chapter has reached its handoff.');
+            add('gate_proof', 'sealed', 'No future gate is exposed in the authored slice.');
+            break;
+        case 'quiet':
+            add('realm_edge', 'quiet', 'No dominant pressure is active.');
+            break;
+    }
+    if (seals.length > PROOF_SEAL_LIMIT)
+        notes.push('proof seals capped at 4');
+    return seals.slice(0, PROOF_SEAL_LIMIT);
+}
+function buildPressureBadges(surface, currentOmen) {
+    const badges = [];
+    const add = (kind, state, detail) => {
+        if (badges.some((badge) => badge.kind === kind))
+            return;
+        badges.push({
+            id: stableId(`pressure:${surface.milestone.id}:${kind}`),
+            kind,
+            label: pressureBadgeLabel(kind),
+            state,
+            tone: toneForPressureState(state),
+            iconId: iconForPressureBadge(kind),
+            detail,
+            ownerScreen: ownerScreenForPressure(kind),
+            evidenceIds: currentOmen.evidenceIds,
+        });
+    };
+    switch (currentOmen.kind) {
+        case 'reserve_thin':
+            add('survival', 'thin', 'Survival reserve looks thin.');
+            break;
+        case 'gear_floor_strained':
+            add('forge', 'strained', 'The weapon floor is under pressure.');
+            break;
+        case 'doctrine_uncertain':
+            add('doctrine', 'strained', 'Doctrine expression looks incomplete.');
+            break;
+        case 'support_reserve_low':
+        case 'currency_reserve_low':
+            add('support', 'low', 'Background support looks thin.');
+            break;
+        case 'source_drought':
+            add('source', 'thin', 'A needed source thread has run dry.');
+            break;
+        case 'risky_attempt':
+            add(riskyBadgeKind(surface), 'thin', 'One proof feels thin beside the open gate.');
+            break;
+        default:
+            break;
+    }
+    return badges.slice(0, PRESSURE_BADGE_LIMIT);
+}
+function buildSourceThreads(surface, currentOmen, currentScreen) {
+    return surface.sourceMap.map((entry) => {
+        const route = entry.route ?? entry.bestSources[0]?.route ?? null;
+        const ownerScreen = ownerScreenFromRoute(route) ?? ownerScreenFromProblem(entry.problemKind);
+        const visibility = sourceThreadVisibility(currentOmen, ownerScreen, currentScreen, entry.problemKind);
+        return {
+            id: stableId(`source-thread:${entry.id}`),
+            label: entry.neededThingLabel,
+            missingThing: entry.neededThingLabel,
+            sinkLabel: entry.sinkLabel,
+            evidenceLine: entry.expectedImpactLabel ?? 'Source thread evidence is available in detail.',
+            bestSource: entry.bestSources[0] ? sourceOption(entry.bestSources[0]) : null,
+            fallbackSources: entry.fallbackSources.map(sourceOption),
+            routeVisibility: visibility,
+            ownerScreen,
+            evidenceIds: [entry.id, ...currentOmen.evidenceIds],
+        };
+    });
+}
+function buildReflections(surface, currentOmen) {
+    if (currentOmen.kind !== 'reflection')
+        return [];
+    const text = rowText(allRows(surface));
+    const correctionRoute = currentOmen.route ? cloneRoute(currentOmen.route) : undefined;
+    return [{
+            id: stableId(`reflection:${surface.milestone.id}:${currentOmen.kind}`),
+            kind: reflectionKindFromText(text),
+            label: 'Repeated gate reflection',
+            detail: 'The same pattern has appeared again.',
+            tone: 'bronze',
+            iconId: 'reflection',
+            evidenceIds: currentOmen.evidenceIds,
+            ...(correctionRoute ? { correctionRoute } : {}),
+        }];
+}
+function sourceOption(option) {
+    return {
+        id: option.id,
+        label: option.label,
+        detail: option.detail,
+        ...(option.route ? { route: cloneRoute(option.route) } : {}),
+        lockedReason: option.lockedReason,
+        activityMode: option.activityMode,
+    };
+}
+function sourceThreadVisibility(currentOmen, ownerScreen, currentScreen, problemKind) {
+    if (currentScreen && currentScreen === ownerScreen)
+        return 'local_owner';
+    if (currentOmen.kind === 'proof_missing' && /proof|gate|required/i.test(problemKind ?? ''))
+        return 'hard_lock';
+    if (currentOmen.kind === 'source_drought')
+        return 'drawer';
+    return 'drawer';
+}
+function allRows(surface) {
+    return [
+        ...surface.requirementLedger.hardGates,
+        ...surface.requirementLedger.readinessFloors,
+        ...surface.requirementLedger.supportReserves,
+        ...surface.requirementLedger.sourceRoutes,
+        ...surface.requirementLedger.optionalOptimizations,
+        ...surface.requirementLedger.recentOmens,
+    ];
+}
+function rowText(rows) {
+    return rows
+        .map((row) => `${row.id} ${row.bucket} ${row.label} ${row.detail} ${row.sourceLine ?? ''}`)
+        .join(' ')
+        .toLowerCase();
+}
+function findRowForProof(surface, kind) {
+    const rows = allRows(surface);
+    const patterns = {
+        path: /path/,
+        heart_law: /heart law/,
+        realm_edge: /realm edge|realm/,
+        qi_threshold: /qi|threshold/,
+        gate_proof: /gate proof|proof/,
+        survival_reserve: /survival|medicine|apothecary/,
+        forge_floor: /forge|weapon|gear/,
+        doctrine_expression: /doctrine|technique|manual|loadout/,
+        support_reserve: /support|merit|reserve/,
+        source_thread: /source|herb|ore|thread/,
+        failure_reflection: /failure|reflection|repeated/,
+        mercy_seal: /mercy|safety/,
+        reincarnation: /reincarnation|prestige|chapter cap|cap/,
+    };
+    return rows.find((row) => patterns[kind].test(`${row.id} ${row.label} ${row.detail}`.toLowerCase())) ?? null;
+}
+function proofSealStateFromRow(row) {
+    switch (row.state) {
+        case 'met':
+            return 'sealed';
+        case 'resolved':
+            return 'ready';
+        case 'partial':
+            return 'thin';
+        case 'unmet':
+            return 'unsealed';
+        case 'blocked':
+            return 'locked';
+        case 'unknown':
+            return 'unknown';
+    }
+}
+function routePolicyForProof(kind, currentOmen) {
+    if (!currentOmen.allowDirectRoute)
+        return 'hidden';
+    if (['gate_proof', 'mercy_seal', 'reincarnation'].includes(kind))
+        return 'direct';
+    return 'inspect';
+}
+function reflectionPressureProof(surface) {
+    const text = rowText(allRows(surface));
+    if (/survival|medicine|apothecary/.test(text))
+        return 'survival_reserve';
+    if (/doctrine|technique|manual|loadout/.test(text))
+        return 'doctrine_expression';
+    if (/source|herb|ore/.test(text))
+        return 'source_thread';
+    return 'forge_floor';
+}
+function riskyBadgeKind(surface) {
+    const text = `${surface.readiness.primaryShortfallLabel ?? ''} ${rowText(allRows(surface))}`.toLowerCase();
+    if (/forge|weapon|gear/.test(text))
+        return 'forge';
+    if (/doctrine|technique|manual|loadout/.test(text))
+        return 'doctrine';
+    if (/source|herb|ore/.test(text))
+        return 'source';
+    if (/merit|support|bounty|expedition/.test(text))
+        return 'support';
+    return 'survival';
+}
+function reflectionKindFromText(text) {
+    if (/survival|medicine|apothecary/.test(text))
+        return 'survival_pattern';
+    if (/forge|weapon|gear/.test(text))
+        return 'forge_pattern';
+    if (/doctrine|technique|manual|loadout/.test(text))
+        return 'doctrine_pattern';
+    if (/threshold|qi|realm/.test(text))
+        return 'threshold_pattern';
+    if (/source|herb|ore/.test(text))
+        return 'source_pattern';
+    return 'unknown_pattern';
+}
+function resolveLifeStage(surface, kind) {
+    switch (kind) {
+        case 'life_setup':
+            return 'setup';
+        case 'threshold_unreached':
+            return 'cultivating';
+        case 'reserve_thin':
+        case 'gear_floor_strained':
+        case 'doctrine_uncertain':
+        case 'support_reserve_low':
+        case 'currency_reserve_low':
+        case 'source_drought':
+            return 'preparing';
+        case 'proof_missing':
+        case 'attemptable':
+        case 'risky_attempt':
+        case 'reflection':
+        case 'safety_net_ready':
+            return 'gate';
+        case 'breakthrough_ready':
+            return 'breakthrough';
+        case 'reincarnation_viable':
+            return 'reincarnation';
+        case 'content_cap':
+            return 'cap';
+        case 'quiet':
+            return lifeStageFromMilestone(surface.milestone.state);
+    }
+}
+function lifeStageFromMilestone(state) {
+    switch (state) {
+        case 'life_setup':
+            return 'setup';
+        case 'cultivating':
+            return 'cultivating';
+        case 'preparing':
+            return 'preparing';
+        case 'attemptable':
+        case 'gate_active':
+        case 'gate_failed':
+        case 'gate_resolved':
+            return 'gate';
+        case 'breakthrough_pending':
+        case 'realm_entered':
+            return 'breakthrough';
+        case 'content_cap':
+            return 'cap';
+        case 'prestige_recommended':
+            return 'reincarnation';
+        case 'fallback':
+            return 'preparing';
+    }
+}
+function severityForOmen(kind) {
+    switch (kind) {
+        case 'quiet':
+            return 'quiet';
+        case 'reserve_thin':
+        case 'gear_floor_strained':
+        case 'doctrine_uncertain':
+        case 'support_reserve_low':
+        case 'currency_reserve_low':
+        case 'source_drought':
+        case 'risky_attempt':
+            return 'thin';
+        case 'life_setup':
+        case 'threshold_unreached':
+        case 'proof_missing':
+            return 'locked';
+        case 'reflection':
+            return 'reflection';
+        case 'attemptable':
+        case 'safety_net_ready':
+        case 'breakthrough_ready':
+        case 'reincarnation_viable':
+            return 'ready';
+        case 'content_cap':
+            return 'cap';
+    }
+}
+function toneForOmen(kind) {
+    switch (kind) {
+        case 'quiet':
+            return 'ink';
+        case 'attemptable':
+        case 'safety_net_ready':
+        case 'breakthrough_ready':
+        case 'reincarnation_viable':
+            return 'jade';
+        case 'content_cap':
+            return 'gold';
+        case 'proof_missing':
+        case 'life_setup':
+        case 'threshold_unreached':
+        case 'reflection':
+            return 'cinnabar';
+        default:
+            return 'bronze';
+    }
+}
+function iconForOmen(kind) {
+    const icons = {
+        quiet: 'lotus',
+        life_setup: 'path',
+        threshold_unreached: 'mountain',
+        proof_missing: 'seal',
+        reserve_thin: 'vial',
+        gear_floor_strained: 'hammer',
+        doctrine_uncertain: 'scroll',
+        support_reserve_low: 'hands',
+        currency_reserve_low: 'coins',
+        source_drought: 'sprout',
+        attemptable: 'gate',
+        risky_attempt: 'alertTriangle',
+        reflection: 'reflection',
+        safety_net_ready: 'shield',
+        breakthrough_ready: 'sparkles',
+        reincarnation_viable: 'circle',
+        content_cap: 'bookOpen',
+    };
+    return icons[kind];
+}
+function proofSealLabel(kind) {
+    const labels = {
+        path: 'Path',
+        heart_law: 'Heart Law',
+        realm_edge: 'Realm Edge',
+        qi_threshold: 'Qi Threshold',
+        gate_proof: 'Gate Proof',
+        survival_reserve: 'Survival Reserve',
+        forge_floor: 'Forge Floor',
+        doctrine_expression: 'Doctrine',
+        support_reserve: 'Support Reserve',
+        source_thread: 'Source Thread',
+        failure_reflection: 'Failure Reflection',
+        mercy_seal: 'Mercy Seal',
+        reincarnation: 'Reincarnation',
+    };
+    return labels[kind];
+}
+function pressureBadgeLabel(kind) {
+    const labels = {
+        survival: 'Survival',
+        forge: 'Forge',
+        doctrine: 'Doctrine',
+        support: 'Support',
+        source: 'Source',
+    };
+    return labels[kind];
+}
+function ownerScreenForProof(kind) {
+    const owners = {
+        path: 'cultivation',
+        heart_law: 'cultivation',
+        realm_edge: 'cultivation',
+        qi_threshold: 'cultivation',
+        gate_proof: 'gateTrial',
+        survival_reserve: 'apothecary',
+        forge_floor: 'forge',
+        doctrine_expression: 'techniques',
+        support_reserve: 'bounties',
+        source_thread: 'world',
+        failure_reflection: 'gateTrial',
+        mercy_seal: 'gateTrial',
+        reincarnation: 'prestige',
+    };
+    return owners[kind];
+}
+function ownerScreenForPressure(kind) {
+    const owners = {
+        survival: 'apothecary',
+        forge: 'forge',
+        doctrine: 'techniques',
+        support: 'bounties',
+        source: 'world',
+    };
+    return owners[kind];
+}
+function ownerScreenFromProblem(problemKind) {
+    if (/medicine|survival|herb|apothecary/i.test(problemKind ?? ''))
+        return 'apothecary';
+    if (/forge|weapon|ore|gear/i.test(problemKind ?? ''))
+        return 'forge';
+    if (/manual|technique|doctrine|loadout/i.test(problemKind ?? ''))
+        return 'techniques';
+    if (/merit|bounty/i.test(problemKind ?? ''))
+        return 'bounties';
+    if (/expedition|source/i.test(problemKind ?? ''))
+        return 'expeditions';
+    return 'world';
+}
+function ownerScreenFromRoute(route) {
+    if (!route?.target)
+        return null;
+    if (route.target.kind === 'world_module') {
+        switch (route.target.moduleKey) {
+            case 'gateTrial':
+            case 'outskirts':
+            case 'ruins':
+            case 'apothecary':
+            case 'forge':
+            case 'manualPavilion':
+            case 'bounties':
+            case 'expeditions':
+                return route.target.moduleKey;
+            default:
+                return 'world';
+        }
+    }
+    switch (route.target.tab) {
+        case 'cultivation':
+        case 'status':
+        case 'inventory':
+        case 'techniques':
+        case 'records':
+        case 'prestige':
+        case 'settings':
+            return route.target.tab;
+        case 'adventure':
+            return 'world';
+    }
+}
+function toneForProofState(state) {
+    switch (state) {
+        case 'sealed':
+        case 'ready':
+            return 'jade';
+        case 'cap':
+            return 'gold';
+        case 'unsealed':
+        case 'locked':
+        case 'reflected':
+            return 'cinnabar';
+        case 'thin':
+        case 'strained':
+            return 'bronze';
+        case 'quiet':
+        case 'unknown':
+            return 'ink';
+    }
+}
+function toneForPressureState(state) {
+    switch (state) {
+        case 'stable':
+        case 'ready':
+            return 'jade';
+        case 'thin':
+        case 'strained':
+        case 'low':
+            return 'bronze';
+        case 'quiet':
+        case 'unknown':
+            return 'ink';
+    }
+}
+function iconForProofSeal(kind) {
+    const icons = {
+        path: 'path',
+        heart_law: 'heart',
+        realm_edge: 'mountain',
+        qi_threshold: 'sparkles',
+        gate_proof: 'seal',
+        survival_reserve: 'vial',
+        forge_floor: 'hammer',
+        doctrine_expression: 'scroll',
+        support_reserve: 'hands',
+        source_thread: 'sprout',
+        failure_reflection: 'reflection',
+        mercy_seal: 'shield',
+        reincarnation: 'circle',
+    };
+    return icons[kind];
+}
+function iconForPressureBadge(kind) {
+    const icons = {
+        survival: 'vial',
+        forge: 'hammer',
+        doctrine: 'scroll',
+        support: 'hands',
+        source: 'sprout',
+    };
+    return icons[kind];
+}
+function cloneRoute(route) {
+    return {
+        ...route,
+        target: cloneTarget(route.target),
+    };
+}
+function cloneTarget(target) {
+    if (!target)
+        return null;
+    if (target.kind === 'tab')
+        return { kind: 'tab', tab: target.tab };
+    return { kind: 'world_module', cityId: target.cityId, moduleKey: target.moduleKey };
+}
+function cloneRecentOmen(omen) {
+    return { ...omen };
+}
+function fixtureStateFromSurface(surface) {
+    return surface.milestone.id.startsWith('omen-fixture:')
+        ? surface.milestone.id.replace('omen-fixture:', '')
+        : undefined;
+}
+function stableId(value) {
+    return value.replace(/[^a-zA-Z0-9:_-]+/g, '-').replace(/-+/g, '-');
+}

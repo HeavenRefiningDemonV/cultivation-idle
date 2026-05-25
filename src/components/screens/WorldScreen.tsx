@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useCallback, useRef, useState } from 'react';
-import type { CityDef, LiveWorldModuleKey, ValidatedContent } from '../../content/index.js';
+import type { CityDef, ValidatedContent } from '../../content/index.js';
 import { useContentStore } from '../../stores/contentStore.js';
 import { useCityStore } from '../../stores/cityStore.js';
 import { useCombatStore } from '../../stores/combatStore.js';
@@ -8,11 +8,6 @@ import { useActivityStore } from '../../stores/activityStore.js';
 import { useExpeditionStore } from '../../stores/expeditionStore.js';
 import { useUIStore } from '../../stores/uiStore.js';
 import { useGameStore } from '../../stores/gameStore.js';
-import { useInventoryStore } from '../../stores/inventoryStore.js';
-import { useTrialStore } from '../../stores/trialStore.js';
-import { usePrestigeStore } from '../../stores/prestigeStore.js';
-import { useCultivationStore } from '../../stores/cultivationStore.js';
-import { useRunDeltaStore } from '../../systems/runDeltas/runDeltaStore.js';
 import './WorldScreen.scss';
 import { resolveBountyDestination } from '../../utils/bountyRouting.js';
 import { buildLiveCraftBountyRouteSupportState } from '../../systems/bounties/liveCraftBountyRouteSupport.js';
@@ -42,12 +37,6 @@ import { InspectorDrawer } from '../../ui/shell/InspectorDrawer.js';
 import { buildWorldCombatHandoffSurface } from '../../systems/world/worldCombatHandoff.js';
 import { resolveWorldInspectorBoundaryLine } from '../../systems/ui/world/worldInspectorSurface.js';
 import { buildCityPhaseSurfaceFromSnapshot } from '../../systems/world/cityPhaseSurface.js';
-import {
-  applyDaoMandateVisibility,
-  buildLiveDaoMandateSurfaceV1,
-  pickDaoMandateGuidanceSettings,
-} from '../../systems/ui/daoMandate/index.js';
-import { buildWorldMandateRoutingLensSurface } from '../../systems/world/localMandateLensSurface.js';
 
 const WORLD_SCREEN_HIDDEN_MODULES = new Set<string>(DEFERRED_WORLD_MODULES);
 const EMPTY_VISIBLE_CITY_MODULES: readonly string[] = Object.freeze([]);
@@ -69,14 +58,6 @@ const ROUTING_CHIP_TO_HOTSPOT_CUE: Partial<Record<WorldRoutingChipKind, WorldHot
   build_fix: 'FIX',
   gate_critical: 'GATE',
   stock_low: 'LOW',
-};
-
-const MANDATE_RELATION_LABEL: Record<string, string> = {
-  primary: 'Primary route',
-  support: 'Support route',
-  future: 'Future route',
-  quiet: 'Quiet route',
-  blocked: 'Mandate route blocked',
 };
 
 function deriveCityRequirementText(city: CityDef): string | null {
@@ -128,15 +109,7 @@ function LoadedWorldScreen({ citiesSorted, rawContent }: LoadedWorldScreenProps)
   const activeActivityType = useActivityStore((state) => state.active?.type ?? null);
   const expeditionSlots = useExpeditionStore((state) => state.slots);
   const expeditionActive = useExpeditionStore((state) => state.active);
-  const uiSettings = useUIStore((state) => state.settings);
-  const gameRouteSignature = useGameStore((state) => `${state.realm.index}:${state.realm.substage}:${state.qi}:${state.qiPerSecond}:${state.selectedPath ?? ''}`);
-  const inventoryRouteSignature = useInventoryStore((state) => `${JSON.stringify(state.currencies)}:${Object.keys(state.items).map((itemId) => `${itemId}:${state.items[itemId]}`).join('|')}`);
-  const trialRouteSignature = useTrialStore((state) => JSON.stringify(state.progressByTrialId));
-  const prestigeRouteSignature = usePrestigeStore((state) => `${state.highestRealmReached}:${state.prestigeCount}`);
-  const cultivationRouteSignature = useCultivationStore((state) => `${state.selectedHeartLawId ?? ''}:${state.chapter}`);
-  const runDeltaRouteSignature = useRunDeltaStore((state) => `${state.deltas.length}:${state.deltas[0]?.id ?? ''}`);
   const { effectiveQuality, prefersReducedMotion } = useFxQuality();
-  const guidanceSettings = useMemo(() => pickDaoMandateGuidanceSettings(uiSettings), [uiSettings]);
 
   const selectedCity = useMemo(() => {
     if (!currentCityId) return null;
@@ -265,38 +238,6 @@ function LoadedWorldScreen({ citiesSorted, rawContent }: LoadedWorldScreenProps)
     : null;
   const economicPrimaryProblemKind = economicTopRoute?.problemKind ?? null;
 
-  const visibleMandate = useMemo(() => {
-    if (!rawContent) return null;
-    const raw = buildLiveDaoMandateSurfaceV1({
-      currentScreen: 'world',
-      guidanceProfile: guidanceSettings.guidanceOath,
-    });
-    return applyDaoMandateVisibility(raw, { settings: guidanceSettings });
-  }, [
-    activeActivityType,
-    currentCityId,
-    cultivationRouteSignature,
-    gameRouteSignature,
-    guidanceSettings,
-    inCombat,
-    inventoryRouteSignature,
-    prestigeRouteSignature,
-    rawContent,
-    runDeltaRouteSignature,
-    trialRouteSignature,
-  ]);
-
-  const mandateRoutingLens = useMemo(() => {
-    if (!visibleMandate || !selectedCity) return null;
-    return buildWorldMandateRoutingLensSurface({
-      mandate: visibleMandate,
-      cityId: selectedCity.id,
-      visibleModules: visibleCityModules as LiveWorldModuleKey[],
-      guidanceSettings,
-    });
-  }, [guidanceSettings, selectedCity, visibleCityModules, visibleMandate]);
-  const allowWorldRecommendationFallback = !mandateRoutingLens?.strongestModuleKey;
-
   const trackedAlert = useMemo(() => {
     if (!trackedBounty || !selectedCity) return null;
     const ctaModuleKey = trackedDestination?.kind === 'module' && visibleCityModules.includes(trackedDestination.moduleKey)
@@ -337,20 +278,16 @@ function LoadedWorldScreen({ citiesSorted, rawContent }: LoadedWorldScreenProps)
         cityId: selectedCity.id,
         visibleModules: visibleCityModules as never,
         activeModuleKey: lockedModuleKey,
-        mandatePrimaryModuleKey: mandateRoutingLens?.primaryModuleKey ?? null,
-        mandateSecondaryModuleKeys: mandateRoutingLens?.secondaryModuleKeys ?? [],
-        mandateSupportModuleKeys: mandateRoutingLens?.supportModuleKeys ?? [],
-        mandateBlockedModuleKeys: mandateRoutingLens?.blockedModuleKeys ?? [],
-        economicModuleKeys: allowWorldRecommendationFallback && economicPrimary?.cityId === selectedCity.id && economicPrimary.moduleKey ? [economicPrimary.moduleKey] : [],
+        economicModuleKeys: economicPrimary?.cityId === selectedCity.id && economicPrimary.moduleKey ? [economicPrimary.moduleKey] : [],
         economicPrimaryProblemKind,
-        trackedBountyModuleKey: allowWorldRecommendationFallback && trackedDestination?.kind === 'module' ? trackedDestination.moduleKey as never : null,
+        trackedBountyModuleKey: trackedDestination?.kind === 'module' ? trackedDestination.moduleKey as never : null,
         trackedBountyAlert: trackedAlert,
         expeditionIdleAlert,
         readyBountyCount: currentCityId ? (activeByCityId[currentCityId] ?? []).filter((entry) => entry.progress >= entry.target && !entry.claimed).length : 0,
         idleExpeditionSlots: Math.max(0, expeditionSlots - expeditionActive.filter((entry) => entry.cityId === selectedCity.id && entry.status === 'running').length),
       });
     },
-    [activeByCityId, allowWorldRecommendationFallback, currentCityId, economicPrimary, economicPrimaryProblemKind, expeditionActive, expeditionIdleAlert, expeditionSlots, lockedModuleKey, mandateRoutingLens, rawContent, selectedCity, trackedAlert, trackedDestination, visibleCityModules],
+    [activeByCityId, currentCityId, economicPrimary, economicPrimaryProblemKind, expeditionActive, expeditionIdleAlert, expeditionSlots, lockedModuleKey, rawContent, selectedCity, trackedAlert, trackedDestination, visibleCityModules],
   );
 
   const cityPhaseSurface = useMemo(() => {
@@ -362,9 +299,9 @@ function LoadedWorldScreen({ citiesSorted, rawContent }: LoadedWorldScreenProps)
       acknowledgedArrivalCityIds,
       pendingCityArrivalId,
       currentRealmIndex,
-      mandate: visibleMandate,
+      mandate: null,
     });
-  }, [acknowledgedArrivalCityIds, currentRealmIndex, pendingCityArrivalId, rawContent, selectedCity, unlockedCityIds, visibleMandate]);
+  }, [acknowledgedArrivalCityIds, currentRealmIndex, pendingCityArrivalId, rawContent, selectedCity, unlockedCityIds]);
 
   const moduleMetadataByKey = useMemo(() => {
     const byModuleKey: Record<string, {
@@ -580,19 +517,13 @@ function LoadedWorldScreen({ citiesSorted, rawContent }: LoadedWorldScreenProps)
     boundaryLineFromHandoff: inspectorCombatHandoff?.boundaryLine ?? null,
   });
   const inspectorCueKind = inspectorModuleKey ? moduleCueByKey[inspectorModuleKey] ?? null : null;
-  const inspectorLocalLens = inspectorModuleKey
-    ? mandateRoutingLens?.visibleRelationByModuleKey[inspectorModuleKey as LiveWorldModuleKey] ?? null
-    : null;
-  const inspectorMandateLine = inspectorLocalLens
-    ? `${MANDATE_RELATION_LABEL[inspectorLocalLens.relation] ?? 'Mandate route'}: ${inspectorLocalLens.detail}`
-    : null;
   const phaseLine = cityPhaseSurface
     ? `City Phase: ${cityPhaseSurface.cityName} - ${cityPhaseSurface.phaseLesson.title.toLowerCase()}`
     : null;
   const pressureLine = cityPhaseSurface
     ? `Pressure: ${cityPhaseSurface.newPressure.explanation}`
     : null;
-  const inspectorStateLine = inspectorMandateLine ?? (inspectorCueKind ? ({
+  const inspectorStateLine = inspectorCueKind ? ({
     GATE: 'Gate is your next step.',
     NOW: `Recommended here now: ${inspectorLabel}.`,
     FIX: 'Build fix points here.',
@@ -600,7 +531,7 @@ function LoadedWorldScreen({ citiesSorted, rawContent }: LoadedWorldScreenProps)
     CLAIM: 'Claimable board reward.',
     IDLE: 'Expedition slot idle.',
     SOON: 'Useful soon for your next step.',
-  } as const)[inspectorCueKind] : null);
+  } as const)[inspectorCueKind] : null;
   const inspectorOpenLabel = inspectorCombatHandoff?.openLabel ?? inspectorCard?.openLabel ?? (inspectorModuleKey ? `Open ${inspectorLabel}` : 'Open');
 
   return (

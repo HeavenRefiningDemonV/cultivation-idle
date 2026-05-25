@@ -131,7 +131,7 @@ export const GATE_TRIAL_FIXTURE_MINIMUM_ROWS = [
 ] as const;
 
 export const GATE_TRIAL_FIXTURE_RECOMMENDED_ROWS = [
-  { id: 'refineGear', title: 'Refine or temper gear', detail: '', status: 'success', iconKey: 'statusCheck', routeTarget: 'forge' },
+  { id: 'refineGear', title: 'Stabilize weapon floor', detail: '', status: 'success', iconKey: 'statusCheck', routeTarget: 'forge' },
   { id: 'boostStats', title: 'Boost stats with pills', detail: '', status: 'success', iconKey: 'statusCheck', routeTarget: 'apothecary' },
   { id: 'upgradeTechniques', title: 'Upgrade major techniques', detail: '', status: 'success', iconKey: 'statusCheck', routeTarget: 'techniques' },
   { id: 'ruinSupportRun', title: 'Complete one Ruin support run', detail: '', status: 'warning', iconKey: 'statusWarning', routeTarget: 'ruins' },

@@ -5,16 +5,6 @@ import { getContentBaseUrl } from '../../content/index.js';
 import { RewardService } from '../../services/rewards/index.js';
 import { buildMegaRewardBundle } from '../../debug/buildMegaRewardBundle.js';
 import { useUIStore } from '../../stores/uiStore.js';
-import {
-  type DaoAdvancedReadinessMathSetting,
-  type DaoBackgroundRemindersSetting,
-  type DaoFailureCoachingSetting,
-  type DaoJadeSlipLessonsSetting,
-  type DaoLocalLensBannersSetting,
-  type DaoMandateMotionModeSetting,
-  type DaoRecentOmensFeedSetting,
-  type DaoSourceRouteDetailSetting,
-} from '../../systems/ui/daoMandate/index.js';
 import { useRewardsLogStore } from '../../stores/rewardsLogStore.js';
 import { useManualSatchelStore } from '../../stores/manualSatchelStore.js';
 import { SystemStatusPanel } from '../SystemStatusPanel.js';
@@ -35,61 +25,6 @@ import {
   type ValidationIssue,
 } from '../../services/diagnostics/runValidation.js';
 import './SettingsScreen.scss';
-
-type GuidanceSelectOption<T extends string> = {
-  value: T;
-  label: string;
-};
-
-const JADE_SLIP_LESSON_OPTIONS: GuidanceSelectOption<DaoJadeSlipLessonsSetting>[] = [
-  { value: 'off', label: 'Off' },
-  { value: 'first_time', label: 'First encounter' },
-  { value: 'repeat_until_learned', label: 'Repeat on demand' },
-];
-
-const LOCAL_LENS_BANNER_OPTIONS: GuidanceSelectOption<DaoLocalLensBannersSetting>[] = [
-  { value: 'hidden', label: 'Hidden' },
-  { value: 'compact', label: 'Compact' },
-  { value: 'full', label: 'Full' },
-];
-
-const SOURCE_ROUTE_DETAIL_OPTIONS: GuidanceSelectOption<DaoSourceRouteDetailSetting>[] = [
-  { value: 'needed_only', label: 'When needed' },
-  { value: 'always', label: 'Expanded when inspected' },
-  { value: 'never', label: 'Never' },
-];
-
-const ADVANCED_READINESS_MATH_OPTIONS: GuidanceSelectOption<DaoAdvancedReadinessMathSetting>[] = [
-  { value: 'off', label: 'Off' },
-  { value: 'collapsed', label: 'Collapsed' },
-  { value: 'expanded', label: 'Expanded' },
-];
-
-const FAILURE_COACHING_OPTIONS: GuidanceSelectOption<DaoFailureCoachingSetting>[] = [
-  { value: 'critical_only', label: 'Critical only' },
-  { value: 'every_gate_loss', label: 'Every gate loss' },
-  { value: 'full_reflection', label: 'Full reflection' },
-];
-
-const BACKGROUND_REMINDER_OPTIONS: GuidanceSelectOption<DaoBackgroundRemindersSetting>[] = [
-  { value: 'critical_idle_only', label: 'Critical idle only' },
-  { value: 'normal', label: 'Normal' },
-  { value: 'full_optimization', label: 'Expanded support' },
-];
-
-const RECENT_OMENS_FEED_OPTIONS: GuidanceSelectOption<DaoRecentOmensFeedSetting>[] = [
-  { value: 'hidden', label: 'Hidden' },
-  { value: 'compact', label: 'Compact' },
-  { value: 'full', label: 'Full' },
-];
-
-const MANDATE_MOTION_MODE_OPTIONS: GuidanceSelectOption<DaoMandateMotionModeSetting>[] = [
-  { value: 'follow_story', label: 'Follow story motion' },
-  { value: 'full', label: 'Full' },
-  { value: 'medium', label: 'Medium' },
-  { value: 'low', label: 'Low' },
-  { value: 'reduced', label: 'Reduced' },
-];
 
 function downloadJson(filename: string, data: unknown) {
   try {
@@ -148,16 +83,7 @@ export function SettingsScreen() {
   const requirePrestigeConfirm = useUIStore((state) => state.settings.requirePrestigeConfirm);
   const showSystemStatusPanel = useUIStore((state) => state.settings.showSystemStatusPanel);
   const storyMotionMode = useUIStore((state) => state.settings.storyMotionMode);
-  const jadeSlipLessons = useUIStore((state) => state.settings.jadeSlipLessons);
-  const localLensBanners = useUIStore((state) => state.settings.localLensBanners);
-  const sourceRouteDetail = useUIStore((state) => state.settings.sourceRouteDetail);
-  const advancedReadinessMath = useUIStore((state) => state.settings.advancedReadinessMath);
-  const failureCoaching = useUIStore((state) => state.settings.failureCoaching);
-  const backgroundReminders = useUIStore((state) => state.settings.backgroundReminders);
-  const recentOmensFeed = useUIStore((state) => state.settings.recentOmensFeed);
-  const mandateMotionMode = useUIStore((state) => state.settings.mandateMotionMode);
   const setSettings = useUIStore((state) => state.setSettings);
-  const setGuidanceSetting = useUIStore((state) => state.setGuidanceSetting);
   const setHeaderTitles = useUIStore((state) => state.setHeaderTitles);
   const addNotification = useUIStore((state) => state.addNotification);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -381,179 +307,6 @@ export function SettingsScreen() {
             <h2 className={'settingsScreenPanelTitle'}>Gameplay &amp; UI</h2>
             <p className={'settingsScreenPanelSubtitle'}>Toggle interface elements and confirmations.</p>
             <div className={'settingsScreenOptionList'}>
-              <section className={'settingsMandateInterface'} aria-labelledby="settingsMandateInterfaceTitle">
-                <div className={'settingsMandateInterfaceHeader'}>
-                  <h3 id="settingsMandateInterfaceTitle" className={'settingsMandateInterfaceTitle'}>
-                    Dao Mandate Interface
-                  </h3>
-                  <p className={'settingsMandateInterfaceIntro'}>
-                    The Mandate uses one sparse omen-and-proof model for every player. These controls only change
-                    optional explanations, detail drawers, lesson cadence, and motion. They never change rewards, power, route truth, or progression.
-                  </p>
-                </div>
-
-                <details className={'settingsMandateExplanation'} open>
-                  <summary className={'settingsMandateExplanationSummary'}>Explanation and accessibility</summary>
-                  <p className={'settingsMandateExplanationIntro'}>
-                    Adjust supporting explanation after the first layer without changing the decree, proof, or route truth.
-                  </p>
-
-                  <div className={'settingsMandateExplanationGrid'}>
-                    <label className={'settingsMandateExplanationRow'}>
-                      <span>
-                        <span className={'settingsMandateExplanationLabel'}>Jade Slip lessons</span>
-                        <span className={'settingsMandateExplanationDescription'}>
-                          Contextual teaching slips that explain a concept when it becomes relevant.
-                        </span>
-                      </span>
-                      <select
-                        value={jadeSlipLessons}
-                        onChange={(event) =>
-                          setGuidanceSetting('jadeSlipLessons', event.target.value as DaoJadeSlipLessonsSetting)}
-                        className={'settingsScreenSelect'}
-                      >
-                        {JADE_SLIP_LESSON_OPTIONS.map((option) => (
-                          <option key={option.value} value={option.value}>{option.label}</option>
-                        ))}
-                      </select>
-                    </label>
-
-                    <label className={'settingsMandateExplanationRow'}>
-                      <span>
-                        <span className={'settingsMandateExplanationLabel'}>Room relation stamps</span>
-                        <span className={'settingsMandateExplanationDescription'}>
-                          Controls small local stamps that explain whether a room is relevant when you visit it.
-                        </span>
-                      </span>
-                      <select
-                        value={localLensBanners}
-                        onChange={(event) =>
-                          setGuidanceSetting('localLensBanners', event.target.value as DaoLocalLensBannersSetting)}
-                        className={'settingsScreenSelect'}
-                      >
-                        {LOCAL_LENS_BANNER_OPTIONS.map((option) => (
-                          <option key={option.value} value={option.value}>{option.label}</option>
-                        ))}
-                      </select>
-                    </label>
-
-                    <label className={'settingsMandateExplanationRow'}>
-                      <span>
-                        <span className={'settingsMandateExplanationLabel'}>Source provenance</span>
-                        <span className={'settingsMandateExplanationDescription'}>
-                          Controls whether inspected proof and reserve details show where materials or proof can come from.
-                        </span>
-                      </span>
-                      <select
-                        value={sourceRouteDetail}
-                        onChange={(event) =>
-                          setGuidanceSetting('sourceRouteDetail', event.target.value as DaoSourceRouteDetailSetting)}
-                        className={'settingsScreenSelect'}
-                      >
-                        {SOURCE_ROUTE_DETAIL_OPTIONS.map((option) => (
-                          <option key={option.value} value={option.value}>{option.label}</option>
-                        ))}
-                      </select>
-                    </label>
-
-                    <label className={'settingsMandateExplanationRow'}>
-                      <span>
-                        <span className={'settingsMandateExplanationLabel'}>Formula/detail rows</span>
-                        <span className={'settingsMandateExplanationDescription'}>
-                          Controls numeric evidence rows in detail views and owner screens.
-                        </span>
-                      </span>
-                      <select
-                        value={advancedReadinessMath}
-                        onChange={(event) =>
-                          setGuidanceSetting('advancedReadinessMath', event.target.value as DaoAdvancedReadinessMathSetting)}
-                        className={'settingsScreenSelect'}
-                      >
-                        {ADVANCED_READINESS_MATH_OPTIONS.map((option) => (
-                          <option key={option.value} value={option.value}>{option.label}</option>
-                        ))}
-                      </select>
-                    </label>
-
-                    <label className={'settingsMandateExplanationRow'}>
-                      <span>
-                        <span className={'settingsMandateExplanationLabel'}>Failure reflections</span>
-                        <span className={'settingsMandateExplanationDescription'}>
-                          Controls how much detail appears after meaningful or repeated failures.
-                        </span>
-                      </span>
-                      <select
-                        value={failureCoaching}
-                        onChange={(event) =>
-                          setGuidanceSetting('failureCoaching', event.target.value as DaoFailureCoachingSetting)}
-                        className={'settingsScreenSelect'}
-                      >
-                        {FAILURE_COACHING_OPTIONS.map((option) => (
-                          <option key={option.value} value={option.value}>{option.label}</option>
-                        ))}
-                      </select>
-                    </label>
-
-                    <label className={'settingsMandateExplanationRow'}>
-                      <span>
-                        <span className={'settingsMandateExplanationLabel'}>Background support reminders</span>
-                        <span className={'settingsMandateExplanationDescription'}>
-                          Controls reminders for passive support such as expeditions, bounties, and queues.
-                        </span>
-                      </span>
-                      <select
-                        value={backgroundReminders}
-                        onChange={(event) =>
-                          setGuidanceSetting('backgroundReminders', event.target.value as DaoBackgroundRemindersSetting)}
-                        className={'settingsScreenSelect'}
-                      >
-                        {BACKGROUND_REMINDER_OPTIONS.map((option) => (
-                          <option key={option.value} value={option.value}>{option.label}</option>
-                        ))}
-                      </select>
-                    </label>
-
-                    <label className={'settingsMandateExplanationRow'}>
-                      <span>
-                        <span className={'settingsMandateExplanationLabel'}>Recent omen memory</span>
-                        <span className={'settingsMandateExplanationDescription'}>
-                          Controls how much recent-event memory appears in Mandate detail.
-                        </span>
-                      </span>
-                      <select
-                        value={recentOmensFeed}
-                        onChange={(event) =>
-                          setGuidanceSetting('recentOmensFeed', event.target.value as DaoRecentOmensFeedSetting)}
-                        className={'settingsScreenSelect'}
-                      >
-                        {RECENT_OMENS_FEED_OPTIONS.map((option) => (
-                          <option key={option.value} value={option.value}>{option.label}</option>
-                        ))}
-                      </select>
-                    </label>
-
-                    <label className={'settingsMandateExplanationRow'}>
-                      <span>
-                        <span className={'settingsMandateExplanationLabel'}>Mandate motion</span>
-                        <span className={'settingsMandateExplanationDescription'}>
-                          Controls only Mandate ceremony, reveals, glints, and seals. Reduced motion keeps the meaning but removes nonessential movement.
-                        </span>
-                      </span>
-                      <select
-                        value={mandateMotionMode}
-                        onChange={(event) =>
-                          setGuidanceSetting('mandateMotionMode', event.target.value as DaoMandateMotionModeSetting)}
-                        className={'settingsScreenSelect'}
-                      >
-                        {MANDATE_MOTION_MODE_OPTIONS.map((option) => (
-                          <option key={option.value} value={option.value}>{option.label}</option>
-                        ))}
-                      </select>
-                    </label>
-                  </div>
-                </details>
-              </section>
-
               <label className={'settingsScreenOptionRow'}>
                 <input
                   type="checkbox"

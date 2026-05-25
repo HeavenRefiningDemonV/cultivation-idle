@@ -4,15 +4,6 @@ import type {
   RunCompassTabTarget,
   RunCompassSurface,
 } from '../../../systems/ui/runCompass/index.js';
-import type {
-  DaoMandateEffectiveMotionMode,
-  DaoMandateRoute,
-  DaoCurrentOmenV1,
-  DaoOmenProjectionV1,
-  DaoProofSealV1,
-  DaoReflectionV1,
-  DaoSourceThreadV1,
-} from '../../../systems/ui/daoMandate/index.js';
 import type { SpiritRootElement } from '../../../types/index.js';
 
 export type CultivationExactSurfaceMode = 'fixture' | 'live';
@@ -27,7 +18,6 @@ export type CultivationExactActivityState =
 
 export type CultivationExactDrawerId =
   | 'none'
-  | 'omen'
   | 'milestone'
   | 'doctrine'
   | 'gate'
@@ -120,6 +110,15 @@ export interface CultivationVerseDetailSurface {
   placeholderValue?: string;
 }
 
+export interface CultivationBreakthroughReadinessSurfaceV1 {
+  title: 'Breakthrough Readiness';
+  state: 'ready' | 'blocked' | 'cultivating' | 'gate_required' | 'content_cap' | 'prestige_recommended';
+  headline: string;
+  detail: string;
+  rows: CultivationDrawerRowSurface[];
+  primaryAction?: CultivationButtonSurface | null;
+}
+
 export interface CultivationDrawerSurface {
   id: Exclude<CultivationExactDrawerId, 'none'>;
   side: 'left' | 'right';
@@ -129,21 +128,6 @@ export interface CultivationDrawerSurface {
   action?: CultivationButtonSurface;
   runCompass?: RunCompassSurface | null;
   verse?: CultivationVerseDetailSurface;
-}
-
-export interface CultivationCompactOmenSurfaceV1 {
-  projection: DaoOmenProjectionV1;
-  currentOmen: DaoCurrentOmenV1;
-  proofSeals: DaoProofSealV1[];
-  sourceThreads: DaoSourceThreadV1[];
-  reflections: DaoReflectionV1[];
-  motionMode: DaoMandateEffectiveMotionMode;
-  regionLabel: 'Threshold Omen';
-  detailSummary: string;
-  detailActionLabel: 'Inspect proof';
-  allowedDirectRoute: DaoMandateRoute | null;
-  defaultCopyPolicy: 'symptom_proof_first';
-  sourceThreadsOpenByDefault: false;
 }
 
 export interface CultivationExactSurfaceV1 {
@@ -217,7 +201,7 @@ export interface CultivationExactSurfaceV1 {
     secondary?: CultivationButtonSurface;
     supportLine: string;
   };
-  compactOmen: CultivationCompactOmenSurfaceV1 | null;
+  breakthroughReadiness: CultivationBreakthroughReadinessSurfaceV1;
   runCompassCompact?: RunCompassCompactSurface | null;
 
   lifeCycleWhisper: {
@@ -230,7 +214,6 @@ export interface CultivationExactSurfaceV1 {
   };
 
   drawers: {
-    omen: CultivationDrawerSurface;
     milestone: CultivationDrawerSurface;
     doctrine: CultivationDrawerSurface;
     gate: CultivationDrawerSurface;

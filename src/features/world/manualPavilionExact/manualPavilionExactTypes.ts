@@ -1,5 +1,4 @@
 import type { IconId } from '../../../ui/icons/index.js';
-import type { DaoMandateModuleSourceSinkProjection } from '../../../systems/ui/daoMandate/index.js';
 import type { TechniqueVisualIdentity, VisualBadgeSurface } from '../../techniques/techniqueVisualIdentity.js';
 
 export type ManualPavilionExactMode = 'fixture' | 'live';
@@ -280,7 +279,6 @@ export interface ManualPavilionExactSurfaceV1 {
     lastPurchaseMessage: string | null;
     lastErrorMessage: string | null;
   };
-  mandateSourceSink?: DaoMandateModuleSourceSinkProjection | null;
   debug?: {
     missingDataFallbacks: string[];
     notes: string[];

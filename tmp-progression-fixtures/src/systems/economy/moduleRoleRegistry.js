@@ -62,8 +62,8 @@ export const MODULE_ROLE_REGISTRY = [
     },
     {
         moduleKey: 'gateTrial',
-        roleTag: 'Gate Progress',
-        bestUsedWhen: 'You are ready to resolve the current milestone gate.',
+        roleTag: 'Gate Item',
+        bestUsedWhen: 'The current gate item is ready for judgment.',
         economicCategory: 'milestone',
         moduleKind: 'milestone_step',
         activityMode: 'foreground',

@@ -281,9 +281,16 @@ export interface DaoJadeSlip {
   profile: DaoMandateGuidanceProfile | 'all';
 }
 
+export type DaoLocalOmenRelationV1 =
+  | 'primary-evidence'
+  | 'supporting-source'
+  | 'blocked'
+  | 'completed'
+  | 'quiet';
+
 export interface DaoLocalLensSurface {
   screenId: string;
-  relation: 'primary' | 'support' | 'future' | 'quiet' | 'blocked';
+  relation: DaoLocalOmenRelationV1;
   label: string;
   detail: string;
   route: DaoMandateRoute | null;

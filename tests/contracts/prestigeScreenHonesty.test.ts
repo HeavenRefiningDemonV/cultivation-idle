@@ -9,6 +9,7 @@ const readSource = async (relativePath: string) =>
 test('prestige exact screen uses advisor vocabulary and reset contract headings', async () => {
   const wrapper = await readSource('src/components/screens/PrestigeScreen.tsx');
   const source = await readSource('src/features/prestige/prestigeLedgerExact/PrestigeLedgerExactScreen.tsx');
+  const surface = await readSource('src/features/prestige/prestigeLedgerExact/buildPrestigeLedgerExactSurface.ts');
   const presentation = await readSource('src/features/prestige/prestigeLedgerExact/prestigeLedgerExactPresentation.ts');
   const advisor = await readSource('src/features/prestige/prestigeAdvisorSurface.ts');
 
@@ -17,9 +18,14 @@ test('prestige exact screen uses advisor vocabulary and reset contract headings'
   assert.equal(advisor.includes('Recommended'), true);
   assert.equal(wrapper.includes('PrestigeLedgerScreenOwner'), true);
   assert.equal(source.includes('Reincarnation Ledger'), true);
+  assert.equal(surface.includes('Reincarnation Decree'), true);
+  assert.equal(surface.includes('Reset Contract'), true);
   assert.equal(presentation.includes('Resets this life'), true);
   assert.equal(presentation.includes('Carries forward'), true);
   assert.equal(presentation.includes('Rebuilt next life'), true);
+  assert.equal(source.includes('Primary Route'), false);
+  assert.equal(source.includes('Mandate Context'), false);
+  assert.equal(source.includes('Run Compass'), false);
   assert.equal(source.includes('Heavenly Decrees'), false);
   assert.equal(source.includes('AP Forecast'), false);
 });

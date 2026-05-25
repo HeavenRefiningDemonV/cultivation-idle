@@ -1,6 +1,4 @@
 import type { WorldBuildingKey } from '../../../stores/uiStore.js';
-import type { DaoMandateModuleSourceSinkProjection } from '../../../systems/ui/daoMandate/index.js';
-
 export type ForgeExactTab = 'refine' | 'temper' | 'runes';
 export type ForgeExactMode = 'idle' | 'assisted' | 'handsOn';
 export type ForgeExactSurfaceMode = 'fixture' | 'live';
@@ -289,7 +287,6 @@ export interface ForgeExactSurfaceV1 {
   floorRail: ForgeExactFloorRail;
   primaryAction: ForgeExactButtonSurface;
   secondaryActions: ForgeExactButtonSurface[];
-  mandateSourceSink?: DaoMandateModuleSourceSinkProjection | null;
   debug?: {
     notes: string[];
     visibleBlueprintIds?: string[];

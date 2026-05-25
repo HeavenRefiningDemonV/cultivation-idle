@@ -13,7 +13,7 @@ export const SPOILS_GROUP_TITLES: Record<CombatAftermathSpoilsGroupId, string> =
   crafting: 'Crafting',
   reputation: 'Reputation',
   rare_signs: 'Rare Signs',
-  gate_proof: 'Gate Proof',
+  gate_proof: 'Gate Item',
 };
 
 export const SPOILS_GROUP_ORDER: CombatAftermathSpoilsGroupId[] = [
@@ -98,7 +98,7 @@ export function summarizeGroup(group: CombatAftermathSpoilsGroup): CombatAfterma
   const first = group.lines[0];
   const extra = group.lines.length > 1 ? ` and ${group.lines.length - 1} more` : '';
   const label = group.id === 'gate_proof'
-    ? `Gate proof: ${first?.value ?? first?.label ?? group.title}`
+    ? `Gate item: ${first?.value ?? first?.label ?? group.title}`
     : `${first?.value ?? first?.label ?? group.title}`;
   return {
     ...group,

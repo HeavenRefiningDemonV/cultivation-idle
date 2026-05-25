@@ -14,6 +14,21 @@ export interface ModuleSourceSinkPanelProps {
   onRouteAction?: DaoMandateRouteActionHandler;
 }
 
+function relationLabel(relation: DaoMandateModuleSourceSinkProjection['sourceSink']['relation']): string {
+  switch (relation) {
+    case 'primary-evidence':
+      return 'Relevant source';
+    case 'supporting-source':
+      return 'Supporting source';
+    case 'blocked':
+      return 'Locked source';
+    case 'completed':
+      return 'Proof sealed';
+    case 'quiet':
+      return 'Quiet';
+  }
+}
+
 export function ModuleSourceSinkPanel({
   projection,
   className,
@@ -22,15 +37,17 @@ export function ModuleSourceSinkPanel({
 }: ModuleSourceSinkPanelProps) {
   if (!projection) return null;
   const { sourceSink } = projection;
+  if (sourceSink.relation === 'quiet') return null;
+  const stampLabel = relationLabel(sourceSink.relation);
 
   return (
     <section
       className={classNames('daoModuleSourceSinkPanel', className)}
-      data-relation={sourceSink.relation}
+      data-relation={stampLabel}
       data-module-key={sourceSink.moduleKey}
     >
       <header className="daoModuleSourceSinkPanel__header">
-        <span className="daoModuleSourceSinkPanel__relation">{sourceSink.relation}</span>
+        <span className="daoModuleSourceSinkPanel__relation">{stampLabel}</span>
         <div>
           <h2>{title ?? sourceSink.headline}</h2>
           <p>{sourceSink.detail}</p>

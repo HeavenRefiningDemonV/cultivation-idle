@@ -74,10 +74,6 @@ void test('Cultivation Exact live surface maps idle store truth without fixture 
   assert.equal(surface.rightDoctrineSeals.find((seal) => seal.id === 'verse')?.value, 'Chapter 3');
   assert.equal(surface.commandDeck.primary.actionKey, 'startCultivation');
   assert.equal(surface.commandDeck.primary.label, 'Start Cultivation');
-  assert.equal(surface.compactOmen?.currentOmen.kind, 'threshold_unreached');
-  assert.equal(surface.compactOmen?.currentOmen.allowDirectRoute, false);
-  assert.ok((surface.compactOmen?.proofSeals.length ?? 0) <= 3);
-  assert.equal(surface.compactOmen?.proofSeals.some((seal) => seal.kind === 'qi_threshold'), true);
 });
 
 void test('Cultivation Exact live surface maps cultivating and near-edge states', () => {
@@ -102,14 +98,14 @@ void test('Cultivation Exact live surface maps gate-blocked, ready, and content-
   const gateBlocked = build({
     realm: { index: 0, substage: 9, name: 'Qi Condensation' },
     requiredGateItemId: 'token_gate',
-    requiredGateItemName: 'Gate Proof',
+    requiredGateItemName: 'Foundation Pill',
     requiredGateItemCount: 0,
     qi: '30000000',
     breakthroughRequirement: '24400000',
     runCompassActions: [{
       id: 'gate',
       label: 'Challenge the Gate Trial',
-      why: 'Gate proof is missing.',
+      why: 'Gate item is missing.',
       destinationLabel: 'Gate Trial',
       blocked: false,
       blockedReason: null,
@@ -119,15 +115,12 @@ void test('Cultivation Exact live surface maps gate-blocked, ready, and content-
   assert.equal(gateBlocked.meta.activityState, 'gate_blocked');
   assert.equal(gateBlocked.commandDeck.primary.actionKey, 'openGateTrial');
   assert.equal(gateBlocked.commandDeck.primary.label, 'Open Gate Trial');
-  assert.equal(gateBlocked.leftMilestoneSeals[1]?.title, 'Gate Proof');
-  assert.equal(gateBlocked.compactOmen?.currentOmen.kind, 'proof_missing');
-  assert.equal(gateBlocked.compactOmen?.proofSeals.some((seal) => seal.kind === 'gate_proof' && seal.state === 'unsealed'), true);
-  assert.equal(gateBlocked.compactOmen?.allowedDirectRoute?.target?.kind, 'world_module');
+  assert.equal(gateBlocked.leftMilestoneSeals[1]?.title, 'Foundation Pill');
 
   const ready = build({
     realm: { index: 0, substage: 9, name: 'Qi Condensation' },
     requiredGateItemId: 'token_gate',
-    requiredGateItemName: 'Gate Proof',
+    requiredGateItemName: 'Foundation Pill',
     requiredGateItemCount: 1,
     qi: '30000000',
     breakthroughRequirement: '24400000',
@@ -136,8 +129,6 @@ void test('Cultivation Exact live surface maps gate-blocked, ready, and content-
   assert.equal(ready.commandDeck.primary.actionKey, 'breakThrough');
   assert.equal(ready.commandDeck.primary.label, 'Break Through');
   assert.equal(ready.centerAltar.lotus.assetId, 'qi_lotus_full');
-  assert.equal(ready.compactOmen?.currentOmen.kind, 'breakthrough_ready');
-  assert.deepEqual(ready.compactOmen?.proofSeals.map((seal) => seal.kind), ['realm_edge', 'qi_threshold', 'gate_proof']);
 
   const substageReady = build({
     activeActivityType: null,
@@ -168,6 +159,4 @@ void test('Cultivation Exact live surface maps gate-blocked, ready, and content-
   assert.equal(contentCap.leftMilestoneSeals[0]?.title, 'Chapter Cap');
   assert.equal(contentCap.lifeCycleWhisper.visible, false);
   assert.equal(contentCap.lifeCycleWhisper.active, false);
-  assert.equal(contentCap.compactOmen?.currentOmen.kind, 'content_cap');
-  assert.equal(contentCap.compactOmen?.proofSeals.some((seal) => seal.kind === 'reincarnation'), true);
 });

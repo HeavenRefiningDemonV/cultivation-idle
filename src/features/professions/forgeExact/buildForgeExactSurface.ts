@@ -8,7 +8,6 @@ import { useActivityStore } from '../../../stores/activityStore.js';
 import { useCraftSessionStore } from '../../../stores/craftSessionStore.js';
 import { greaterThanOrEqualTo } from '../../../utils/numbers.js';
 import { buildBestSourceIndex, getBestSourceIndexEntry } from '../../../systems/economy/bestSourceIndex.js';
-import { buildLiveDaoMandateModuleSourceSinkProjection } from '../../../systems/ui/daoMandate/index.js';
 import {
   buildForgeSurfaceModel,
   getAllowedForgeModes,
@@ -876,11 +875,6 @@ export function buildForgeExactSurfaceFromStores(
     floorRail: floorRail({ floor, activeTab, gateLabel }),
     primaryAction,
     secondaryActions,
-    mandateSourceSink: buildLiveDaoMandateModuleSourceSinkProjection({
-      currentCityId: resolvedCityId,
-      currentModuleKey: 'forge',
-      currentScreen: 'forge',
-    }),
     debug: {
       notes: [
         'Live Forge Exact surface is built from visible live Forge getters, floor read model, inventory, queue, and mode policy.',

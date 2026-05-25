@@ -1,10 +1,5 @@
 import type { CombatAftermathSurfaceV1 } from '../../combatAftermath/index.js';
 import type { FailureReflectionSurfaceV1 } from '../../../systems/failureReflection/index.js';
-import type {
-  DaoLocalLensSurface,
-  DaoMandateEffectiveMotionMode,
-  DaoMandateGuidanceProfile,
-} from '../../../systems/ui/daoMandate/index.js';
 
 export type GateTrialExactSurfaceMode = 'fixture' | 'live';
 export type GateTrialExactValueSource = 'fixture' | 'live' | 'derived' | 'content' | 'synthetic';
@@ -387,15 +382,6 @@ export interface GateTrialExactDebugSurface {
   visualContractNotes: string[];
 }
 
-export interface GateTrialMandateLensSurface {
-  lens: DaoLocalLensSurface | null;
-  compactLine: string | null;
-  sourceLine: string | null;
-  profile: DaoMandateGuidanceProfile;
-  variant: 'compact' | 'default' | 'full';
-  motionMode: DaoMandateEffectiveMotionMode;
-}
-
 export interface GateTrialExactSurfaceV1 {
   meta: GateTrialExactSurfaceMeta;
   shell: GateTrialExactShellFlags;
@@ -409,7 +395,6 @@ export interface GateTrialExactSurfaceV1 {
   trialSummary: GateTrialTrialSummarySurface;
   readinessRail: GateTrialReadinessRailSurface;
   primaryAction: GateTrialButtonSurface;
-  mandateLens?: GateTrialMandateLensSurface | null;
   aftermath?: CombatAftermathSurfaceV1 | null;
   failureReflection?: FailureReflectionSurfaceV1 | null;
   debug: GateTrialExactDebugSurface;

@@ -12,7 +12,7 @@
   box-shadow: var(--dao-shadow);
 }
 
-.daoLocalMandateLensHeader--primary {
+.daoLocalMandateLensHeader--primary-evidence {
   border-color: rgba(201, 154, 61, 0.58);
 }
 
@@ -20,8 +20,8 @@
   border-color: rgba(155, 47, 39, 0.46);
 }
 
-.daoLocalMandateLensHeader--future,
-.daoLocalMandateLensHeader--quiet {
+.daoLocalMandateLensHeader--supporting-source,
+.daoLocalMandateLensHeader--completed {
   opacity: 0.88;
 }
 
