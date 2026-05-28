@@ -7,6 +7,8 @@ import { useInventoryStore } from '../../../stores/inventoryStore.js';
 import { BountiesExactScreen } from './BountiesExactScreen.js';
 import { buildBountiesExactSurfaceFromStores } from './buildBountiesExactSurface.js';
 import { useBountiesExactActionController } from './useBountiesExactActionController.js';
+import { PERF_LABELS, time } from '../../../services/performance/index.js';
+import { PerfProfiler, useRenderCounter } from '../../../services/performance/perfReact.js';
 import './BountiesExactScreen.scss';
 
 export interface BountiesExactScreenOwnerProps {
@@ -42,30 +44,18 @@ function useExactPlaneScale(containerRef: React.RefObject<HTMLElement | null>) {
 }
 
 export function BountiesExactScreenOwner({ cityId, forceFixture = false }: BountiesExactScreenOwnerProps) {
+  useRenderCounter(PERF_LABELS.renderBountiesExactScreenOwner);
   const ownerRef = useRef<HTMLDivElement | null>(null);
   const scale = useExactPlaneScale(ownerRef);
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   const [now, setNow] = useState(() => Date.now());
 
-  const contentSignature = useContentStore((state) => [
-    state.isLoaded ? 'loaded' : 'unloaded',
-    state.citiesSorted.length,
-    Object.keys(state.maps.itemsById).length,
-    state.raw?.bounties?.templates?.length ?? 0,
-  ].join('|'));
+  const contentVersion = useContentStore((state) => state.contentVersion);
   const citySignature = useCityStore((state) => `${state.currentCityId}|${state.unlockedCityIds.join(',')}`);
-  const inventorySignature = useInventoryStore((state) => `${state.merit}|${state.spiritStones}`);
-  const boardSignature = useBountyStore((state) => JSON.stringify({
-    active: cityId ? state.activeByCityId[cityId]?.map((entry) => [
-      entry.instanceId,
-      entry.progress,
-      entry.target,
-      entry.claimed,
-      entry.kind,
-    ]) : [],
-    tracked: cityId ? state.trackedByCityId[cityId] ?? null : null,
-    refresh: cityId ? state.lastRefreshAtByCityId[cityId] ?? null : null,
-  }));
+  const currencyVersion = useInventoryStore((state) => state.currencyVersion);
+  const boardVersion = useBountyStore((state) =>
+    cityId ? state.bountyVersionByCityId[cityId] ?? 0 : state.bountyVersion,
+  );
   const generateForCity = useBountyStore((state) => state.generateForCity);
 
   const city = useContentStore((state) => (cityId ? state.maps.citiesById[cityId] : undefined));
@@ -82,17 +72,17 @@ export function BountiesExactScreenOwner({ cityId, forceFixture = false }: Bount
   }, [city, cityId, forceFixture, generateForCity, hasBoard]);
 
   const storeInvalidationKey = useMemo(
-    () => [contentSignature, citySignature, inventorySignature, boardSignature].join('||'),
-    [boardSignature, citySignature, contentSignature, inventorySignature],
+    () => [contentVersion, citySignature, currencyVersion, boardVersion].join('||'),
+    [boardVersion, citySignature, contentVersion, currencyVersion],
   );
 
   const surface = useMemo(() => {
     void storeInvalidationKey;
-    return buildBountiesExactSurfaceFromStores(cityId, {
+    return time(PERF_LABELS.surfaceBounties, () => buildBountiesExactSurfaceFromStores(cityId, {
       mode: forceFixture ? 'fixture' : 'live',
       selectedOrderId,
       now,
-    });
+    }));
   }, [cityId, forceFixture, now, selectedOrderId, storeInvalidationKey]);
 
   useEffect(() => {
@@ -108,6 +98,7 @@ export function BountiesExactScreenOwner({ cityId, forceFixture = false }: Bount
   });
 
   return (
+    <PerfProfiler id={PERF_LABELS.renderBountiesExactScreenOwner}>
     <div
       ref={ownerRef}
       className="bountiesExactScreenOwner"
@@ -128,5 +119,6 @@ export function BountiesExactScreenOwner({ cityId, forceFixture = false }: Bount
         onNotePrimaryAction={actions.notePrimaryAction}
       />
     </div>
+    </PerfProfiler>
   );
 }

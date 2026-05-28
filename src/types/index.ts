@@ -206,6 +206,9 @@ export interface GameState {
   activeBuffs: ActiveBuff[];
   absorptionShield: string;
   absorptionExpiresAt: number | null;
+  realmVersion: number;
+  qiDisplayVersion: number;
+  statsVersion: number;
 
   // Cultivation choices
   selectedPath: CultivationPath | null;
@@ -227,6 +230,7 @@ export interface GameState {
 
   // Actions
   tick: (deltaTime: number) => void;
+  flushCultivationAccumulation: (reason?: string) => void;
   setFocusMode: (mode: FocusMode) => void;
   selectPath: (path: CultivationPath) => void;
   selectPerk: (perkId: string) => boolean;
@@ -1092,6 +1096,9 @@ export interface CombatState {
   enemyMechanics: EnemyMechanic[];
   activeAura: { damagePerSec: number; description?: string } | null;
   combatResolved: boolean;
+  combatSessionVersion: number;
+  combatViewVersion: number;
+  combatResultVersion: number;
 
   // Actions
   enterCombat: (zone: string, enemy: EnemyDefinition) => void;

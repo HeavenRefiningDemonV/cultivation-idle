@@ -13,6 +13,8 @@ import { buildApothecaryExactSurfaceFromStores } from './buildApothecaryExactSur
 import { isApothecaryExactFixtureRouteEnabled } from './apothecaryExactFixtureRoute.js';
 import { useApothecaryExactActionController } from './useApothecaryExactActionController.js';
 import type { ApothecaryExactFocus } from './apothecaryExactTypes.js';
+import { PERF_LABELS, time } from '../../../services/performance/index.js';
+import { PerfProfiler, useRenderCounter } from '../../../services/performance/perfReact.js';
 import './ApothecaryExactScreen.scss';
 
 export interface ApothecaryExactScreenOwnerProps {
@@ -50,6 +52,7 @@ function useExactPlaneScale(containerRef: React.RefObject<HTMLElement>) {
 }
 
 export function ApothecaryExactScreenOwner(props: ApothecaryExactScreenOwnerProps) {
+  useRenderCounter(PERF_LABELS.renderApothecaryExactScreenOwner);
   const ownerRef = useRef<HTMLDivElement | null>(null);
   const pouchAnchorRef = useRef<HTMLButtonElement | null>(null);
   const [pouchOpen, setPouchOpen] = useState(false);
@@ -57,43 +60,34 @@ export function ApothecaryExactScreenOwner(props: ApothecaryExactScreenOwnerProp
   const forceFixtureFromRoute = isApothecaryExactFixtureRouteEnabled();
   const mode = props.forceFixture || forceFixtureFromRoute ? 'fixture' : 'live';
 
-  const contentSignature = useContentStore((state) => [
-    state.isLoaded ? 'loaded' : 'unloaded',
-    state.citiesSorted.length,
-    Object.keys(state.maps.apothecariesById).length,
-    Object.keys(state.maps.itemsById).length,
-  ].join('|'));
-  const inventorySignature = useInventoryStore((state) => JSON.stringify({ currencies: state.currencies, items: state.items }));
-  const shopSignature = useShopStore((state) => JSON.stringify({
-    dayKey: state.dayKey,
-    purchased: props.shopId ? state.purchasedToday[props.shopId] ?? {} : state.purchasedToday,
-  }));
-  const pouchSignature = useMedicinePouchStore((state) => JSON.stringify(state.slots));
-  const brewSignature = useProfessionStore((state) => state.alchemyQueue.map((job) => `${job.id}:${job.recipeId}:${job.qty}:${job.endsAt}`).join('|'));
-  const expeditionSignature = useExpeditionStore((state) => `${state.slots}:${state.active.map((run) => `${run.slotIndex}:${run.status}:${run.endsAt}`).join('|')}`);
-  const bountySignature = useBountyStore((state) => JSON.stringify({
-    tracked: state.trackedByCityId[props.cityId] ?? null,
-    board: state.activeByCityId[props.cityId]?.map((bounty) => `${bounty.instanceId}:${bounty.progress}:${bounty.claimed}`).join('|') ?? '',
-  }));
+  const contentVersion = useContentStore((state) => state.contentVersion);
+  const inventoryVersion = useInventoryStore((state) => state.inventoryVersion);
+  const currencyVersion = useInventoryStore((state) => state.currencyVersion);
+  const shopVersion = useShopStore((state) => state.shopVersion);
+  const pouchVersion = useMedicinePouchStore((state) => state.pouchVersion);
+  const professionVersion = useProfessionStore((state) => state.professionVersion);
+  const expeditionVersion = useExpeditionStore((state) => state.expeditionVersion);
+  const bountyVersion = useBountyStore((state) => state.bountyVersionByCityId[props.cityId] ?? 0);
 
   const surface = useMemo(
-    () => buildApothecaryExactSurfaceFromStores(props.cityId, {
+    () => time(PERF_LABELS.surfaceApothecary, () => buildApothecaryExactSurfaceFromStores(props.cityId, {
       mode,
       shopId: props.shopId ?? null,
       focus: props.focus,
-    }),
+    })),
     [
       props.cityId,
       props.shopId,
       props.focus,
       mode,
-      contentSignature,
-      inventorySignature,
-      shopSignature,
-      pouchSignature,
-      brewSignature,
-      expeditionSignature,
-      bountySignature,
+      contentVersion,
+      inventoryVersion,
+      currencyVersion,
+      shopVersion,
+      pouchVersion,
+      professionVersion,
+      expeditionVersion,
+      bountyVersion,
     ],
   );
   const actions = useApothecaryExactActionController({
@@ -105,6 +99,7 @@ export function ApothecaryExactScreenOwner(props: ApothecaryExactScreenOwnerProp
   const screenActions = surface.meta.mode === 'live' ? actions : { onAction: actions.onAction };
 
   return (
+    <PerfProfiler id={PERF_LABELS.renderApothecaryExactScreenOwner}>
     <div
       ref={ownerRef}
       className="apothecaryExactScreenOwner"
@@ -122,5 +117,6 @@ export function ApothecaryExactScreenOwner(props: ApothecaryExactScreenOwnerProp
       />
       <MedicinePouchModal open={pouchOpen} onClose={() => setPouchOpen(false)} anchorRef={pouchAnchorRef} />
     </div>
+    </PerfProfiler>
   );
 }

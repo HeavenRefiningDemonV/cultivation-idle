@@ -4,6 +4,7 @@ import { apply as applyOfflineCatchup } from '../time/OfflineCatchup.js';
 import { GameClock } from '../time/GameClock.js';
 import { useUIStore } from '../../stores/uiStore.js';
 import { shouldShowOfflineProgressModal } from '../../systems/balance/offlineTargets.js';
+import { PERF_LABELS, incrementCounter } from '../performance/index.js';
 let subscriptionsInitialized = false;
 function recordLastSave(timestamp) {
     try {
@@ -54,14 +55,16 @@ export const SaveService = {
         if (subscriptionsInitialized)
             return;
         subscriptionsInitialized = true;
-        GameEvents.on('rewards/granted', () => this.save());
-        GameEvents.on('activity/changed', () => this.save());
-        GameEvents.on('manuals/purchased', () => this.save());
-        GameEvents.on('manuals/studied', () => this.save());
-        GameEvents.on('techniques/equipped', () => this.save());
-        GameEvents.on('heartlaw/selected', () => this.save());
+        GameEvents.on('rewards/granted', () => this.save('rewards/granted'));
+        GameEvents.on('activity/changed', () => this.save('activity/changed'));
+        GameEvents.on('manuals/purchased', () => this.save('manuals/purchased'));
+        GameEvents.on('manuals/studied', () => this.save('manuals/studied'));
+        GameEvents.on('techniques/equipped', () => this.save('techniques/equipped'));
+        GameEvents.on('heartlaw/selected', () => this.save('heartlaw/selected'));
     },
-    save() {
+    save(reason = 'manual') {
+        incrementCounter(PERF_LABELS.saveRequest);
+        incrementCounter(`${PERF_LABELS.saveRequest}:${reason}`);
         const ok = legacySaveGame();
         if (ok) {
             recordLastSave(GameClock.nowWall());

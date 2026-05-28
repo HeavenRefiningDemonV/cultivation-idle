@@ -1,5 +1,6 @@
 import { getPrestigeAdvisorSurface } from '../../../src/features/prestige/prestigeAdvisorSurface.js';
 import { buildCurrentLifeSummarySurface } from '../../../src/features/prestige/lifeSummarySurface.js';
+import { trackProgressionGateAvailabilityNow } from '../../../src/services/diagnostics/progressionGateAvailability.js';
 import { GameEvents, type GameEvent } from '../../../src/services/events/GameEvents.js';
 import { RewardService } from '../../../src/services/rewards/RewardService.js';
 import { getTrialLifecycleSnapshot, getTrialGateRewardBundle } from '../../../src/systems/progression/runtime/index.js';
@@ -221,6 +222,7 @@ export async function runFreshSaveRoute(routeId: FreshSaveRouteId): Promise<Fres
       while (elapsedMs <= maxMs && useGameStore.getState().realm.index < 5) {
         useGameStore.getState().tick(stepMs);
         elapsedMs += stepMs;
+        trackProgressionGateAvailabilityNow(Date.now());
 
         const game = useGameStore.getState();
         const transition = bootstrap.contract.gateTransitions.find((entry) => entry.fromRealmId === getLiveRealmByIndex(game.realm.index).id);

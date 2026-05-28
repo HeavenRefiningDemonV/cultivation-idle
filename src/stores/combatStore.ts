@@ -67,9 +67,11 @@ import {
 import { useMedicinePouchStore } from './medicinePouchStore.js';
 import { GameEvents } from '../services/events/GameEvents.js';
 import { getDefaultCastingPolicyForAiProfile } from '../systems/builds/castingPolicyFit.js';
+import { PERF_LABELS, incrementCounter, startTimer, time } from '../services/performance/index.js';
 import { buildOutskirtsRewardBundle, getOutskirtsDropsConfig } from '../systems/economy/index.js';
 import { getGateFailureMeritPolicyForTrial } from '../systems/economy/gateFailureMeritPolicy.js';
 import { buildSection5ReadinessSurface } from '../systems/readiness/section5Adapters.js';
+import { bumpVersion } from './versionCounters.js';
 
 
 function getHeartLawCombatMultiplier(): number {
@@ -131,6 +133,44 @@ function randomFromList<T>(list: T[]): T | null {
 }
 
 const makeCombatEventId = (at: number) => `${at}-${Math.random().toString(16).slice(2, 10)}`;
+
+function pushWindowed<T>(list: T[], entry: T, max: number): void {
+  list.push(entry);
+  const overflow = list.length - max;
+  if (overflow > 0) list.splice(0, overflow);
+}
+
+function getNextCombatBuffExpiryAt(combatBuffs: readonly CombatBuff[], now: number): number | null {
+  let nextExpiryAt: number | null = null;
+  for (const buff of combatBuffs) {
+    if (!Number.isFinite(buff.endsAt) || buff.endsAt <= now) continue;
+    if (nextExpiryAt === null || buff.endsAt < nextExpiryAt) {
+      nextExpiryAt = buff.endsAt;
+    }
+  }
+  return nextExpiryAt;
+}
+
+function getNextCooldownReadyAt(cooldowns: Record<string, number>, now: number): number | null {
+  let nextReadyAt: number | null = null;
+  for (const readyAt of Object.values(cooldowns)) {
+    if (!Number.isFinite(readyAt) || readyAt <= now) continue;
+    if (nextReadyAt === null || readyAt < nextReadyAt) {
+      nextReadyAt = readyAt;
+    }
+  }
+  return nextReadyAt;
+}
+
+type CombatMedicineEvent =
+  | { type: 'fightStart' }
+  | { type: 'hpThresholdCrossed'; previousHpPct: number; nextHpPct: number }
+  | { type: 'resourceThreshold'; resource: 'qi' | 'intent'; nextPct: number }
+  | { type: 'bossStart' };
+
+function crossedAtOrBelowThreshold(previousPct: number, nextPct: number, thresholdPct: number): boolean {
+  return previousPct > thresholdPct && nextPct <= thresholdPct;
+}
 
 function valueByIndex<T>(
   source: Record<number, T> | T[] | undefined,
@@ -229,6 +269,45 @@ type ResourceAfterCastInfo = {
   resourceAfterPct: number;
   resourceModel: 'qiPct' | 'intent' | 'none';
 };
+
+type AiTechniqueMetadata = {
+  techId: string;
+  def: TechniqueDef;
+  classification: ReturnType<typeof classifyTechnique>;
+  effects: NormalizedEffect[];
+  aiTags: ReturnType<typeof getTechniqueAiTags>;
+  damageScore: number;
+  defensiveScore: number;
+  debuffScore: number;
+  hasShield: boolean;
+};
+
+type AiTechniqueMetadataCache = {
+  key: string;
+  entries: Map<string, AiTechniqueMetadata>;
+};
+
+let aiTechniqueMetadataCache: AiTechniqueMetadataCache | null = null;
+
+function buildAiTechniqueMetadataCacheKey(input: {
+  contentVersion: number;
+  loadoutVersion: number;
+  aiProfileVersion: number;
+  collectionVersion: number;
+  masteryVersion: number;
+  isBossFight: boolean;
+  candidateIds: readonly string[];
+}): string {
+  return [
+    input.contentVersion,
+    input.loadoutVersion,
+    input.aiProfileVersion,
+    input.collectionVersion,
+    input.masteryVersion,
+    input.isBossFight ? 'boss' : 'mob',
+    input.candidateIds.join(','),
+  ].join('|');
+}
 
 function computeResourceAfterCastPct(
   def: TechniqueDef,
@@ -419,6 +498,9 @@ const createInitialCombatState = () => ({
   enemyMechanics: [] as EnemyMechanic[],
   activeAura: null as ExtendedCombatState['activeAura'],
   combatResolved: false,
+  combatSessionVersion: 0,
+  combatViewVersion: 0,
+  combatResultVersion: 0,
 });
 
 /**
@@ -430,7 +512,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
       let remainingDamage = damage;
       let absorbed = D(0);
 
-      set((state) => {
+      time(PERF_LABELS.combatStoreResources, () => set((state) => {
         const shield = state.combatShield;
         if (!shield) return;
         if (shield.expiresAt !== null && shield.expiresAt <= now) {
@@ -453,7 +535,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
         } else if (state.combatShield) {
           state.combatShield.amount = nextAmount;
         }
-      });
+      }));
 
       return { remainingDamage, absorbed };
     };
@@ -464,11 +546,9 @@ export const useCombatStore = create<ExtendedCombatState>()(
       techId?: string,
       at: number = Date.now(),
     ) => {
+      incrementCounter(PERF_LABELS.combatStoreLogsAppended);
       set((state) => {
-        state.techniqueLog.push({ at, kind, message, techId });
-        if (state.techniqueLog.length > MAX_TECHNIQUE_LOG_ENTRIES) {
-          state.techniqueLog.shift();
-        }
+        pushWindowed(state.techniqueLog, { at, kind, message, techId }, MAX_TECHNIQUE_LOG_ENTRIES);
       });
     };
 
@@ -518,7 +598,8 @@ export const useCombatStore = create<ExtendedCombatState>()(
       if (!state.inCombat || !state.currentEnemy) return null;
       if (now - state.lastTechniqueCastAt < MIN_TECHNIQUE_CAST_INTERVAL_MS) return null;
 
-      const loadout = useTechniqueStore.getState().getSelectedLoadout();
+      const techniqueStore = useTechniqueStore.getState();
+      const loadout = techniqueStore.getSelectedLoadout();
       const uiSettings = useUIStore.getState().settings;
       const aiProfile: AiProfile =
         uiSettings?.combatAIProfile ?? (loadout?.aiProfile as AiProfile | undefined) ?? 'balanced';
@@ -527,7 +608,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
         getDefaultCastingPolicyForAiProfile(aiProfile);
       const techCollection = useTechCollectionStore.getState();
       const contentStore = useContentStore.getState();
-      const equipped = useTechniqueStore.getState().getCombatEquippedTechIds();
+      const equipped = techniqueStore.getCombatEquippedTechIds();
       const candidateIds = [...equipped.active];
 
       if (equipped.ultimate) {
@@ -535,6 +616,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
       }
 
       const uniqueCandidates = Array.from(new Set(candidateIds));
+      if (uniqueCandidates.length === 0) return null;
 
       type Candidate = {
         techId: string;
@@ -560,47 +642,70 @@ export const useCombatStore = create<ExtendedCombatState>()(
         !state.combatShield ||
         (state.combatShield.expiresAt !== null && state.combatShield.expiresAt <= now + 3000);
 
+      const cacheKey = buildAiTechniqueMetadataCacheKey({
+        contentVersion: contentStore.contentVersion,
+        loadoutVersion: techniqueStore.loadoutVersion,
+        aiProfileVersion: techniqueStore.aiProfileVersion,
+        collectionVersion: techCollection.collectionVersion,
+        masteryVersion: techCollection.masteryVersion,
+        isBossFight,
+        candidateIds: uniqueCandidates,
+      });
+
+      if (aiTechniqueMetadataCache?.key !== cacheKey) {
+        aiTechniqueMetadataCache = time(PERF_LABELS.combatAiSnapshotBuild, () => {
+          const entries = new Map<string, AiTechniqueMetadata>();
+          for (const techId of uniqueCandidates) {
+            if (!techCollection.hasTech(techId)) continue;
+            const def = contentStore.maps.techniquesById[techId];
+            if (!def) continue;
+
+            const scaling = getTechniqueScaling(techId, def);
+            const effects = normalizeTechniqueEffects(def, { includeSecondary: scaling.secondaryUnlocked });
+            const classification = classifyTechnique(def);
+            const aiTags = getTechniqueAiTags(def, effects);
+            const cooldownSec = Math.max(1, def.cooldownSec ?? 0);
+            const damageMults = effects
+              .filter((effect) => effect.type === 'damage')
+              .map((effect) => effect.mult);
+            const damageMult = damageMults.length ? Math.max(...damageMults) : 0;
+            const damageScore = damageMult > 0 ? damageMult / cooldownSec : 0;
+            const hasHeal = effects.some((effect) => effect.type === 'heal');
+            const hasShield = effects.some((effect) => effect.type === 'shield');
+            const hasDefBuff = effects.some(
+              (effect) => effect.type === 'buff' && /def|hp|resist/i.test(effect.stat),
+            );
+            let defensiveScore = 0;
+            if (hasHeal) defensiveScore += 5;
+            if (hasShield) defensiveScore += 4;
+            if (hasDefBuff) defensiveScore += 3;
+
+            entries.set(techId, {
+              techId,
+              def,
+              classification,
+              effects,
+              aiTags,
+              damageScore,
+              defensiveScore,
+              debuffScore: hasDebuffSignal(def, effects) ? 2 : 0,
+              hasShield,
+            });
+          }
+          return { key: cacheKey, entries };
+        });
+      }
+
       const candidates = uniqueCandidates.reduce<Candidate[]>((acc, techId) => {
-        if (!techCollection.hasTech(techId)) return acc;
-        const def = contentStore.maps.techniquesById[techId];
-        if (!def) return acc;
         if (!get().canCastTechnique(techId, now)) return acc;
+        const metadata = aiTechniqueMetadataCache?.entries.get(techId);
+        if (!metadata) return acc;
 
-        const scaling = getTechniqueScaling(techId, def);
-        const effects = normalizeTechniqueEffects(def, { includeSecondary: scaling.secondaryUnlocked });
-        const classification = classifyTechnique(def);
-        const aiTags = getTechniqueAiTags(def, effects);
-        const cooldownSec = Math.max(1, def.cooldownSec ?? 0);
-        const damageMults = effects
-          .filter((effect) => effect.type === 'damage')
-          .map((effect) => effect.mult);
-        const damageMult = damageMults.length ? Math.max(...damageMults) : 0;
-        const damageScore = damageMult > 0 ? damageMult / cooldownSec : 0;
-
-        const hasHeal = effects.some((effect) => effect.type === 'heal');
-        const hasShield = effects.some((effect) => effect.type === 'shield');
-        const hasDefBuff = effects.some(
-          (effect) => effect.type === 'buff' && /def|hp|resist/i.test(effect.stat)
-        );
-
-        let defensiveScore = 0;
-        if (hasHeal) defensiveScore += 5;
-        if (hasShield) defensiveScore += 4;
-        if (hasDefBuff) defensiveScore += 3;
-
-        const debuffScore = hasDebuffSignal(def, effects) ? 2 : 0;
-        const { resourceAfterPct } = computeResourceAfterCastPct(def, scaling.costReductionPct, state.combatResources);
+        const scaling = getTechniqueScaling(techId, metadata.def);
+        const { resourceAfterPct } = computeResourceAfterCastPct(metadata.def, scaling.costReductionPct, state.combatResources);
 
         acc.push({
-          techId,
-          def,
-          classification,
-          effects,
-          aiTags,
-          damageScore,
-          defensiveScore,
-          debuffScore,
-          hasShield,
+          ...metadata,
           resourceAfterPct,
         });
         return acc;
@@ -654,10 +759,10 @@ export const useCombatStore = create<ExtendedCombatState>()(
       return castingPolicy === 'aggressive' ? best.techId : null;
     };
 
-    const tryAutoUseMedicinePouch = (
+    const triggerAutoMedicineEvent = (
       now: number,
-      _reason: 'tick' | 'postEnemyDamage' | 'postAuraDamage' | 'fightStart',
-    ) => {
+      event: CombatMedicineEvent,
+    ) => time(PERF_LABELS.combatMedicineEvent, () => {
       const uiSettings = useUIStore.getState().settings;
       if (!uiSettings.useConsumablesInCombat) return;
 
@@ -667,6 +772,20 @@ export const useCombatStore = create<ExtendedCombatState>()(
       const pouch = useMedicinePouchStore.getState();
       const slots = pouch.slots;
       const orderedSlots: MedicinePouchSlotKey[] = ['healing', 'utility', 'specialty'];
+      const hasCandidateSlot = orderedSlots.some((slotKey) => {
+        const slot = slots[slotKey];
+        if (!slot || !slot.enabled || !slot.equippedItemId || slot.trigger === 'manual') return false;
+        if (slot.bossOnly && !(state.isBoss || state.combatContext.type === 'trial')) return false;
+        if (event.type === 'fightStart') return slot.trigger === 'fightStart' || (slot.trigger === 'bossStart' && (state.isBoss || state.combatContext.type === 'trial'));
+        if (event.type === 'bossStart') return slot.trigger === 'bossStart';
+        if (event.type === 'hpThresholdCrossed') return slot.trigger === 'hpBelowPct';
+        if (event.type === 'resourceThreshold') return event.resource === 'qi' ? slot.trigger === 'qiBelowPct' : slot.trigger === 'intentBelowPct';
+        return false;
+      });
+      if (!hasCandidateSlot) {
+        incrementCounter(PERF_LABELS.combatMedicineSkippedEmpty);
+        return;
+      }
 
       for (const slotKey of orderedSlots) {
         const slot = slots[slotKey];
@@ -693,33 +812,28 @@ export const useCombatStore = create<ExtendedCombatState>()(
             shouldUse = false;
             break;
           case 'hpBelowPct': {
-            const maxHp = D(state.playerMaxHP);
-            const currentHp = D(state.playerHP);
-            const hpPct = maxHp.greaterThan(0)
-              ? currentHp.dividedBy(maxHp).times(100).toNumber()
-              : 0;
-            shouldUse = hpPct <= slot.thresholdPct;
+            shouldUse = event.type === 'hpThresholdCrossed'
+              && crossedAtOrBelowThreshold(event.previousHpPct, event.nextHpPct, slot.thresholdPct);
             break;
           }
           case 'qiBelowPct': {
-            const qiPct = state.combatResources.maxQi > 0
-              ? (state.combatResources.qi / state.combatResources.maxQi) * 100
-              : 0;
-            shouldUse = qiPct <= slot.thresholdPct;
+            shouldUse = event.type === 'resourceThreshold'
+              && event.resource === 'qi'
+              && event.nextPct <= slot.thresholdPct;
             break;
           }
           case 'intentBelowPct': {
-            const intentPct = state.combatResources.maxIntent > 0
-              ? (state.combatResources.intent / state.combatResources.maxIntent) * 100
-              : 0;
-            shouldUse = intentPct <= slot.thresholdPct;
+            shouldUse = event.type === 'resourceThreshold'
+              && event.resource === 'intent'
+              && event.nextPct <= slot.thresholdPct;
             break;
           }
           case 'fightStart':
-            shouldUse = lastUsed === null || lastUsed < state.combatStartTime;
+            shouldUse = event.type === 'fightStart' && (lastUsed === null || lastUsed < state.combatStartTime);
             break;
           case 'bossStart':
             shouldUse =
+              (event.type === 'fightStart' || event.type === 'bossStart') &&
               (state.isBoss || state.combatContext.type === 'trial') &&
               (lastUsed === null || lastUsed < state.combatStartTime);
             break;
@@ -740,6 +854,24 @@ export const useCombatStore = create<ExtendedCombatState>()(
           break;
         }
       }
+    });
+
+    const triggerStartHpThresholdMedicine = (now: number) => {
+      const state = get();
+      const maxHp = D(state.playerMaxHP);
+      if (!state.inCombat || !maxHp.greaterThan(0)) return;
+
+      const currentHpPct = Math.max(
+        0,
+        Math.min(100, D(state.playerHP).div(maxHp).mul(100).toNumber()),
+      );
+      if (currentHpPct >= 100) return;
+
+      triggerAutoMedicineEvent(now, {
+        type: 'hpThresholdCrossed',
+        previousHpPct: 100,
+        nextHpPct: currentHpPct,
+      });
     };
 
     const getTechniqueScaling = (techId: string, technique?: TechniqueDef) => {
@@ -830,6 +962,8 @@ export const useCombatStore = create<ExtendedCombatState>()(
         // Boss tracking
         state.isBoss = isBoss;
         state.combatStartTime = now;
+        state.combatSessionVersion = bumpVersion(state.combatSessionVersion);
+        state.combatViewVersion = bumpVersion(state.combatViewVersion);
       });
 
       // Add entry to log
@@ -841,6 +975,9 @@ export const useCombatStore = create<ExtendedCombatState>()(
       }
 
       applyPassiveTechniques(now);
+      triggerAutoMedicineEvent(now, { type: 'fightStart' });
+      if (isBoss) triggerAutoMedicineEvent(now, { type: 'bossStart' });
+      triggerStartHpThresholdMedicine(now);
     },
 
 
@@ -983,6 +1120,8 @@ export const useCombatStore = create<ExtendedCombatState>()(
         // Boss tracking
         state.isBoss = isBoss;
         state.combatStartTime = now;
+        state.combatSessionVersion = bumpVersion(state.combatSessionVersion);
+        state.combatViewVersion = bumpVersion(state.combatViewVersion);
       });
 
       if (enemy.isBoss) {
@@ -993,6 +1132,9 @@ export const useCombatStore = create<ExtendedCombatState>()(
       }
 
       applyPassiveTechniques(now);
+      triggerAutoMedicineEvent(now, { type: 'fightStart' });
+      if (isBoss) triggerAutoMedicineEvent(now, { type: 'bossStart' });
+      triggerStartHpThresholdMedicine(now);
     },
 
     /**
@@ -1041,6 +1183,8 @@ export const useCombatStore = create<ExtendedCombatState>()(
         state.enemyMechanics = [];
         state.activeAura = null;
         state.combatResolved = false;
+        state.combatSessionVersion = bumpVersion(state.combatSessionVersion);
+        state.combatViewVersion = bumpVersion(state.combatViewVersion);
       });
     },
 
@@ -1180,6 +1324,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
 
     resetCombat: () => {
       bossMechanics = null;
+      aiTechniqueMetadataCache = null;
 
       set((state) => {
         Object.assign(state, createInitialCombatState());
@@ -1188,6 +1333,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
 
     hardResetCombat: () => {
       bossMechanics = null;
+      aiTechniqueMetadataCache = null;
       set((state) => {
         Object.assign(state, createInitialCombatState());
       });
@@ -1328,6 +1474,12 @@ export const useCombatStore = create<ExtendedCombatState>()(
       const newHP = subtract(state.playerHP, damageAfterAbsorption.toString());
       const clampedHP = clamp(newHP, 0, state.playerMaxHP);
       const appliedDamage = startingHp.minus(D(clampedHP));
+      const previousHpPct = D(state.playerMaxHP).greaterThan(0)
+        ? startingHp.dividedBy(D(state.playerMaxHP)).times(100).toNumber()
+        : 0;
+      const nextHpPct = D(state.playerMaxHP).greaterThan(0)
+        ? D(clampedHP).dividedBy(D(state.playerMaxHP)).times(100).toNumber()
+        : 0;
       const absorptionNote = absorbedAmount.greaterThan(0) ? ` (${absorbedAmount.toFixed(0)} absorbed)` : '';
 
       if (damageAfterAbsorption.lessThanOrEqualTo(0)) {
@@ -1358,7 +1510,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
         });
       }
 
-      tryAutoUseMedicinePouch(now, 'postEnemyDamage');
+      triggerAutoMedicineEvent(now, { type: 'hpThresholdCrossed', previousHpPct, nextHpPct });
 
       // Check if player is defeated
       if (lessThanOrEqualTo(get().playerHP, 0)) {
@@ -1371,12 +1523,14 @@ export const useCombatStore = create<ExtendedCombatState>()(
     /**
      * Handle enemy defeat - award rewards
      */
-    defeatEnemy: () => {
+    defeatEnemy: () => time(PERF_LABELS.combatStoreResolution, () => {
       const state = get();
       if (!state.currentEnemy || state.combatResolved) return;
 
       set((draft) => {
         draft.combatResolved = true;
+        draft.combatResultVersion = bumpVersion(draft.combatResultVersion);
+        draft.combatViewVersion = bumpVersion(draft.combatViewVersion);
       });
 
       const enemy = state.currentEnemy;
@@ -1664,17 +1818,19 @@ export const useCombatStore = create<ExtendedCombatState>()(
       setTimeout(() => {
         get().exitCombat();
       }, 2000);
-    },
+    }),
 
     /**
      * Handle player defeat
      */
-    playerDefeat: () => {
+    playerDefeat: () => time(PERF_LABELS.combatStoreResolution, () => {
       const state = get();
       if (!state.currentEnemy || state.combatResolved) return;
 
       set((draft) => {
         draft.combatResolved = true;
+        draft.combatResultVersion = bumpVersion(draft.combatResultVersion);
+        draft.combatViewVersion = bumpVersion(draft.combatViewVersion);
       });
 
       const now = Date.now();
@@ -1828,7 +1984,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
           }
         }
       }, 2000);
-    },
+    }),
 
     /**
      * Game tick for combat timing
@@ -1847,51 +2003,95 @@ export const useCombatStore = create<ExtendedCombatState>()(
 
       if (!state.inCombat || !state.currentEnemy) return;
 
+      const endTick = startTimer(PERF_LABELS.combatStoreTick);
+      try {
       const now = Date.now();
-
-      tryAutoUseMedicinePouch(now, 'fightStart');
 
       if (lessThanOrEqualTo(state.playerHP, 0) || lessThanOrEqualTo(state.enemyHP, 0)) return;
 
       const gameStore = useGameStore.getState();
-      gameStore.removeExpiredBuffs();
+      if (
+        gameStore.activeBuffs.length > 0
+        || (gameStore.absorptionExpiresAt !== null && gameStore.absorptionExpiresAt <= now)
+      ) {
+        time(PERF_LABELS.combatStoreBuffs, () => gameStore.removeExpiredBuffs());
+      }
       const currentEnemyHP = D(state.enemyHP);
       const currentEnemyMaxHP = D(state.enemyMaxHP);
 
-      set((state) => {
-        state.combatBuffs = state.combatBuffs.filter((buff) => buff.endsAt > now);
+      const latestForMaintenance = get();
+      const nextBuffExpiryAt = getNextCombatBuffExpiryAt(latestForMaintenance.combatBuffs, now);
+      const shouldSweepCombatBuffs =
+        latestForMaintenance.combatBuffs.length > 0
+        && (nextBuffExpiryAt === null || now >= nextBuffExpiryAt);
+      const shouldClearShield = Boolean(
+        latestForMaintenance.combatShield
+        && (
+          latestForMaintenance.combatShield.amount <= 0
+          || (
+            latestForMaintenance.combatShield.expiresAt !== null
+            && latestForMaintenance.combatShield.expiresAt <= now
+          )
+        ),
+      );
+      const qiRegen = latestForMaintenance.combatResources.maxQi * QI_REGEN_PER_SEC_PCT * (deltaTime / 1000);
+      const intentRegen = INTENT_REGEN_PER_SEC * (deltaTime / 1000);
+      const nextQi = Math.min(
+        latestForMaintenance.combatResources.maxQi,
+        latestForMaintenance.combatResources.qi + qiRegen,
+      );
+      const nextIntent = Math.min(
+        latestForMaintenance.combatResources.maxIntent,
+        latestForMaintenance.combatResources.intent + intentRegen,
+      );
+      const resourcesChanged =
+        nextQi !== latestForMaintenance.combatResources.qi
+        || nextIntent !== latestForMaintenance.combatResources.intent;
 
-        if (state.combatShield) {
-          const expired = state.combatShield.expiresAt !== null && state.combatShield.expiresAt <= now;
-          if (expired || state.combatShield.amount <= 0) {
-            state.combatShield = null;
-          }
-        }
+      if (shouldSweepCombatBuffs || shouldClearShield || resourcesChanged) {
+        time(PERF_LABELS.combatStoreResources, () => {
+          if (resourcesChanged) incrementCounter(PERF_LABELS.combatResourcePublish);
+          if (shouldSweepCombatBuffs) incrementCounter(PERF_LABELS.combatBuffSweepRun);
+          set((state) => {
+            if (shouldSweepCombatBuffs) {
+              state.combatBuffs = state.combatBuffs.filter((buff) => buff.endsAt > now);
+            }
 
-        const qiRegen = state.combatResources.maxQi * QI_REGEN_PER_SEC_PCT * (deltaTime / 1000);
-        const intentRegen = INTENT_REGEN_PER_SEC * (deltaTime / 1000);
-        state.combatResources.qi = Math.min(state.combatResources.maxQi, state.combatResources.qi + qiRegen);
-        state.combatResources.intent = Math.min(
-          state.combatResources.maxIntent,
-          state.combatResources.intent + intentRegen,
-        );
-      });
+            if (shouldClearShield) {
+              state.combatShield = null;
+            }
 
-      if (now >= state.nextAiDecisionAt) {
-        set((state) => {
-          state.nextAiDecisionAt = now + AI_DECISION_INTERVAL_MS;
+            if (resourcesChanged) {
+              state.combatResources.qi = nextQi;
+              state.combatResources.intent = nextIntent;
+            }
+          });
         });
+      } else {
+        incrementCounter(PERF_LABELS.combatBuffSweepSkipped);
+      }
 
-        const selectedTechId = selectTechniqueToCast(now);
-        if (selectedTechId) {
-          get().castTechnique(selectedTechId, now, 'ai');
-        }
+      if (state.autoCombatAI && now >= state.nextAiDecisionAt) {
+        time(PERF_LABELS.combatStoreTechniqueAI, () => {
+          set((state) => {
+            state.nextAiDecisionAt = now + AI_DECISION_INTERVAL_MS;
+          });
+
+          const selectedTechId = selectTechniqueToCast(now);
+          if (selectedTechId) {
+            get().castTechnique(selectedTechId, now, 'ai');
+          }
+        });
       }
 
       // Process boss mechanics
-      if (state.isBoss && bossMechanics) {
+      const bossMechanicsForTick = bossMechanics;
+      if (state.isBoss && bossMechanicsForTick) {
         const combatTime = (now - state.combatStartTime) / 1000; // Convert to seconds
-        const mechanics = bossMechanics.update(deltaTime, currentEnemyHP, currentEnemyMaxHP, combatTime);
+        const mechanics = time(
+          PERF_LABELS.combatStoreBossMechanics,
+          () => bossMechanicsForTick.update(deltaTime, currentEnemyHP, currentEnemyMaxHP, combatTime),
+        );
 
         // Handle enrage trigger
         if (mechanics.enrageTriggered) {
@@ -1928,7 +2128,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
           let atk = D(enemy.atk).times(mechanics.ultimateDamageMultiplier);
 
           // Apply enrage if active
-          const enrageMultiplier = bossMechanics.getEnrageMultiplier();
+          const enrageMultiplier = bossMechanicsForTick.getEnrageMultiplier();
           if (enrageMultiplier > 1) {
             atk = atk.times(enrageMultiplier);
           }
@@ -1952,6 +2152,10 @@ export const useCombatStore = create<ExtendedCombatState>()(
             : '';
 
           let appliedDamage = damageAfterShield;
+          const previousHpPct = D(state.playerMaxHP).greaterThan(0)
+            ? D(state.playerHP).dividedBy(D(state.playerMaxHP)).times(100).toNumber()
+            : 0;
+          let nextHpPct = previousHpPct;
 
           // Apply damage to player
           set((state) => {
@@ -1960,6 +2164,9 @@ export const useCombatStore = create<ExtendedCombatState>()(
             const clampedHP = clamp(newHP, 0, state.playerMaxHP);
             appliedDamage = startingHp.minus(D(clampedHP));
             state.playerHP = clampedHP.toString();
+            nextHpPct = D(state.playerMaxHP).greaterThan(0)
+              ? D(clampedHP).dividedBy(D(state.playerMaxHP)).times(100).toNumber()
+              : 0;
           });
 
           get().addLogEntry(
@@ -1976,6 +2183,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
             absorbed: absorbedAmount.greaterThan(0) ? absorbedAmount.toFixed(0) : undefined,
             kind: 'boss_ultimate',
           });
+          triggerAutoMedicineEvent(now, { type: 'hpThresholdCrossed', previousHpPct, nextHpPct });
 
           // Check if player is defeated
           if (lessThanOrEqualTo(get().playerHP, 0)) {
@@ -1989,12 +2197,12 @@ export const useCombatStore = create<ExtendedCombatState>()(
           }
 
           // Reset ultimate triggered flag so it can trigger again
-          bossMechanics.resetUltimateTriggered();
+          bossMechanicsForTick.resetUltimateTriggered();
         }
 
         // Handle ultimate warning
         if (mechanics.ultimateWarning && !mechanics.ultimateTriggered) {
-          const progress = bossMechanics.getUltimateWarningProgress();
+          const progress = bossMechanicsForTick.getUltimateWarningProgress();
           if (progress === 0) {
             // Just started warning
             get().addLogEntry(
@@ -2040,12 +2248,19 @@ export const useCombatStore = create<ExtendedCombatState>()(
 
         if (damageAfterShield.greaterThan(0) || absorbedAmount.greaterThan(0)) {
           let appliedDamage = damageAfterShield;
+          const previousHpPct = D(state.playerMaxHP).greaterThan(0)
+            ? D(state.playerHP).dividedBy(D(state.playerMaxHP)).times(100).toNumber()
+            : 0;
+          let nextHpPct = previousHpPct;
           set((state) => {
             const startingHp = D(state.playerHP);
             const newHP = subtract(state.playerHP, damageAfterShield.toString());
             const clampedHP = clamp(newHP, 0, state.playerMaxHP);
             appliedDamage = startingHp.minus(D(clampedHP));
             state.playerHP = clampedHP.toString();
+            nextHpPct = D(state.playerMaxHP).greaterThan(0)
+              ? D(clampedHP).dividedBy(D(state.playerMaxHP)).times(100).toNumber()
+              : 0;
           });
 
           const absorptionNote = absorbedAmount.greaterThan(0)
@@ -2067,7 +2282,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
             kind: 'aura',
           });
 
-          tryAutoUseMedicinePouch(now, 'postAuraDamage');
+          triggerAutoMedicineEvent(now, { type: 'hpThresholdCrossed', previousHpPct, nextHpPct });
 
           if (lessThanOrEqualTo(get().playerHP, 0)) {
             setTimeout(() => {
@@ -2119,16 +2334,30 @@ export const useCombatStore = create<ExtendedCombatState>()(
         }
       }
 
-      // Update technique cooldowns
-      set((state) => {
-        const updatedCooldowns: Record<string, number> = {};
-        Object.entries(state.techniqueCooldowns).forEach(([techniqueId, readyAt]) => {
-          if (readyAt > now) {
-            updatedCooldowns[techniqueId] = readyAt;
-          }
-        });
-        state.techniqueCooldowns = updatedCooldowns;
-      });
+      // Update technique cooldowns only when at least one entry is ready to expire.
+      const cooldownSnapshot = get().techniqueCooldowns;
+      const cooldownEntries = Object.entries(cooldownSnapshot);
+      if (cooldownEntries.length > 0) {
+        const nextReadyAt = getNextCooldownReadyAt(cooldownSnapshot, now);
+        const hasExpiredCooldown = cooldownEntries.some(([, readyAt]) => readyAt <= now);
+        if (hasExpiredCooldown || nextReadyAt === null) {
+          set((state) => {
+            const updatedCooldowns: Record<string, number> = {};
+            Object.entries(state.techniqueCooldowns).forEach(([techniqueId, readyAt]) => {
+              if (readyAt > now) {
+                updatedCooldowns[techniqueId] = readyAt;
+              }
+            });
+            const changed = Object.keys(updatedCooldowns).length !== Object.keys(state.techniqueCooldowns).length;
+            if (changed) {
+              state.techniqueCooldowns = updatedCooldowns;
+            }
+          });
+        }
+      }
+      } finally {
+        endTick();
+      }
     },
 
     canCastTechnique: (techId: string, now: number = Date.now()) => {
@@ -2360,6 +2589,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
      * Add an entry to the combat log
      */
     addLogEntry: (type: CombatLogEntry['type'], text: string, color: string) => {
+      incrementCounter(PERF_LABELS.combatStoreLogsAppended);
       set((state) => {
         const entry: CombatLogEntry = {
           type,
@@ -2368,12 +2598,8 @@ export const useCombatStore = create<ExtendedCombatState>()(
           color,
         };
 
-        state.combatLog.push(entry);
-
-        // Limit log size for performance
-        if (state.combatLog.length > MAX_COMBAT_LOG_ENTRIES) {
-          state.combatLog.shift();
-        }
+        pushWindowed(state.combatLog, entry, MAX_COMBAT_LOG_ENTRIES);
+        state.combatViewVersion = bumpVersion(state.combatViewVersion);
       });
     },
 
@@ -2382,11 +2608,8 @@ export const useCombatStore = create<ExtendedCombatState>()(
       const entry: CombatEvent = { ...event, at, id: event.id ?? makeCombatEventId(at) };
 
       set((state) => {
-        state.events.push(entry);
-        const overflow = state.events.length - MAX_COMBAT_EVENT_ENTRIES;
-        if (overflow > 0) {
-          state.events.splice(0, overflow);
-        }
+        pushWindowed(state.events, entry, MAX_COMBAT_EVENT_ENTRIES);
+        state.combatViewVersion = bumpVersion(state.combatViewVersion);
       });
     },
 

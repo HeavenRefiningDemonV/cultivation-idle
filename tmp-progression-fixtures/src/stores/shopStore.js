@@ -5,6 +5,7 @@ import { getDayKey } from '../utils/dayKey.js';
 import { useContentStore } from './contentStore.js';
 import { useInventoryStore } from './inventoryStore.js';
 import { RewardService } from '../services/rewards/index.js';
+import { bumpVersion } from './versionCounters.js';
 const currencyLabels = {
     gold: 'Gold',
     spiritStones: 'Spirit Stones',
@@ -37,10 +38,16 @@ export const useShopStore = create()(immer((set, get) => ({
     dayKey: getDayKey(),
     purchasedToday: {},
     lastError: null,
+    shopVersion: 0,
     ensureDayKeyCurrent: (nowTs = Date.now()) => {
         const current = getDayKey(nowTs);
         if (current !== get().dayKey) {
-            set({ dayKey: current, purchasedToday: {}, lastError: null });
+            set((state) => {
+                state.dayKey = current;
+                state.purchasedToday = {};
+                state.lastError = null;
+                state.shopVersion = bumpVersion(state.shopVersion);
+            });
         }
         return current;
     },
@@ -104,7 +111,12 @@ export const useShopStore = create()(immer((set, get) => ({
         }
         get().ensureDayKeyCurrent();
         const fail = (message) => {
-            set({ lastError: message });
+            if (get().lastError !== message) {
+                set((state) => {
+                    state.lastError = message;
+                    state.shopVersion = bumpVersion(state.shopVersion);
+                });
+            }
             return { ok: false, error: message };
         };
         const shop = useContentStore.getState().maps.apothecariesById?.[shopId];
@@ -157,16 +169,21 @@ export const useShopStore = create()(immer((set, get) => ({
             }
             state.purchasedToday[shopId][stockId] = (state.purchasedToday[shopId][stockId] || 0) + quantity;
             state.lastError = null;
+            state.shopVersion = bumpVersion(state.shopVersion);
         });
         return { ok: true, grantedQty: appliedQty };
     },
     hydrate: (state) => {
         const nextDayKey = state.dayKey || getDayKey();
         const nextPurchased = clonePurchasedToday(state.purchasedToday);
-        set({ dayKey: nextDayKey, purchasedToday: nextPurchased });
+        set((draft) => {
+            draft.dayKey = nextDayKey;
+            draft.purchasedToday = nextPurchased;
+            draft.shopVersion = bumpVersion(draft.shopVersion);
+        });
         get().ensureDayKeyCurrent();
     },
     hardResetShop: () => {
-        set({ dayKey: getDayKey(), purchasedToday: {}, lastError: null });
+        set({ dayKey: getDayKey(), purchasedToday: {}, lastError: null, shopVersion: 0 });
     },
 })));

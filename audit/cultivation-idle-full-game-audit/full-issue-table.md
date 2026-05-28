@@ -1,0 +1,16 @@
+# Full Issue Table
+
+| ID | Severity | Category | System/screen | Finding | Evidence | Reproduction | Files | Player impact | Fix direction | Blocks story/tutorial/final polish? | Confidence |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| CI-AUDIT-001 | Blocker | tests/QA | release gate | Release gate is NO_GO | `npm run release:gate:json` failed with 5 blockers | Run command | release scripts/docs | Cannot certify readiness | Resolve or explicitly waive gate items | Yes | High |
+| CI-AUDIT-002 | Blocker | progression | fresh-run route | Fresh-run stops before expected cap | final realm `soul_formation`, expected `spirit_severing` | Run `npm run release:fresh-run-report:json` | `tests/helpers/release/*` | Current campaign endpoint is unproven | Decide cap and repair route/contract | Yes | High |
+| CI-AUDIT-003 | Blocker | balance/pacing | timing probes | Balance/route probes fail before Foundation | `foundation_entry` missing | Run balance/route/reclaim reports | `tests/helpers/balance/runPhaseTimingProbe.ts` | Numbers cannot be judged | Repair harness or progression condition | Yes | High |
+| CI-AUDIT-004 | High | UI-layout/game feel | life start | Live Qi and Breakthrough Ready appear before identity completion | `SS-016-life-start-path-selection.png` | Fresh save, skip intro | `LifeStartWizardModal`, game loop | First tutorial would teach a contradictory state | Pause/gate cultivation until identity is complete | Yes | High |
+| CI-AUDIT-005 | High | tests/QA | contract tests | Full contract runner fails on fixture writes | TS5033 writing `tmp-progression-fixtures` | Run `npm run test:contracts` | fixture build scripts | Cannot rely on full guardrail suite | Fix fixture output path/cleanup | Yes | High |
+| CI-AUDIT-006 | High | tests/QA | trial lifecycle | Trial lifecycle tests fail from content fixture shape | `[PavilionContent] manifest root must be an object` | Run direct compiled lifecycle tests | `trialLifecycle.test.js`, content fixture helpers | Gate lifecycle guardrails are not independently green | Repair fixture bootstrap | Yes | High |
+| CI-AUDIT-007 | Medium | technical debt | release diagnostics | Legacy gate/offline/prestige warning candidates remain | release gate warnings | Run `release:gate:json` | progression/offline/prestige surfaces | Regression risk remains | Clean up or document accepted waivers | Final polish: Yes | Medium |
+| CI-AUDIT-008 | Medium | security | dependencies | npm audit reports vulnerabilities | high `vite`, high `xmldom`, moderate `brace-expansion`, `postcss` | Run `npm audit --audit-level=moderate --json` | `package-lock.json` | Release hygiene/security risk | Update dependencies | Final polish: Yes | High |
+| CI-AUDIT-009 | Medium | performance | build | Build passes with warnings | unresolved `InsideDungeon.png`, stale Browserslist, large chunks | Run `npm run build` | assets/build config | Packaging/perf debt | Build warning cleanup packet | Final polish: Yes | High |
+| CI-AUDIT-010 | Info | progression | core contracts | Focused path/gate/city/prestige/offline contracts pass | direct compiled tests 26/29 pass; failures fixture-local | Run command in logs | stores/progression tests | Narrows fix scope | Preserve with green runners | No | High |
+
+See `full-issue-table.csv` for machine-readable rows.

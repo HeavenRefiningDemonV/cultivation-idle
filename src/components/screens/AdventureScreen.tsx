@@ -156,18 +156,16 @@ function ZoneCard({ zone }: { zone: typeof ZONES[0] }) {
  * Combat View Component
  */
 export function CombatView() {
-  const {
-    currentEnemy,
-    playerHP,
-    playerMaxHP,
-    enemyHP,
-    enemyMaxHP,
-    combatLog,
-    autoAttack,
-    exitCombat,
-    setAutoAttack,
-    playerAttack,
-  } = useCombatStore();
+  const currentEnemy = useCombatStore((state) => state.currentEnemy);
+  const playerHP = useCombatStore((state) => state.playerHP);
+  const playerMaxHP = useCombatStore((state) => state.playerMaxHP);
+  const enemyHP = useCombatStore((state) => state.enemyHP);
+  const enemyMaxHP = useCombatStore((state) => state.enemyMaxHP);
+  const combatLog = useCombatStore((state) => state.combatLog);
+  const autoAttack = useCombatStore((state) => state.autoAttack);
+  const exitCombat = useCombatStore((state) => state.exitCombat);
+  const setAutoAttack = useCombatStore((state) => state.setAutoAttack);
+  const playerAttack = useCombatStore((state) => state.playerAttack);
 
   const stats = useGameStore((state) => state.stats);
   const showCombatLog = useUIStore((state) => state.settings.showCombatLog);

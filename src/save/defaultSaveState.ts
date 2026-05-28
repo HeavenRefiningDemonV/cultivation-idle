@@ -153,6 +153,8 @@ const cloneManualPavilionState = (
 
 export function buildDefaultSaveState(): SaveData {
   const now = Date.now();
+  useGameStore.getState().flushCultivationAccumulation('default-save-state');
+  useHeartLawStore.getState().flushInsightProgress(now);
   const gameState = useGameStore.getState();
   const inventoryState = useInventoryStore.getState();
   const combatState = useCombatStore.getState();

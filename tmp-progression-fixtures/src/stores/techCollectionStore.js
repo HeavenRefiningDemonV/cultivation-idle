@@ -5,6 +5,7 @@ import { useInventoryStore } from './inventoryStore.js';
 import { randFloat } from '../utils/rng.js';
 import { useUIStore } from './uiStore.js';
 import { GameEvents } from '../services/events/GameEvents.js';
+import { bumpVersion } from './versionCounters.js';
 import { buildTechniqueProgressionSnapshot, getMasteryMilestoneContract, getNextMasteryMilestoneContract, getTechniqueMaxRankForGrade, getTechniqueTraitSlotBreakdown, getTechniqueEffectiveRuneSockets, isHigherTechniqueGrade, isHigherTechniqueRarity, masteryLevelFromXp, normalizeManualGrade, normalizeTechniqueProgressionState, normalizeTechniqueRarity, xpNeededForLevel, } from '../systems/builds/index.js';
 export { xpNeededForLevel, masteryLevelFromXp, masteryMultiplier, rankMultiplier } from '../systems/builds/index.js';
 export const MASTERY_XP_SCALE = 3;
@@ -67,6 +68,8 @@ const createInitialState = () => ({
     unlockedTechs: {},
     fragments: {},
     rngSeed: 123456789,
+    collectionVersion: 0,
+    masteryVersion: 0,
 });
 const RUNE_DUST_ITEM_ID = 'mat_rune_dust';
 const SOUL_INK_REROLL_ITEM_ID = 'reagent_soul_ink_t0';
@@ -198,6 +201,7 @@ export const useTechCollectionStore = create()(immer((set, get) => ({
         const normalized = normalizeTechEntry(techId);
         set((state) => {
             state.unlockedTechs[techId] = normalized;
+            state.collectionVersion = bumpVersion(state.collectionVersion);
         });
         get().ensureRunes(techId);
         return normalized;
@@ -215,6 +219,7 @@ export const useTechCollectionStore = create()(immer((set, get) => ({
                 favorite: existing?.favorite,
             });
             state.unlockedTechs[techId] = normalized;
+            state.collectionVersion = bumpVersion(state.collectionVersion);
         });
         get().ensureTraits(techId);
     },
@@ -225,6 +230,7 @@ export const useTechCollectionStore = create()(immer((set, get) => ({
             const current = state.fragments[techId] ?? 0;
             const next = current + qty;
             state.fragments[techId] = next < 0 ? 0 : next;
+            state.collectionVersion = bumpVersion(state.collectionVersion);
         });
     },
     getFragments: (techId) => {
@@ -242,6 +248,7 @@ export const useTechCollectionStore = create()(immer((set, get) => ({
             const total = amount * (1 + masteryGainPct);
             entry.masteryXp += total;
             entry.lastCastAt = now;
+            state.masteryVersion = bumpVersion(state.masteryVersion);
         });
         const nextLevel = get().getMasteryLevel(techId);
         if (nextLevel > prevLevel) {
@@ -260,29 +267,39 @@ export const useTechCollectionStore = create()(immer((set, get) => ({
     },
     setManualGrade: (techId, grade) => {
         set((state) => {
-            const entry = state.unlockedTechs[techId] ?? normalizeTechEntry(techId);
+            const existing = state.unlockedTechs[techId];
+            const entry = existing ?? normalizeTechEntry(techId);
             if (!isHigherGrade(entry.manualGrade, grade)) {
                 state.unlockedTechs[techId] = entry;
+                if (!existing) {
+                    state.collectionVersion = bumpVersion(state.collectionVersion);
+                }
                 return;
             }
             state.unlockedTechs[techId] = normalizeTechEntry(techId, {
                 ...entry,
                 manualGrade: grade,
             });
+            state.collectionVersion = bumpVersion(state.collectionVersion);
         });
         get().ensureRunes(techId);
     },
     setRarityIfHigher: (techId, rarity) => {
         set((state) => {
-            const entry = state.unlockedTechs[techId] ?? normalizeTechEntry(techId);
+            const existing = state.unlockedTechs[techId];
+            const entry = existing ?? normalizeTechEntry(techId);
             if (!isHigherRarity(entry.rarity, rarity)) {
                 state.unlockedTechs[techId] = entry;
+                if (!existing) {
+                    state.collectionVersion = bumpVersion(state.collectionVersion);
+                }
                 return;
             }
             state.unlockedTechs[techId] = normalizeTechEntry(techId, {
                 ...entry,
                 rarity,
             });
+            state.collectionVersion = bumpVersion(state.collectionVersion);
         });
     },
     getMasteryLevel: (techId) => {
@@ -300,6 +317,7 @@ export const useTechCollectionStore = create()(immer((set, get) => ({
             if (entry.masteryXp >= targetXp)
                 return;
             entry.masteryXp = targetXp;
+            state.masteryVersion = bumpVersion(state.masteryVersion);
         });
     },
     getTechniqueProgressionSnapshot: (techId) => {
@@ -343,7 +361,13 @@ export const useTechCollectionStore = create()(immer((set, get) => ({
             if (!entry)
                 return;
             const slots = getTechniqueEffectiveRuneSockets(entry.manualGrade);
-            entry.runes = normalizeRunes(entry.runes, slots);
+            const nextRunes = normalizeRunes(entry.runes, slots);
+            const changed = nextRunes.length !== entry.runes.length
+                || nextRunes.some((rune, index) => rune !== entry.runes[index]);
+            if (!changed)
+                return;
+            entry.runes = nextRunes;
+            state.collectionVersion = bumpVersion(state.collectionVersion);
         });
     },
     socketRune: (techId, slotIndex, runeItemId) => {
@@ -373,6 +397,7 @@ export const useTechCollectionStore = create()(immer((set, get) => ({
                 return;
             target.runes = normalizeRunes(target.runes, slots);
             target.runes[slotIndex] = runeItemId;
+            state.collectionVersion = bumpVersion(state.collectionVersion);
         });
         GameEvents.emit({
             type: 'techniques/rune_socketed',
@@ -385,6 +410,7 @@ export const useTechCollectionStore = create()(immer((set, get) => ({
             const entry = state.unlockedTechs[techId] ?? normalizeTechEntry(techId);
             entry.favorite = !entry.favorite;
             state.unlockedTechs[techId] = entry;
+            state.collectionVersion = bumpVersion(state.collectionVersion);
         });
     },
     isFavorite: (techId) => Boolean(get().unlockedTechs[techId]?.favorite),
@@ -407,6 +433,7 @@ export const useTechCollectionStore = create()(immer((set, get) => ({
                 return;
             target.runes = normalizeRunes(target.runes, slots);
             target.runes[slotIndex] = null;
+            state.collectionVersion = bumpVersion(state.collectionVersion);
         });
         GameEvents.emit({
             type: 'techniques/rune_unsocketed',
@@ -494,13 +521,17 @@ export const useTechCollectionStore = create()(immer((set, get) => ({
                 return;
             const slots = get().getEffectiveTraitSlots(techId);
             if (slots <= 0) {
+                if (entry.traits.length === 0)
+                    return;
                 entry.traits = [];
+                state.collectionVersion = bumpVersion(state.collectionVersion);
                 return;
             }
             if (entry.traits.length === slots)
                 return;
             if (entry.traits.length > slots) {
                 entry.traits = entry.traits.slice(0, slots);
+                state.collectionVersion = bumpVersion(state.collectionVersion);
                 return;
             }
             const missing = slots - entry.traits.length;
@@ -508,6 +539,7 @@ export const useTechCollectionStore = create()(immer((set, get) => ({
             const rolled = rollTraits(missing, state.rngSeed, existingIds);
             state.rngSeed = rolled.seed;
             entry.traits = [...entry.traits, ...rolled.traits];
+            state.collectionVersion = bumpVersion(state.collectionVersion);
         });
     },
     rerollTraits: (techId, options) => {
@@ -559,6 +591,7 @@ export const useTechCollectionStore = create()(immer((set, get) => ({
                 ? [...next.traits.slice(0, lockIndex), lockedTrait, ...next.traits.slice(lockIndex)]
                 : next.traits;
             target.traits = traits.slice(0, slots);
+            state.collectionVersion = bumpVersion(state.collectionVersion);
         });
         GameEvents.emit({ type: 'techniques/trait_reroll_result', payload: { techniqueId: techId, ok: true } });
         return { ok: true, lockedIndex: hasValidLock ? lockIndex : undefined, cost: { soulInkItemId: SOUL_INK_REROLL_ITEM_ID, qty: costQty } };
@@ -571,6 +604,7 @@ export const useTechCollectionStore = create()(immer((set, get) => ({
             if (!entry?.unlocked || !entry.traits?.length)
                 return;
             let seed = state.rngSeed;
+            let changed = false;
             entry.traits = entry.traits.map((trait) => {
                 const def = getTraitDefinition(trait.id);
                 if (!def)
@@ -580,9 +614,16 @@ export const useTechCollectionStore = create()(immer((set, get) => ({
                 if (roll.value >= chance)
                     return trait;
                 const boosted = Math.min(def.max, trait.value + (def.max - trait.value) * 0.5);
-                return { ...trait, value: Number(boosted.toFixed(4)) };
+                const nextValue = Number(boosted.toFixed(4));
+                if (nextValue === trait.value)
+                    return trait;
+                changed = true;
+                return { ...trait, value: nextValue };
             });
             state.rngSeed = seed;
+            if (changed) {
+                state.collectionVersion = bumpVersion(state.collectionVersion);
+            }
         });
     },
     getTraitModifiers: (techId, isBoss) => {
@@ -774,6 +815,7 @@ export const useTechCollectionStore = create()(immer((set, get) => ({
             if (target) {
                 target.rank = nextRank;
             }
+            state.collectionVersion = bumpVersion(state.collectionVersion);
         });
         GameEvents.emit({ type: 'techniques/rank_upgrade_success', payload: { techniqueId: techId, nextRank } });
         return { ok: true };
@@ -788,6 +830,8 @@ export const useTechCollectionStore = create()(immer((set, get) => ({
             state.unlockedTechs = unlockedTechs;
             state.fragments = { ...(data.fragments ?? {}) };
             state.rngSeed = typeof data.rngSeed === 'number' ? data.rngSeed : state.rngSeed;
+            state.collectionVersion = bumpVersion(state.collectionVersion);
+            state.masteryVersion = bumpVersion(state.masteryVersion);
         });
         Object.keys(get().unlockedTechs).forEach((techId) => {
             get().ensureRunes(techId);
@@ -799,6 +843,8 @@ export const useTechCollectionStore = create()(immer((set, get) => ({
             state.unlockedTechs = base.unlockedTechs;
             state.fragments = base.fragments;
             state.rngSeed = base.rngSeed;
+            state.collectionVersion = base.collectionVersion;
+            state.masteryVersion = base.masteryVersion;
         });
     },
 })));

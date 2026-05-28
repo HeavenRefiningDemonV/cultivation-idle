@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import { D, add, greaterThanOrEqualTo, subtract } from '../utils/numbers.js';
+import { bumpVersion } from './versionCounters.js';
 const initialCurrencies = {
     gold: '0',
     spiritStones: '0',
@@ -12,6 +13,8 @@ const createInitialState = () => ({
     gold: '0',
     spiritStones: '0',
     merit: '0',
+    inventoryVersion: 0,
+    currencyVersion: 0,
 });
 function sanitizeAmount(amount) {
     if (typeof amount !== 'string')
@@ -41,9 +44,14 @@ export const useInventoryStore = create()(immer((set, get) => ({
         const sanitized = sanitizeAmount(amount);
         if (sanitized === null)
             return;
+        if (D(sanitized).isZero())
+            return;
         set((state) => {
             const next = add(state.currencies[key] || '0', sanitized).toString();
+            if (next === state.currencies[key])
+                return;
             state.currencies[key] = next;
+            state.currencyVersion = bumpVersion(state.currencyVersion);
             syncCurrencyFields(state);
         });
     },
@@ -51,12 +59,17 @@ export const useInventoryStore = create()(immer((set, get) => ({
         const sanitized = sanitizeAmount(amount);
         if (sanitized === null)
             return false;
+        if (D(sanitized).isZero())
+            return true;
         const current = get().currencies[key] || '0';
         if (!greaterThanOrEqualTo(current, sanitized))
             return false;
         set((state) => {
             const next = subtract(state.currencies[key] || '0', sanitized).toString();
+            if (next === state.currencies[key])
+                return;
             state.currencies[key] = next;
+            state.currencyVersion = bumpVersion(state.currencyVersion);
             syncCurrencyFields(state);
         });
         return true;
@@ -79,18 +92,28 @@ export const useInventoryStore = create()(immer((set, get) => ({
             return true;
         if (!get().canAffordCurrency(costs))
             return false;
+        const entries = Object.keys(costs)
+            .map((key) => {
+            const raw = costs[key];
+            const sanitized = raw === undefined ? null : sanitizeAmount(raw);
+            return sanitized && !D(sanitized).isZero() ? { key, amount: sanitized } : null;
+        })
+            .filter((entry) => entry !== null);
+        if (entries.length === 0)
+            return true;
         set((state) => {
-            Object.keys(costs).forEach((key) => {
-                const raw = costs[key];
-                if (raw === undefined)
+            let changed = false;
+            entries.forEach(({ key, amount }) => {
+                const next = subtract(state.currencies[key] || '0', amount).toString();
+                if (next === state.currencies[key])
                     return;
-                const sanitized = sanitizeAmount(raw);
-                if (sanitized === null)
-                    return;
-                const next = subtract(state.currencies[key] || '0', sanitized).toString();
                 state.currencies[key] = next;
+                changed = true;
             });
-            syncCurrencyFields(state);
+            if (changed) {
+                state.currencyVersion = bumpVersion(state.currencyVersion);
+                syncCurrencyFields(state);
+            }
         });
         return true;
     },
@@ -104,6 +127,7 @@ export const useInventoryStore = create()(immer((set, get) => ({
             const current = state.items[itemId] || 0;
             const next = current + amount;
             state.items[itemId] = next;
+            state.inventoryVersion = bumpVersion(state.inventoryVersion);
         });
         return true;
     },
@@ -124,6 +148,7 @@ export const useInventoryStore = create()(immer((set, get) => ({
             else {
                 state.items[itemId] = next;
             }
+            state.inventoryVersion = bumpVersion(state.inventoryVersion);
         });
         return true;
     },
@@ -158,6 +183,8 @@ export const useInventoryStore = create()(immer((set, get) => ({
         set((state) => {
             state.currencies = { ...initialCurrencies };
             state.items = {};
+            state.inventoryVersion = bumpVersion(state.inventoryVersion);
+            state.currencyVersion = bumpVersion(state.currencyVersion);
             syncCurrencyFields(state);
         });
     },

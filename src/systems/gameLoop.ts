@@ -21,27 +21,191 @@ import { useUIStore } from '../stores/uiStore.js';
 import { useActivityStore } from '../stores/activityStore.js';
 import { RewardService } from '../services/rewards/index.js';
 import { COMBAT_ACTIVITY_TYPES } from '../types/activity.js';
+import { PERF_LABELS, incrementCounter, recordMeasure, startTimer } from '../services/performance/index.js';
+import { SimulationScheduler, type ScheduledJobRunContext } from '../services/time/SimulationScheduler.js';
+import { trackProgressionGateAvailabilityNow } from '../services/diagnostics/progressionGateAvailability.js';
 
 /**
  * Game loop constants
  */
 const CULTIVATION_TICK_INTERVAL = 1000;  // 1 second in milliseconds
 const AUTOSAVE_INTERVAL = 60000;         // 60 seconds in milliseconds
-const MAX_DELTA_TIME = 1000;             // Max 1 second delta to prevent time exploits
-/**
- * Main game loop managing all game ticking and updates
- */
-class GameLoop {
-  private lastTick: number = Date.now();
-  private rafId: number | null = null;
-  private cultivationIntervalId: number | null = null;
-  private autosaveIntervalId: number | null = null;
-  private isRunning: boolean = false;
+const AUTHORITATIVE_CULTIVATION_INTERVAL = 250;
+const COMBAT_FIXED_STEP_INTERVAL = 100;
+const PROGRESSION_DIAGNOSTICS_INTERVAL = 1000;
+export type SimulationJobDependencies = {
+  gameTick: (elapsedMs: number) => void;
+  cultivationTick: (elapsedMs: number) => void;
+  combatTick: (elapsedMs: number) => void;
+  queueTick: (nowWall: number) => void;
+  progressionDiagnosticsTick: (nowWall: number) => void;
+  autosaveTick: () => boolean;
+  nowWall: () => number;
+  isCombatActivityActive: () => boolean;
+};
 
-  /**
-   * Start the game loop
-   * Initializes RAF loop, cultivation tick, and autosave
-   */
+export type GameLoopDependencies = SimulationJobDependencies & {
+  scheduler: SimulationScheduler;
+  requestAnimationFrame: (callback: () => void) => number;
+  cancelAnimationFrame: (id: number) => void;
+};
+
+export function isCombatActivityActiveForScheduler(): boolean {
+  const activeActivity = useActivityStore.getState().active;
+  return activeActivity ? COMBAT_ACTIVITY_TYPES.includes(activeActivity.type) : false;
+}
+
+function defaultQueueTick(nowWall: number): void {
+  const endTick = startTimer(PERF_LABELS.gameLoopOneSecondJobs);
+  try {
+    useExpeditionStore.getState().tick(nowWall);
+    useManualSatchelStore.getState().tick(nowWall);
+    useCraftSessionStore.getState().tick(nowWall);
+  } catch (error) {
+    console.error('[GameLoop] Error in queues-and-expeditions tick:', error);
+  } finally {
+    endTick();
+  }
+}
+
+function defaultAutosaveTick(): boolean {
+  const endTick = startTimer(PERF_LABELS.gameLoopAutoSaveInterval);
+  try {
+    incrementCounter(PERF_LABELS.gameLoopAutoSaveInterval);
+    const success = SaveService.save('autosave');
+    if (success) {
+      console.log('[GameLoop] Game autosaved');
+    } else {
+      console.warn('[GameLoop] Autosave failed');
+    }
+    return success;
+  } catch (error) {
+    console.error('[GameLoop] Error in autosave:', error);
+    return false;
+  } finally {
+    endTick();
+  }
+}
+
+function createDefaultGameLoopDependencies(): GameLoopDependencies {
+  return {
+    scheduler: new SimulationScheduler(),
+    requestAnimationFrame: (callback) => window.requestAnimationFrame(callback),
+    cancelAnimationFrame: (id) => window.cancelAnimationFrame(id),
+    gameTick: (elapsedMs) => {
+      const endTick = startTimer(PERF_LABELS.gameLoopTick);
+      try {
+        recordMeasure(PERF_LABELS.gameLoopTickDeltaMs, elapsedMs);
+        useGameStore.getState().tick(elapsedMs);
+      } catch (error) {
+        console.error('[GameLoop] Error in game store tick:', error);
+      } finally {
+        endTick();
+      }
+    },
+    cultivationTick: (elapsedMs) => {
+      try {
+        cultivationService.tick(elapsedMs);
+      } catch (error) {
+        console.error('[GameLoop] Error in cultivation service tick:', error);
+      }
+    },
+    combatTick: (elapsedMs) => {
+      try {
+        useCombatStore.getState().tick(elapsedMs);
+      } catch (error) {
+        console.error('[GameLoop] Error in combat tick:', error);
+      }
+    },
+    queueTick: defaultQueueTick,
+    progressionDiagnosticsTick: trackProgressionGateAvailabilityNow,
+    autosaveTick: defaultAutosaveTick,
+    nowWall: () => Date.now(),
+    isCombatActivityActive: isCombatActivityActiveForScheduler,
+  };
+}
+
+export function registerSimulationSchedulerJobs(
+  scheduler: SimulationScheduler,
+  deps: SimulationJobDependencies,
+): void {
+  scheduler.clearJobs();
+
+  scheduler.register({
+    name: 'cultivation-authoritative',
+    intervalMs: AUTHORITATIVE_CULTIVATION_INTERVAL,
+    maxCatchupMs: 1000,
+    maxStepsPerDrain: 4,
+    runWhenHidden: false,
+    priority: 'critical',
+    run: ({ elapsedMs }: ScheduledJobRunContext) => {
+      deps.gameTick(elapsedMs);
+      deps.cultivationTick(elapsedMs);
+    },
+  });
+
+  scheduler.register({
+    name: 'combat-fixed-step',
+    intervalMs: COMBAT_FIXED_STEP_INTERVAL,
+    maxCatchupMs: 250,
+    maxStepsPerDrain: 2,
+    runWhenHidden: false,
+    priority: 'critical',
+    enabled: deps.isCombatActivityActive,
+    run: ({ elapsedMs }: ScheduledJobRunContext) => {
+      deps.combatTick(elapsedMs);
+    },
+  });
+
+  scheduler.register({
+    name: 'queues-and-expeditions',
+    intervalMs: CULTIVATION_TICK_INTERVAL,
+    maxCatchupMs: CULTIVATION_TICK_INTERVAL,
+    maxStepsPerDrain: 1,
+    runWhenHidden: false,
+    priority: 'normal',
+    run: ({ nowWall }: ScheduledJobRunContext) => {
+      deps.queueTick(nowWall);
+    },
+  });
+
+  scheduler.register({
+    name: 'progression-diagnostics',
+    intervalMs: PROGRESSION_DIAGNOSTICS_INTERVAL,
+    maxCatchupMs: PROGRESSION_DIAGNOSTICS_INTERVAL,
+    maxStepsPerDrain: 1,
+    runWhenHidden: false,
+    priority: 'background',
+    run: ({ nowWall }: ScheduledJobRunContext) => {
+      deps.progressionDiagnosticsTick(nowWall);
+    },
+  });
+
+  scheduler.register({
+    name: 'autosave',
+    intervalMs: AUTOSAVE_INTERVAL,
+    maxCatchupMs: AUTOSAVE_INTERVAL,
+    maxStepsPerDrain: 1,
+    runWhenHidden: false,
+    priority: 'background',
+    run: () => {
+      deps.autosaveTick();
+    },
+  });
+}
+
+/**
+ * Main game loop managing app lifecycle, visual rAF, and scheduled simulation jobs.
+ */
+export class GameLoop {
+  private rafId: number | null = null;
+  private isRunning: boolean = false;
+  private readonly deps: GameLoopDependencies;
+
+  constructor(deps: GameLoopDependencies = createDefaultGameLoopDependencies()) {
+    this.deps = deps;
+  }
+
   public start(): void {
     if (this.isRunning) {
       console.warn('[GameLoop] Already running');
@@ -49,26 +213,13 @@ class GameLoop {
     }
 
     console.log('[GameLoop] Starting game loop...');
-
     this.isRunning = true;
-    this.lastTick = Date.now();
-
-    // Start RAF loop for smooth updates
+    registerSimulationSchedulerJobs(this.deps.scheduler, this.deps);
+    this.deps.scheduler.start();
     this.startRafLoop();
-
-    // Start cultivation tick (1 second interval)
-    this.startCultivationTick();
-
-    // Start autosave (60 second interval)
-    this.startAutosave();
-
     console.log('[GameLoop] Game loop started');
   }
 
-  /**
-   * Stop the game loop
-   * Cleans up all intervals and RAF
-   */
   public stop(): void {
     if (!this.isRunning) {
       console.warn('[GameLoop] Already stopped');
@@ -76,154 +227,43 @@ class GameLoop {
     }
 
     console.log('[GameLoop] Stopping game loop...');
-
     this.isRunning = false;
 
-    // Stop RAF loop
     if (this.rafId !== null) {
-      cancelAnimationFrame(this.rafId);
+      this.deps.cancelAnimationFrame(this.rafId);
       this.rafId = null;
     }
 
-    // Stop cultivation tick
-    if (this.cultivationIntervalId !== null) {
-      clearInterval(this.cultivationIntervalId);
-      this.cultivationIntervalId = null;
-    }
-
-    // Stop autosave
-    if (this.autosaveIntervalId !== null) {
-      clearInterval(this.autosaveIntervalId);
-      this.autosaveIntervalId = null;
-    }
-
+    this.deps.scheduler.stop();
+    this.deps.scheduler.clearJobs();
     console.log('[GameLoop] Game loop stopped');
   }
 
-  /**
-   * Start the RAF (requestAnimationFrame) loop
-   */
   private startRafLoop(): void {
     const loop = () => {
       if (!this.isRunning) return;
-
-      this.tick();
-      this.rafId = requestAnimationFrame(loop);
+      incrementCounter(PERF_LABELS.gameLoopRafCallback);
+      this.rafId = this.deps.requestAnimationFrame(loop);
     };
 
-    this.rafId = requestAnimationFrame(loop);
+    this.rafId = this.deps.requestAnimationFrame(loop);
   }
 
-  /**
-   * Main tick function called by RAF (~60fps)
-   * Updates all stores with delta time
-   */
-  private tick(): void {
-    const now = Date.now();
-    let deltaTime = now - this.lastTick;
-
-    // Clamp delta time to prevent time exploits
-    if (deltaTime > MAX_DELTA_TIME) {
-      console.warn(`[GameLoop] Delta time clamped from ${deltaTime}ms to ${MAX_DELTA_TIME}ms`);
-      deltaTime = MAX_DELTA_TIME;
-    }
-
-    // Prevent negative delta time
-    if (deltaTime < 0) {
-      console.warn('[GameLoop] Negative delta time detected, resetting');
-      deltaTime = 0;
-      this.lastTick = now;
-      return;
-    }
-
-    // Update last tick time
-    this.lastTick = now;
-
-    // Update all stores
-    try {
-      // Update game store (HP regen, etc.)
-      const gameState = useGameStore.getState();
-      gameState.tick(deltaTime);
-
-      cultivationService.tick(deltaTime);
-
-      // Update combat store (attacks, cooldowns)
-      const combatState = useCombatStore.getState();
-      const activeActivity = useActivityStore.getState().active;
-      const isCombatActivityActive = activeActivity
-        ? COMBAT_ACTIVITY_TYPES.includes(activeActivity.type)
-        : false;
-
-      if (isCombatActivityActive) {
-        combatState.tick(deltaTime);
-      }
-    } catch (error) {
-      console.error('[GameLoop] Error in tick:', error);
-    }
+  public setHidden(hidden: boolean): void {
+    this.deps.scheduler.setHidden(hidden);
   }
 
-  /**
-   * Start cultivation tick interval
-   * Called every 1 second to add Qi
-   */
-  private startCultivationTick(): void {
-    this.cultivationIntervalId = window.setInterval(() => {
-      this.cultivationTick();
-    }, CULTIVATION_TICK_INTERVAL);
+  public getScheduler(): SimulationScheduler {
+    return this.deps.scheduler;
   }
 
-  /**
-   * Cultivation tick function
-   * Adds Qi based on Qi/s every second
-   */
-  private cultivationTick(): void {
-    try {
-      // The actual Qi addition is handled in gameStore.tick()
-      // This is just a heartbeat to ensure regular updates
-
-      // We could add additional cultivation logic here in the future
-      // For now, the gameStore.tick() handles Qi generation
-      useExpeditionStore.getState().tick(Date.now());
-      useManualSatchelStore.getState().tick(Date.now());
-      useCraftSessionStore.getState().tick(Date.now());
-    } catch (error) {
-      console.error('[GameLoop] Error in cultivation tick:', error);
-    }
-  }
-
-  /**
-   * Start autosave interval
-   * Saves game every 60 seconds
-   */
-  private startAutosave(): void {
-    this.autosaveIntervalId = window.setInterval(() => {
-      this.autosaveTick();
-    }, AUTOSAVE_INTERVAL);
-  }
-
-  /**
-   * Autosave tick function
-   * Called every 60 seconds to save game
-   */
-  private autosaveTick(): void {
-    try {
-      const success = SaveService.save();
-      if (success) {
-        console.log('[GameLoop] Game autosaved');
-      } else {
-        console.warn('[GameLoop] Autosave failed');
-      }
-    } catch (error) {
-      console.error('[GameLoop] Error in autosave:', error);
-    }
-  }
-
-  /**
-   * Check if game loop is running
-   */
   public isActive(): boolean {
     return this.isRunning;
   }
+}
+
+export function createGameLoop(deps: GameLoopDependencies): GameLoop {
+  return new GameLoop(deps);
 }
 
 /**
@@ -289,7 +329,7 @@ export function initializeGame(): boolean {
         const now = Date.now();
         useGameStore.setState({ lastActiveTime: now, lastTickTime: now });
         useManualSatchelStore.getState().tick(now);
-        SaveService.save();
+        SaveService.save('offline-summary-bootstrap');
       } else {
         console.warn('[GameLoop] Failed to load save, starting fresh');
         const loadFailure = SaveService.getLastLoadFailure();
@@ -355,7 +395,7 @@ function setupBeforeUnload(): void {
       });
 
       // Save the game
-    const success = SaveService.save();
+      const success = SaveService.save('beforeunload');
 
       if (success) {
         console.log('[GameLoop] Game saved on exit');
@@ -388,9 +428,13 @@ function setupActivityTracking(): void {
     if (document.hidden) {
       updateLastActive();
     }
+    gameLoop.setHidden(document.hidden);
   });
 
-  window.addEventListener('pagehide', updateLastActive);
+  window.addEventListener('pagehide', () => {
+    updateLastActive();
+    gameLoop.setHidden(true);
+  });
 }
 
 /**
@@ -402,7 +446,7 @@ export function shutdownGame(): void {
 
   try {
     // Save the game
-    SaveService.save();
+    SaveService.save('shutdown');
 
     // Stop the game loop
     gameLoop.stop();

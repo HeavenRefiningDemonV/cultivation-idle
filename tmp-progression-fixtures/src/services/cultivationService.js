@@ -3,6 +3,7 @@ import { useActivityStore } from '../stores/activityStore.js';
 import { useCultivationStore } from '../stores/cultivationStore.js';
 import { useTechCollectionStore } from '../stores/techCollectionStore.js';
 import { buildCultivationConsumableCarryoverWindows } from '../systems/consumables/cultivationConsumableEffects.js';
+import { PERF_LABELS, time } from './performance/index.js';
 function ensureInsightScheduled(now) {
     const store = useCultivationStore.getState();
     if (!store.selectedHeartLawId)
@@ -21,7 +22,7 @@ function applyContinuousGains(deltaMs, now = Date.now(), ignoreActivityGate = fa
     if (deltaMs <= 0)
         return;
     const heart = useCultivationStore.getState();
-    heart.clearExpiredCultivationConsumables(now);
+    time(PERF_LABELS.cultivationServiceConsumables, () => heart.clearExpiredCultivationConsumables(now));
     if (!heart.selectedHeartLawId)
         return;
     const activity = useActivityStore.getState().active;
@@ -29,19 +30,24 @@ function applyContinuousGains(deltaMs, now = Date.now(), ignoreActivityGate = fa
     if (!isCultivating && !ignoreActivityGate)
         return;
     const breath = getBreathModeMultipliers(heart.breathMode);
-    const modifiers = heart.getCultivationConsumableModifiers(now);
+    const modifiers = time(PERF_LABELS.cultivationServiceConsumables, () => heart.getCultivationConsumableModifiers(now));
     const deltaMinutes = deltaMs / 60000;
     const comprehensionGain = COMPREHENSION_PER_MINUTE_BASE * deltaMinutes * breath.comprehensionMult * modifiers.comprehensionGainMult;
     if (comprehensionGain > 0) {
-        heart.addComprehension(comprehensionGain, 'meditation');
+        time(PERF_LABELS.cultivationServiceHeartLaw, () => heart.addComprehension(comprehensionGain, 'meditation'));
     }
-    if (heart.studyEnabled && heart.studyTechniqueId) {
+    const studyTechniqueId = heart.studyTechniqueId;
+    if (heart.studyEnabled && studyTechniqueId) {
         const masteryGain = STUDY_MASTERY_PER_MINUTE_BASE * deltaMinutes;
         if (masteryGain > 0) {
-            useTechCollectionStore.getState().addMasteryXp(heart.studyTechniqueId, masteryGain);
+            time(PERF_LABELS.cultivationServiceHeartLaw, () => {
+                useTechCollectionStore.getState().addMasteryXp(studyTechniqueId, masteryGain);
+            });
         }
     }
-    heart.advanceInsightTimer(deltaMs, now, modifiers.insightFrequencyMult);
+    time(PERF_LABELS.cultivationServiceInsight, () => {
+        heart.advanceInsightTimer(deltaMs, now, modifiers.insightFrequencyMult);
+    });
 }
 function processInsights(startAt, endAt) {
     ensureInsightScheduled(startAt);
@@ -76,13 +82,15 @@ function processInsights(startAt, endAt) {
 }
 export const cultivationService = {
     tick(deltaMs) {
-        const now = Date.now();
-        applyContinuousGains(deltaMs, now);
-        autoResolveInsight(now);
-        const store = useCultivationStore.getState();
-        if (!store.insight) {
-            ensureInsightScheduled(now);
-        }
+        time(PERF_LABELS.cultivationServiceTick, () => {
+            const now = Date.now();
+            applyContinuousGains(deltaMs, now);
+            autoResolveInsight(now);
+            const store = useCultivationStore.getState();
+            if (!store.insight) {
+                time(PERF_LABELS.cultivationServiceInsight, () => ensureInsightScheduled(now));
+            }
+        });
     },
     applyOfflineProgress(deltaMs, startAt, endAt) {
         if (deltaMs > 0) {

@@ -5,9 +5,11 @@ import './stores/rewardsLogStore'
 import App from './App.tsx'
 import { initializeTelemetry } from './services/diagnostics/initializeTelemetry.js'
 import { initializeErrorCapture } from './services/diagnostics/initializeErrorCapture.js'
+import { initializePerformanceInstrumentation } from './services/performance/index.js'
 
 initializeTelemetry()
 initializeErrorCapture()
+initializePerformanceInstrumentation()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

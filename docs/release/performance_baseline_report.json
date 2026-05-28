@@ -1,0 +1,2686 @@
+{
+  "generatedAt": "2026-05-26T13:11:10.159Z",
+  "package": {
+    "name": "cultivation-idle",
+    "version": "0.0.0",
+    "dependencies": {
+      "@headlessui/react": "^2.2.9",
+      "@pixi/react": "^8.0.5",
+      "classnames": "file:vendor/classnames",
+      "crypto-js": "^4.2.0",
+      "date-fns": "^4.1.0",
+      "decimal.js": "^10.6.0",
+      "framer-motion": "^12.23.24",
+      "immer": "^10.2.0",
+      "lucide-react": "^0.553.0",
+      "pixi.js": "^8.17.1",
+      "react": "^19.1.1",
+      "react-dom": "^19.1.1",
+      "react-spring": "^10.0.3",
+      "zustand": "^5.0.8"
+    },
+    "devDependencies": {
+      "@eslint/js": "^9.36.0",
+      "@playwright/test": "^1.59.1",
+      "@types/crypto-js": "^4.2.2",
+      "@types/node": "^24.6.0",
+      "@types/react": "^19.1.16",
+      "@types/react-dom": "^19.1.9",
+      "@vitejs/plugin-react": "^5.0.4",
+      "autoprefixer": "^10.4.21",
+      "baseline-browser-mapping": "^2.10.8",
+      "eslint": "^9.36.0",
+      "eslint-plugin-react-hooks": "^5.2.0",
+      "eslint-plugin-react-refresh": "^0.4.22",
+      "globals": "^16.4.0",
+      "postcss": "^8.5.6",
+      "sass": "file:vendor/sass-stub",
+      "sass-embedded": "file:vendor/sass-embedded",
+      "typescript": "~5.9.3",
+      "typescript-eslint": "^8.45.0",
+      "vite": "^7.1.7"
+    }
+  },
+  "environment": {
+    "nodeVersion": "v24.14.0",
+    "npmVersion": "11.9.0",
+    "platform": "win32",
+    "cwd": "cultivation-idle"
+  },
+  "git": {
+    "branch": "codex/perf-packet-3-selector-surface-cleanup",
+    "dirty": true,
+    "statusPreview": [
+      "M docs/release/build_warning_inventory.md",
+      " M docs/release/current_implementation_baseline.json",
+      " M docs/release/current_implementation_baseline.md",
+      " M docs/release/go_no_go_checklist.md",
+      " M docs/release/known_issues.md",
+      " M docs/release/performance_smoke_checklist.md",
+      " M docs/release/release_handoff_bundle.md",
+      " M docs/release/runtime_content_manifest.md",
+      " M docs/release/signoff_sheet.md",
+      " M package.json",
+      " M src/components/GameLayout.tsx",
+      " M src/components/Header.tsx",
+      " M src/components/Sidebar.tsx",
+      " M src/components/TechniquePanel.tsx",
+      " M src/components/TechniquesPanel.tsx",
+      " M src/components/combat/CombatMinibar.tsx",
+      " M src/components/modals/PerkSelectionModal.tsx",
+      " M src/components/modals/WorldBuildingModal.tsx",
+      " M src/components/screens/AdventureScreen.tsx",
+      " M src/content/loaders.ts",
+      " M src/features/apothecary/exact/ApothecaryExactScreenOwner.tsx",
+      " M src/features/cultivation/exact/CultivationExactScreenOwner.tsx",
+      " M src/features/pavilion/PavilionScreenOwner.tsx",
+      " M src/features/prestige/prestigeLedgerExact/PrestigeLedgerScreenOwner.tsx",
+      " M src/features/professions/forgeExact/ForgeExactScreenOwner.tsx",
+      " M src/features/techniquesExact/TechniquesScreenOwner.tsx",
+      " M src/features/world/bountiesExact/BountiesExactScreenOwner.tsx",
+      " M src/features/world/expeditionsExact/ExpeditionsExactScreenOwner.tsx",
+      " M src/features/world/gateTrialExact/GateTrialScreenOwner.tsx",
+      " M src/features/world/manualPavilionExact/ManualPavilionScreenOwner.tsx"
+    ]
+  },
+  "previousPacketVerification": {
+    "status": "pass",
+    "inspectedFiles": [
+      "AGENTS.md",
+      "docs/release/current_implementation_baseline.md",
+      "docs/release/current_implementation_baseline.json",
+      "docs/release/build_warning_inventory.md",
+      "docs/release/performance_smoke_checklist.md",
+      "docs/release/release_handoff_bundle.md",
+      "docs/release/go_no_go_checklist.md",
+      "docs/release/known_issues.md",
+      "docs/release/waiver_policy.md",
+      "docs/codex/PROMPT_STYLE.md",
+      "docs/codex/TASK_QUEUE.md"
+    ],
+    "notes": []
+  },
+  "plugins": {
+    "Browser": {
+      "available": false,
+      "used": false,
+      "notes": [
+        "Static release script cannot query Codex plugin state; see packet handoff for live plugin usage."
+      ]
+    },
+    "Linear": {
+      "available": false,
+      "used": false,
+      "notes": [
+        "Static release script cannot query Codex plugin state; see packet handoff for live plugin usage."
+      ]
+    },
+    "Game Studio": {
+      "available": false,
+      "used": false,
+      "notes": [
+        "Static release script cannot query Codex plugin state; see packet handoff for live plugin usage."
+      ]
+    },
+    "Superpowers": {
+      "available": false,
+      "used": false,
+      "notes": [
+        "Static release script cannot query Codex plugin state; see packet handoff for live plugin usage."
+      ]
+    },
+    "GitHub": {
+      "available": false,
+      "used": false,
+      "notes": [
+        "Static release script cannot query Codex plugin state; see packet handoff for live plugin usage."
+      ]
+    },
+    "Sentry": {
+      "available": false,
+      "used": false,
+      "notes": [
+        "Static release script cannot query Codex plugin state; see packet handoff for live plugin usage."
+      ]
+    },
+    "CodeRabbit": {
+      "available": false,
+      "used": false,
+      "notes": [
+        "Static release script cannot query Codex plugin state; see packet handoff for live plugin usage."
+      ]
+    },
+    "HyperFrames by HeyGen": {
+      "available": false,
+      "used": false,
+      "notes": [
+        "Static release script cannot query Codex plugin state; see packet handoff for live plugin usage."
+      ]
+    },
+    "Codex Security": {
+      "available": false,
+      "used": false,
+      "notes": [
+        "Static release script cannot query Codex plugin state; see packet handoff for live plugin usage."
+      ]
+    }
+  },
+  "staticAudit": {
+    "sourceFileCounts": {
+      ".scss": 157,
+      ".tsx": 254,
+      ".css": 3,
+      ".png": 293,
+      ".md": 16,
+      ".json": 1,
+      ".zip": 1,
+      "<none>": 4,
+      ".svg": 96,
+      ".ts": 646
+    },
+    "largestSourceFiles": [
+      {
+        "path": "src/assets/icons/icons.zip",
+        "bytes": 4765927
+      },
+      {
+        "path": "src/assets/cutscenes/S00/S00 Slide 4.png",
+        "bytes": 2982446
+      },
+      {
+        "path": "src/assets/cutscenes/S00/S00 Slide 3.png",
+        "bytes": 2966226
+      },
+      {
+        "path": "src/assets/cutscenes/S00/S00 Slide 5.png",
+        "bytes": 2934511
+      },
+      {
+        "path": "src/assets/cutscenes/S00/S00 Slide 2.png",
+        "bytes": 2828902
+      },
+      {
+        "path": "src/assets/cutscenes/S00/S00 Slide 1.png",
+        "bytes": 2653791
+      },
+      {
+        "path": "src/assets/Gate trail screen.png",
+        "bytes": 2629488
+      },
+      {
+        "path": "src/assets/world/gateTrial/foundation-gate-scene-approved-plate.png",
+        "bytes": 2629488
+      },
+      {
+        "path": "src/assets/onscreen/qisign.png",
+        "bytes": 2623951
+      },
+      {
+        "path": "src/assets/mockups/ChatGPT Image Apr 17, 2026, 04_24_04 PM.png",
+        "bytes": 2593728
+      }
+    ],
+    "contentFiles": [
+      {
+        "path": "public/cultivation_idle_content_bible_v1_config/pavilion_records.json",
+        "bytes": 1374820
+      },
+      {
+        "path": "public/cultivation_idle_content_bible_v1_config/techniques.json",
+        "bytes": 42643
+      },
+      {
+        "path": "public/cultivation_idle_content_bible_v1_config/forge_blueprints.json",
+        "bytes": 30119
+      },
+      {
+        "path": "public/cultivation_idle_content_bible_v1_config/heart_laws.json",
+        "bytes": 20208
+      },
+      {
+        "path": "public/cultivation_idle_content_bible_v1_config/economy.json",
+        "bytes": 16965
+      },
+      {
+        "path": "public/cultivation_idle_content_bible_v1_config/items.json",
+        "bytes": 15397
+      },
+      {
+        "path": "public/cultivation_idle_content_bible_v1_config/bounties.json",
+        "bytes": 10289
+      },
+      {
+        "path": "public/cultivation_idle_content_bible_v1_config/enemies.json",
+        "bytes": 9014
+      },
+      {
+        "path": "public/cultivation_idle_content_bible_v1_config/ruins.json",
+        "bytes": 8022
+      },
+      {
+        "path": "public/cultivation_idle_content_bible_v1_config/alchemy_recipes.json",
+        "bytes": 7806
+      },
+      {
+        "path": "public/cultivation_idle_content_bible_v1_config/prestige_store.json",
+        "bytes": 7764
+      },
+      {
+        "path": "public/cultivation_idle_content_bible_v1_config/pavilions.json",
+        "bytes": 7595
+      },
+      {
+        "path": "public/cultivation_idle_content_bible_v1_config/expeditions.json",
+        "bytes": 5351
+      },
+      {
+        "path": "public/cultivation_idle_content_bible_v1_config/outskirts.json",
+        "bytes": 5108
+      },
+      {
+        "path": "public/cultivation_idle_content_bible_v1_config/trials.json",
+        "bytes": 4016
+      },
+      {
+        "path": "public/cultivation_idle_content_bible_v1_config/runes.json",
+        "bytes": 3963
+      },
+      {
+        "path": "public/cultivation_idle_content_bible_v1_config/talisman_recipes.json",
+        "bytes": 3583
+      },
+      {
+        "path": "public/cultivation_idle_content_bible_v1_config/apothecary_shops.json",
+        "bytes": 3503
+      },
+      {
+        "path": "public/cultivation_idle_content_bible_v1_config/cities.json",
+        "bytes": 3277
+      }
+    ],
+    "largeContentFiles": [
+      {
+        "path": "public/cultivation_idle_content_bible_v1_config/pavilion_records.json",
+        "bytes": 1374820
+      }
+    ],
+    "requestAnimationFrameUsages": [
+      {
+        "path": "src/components/combat/CombatCanvas.tsx",
+        "line": 420,
+        "text": "rafRef.current = requestAnimationFrame(animate);"
+      },
+      {
+        "path": "src/components/combat/CombatCanvas.tsx",
+        "line": 424,
+        "text": "rafRef.current = requestAnimationFrame(animate);"
+      },
+      {
+        "path": "src/components/crafting/ForgeRingQte.tsx",
+        "line": 157,
+        "text": "rafRef.current = requestAnimationFrame(tick);"
+      },
+      {
+        "path": "src/components/crafting/ForgeRingQte.tsx",
+        "line": 168,
+        "text": "rafRef.current = requestAnimationFrame(tick);"
+      },
+      {
+        "path": "src/components/modals/ApBreakdownModal.tsx",
+        "line": 30,
+        "text": "requestAnimationFrame(() => {"
+      },
+      {
+        "path": "src/components/modals/DaoHeartModal.tsx",
+        "line": 104,
+        "text": "requestAnimationFrame(() => {"
+      },
+      {
+        "path": "src/components/modals/ManualDetailModal.tsx",
+        "line": 406,
+        "text": "requestAnimationFrame(() => {"
+      },
+      {
+        "path": "src/components/modals/PrestigeRitualModal.tsx",
+        "line": 90,
+        "text": "holdFrameRef.current = requestAnimationFrame(step);"
+      },
+      {
+        "path": "src/components/modals/PrestigeRitualModal.tsx",
+        "line": 93,
+        "text": "holdFrameRef.current = requestAnimationFrame(step);"
+      },
+      {
+        "path": "src/components/modals/PrestigeUpgradeModal.tsx",
+        "line": 269,
+        "text": "requestAnimationFrame(() => {"
+      },
+      {
+        "path": "src/components/modals/RankUpgradeRitualModal.tsx",
+        "line": 59,
+        "text": "window.requestAnimationFrame(step);"
+      },
+      {
+        "path": "src/components/modals/RankUpgradeRitualModal.tsx",
+        "line": 73,
+        "text": "window.requestAnimationFrame(step);"
+      },
+      {
+        "path": "src/components/modals/TechniqueDetailModal.tsx",
+        "line": 419,
+        "text": "window.requestAnimationFrame(() => confirmCancelRef.current?.focus());"
+      },
+      {
+        "path": "src/components/modals/TechniqueFilterDrawer.tsx",
+        "line": 90,
+        "text": "requestAnimationFrame(() => {"
+      },
+      {
+        "path": "src/components/screens/TechniqueLibraryScreen.tsx",
+        "line": 423,
+        "text": "window.requestAnimationFrame(() => {"
+      },
+      {
+        "path": "src/components/screens/TechniqueLibraryScreen.tsx",
+        "line": 902,
+        "text": "window.requestAnimationFrame(() => setAltarFlashSlot({ key, tone: action }));"
+      },
+      {
+        "path": "src/components/techniques/InnerPalaceEquipAltar.tsx",
+        "line": 124,
+        "text": "window.requestAnimationFrame(() => {"
+      },
+      {
+        "path": "src/features/prestige/prestigeLedgerExact/PrestigeDecreeLibraryDrawer.tsx",
+        "line": 49,
+        "text": "requestAnimationFrame(() => {"
+      },
+      {
+        "path": "src/features/prestige/prestigeLedgerExact/PrestigeLedgerScreenOwner.tsx",
+        "line": 248,
+        "text": "requestAnimationFrame(() => {"
+      },
+      {
+        "path": "src/features/story/StoryCutsceneOverlay.tsx",
+        "line": 83,
+        "text": "requestAnimationFrame(() => {"
+      },
+      {
+        "path": "src/features/story/StoryCutsceneOverlay.tsx",
+        "line": 169,
+        "text": "window.requestAnimationFrame(() => {"
+      },
+      {
+        "path": "src/features/story/StoryVfxLayer.tsx",
+        "line": 210,
+        "text": "frame = window.requestAnimationFrame(tick);"
+      },
+      {
+        "path": "src/features/story/StoryVfxLayer.tsx",
+        "line": 247,
+        "text": "frame = window.requestAnimationFrame(tick);"
+      },
+      {
+        "path": "src/services/audio/AudioService.ts",
+        "line": 291,
+        "text": "this.ambienceFadeFrame = requestAnimationFrame(step);"
+      },
+      {
+        "path": "src/services/audio/AudioService.ts",
+        "line": 295,
+        "text": "this.ambienceFadeFrame = requestAnimationFrame(step);"
+      },
+      {
+        "path": "src/services/audio/AudioService.ts",
+        "line": 313,
+        "text": "requestAnimationFrame(step);"
+      },
+      {
+        "path": "src/services/audio/AudioService.ts",
+        "line": 321,
+        "text": "requestAnimationFrame(step);"
+      },
+      {
+        "path": "src/systems/gameLoop.ts",
+        "line": 49,
+        "text": "requestAnimationFrame: (callback: () => void) => number;"
+      },
+      {
+        "path": "src/systems/gameLoop.ts",
+        "line": 93,
+        "text": "requestAnimationFrame: (callback) => window.requestAnimationFrame(callback),"
+      },
+      {
+        "path": "src/systems/gameLoop.ts",
+        "line": 246,
+        "text": "this.rafId = this.deps.requestAnimationFrame(loop);"
+      },
+      {
+        "path": "src/systems/gameLoop.ts",
+        "line": 249,
+        "text": "this.rafId = this.deps.requestAnimationFrame(loop);"
+      },
+      {
+        "path": "src/ui/primitives/DetailScrollModal.tsx",
+        "line": 69,
+        "text": "requestAnimationFrame(() => {"
+      },
+      {
+        "path": "src/ui/primitives/Modal.tsx",
+        "line": 53,
+        "text": "const focusFrame = window.requestAnimationFrame(() => {"
+      },
+      {
+        "path": "src/ui/shell/RitualModalFrame.tsx",
+        "line": 133,
+        "text": "requestAnimationFrame(() => {"
+      }
+    ],
+    "clockLoopUsages": [
+      {
+        "path": "src/App.tsx",
+        "line": 42,
+        "text": "const intervalId = window.setInterval(() => ensureDayKey(), 60000);"
+      },
+      {
+        "path": "src/components/Header.tsx",
+        "line": 92,
+        "text": "const interval = setInterval(updateLastSaved, 1000);"
+      },
+      {
+        "path": "src/components/SpiritRootDisplay.tsx",
+        "line": 74,
+        "text": "const timeout = window.setTimeout(() => setJustRerolled(false), 420);"
+      },
+      {
+        "path": "src/components/SystemStatusPanel.tsx",
+        "line": 44,
+        "text": "const handle = window.setInterval(() => setNow(Date.now()), 1000);"
+      },
+      {
+        "path": "src/components/combat/CombatCanvas.tsx",
+        "line": 254,
+        "text": "setTimeout(() => {"
+      },
+      {
+        "path": "src/components/combat/CombatCanvas.tsx",
+        "line": 297,
+        "text": "setTimeout(() => {"
+      },
+      {
+        "path": "src/components/combat/CombatMinibar.tsx",
+        "line": 119,
+        "text": "const handle = window.setInterval(() => setNow(Date.now()), 200);"
+      },
+      {
+        "path": "src/components/combat/MedicinePouchStrip.tsx",
+        "line": 39,
+        "text": "const handle = window.setInterval(() => setNow(Date.now()), 250);"
+      },
+      {
+        "path": "src/components/combat/theater/CombatTheater.tsx",
+        "line": 192,
+        "text": "const timer = window.setTimeout(() => setAiHint(null), 4500);"
+      },
+      {
+        "path": "src/components/combat/theater/FightIntelPanel.tsx",
+        "line": 47,
+        "text": "const id = setInterval(() => setNow(Date.now()), 1000);"
+      },
+      {
+        "path": "src/components/combat/theater/StatusEffectRow.tsx",
+        "line": 37,
+        "text": "const id = setInterval(() => setNow(Date.now()), 1000);"
+      },
+      {
+        "path": "src/components/combat/theater/TechniqueStrip.tsx",
+        "line": 91,
+        "text": "const interval = setInterval(() => setNow(Date.now()), 250);"
+      },
+      {
+        "path": "src/components/combat/theater/TechniqueStrip.tsx",
+        "line": 105,
+        "text": "const timeout = setTimeout(() => {"
+      },
+      {
+        "path": "src/components/combat/theater/panels/OutskirtsProgress.tsx",
+        "line": 108,
+        "text": "const timer = setTimeout(() => setShowSegmentBanner(false), 1200);"
+      },
+      {
+        "path": "src/components/combat/theater/panels/OutskirtsProgress.tsx",
+        "line": 156,
+        "text": "const timer = setTimeout(() => setBossIntro(null), 2000);"
+      },
+      {
+        "path": "src/components/consumables/MedicinePouchPanel.tsx",
+        "line": 78,
+        "text": "const handle = window.setInterval(() => setNow(Date.now()), 250);"
+      },
+      {
+        "path": "src/components/crafting/ForgeHandsOnSession.tsx",
+        "line": 447,
+        "text": "const interval = window.setInterval(() => {"
+      },
+      {
+        "path": "src/components/crafting/ForgeHandsOnSession.tsx",
+        "line": 464,
+        "text": "moveTimeoutRef.current = window.setTimeout(() => {"
+      },
+      {
+        "path": "src/components/crafting/ForgeHandsOnSession.tsx",
+        "line": 505,
+        "text": "const interval = window.setInterval(() => {"
+      },
+      {
+        "path": "src/components/crafting/ForgeRingQte.tsx",
+        "line": 130,
+        "text": "ratingTimeoutRef.current = window.setTimeout(() => {"
+      },
+      {
+        "path": "src/components/crafting/ForgeRingQte.tsx",
+        "line": 169,
+        "text": "timeoutRef.current = window.setTimeout(() => {"
+      },
+      {
+        "path": "src/components/crafting/HandsOnAlchemySession.tsx",
+        "line": 117,
+        "text": "const interval = window.setInterval(() => {"
+      },
+      {
+        "path": "src/components/inventory/EquipmentDrawer.tsx",
+        "line": 120,
+        "text": "window.setTimeout(() => setPulseSlot((prev) => (prev === slot ? null : prev)), 700);"
+      },
+      {
+        "path": "src/components/modals/LifeStartWizardModal.tsx",
+        "line": 199,
+        "text": "window.setTimeout(commitPath, getSelectionCommitDelay(prefersReducedMotion));"
+      },
+      {
+        "path": "src/components/modals/ManualSatchelModal.tsx",
+        "line": 57,
+        "text": "const handle = window.setInterval(() => setNow(Date.now()), 1000);"
+      },
+      {
+        "path": "src/components/modals/ManualSatchelModal.tsx",
+        "line": 78,
+        "text": "const handle = window.setInterval(() => {"
+      },
+      {
+        "path": "src/components/modals/PrestigeRitualModal.tsx",
+        "line": 66,
+        "text": "window.setTimeout(() => {"
+      },
+      {
+        "path": "src/components/modals/TechniqueDetailModal.tsx",
+        "line": 301,
+        "text": "window.setTimeout(() => setShakeSlotKey((current) => (current === slotKey ? null : current)), 450);"
+      },
+      {
+        "path": "src/components/modals/TechniqueDetailModal.tsx",
+        "line": 413,
+        "text": "const timer = window.setTimeout(() => setEquipFeedback(null), durationMs);"
+      },
+      {
+        "path": "src/components/qte/TimingCircleQTE.tsx",
+        "line": 81,
+        "text": "clearLabelTimeoutRef.current = window.setTimeout(() => {"
+      },
+      {
+        "path": "src/components/qte/TimingCircleQTE.tsx",
+        "line": 101,
+        "text": "resolveTimeoutRef.current = window.setTimeout(() => {"
+      },
+      {
+        "path": "src/components/screens/AlchemyPanel.tsx",
+        "line": 141,
+        "text": "const handle = window.setInterval(() => setNow(Date.now()), 500);"
+      },
+      {
+        "path": "src/components/screens/AlchemyPanel.tsx",
+        "line": 155,
+        "text": "const handle = window.setTimeout(() => setQueueToast(null), 4500);"
+      },
+      {
+        "path": "src/components/screens/BountyBoardPanel.tsx",
+        "line": 121,
+        "text": "const handle = window.setInterval(() => setNow(Date.now()), 1000);"
+      },
+      {
+        "path": "src/components/screens/BountyBoardPanel.tsx",
+        "line": 154,
+        "text": "window.setTimeout(() => {"
+      },
+      {
+        "path": "src/components/screens/BountyBoardPanel.tsx",
+        "line": 252,
+        "text": "window.setTimeout(() => setPinPulseId(null), 450);"
+      },
+      {
+        "path": "src/components/screens/BountyBoardPanel.tsx",
+        "line": 276,
+        "text": "window.setTimeout(() => setClaimAnimId(null), 900);"
+      },
+      {
+        "path": "src/components/screens/ExpeditionBoardPanel.tsx",
+        "line": 270,
+        "text": "const interval = window.setInterval(() => setNow(Date.now()), 1000);"
+      },
+      {
+        "path": "src/components/screens/ExpeditionBoardPanel.tsx",
+        "line": 364,
+        "text": "window.setTimeout(() => setDurationPulseId(null), 250);"
+      },
+      {
+        "path": "src/components/screens/ExpeditionBoardPanel.tsx",
+        "line": 399,
+        "text": "window.setTimeout(() => setDurationPulseId(null), 250);"
+      },
+      {
+        "path": "src/components/screens/ExpeditionBoardPanel.tsx",
+        "line": 442,
+        "text": "window.setTimeout(() => setSentPulseSlotIndex(null), 700);"
+      },
+      {
+        "path": "src/components/screens/ExpeditionBoardPanel.tsx",
+        "line": 443,
+        "text": "window.setTimeout(() => setSentRoutePulseId(null), 700);"
+      },
+      {
+        "path": "src/components/screens/ExpeditionBoardPanel.tsx",
+        "line": 607,
+        "text": "window.setTimeout(() => setSentRoutePulseId(null), 600);"
+      },
+      {
+        "path": "src/components/screens/InventoryScreen.tsx",
+        "line": 264,
+        "text": "window.setTimeout(() => {"
+      },
+      {
+        "path": "src/components/screens/InventoryScreen.tsx",
+        "line": 423,
+        "text": "selectionLostTimeoutRef.current = window.setTimeout(() => {"
+      },
+      {
+        "path": "src/components/screens/InventoryScreen.tsx",
+        "line": 426,
+        "text": "selectionLostMessageTimeoutRef.current = window.setTimeout(() => {"
+      },
+      {
+        "path": "src/components/screens/InventoryScreen.tsx",
+        "line": 450,
+        "text": "fullPulseTimeoutRef.current = window.setTimeout(() => {"
+      },
+      {
+        "path": "src/components/screens/LegacyCultivateScreen.tsx",
+        "line": 214,
+        "text": "const intervalId = window.setInterval(() => {"
+      },
+      {
+        "path": "src/components/screens/LegacyCultivateScreen.tsx",
+        "line": 311,
+        "text": "const startTimeout = window.setTimeout(() => {"
+      },
+      {
+        "path": "src/components/screens/LegacyCultivateScreen.tsx",
+        "line": 315,
+        "text": "const finishTimeout = window.setTimeout(() => {"
+      },
+      {
+        "path": "src/components/screens/ManualPavilionPanel.tsx",
+        "line": 337,
+        "text": "const handle = window.setInterval(() => setNow(Date.now()), 1000);"
+      },
+      {
+        "path": "src/components/screens/ManualPavilionPanel.tsx",
+        "line": 398,
+        "text": "const timeout = window.setTimeout(() => setFlashOn(false), 450);"
+      },
+      {
+        "path": "src/components/screens/ManualPavilionPanel.tsx",
+        "line": 646,
+        "text": "purchasePulseTimeoutRef.current = window.setTimeout("
+      },
+      {
+        "path": "src/components/screens/SettingsScreen.tsx",
+        "line": 291,
+        "text": "setTimeout(() => {"
+      },
+      {
+        "path": "src/components/screens/TalismanPanel.tsx",
+        "line": 72,
+        "text": "const handle = window.setInterval(() => setNow(Date.now()), 500);"
+      },
+      {
+        "path": "src/components/screens/TalismanPanel.tsx",
+        "line": 77,
+        "text": "const handle = window.setInterval(() => purgeExpired(Date.now()), 1000);"
+      },
+      {
+        "path": "src/components/screens/TechniqueLibraryScreen.tsx",
+        "line": 428,
+        "text": "window.setTimeout(() => el.classList.remove('techniqueCardHighlight'), 2000);"
+      },
+      {
+        "path": "src/components/techniques/InnerPalaceEquipAltar.tsx",
+        "line": 98,
+        "text": "const timeout = window.setTimeout(() => onFeedback(null), 4500);"
+      },
+      {
+        "path": "src/components/techniques/InnerPalaceEquipAltar.tsx",
+        "line": 151,
+        "text": "window.setTimeout(() => setShakeSlotKey((current) => (current === slotKey ? null : current)), 450);"
+      },
+      {
+        "path": "src/components/techniques/InnerPalaceEquipAltar.tsx",
+        "line": 158,
+        "text": "window.setTimeout(() => setCorePulseTone(null), 600);"
+      },
+      {
+        "path": "src/components/techniques/InnerPalaceEquipAltar.tsx",
+        "line": 160,
+        "text": "window.setTimeout(() => setFlashState((current) => (current?.key === slotKey ? null : current)), 600);"
+      },
+      {
+        "path": "src/dev/phase6CombatAudit/Phase6CombatAuditHarness.tsx",
+        "line": 687,
+        "text": "const readyTimer = window.setTimeout(() => {"
+      },
+      {
+        "path": "src/features/cultivation/exact/CultivationExactScreenOwner.tsx",
+        "line": 135,
+        "text": "const intervalId = window.setInterval(() => setBuffNow(Date.now()), 1000);"
+      },
+      {
+        "path": "src/features/cultivation/exact/useCultivationExactActionController.ts",
+        "line": 84,
+        "text": "const gatherTimeout = window.setTimeout(() => {"
+      },
+      {
+        "path": "src/features/cultivation/exact/useCultivationExactActionController.ts",
+        "line": 99,
+        "text": "const settleTimeout = window.setTimeout(() => {"
+      },
+      {
+        "path": "src/features/prestige/prestigeLedgerExact/PrestigeLedgerScreenOwner.tsx",
+        "line": 320,
+        "text": "window.setTimeout(() => setApPulse(false), 450);"
+      },
+      {
+        "path": "src/features/prestige/prestigeLedgerExact/PrestigeLedgerScreenOwner.tsx",
+        "line": 321,
+        "text": "window.setTimeout(() => setPurchaseToast(null), 2000);"
+      },
+      {
+        "path": "src/features/professions/forgeExact/ForgeExactScreenOwner.tsx",
+        "line": 94,
+        "text": "const handle = window.setInterval(() => setNow(Date.now()), 500);"
+      },
+      {
+        "path": "src/features/professions/forge/ForgeWorkshop.tsx",
+        "line": 133,
+        "text": "const handle = window.setInterval(() => setNow(Date.now()), 500);"
+      },
+      {
+        "path": "src/features/story/StoryCutsceneOverlay.tsx",
+        "line": 74,
+        "text": "const lazyPreloadTimer = window.setTimeout(() => {"
+      },
+      {
+        "path": "src/features/story/StoryCutsceneOverlay.tsx",
+        "line": 113,
+        "text": "const transitionTimer = window.setTimeout(() => {"
+      },
+      {
+        "path": "src/features/story/StoryCutsceneOverlay.tsx",
+        "line": 128,
+        "text": "timers.push(window.setTimeout(() => setCanSkip(true), 500));"
+      },
+      {
+        "path": "src/features/story/StoryCutsceneOverlay.tsx",
+        "line": 129,
+        "text": "timers.push(window.setTimeout(() => setCanAdvance(true), slide.minHoldMs));"
+      },
+      {
+        "path": "src/features/story/StoryCutsceneOverlay.tsx",
+        "line": 132,
+        "text": "timers.push(window.setTimeout(() => {"
+      },
+      {
+        "path": "src/features/story/StoryCutsceneOverlay.tsx",
+        "line": 179,
+        "text": "window.setTimeout(() => {"
+      },
+      {
+        "path": "src/features/world/bountiesExact/BountiesExactScreenOwner.tsx",
+        "line": 65,
+        "text": "const handle = window.setInterval(() => setNow(Date.now()), 1000);"
+      },
+      {
+        "path": "src/features/world/expeditionsExact/ExpeditionsExactScreenOwner.tsx",
+        "line": 64,
+        "text": "const handle = window.setInterval(() => {"
+      },
+      {
+        "path": "src/features/world/manualPavilionExact/ManualPavilionScreenOwner.tsx",
+        "line": 76,
+        "text": "const handle = window.setInterval(() => setNow(Date.now()), 1000);"
+      },
+      {
+        "path": "src/features/world/outskirts/hooks/useOutskirtsActiveClock.ts",
+        "line": 15,
+        "text": "const intervalId = globalThis.setInterval(tick, 1000);"
+      },
+      {
+        "path": "src/features/world/outskirts/hooks/useOutskirtsCombatMotion.ts",
+        "line": 48,
+        "text": "const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);"
+      },
+      {
+        "path": "src/features/world/outskirts/hooks/useOutskirtsCombatMotion.ts",
+        "line": 73,
+        "text": "timeoutRef.current = setTimeout(() => {"
+      },
+      {
+        "path": "src/features/world/outskirts/hooks/useOutskirtsFloatingHits.ts",
+        "line": 18,
+        "text": "const timersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());"
+      },
+      {
+        "path": "src/features/world/outskirts/hooks/useOutskirtsFloatingHits.ts",
+        "line": 47,
+        "text": "const timer = setTimeout(() => {"
+      },
+      {
+        "path": "src/services/audio/SoundRouter.ts",
+        "line": 24,
+        "text": "window.setTimeout(() => audio.play(id), delayMs);"
+      },
+      {
+        "path": "src/services/time/SimulationScheduler.ts",
+        "line": 56,
+        "text": "type SchedulerHostTimer = ReturnType<typeof globalThis.setTimeout>;"
+      },
+      {
+        "path": "src/services/time/SimulationScheduler.ts",
+        "line": 251,
+        "text": "this.timerId = globalThis.setTimeout(() => {"
+      },
+      {
+        "path": "src/stores/combatStore.ts",
+        "line": 1412,
+        "text": "setTimeout(() => {"
+      },
+      {
+        "path": "src/stores/combatStore.ts",
+        "line": 1517,
+        "text": "setTimeout(() => {"
+      },
+      {
+        "path": "src/stores/combatStore.ts",
+        "line": 1609,
+        "text": "setTimeout(() => {"
+      },
+      {
+        "path": "src/stores/combatStore.ts",
+        "line": 1654,
+        "text": "setTimeout(() => get().exitCombat(), 500);"
+      },
+      {
+        "path": "src/stores/combatStore.ts",
+        "line": 1701,
+        "text": "setTimeout(() => {"
+      },
+      {
+        "path": "src/stores/combatStore.ts",
+        "line": 1818,
+        "text": "setTimeout(() => {"
+      },
+      {
+        "path": "src/stores/combatStore.ts",
+        "line": 1951,
+        "text": "setTimeout(() => {"
+      },
+      {
+        "path": "src/stores/combatStore.ts",
+        "line": 1973,
+        "text": "setTimeout(() => {"
+      },
+      {
+        "path": "src/stores/combatStore.ts",
+        "line": 2190,
+        "text": "setTimeout(() => {"
+      },
+      {
+        "path": "src/stores/combatStore.ts",
+        "line": 2288,
+        "text": "setTimeout(() => {"
+      },
+      {
+        "path": "src/stores/combatStore.ts",
+        "line": 2580,
+        "text": "setTimeout(() => {"
+      },
+      {
+        "path": "src/stores/ruinsStore.ts",
+        "line": 391,
+        "text": "setTimeout(() => {"
+      },
+      {
+        "path": "src/stores/ruinsStore.ts",
+        "line": 413,
+        "text": "setTimeout(() => {"
+      },
+      {
+        "path": "src/stores/ruinsStore.ts",
+        "line": 456,
+        "text": "setTimeout(() => {"
+      },
+      {
+        "path": "src/stores/uiStore.ts",
+        "line": 373,
+        "text": "const notificationTimeouts = new Map<string, ReturnType<typeof setTimeout>>();"
+      },
+      {
+        "path": "src/stores/uiStore.ts",
+        "line": 386,
+        "text": "const timeoutId = setTimeout(() => {"
+      },
+      {
+        "path": "src/stores/uiStore.ts",
+        "line": 678,
+        "text": "setTimeout(() => {"
+      },
+      {
+        "path": "src/ui/cultivation/heartLaw/HeartLawPanel.tsx",
+        "line": 263,
+        "text": "const timer = window.setTimeout(() => setCelebrate(false), 1200);"
+      },
+      {
+        "path": "src/ui/forge/ForgeHeatPullOutQTE.tsx",
+        "line": 77,
+        "text": "timeoutRef.current = window.setTimeout(() => {"
+      },
+      {
+        "path": "src/ui/fx/ScreenFxStage.tsx",
+        "line": 123,
+        "text": "const fallbackInterval = typeof window !== 'undefined' ? window.setInterval(updateSnapshot, 750) : null;"
+      },
+      {
+        "path": "src/ui/status/CombatStatTile.tsx",
+        "line": 39,
+        "text": "const timeout = window.setTimeout(() => setPulsing(false), 220);"
+      },
+      {
+        "path": "src/utils/saveload.ts",
+        "line": 1846,
+        "text": "autosaveIntervalId = window.setInterval(() => {"
+      }
+    ],
+    "bareStoreSubscriptions": [],
+    "jsonStringifyInReactOwners": [
+      {
+        "path": "src/components/modals/ManualDetailModal.tsx",
+        "line": 61,
+        "text": "return JSON.stringify(value, null, 2);"
+      },
+      {
+        "path": "src/components/modals/PrestigeUpgradeModal.tsx",
+        "line": 32,
+        "text": "return JSON.stringify(value, null, 2);"
+      },
+      {
+        "path": "src/components/screens/InventoryScreen.tsx",
+        "line": 244,
+        "text": "localStorage.setItem(INVENTORY_FILTERS_KEY, JSON.stringify(payload));"
+      },
+      {
+        "path": "src/components/screens/SettingsScreen.tsx",
+        "line": 31,
+        "text": "const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });"
+      },
+      {
+        "path": "src/components/screens/SettingsScreen.tsx",
+        "line": 165,
+        "text": "const text = JSON.stringify(slice, null, 2);"
+      },
+      {
+        "path": "src/components/screens/SettingsScreen.tsx",
+        "line": 173,
+        "text": "const text = JSON.stringify(slice, null, 2);"
+      },
+      {
+        "path": "src/components/system/ContentInitGate.tsx",
+        "line": 62,
+        "text": "const blob = new Blob([JSON.stringify(loadFailureDiagnostics, null, 2)], { type: 'application/json' });"
+      }
+    ],
+    "lazyImportInventory": [
+      {
+        "path": "src/save/defaultSaveState.ts",
+        "line": 797,
+        "text": "function isValidMedicinePouchSlot(value: unknown): value is import('../types').MedicinePouchSlotState {"
+      },
+      {
+        "path": "src/save/defaultSaveState.ts",
+        "line": 932,
+        "text": "slotKey: import('../types').MedicinePouchSlotKey,"
+      },
+      {
+        "path": "src/save/defaultSaveState.ts",
+        "line": 934,
+        "text": "fallback: import('../types').MedicinePouchSlotState,"
+      },
+      {
+        "path": "src/save/defaultSaveState.ts",
+        "line": 935,
+        "text": "): import('../types').MedicinePouchSlotState {"
+      },
+      {
+        "path": "src/stores/contentStore.ts",
+        "line": 112,
+        "text": "getBestSourceIndex: () => ReturnType<typeof import('../systems/economy/index.js').buildBestSourceIndex>;"
+      },
+      {
+        "path": "src/stores/cultivationStore.ts",
+        "line": 239,
+        "text": "const { useGameStore } = require('./gameStore') as typeof import('./gameStore');"
+      },
+      {
+        "path": "src/stores/cultivationStore.ts",
+        "line": 330,
+        "text": "const { useGameStore } = require('./gameStore') as typeof import('./gameStore');"
+      },
+      {
+        "path": "src/stores/cultivationStore.ts",
+        "line": 506,
+        "text": "const { useGameStore } = require('./gameStore') as typeof import('./gameStore');"
+      },
+      {
+        "path": "src/types/index.ts",
+        "line": 652,
+        "text": "import(\"../stores/equipmentStore\").EquipmentSlot,"
+      },
+      {
+        "path": "src/types/index.ts",
+        "line": 653,
+        "text": "import(\"../stores/equipmentStore\").TemperAffix[]"
+      },
+      {
+        "path": "src/types/index.ts",
+        "line": 655,
+        "text": "forgeToolTiers?: import(\"../stores/equipmentStore\").ForgeToolTiers;"
+      },
+      {
+        "path": "src/utils/saveload.ts",
+        "line": 58,
+        "text": "let lastLoadMigrationReport: import('../save/migrations/index.js').MigrationRunReport | null = null;"
+      },
+      {
+        "path": "src/utils/saveload.ts",
+        "line": 916,
+        "text": "export function getLastLoadMigrationReport(): import('../save/migrations').MigrationRunReport | null {"
+      }
+    ],
+    "visualRuntimeImports": [
+      {
+        "path": "src/components/tabs/AdventureTab.tsx",
+        "line": 2,
+        "text": "import { motion } from 'framer-motion';"
+      },
+      {
+        "path": "src/components/tabs/CultivationTab.tsx",
+        "line": 1,
+        "text": "import { motion } from 'framer-motion';"
+      },
+      {
+        "path": "src/types/shims.d.ts",
+        "line": 52,
+        "text": "declare module 'framer-motion';"
+      },
+      {
+        "path": "src/types/shims.d.ts",
+        "line": 53,
+        "text": "declare module 'react-spring';"
+      },
+      {
+        "path": "src/ui/motion/uiMotionTokens.ts",
+        "line": 1,
+        "text": "import type { Transition } from 'framer-motion';"
+      }
+    ],
+    "localStorageWrites": [
+      {
+        "path": "src/components/screens/InventoryScreen.tsx",
+        "line": 244,
+        "text": "localStorage.setItem(INVENTORY_FILTERS_KEY, JSON.stringify(payload));"
+      },
+      {
+        "path": "src/ui/cultivation/CultivationHeaderRibbon.tsx",
+        "line": 59,
+        "text": "window.localStorage.setItem(storageKey, collapsed ? '1' : '0');"
+      },
+      {
+        "path": "src/utils/saveload.ts",
+        "line": 937,
+        "text": "localStorage.setItem(BACKUP_C_KEY, backupB);"
+      },
+      {
+        "path": "src/utils/saveload.ts",
+        "line": 940,
+        "text": "localStorage.setItem(BACKUP_B_KEY, backupA);"
+      },
+      {
+        "path": "src/utils/saveload.ts",
+        "line": 943,
+        "text": "localStorage.setItem(BACKUP_A_KEY, mainSave);"
+      },
+      {
+        "path": "src/utils/saveload.ts",
+        "line": 956,
+        "text": "localStorage.setItem(quarantineKey, encryptedPayload);"
+      },
+      {
+        "path": "src/utils/saveload.ts",
+        "line": 983,
+        "text": "time(PERF_LABELS.saveLocalStorage, () => localStorage.setItem(SAVE_KEY, encrypted));"
+      }
+    ]
+  },
+  "buildInventory": {
+    "distExists": true,
+    "chunks": [
+      {
+        "file": "dist/assets/foundation-gate-scene-approved-plate-BL_HEwmo.png",
+        "bytes": 2629488,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": true
+      },
+      {
+        "file": "dist/assets/qisign-Dn9Gogcg.png",
+        "bytes": 2623951,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": true
+      },
+      {
+        "file": "dist/assets/index-CvklXriv.js",
+        "bytes": 2617705,
+        "kind": "js",
+        "over300kb": true,
+        "over500kb": true
+      },
+      {
+        "file": "dist/assets/apothecary_room_scenic_plate-ClS60XbF.png",
+        "bytes": 2456259,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": true
+      },
+      {
+        "file": "dist/assets/prescription_parchment_frame_cropped-DWAlllyd.png",
+        "bytes": 2310140,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": true
+      },
+      {
+        "file": "dist/assets/gold_cta_plaque_cropped-B19YjFsW.png",
+        "bytes": 2287819,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": true
+      },
+      {
+        "file": "dist/assets/ui_plate_building_selected_world_default_m-DLL6fkFQ.png",
+        "bytes": 2246085,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": true
+      },
+      {
+        "file": "dist/assets/path_heaven 1-CVjlRklu.png",
+        "bytes": 2030310,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": true
+      },
+      {
+        "file": "dist/assets/medicine_pouch_object_cropped-BHJeYotG.png",
+        "bytes": 1827278,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": true
+      },
+      {
+        "file": "dist/assets/path_martial 1-BMAwfsPc.png",
+        "bytes": 1820470,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": true
+      },
+      {
+        "file": "dist/assets/path_earth 1-Dm42n3Uk.png",
+        "bytes": 1651422,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": true
+      },
+      {
+        "file": "dist/cultivation_idle_content_bible_v1_config/pavilion_records.json",
+        "bytes": 1374820,
+        "kind": "other",
+        "over300kb": true,
+        "over500kb": true
+      },
+      {
+        "file": "dist/assets/Aged parchment vignette for game-DYgfySMP.png",
+        "bytes": 1144921,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": true
+      },
+      {
+        "file": "dist/assets/index-Cw1dqdSf.css",
+        "bytes": 867565,
+        "kind": "css",
+        "over300kb": true,
+        "over500kb": true
+      },
+      {
+        "file": "dist/assets/ui_banner_city_arrival_world_default_l-BsRiwPOV.png",
+        "bytes": 766243,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": true
+      },
+      {
+        "file": "dist/assets/frame_light_square_default-DbmsRSdH.png",
+        "bytes": 743380,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": true
+      },
+      {
+        "file": "dist/assets/ui_plate_city_current_world_default_l-BkEzycYr.png",
+        "bytes": 734547,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": true
+      },
+      {
+        "file": "dist/assets/ui_label_district_world_default_l-HMRpyS3r.png",
+        "bytes": 720845,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": true
+      },
+      {
+        "file": "dist/assets/scroll-rtmYka0h.png",
+        "bytes": 691511,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": true
+      },
+      {
+        "file": "dist/assets/bountyboard-Bi6gk6Q8.png",
+        "bytes": 664666,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": true
+      },
+      {
+        "file": "dist/assets/ui_label_building_world_default_m-C7wMsKIm.png",
+        "bytes": 646355,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": true
+      },
+      {
+        "file": "dist/assets/ui_hint_route_world_default_s-C2723F2X.png",
+        "bytes": 598534,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": true
+      },
+      {
+        "file": "dist/assets/citygreen-D6qxVmKg.png",
+        "bytes": 590210,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": true
+      },
+      {
+        "file": "dist/assets/texture_overlay-MyZ_hv-2.png",
+        "bytes": 551817,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": true
+      },
+      {
+        "file": "dist/assets/book_earth-Duqc2YUg.png",
+        "bytes": 527840,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": true
+      },
+      {
+        "file": "dist/assets/tech-4PZbW1EF.png",
+        "bytes": 516411,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": true
+      },
+      {
+        "file": "dist/assets/book_martial-C_gu2ZNK.png",
+        "bytes": 515200,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": true
+      },
+      {
+        "file": "dist/assets/book_heaven-D6UpYfp1.png",
+        "bytes": 505932,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/forgewide_unshaped-ChH8JU34.png",
+        "bytes": 480138,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/forgewide_shaped-r8cmc_lR.png",
+        "bytes": 478377,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/forgewide_shaping-3myQbGqM.png",
+        "bytes": 478159,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/forgewide_empty-D0guMzmL.png",
+        "bytes": 461218,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/cbg_bgblue-D6gYSk-L.png",
+        "bytes": 448694,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/city_outskirts-BQAdDzA3.png",
+        "bytes": 412557,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/city_alchemy-BekTZdo4.png",
+        "bytes": 411548,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/city_ruins-rOw3lecR.png",
+        "bytes": 408175,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/city_talisman-S-DMhMrk.png",
+        "bytes": 400238,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/city_forge-CpwU2dYP.png",
+        "bytes": 399815,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/city_manual--WldHNCp.png",
+        "bytes": 399638,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/city_apothecary-ljlCQue5.png",
+        "bytes": 399208,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/city_gate-BIB7haj1.png",
+        "bytes": 395525,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/city_bounties_expeditions-B9XdkJ_G.png",
+        "bytes": 395157,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/lane_card_default-CYByiiHA.png",
+        "bytes": 381492,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/lane_card_recommended-B_2XYo_W.png",
+        "bytes": 374593,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/lane_card_selected-C4E1F0ry.png",
+        "bytes": 370557,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/lane_card_ready-TPwK04I7.png",
+        "bytes": 366837,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/cbg_full-BrPFx_dw.png",
+        "bytes": 363739,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/lane_card_warning-D_V0HR6a.png",
+        "bytes": 358485,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/story/s00/s00_03_ash_erasure.webp",
+        "bytes": 351640,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/InsideDungeon-0COJ3IH-.png",
+        "bytes": 351249,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/story/s00/s00_04_keeper_yan_returning_page.webp",
+        "bytes": 348478,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/manualpavilion-CZ-HTH2T.png",
+        "bytes": 340938,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/story/s00/s00_05_returning_page_paths.webp",
+        "bytes": 335808,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/story/s00/s00_02_gate_census_refusal.webp",
+        "bytes": 313784,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/lane_card_disabled-BSIl-ojA.png",
+        "bytes": 309146,
+        "kind": "asset",
+        "over300kb": true,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/qi_lotus_full-CzDYQQFf.png",
+        "bytes": 278578,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/hourglass_progress-DuPsdjQh.png",
+        "bytes": 278149,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/buttoncorners-wHJOsGST.png",
+        "bytes": 259566,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/qi_lotus_open-C8OCutTQ.png",
+        "bytes": 243330,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/artifactbundle-ClS8fGyY.png",
+        "bytes": 239535,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/task_complete-Bzcn24-d.png",
+        "bytes": 236891,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/story/s00/s00_01_pinewind_dusk.webp",
+        "bytes": 235908,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/hourglass_empty-9P0nESI8.png",
+        "bytes": 234770,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/warning_locked-ki4Ph6pZ.png",
+        "bytes": 232293,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/artifactshard-8s4eBWIW.png",
+        "bytes": 217993,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/herbbundle-BxYR8Mkb.png",
+        "bytes": 209138,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/spiritgrass-CFsezfWC.png",
+        "bytes": 189851,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/block_fancy-DFsPTCQu.png",
+        "bytes": 189480,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/warning_city_specialty_missing-DWD-Vvba.png",
+        "bytes": 188669,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/warning_pouch_requirement-D1c4NSX8.png",
+        "bytes": 184618,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/warning_healing_below_floor-CuY7_Eqs.png",
+        "bytes": 180996,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/warning_unknown_problem-DGCRrYVu.png",
+        "bytes": 174893,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/metalchunk-Bc3qNtfE.png",
+        "bytes": 166317,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/qi_lotus_closed-BkRV0nA1.png",
+        "bytes": 157269,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/ancientseed-j4wNctFY.png",
+        "bytes": 155609,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/spine_martial-BjlJ3t48.png",
+        "bytes": 145699,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/spine_earth-D0PwfO5i.png",
+        "bytes": 142038,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/beastblood-BnWDRx7F.png",
+        "bytes": 138180,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/spine_neutral-B2SBeoJm.png",
+        "bytes": 137046,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/prayerbeads-BPCoHxQV.png",
+        "bytes": 136355,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/source_ruins-Bf7ZqFxw.png",
+        "bytes": 131573,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/placeholder_ring_large-CHEcMLX9.png",
+        "bytes": 130223,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/spine_heaven-BYKL_qRA.png",
+        "bytes": 126319,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/source_expedition-DTmtl2ED.png",
+        "bytes": 115761,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/source_city_market-Cl2qatnU.png",
+        "bytes": 110809,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/powder_packet-DDLR6jSI.png",
+        "bytes": 109758,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/dust_brown-B-50szy6.png",
+        "bytes": 108322,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/dust_blue-D4IjeBT4.png",
+        "bytes": 107686,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/dust_green-husmxC8W.png",
+        "bytes": 107413,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/healing_pellet-ByXaTC7U.png",
+        "bytes": 106211,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/foundationpill-IbzuHiy9.png",
+        "bytes": 106140,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/source_bounty-CiGs_lkR.png",
+        "bytes": 105009,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/dust_purple-yzbpwj6K.png",
+        "bytes": 104869,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/spirit_leaf-Dm5lpyx8.png",
+        "bytes": 104444,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/source_outskirts-BlFaZZV1.png",
+        "bytes": 104315,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/source_gate_trial-CftnwzPt.png",
+        "bytes": 101997,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/source_inventory_cache-DxohWiOV.png",
+        "bytes": 101432,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/jadesword-Bwq77aWn.png",
+        "bytes": 99241,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/source_herb_grove-DwV3vQT6.png",
+        "bytes": 98804,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/ward_salt-DguqWhSY.png",
+        "bytes": 98717,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/ironblood_pellet-BS-h1wMg.png",
+        "bytes": 96069,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/qi_elixir-BIFBmECV.png",
+        "bytes": 95316,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/source_apothecary_shelf-DjO2wicY.png",
+        "bytes": 93976,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/source_brew_cauldron-D8K9ozCV.png",
+        "bytes": 91823,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/source_manual_pavilion-4y-WYZXL.png",
+        "bytes": 91792,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/rustysword-9WkumUzj.png",
+        "bytes": 90246,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/meridian_tea-gDBYX_LS.png",
+        "bytes": 89830,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/dust_gray-jHbjDsWh.png",
+        "bytes": 83546,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/blue_potion_bottle-Krwve05-.png",
+        "bytes": 83500,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/source_forge-B4Ftfoco.png",
+        "bytes": 79723,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/source_merit_exchange-1doVhuJL.png",
+        "bytes": 75540,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/placeholder_ring_small-_B2CmWiF.png",
+        "bytes": 73821,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/focus_dew-028vjG3m.png",
+        "bytes": 69401,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/source_locked_unknown-Dj26ts0F.png",
+        "bytes": 64691,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/cultivation_idle_content_bible_v1_config/techniques.json",
+        "bytes": 42643,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_click_primary.ogg",
+        "bytes": 42558,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/bar_long-C60C9iNj.png",
+        "bytes": 30761,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/cultivation_idle_content_bible_v1_config/forge_blueprints.json",
+        "bytes": 30119,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/bar_short-05TsxguP.png",
+        "bytes": 21271,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/cultivation_idle_content_bible_v1_config/heart_laws.json",
+        "bytes": 20208,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/assets/hammer-BFitGP-d.png",
+        "bytes": 18959,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/cultivation_idle_content_bible_v1_config/economy.json",
+        "bytes": 16965,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_trial_enter.ogg",
+        "bytes": 16080,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/cultivation_idle_content_bible_v1_config/items.json",
+        "bytes": 15397,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_ruins_enter.ogg",
+        "bytes": 15290,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_building_enter.ogg",
+        "bytes": 15169,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_city_exit.ogg",
+        "bytes": 15098,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_pagoda_enter.ogg",
+        "bytes": 14378,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_city_enter.ogg",
+        "bytes": 14192,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_trial_exit.ogg",
+        "bytes": 12552,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_prestige_open.ogg",
+        "bytes": 12512,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_pagoda_exit.ogg",
+        "bytes": 12134,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_building_exit.ogg",
+        "bytes": 11987,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_ap_store_open.ogg",
+        "bytes": 11844,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_crafting_open.ogg",
+        "bytes": 11807,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_crafting_close.ogg",
+        "bytes": 11779,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_apothecary_close.ogg",
+        "bytes": 11736,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_meridian_open.ogg",
+        "bytes": 11667,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_expedition_open.ogg",
+        "bytes": 11384,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_modal_close.ogg",
+        "bytes": 11316,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_expedition_close.ogg",
+        "bytes": 11266,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_techlib_open.ogg",
+        "bytes": 11233,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_bounty_board_open.ogg",
+        "bytes": 10675,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_apothecary_open.ogg",
+        "bytes": 10357,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_jadecore_open.ogg",
+        "bytes": 10314,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/cultivation_idle_content_bible_v1_config/bounties.json",
+        "bytes": 10289,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_ap_store_close.ogg",
+        "bytes": 10246,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_prestige_close.ogg",
+        "bytes": 10097,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_satchel_open.ogg",
+        "bytes": 10081,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_modal_open.ogg",
+        "bytes": 10042,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_garden_close.ogg",
+        "bytes": 9982,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_theater_close.ogg",
+        "bytes": 9962,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_bounty_board_close.ogg",
+        "bytes": 9819,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_ruins_run_summary_open.ogg",
+        "bytes": 9780,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_theater_open.ogg",
+        "bytes": 9728,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_trait_reroll_open.ogg",
+        "bytes": 9573,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_trial_summary_open.ogg",
+        "bytes": 9539,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_jadecore_close.ogg",
+        "bytes": 9447,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_pavilion_receipt_popup_open.ogg",
+        "bytes": 9340,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_meridian_close.ogg",
+        "bytes": 9282,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_bounty_claim_open.ogg",
+        "bytes": 9238,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_garden_open.ogg",
+        "bytes": 9205,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_techlib_close.ogg",
+        "bytes": 9160,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_pavilion_detail_expand.ogg",
+        "bytes": 9159,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_drawer_open.ogg",
+        "bytes": 9019,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/cultivation_idle_content_bible_v1_config/enemies.json",
+        "bytes": 9014,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_pouch_open.ogg",
+        "bytes": 8949,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_rune_socket_open.ogg",
+        "bytes": 8867,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_learned_popup_close.ogg",
+        "bytes": 8831,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_satchel_close.ogg",
+        "bytes": 8826,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_dropdown_open.ogg",
+        "bytes": 8780,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_ruins_run_summary_close.ogg",
+        "bytes": 8739,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_rank_upgrade_open.ogg",
+        "bytes": 8715,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_pavilion_refresh_open.ogg",
+        "bytes": 8678,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_learned_popup_open.ogg",
+        "bytes": 8639,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_drawer_close.ogg",
+        "bytes": 8525,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_pavilion_receipt_popup_close.ogg",
+        "bytes": 8447,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_pouch_close.ogg",
+        "bytes": 8414,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_trial_summary_close.ogg",
+        "bytes": 8141,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/cultivation_idle_content_bible_v1_config/ruins.json",
+        "bytes": 8022,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_combat_details_expand.ogg",
+        "bytes": 8000,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_minibar_open.ogg",
+        "bytes": 7948,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_pavilion_detail_collapse.ogg",
+        "bytes": 7948,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/cultivation_idle_content_bible_v1_config/alchemy_recipes.json",
+        "bytes": 7806,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/cultivation_idle_content_bible_v1_config/prestige_store.json",
+        "bytes": 7764,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_minibar_close.ogg",
+        "bytes": 7695,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_combat_details_collapse.ogg",
+        "bytes": 7612,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/cultivation_idle_content_bible_v1_config/pavilions.json",
+        "bytes": 7595,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_tab_switch.ogg",
+        "bytes": 7515,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/config/enemies.json",
+        "bytes": 7157,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_tooltip_open.ogg",
+        "bytes": 7057,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/ui_tooltip_close.ogg",
+        "bytes": 6819,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/cultivation_idle_content_bible_v1_config/expeditions.json",
+        "bytes": 5351,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/cultivation_idle_content_bible_v1_config/outskirts.json",
+        "bytes": 5108,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/cultivation_idle_content_bible_v1_config/trials.json",
+        "bytes": 4016,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/cultivation_idle_content_bible_v1_config/runes.json",
+        "bytes": 3963,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/cultivation_idle_content_bible_v1_config/talisman_recipes.json",
+        "bytes": 3583,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/config/dungeons.json",
+        "bytes": 3511,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/cultivation_idle_content_bible_v1_config/apothecary_shops.json",
+        "bytes": 3503,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/cultivation_idle_content_bible_v1_config/cities.json",
+        "bytes": 3277,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/cultivation_idle_content_bible_v1_config/README.md",
+        "bytes": 2059,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/vite.svg",
+        "bytes": 1497,
+        "kind": "asset",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/config/zones.json",
+        "bytes": 1477,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/index.html",
+        "bytes": 591,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      },
+      {
+        "file": "dist/audio/README.md",
+        "bytes": 449,
+        "kind": "other",
+        "over300kb": false,
+        "over500kb": false
+      }
+    ],
+    "warnings": [
+      "dist/assets/index-CvklXriv.js is over 500 KiB uncompressed."
+    ]
+  },
+  "budgets": [
+    {
+      "id": "idle-react-commits",
+      "label": "Idle React commits",
+      "target": "No global shell component should commit at requestAnimationFrame cadence while idle.",
+      "status": "not-measured",
+      "evidence": "Runtime scenario capture is required; render counters are available when ?ciPerf=1 is enabled."
+    },
+    {
+      "id": "idle-store-writes",
+      "label": "Idle store writes",
+      "target": "Core stores should not write more than planned cadence after the scheduler refactor.",
+      "status": "baseline-only",
+      "evidence": "Mega Prompt 1 records current behavior without failing on it."
+    },
+    {
+      "id": "long-tasks-loaf",
+      "label": "Long tasks / LoAF",
+      "target": "No common interaction should create >50ms long tasks/long animation frames in optimized state.",
+      "status": "not-measured",
+      "evidence": "PerformanceObserver data appears in runtime snapshots when supported by the browser."
+    },
+    {
+      "id": "initial-chunks",
+      "label": "Initial chunks",
+      "target": "No unexpected initial app chunk over 500KB uncompressed; heavy features lazy.",
+      "status": "warning",
+      "evidence": "1 JS chunks over 500 KiB found in dist."
+    },
+    {
+      "id": "content-startup",
+      "label": "Content startup",
+      "target": "Core startup should avoid heavy optional records after future content split.",
+      "status": "warning",
+      "evidence": "1 runtime content files over 100 KiB found."
+    },
+    {
+      "id": "save-cost",
+      "label": "Save cost",
+      "target": "No repeated direct save bursts after future SaveScheduler.",
+      "status": "not-measured",
+      "evidence": "Save gather/stringify/encrypt/localStorage timers are available in runtime snapshots."
+    }
+  ],
+  "commandsRun": [
+    {
+      "command": "npm run release:performance-baseline",
+      "status": "pass",
+      "notes": "This command generated the static baseline report."
+    }
+  ],
+  "nextRecommendedPrompt": "Mega Prompt 2: fixed-step SimulationScheduler and removal of authoritative gameplay publication from requestAnimationFrame."
+}

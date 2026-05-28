@@ -6,7 +6,10 @@ import { INSIGHT_BURSTS, INSIGHT_DURATION_MS, INSIGHT_INTERVAL_RANGE_MS, VERSE_C
 import { useUIStore } from './uiStore.js';
 import { D } from '../utils/numbers.js';
 import { getConsumableSpec } from '../systems/consumables/consumableCatalog.js';
-import { buildCultivationConsumableReadModel, filterActiveCultivationConsumables, mergeCultivationConsumableModifiers, } from '../systems/consumables/cultivationConsumableEffects.js';
+import { buildCultivationConsumableReadModel, filterActiveCultivationConsumables, getNextCultivationConsumableExpiryAt, mergeCultivationConsumableModifiers, } from '../systems/consumables/cultivationConsumableEffects.js';
+import { DEFAULT_CULTIVATION_CONSUMABLE_MODIFIERS, } from '../systems/consumables/cultivationConsumableTypes.js';
+import { PERF_LABELS, incrementCounter, time } from '../services/performance/index.js';
+import { bumpVersion } from './versionCounters.js';
 function getStarterHeartLawIds(defs) {
     const starters = defs.filter((law) => law.tier === 'starter' || law.isStarter);
     if (starters.length > 0)
@@ -51,7 +54,72 @@ const baseState = {
     activeCultivationConsumables: [],
     insightProgressMs: 0,
     insightTargetMs: null,
+    heartLawVersion: 0,
+    insightDisplayVersion: 0,
+    consumableVersion: 0,
 };
+const sameConsumableList = (left, right) => left.length === right.length
+    && left.every((entry, index) => {
+        const other = right[index];
+        return other
+            && entry.itemId === other.itemId
+            && entry.family === other.family
+            && entry.activatedAt === other.activatedAt
+            && entry.expiresAt === other.expiresAt
+            && entry.consumedOnMajorBreakthrough === other.consumedOnMajorBreakthrough
+            && entry.modifiers.qiRateMult === other.modifiers.qiRateMult
+            && entry.modifiers.comprehensionGainMult === other.modifiers.comprehensionGainMult
+            && entry.modifiers.stabilityGainMult === other.modifiers.stabilityGainMult
+            && entry.modifiers.insightFrequencyMult === other.modifiers.insightFrequencyMult
+            && entry.modifiers.majorBreakthroughQiCostMult === other.modifiers.majorBreakthroughQiCostMult
+            && entry.modifiers.majorBreakthroughStabilityBonus === other.modifiers.majorBreakthroughStabilityBonus;
+    });
+const EMPTY_CULTIVATION_MODIFIERS = Object.freeze({
+    ...DEFAULT_CULTIVATION_CONSUMABLE_MODIFIERS,
+});
+let modifierCache = null;
+let insightRuntimeCache = null;
+function invalidateModifierCache() {
+    modifierCache = null;
+}
+function resetInsightRuntimeCache() {
+    insightRuntimeCache = null;
+}
+function getInsightBucketKey(progressMs, targetMs, nextInsightAt, now) {
+    if (!targetMs || targetMs <= 0)
+        return '0:none';
+    const pct = Math.max(0, Math.min(100, Math.floor((progressMs / targetMs) * 100)));
+    const remainingSec = nextInsightAt === null ? 'none' : String(Math.max(0, Math.ceil((nextInsightAt - now) / 1000)));
+    return `${pct}:${remainingSec}`;
+}
+function runtimeProgressFor(state) {
+    if (insightRuntimeCache
+        && insightRuntimeCache.selectedHeartLawId === state.selectedHeartLawId
+        && insightRuntimeCache.targetMs === state.insightTargetMs
+        && insightRuntimeCache.progressMs >= state.insightProgressMs) {
+        return insightRuntimeCache.progressMs;
+    }
+    return state.insightProgressMs;
+}
+function applyComprehensionGainSnapshot(chapter, comprehension, amount) {
+    if (!Number.isFinite(amount) || amount <= 0) {
+        return { chapter, comprehension, changed: false };
+    }
+    let nextChapter = chapter;
+    let nextComprehension = comprehension + amount;
+    while (nextChapter < 5 && nextComprehension >= getChapterRequirement(nextChapter)) {
+        nextComprehension -= getChapterRequirement(nextChapter);
+        nextChapter += 1;
+    }
+    if (nextChapter >= 5) {
+        nextComprehension = Math.min(nextComprehension, getChapterRequirement(nextChapter));
+    }
+    return {
+        chapter: nextChapter,
+        comprehension: nextComprehension,
+        changed: nextChapter !== chapter || nextComprehension !== comprehension,
+    };
+}
 export const useCultivationStore = create()(immer((set, get) => ({
     ...baseState,
     selectHeartLaw: (id) => {
@@ -59,42 +127,72 @@ export const useCultivationStore = create()(immer((set, get) => ({
             return;
         if (get().selectedHeartLawId === id)
             return;
+        try {
+            // eslint-disable-next-line @typescript-eslint/no-require-imports
+            const { useGameStore } = require('./gameStore');
+            useGameStore.getState().flushCultivationAccumulation('heartLaw/select');
+        }
+        catch {
+            // Game store may be unavailable during isolated tests.
+        }
         useUIStore.getState().setLifeStartWizardContext(id);
         set((state) => {
             Object.assign(state, baseState);
             state.selectedHeartLawId = id;
+            state.heartLawVersion = bumpVersion(state.heartLawVersion);
+            state.insightDisplayVersion = bumpVersion(state.insightDisplayVersion);
+            state.consumableVersion = bumpVersion(state.consumableVersion);
         });
+        invalidateModifierCache();
+        resetInsightRuntimeCache();
         GameEvents.emit({ type: 'heartlaw/selected', payload: { heartLawId: id } });
     },
-    addComprehension: (amount) => {
+    addComprehension: (amount) => time(PERF_LABELS.cultivationAddComprehension, () => {
         if (!Number.isFinite(amount) || amount <= 0)
             return;
-        if (!get().selectedHeartLawId)
+        const current = get();
+        if (!current.selectedHeartLawId)
+            return;
+        const result = time(PERF_LABELS.cultivationComprehensionBatch, () => applyComprehensionGainSnapshot(current.chapter, current.comprehension, amount));
+        if (!result.changed)
             return;
         set((state) => {
-            state.comprehension += amount;
+            state.chapter = result.chapter;
+            state.comprehension = result.comprehension;
+            state.heartLawVersion = bumpVersion(state.heartLawVersion);
         });
-        get().tryAdvanceChapter();
-    },
+    }),
     addStability: (amount) => {
         if (!Number.isFinite(amount) || amount <= 0)
             return;
+        const current = get();
+        const nextStability = clampStability(current.stability + amount, current.stabilityCap);
+        if (nextStability === current.stability)
+            return;
         set((state) => {
-            state.stability = clampStability(state.stability + amount, state.stabilityCap);
+            state.stability = nextStability;
+            state.heartLawVersion = bumpVersion(state.heartLawVersion);
         });
     },
     tryAdvanceChapter: () => {
-        const { selectedHeartLawId } = get();
+        const { selectedHeartLawId, chapter, comprehension } = get();
         if (!selectedHeartLawId)
             return;
+        let nextChapter = chapter;
+        let nextComprehension = comprehension;
+        while (nextChapter < 5 && nextComprehension >= getChapterRequirement(nextChapter)) {
+            nextComprehension -= getChapterRequirement(nextChapter);
+            nextChapter += 1;
+        }
+        if (nextChapter >= 5) {
+            nextComprehension = Math.min(nextComprehension, getChapterRequirement(nextChapter));
+        }
+        if (nextChapter === chapter && nextComprehension === comprehension)
+            return;
         set((state) => {
-            while (state.chapter < 5 && state.comprehension >= getChapterRequirement(state.chapter)) {
-                state.comprehension -= getChapterRequirement(state.chapter);
-                state.chapter += 1;
-            }
-            if (state.chapter >= 5) {
-                state.comprehension = Math.min(state.comprehension, getChapterRequirement(state.chapter));
-            }
+            state.chapter = nextChapter;
+            state.comprehension = nextComprehension;
+            state.heartLawVersion = bumpVersion(state.heartLawVersion);
         });
     },
     isUnlocked: (id) => {
@@ -105,31 +203,110 @@ export const useCultivationStore = create()(immer((set, get) => ({
             return true;
         return get().unlockedHeartLawIds.includes(id);
     },
-    setUnlocked: (ids) => set((state) => { state.unlockedHeartLawIds = Array.from(new Set(ids)); }),
-    unlock: (id) => set((state) => { if (!state.unlockedHeartLawIds.includes(id))
-        state.unlockedHeartLawIds.push(id); }),
-    setBreathMode: (mode) => set((state) => { state.breathMode = mode; }),
-    setStudyEnabled: (enabled) => set((state) => { state.studyEnabled = enabled; }),
-    setStudyTechniqueId: (techniqueId) => set((state) => { state.studyTechniqueId = techniqueId; }),
-    markInsight: (timestampMs) => set((state) => { state.lastInsightAt = typeof timestampMs === 'number' ? timestampMs : Date.now(); }),
+    setUnlocked: (ids) => {
+        const nextIds = Array.from(new Set(ids));
+        const currentIds = get().unlockedHeartLawIds;
+        if (nextIds.length === currentIds.length && nextIds.every((id, index) => id === currentIds[index]))
+            return;
+        set((state) => {
+            state.unlockedHeartLawIds = nextIds;
+            state.heartLawVersion = bumpVersion(state.heartLawVersion);
+        });
+    },
+    unlock: (id) => set((state) => {
+        if (state.unlockedHeartLawIds.includes(id))
+            return;
+        state.unlockedHeartLawIds.push(id);
+        state.heartLawVersion = bumpVersion(state.heartLawVersion);
+    }),
+    setBreathMode: (mode) => {
+        if (get().breathMode === mode)
+            return;
+        try {
+            // eslint-disable-next-line @typescript-eslint/no-require-imports
+            const { useGameStore } = require('./gameStore');
+            useGameStore.getState().flushCultivationAccumulation('breathMode/change');
+        }
+        catch {
+            // Game store may be unavailable during isolated tests.
+        }
+        set((state) => {
+            state.breathMode = mode;
+            state.heartLawVersion = bumpVersion(state.heartLawVersion);
+        });
+        resetInsightRuntimeCache();
+    },
+    setStudyEnabled: (enabled) => {
+        if (get().studyEnabled === enabled)
+            return;
+        set((state) => { state.studyEnabled = enabled; });
+    },
+    setStudyTechniqueId: (techniqueId) => {
+        if (get().studyTechniqueId === techniqueId)
+            return;
+        set((state) => { state.studyTechniqueId = techniqueId; });
+    },
+    markInsight: (timestampMs) => {
+        const next = typeof timestampMs === 'number' ? timestampMs : Date.now();
+        if (get().lastInsightAt === next)
+            return;
+        set((state) => {
+            state.lastInsightAt = next;
+            state.insightDisplayVersion = bumpVersion(state.insightDisplayVersion);
+        });
+    },
     getComprehensionRequirementForNextChapter: () => {
         const chapter = get().chapter;
         if (chapter >= 5)
             return 0;
         return getChapterRequirement(chapter);
     },
-    ensureInsightCycle: (now) => {
+    flushInsightProgress: (now = Date.now(), frequencyMultiplier = 1) => {
+        const current = get();
+        if (!insightRuntimeCache || insightRuntimeCache.selectedHeartLawId !== current.selectedHeartLawId)
+            return;
+        if (insightRuntimeCache.targetMs !== current.insightTargetMs)
+            return;
+        const nextProgressMs = insightRuntimeCache.progressMs;
+        const nextInsightAt = deriveNextInsightAt(now, nextProgressMs, current.insightTargetMs, frequencyMultiplier);
+        if (current.insightProgressMs === nextProgressMs && current.nextInsightAt === nextInsightAt)
+            return;
         set((state) => {
-            if (!state.selectedHeartLawId)
-                return;
-            if (state.insightTargetMs === null || state.insightTargetMs <= 0) {
-                state.insightTargetMs = pickInsightTargetMs();
-                state.insightProgressMs = 0;
-            }
-            const frequency = get().getCultivationConsumableModifiers(now).insightFrequencyMult;
-            state.nextInsightAt = deriveNextInsightAt(now, state.insightProgressMs, state.insightTargetMs, frequency);
+            state.insightProgressMs = nextProgressMs;
+            state.nextInsightAt = nextInsightAt;
+            state.insightDisplayVersion = bumpVersion(state.insightDisplayVersion);
         });
     },
+    ensureInsightCycle: (now) => time(PERF_LABELS.cultivationEnsureInsightCycle, () => {
+        const current = get();
+        if (!current.selectedHeartLawId)
+            return;
+        const nextTargetMs = current.insightTargetMs === null || current.insightTargetMs <= 0
+            ? pickInsightTargetMs()
+            : current.insightTargetMs;
+        const nextProgressMs = current.insightTargetMs === null || current.insightTargetMs <= 0
+            ? 0
+            : runtimeProgressFor(current);
+        const frequency = get().getCultivationConsumableModifiers(now).insightFrequencyMult;
+        const nextInsightAt = deriveNextInsightAt(now, nextProgressMs, nextTargetMs, frequency);
+        if (current.insightTargetMs === nextTargetMs
+            && current.insightProgressMs === nextProgressMs
+            && current.nextInsightAt !== null) {
+            return;
+        }
+        set((state) => {
+            state.insightTargetMs = nextTargetMs;
+            state.insightProgressMs = nextProgressMs;
+            state.nextInsightAt = nextInsightAt;
+            state.insightDisplayVersion = bumpVersion(state.insightDisplayVersion);
+        });
+        insightRuntimeCache = {
+            selectedHeartLawId: current.selectedHeartLawId,
+            targetMs: nextTargetMs,
+            progressMs: nextProgressMs,
+            bucketKey: getInsightBucketKey(nextProgressMs, nextTargetMs, nextInsightAt, now),
+        };
+    }),
     scheduleNextInsight: (now) => {
         set((state) => {
             const reference = typeof now === 'number' ? now : Date.now();
@@ -137,22 +314,25 @@ export const useCultivationStore = create()(immer((set, get) => ({
             state.insightProgressMs = 0;
             const frequency = get().getCultivationConsumableModifiers(reference).insightFrequencyMult;
             state.nextInsightAt = deriveNextInsightAt(reference, 0, state.insightTargetMs, frequency);
+            state.insightDisplayVersion = bumpVersion(state.insightDisplayVersion);
         });
+        resetInsightRuntimeCache();
     },
-    advanceInsightTimer: (deltaMs, now, frequencyMultiplier = 1) => {
-        if (deltaMs <= 0 || !get().selectedHeartLawId)
+    advanceInsightTimer: (deltaMs, now, frequencyMultiplier = 1) => time(PERF_LABELS.cultivationAdvanceInsightTimer, () => {
+        const current = get();
+        if (deltaMs <= 0 || !current.selectedHeartLawId)
             return false;
-        let opened = false;
-        set((state) => {
-            if (state.insight)
-                return;
-            if (state.insightTargetMs === null || state.insightTargetMs <= 0) {
-                state.insightTargetMs = pickInsightTargetMs();
-                state.insightProgressMs = 0;
-            }
-            state.insightProgressMs += deltaMs * Math.max(0, frequencyMultiplier);
-            if (state.insightTargetMs !== null && state.insightProgressMs >= state.insightTargetMs) {
-                opened = true;
+        if (current.insight)
+            return false;
+        const targetMs = current.insightTargetMs === null || current.insightTargetMs <= 0
+            ? pickInsightTargetMs()
+            : current.insightTargetMs;
+        const baseProgressMs = current.insightTargetMs === null || current.insightTargetMs <= 0
+            ? 0
+            : runtimeProgressFor(current);
+        const nextProgressMs = baseProgressMs + deltaMs * Math.max(0, frequencyMultiplier);
+        if (nextProgressMs >= targetMs) {
+            set((state) => {
                 state.insight = {
                     pending: true,
                     startedAt: now,
@@ -168,13 +348,37 @@ export const useCultivationStore = create()(immer((set, get) => ({
                 state.insightProgressMs = 0;
                 state.insightTargetMs = pickInsightTargetMs();
                 state.nextInsightAt = null;
-            }
-            else {
-                state.nextInsightAt = deriveNextInsightAt(now, state.insightProgressMs, state.insightTargetMs, frequencyMultiplier);
-            }
+                state.insightDisplayVersion = bumpVersion(state.insightDisplayVersion);
+            });
+            resetInsightRuntimeCache();
+            return true;
+        }
+        const nextInsightAt = deriveNextInsightAt(now, nextProgressMs, targetMs, frequencyMultiplier);
+        const previousBucketKey = insightRuntimeCache?.selectedHeartLawId === current.selectedHeartLawId
+            && insightRuntimeCache.targetMs === targetMs
+            ? insightRuntimeCache.bucketKey
+            : getInsightBucketKey(current.insightProgressMs, targetMs, current.nextInsightAt, now);
+        const nextBucketKey = getInsightBucketKey(nextProgressMs, targetMs, nextInsightAt, now);
+        insightRuntimeCache = {
+            selectedHeartLawId: current.selectedHeartLawId,
+            targetMs,
+            progressMs: nextProgressMs,
+            bucketKey: nextBucketKey,
+        };
+        if (current.insightTargetMs === targetMs
+            && previousBucketKey === nextBucketKey) {
+            return false;
+        }
+        time(PERF_LABELS.cultivationInsightDisplayPublish, () => {
+            set((state) => {
+                state.insightTargetMs = targetMs;
+                state.insightProgressMs = nextProgressMs;
+                state.nextInsightAt = nextInsightAt;
+                state.insightDisplayVersion = bumpVersion(state.insightDisplayVersion);
+            });
         });
-        return opened;
-    },
+        return false;
+    }),
     resolveInsight: (choiceId) => {
         const state = get();
         if (!state.insight)
@@ -188,7 +392,9 @@ export const useCultivationStore = create()(immer((set, get) => ({
             draft.insightTargetMs = pickInsightTargetMs();
             const frequency = get().getCultivationConsumableModifiers(now).insightFrequencyMult;
             draft.nextInsightAt = deriveNextInsightAt(now, 0, draft.insightTargetMs, frequency);
+            draft.insightDisplayVersion = bumpVersion(draft.insightDisplayVersion);
         });
+        resetInsightRuntimeCache();
         switch (chosenId) {
             case 'contemplate':
                 get().addComprehension(INSIGHT_BURSTS.comprehension, 'meditation');
@@ -196,12 +402,21 @@ export const useCultivationStore = create()(immer((set, get) => ({
             case 'drawQi': {
                 // eslint-disable-next-line @typescript-eslint/no-require-imports
                 const { useGameStore } = require('./gameStore');
+                useGameStore.getState().flushCultivationAccumulation('insight/drawQi');
                 const qiPerSecond = D(useGameStore.getState().qiPerSecond ?? '0');
                 const qiBonus = qiPerSecond.times(INSIGHT_BURSTS.qiSecondsWorth);
                 if (qiBonus.greaterThan(0)) {
                     useGameStore.setState((s) => {
                         const currentQi = D(s.qi ?? '0');
-                        return { qi: currentQi.plus(qiBonus).toString(), lastActiveTime: now, lastTickTime: now };
+                        const previousBucket = currentQi.floor().toString();
+                        const nextQi = currentQi.plus(qiBonus);
+                        const nextBucket = nextQi.floor().toString();
+                        return {
+                            qi: nextQi.toString(),
+                            lastActiveTime: now,
+                            lastTickTime: now,
+                            qiDisplayVersion: previousBucket === nextBucket ? s.qiDisplayVersion : bumpVersion(s.qiDisplayVersion),
+                        };
                     });
                 }
                 break;
@@ -232,7 +447,10 @@ export const useCultivationStore = create()(immer((set, get) => ({
                 modifiers: { ...effect.modifiers },
                 consumedOnMajorBreakthrough: false,
             });
+            state.consumableVersion = bumpVersion(state.consumableVersion);
         });
+        invalidateModifierCache();
+        resetInsightRuntimeCache();
         get().clearExpiredCultivationConsumables(now);
         get().ensureInsightCycle(now);
         return {
@@ -242,14 +460,57 @@ export const useCultivationStore = create()(immer((set, get) => ({
         };
     },
     getActiveCultivationConsumables: (now = Date.now()) => filterActiveCultivationConsumables(get().activeCultivationConsumables, now),
-    clearExpiredCultivationConsumables: (now = Date.now()) => {
+    clearExpiredCultivationConsumables: (now = Date.now()) => time(PERF_LABELS.cultivationClearExpiredConsumables, () => {
+        const current = get();
+        if (current.activeCultivationConsumables.length === 0)
+            return;
+        const nextExpiryAt = getNextCultivationConsumableExpiryAt(current.activeCultivationConsumables, now);
+        if (nextExpiryAt !== null && now < nextExpiryAt)
+            return;
+        const nextConsumables = filterActiveCultivationConsumables(current.activeCultivationConsumables, now);
+        const consumablesChanged = !sameConsumableList(current.activeCultivationConsumables, nextConsumables);
+        const frequency = get().getCultivationConsumableModifiers(now).insightFrequencyMult;
+        const nextInsightAt = deriveNextInsightAt(now, current.insightProgressMs, current.insightTargetMs, frequency);
+        if (!consumablesChanged && current.nextInsightAt === nextInsightAt)
+            return;
         set((state) => {
-            state.activeCultivationConsumables = filterActiveCultivationConsumables(state.activeCultivationConsumables, now);
-            const frequency = mergeCultivationConsumableModifiers(state.activeCultivationConsumables, now).insightFrequencyMult;
-            state.nextInsightAt = deriveNextInsightAt(now, state.insightProgressMs, state.insightTargetMs, frequency);
+            state.activeCultivationConsumables = nextConsumables;
+            state.nextInsightAt = nextInsightAt;
+            if (consumablesChanged) {
+                state.consumableVersion = bumpVersion(state.consumableVersion);
+            }
+            if (current.nextInsightAt !== nextInsightAt) {
+                state.insightDisplayVersion = bumpVersion(state.insightDisplayVersion);
+            }
         });
-    },
-    getCultivationConsumableModifiers: (now = Date.now()) => mergeCultivationConsumableModifiers(get().activeCultivationConsumables, now),
+        invalidateModifierCache();
+        resetInsightRuntimeCache();
+    }),
+    getCultivationConsumableModifiers: (now = Date.now()) => time(PERF_LABELS.cultivationConsumableModifiers, () => {
+        const current = get();
+        if (current.activeCultivationConsumables.length === 0) {
+            incrementCounter(PERF_LABELS.cultivationConsumableModifierCacheHit);
+            return EMPTY_CULTIVATION_MODIFIERS;
+        }
+        const nextExpiryAt = getNextCultivationConsumableExpiryAt(current.activeCultivationConsumables, now);
+        if (modifierCache
+            && modifierCache.version === current.consumableVersion
+            && modifierCache.activeLength === current.activeCultivationConsumables.length
+            && modifierCache.nextExpiryAt === nextExpiryAt
+            && (nextExpiryAt === null || now < nextExpiryAt)) {
+            incrementCounter(PERF_LABELS.cultivationConsumableModifierCacheHit);
+            return modifierCache.modifiers;
+        }
+        incrementCounter(PERF_LABELS.cultivationConsumableModifierCacheMiss);
+        const modifiers = mergeCultivationConsumableModifiers(current.activeCultivationConsumables, now);
+        modifierCache = {
+            version: current.consumableVersion,
+            activeLength: current.activeCultivationConsumables.length,
+            nextExpiryAt,
+            modifiers,
+        };
+        return modifiers;
+    }),
     getCultivationConsumableReadModel: (now = Date.now()) => buildCultivationConsumableReadModel(get().activeCultivationConsumables, now),
     consumeMajorBreakthroughBonus: (now = Date.now()) => {
         let granted = 0;
@@ -259,12 +520,19 @@ export const useCultivationStore = create()(immer((set, get) => ({
                 return;
             target.consumedOnMajorBreakthrough = true;
             granted = target.modifiers.majorBreakthroughStabilityBonus;
+            state.consumableVersion = bumpVersion(state.consumableVersion);
         });
+        if (granted > 0) {
+            invalidateModifierCache();
+            resetInsightRuntimeCache();
+        }
         return granted;
     },
     resetForNewLife: () => {
         const lastSelected = get().selectedHeartLawId;
         set((state) => { Object.assign(state, baseState); });
+        invalidateModifierCache();
+        resetInsightRuntimeCache();
         if (lastSelected)
             useUIStore.getState().setLifeStartWizardContext(lastSelected);
         GameEvents.emit({ type: 'heartlaw/selected', payload: { heartLawId: null } });

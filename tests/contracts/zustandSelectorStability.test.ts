@@ -6,6 +6,7 @@ import test from 'node:test';
 import { useCityStore } from '../../src/stores/cityStore.js';
 import { useContentStore } from '../../src/stores/contentStore.js';
 import { useUIStore } from '../../src/stores/uiStore.js';
+import { runStoreSelectorAudit } from '../../scripts/release/auditStoreSelectors.js';
 
 const repoPath = (...parts: string[]) => path.resolve(process.cwd(), ...parts);
 
@@ -176,6 +177,22 @@ test('WorldScreen no longer contains the old visible-module writeback loop patte
     /setSelectedModule\(selectedCity\.id, moduleKey\)/,
     'User-driven module selection should remain the only selected-module write in WorldScreen.',
   );
+});
+
+test('release selector hygiene audit rejects full-store subscriptions and hot JSON signatures', async () => {
+  const report = await runStoreSelectorAudit({ rootDir: process.cwd() });
+
+  assert.deepEqual(
+    report.bareStoreSubscriptions,
+    [],
+    'React component/owner files should not subscribe to entire Zustand stores',
+  );
+  assert.deepEqual(
+    report.forbiddenJsonSignatures,
+    [],
+    'Exact owners should use scalar version counters rather than JSON.stringify dependency signatures',
+  );
+  assert.equal(report.pass, true);
 });
 
 test('packet-era city-arrival store actions are idempotent when the same target state is requested repeatedly', () => {

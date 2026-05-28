@@ -22,6 +22,8 @@ import { ForgeExactScreenOwner } from '../../features/professions/forgeExact/ind
 import { BountiesExactScreenOwner } from '../../features/world/bountiesExact/index.js';
 import { ExpeditionsExactScreenOwner } from '../../features/world/expeditionsExact/index.js';
 import { ManualPavilionScreenOwner } from '../../features/world/manualPavilionExact/index.js';
+import { PERF_LABELS } from '../../services/performance/index.js';
+import { PerfProfiler, useRenderCounter } from '../../services/performance/perfReact.js';
 
 export interface WorldBuildingModalProps {
   open?: boolean;
@@ -52,6 +54,7 @@ export function WorldBuildingModal({
   children,
   useStore = true,
 }: WorldBuildingModalProps) {
+  useRenderCounter(PERF_LABELS.renderWorldBuildingModal);
   const storeOpen = useUIStore((state) => state.showWorldBuildingModal);
   const storeCityId = useUIStore((state) => state.worldBuildingModalCityId);
   const storeBuildingKey = useUIStore((state) => state.worldBuildingModalKey);
@@ -192,6 +195,7 @@ export function WorldBuildingModal({
   }
 
   return (
+    <PerfProfiler id={PERF_LABELS.renderWorldBuildingModal}>
     <Modal
       open={open}
       onClose={close}
@@ -213,5 +217,6 @@ export function WorldBuildingModal({
       ) : null}
       <div className={`worldBuildingBody worldBuildingBody--${entrySurface.backgroundVariant} worldBuildingBody--${entrySurface.shellFamily} worldBuildingBody--${entrySurface.shellMode}`}>{content}</div>
     </Modal>
+    </PerfProfiler>
   );
 }

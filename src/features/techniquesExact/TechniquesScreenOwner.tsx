@@ -19,6 +19,8 @@ import type {
 import { buildTechniquesExactSurfaceFromStores } from './buildTechniquesExactSurface.js';
 import { TechniquesExactScreen } from './TechniquesExactScreen.js';
 import { useTechniquesExactActionController } from './useTechniquesExactActionController.js';
+import { PERF_LABELS, time } from '../../services/performance/index.js';
+import { PerfProfiler, useRenderCounter } from '../../services/performance/perfReact.js';
 
 export interface TechniquesScreenOwnerProps {
   forceFixture?: boolean;
@@ -34,6 +36,7 @@ const slotFromKey = (slotKey: string | null): { type: SlotType; index: number } 
 };
 
 export function TechniquesScreenOwner({ forceFixture = false }: TechniquesScreenOwnerProps) {
+  useRenderCounter(PERF_LABELS.renderTechniquesScreenOwner);
   const [selectedTechniqueId, setSelectedTechniqueId] = useState<string | null>(null);
   const [selectedSlotKey, setSelectedSlotKey] = useState<string | null>(null);
   const [selectedFilter, setSelectedFilter] = useState<TechniquesExactFilterId>('all');
@@ -85,13 +88,13 @@ export function TechniquesScreenOwner({ forceFixture = false }: TechniquesScreen
   const clearTechniqueLibraryIntent = useUIStore((state) => state.clearTechniqueLibraryIntent);
   const clearTechniqueFocusRequest = useUIStore((state) => state.clearTechniqueFocusRequest);
 
-  const surface = useMemo(() => buildTechniquesExactSurfaceFromStores({
+  const surface = useMemo(() => time(PERF_LABELS.surfaceTechniques, () => buildTechniquesExactSurfaceFromStores({
     mode: forceFixture ? 'fixture' : 'live',
     selectedTechniqueId,
     selectedSlotKey,
     selectedFilter,
     feedback,
-  }), [
+  })), [
     collectionSignature,
     contentSignature,
     feedback,
@@ -163,6 +166,7 @@ export function TechniquesScreenOwner({ forceFixture = false }: TechniquesScreen
   const uniqueRoles = useMemo(() => Array.from(new Set(surface.ownedLibrary.rows.map((row) => row.roleLabel))).sort(), [surface.ownedLibrary.rows]);
 
   return (
+    <PerfProfiler id={PERF_LABELS.renderTechniquesScreenOwner}>
     <>
       <TechniquesExactScreen
         surface={surface}
@@ -227,5 +231,6 @@ export function TechniquesScreenOwner({ forceFixture = false }: TechniquesScreen
         triggerRef={filterButtonRef}
       />
     </>
+    </PerfProfiler>
   );
 }

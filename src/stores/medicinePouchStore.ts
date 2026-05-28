@@ -7,12 +7,14 @@ import type {
   MedicinePouchTrigger,
 } from '../types/index.js';
 import { isCombatUsableConsumable } from '../systems/consumables/consumableCatalog.js';
+import { bumpVersion } from './versionCounters.js';
 
 type SlotConfigUpdate = Partial<
   Pick<MedicinePouchSlotState, 'enabled' | 'trigger' | 'thresholdPct' | 'cooldownSec' | 'bossOnly'>
 >;
 
 interface MedicinePouchStoreState extends MedicinePouchState {
+  pouchVersion: number;
   equip: (slotKey: MedicinePouchSlotKey, itemId: string | null) => void;
   setSlotConfig: (slotKey: MedicinePouchSlotKey, partial: SlotConfigUpdate) => void;
   markUsed: (slotKey: MedicinePouchSlotKey, now?: number) => void;
@@ -69,6 +71,23 @@ const createDefaultSlots = (): Record<MedicinePouchSlotKey, MedicinePouchSlotSta
   }),
 });
 
+const sameSlotState = (left: MedicinePouchSlotState, right: MedicinePouchSlotState): boolean =>
+  left.slotKey === right.slotKey
+  && left.equippedItemId === right.equippedItemId
+  && left.enabled === right.enabled
+  && left.trigger === right.trigger
+  && left.thresholdPct === right.thresholdPct
+  && left.cooldownSec === right.cooldownSec
+  && left.bossOnly === right.bossOnly
+  && left.lastUsedAt === right.lastUsedAt;
+
+const sameSlotMap = (
+  left: Record<MedicinePouchSlotKey, MedicinePouchSlotState>,
+  right: Record<MedicinePouchSlotKey, MedicinePouchSlotState>,
+): boolean => sameSlotState(left.healing, right.healing)
+  && sameSlotState(left.utility, right.utility)
+  && sameSlotState(left.specialty, right.specialty);
+
 function sanitizeSlot(
   slotKey: MedicinePouchSlotKey,
   raw: Partial<MedicinePouchSlotState> | null | undefined,
@@ -106,38 +125,50 @@ function sanitizeSlot(
 export const useMedicinePouchStore = create<MedicinePouchStoreState>()(
   immer((set, get) => ({
     slots: createDefaultSlots(),
+    pouchVersion: 0,
 
     equip: (slotKey, itemId) => {
+      const slot = get().slots[slotKey];
+      if (!slot) return;
+      const nextItemId = itemId && isCombatUsableConsumable(itemId) ? itemId : null;
+      if (slot.equippedItemId === nextItemId) return;
       set((state) => {
-        const slot = state.slots[slotKey];
-        if (!slot) return;
-        slot.equippedItemId = itemId && isCombatUsableConsumable(itemId) ? itemId : null;
+        state.slots[slotKey].equippedItemId = nextItemId;
+        state.pouchVersion = bumpVersion(state.pouchVersion);
       });
     },
 
     setSlotConfig: (slotKey, partial) => {
+      const current = get().slots[slotKey];
+      if (!current) return;
+      const next = { ...current };
+      if (partial.enabled !== undefined) next.enabled = Boolean(partial.enabled);
+      if (partial.trigger !== undefined && isValidTrigger(partial.trigger)) {
+        next.trigger = partial.trigger;
+      }
+      if (partial.thresholdPct !== undefined) {
+        next.thresholdPct = clamp(Number(partial.thresholdPct), 0, 100);
+      }
+      if (partial.cooldownSec !== undefined) {
+        next.cooldownSec = clamp(Number(partial.cooldownSec), 0, 3600);
+      }
+      if (partial.bossOnly !== undefined) next.bossOnly = Boolean(partial.bossOnly);
+      if (sameSlotState(current, next)) return;
+
       set((state) => {
         const slot = state.slots[slotKey];
         if (!slot) return;
-        if (partial.enabled !== undefined) slot.enabled = Boolean(partial.enabled);
-        if (partial.trigger !== undefined && isValidTrigger(partial.trigger)) {
-          slot.trigger = partial.trigger;
-        }
-        if (partial.thresholdPct !== undefined) {
-          slot.thresholdPct = clamp(Number(partial.thresholdPct), 0, 100);
-        }
-        if (partial.cooldownSec !== undefined) {
-          slot.cooldownSec = clamp(Number(partial.cooldownSec), 0, 3600);
-        }
-        if (partial.bossOnly !== undefined) slot.bossOnly = Boolean(partial.bossOnly);
+        Object.assign(slot, next);
+        state.pouchVersion = bumpVersion(state.pouchVersion);
       });
     },
 
     markUsed: (slotKey, now = Date.now()) => {
+      const slot = get().slots[slotKey];
+      if (!slot || slot.lastUsedAt === now) return;
       set((state) => {
-        const slot = state.slots[slotKey];
-        if (!slot) return;
-        slot.lastUsedAt = now;
+        state.slots[slotKey].lastUsedAt = now;
+        state.pouchVersion = bumpVersion(state.pouchVersion);
       });
     },
 
@@ -145,14 +176,22 @@ export const useMedicinePouchStore = create<MedicinePouchStoreState>()(
       const defaults = createDefaultSlots();
       const incomingSlots = slice?.slots;
       if (!incomingSlots || typeof incomingSlots !== 'object') {
-        set(() => ({ slots: defaults }));
+        if (sameSlotMap(get().slots, defaults)) return;
+        set((state) => {
+          state.slots = defaults;
+          state.pouchVersion = bumpVersion(state.pouchVersion);
+        });
         return;
       }
       const nextSlots = { ...defaults } as Record<MedicinePouchSlotKey, MedicinePouchSlotState>;
       (Object.keys(defaults) as MedicinePouchSlotKey[]).forEach((slotKey) => {
         nextSlots[slotKey] = sanitizeSlot(slotKey, incomingSlots[slotKey] as MedicinePouchSlotState, defaults[slotKey]);
       });
-      set(() => ({ slots: nextSlots }));
+      if (sameSlotMap(get().slots, nextSlots)) return;
+      set((state) => {
+        state.slots = nextSlots;
+        state.pouchVersion = bumpVersion(state.pouchVersion);
+      });
     },
 
     toSaveState: () => {
@@ -166,7 +205,7 @@ export const useMedicinePouchStore = create<MedicinePouchStoreState>()(
     },
 
     hardReset: () => {
-      set(() => ({ slots: createDefaultSlots() }));
+      set(() => ({ slots: createDefaultSlots(), pouchVersion: 0 }));
     },
   })),
 );

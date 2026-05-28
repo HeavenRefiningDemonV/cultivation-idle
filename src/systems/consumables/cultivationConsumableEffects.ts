@@ -35,6 +35,20 @@ export function filterActiveCultivationConsumables(
   return consumables.filter((entry) => entry.expiresAt > now).map((entry) => ({ ...entry }));
 }
 
+export function getNextCultivationConsumableExpiryAt(
+  consumables: readonly ActiveCultivationConsumable[],
+  now: number,
+): number | null {
+  let nextExpiryAt: number | null = null;
+  for (const entry of consumables) {
+    if (!Number.isFinite(entry.expiresAt) || entry.expiresAt <= now) continue;
+    if (nextExpiryAt === null || entry.expiresAt < nextExpiryAt) {
+      nextExpiryAt = entry.expiresAt;
+    }
+  }
+  return nextExpiryAt;
+}
+
 function toReadModelEntry(entry: ActiveCultivationConsumable, now: number): CultivationConsumableReadModelEntry {
   const familyDef = CULTIVATION_CONSUMABLE_FAMILY_REGISTRY[entry.family];
   const spec = getConsumableSpec(entry.itemId);

@@ -1,14 +1,7 @@
 # Release Sign-off Sheet
 
-## Packet D public UI decommission signoff note - 2026-05-24
-
-- Packet D status: packet-local PASS for public Dao/Omen/Proof/Source/Mandate decommission outside Status.
-- Evidence: `npm run typecheck`, `npm run check:icons`, focused Packet D compiled contract runner, strict focused Packet D compiled contract runner, `npm run release:vocab-audit:json`, `npm run build`, and final public-root `rg` scans.
-- Visual evidence: in-app Browser capability was unavailable, so no new screenshot paths were captured in this pass. Existing visual signoff requirements remain separate from the packet-local static/test gate.
-- Release decision: this note does not override the generated release-level `NO_GO` below, which includes broader gate/build/test state outside Packet D.
-
 ## Release candidate identity
-- generatedAt: 2026-05-24T20:41:13.976Z
+- generatedAt: 2026-05-28T12:57:25.063Z
 - releaseDecision: NO_GO
 - cleanPass: false
 - acceptedWaiverCount: 0

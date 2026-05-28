@@ -1,0 +1,57 @@
+Realm
+Qi Condensation
+Stage 1
+Qi
+91.12
+Cultivation Rate
+45.56 / s
+Stability
+0%
+Foreground
+Idle
+Next Milestone
+Push Qi
+Need
+Qi Cap
+100
+Action
+Start Cultivation
+Cultivating
+Dao
+Path
+No Path selected
+Spirit Root
+Wood / Mortal
+Heart Law
+No Heart Law selected
+Verse
+Chapter 1
+Breath / Focus
+Balanced
+Breakthrough
+Approaching Edge
+BREAKTHROUGH READINESS
+Reach the realm edge and fill the Qi reservoir.
+Qi
+8.87 short
+Realm edge
+Reached
+Gate item
+Not needed now
+Qi 91.12 / 100
++45.56/s
+Start Cultivation
+Break Through
+Status
+Cultivation
+World
+Inventory
+Techniques
+Records
+Prestige
+Settings
+
+Pinewind was too small to matter to immortals. That was why it survived.
+
+Skip
+Next

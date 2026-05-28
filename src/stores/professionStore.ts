@@ -16,6 +16,7 @@ import { useActivityStore } from './activityStore.js';
 import { useCraftSessionStore } from './craftSessionStore.js';
 import type { ForgeStepResult } from '../systems/crafting/craftingTypes.js';
 import { fromForgeJobMode, isForgeModeAllowed } from '../systems/forge/index.js';
+import { bumpVersion } from './versionCounters.js';
 
 export type AlchemyJob = {
   id: string;
@@ -75,6 +76,7 @@ interface ProfessionState {
   talismanQueue: TalismanJob[];
   forgeQueue: ForgeJob[];
   lastTickAt: number;
+  professionVersion: number;
   startAlchemy: (recipeId: string, qty: number) => ActionResult;
   startTalisman: (recipeId: string, qty: number) => ActionResult;
   startForge: (blueprintId: string, qty: number, options?: { targetSlot?: ForgeJob['targetSlot'] }) => ActionResult;
@@ -206,6 +208,7 @@ export const useProfessionStore = create<ProfessionState>()(
     talismanQueue: [],
     forgeQueue: [],
     lastTickAt: 0,
+    professionVersion: 0,
 
     startAlchemy: (recipeId, qty) => {
       const parsedQty = Math.floor(qty);
@@ -313,6 +316,7 @@ export const useProfessionStore = create<ProfessionState>()(
           endsAt,
           cityId,
         });
+        state.professionVersion = bumpVersion(state.professionVersion);
       });
 
       GameEvents.emit({ type: 'crafting/queue_added', payload: { station: 'alchemy', sourceId: recipeId, qty: amount } });
@@ -430,6 +434,7 @@ export const useProfessionStore = create<ProfessionState>()(
           endsAt,
           cityId,
         });
+        state.professionVersion = bumpVersion(state.professionVersion);
       });
 
       GameEvents.emit({ type: 'crafting/queue_added', payload: { station: 'talisman', sourceId: recipeId, qty: amount } });
@@ -631,6 +636,7 @@ export const useProfessionStore = create<ProfessionState>()(
           status,
           sessionId,
         });
+        state.professionVersion = bumpVersion(state.professionVersion);
       });
 
       GameEvents.emit({ type: 'crafting/queue_added', payload: { station: 'forge', sourceId: blueprintId, qty: amount } });
@@ -688,6 +694,7 @@ export const useProfessionStore = create<ProfessionState>()(
               }
             : entry,
         );
+        state.professionVersion = bumpVersion(state.professionVersion);
       });
 
       useActivityStore.getState().stopActivity('forge_complete');
@@ -767,6 +774,7 @@ export const useProfessionStore = create<ProfessionState>()(
 
       set((state) => {
         state.forgeQueue = state.forgeQueue.filter((entry) => entry.id !== jobId);
+        state.professionVersion = bumpVersion(state.professionVersion);
       });
 
       GameEvents.emit({ type: 'crafting/queue_completed', payload: { station: 'forge', sourceId: job.blueprintId, qty: job.qty } });
@@ -812,10 +820,14 @@ export const useProfessionStore = create<ProfessionState>()(
       const lastTickAt = get().lastTickAt;
       if (now === lastTickAt) return;
       if (now < lastTickAt) {
-        set({ lastTickAt: now });
-        return;
-      }
-      set({ lastTickAt: now });
+      set((state) => {
+        state.lastTickAt = now;
+      });
+      return;
+    }
+      set((state) => {
+        state.lastTickAt = now;
+      });
     },
 
     applyOffline: (now) => {
@@ -857,6 +869,7 @@ export const useProfessionStore = create<ProfessionState>()(
             endsAt,
           };
         });
+        state.professionVersion = bumpVersion(state.professionVersion);
       });
 
       if (activeForgeSession && !sawForgeSessionMatch) {
@@ -896,6 +909,7 @@ export const useProfessionStore = create<ProfessionState>()(
 
       set((state) => {
         state.alchemyQueue = state.alchemyQueue.filter((entry) => entry.id !== jobId);
+        state.professionVersion = bumpVersion(state.professionVersion);
       });
 
       GameEvents.emit({ type: 'crafting/queue_completed', payload: { station: 'alchemy', sourceId: job.recipeId, qty: job.qty } });
@@ -946,6 +960,7 @@ export const useProfessionStore = create<ProfessionState>()(
 
       set((state) => {
         state.talismanQueue = state.talismanQueue.filter((entry) => entry.id !== jobId);
+        state.professionVersion = bumpVersion(state.professionVersion);
       });
 
       GameEvents.emit({ type: 'crafting/queue_completed', payload: { station: 'talisman', sourceId: job.recipeId, qty: job.qty } });

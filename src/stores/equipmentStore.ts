@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import { useCityStore } from './cityStore.js';
 import { useContentStore } from './contentStore.js';
+import { bumpVersion } from './versionCounters.js';
 
 export type EquipmentSlot = 'weapon' | 'accessory';
 
@@ -29,6 +30,7 @@ interface EquipmentState {
   refineLevelBySlot: { weapon: number; accessory: number };
   temperBonusesBySlot: Record<EquipmentSlot, TemperAffix[]>;
   forgeToolTiers: ForgeToolTiers;
+  equipmentVersion: number;
   equipWeapon: (itemId: string | null) => void;
   equipAccessory: (itemId: string | null) => void;
   getRefineCapForCurrentProgress: () => number;
@@ -46,14 +48,22 @@ interface EquipmentState {
 
 const createInitialEquipmentState = (): Pick<
   EquipmentState,
-  'equippedWeaponId' | 'equippedAccessoryId' | 'refineLevelBySlot' | 'temperBonusesBySlot' | 'forgeToolTiers'
+  'equippedWeaponId' | 'equippedAccessoryId' | 'refineLevelBySlot' | 'temperBonusesBySlot' | 'forgeToolTiers' | 'equipmentVersion'
 > => ({
   equippedWeaponId: null,
   equippedAccessoryId: null,
   refineLevelBySlot: { weapon: 0, accessory: 0 },
   temperBonusesBySlot: { weapon: [], accessory: [] },
   forgeToolTiers: { anvil: 1, hammer: 1, bellows: 1, quenchTub: 1 },
+  equipmentVersion: 0,
 });
+
+const sameTemperAffix = (left: TemperAffix | undefined, right: TemperAffix): boolean =>
+  !!left
+  && left.id === right.id
+  && left.label === right.label
+  && left.stat === right.stat
+  && left.valuePct === right.valuePct;
 
 function resolveCityTier(): number {
   const cityState = useCityStore.getState();
@@ -84,14 +94,20 @@ export const useEquipmentStore = create<EquipmentState>()(
     ...createInitialEquipmentState(),
 
     equipWeapon: (itemId) => {
+      const nextItemId = itemId || null;
+      if (get().equippedWeaponId === nextItemId) return;
       set((state) => {
-        state.equippedWeaponId = itemId || null;
+        state.equippedWeaponId = nextItemId;
+        state.equipmentVersion = bumpVersion(state.equipmentVersion);
       });
     },
 
     equipAccessory: (itemId) => {
+      const nextItemId = itemId || null;
+      if (get().equippedAccessoryId === nextItemId) return;
       set((state) => {
-        state.equippedAccessoryId = itemId || null;
+        state.equippedAccessoryId = nextItemId;
+        state.equipmentVersion = bumpVersion(state.equipmentVersion);
       });
     },
 
@@ -119,9 +135,13 @@ export const useEquipmentStore = create<EquipmentState>()(
       const currentLevel = state.refineLevelBySlot[slot];
       const nextLevel = Math.min(cap, currentLevel + amount * addLevel);
       const applied = Math.max(0, nextLevel - currentLevel);
+      if (applied <= 0) {
+        return { ok: true, applied, capped: nextLevel >= cap };
+      }
 
       set((draft) => {
         draft.refineLevelBySlot[slot] = nextLevel;
+        draft.equipmentVersion = bumpVersion(draft.equipmentVersion);
       });
 
       return { ok: true, applied, capped: nextLevel >= cap };
@@ -133,11 +153,14 @@ export const useEquipmentStore = create<EquipmentState>()(
         const next = [...list];
         const existingIndex = next.findIndex((entry) => entry.id === affix.id);
         if (existingIndex >= 0) {
+          if (sameTemperAffix(next[existingIndex], affix)) return;
           next[existingIndex] = affix;
         } else {
           next.push(affix);
         }
-        draft.temperBonusesBySlot[slot] = next.slice(-3);
+        const trimmed = next.slice(-3);
+        draft.temperBonusesBySlot[slot] = trimmed;
+        draft.equipmentVersion = bumpVersion(draft.equipmentVersion);
       });
     },
 
@@ -146,7 +169,10 @@ export const useEquipmentStore = create<EquipmentState>()(
       if (increment <= 0) return;
       set((draft) => {
         const current = draft.forgeToolTiers[tool] ?? 1;
-        draft.forgeToolTiers[tool] = Math.min(10, current + increment);
+        const next = Math.min(10, current + increment);
+        if (next === current) return;
+        draft.forgeToolTiers[tool] = next;
+        draft.equipmentVersion = bumpVersion(draft.equipmentVersion);
       });
     },
 

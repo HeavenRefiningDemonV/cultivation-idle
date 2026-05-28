@@ -1,0 +1,646 @@
+{
+  "url": "http://127.0.0.1:5173/?ciPerf=1",
+  "summaries": [
+    {
+      "name": "freshIdle",
+      "enabled": true,
+      "durationMs": 30164.899999976158,
+      "counters": {
+        "ci:scheduler:job:cultivation-authoritative": 124,
+        "ci:gameLoop:rafCallback": 76,
+        "ci:store:game:setCalls": 124
+      },
+      "measures": {
+        "ci:gameLoop:tick": {
+          "count": 124,
+          "totalMs": 14.3,
+          "avgMs": 0.1153,
+          "maxMs": 0.4
+        },
+        "ci:store:game:tick": {
+          "count": 124,
+          "totalMs": 14.2,
+          "avgMs": 0.1145,
+          "maxMs": 0.4
+        },
+        "ci:store:game:tick:qi": {
+          "count": 124,
+          "totalMs": 5.2,
+          "avgMs": 0.0419,
+          "maxMs": 0.2
+        },
+        "ci:store:game:tick:hpRegen": {
+          "count": 124,
+          "totalMs": 0.7,
+          "avgMs": 0.0056,
+          "maxMs": 0.1
+        },
+        "ci:store:game:tick:buffCleanup": {
+          "count": 124,
+          "totalMs": 0.2,
+          "avgMs": 0.0016,
+          "maxMs": 0.1
+        },
+        "ci:store:game:tick:cultivationConsumableCleanup": {
+          "count": 124,
+          "totalMs": 0.4,
+          "avgMs": 0.0032,
+          "maxMs": 0.1
+        },
+        "ci:service:cultivation:tick": {
+          "count": 124,
+          "totalMs": 0.7,
+          "avgMs": 0.0056,
+          "maxMs": 0.1
+        },
+        "ci:service:cultivation:insight": {
+          "count": 124,
+          "totalMs": 0.1,
+          "avgMs": 0.0008,
+          "maxMs": 0.1
+        },
+        "ci:service:cultivation:consumables": {
+          "count": 124,
+          "totalMs": 0.3,
+          "avgMs": 0.0024,
+          "maxMs": 0.1
+        },
+        "ci:store:cultivation:clearExpiredConsumables": {
+          "count": 248,
+          "totalMs": 0.4,
+          "avgMs": 0.0016,
+          "maxMs": 0.1
+        }
+      },
+      "renders": {
+        "ci:render:GameLayout": {
+          "renderCount": 0,
+          "commitCount": 90,
+          "updateCount": 90,
+          "maxActualDurationMs": 440.3
+        },
+        "ci:render:CultivationExactScreenOwner": {
+          "renderCount": 152,
+          "commitCount": 76,
+          "updateCount": 76,
+          "maxActualDurationMs": 9.3
+        }
+      },
+      "longTasks": 76,
+      "longAnimationFrames": 76,
+      "warningsOrErrors": [
+        {
+          "type": "warning",
+          "text": "[GameLoop] Already running"
+        },
+        {
+          "type": "warning",
+          "text": "[ContentValidation] Technique counts by path: Heaven=20, Earth=20, Martial=20"
+        },
+        {
+          "type": "warning",
+          "text": "[ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=heaven: 6"
+        },
+        {
+          "type": "warning",
+          "text": "[ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=earth: 6"
+        },
+        {
+          "type": "warning",
+          "text": "[ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=martial: 6"
+        },
+        {
+          "type": "warning",
+          "text": "[ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=heaven: 7"
+        },
+        {
+          "type": "warning",
+          "text": "[ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=earth: 9"
+        },
+        {
+          "type": "warning",
+          "text": "[ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=martial: 8"
+        },
+        {
+          "type": "warning",
+          "text": "[ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=heaven: 9"
+        },
+        {
+          "type": "warning",
+          "text": "[ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=earth: 9"
+        },
+        {
+          "type": "warning",
+          "text": "[ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=martial: 10"
+        },
+        {
+          "type": "warning",
+          "text": "[ContentValidation] Pavilion pool size city=3 (city_lotusford) path=heaven: 10"
+        },
+        {
+          "type": "warning",
+          "text": "[ContentValidation] Pavilion pool size city=3 (city_lotusford) path=earth: 10"
+        },
+        {
+          "type": "warning",
+          "text": "[ContentValidation] Pavilion pool size city=3 (city_lotusford) path=martial: 10"
+        },
+        {
+          "type": "warning",
+          "text": "[ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=heaven: 10"
+        },
+        {
+          "type": "warning",
+          "text": "[ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=earth: 10"
+        },
+        {
+          "type": "warning",
+          "text": "[ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=martial: 10"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "name": "heartLawIdle",
+      "enabled": true,
+      "durationMs": 30170.899999976158,
+      "counters": {
+        "ci:scheduler:job:cultivation-authoritative": 124,
+        "ci:gameLoop:rafCallback": 77,
+        "ci:store:game:setCalls": 124
+      },
+      "measures": {
+        "ci:gameLoop:tick": {
+          "count": 124,
+          "totalMs": 42.4,
+          "avgMs": 0.3419,
+          "maxMs": 0.7
+        },
+        "ci:store:game:tick": {
+          "count": 124,
+          "totalMs": 42,
+          "avgMs": 0.3387,
+          "maxMs": 0.6
+        },
+        "ci:store:game:tick:qi": {
+          "count": 124,
+          "totalMs": 8.8,
+          "avgMs": 0.071,
+          "maxMs": 0.3
+        },
+        "ci:store:game:tick:hpRegen": {
+          "count": 124,
+          "totalMs": 0.3,
+          "avgMs": 0.0024,
+          "maxMs": 0.1
+        },
+        "ci:store:game:tick:buffCleanup": {
+          "count": 124,
+          "totalMs": 0.4,
+          "avgMs": 0.0032,
+          "maxMs": 0.1
+        },
+        "ci:store:game:tick:cultivationConsumableCleanup": {
+          "count": 124,
+          "totalMs": 5.3,
+          "avgMs": 0.0427,
+          "maxMs": 0.2
+        },
+        "ci:service:cultivation:tick": {
+          "count": 124,
+          "totalMs": 7.3,
+          "avgMs": 0.0589,
+          "maxMs": 0.2
+        },
+        "ci:service:cultivation:heartLaw": {
+          "count": 124,
+          "totalMs": 3.2,
+          "avgMs": 0.0258,
+          "maxMs": 0.1
+        },
+        "ci:service:cultivation:insight": {
+          "count": 248,
+          "totalMs": 2.1,
+          "avgMs": 0.0085,
+          "maxMs": 0.1
+        },
+        "ci:service:cultivation:consumables": {
+          "count": 248,
+          "totalMs": 1.5,
+          "avgMs": 0.006,
+          "maxMs": 0.1
+        },
+        "ci:store:cultivation:addComprehension": {
+          "count": 124,
+          "totalMs": 2.7,
+          "avgMs": 0.0218,
+          "maxMs": 0.1
+        },
+        "ci:store:cultivation:advanceInsightTimer": {
+          "count": 124,
+          "totalMs": 1.7,
+          "avgMs": 0.0137,
+          "maxMs": 0.1
+        },
+        "ci:store:cultivation:getConsumableModifiers": {
+          "count": 248,
+          "totalMs": 0.2,
+          "avgMs": 0.0008,
+          "maxMs": 0.1
+        },
+        "ci:store:cultivation:clearExpiredConsumables": {
+          "count": 248,
+          "totalMs": 6.1,
+          "avgMs": 0.0246,
+          "maxMs": 0.1
+        }
+      },
+      "renders": {
+        "ci:render:GameLayout": {
+          "renderCount": 0,
+          "commitCount": 80,
+          "updateCount": 80,
+          "maxActualDurationMs": 435.2
+        },
+        "ci:render:CultivationExactScreenOwner": {
+          "renderCount": 154,
+          "commitCount": 77,
+          "updateCount": 77,
+          "maxActualDurationMs": 8.6
+        }
+      },
+      "longTasks": 77,
+      "longAnimationFrames": 78,
+      "warningsOrErrors": [
+        {
+          "type": "warning",
+          "text": "[GameLoop] Already running"
+        },
+        {
+          "type": "warning",
+          "text": "[ContentValidation] Technique counts by path: Heaven=20, Earth=20, Martial=20"
+        },
+        {
+          "type": "warning",
+          "text": "[ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=heaven: 6"
+        },
+        {
+          "type": "warning",
+          "text": "[ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=earth: 6"
+        },
+        {
+          "type": "warning",
+          "text": "[ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=martial: 6"
+        },
+        {
+          "type": "warning",
+          "text": "[ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=heaven: 7"
+        },
+        {
+          "type": "warning",
+          "text": "[ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=earth: 9"
+        },
+        {
+          "type": "warning",
+          "text": "[ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=martial: 8"
+        },
+        {
+          "type": "warning",
+          "text": "[ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=heaven: 9"
+        },
+        {
+          "type": "warning",
+          "text": "[ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=earth: 9"
+        },
+        {
+          "type": "warning",
+          "text": "[ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=martial: 10"
+        },
+        {
+          "type": "warning",
+          "text": "[ContentValidation] Pavilion pool size city=3 (city_lotusford) path=heaven: 10"
+        },
+        {
+          "type": "warning",
+          "text": "[ContentValidation] Pavilion pool size city=3 (city_lotusford) path=earth: 10"
+        },
+        {
+          "type": "warning",
+          "text": "[ContentValidation] Pavilion pool size city=3 (city_lotusford) path=martial: 10"
+        },
+        {
+          "type": "warning",
+          "text": "[ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=heaven: 10"
+        },
+        {
+          "type": "warning",
+          "text": "[ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=earth: 10"
+        },
+        {
+          "type": "warning",
+          "text": "[ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=martial: 10"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "name": "activeCombat",
+      "enabled": true,
+      "durationMs": 30301.299999952316,
+      "counters": {
+        "ci:scheduler:job:cultivation-authoritative": 125,
+        "ci:scheduler:job:combat-fixed-step": 156,
+        "ci:gameLoop:rafCallback": 80,
+        "ci:store:game:setCalls": 125,
+        "ci:store:combat:logsAppended": 40
+      },
+      "measures": {
+        "ci:gameLoop:tick": {
+          "count": 125,
+          "totalMs": 39.4,
+          "avgMs": 0.3152,
+          "maxMs": 0.6
+        },
+        "ci:store:game:tick": {
+          "count": 125,
+          "totalMs": 39.2,
+          "avgMs": 0.3136,
+          "maxMs": 0.6
+        },
+        "ci:store:game:tick:qi": {
+          "count": 125,
+          "totalMs": 9.2,
+          "avgMs": 0.0736,
+          "maxMs": 0.2
+        },
+        "ci:store:game:tick:hpRegen": {
+          "count": 125,
+          "totalMs": 0.7,
+          "avgMs": 0.0056,
+          "maxMs": 0.1
+        },
+        "ci:store:game:tick:buffCleanup": {
+          "count": 125,
+          "totalMs": 0.3,
+          "avgMs": 0.0024,
+          "maxMs": 0.1
+        },
+        "ci:store:game:tick:cultivationConsumableCleanup": {
+          "count": 125,
+          "totalMs": 4.2,
+          "avgMs": 0.0336,
+          "maxMs": 0.2
+        },
+        "ci:service:cultivation:tick": {
+          "count": 125,
+          "totalMs": 1.6,
+          "avgMs": 0.0128,
+          "maxMs": 0.1
+        },
+        "ci:service:cultivation:insight": {
+          "count": 125,
+          "totalMs": 0.4,
+          "avgMs": 0.0032,
+          "maxMs": 0.1
+        },
+        "ci:service:cultivation:consumables": {
+          "count": 125,
+          "totalMs": 0.8,
+          "avgMs": 0.0064,
+          "maxMs": 0.1
+        },
+        "ci:store:cultivation:getConsumableModifiers": {
+          "count": 125,
+          "totalMs": 0,
+          "avgMs": 0,
+          "maxMs": 0
+        },
+        "ci:store:cultivation:clearExpiredConsumables": {
+          "count": 250,
+          "totalMs": 4.6,
+          "avgMs": 0.0184,
+          "maxMs": 0.2
+        },
+        "ci:store:combat:tick": {
+          "count": 156,
+          "totalMs": 31.2,
+          "avgMs": 0.2,
+          "maxMs": 10.1
+        },
+        "ci:store:combat:medicine": {
+          "count": 156,
+          "totalMs": 0.3,
+          "avgMs": 0.0019,
+          "maxMs": 0.1
+        },
+        "ci:store:combat:buffs": {
+          "count": 136,
+          "totalMs": 0.1,
+          "avgMs": 0.0007,
+          "maxMs": 0.1
+        },
+        "ci:store:combat:resources": {
+          "count": 12,
+          "totalMs": 0,
+          "avgMs": 0,
+          "maxMs": 0
+        },
+        "ci:store:combat:techniqueAI": {
+          "count": 67,
+          "totalMs": 3.6,
+          "avgMs": 0.0537,
+          "maxMs": 0.3
+        }
+      },
+      "renders": {
+        "ci:render:GameLayout": {
+          "renderCount": 4,
+          "commitCount": 82,
+          "updateCount": 82,
+          "maxActualDurationMs": 425.9
+        },
+        "ci:render:CultivationExactScreenOwner": {
+          "renderCount": 160,
+          "commitCount": 80,
+          "updateCount": 80,
+          "maxActualDurationMs": 8.6
+        }
+      },
+      "longTasks": 80,
+      "longAnimationFrames": 80,
+      "warningsOrErrors": [
+        {
+          "type": "warning",
+          "text": "[GameLoop] Already running"
+        },
+        {
+          "type": "warning",
+          "text": "[ContentValidation] Technique counts by path: Heaven=20, Earth=20, Martial=20"
+        },
+        {
+          "type": "warning",
+          "text": "[ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=heaven: 6"
+        },
+        {
+          "type": "warning",
+          "text": "[ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=earth: 6"
+        },
+        {
+          "type": "warning",
+          "text": "[ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=martial: 6"
+        },
+        {
+          "type": "warning",
+          "text": "[ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=heaven: 7"
+        },
+        {
+          "type": "warning",
+          "text": "[ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=earth: 9"
+        },
+        {
+          "type": "warning",
+          "text": "[ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=martial: 8"
+        },
+        {
+          "type": "warning",
+          "text": "[ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=heaven: 9"
+        },
+        {
+          "type": "warning",
+          "text": "[ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=earth: 9"
+        },
+        {
+          "type": "warning",
+          "text": "[ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=martial: 10"
+        },
+        {
+          "type": "warning",
+          "text": "[ContentValidation] Pavilion pool size city=3 (city_lotusford) path=heaven: 10"
+        },
+        {
+          "type": "warning",
+          "text": "[ContentValidation] Pavilion pool size city=3 (city_lotusford) path=earth: 10"
+        },
+        {
+          "type": "warning",
+          "text": "[ContentValidation] Pavilion pool size city=3 (city_lotusford) path=martial: 10"
+        },
+        {
+          "type": "warning",
+          "text": "[ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=heaven: 10"
+        },
+        {
+          "type": "warning",
+          "text": "[ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=earth: 10"
+        },
+        {
+          "type": "warning",
+          "text": "[ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=martial: 10"
+        },
+        {
+          "type": "warning",
+          "text": "[audio] Unable to play sound ui_currency_gain_small NotSupportedError: Failed to load because no supported source was found."
+        },
+        {
+          "type": "warning",
+          "text": "[audio] Unable to play sound ui_item_pickup NotSupportedError: Failed to load because no supported source was found."
+        },
+        {
+          "type": "warning",
+          "text": "[audio] Unable to play sound ui_item_pickup NotSupportedError: Failed to load because no supported source was found."
+        },
+        {
+          "type": "warning",
+          "text": "[audio] Unable to play sound ui_currency_gain_small NotSupportedError: Failed to load because no supported source was found."
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "consoleMessages": [
+    {
+      "type": "warning",
+      "text": "[GameLoop] Already running"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Technique counts by path: Heaven=20, Earth=20, Martial=20"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=heaven: 6"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=earth: 6"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=martial: 6"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=heaven: 7"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=earth: 9"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=martial: 8"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=heaven: 9"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=earth: 9"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=martial: 10"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=3 (city_lotusford) path=heaven: 10"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=3 (city_lotusford) path=earth: 10"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=3 (city_lotusford) path=martial: 10"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=heaven: 10"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=earth: 10"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=martial: 10"
+    },
+    {
+      "type": "warning",
+      "text": "[audio] Unable to play sound ui_currency_gain_small NotSupportedError: Failed to load because no supported source was found."
+    },
+    {
+      "type": "warning",
+      "text": "[audio] Unable to play sound ui_item_pickup NotSupportedError: Failed to load because no supported source was found."
+    },
+    {
+      "type": "warning",
+      "text": "[audio] Unable to play sound ui_item_pickup NotSupportedError: Failed to load because no supported source was found."
+    },
+    {
+      "type": "warning",
+      "text": "[audio] Unable to play sound ui_currency_gain_small NotSupportedError: Failed to load because no supported source was found."
+    }
+  ]
+}

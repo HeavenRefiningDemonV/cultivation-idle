@@ -14,6 +14,8 @@ import { getPavilionExactFixtureEntryId, isPavilionExactFixtureRouteEnabled, PAV
 import { PavilionExactScreen } from './PavilionExactScreen.js';
 import { executePavilionRouteAction } from './pavilionRouteActions.js';
 import type { PavilionRouteButtonSurface, PavilionRuntimeSnapshot, PavilionSaveState } from './pavilionTypes.js';
+import { PERF_LABELS, time } from '../../services/performance/index.js';
+import { PerfProfiler, useRenderCounter } from '../../services/performance/perfReact.js';
 import './PavilionExactScreen.scss';
 
 function pathLabel(path: string | null): string {
@@ -24,14 +26,10 @@ function pathLabel(path: string | null): string {
 }
 
 export function PavilionScreenOwner() {
+  useRenderCounter(PERF_LABELS.renderPavilionScreenOwner);
   const searchRef = useRef<HTMLInputElement | null>(null);
   const rawContent = useContentStore((state) => state.raw);
-  const contentVersion = useContentStore((state) => [
-    state.isLoaded,
-    state.raw?.pavilion_records?.version ?? 'none',
-    Object.keys(state.maps.itemsById).length,
-    Object.keys(state.maps.trialsById).length,
-  ].join(':'));
+  const contentVersion = useContentStore((state) => state.contentVersion);
   const maps = useContentStore((state) => state.maps);
   const citiesSorted = useContentStore((state) => state.citiesSorted);
   const realm = useGameStore((state) => state.realm);
@@ -43,12 +41,12 @@ export function PavilionScreenOwner() {
     return cityId ? useContentStore.getState().maps.citiesById[cityId]?.modules ?? [] : [];
   });
   const selectedLoadoutId = useTechniqueStore((state) => state.selectedLoadoutId);
-  const medicineSignature = useMedicinePouchStore((state) => JSON.stringify(state.slots));
-  const equipmentSignature = useEquipmentStore((state) => JSON.stringify({
-    weapon: state.equippedWeaponId,
-    accessory: state.equippedAccessoryId,
-    refine: state.refineLevelBySlot,
-  }));
+  const pouchVersion = useMedicinePouchStore((state) => state.pouchVersion);
+  const medicineWeak = useMedicinePouchStore((state) =>
+    !Object.values(state.slots).some((slot) => slot.equippedItemId),
+  );
+  const equipmentVersion = useEquipmentStore((state) => state.equipmentVersion);
+  const weaponFloorClose = useEquipmentStore((state) => Boolean(state.equippedWeaponId));
   const selectedEntryId = usePavilionStore((state) => state.selectedEntryId);
   const selectedCategoryId = usePavilionStore((state) => state.selectedCategoryId);
   const searchQuery = usePavilionStore((state) => state.searchQuery);
@@ -112,8 +110,6 @@ export function PavilionScreenOwner() {
   const runtime = useMemo<PavilionRuntimeSnapshot>(() => {
     const city = currentCityId ? maps.citiesById[currentCityId] : citiesSorted[0] ?? null;
     const heartLaw = selectedHeartLawId ? maps.heartLawsById[selectedHeartLawId] : null;
-    const medicineWeak = medicineSignature.includes('"equippedItemId":null');
-    const weaponFloorClose = equipmentSignature.includes('"weapon":') && !equipmentSignature.includes('"weapon":null');
     const loadoutComplete = Boolean(selectedLoadoutId);
     const milestone = realm.name === 'Qi Condensation' && realm.substage >= 4
       ? 'Prepare Foundation Gate'
@@ -141,22 +137,24 @@ export function PavilionScreenOwner() {
     cityModules,
     citiesSorted,
     currentCityId,
-    equipmentSignature,
+    equipmentVersion,
     maps.citiesById,
     maps.heartLawsById,
-    medicineSignature,
+    medicineWeak,
     pavilionSave.priorLifeAnnotations,
+    pouchVersion,
     realm.name,
     realm.substage,
     selectedHeartLawId,
     selectedLoadoutId,
     selectedPath,
+    weaponFloorClose,
   ]);
 
   const manifest = rawContent?.pavilion_records ?? null;
   const surface = useMemo(() => {
     if (!manifest) return null;
-    return buildPavilionSurface({
+    return time(PERF_LABELS.surfacePavilion, () => buildPavilionSurface({
       mode,
       manifest,
       content: rawContent,
@@ -164,14 +162,16 @@ export function PavilionScreenOwner() {
       runtime,
       contentVersion,
       jadeSlipEntryId,
-    });
+    }));
   }, [contentVersion, jadeSlipEntryId, manifest, mode, pavilionSave, rawContent, runtime]);
 
   if (!surface) {
     return (
+      <PerfProfiler id={PERF_LABELS.renderPavilionScreenOwner}>
       <section className="pavilionExact pavilionExact--loading" data-testid="pavilion-exact-page">
         <div className="pavilionExact__loading">Consulting the Records...</div>
       </section>
+      </PerfProfiler>
     );
   }
 
@@ -193,6 +193,7 @@ export function PavilionScreenOwner() {
   };
 
   return (
+    <PerfProfiler id={PERF_LABELS.renderPavilionScreenOwner}>
     <PavilionExactScreen
       surface={surface}
       searchInputRef={searchRef}
@@ -204,5 +205,6 @@ export function PavilionScreenOwner() {
       onOpenJadeSlip={openJadeSlip}
       onCloseJadeSlip={closeJadeSlip}
     />
+    </PerfProfiler>
   );
 }

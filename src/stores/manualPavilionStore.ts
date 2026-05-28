@@ -23,6 +23,7 @@ import { useContentStore } from "./contentStore.js";
 import { useInventoryStore } from "./inventoryStore.js";
 import { useTechCollectionStore } from "./techCollectionStore.js";
 import { useManualSatchelStore } from "./manualSatchelStore.js";
+import { bumpVersion } from "./versionCounters.js";
 
 export type ManualPurchaseResult =
   | { ok: false; reason: string }
@@ -57,6 +58,8 @@ export type ManualPurchaseResult =
     };
 
 interface ManualPavilionStoreState extends ManualPavilionSaveState {
+  stockVersion: number;
+  pavilionVersionByCityId: Record<string, number>;
   ensureStock: (pavilionId: string, now?: number) => void;
   refreshStock: (
     pavilionId: string,
@@ -118,9 +121,19 @@ function manualIdForSlot(slot: PavilionStockSlot): string {
   return `${slot.techniqueId}:${slot.grade}:${slot.rarity}:manual`;
 }
 
+function bumpPavilionVersion(state: ManualPavilionStoreState, pavilionId: string) {
+  state.stockVersion = bumpVersion(state.stockVersion);
+  const cityId = useContentStore.getState().maps.pavilionsById[pavilionId]?.cityId;
+  if (cityId) {
+    state.pavilionVersionByCityId[cityId] = bumpVersion(state.pavilionVersionByCityId[cityId]);
+  }
+}
+
 export const useManualPavilionStore = create<ManualPavilionStoreState>()(
   immer((set, get) => ({
     stockByPavilionId: {},
+    stockVersion: 0,
+    pavilionVersionByCityId: {},
     isPurchasing: false,
     lastError: null,
 
@@ -134,6 +147,7 @@ export const useManualPavilionStore = create<ManualPavilionStoreState>()(
       });
       set((state) => {
         state.stockByPavilionId[pavilionId] = stock;
+        bumpPavilionVersion(state, pavilionId);
       });
     },
 
@@ -175,6 +189,7 @@ export const useManualPavilionStore = create<ManualPavilionStoreState>()(
       });
       set((state) => {
         state.stockByPavilionId[pavilionId] = refreshed;
+        bumpPavilionVersion(state, pavilionId);
       });
       GameEvents.emit({
         type: "pavilion/refresh_confirmed",
@@ -249,6 +264,7 @@ export const useManualPavilionStore = create<ManualPavilionStoreState>()(
         set((state) => {
           state.lastError = reason;
           state.isPurchasing = false;
+          state.stockVersion = bumpVersion(state.stockVersion);
         });
         emitFailure(reason);
         return { ok: false, reason };
@@ -318,6 +334,7 @@ export const useManualPavilionStore = create<ManualPavilionStoreState>()(
       set((state) => {
         state.isPurchasing = true;
         state.lastError = null;
+        state.stockVersion = bumpVersion(state.stockVersion);
       });
 
       const now = Date.now();
@@ -416,6 +433,7 @@ export const useManualPavilionStore = create<ManualPavilionStoreState>()(
         }
         state.isPurchasing = false;
         state.lastError = null;
+        bumpPavilionVersion(state, pavilionId);
       });
 
       GameEvents.emit({
@@ -443,11 +461,19 @@ export const useManualPavilionStore = create<ManualPavilionStoreState>()(
         state.stockByPavilionId = cloned;
         state.isPurchasing = false;
         state.lastError = null;
+        state.stockVersion = bumpVersion(state.stockVersion);
+        state.pavilionVersionByCityId = {};
       });
     },
 
     hardReset: () => {
-      set({ stockByPavilionId: {}, isPurchasing: false, lastError: null });
+      set({
+        stockByPavilionId: {},
+        stockVersion: 0,
+        pavilionVersionByCityId: {},
+        isPurchasing: false,
+        lastError: null,
+      });
     },
   })),
 );

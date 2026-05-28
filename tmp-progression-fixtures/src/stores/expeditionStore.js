@@ -12,6 +12,7 @@ import { rollWithPity } from '../services/economy/pity.js';
 import { useUIStore } from './uiStore.js';
 import { getExpeditionBountyCreditCityId } from '../utils/bountyRouting.js';
 import { GameEvents } from '../services/events/GameEvents.js';
+import { bumpVersion } from './versionCounters.js';
 function mergeCurrency(target, source) {
     ['gold', 'spiritStones', 'merit'].forEach((key) => {
         const value = source[key];
@@ -326,6 +327,7 @@ export const useExpeditionStore = create()(immer((set, get) => ({
     slots: 1,
     active: [],
     rareProgressByKey: {},
+    expeditionVersion: 0,
     setSlots: (slots) => {
         const nextSlots = Number.isFinite(slots) ? Math.max(1, Math.floor(slots)) : 1;
         if (nextSlots === get().slots)
@@ -333,6 +335,7 @@ export const useExpeditionStore = create()(immer((set, get) => ({
         set((state) => {
             state.slots = nextSlots;
             state.active = state.active.filter((run) => run.slotIndex < nextSlots);
+            state.expeditionVersion = bumpVersion(state.expeditionVersion);
         });
     },
     hydrate: (slice, now = Date.now()) => {
@@ -347,6 +350,7 @@ export const useExpeditionStore = create()(immer((set, get) => ({
             state.slots = nextSlots;
             state.active = nextActive;
             state.rareProgressByKey = sanitizeRareProgressByKey(slice?.rareProgressByKey);
+            state.expeditionVersion = bumpVersion(state.expeditionVersion);
         });
     },
     start: (slotIndex, typeId, durationId, cityId, cityIndex) => {
@@ -375,6 +379,7 @@ export const useExpeditionStore = create()(immer((set, get) => ({
         };
         set((state) => {
             state.active.push(run);
+            state.expeditionVersion = bumpVersion(state.expeditionVersion);
         });
         GameEvents.emit({
             type: 'expeditions/started',
@@ -390,12 +395,16 @@ export const useExpeditionStore = create()(immer((set, get) => ({
         return true;
     },
     tick: (now) => {
+        const hasReadyTransition = get().active.some((run) => run.status === 'running' && now >= run.endsAt);
+        if (!hasReadyTransition)
+            return;
         set((state) => {
             state.active.forEach((run) => {
                 if (run.status === 'running' && now >= run.endsAt) {
                     run.status = 'complete';
                 }
             });
+            state.expeditionVersion = bumpVersion(state.expeditionVersion);
         });
     },
     claim: (slotIndex) => {
@@ -484,6 +493,7 @@ export const useExpeditionStore = create()(immer((set, get) => ({
             if (pityCap > 1) {
                 state.rareProgressByKey[progressKey] = Math.min(Math.max(0, nextFailures), Math.max(0, pityCap - 1));
             }
+            state.expeditionVersion = bumpVersion(state.expeditionVersion);
         });
         GameEvents.emit({
             type: 'expeditions/claimed',

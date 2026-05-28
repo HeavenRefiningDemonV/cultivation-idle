@@ -65,8 +65,11 @@ function getMasteryProgress(xp: number) {
 }
 
 export function TechniquesPanel() {
-  const { loadouts, selectedLoadoutId, setSelectedLoadout, setAiProfile, equipTechnique } =
-    useTechniqueStore();
+  const loadouts = useTechniqueStore((state) => state.loadouts);
+  const selectedLoadoutId = useTechniqueStore((state) => state.selectedLoadoutId);
+  const setSelectedLoadout = useTechniqueStore((state) => state.setSelectedLoadout);
+  const setAiProfile = useTechniqueStore((state) => state.setAiProfile);
+  const equipTechnique = useTechniqueStore((state) => state.equipTechnique);
   const unlockedTechs = useTechCollectionStore((state) => state.unlockedTechs);
   const ensureTraits = useTechCollectionStore((state) => state.ensureTraits);
   const rerollTraits = useTechCollectionStore((state) => state.rerollTraits);

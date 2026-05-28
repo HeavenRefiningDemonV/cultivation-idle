@@ -1,5 +1,6 @@
 import { contentUrl } from './contentPaths.js';
 import { RUNTIME_CONTENT_DIR, RUNTIME_CONTENT_FILE_BY_KEY } from './runtimeContentManifest.js';
+import { PERF_LABELS, timeAsync } from '../services/performance/index.js';
 export class ContentLoadError extends Error {
     phase;
     fileName;
@@ -40,7 +41,7 @@ export async function fetchJson(url) {
 async function loadFile(fileName) {
     const url = contentUrl(fileName);
     try {
-        return await fetchJson(url);
+        return await timeAsync(`ci:content:loadFile:${fileName}`, () => fetchJson(url));
     }
     catch (error) {
         if (error instanceof ContentLoadError) {
@@ -65,10 +66,12 @@ async function loadFile(fileName) {
     }
 }
 export async function loadAllContent() {
-    const files = RUNTIME_CONTENT_FILE_BY_KEY;
-    const entries = await Promise.all(Object.entries(files).map(async ([key, fileName]) => {
-        const data = await loadFile(fileName);
-        return [key, data];
-    }));
-    return Object.fromEntries(entries);
+    return await timeAsync(PERF_LABELS.contentLoadAll, async () => {
+        const files = RUNTIME_CONTENT_FILE_BY_KEY;
+        const entries = await Promise.all(Object.entries(files).map(async ([key, fileName]) => {
+            const data = await loadFile(fileName);
+            return [key, data];
+        }));
+        return Object.fromEntries(entries);
+    });
 }

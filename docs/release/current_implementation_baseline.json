@@ -1,16 +1,35 @@
 {
   "schemaVersion": "implementation-baseline-v1",
-  "generatedAt": "2026-05-25T15:25:41.230Z",
+  "generatedAt": "2026-05-28T12:54:47.678Z",
   "cwd": "C:\\Users\\abdul\\Desktop\\cultivation-idle",
   "packageName": "cultivation-idle",
   "packageVersion": "0.0.0",
   "nodeVersion": "v24.14.0",
   "npmVersion": "11.9.0",
   "git": {
-    "branch": "Latest",
+    "branch": "codex/perf-packet-3-selector-surface-cleanup",
     "dirty": true,
     "statusPreview": [
-      "M docs/release/runtime_content_manifest.md"
+      "M docs/release/build_warning_inventory.md",
+      " M docs/release/current_implementation_baseline.json",
+      " M docs/release/current_implementation_baseline.md",
+      " M docs/release/go_no_go_checklist.md",
+      " M docs/release/known_issues.md",
+      " M docs/release/p4_prestige_runtime_effect_audit.json",
+      " M docs/release/p4_prestige_runtime_effect_audit.md",
+      " M docs/release/performance_smoke_checklist.md",
+      " M docs/release/release_handoff_bundle.md",
+      " M docs/release/runtime_content_manifest.md",
+      " M docs/release/signoff_sheet.md",
+      " M package.json",
+      " M src/components/GameLayout.tsx",
+      " M src/components/Header.tsx",
+      " M src/components/Sidebar.tsx",
+      " M src/components/TechniquePanel.tsx",
+      " M src/components/TechniquesPanel.tsx",
+      " M src/components/combat/CombatMinibar.tsx",
+      " M src/components/modals/PerkSelectionModal.tsx",
+      " M src/components/modals/WorldBuildingModal.tsx"
     ]
   },
   "checks": [
@@ -120,7 +139,7 @@
       "id": "test_sources",
       "title": "Test sources",
       "status": "pass",
-      "summary": "680 TypeScript test source files found under tests/.",
+      "summary": "698 TypeScript test source files found under tests/.",
       "evidence": [
         "tests/**/*.ts"
       ]

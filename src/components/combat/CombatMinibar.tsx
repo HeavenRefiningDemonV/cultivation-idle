@@ -7,6 +7,7 @@ import { useGameStore } from '../../stores/gameStore.js';
 import { useUIStore, type WorldBuildingKey } from '../../stores/uiStore.js';
 import { isCombatModule } from '../../systems/world/openWorldModule.js';
 import { computeCombatSafety, formatSeconds, getCooldownProgress, getNextActionTimerMs, hpPercent } from '../../systems/combat/minibarModel.js';
+import { buildCombatViewModel } from '../../systems/combat/combatViewModel.js';
 import { formatNumber } from '../../utils/numbers.js';
 import { AI_PROFILE_OPTIONS } from '../../systems/combat/aiProfiles.js';
 import { MedicinePouchStrip } from './MedicinePouchStrip.js';
@@ -94,8 +95,9 @@ function CombatMinibarContent({
   const lastAttackTime = useCombatStore((state) => state.lastAttackTime);
   const lastEnemyAttackTime = useCombatStore((state) => state.lastEnemyAttackTime);
   const isBoss = useCombatStore((state) => state.isBoss);
-  const combatLog = useCombatStore((state) => state.combatLog);
-  const techniqueLog = useCombatStore((state) => state.techniqueLog);
+  const combatSessionVersion = useCombatStore((state) => state.combatSessionVersion);
+  const combatViewVersion = useCombatStore((state) => state.combatViewVersion);
+  const combatResultVersion = useCombatStore((state) => state.combatResultVersion);
   const combatShield = useCombatStore((state) => state.combatShield);
   const enemyMechanics = useCombatStore((state) => state.enemyMechanics);
   const activeAura = useCombatStore((state) => state.activeAura);
@@ -118,6 +120,15 @@ function CombatMinibarContent({
     return () => window.clearInterval(handle);
   }, []);
 
+  const combatView = useMemo(
+    () => buildCombatViewModel(useCombatStore.getState(), activity?.type ?? null, {
+      logCount: 1,
+      techniqueLogCount: 1,
+      eventCount: 1,
+    }),
+    [activity?.type, combatSessionVersion, combatViewVersion, combatResultVersion],
+  );
+
   const playerHpPct = hpPercent(playerHP, playerMaxHP);
   const enemyHpPct = hpPercent(enemyHP, enemyMaxHP);
 
@@ -127,8 +138,8 @@ function CombatMinibarContent({
   const enemyProgress = getCooldownProgress(now, lastEnemyAttackTime, ENEMY_ATTACK_COOLDOWN);
 
   const lastLogEntry: LogEntry | null = useMemo(() => {
-    const combatEntry = combatLog[combatLog.length - 1];
-    const techEntry = techniqueLog[techniqueLog.length - 1];
+    const combatEntry = combatView.recentLogs[combatView.recentLogs.length - 1];
+    const techEntry = combatView.recentTechniqueLogs[combatView.recentTechniqueLogs.length - 1];
     const combatIsLong = combatEntry ? combatEntry.text.length > 60 : false;
 
     const combatLogEntry: LogEntry | null = combatEntry
@@ -142,7 +153,7 @@ function CombatMinibarContent({
       return techLog;
     }
     return combatLogEntry;
-  }, [combatLog, techniqueLog]);
+  }, [combatView.recentLogs, combatView.recentTechniqueLogs]);
 
   const activityLabel = formatActivityLabel(activity?.type);
 

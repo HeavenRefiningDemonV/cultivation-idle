@@ -1,0 +1,290 @@
+Realm
+Qi Condensation
+Stage 1
+Qi
+3.57K
+Cultivation Rate
+64.75 / s
+Stability
+0%
+Foreground
+Idle
+Next Milestone
+Breakthrough
+Need
+Qi Cap
+100
+Action
+Break Through
+Breakthrough Ready
+Dao
+Path
+Heaven
+Spirit Root
+Fire / Mortal
+Heart Law
+No Heart Law selected
+Verse
+Chapter 1
+Breath / Focus
+Balanced
+Breakthrough
+Ready
+BREAKTHROUGH READINESS
+Qi and gate requirements are ready.
+Qi
+Ready
+Realm edge
+Reached
+Gate item
+Not needed now
+Qi 3.57K / 100
++64.75/s
+Break Through
+Start Cultivation
+Status
+Cultivation
+World
+Inventory
+Techniques
+Records
+Prestige
+Settings
+Begin Your New Life
+
+Choose your path, scripture, and initial breath focus before cultivation begins.
+
+1 · Life Path
+2 · Heart Law
+3 · Breath Focus
+Locked Path: Heaven
+
+Fast cultivation and technique-led pressure. Heaven converts qi tempo into precise offensive windows, but its survival floor is thinner and greed is punished.
+
+precision_pressure
+Breath: Balanced
+Choose the sentence your soul will repeat when the Gate presses down.
+
+A path points forward. A Heart Law keeps the breath from scattering.
+
+AVAILABLE
+Ember Thread Sutra
+Burst
+Strong (+12%)
+Role: Decisive windows and pressure spikes.
+Fire
+Flame
+Starter
+Available
+Starter scripture available immediately.
+AVAILABLE
+Iron Intent Scripture
+Burst
+Weak (minor penalty)
+Role: Decisive windows and pressure spikes.
+Metal
+Weapon
+Starter
+Available
+Starter scripture available immediately.
+CHOSEN FOR THIS LIFE
+Quiet Breath Method
+Circulation
+Neutral
+Role: Smooth cadence and flow control.
+Neutral
+Breath
+Starter
+Chosen for This Life
+Chosen for this life.
+AVAILABLE
+River Mirror Art
+Endurance
+Weak (minor penalty)
+Role: Long-fight composure and sustain.
+Water
+Mirror
+Starter
+Available
+Starter scripture available immediately.
+AVAILABLE
+Stone Root Tempering
+Stability
+Weak (minor penalty)
+Role: Defensive discipline and risk control.
+Earth
+Body
+Starter
+Available
+Starter scripture available immediately.
+AVAILABLE
+Verdant Pulse Canon
+Endurance
+Weak (minor penalty)
+Role: Long-fight composure and sustain.
+Wood
+Life
+Starter
+Available
+Starter scripture available immediately.
+LOCKED SCRIPTURE
+Black Tortoise Body Codex
+Stability
+Weak (minor penalty)
+Role: Defensive discipline and risk control.
+Earth
+Water
+Body
+Tier 1
+Locked Scripture
+Locked until Unlock Heart Laws (Tier 1) (25 AP).
+LOCKED SCRIPTURE
+Heaven Flame Manual
+Burst
+Strong (+12%)
+Role: Decisive windows and pressure spikes.
+Fire
+Heaven
+Tier 1
+Locked Scripture
+Locked until Unlock Heart Laws (Tier 1) (25 AP).
+LOCKED SCRIPTURE
+Stormstep Diagram
+Burst
+Neutral
+Role: Decisive windows and pressure spikes.
+Wind
+Lightning
+Movement
+Tier 1
+Locked Scripture
+Locked until Unlock Heart Laws (Tier 1) (25 AP).
+LOCKED SCRIPTURE
+Sword-River Heart Law
+Insight
+Weak (minor penalty)
+Role: Precision setup and timing clarity.
+Metal
+Water
+Sword
+Tier 1
+Locked Scripture
+Locked until Unlock Heart Laws (Tier 1) (25 AP).
+LOCKED SCRIPTURE
+Bloodseal Scripture
+Burst
+Strong (+12%)
+Role: Decisive windows and pressure spikes.
+Blood
+Demon
+Tier 2
+Locked Scripture
+Locked until Unlock Heart Laws (Tier 2) (80 AP).
+LOCKED SCRIPTURE
+Moment-Thread Chronicle
+Insight
+Weak (minor penalty)
+Role: Precision setup and timing clarity.
+Time
+Mystic
+Tier 2
+Locked Scripture
+Locked until Unlock Heart Laws (Tier 2) (80 AP).
+LOCKED SCRIPTURE
+Soul Lantern Sutra
+Insight
+Weak (minor penalty)
+Role: Precision setup and timing clarity.
+Soul
+Mystic
+Tier 2
+Locked Scripture
+Locked until Unlock Heart Laws (Tier 2) (80 AP).
+LOCKED SCRIPTURE
+Void Palm Record
+Burst
+Weak (minor penalty)
+Role: Decisive windows and pressure spikes.
+Void
+Space
+Tier 2
+Locked Scripture
+Locked until Unlock Heart Laws (Tier 2) (80 AP).
+LOCKED SCRIPTURE
+Earth Dragon Spine Manual
+Breakthrough
+Weak (minor penalty)
+Role: Milestone pushes and peak transitions.
+Earth
+Metal
+Artisan
+Tier 3
+Locked Scripture
+Locked until Unlock Heart Laws (Tier 3) (220 AP).
+LOCKED SCRIPTURE
+Nine Heavens Scripture
+Breakthrough
+Strong (+12%)
+Role: Milestone pushes and peak transitions.
+Heaven
+Light
+Tier 3
+Locked Scripture
+Locked until Unlock Heart Laws (Tier 3) (220 AP).
+LOCKED SCRIPTURE
+Star-Core Refinement Law
+Circulation
+Neutral
+Role: Smooth cadence and flow control.
+Astral
+Star
+Tier 3
+Locked Scripture
+Locked until Unlock Heart Laws (Tier 3) (220 AP).
+LOCKED SCRIPTURE
+Unbroken Will Method
+Stability
+Weak (minor penalty)
+Role: Defensive discipline and risk control.
+Martial
+Will
+Tier 3
+Locked Scripture
+Locked until Unlock Heart Laws (Tier 3) (220 AP).
+
+SCRIPTURE DETAIL
+
+Quiet Breath Method
+
+Circulation • Starter • Steady
+
+Breath-circulation scripture.
+
+Role: Smooth cadence and flow control.
+
+Resonance: Neutral — No resonance bonus needed.
+INNER SCRIPTURE ALTAR
+Quiet Breath Method
+Breath-circulation scripture.
+Neutral
+Breath
+
+A doctrine of turning tides and unbroken inner rhythm.
+
+Best when you want smooth cultivation flow and consistent momentum.
+
+SIGNATURE
+
+CultivateQiMult +10%
+
+CultivateQiMult +10%
+OfflineEfficiencyAdd +5%
+StabilityCostMult -3%
+
+Chosen for this life.
+
+Chosen for This Life
+
+This is doctrine preview only; verse progress begins after life-start is confirmed.
+
+Next

@@ -1,0 +1,233 @@
+{
+  "overlayCount": 0,
+  "logs": [
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"
+    },
+    {
+      "type": "log",
+      "text": "[App] Initializing game..."
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Initializing game..."
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Store dependencies wired"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Prestige store initialized"
+    },
+    {
+      "type": "log",
+      "text": "[SpiritRoot] Generated: Mortal fire (63% purity)"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Generated initial spirit root"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] No save found, starting new game"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Added starter items to inventory"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Starting game loop..."
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Game loop started"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Game initialized successfully"
+    },
+    {
+      "type": "log",
+      "text": "[App] Game initialized successfully"
+    },
+    {
+      "type": "log",
+      "text": "[App] Initializing game..."
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Initializing game..."
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Store dependencies wired"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Prestige store initialized"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] No save found, starting new game"
+    },
+    {
+      "type": "warning",
+      "text": "[GameLoop] Already running"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Game initialized successfully"
+    },
+    {
+      "type": "log",
+      "text": "[App] Game initialized successfully"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Technique counts by path: Heaven=20, Earth=20, Martial=20"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=heaven: 6"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=earth: 6"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=martial: 6"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=heaven: 7"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=earth: 9"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=martial: 8"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=heaven: 9"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=earth: 9"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=martial: 10"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=3 (city_lotusford) path=heaven: 10"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=3 (city_lotusford) path=earth: 10"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=3 (city_lotusford) path=martial: 10"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=heaven: 10"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=earth: 10"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=martial: 10"
+    },
+    {
+      "type": "info",
+      "text": "[Content] Loaded 5 cities, 60 techniques (H/E/M: 20/20/20)"
+    },
+    {
+      "type": "info",
+      "text": "[Content] Prestige upgrades: 27"
+    },
+    {
+      "type": "log",
+      "text": "[SaveLoad] Saving game..."
+    },
+    {
+      "type": "log",
+      "text": "[SaveLoad] Game saved successfully at 28/05/2026, 16:08:15"
+    },
+    {
+      "type": "requestfailed",
+      "text": "http://127.0.0.1:5173/audio/ui_click_primary.ogg net::ERR_ABORTED"
+    },
+    {
+      "type": "script",
+      "text": "clicked Skip intro"
+    },
+    {
+      "type": "script",
+      "text": "clicked Select heaven path"
+    },
+    {
+      "type": "script",
+      "text": "clicked heart law selectable 0"
+    },
+    {
+      "type": "script",
+      "text": "failed heart law selectable 1: locator.click: Timeout 3000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button').filter({ hasText: /Select|Choose|Begin|Confirm/ }).first()\u001b[22m\n"
+    },
+    {
+      "type": "script",
+      "text": "failed generic first visible button 1: locator.click: Timeout 3000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.lifeStartWizardOverlay button').first()\u001b[22m\n"
+    },
+    {
+      "type": "script",
+      "text": "failed nav Status: locator.click: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button').filter({ hasText: /^Status$/ }).first()\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"button\" class=\"bottomNavDock__button bottomTabBarButton button-standard uiNoShift bottomTabBarButton\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <div class=\"inkPanel inkPanel--heartlaw inkPanel--"
+    },
+    {
+      "type": "script",
+      "text": "failed nav Cultivation: locator.click: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button').filter({ hasText: /^Cultivation$/ }).first()\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"button\" aria-current=\"page\" class=\"bottomNavDock__button bottomNavDock__button--active bottomTabBarButton bottomTabBarButton--active button-standard uiNoShift bottomTabBarButton\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - "
+    },
+    {
+      "type": "script",
+      "text": "failed nav World: locator.click: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button').filter({ hasText: /^World$/ }).first()\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"button\" class=\"bottomNavDock__button bottomTabBarButton button-standard uiNoShift bottomTabBarButton\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <div class=\"inkPanel inkPanel--heartlaw inkPanel--s"
+    },
+    {
+      "type": "script",
+      "text": "failed nav Inventory: locator.click: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button').filter({ hasText: /^Inventory$/ }).first()\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"button\" class=\"bottomNavDock__button bottomTabBarButton button-standard uiNoShift bottomTabBarButton\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <div class=\"inkPanel inkPanel--heartlaw inkPane"
+    },
+    {
+      "type": "script",
+      "text": "failed nav Techniques: locator.click: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button').filter({ hasText: /^Techniques$/ }).first()\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"button\" class=\"bottomNavDock__button bottomTabBarButton button-standard uiNoShift bottomTabBarButton\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <div class=\"inkPanel inkPanel--heartlaw inkPan"
+    },
+    {
+      "type": "script",
+      "text": "failed nav Records: locator.click: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button').filter({ hasText: /^Records$/ }).first()\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"button\" class=\"bottomNavDock__button bottomTabBarButton button-standard uiNoShift bottomTabBarButton\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <div class=\"inkPanel inkPanel--heartlaw inkPanel-"
+    },
+    {
+      "type": "script",
+      "text": "failed nav Prestige: locator.click: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button').filter({ hasText: /^Prestige$/ }).first()\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"button\" class=\"bottomNavDock__button bottomTabBarButton button-standard uiNoShift bottomTabBarButton\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <div class=\"inkPanel inkPanel--heartlaw inkPanel"
+    },
+    {
+      "type": "script",
+      "text": "failed nav Settings: locator.click: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button').filter({ hasText: /^Settings$/ }).first()\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"button\" class=\"bottomNavDock__button bottomTabBarButton button-standard uiNoShift bottomTabBarButton\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <div class=\"inkPanel inkPanel--heartlaw inkPanel"
+    }
+  ]
+}

@@ -3,6 +3,8 @@ import type { GameTab } from '../stores/uiStore.js';
 import { useUIStore } from '../stores/uiStore.js';
 import { useGameStore } from '../stores/gameStore.js';
 import { formatNumber } from '../utils/numbers.js';
+import { PERF_LABELS } from '../services/performance/index.js';
+import { PerfProfiler, useRenderCounter } from '../services/performance/perfReact.js';
 import './Sidebar.scss';
 
 interface NavButtonProps {
@@ -27,10 +29,14 @@ function NavButton({ label, active, onClick }: NavButtonProps) {
  * Sidebar navigation with ink wash theme
  */
 export function Sidebar() {
-  const { activeTab, setActiveTab, showPrestige } = useUIStore();
-  const { totalAuras } = useGameStore();
+  useRenderCounter(PERF_LABELS.renderSidebar);
+  const activeTab = useUIStore((state) => state.activeTab);
+  const setActiveTab = useUIStore((state) => state.setActiveTab);
+  const showPrestige = useUIStore((state) => state.showPrestige);
+  const totalAuras = useGameStore((state) => state.totalAuras);
 
   return (
+    <PerfProfiler id={PERF_LABELS.renderSidebar}>
     <aside className='sidebar'>
       <nav className='sidebarNavList'>
         <NavButton
@@ -83,5 +89,6 @@ export function Sidebar() {
         </button>
       </div>
     </aside>
+    </PerfProfiler>
   );
 }

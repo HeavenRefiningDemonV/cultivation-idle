@@ -1,0 +1,257 @@
+REALM
+Qi Condensation
+Stage 1/9
+Pinewind Hamlet
+PATH
+Heaven
+HEART LAW
+Ember Thread Sutra
+Wood
+Common · 55% purity
+Resonant · 2.17x
+FOCUS
+Balanced
+BREATH
+Balanced
+NEXT MAJOR GOAL
+Reach Foundation Establishment
+
+Advance to substage 9 before the gate opens.
+
+MAIN BOTTLENECK
+Realm edge not reached
+Refine Qi until the next gate threshold opens.
+Refine weapon
+QI
+3.63K
+QI / S
+90.94 / s
+STABILITY
+0/100
+HP
+173.6
+COMBAT STRENGTH
+226.57
+ATTACK
+28.21
+DEFENSE
+9.76
+CRIT RATE
+15%
+FOREGROUND
+Idle
+MILESTONE
+Preparing
+
+Advance to substage 9 before the gate opens.
+
+Qi Condensation
+Stage 1/9
+Novice's Clearing
+Viable — Apothecary route shows reserve pressure
+Reach Foundation Establishment
+Advance to substage 9 before the gate opens.
+Heaven
+No stable archetype profile detected yet.
+REALM STEP
+Qi Condensation
+Stage 1/9
+GATE READINESS
+Preparing
+Advance to substage 9 before the gate opens.
+NEXT MAJOR GOAL
+Reach Foundation Establishment
+Advance to substage 9 before the gate opens.
+MAIN GAP
+Realm edge not reached
+Realm edge not reached
+CITY
+Pinewind Hamlet
+Current city anchor for routes and services.
+CULTIVATION BASE
+QI / QI CAP
+3.63K / 100
+Current Qi against the next breakthrough threshold.
+Cultivation
+CULTIVATION RATE
+90.94 / s
+Live Qi gain rate.
+Cultivation
+BREAKTHROUGH STATE
+Preparing
+Advance to substage 9 before the gate opens.
+Readiness
+STABILITY
+0/100
+Inner stability reserve available for cultivation posture.
+Heart Law
+FOCUS / BREATH
+Balanced / Balanced
+Current doctrine posture for Qi, stability, and combat support.
+Identity & Doctrine
+HEART LAW CHAPTER
+Ember Thread Sutra
+Verse I • Chapter 1
+Heart Law
+CURRENT CULTIVATION ACTIVITY
+Idle
+Cultivation is not the foreground activity right now.
+Current Work
+MISSION REQUIREMENTS
+REALM EDGE NOT REACHED
+Primary blocker
+Advance to substage 9 before the gate opens.
+Refine weapon
+CURRENT STATE
+Priority 1
+Blocked
+Apothecary
+Viable — Apothecary route shows reserve pressure
+POUCH FIT
+Priority 1
+Apothecary
+bad
+Restock healing
+POUCH FIT
+Priority 2
+bad
+Apothecary
+bad
+LOADOUT COVERAGE
+Priority 1
+Techniques
+Balanced AI is under-supported: the current loadout lacks both survival and boss-pressure tools.
+LOADOUT WARNING
+Priority 1
+Techniques
+Balanced AI is under-supported: the current loadout lacks both survival and boss-pressure tools.
+Study doctrine
+TOP WARNING
+Priority 2
+Balanced AI is under-supported: the current loadout lacks both survival and boss-pressure tools.
+Techniques
+Balanced AI is under-supported: the current loadout lacks both survival and boss-pressure tools.
+BEST IMPROVEMENTS
+REFINE WEAPON
+Cultivation
+Refine Qi until the next gate threshold opens.
+Refine weapon
+OPEN GATE TRIAL
+Gate Trial
+Inspect the active gate threshold.
+Open Gate Trial
+RESTOCK HEALING
+Apothecary
+Consumable shortages should route to Apothecary Buy first when the current city stocks them and the cap can still cover the gap.
+Restock healing
+SAFETY NET
+STATE
+Too Early
+Not at final substage yet.
+Safety Net
+PROGRESS
+Safety Net progress: 0 / 3 eligible defeats
+Threshold: 3
+Safety Net
+COST
+Cost: 10 Merit / 0 Spirit Stones
+Too Early
+Safety Net
+OPEN GATE TRIAL
+Gate Trial
+Open the gate surface for this gate requirement.
+Open Gate Trial
+IDENTITY & DOCTRINE
+Wood - Common
+Wood
+Common · 55% purity
+Resonant · 2.17x
+RESONANCE
+Resonant
+FOCUS
+Balanced
+PATH
+Heaven
+HEART LAW
+Ember Thread Sutra
+BREATH
+Balanced
+CITY ANCHOR
+Pinewind Hamlet
+CURRENT WORK
+STATE
+Idle
+COMBAT
+Idle
+BOUNTY
+None tracked
+EXPEDITIONS
+0 active / 0 claimable / 1 idle
+FOREGROUND
+Idle
+No foreground activity is running; choose a route from Best Improvements when ready.
+EXPEDITIONS
+0 active / 0 claimable / 1 idle
+Use idle expedition slots for background materials.
+BUILD & PREPARATION
+TOP WARNING
+Balanced AI is under-supported: the current loadout lacks both survival and boss-pressure tools.
+Balanced AI is under-supported: the current loadout lacks both survival and boss-pressure tools.
+Refine weapon
+BUILD READINESS
+
+Unlocked technique slots without loadout coverage.
+
+PATH ALIGNMENT
+0%
+Build path alignment score.
+EMPTY SLOTS
+3
+Unlocked technique slots without loadout coverage.
+MASTERY FLOOR
+Met
+Met
+RANK FLOOR
+Met
+Met
+RUNE FLOOR
+Met
+Met
+POLICY FIT
+AI risky • Casting good
+AI risky • Casting good
+
+Top Gap
+Two or more unlocked technique slots are empty.
+
+PREPARATION RESERVES
+
+Merit
+reserve: 0 (below minimum)
+
+MERIT RESERVE
+0 (below minimum)
+Merit reserve: 0 (below minimum)
+SPIRIT STONES RESERVE
+0 (below minimum)
+Spirit Stones reserve: 0 (below minimum)
+POUCH
+Auto-use disabled • 0/3 slots filled
+Combat consumable auto-use and slots.
+POUCH FIT
+bad
+bad
+
+Top Warning
+Balanced AI is under-supported: the current loadout lacks both survival and boss-pressure tools.
+
+How calculated
+This ledger combines cultivation, gate readiness, build, preparation, current work, safety net, and recent route data.
+Status
+Cultivation
+World
+Inventory
+Techniques
+Records
+Prestige
+Settings

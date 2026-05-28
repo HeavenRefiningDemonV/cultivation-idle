@@ -52,6 +52,8 @@ import { initDaoImpressionEventBridge } from '../systems/daoImpressions/index.js
 import { initFailureReflectionEventBridge } from '../systems/failureReflection/index.js';
 import { initBreakthroughEchoEventBridge } from '../features/breakthroughEchoes/index.js';
 import { initCombatAftermathEventBridge } from '../features/combatAftermath/index.js';
+import { PERF_LABELS } from '../services/performance/index.js';
+import { PerfProfiler, useRenderCounter } from '../services/performance/perfReact.js';
 import './GameLayout.scss';
 
 /**
@@ -93,6 +95,7 @@ function TechniquesTab() {
  * Main game layout component
  */
 export function GameLayout() {
+  useRenderCounter(PERF_LABELS.renderGameLayout);
   useStoryTriggers();
   const activeTab = useUIStore((state) => state.activeTab);
   const showOfflineProgressModal = useUIStore((state) => state.showOfflineProgressModal);
@@ -271,49 +274,53 @@ export function GameLayout() {
 
   if (p5CloseoutFixture) {
     return (
-      <FxQualityProvider>
-        <P5CloseoutHarness fixture={p5CloseoutFixture} />
-      </FxQualityProvider>
+      <PerfProfiler id={PERF_LABELS.renderGameLayout}>
+        <FxQualityProvider>
+          <P5CloseoutHarness fixture={p5CloseoutFixture} />
+        </FxQualityProvider>
+      </PerfProfiler>
     );
   }
 
   return (
-    <FxQualityProvider>
-      <div className={rootClassNames}>
-        <AudioBindings />
-        {showLayoutBackgroundOverlay ? (
-        <div
-          className="gameLayoutBackgroundOverlay"
-          style={{ backgroundImage: `url(${layoutBackgroundOverride})` }}
-          aria-hidden
-        />
-        ) : null}
-        <div className="gameLayoutTextureOverlay" aria-hidden />
-        <div className={`gameLayoutContent ${isScrollable ? 'gameLayoutContent--scrollable' : ''}`}>
-          {renderContent()}
+    <PerfProfiler id={PERF_LABELS.renderGameLayout}>
+      <FxQualityProvider>
+        <div className={rootClassNames}>
+          <AudioBindings />
+          {showLayoutBackgroundOverlay ? (
+          <div
+            className="gameLayoutBackgroundOverlay"
+            style={{ backgroundImage: `url(${layoutBackgroundOverride})` }}
+            aria-hidden
+          />
+          ) : null}
+          <div className="gameLayoutTextureOverlay" aria-hidden />
+          <div className={`gameLayoutContent ${isScrollable ? 'gameLayoutContent--scrollable' : ''}`}>
+            {renderContent()}
+          </div>
+
+          {!apothecaryExactFixtureRouteEnabled && <BottomTabBar />}
+
+          {shouldShowOfflineProgress && <OfflineProgressModal />}
+          {showManualSatchelModal && !suppressExactCaptureChrome && <ManualSatchelModal />}
+          {showTechniqueLearnedModal && !suppressExactCaptureChrome && <TechniqueLearnedModal />}
+          {showWorldBuildingModal && <BuildingModalHost />}
+          {showCurrentChapterExhaustedModal && !suppressExactCaptureChrome && <CurrentChapterExhaustedModal />}
+          {showLifeSummaryModal && !suppressExactCaptureChrome && <LifeSummaryModal />}
+          {showMigrationIssuesModal && !suppressExactCaptureChrome && <MigrationIssuesModal />}
+          {showSystemStatusOverlay && activeTab !== 'cultivation' && !apothecaryExactModalOpen && !suppressExactCaptureChrome && <SystemStatusPanelOverlay />}
+          <CombatPresentationHost />
+          {!suppressExactCaptureChrome && <OnboardingPromptRuntime />}
+          {shouldShowLifeStartWizard && <LifeStartWizardModal />}
+          {!suppressExactCaptureChrome && activeStoryCutsceneId && <StoryCutsceneOverlay />}
+          {!suppressExactCaptureChrome && <CityArrivalBanner />}
+          {!suppressExactCaptureChrome && <OnboardingPromptHost />}
+          {!suppressExactCaptureChrome && <NotificationToasts />}
+          {showSectionCAuditHarness ? <SectionCAuditHarness /> : null}
+          {showPhase0CoreAuditHarness ? <Phase0CoreAuditHarness /> : null}
+          {showPhase6CombatAuditHarness ? <Phase6CombatAuditHarness /> : null}
         </div>
-
-        {!apothecaryExactFixtureRouteEnabled && <BottomTabBar />}
-
-        {shouldShowOfflineProgress && <OfflineProgressModal />}
-        {showManualSatchelModal && !suppressExactCaptureChrome && <ManualSatchelModal />}
-        {showTechniqueLearnedModal && !suppressExactCaptureChrome && <TechniqueLearnedModal />}
-        {showWorldBuildingModal && <BuildingModalHost />}
-        {showCurrentChapterExhaustedModal && !suppressExactCaptureChrome && <CurrentChapterExhaustedModal />}
-        {showLifeSummaryModal && !suppressExactCaptureChrome && <LifeSummaryModal />}
-        {showMigrationIssuesModal && !suppressExactCaptureChrome && <MigrationIssuesModal />}
-        {showSystemStatusOverlay && activeTab !== 'cultivation' && !apothecaryExactModalOpen && !suppressExactCaptureChrome && <SystemStatusPanelOverlay />}
-        <CombatPresentationHost />
-        {!suppressExactCaptureChrome && <OnboardingPromptRuntime />}
-        {shouldShowLifeStartWizard && <LifeStartWizardModal />}
-        {!suppressExactCaptureChrome && activeStoryCutsceneId && <StoryCutsceneOverlay />}
-        {!suppressExactCaptureChrome && <CityArrivalBanner />}
-        {!suppressExactCaptureChrome && <OnboardingPromptHost />}
-        {!suppressExactCaptureChrome && <NotificationToasts />}
-        {showSectionCAuditHarness ? <SectionCAuditHarness /> : null}
-        {showPhase0CoreAuditHarness ? <Phase0CoreAuditHarness /> : null}
-        {showPhase6CombatAuditHarness ? <Phase6CombatAuditHarness /> : null}
-      </div>
-    </FxQualityProvider>
+      </FxQualityProvider>
+    </PerfProfiler>
   );
 }

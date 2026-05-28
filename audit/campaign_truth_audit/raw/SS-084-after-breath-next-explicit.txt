@@ -1,0 +1,104 @@
+Realm
+Qi Condensation
+Stage 1
+Qi
+751.6
+Cultivation Rate
+69.91 / s
+Stability
+0%
+Foreground
+Idle
+Next Milestone
+Breakthrough
+Need
+Qi Cap
+100
+Action
+Break Through
+Breakthrough Ready
+Dao
+Path
+Heaven
+Spirit Root
+Water / Mortal
+Heart Law
+No Heart Law selected
+Verse
+Chapter 1
+Breath / Focus
+Balanced
+Breakthrough
+Ready
+BREAKTHROUGH READINESS
+Qi and gate requirements are ready.
+Qi
+Ready
+Realm edge
+Reached
+Gate item
+Not needed now
+Qi 751.6 / 100
++69.91/s
+Break Through
+Start Cultivation
+Status
+Cultivation
+World
+Inventory
+Techniques
+Records
+Prestige
+Settings
+Begin Your New Life
+
+Choose your path, scripture, and initial breath focus before cultivation begins.
+
+1 · Life Path
+2 · Heart Law
+3 · Breath Focus
+Locked Path: Heaven
+
+Fast cultivation and technique-led pressure. Heaven converts qi tempo into precise offensive windows, but its survival floor is thinner and greed is punished.
+
+precision_pressure
+Breath: Balanced
+Choose Breath Focus
+
+Select how this life will pace cultivation breath cycles.
+
+CHOSEN
+Balanced
+Neutral cycle. Steady Qi flow, steady comprehension, and steady stability.
+Best For: Cultivate, Recover
+Selected for this life
+DISCIPLINE
+Safe
+Controlled cycle. Slower Qi flow in exchange for better comprehension and better stability.
+Best For: Prepare Breakthrough, Recover
+Select focus
+DISCIPLINE
+Fast
+Aggressive cycle. Faster Qi flow in exchange for worse comprehension and worse stability.
+Best For: Push Fast, Cultivate
+Select focus
+
+BREATH DISCIPLINE
+
+Balanced
+
+Neutral cycle. Steady Qi flow, steady comprehension, and steady stability.
+
+Path: Heaven • Scripture: Ember Thread Sutra
+
+BEST FOR
+
+Cultivate
+Recover
+
+CAUTION
+
+Good default, but it will not specialize verse progress or short burst farming.
+
+Back
+Finish

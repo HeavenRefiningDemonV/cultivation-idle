@@ -7,6 +7,7 @@ import { randFloat } from '../utils/rng.js';
 import { useUIStore } from './uiStore.js';
 import { GameEvents } from '../services/events/GameEvents.js';
 import type { ManualGrade, TechRarity } from '../types/index.js';
+import { bumpVersion } from './versionCounters.js';
 import {
   buildTechniqueProgressionSnapshot,
   getMasteryMilestoneContract,
@@ -51,6 +52,8 @@ interface TechCollectionState {
   unlockedTechs: Record<string, TechniqueOwnedState>;
   fragments: Record<string, number>;
   rngSeed: number;
+  collectionVersion: number;
+  masteryVersion: number;
   hasTech: (techId: string) => boolean;
   ensureTechState: (techId: string) => TechniqueOwnedState;
   unlockTech: (techId: string, meta?: Partial<TechniqueOwnedState>) => void;
@@ -224,10 +227,12 @@ const createDefaultOwnedState = (): TechniqueOwnedState => ({
   favorite: false,
 });
 
-const createInitialState = (): Pick<TechCollectionState, 'unlockedTechs' | 'fragments' | 'rngSeed'> => ({
+const createInitialState = (): Pick<TechCollectionState, 'unlockedTechs' | 'fragments' | 'rngSeed' | 'collectionVersion' | 'masteryVersion'> => ({
   unlockedTechs: {},
   fragments: {},
   rngSeed: 123456789,
+  collectionVersion: 0,
+  masteryVersion: 0,
 });
 
 const RUNE_DUST_ITEM_ID = 'mat_rune_dust';
@@ -390,6 +395,7 @@ export const useTechCollectionStore = create<TechCollectionState>()(
       const normalized = normalizeTechEntry(techId);
       set((state) => {
         state.unlockedTechs[techId] = normalized;
+        state.collectionVersion = bumpVersion(state.collectionVersion);
       });
       get().ensureRunes(techId);
       return normalized;
@@ -407,6 +413,7 @@ export const useTechCollectionStore = create<TechCollectionState>()(
           favorite: existing?.favorite,
         });
         state.unlockedTechs[techId] = normalized;
+        state.collectionVersion = bumpVersion(state.collectionVersion);
       });
       get().ensureTraits(techId);
     },
@@ -417,6 +424,7 @@ export const useTechCollectionStore = create<TechCollectionState>()(
         const current = state.fragments[techId] ?? 0;
         const next = current + qty;
         state.fragments[techId] = next < 0 ? 0 : next;
+        state.collectionVersion = bumpVersion(state.collectionVersion);
       });
     },
 
@@ -434,6 +442,7 @@ export const useTechCollectionStore = create<TechCollectionState>()(
         const total = amount * (1 + masteryGainPct);
         entry.masteryXp += total;
         entry.lastCastAt = now;
+        state.masteryVersion = bumpVersion(state.masteryVersion);
       });
 
       const nextLevel = get().getMasteryLevel(techId);
@@ -456,30 +465,40 @@ export const useTechCollectionStore = create<TechCollectionState>()(
 
     setManualGrade: (techId, grade) => {
       set((state) => {
-        const entry = state.unlockedTechs[techId] ?? normalizeTechEntry(techId);
+        const existing = state.unlockedTechs[techId];
+        const entry = existing ?? normalizeTechEntry(techId);
         if (!isHigherGrade(entry.manualGrade, grade)) {
           state.unlockedTechs[techId] = entry;
+          if (!existing) {
+            state.collectionVersion = bumpVersion(state.collectionVersion);
+          }
           return;
         }
         state.unlockedTechs[techId] = normalizeTechEntry(techId, {
           ...entry,
           manualGrade: grade,
         });
+        state.collectionVersion = bumpVersion(state.collectionVersion);
       });
       get().ensureRunes(techId);
     },
 
     setRarityIfHigher: (techId, rarity) => {
       set((state) => {
-        const entry = state.unlockedTechs[techId] ?? normalizeTechEntry(techId);
+        const existing = state.unlockedTechs[techId];
+        const entry = existing ?? normalizeTechEntry(techId);
         if (!isHigherRarity(entry.rarity, rarity)) {
           state.unlockedTechs[techId] = entry;
+          if (!existing) {
+            state.collectionVersion = bumpVersion(state.collectionVersion);
+          }
           return;
         }
         state.unlockedTechs[techId] = normalizeTechEntry(techId, {
           ...entry,
           rarity,
         });
+        state.collectionVersion = bumpVersion(state.collectionVersion);
       });
     },
 
@@ -496,6 +515,7 @@ export const useTechCollectionStore = create<TechCollectionState>()(
         const targetXp = xpNeededForLevel(level);
         if (entry.masteryXp >= targetXp) return;
         entry.masteryXp = targetXp;
+        state.masteryVersion = bumpVersion(state.masteryVersion);
       });
     },
 
@@ -546,7 +566,12 @@ export const useTechCollectionStore = create<TechCollectionState>()(
         const entry = state.unlockedTechs[techId];
         if (!entry) return;
         const slots = getTechniqueEffectiveRuneSockets(entry.manualGrade);
-        entry.runes = normalizeRunes(entry.runes, slots);
+        const nextRunes = normalizeRunes(entry.runes, slots);
+        const changed = nextRunes.length !== entry.runes.length
+          || nextRunes.some((rune, index) => rune !== entry.runes[index]);
+        if (!changed) return;
+        entry.runes = nextRunes;
+        state.collectionVersion = bumpVersion(state.collectionVersion);
       });
     },
 
@@ -578,6 +603,7 @@ export const useTechCollectionStore = create<TechCollectionState>()(
         if (!target) return;
         target.runes = normalizeRunes(target.runes, slots);
         target.runes[slotIndex] = runeItemId;
+        state.collectionVersion = bumpVersion(state.collectionVersion);
       });
 
       GameEvents.emit({
@@ -592,6 +618,7 @@ export const useTechCollectionStore = create<TechCollectionState>()(
         const entry = state.unlockedTechs[techId] ?? normalizeTechEntry(techId);
         entry.favorite = !entry.favorite;
         state.unlockedTechs[techId] = entry;
+        state.collectionVersion = bumpVersion(state.collectionVersion);
       });
     },
 
@@ -615,6 +642,7 @@ export const useTechCollectionStore = create<TechCollectionState>()(
         if (!target) return;
         target.runes = normalizeRunes(target.runes, slots);
         target.runes[slotIndex] = null;
+        state.collectionVersion = bumpVersion(state.collectionVersion);
       });
 
       GameEvents.emit({
@@ -703,7 +731,9 @@ export const useTechCollectionStore = create<TechCollectionState>()(
         if (!entry) return;
         const slots = get().getEffectiveTraitSlots(techId);
         if (slots <= 0) {
+          if (entry.traits.length === 0) return;
           entry.traits = [];
+          state.collectionVersion = bumpVersion(state.collectionVersion);
           return;
         }
 
@@ -711,6 +741,7 @@ export const useTechCollectionStore = create<TechCollectionState>()(
 
         if (entry.traits.length > slots) {
           entry.traits = entry.traits.slice(0, slots);
+          state.collectionVersion = bumpVersion(state.collectionVersion);
           return;
         }
 
@@ -719,6 +750,7 @@ export const useTechCollectionStore = create<TechCollectionState>()(
         const rolled = rollTraits(missing, state.rngSeed, existingIds);
         state.rngSeed = rolled.seed;
         entry.traits = [...entry.traits, ...rolled.traits];
+        state.collectionVersion = bumpVersion(state.collectionVersion);
       });
     },
 
@@ -777,6 +809,7 @@ export const useTechCollectionStore = create<TechCollectionState>()(
           ? [...next.traits.slice(0, lockIndex), lockedTrait!, ...next.traits.slice(lockIndex)]
           : next.traits;
         target.traits = traits.slice(0, slots);
+        state.collectionVersion = bumpVersion(state.collectionVersion);
       });
 
       GameEvents.emit({ type: 'techniques/trait_reroll_result', payload: { techniqueId: techId, ok: true } });
@@ -789,6 +822,7 @@ export const useTechCollectionStore = create<TechCollectionState>()(
         const entry = state.unlockedTechs[techId];
         if (!entry?.unlocked || !entry.traits?.length) return;
         let seed = state.rngSeed;
+        let changed = false;
         entry.traits = entry.traits.map((trait) => {
           const def = getTraitDefinition(trait.id);
           if (!def) return trait;
@@ -796,9 +830,15 @@ export const useTechCollectionStore = create<TechCollectionState>()(
           seed = roll.seed;
           if (roll.value >= chance) return trait;
           const boosted = Math.min(def.max, trait.value + (def.max - trait.value) * 0.5);
-          return { ...trait, value: Number(boosted.toFixed(4)) };
+          const nextValue = Number(boosted.toFixed(4));
+          if (nextValue === trait.value) return trait;
+          changed = true;
+          return { ...trait, value: nextValue };
         });
         state.rngSeed = seed;
+        if (changed) {
+          state.collectionVersion = bumpVersion(state.collectionVersion);
+        }
       });
     },
 
@@ -1009,6 +1049,7 @@ export const useTechCollectionStore = create<TechCollectionState>()(
         if (target) {
           target.rank = nextRank;
         }
+        state.collectionVersion = bumpVersion(state.collectionVersion);
       });
 
       GameEvents.emit({ type: 'techniques/rank_upgrade_success', payload: { techniqueId: techId, nextRank } });
@@ -1027,6 +1068,8 @@ export const useTechCollectionStore = create<TechCollectionState>()(
         state.unlockedTechs = unlockedTechs;
         state.fragments = { ...(data.fragments ?? {}) };
         state.rngSeed = typeof data.rngSeed === 'number' ? data.rngSeed : state.rngSeed;
+        state.collectionVersion = bumpVersion(state.collectionVersion);
+        state.masteryVersion = bumpVersion(state.masteryVersion);
       });
       Object.keys(get().unlockedTechs).forEach((techId) => {
         get().ensureRunes(techId);
@@ -1039,6 +1082,8 @@ export const useTechCollectionStore = create<TechCollectionState>()(
         state.unlockedTechs = base.unlockedTechs;
         state.fragments = base.fragments;
         state.rngSeed = base.rngSeed;
+        state.collectionVersion = base.collectionVersion;
+        state.masteryVersion = base.masteryVersion;
       });
     },
   })),

@@ -7,6 +7,7 @@ import { useContentStore } from './contentStore.js';
 import { useGameStore } from './gameStore.js';
 import { GameEvents } from '../services/events/GameEvents.js';
 import { useTechCollectionStore } from './techCollectionStore.js';
+import { bumpVersion } from './versionCounters.js';
 export const BASE_ACTIVE_SLOTS = 2;
 export const BASE_PASSIVE_SLOTS = 1;
 const createEmptyLoadout = (id, name, aiProfile, activeSlots, passiveSlots, castingPolicy) => ({
@@ -73,6 +74,9 @@ const emitUnlockedSlotEvents = (previousUnlocked, nextUnlocked, slotType) => {
 export const useTechniqueStore = create()(immer((set, get) => ({
     activeSlots: BASE_ACTIVE_SLOTS,
     passiveSlots: BASE_PASSIVE_SLOTS,
+    loadoutVersion: 0,
+    aiProfileVersion: 0,
+    slotVersion: 0,
     loadouts: [
         createEmptyLoadout('loadout_1', 'Loadout 1', 'balanced', SEMESTER_SLOT_CAPS.active, SEMESTER_SLOT_CAPS.passive),
         createEmptyLoadout('loadout_2', 'Loadout 2', 'survivor', SEMESTER_SLOT_CAPS.active, SEMESTER_SLOT_CAPS.passive),
@@ -120,6 +124,7 @@ export const useTechniqueStore = create()(immer((set, get) => ({
             return;
         set((state) => {
             state.selectedLoadoutId = id;
+            state.loadoutVersion = bumpVersion(state.loadoutVersion);
         });
         GameEvents.emit({ type: 'techniques/loadout_changed', payload: { loadoutId: id } });
     },
@@ -139,24 +144,34 @@ export const useTechniqueStore = create()(immer((set, get) => ({
                 loadout.slots.active = normalizeSlots(loadout.slots.active, SEMESTER_SLOT_CAPS.active);
                 loadout.slots.passive = normalizeSlots(loadout.slots.passive, SEMESTER_SLOT_CAPS.passive);
             });
+            state.slotVersion = bumpVersion(state.slotVersion);
+            state.loadoutVersion = bumpVersion(state.loadoutVersion);
         });
         emitUnlockedSlotEvents(previousSnapshot.unlocked.active, nextSnapshot.unlocked.active, 'active');
         emitUnlockedSlotEvents(previousSnapshot.unlocked.passive, nextSnapshot.unlocked.passive, 'passive');
     },
     setAiProfile: (loadoutId, profile) => {
+        const current = get().loadouts.find((l) => l.id === loadoutId);
+        if (!current || current.aiProfile === profile)
+            return;
         set((state) => {
             const loadout = state.loadouts.find((l) => l.id === loadoutId);
             if (!loadout)
                 return;
             loadout.aiProfile = profile;
+            state.aiProfileVersion = bumpVersion(state.aiProfileVersion);
         });
     },
     setCastingPolicy: (loadoutId, policy) => {
+        const current = get().loadouts.find((l) => l.id === loadoutId);
+        if (!current || current.castingPolicy === policy)
+            return;
         set((state) => {
             const loadout = state.loadouts.find((l) => l.id === loadoutId);
             if (!loadout)
                 return;
             loadout.castingPolicy = policy;
+            state.aiProfileVersion = bumpVersion(state.aiProfileVersion);
         });
     },
     equipTechnique: (slotType, slotIndex, techId, loadoutId) => {
@@ -262,6 +277,9 @@ export const useTechniqueStore = create()(immer((set, get) => ({
             : slotType === 'passive'
                 ? loadout.slots.passive[slotIndex]
                 : loadout.slots.ultimate ?? '';
+        if (previousTechId === techId) {
+            return { ok: true };
+        }
         set((draft) => {
             const targetLoadout = draft.loadouts.find((l) => l.id === (loadoutId ?? draft.selectedLoadoutId));
             if (!targetLoadout)
@@ -284,6 +302,7 @@ export const useTechniqueStore = create()(immer((set, get) => ({
             else {
                 targetLoadout.slots.ultimate = techId || null;
             }
+            draft.loadoutVersion = bumpVersion(draft.loadoutVersion);
         });
         GameEvents.emit({
             type: 'techniques/equipped',
@@ -312,6 +331,8 @@ export const useTechniqueStore = create()(immer((set, get) => ({
         set((state) => {
             state.loadouts = normalizedLoadouts;
             state.selectedLoadoutId = selectedExists ? data.selectedLoadoutId : normalizedLoadouts[0].id;
+            state.loadoutVersion = bumpVersion(state.loadoutVersion);
+            state.aiProfileVersion = bumpVersion(state.aiProfileVersion);
         });
     },
     resetLoadouts: () => {
@@ -322,6 +343,11 @@ export const useTechniqueStore = create()(immer((set, get) => ({
                 createEmptyLoadout('loadout_3', 'Loadout 3', 'burst', SEMESTER_SLOT_CAPS.active, SEMESTER_SLOT_CAPS.passive),
             ],
             selectedLoadoutId: 'loadout_1',
+            activeSlots: BASE_ACTIVE_SLOTS,
+            passiveSlots: BASE_PASSIVE_SLOTS,
+            loadoutVersion: 0,
+            aiProfileVersion: 0,
+            slotVersion: 0,
         }));
     },
     getSelectedLoadout: () => {

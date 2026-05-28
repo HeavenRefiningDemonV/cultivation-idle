@@ -9,14 +9,14 @@ export function TechniquePanel() {
   const setSelectedLoadout = useTechniqueStore((state) => state.setSelectedLoadout);
   const getEquippedTechIds = useTechniqueStore((state) => state.getEquippedTechIds);
   const getSelectedAiProfile = useTechniqueStore((state) => state.getSelectedAiProfile);
-  const { maps } = useContentStore();
+  const techniquesById = useContentStore((state) => state.maps.techniquesById);
   const setActiveTab = useUIStore((state) => state.setActiveTab);
 
   const selectedProfile = getSelectedAiProfile();
 
   const getTechniqueName = (techId: string | null) => {
     if (!techId) return 'Empty Slot';
-    return maps.techniquesById[techId]?.name ?? techId;
+    return techniquesById[techId]?.name ?? techId;
   };
 
   return (

@@ -1,0 +1,878 @@
+{
+  "url": "http://127.0.0.1:5173/?ciPerf=1",
+  "generatedAt": "2026-05-26T12:54:54.255Z",
+  "summaries": [
+    {
+      "name": "freshIdle",
+      "enabled": true,
+      "durationMs": 30007.399999976158,
+      "counters": {
+        "ci:gameLoop:rafCallback": {
+          "name": "ci:gameLoop:rafCallback",
+          "count": 1170,
+          "lastIncrementAt": 36601.39999997616
+        },
+        "ci:scheduler:drain": {
+          "name": "ci:scheduler:drain",
+          "count": 392,
+          "lastIncrementAt": 36580.80000001192
+        },
+        "ci:scheduler:job:skipped": {
+          "name": "ci:scheduler:job:skipped",
+          "count": 205,
+          "lastIncrementAt": 36522
+        },
+        "ci:scheduler:job:run": {
+          "name": "ci:scheduler:job:run",
+          "count": 180,
+          "lastIncrementAt": 36521.80000001192
+        },
+        "ci:scheduler:job:cultivation-authoritative": {
+          "name": "ci:scheduler:job:cultivation-authoritative",
+          "count": 120,
+          "lastIncrementAt": 36521.89999997616
+        },
+        "ci:scheduler:job:queues-and-expeditions": {
+          "name": "ci:scheduler:job:queues-and-expeditions",
+          "count": 30,
+          "lastIncrementAt": 35978.89999997616
+        },
+        "ci:scheduler:job:progression-diagnostics": {
+          "name": "ci:scheduler:job:progression-diagnostics",
+          "count": 30,
+          "lastIncrementAt": 35978.89999997616
+        },
+        "ci:store:game:setCalls": {
+          "name": "ci:store:game:setCalls",
+          "count": 28,
+          "lastIncrementAt": 35978.80000001192
+        },
+        "ci:longtask:count": {
+          "name": "ci:longtask:count",
+          "count": 26,
+          "lastIncrementAt": 35978.69999998808
+        },
+        "ci:long-animation-frame:count": {
+          "name": "ci:long-animation-frame:count",
+          "count": 26,
+          "lastIncrementAt": 36000.30000001192
+        }
+      },
+      "measures": {
+        "ci:scheduler:drain": {
+          "name": "ci:scheduler:drain",
+          "count": 392,
+          "totalMs": 21.500000178813934,
+          "avgMs": 0.0548469392316682,
+          "maxMs": 0.5,
+          "minMs": 0,
+          "lastMs": 0
+        },
+        "ci:gameLoop:tick:deltaMs": {
+          "name": "ci:gameLoop:tick:deltaMs",
+          "count": 120,
+          "totalMs": 30000,
+          "avgMs": 250,
+          "maxMs": 250,
+          "minMs": 250,
+          "lastMs": 250
+        },
+        "ci:store:game:tick:buffCleanup": {
+          "name": "ci:store:game:tick:buffCleanup",
+          "count": 120,
+          "totalMs": 0.699999988079071,
+          "avgMs": 0.005833333233992258,
+          "maxMs": 0.10000002384185791,
+          "minMs": 0,
+          "lastMs": 0
+        },
+        "ci:store:cultivation:clearExpiredConsumables": {
+          "name": "ci:store:cultivation:clearExpiredConsumables",
+          "count": 240,
+          "totalMs": 0,
+          "avgMs": 0,
+          "maxMs": 0,
+          "minMs": 0,
+          "lastMs": 0
+        },
+        "ci:store:game:tick:cultivationConsumableCleanup": {
+          "name": "ci:store:game:tick:cultivationConsumableCleanup",
+          "count": 120,
+          "totalMs": 0.30000007152557373,
+          "avgMs": 0.002500000596046448,
+          "maxMs": 0.10000002384185791,
+          "minMs": 0,
+          "lastMs": 0
+        },
+        "ci:store:game:tick:qi": {
+          "name": "ci:store:game:tick:qi",
+          "count": 120,
+          "totalMs": 2.1000000834465027,
+          "avgMs": 0.017500000695387524,
+          "maxMs": 0.10000002384185791,
+          "minMs": 0,
+          "lastMs": 0
+        },
+        "ci:store:game:tick": {
+          "name": "ci:store:game:tick",
+          "count": 120,
+          "totalMs": 7.5000001192092896,
+          "avgMs": 0.06250000099341074,
+          "maxMs": 0.30000001192092896,
+          "minMs": 0,
+          "lastMs": 0
+        },
+        "ci:gameLoop:tick": {
+          "name": "ci:gameLoop:tick",
+          "count": 120,
+          "totalMs": 8.200000166893005,
+          "avgMs": 0.06833333472410838,
+          "maxMs": 0.30000001192092896,
+          "minMs": 0,
+          "lastMs": 0.10000002384185791
+        },
+        "ci:service:cultivation:consumables": {
+          "name": "ci:service:cultivation:consumables",
+          "count": 120,
+          "totalMs": 0,
+          "avgMs": 0,
+          "maxMs": 0,
+          "minMs": 0,
+          "lastMs": 0
+        },
+        "ci:service:cultivation:insight": {
+          "name": "ci:service:cultivation:insight",
+          "count": 120,
+          "totalMs": 0,
+          "avgMs": 0,
+          "maxMs": 0,
+          "minMs": 0,
+          "lastMs": 0
+        },
+        "ci:service:cultivation:tick": {
+          "name": "ci:service:cultivation:tick",
+          "count": 120,
+          "totalMs": 0.19999992847442627,
+          "avgMs": 0.001666666070620219,
+          "maxMs": 0.09999996423721313,
+          "minMs": 0,
+          "lastMs": 0
+        },
+        "ci:gameLoop:oneSecondJobs": {
+          "name": "ci:gameLoop:oneSecondJobs",
+          "count": 30,
+          "totalMs": 0.10000002384185791,
+          "avgMs": 0.0033333341280619303,
+          "maxMs": 0.10000002384185791,
+          "minMs": 0,
+          "lastMs": 0
+        },
+        "ci:store:game:tick:progressionDiagnostics": {
+          "name": "ci:store:game:tick:progressionDiagnostics",
+          "count": 30,
+          "totalMs": 3.000000238418579,
+          "avgMs": 0.10000000794728597,
+          "maxMs": 0.20000004768371582,
+          "minMs": 0,
+          "lastMs": 0.10000002384185791
+        },
+        "ci:store:game:tick:hpRegen": {
+          "name": "ci:store:game:tick:hpRegen",
+          "count": 28,
+          "totalMs": 0,
+          "avgMs": 0,
+          "maxMs": 0,
+          "minMs": 0,
+          "lastMs": 0
+        },
+        "ci:surface:cultivation": {
+          "name": "ci:surface:cultivation",
+          "count": 52,
+          "totalMs": 3.299999952316284,
+          "avgMs": 0.06346153754454392,
+          "maxMs": 0.19999998807907104,
+          "minMs": 0,
+          "lastMs": 0.10000002384185791
+        },
+        "ci:longtask:duration": {
+          "name": "ci:longtask:duration",
+          "count": 26,
+          "totalMs": 10001,
+          "avgMs": 384.65384615384613,
+          "maxMs": 425,
+          "minMs": 341,
+          "lastMs": 408
+        },
+        "ci:long-animation-frame:duration": {
+          "name": "ci:long-animation-frame:duration",
+          "count": 26,
+          "totalMs": 10248.399999976158,
+          "avgMs": 394.16923076831375,
+          "maxMs": 436.60000002384186,
+          "minMs": 342.5999999642372,
+          "lastMs": 409.69999998807907
+        }
+      },
+      "renders": {
+        "ci:render:CultivationExactScreenOwner": {
+          "id": "ci:render:CultivationExactScreenOwner",
+          "renderCount": 52,
+          "commitCount": 26,
+          "mountCount": 0,
+          "updateCount": 26,
+          "totalActualDurationMs": 167.79999977350235,
+          "maxActualDurationMs": 7.999999940395355,
+          "totalBaseDurationMs": 165.99999982118607,
+          "lastPhase": "update",
+          "lastCommitTime": 35975.59999996424
+        },
+        "ci:render:GameLayout": {
+          "id": "ci:render:GameLayout",
+          "renderCount": 0,
+          "commitCount": 41,
+          "mountCount": 0,
+          "updateCount": 41,
+          "totalActualDurationMs": 9991.699999570847,
+          "maxActualDurationMs": 423.2999999523163,
+          "totalBaseDurationMs": 15997.399999916553,
+          "lastPhase": "update",
+          "lastCommitTime": 35981.09999996424
+        }
+      },
+      "longTasks": 26,
+      "longAnimationFrames": 26,
+      "warnings": [
+        "[GameLoop] Already running",
+        "[ContentValidation] Technique counts by path: Heaven=20, Earth=20, Martial=20",
+        "[ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=heaven: 6",
+        "[ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=earth: 6",
+        "[ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=martial: 6",
+        "[ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=heaven: 7",
+        "[ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=earth: 9",
+        "[ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=martial: 8",
+        "[ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=heaven: 9",
+        "[ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=earth: 9",
+        "[ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=martial: 10",
+        "[ContentValidation] Pavilion pool size city=3 (city_lotusford) path=heaven: 10",
+        "[ContentValidation] Pavilion pool size city=3 (city_lotusford) path=earth: 10",
+        "[ContentValidation] Pavilion pool size city=3 (city_lotusford) path=martial: 10",
+        "[ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=heaven: 10",
+        "[ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=earth: 10",
+        "[ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=martial: 10"
+      ],
+      "errors": []
+    },
+    {
+      "name": "heartLawIdle",
+      "enabled": true,
+      "durationMs": 30016.900000035763,
+      "counters": {
+        "ci:gameLoop:rafCallback": {
+          "name": "ci:gameLoop:rafCallback",
+          "count": 1225,
+          "lastIncrementAt": 36564.89999997616
+        },
+        "ci:scheduler:drain": {
+          "name": "ci:scheduler:drain",
+          "count": 398,
+          "lastIncrementAt": 36564.59999996424
+        },
+        "ci:scheduler:job:skipped": {
+          "name": "ci:scheduler:job:skipped",
+          "count": 207,
+          "lastIncrementAt": 36509
+        },
+        "ci:scheduler:job:run": {
+          "name": "ci:scheduler:job:run",
+          "count": 180,
+          "lastIncrementAt": 36457.299999952316
+        },
+        "ci:scheduler:job:cultivation-authoritative": {
+          "name": "ci:scheduler:job:cultivation-authoritative",
+          "count": 120,
+          "lastIncrementAt": 36457.299999952316
+        },
+        "ci:store:cultivation:modifierCacheHit": {
+          "name": "ci:store:cultivation:modifierCacheHit",
+          "count": 240,
+          "lastIncrementAt": 36457.59999996424
+        },
+        "ci:scheduler:job:queues-and-expeditions": {
+          "name": "ci:scheduler:job:queues-and-expeditions",
+          "count": 30,
+          "lastIncrementAt": 35860.19999998808
+        },
+        "ci:scheduler:job:progression-diagnostics": {
+          "name": "ci:scheduler:job:progression-diagnostics",
+          "count": 30,
+          "lastIncrementAt": 35860.19999998808
+        },
+        "ci:store:game:setCalls": {
+          "name": "ci:store:game:setCalls",
+          "count": 28,
+          "lastIncrementAt": 35859.799999952316
+        },
+        "ci:longtask:count": {
+          "name": "ci:longtask:count",
+          "count": 25,
+          "lastIncrementAt": 35859.799999952316
+        },
+        "ci:long-animation-frame:count": {
+          "name": "ci:long-animation-frame:count",
+          "count": 25,
+          "lastIncrementAt": 35892.89999997616
+        }
+      },
+      "measures": {
+        "ci:scheduler:drain": {
+          "name": "ci:scheduler:drain",
+          "count": 398,
+          "totalMs": 67.59999984502792,
+          "avgMs": 0.1698492458417787,
+          "maxMs": 1.699999988079071,
+          "minMs": 0,
+          "lastMs": 0
+        },
+        "ci:gameLoop:tick:deltaMs": {
+          "name": "ci:gameLoop:tick:deltaMs",
+          "count": 120,
+          "totalMs": 30000,
+          "avgMs": 250,
+          "maxMs": 250,
+          "minMs": 250,
+          "lastMs": 250
+        },
+        "ci:store:game:tick:buffCleanup": {
+          "name": "ci:store:game:tick:buffCleanup",
+          "count": 120,
+          "totalMs": 0.20000004768371582,
+          "avgMs": 0.0016666670640309651,
+          "maxMs": 0.10000002384185791,
+          "minMs": 0,
+          "lastMs": 0
+        },
+        "ci:store:cultivation:clearExpiredConsumables": {
+          "name": "ci:store:cultivation:clearExpiredConsumables",
+          "count": 240,
+          "totalMs": 0.20000004768371582,
+          "avgMs": 0.0008333335320154826,
+          "maxMs": 0.10000002384185791,
+          "minMs": 0,
+          "lastMs": 0
+        },
+        "ci:store:game:tick:cultivationConsumableCleanup": {
+          "name": "ci:store:game:tick:cultivationConsumableCleanup",
+          "count": 120,
+          "totalMs": 0.6000001430511475,
+          "avgMs": 0.005000001192092896,
+          "maxMs": 0.10000002384185791,
+          "minMs": 0,
+          "lastMs": 0
+        },
+        "ci:store:game:tick:qi": {
+          "name": "ci:store:game:tick:qi",
+          "count": 120,
+          "totalMs": 2.2000001072883606,
+          "avgMs": 0.018333334227403006,
+          "maxMs": 0.10000002384185791,
+          "minMs": 0,
+          "lastMs": 0.10000002384185791
+        },
+        "ci:store:game:tick": {
+          "name": "ci:store:game:tick",
+          "count": 120,
+          "totalMs": 14.300000369548798,
+          "avgMs": 0.11916666974623998,
+          "maxMs": 0.5,
+          "minMs": 0,
+          "lastMs": 0.10000002384185791
+        },
+        "ci:gameLoop:tick": {
+          "name": "ci:gameLoop:tick",
+          "count": 120,
+          "totalMs": 15.300000190734863,
+          "avgMs": 0.1275000015894572,
+          "maxMs": 0.5,
+          "minMs": 0,
+          "lastMs": 0.10000002384185791
+        },
+        "ci:service:cultivation:consumables": {
+          "name": "ci:service:cultivation:consumables",
+          "count": 240,
+          "totalMs": 0.4999999403953552,
+          "avgMs": 0.002083333084980647,
+          "maxMs": 0.10000002384185791,
+          "minMs": 0,
+          "lastMs": 0
+        },
+        "ci:store:cultivation:getConsumableModifiers": {
+          "name": "ci:store:cultivation:getConsumableModifiers",
+          "count": 240,
+          "totalMs": 0.30000007152557373,
+          "avgMs": 0.001250000298023224,
+          "maxMs": 0.10000002384185791,
+          "minMs": 0,
+          "lastMs": 0
+        },
+        "ci:store:cultivation:comprehensionBatch": {
+          "name": "ci:store:cultivation:comprehensionBatch",
+          "count": 120,
+          "totalMs": 0.30000007152557373,
+          "avgMs": 0.002500000596046448,
+          "maxMs": 0.10000002384185791,
+          "minMs": 0,
+          "lastMs": 0
+        },
+        "ci:store:cultivation:addComprehension": {
+          "name": "ci:store:cultivation:addComprehension",
+          "count": 120,
+          "totalMs": 10.00000011920929,
+          "avgMs": 0.08333333432674409,
+          "maxMs": 0.20000004768371582,
+          "minMs": 0,
+          "lastMs": 0.10000002384185791
+        },
+        "ci:service:cultivation:heartLaw": {
+          "name": "ci:service:cultivation:heartLaw",
+          "count": 120,
+          "totalMs": 10.300000071525574,
+          "avgMs": 0.08583333392937978,
+          "maxMs": 0.20000004768371582,
+          "minMs": 0,
+          "lastMs": 0.10000002384185791
+        },
+        "ci:store:cultivation:insightDisplayPublish": {
+          "name": "ci:store:cultivation:insightDisplayPublish",
+          "count": 60,
+          "totalMs": 1.7000000476837158,
+          "avgMs": 0.02833333412806193,
+          "maxMs": 0.10000002384185791,
+          "minMs": 0,
+          "lastMs": 0.09999996423721313
+        },
+        "ci:store:cultivation:advanceInsightTimer": {
+          "name": "ci:store:cultivation:advanceInsightTimer",
+          "count": 120,
+          "totalMs": 2.0000000596046448,
+          "avgMs": 0.01666666716337204,
+          "maxMs": 0.10000002384185791,
+          "minMs": 0,
+          "lastMs": 0.09999996423721313
+        },
+        "ci:service:cultivation:insight": {
+          "name": "ci:service:cultivation:insight",
+          "count": 240,
+          "totalMs": 4.300000071525574,
+          "avgMs": 0.01791666696468989,
+          "maxMs": 0.10000002384185791,
+          "minMs": 0,
+          "lastMs": 0
+        },
+        "ci:store:cultivation:ensureInsightCycle": {
+          "name": "ci:store:cultivation:ensureInsightCycle",
+          "count": 120,
+          "totalMs": 1.9999999403953552,
+          "avgMs": 0.016666666169961295,
+          "maxMs": 0.10000002384185791,
+          "minMs": 0,
+          "lastMs": 0
+        },
+        "ci:service:cultivation:tick": {
+          "name": "ci:service:cultivation:tick",
+          "count": 120,
+          "totalMs": 15.800000011920929,
+          "avgMs": 0.13166666676600774,
+          "maxMs": 0.30000001192092896,
+          "minMs": 0,
+          "lastMs": 0.19999998807907104
+        },
+        "ci:gameLoop:oneSecondJobs": {
+          "name": "ci:gameLoop:oneSecondJobs",
+          "count": 30,
+          "totalMs": 0.30000001192092896,
+          "avgMs": 0.010000000397364298,
+          "maxMs": 0.10000002384185791,
+          "minMs": 0,
+          "lastMs": 0
+        },
+        "ci:store:game:tick:progressionDiagnostics": {
+          "name": "ci:store:game:tick:progressionDiagnostics",
+          "count": 30,
+          "totalMs": 27.399999916553497,
+          "avgMs": 0.9133333305517832,
+          "maxMs": 1.399999976158142,
+          "minMs": 0.6000000238418579,
+          "lastMs": 1.199999988079071
+        },
+        "ci:surface:cultivation": {
+          "name": "ci:surface:cultivation",
+          "count": 240,
+          "totalMs": 88.19999980926514,
+          "avgMs": 0.3674999992052714,
+          "maxMs": 0.699999988079071,
+          "minMs": 0.19999998807907104,
+          "lastMs": 0.40000003576278687
+        },
+        "ci:store:game:tick:hpRegen": {
+          "name": "ci:store:game:tick:hpRegen",
+          "count": 28,
+          "totalMs": 0,
+          "avgMs": 0,
+          "maxMs": 0,
+          "minMs": 0,
+          "lastMs": 0
+        },
+        "ci:longtask:duration": {
+          "name": "ci:longtask:duration",
+          "count": 25,
+          "totalMs": 9747,
+          "avgMs": 389.88,
+          "maxMs": 438,
+          "minMs": 350,
+          "lastMs": 394
+        },
+        "ci:long-animation-frame:duration": {
+          "name": "ci:long-animation-frame:duration",
+          "count": 25,
+          "totalMs": 10002.700000107288,
+          "avgMs": 400.1080000042915,
+          "maxMs": 454.19999998807907,
+          "minMs": 351.80000001192093,
+          "lastMs": 399.80000001192093
+        }
+      },
+      "renders": {
+        "ci:render:CultivationExactScreenOwner": {
+          "id": "ci:render:CultivationExactScreenOwner",
+          "renderCount": 240,
+          "commitCount": 120,
+          "mountCount": 0,
+          "updateCount": 120,
+          "totalActualDurationMs": 817.3000004291534,
+          "maxActualDurationMs": 8.800000011920929,
+          "totalBaseDurationMs": 806.7000002264977,
+          "lastPhase": "update",
+          "lastCommitTime": 36468.09999996424
+        },
+        "ci:render:GameLayout": {
+          "id": "ci:render:GameLayout",
+          "renderCount": 0,
+          "commitCount": 135,
+          "mountCount": 0,
+          "updateCount": 135,
+          "totalActualDurationMs": 10550.800000011921,
+          "maxActualDurationMs": 435.5,
+          "totalBaseDurationMs": 19301.29999232292,
+          "lastPhase": "update",
+          "lastCommitTime": 36468.09999996424
+        }
+      },
+      "longTasks": 25,
+      "longAnimationFrames": 25,
+      "warnings": [
+        "[GameLoop] Already running",
+        "[ContentValidation] Technique counts by path: Heaven=20, Earth=20, Martial=20",
+        "[ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=heaven: 6",
+        "[ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=earth: 6",
+        "[ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=martial: 6",
+        "[ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=heaven: 7",
+        "[ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=earth: 9",
+        "[ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=martial: 8",
+        "[ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=heaven: 9",
+        "[ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=earth: 9",
+        "[ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=martial: 10",
+        "[ContentValidation] Pavilion pool size city=3 (city_lotusford) path=heaven: 10",
+        "[ContentValidation] Pavilion pool size city=3 (city_lotusford) path=earth: 10",
+        "[ContentValidation] Pavilion pool size city=3 (city_lotusford) path=martial: 10",
+        "[ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=heaven: 10",
+        "[ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=earth: 10",
+        "[ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=martial: 10"
+      ],
+      "errors": []
+    },
+    {
+      "name": "activeCombat",
+      "enabled": true,
+      "durationMs": 30011.100000023842,
+      "counters": {
+        "ci:gameLoop:rafCallback": {
+          "name": "ci:gameLoop:rafCallback",
+          "count": 1202,
+          "lastIncrementAt": 36504.09999996424
+        },
+        "ci:scheduler:drain": {
+          "name": "ci:scheduler:drain",
+          "count": 392,
+          "lastIncrementAt": 36500.30000001192
+        },
+        "ci:scheduler:job:run": {
+          "name": "ci:scheduler:job:run",
+          "count": 440,
+          "lastIncrementAt": 36447
+        },
+        "ci:scheduler:job:combat-fixed-step": {
+          "name": "ci:scheduler:job:combat-fixed-step",
+          "count": 260,
+          "lastIncrementAt": 36447
+        },
+        "ci:store:combat:buffSweepSkipped": {
+          "name": "ci:store:combat:buffSweepSkipped",
+          "count": 260,
+          "lastIncrementAt": 36447
+        },
+        "ci:store:combat:logsAppended": {
+          "name": "ci:store:combat:logsAppended",
+          "count": 45,
+          "lastIncrementAt": 36389.19999998808
+        },
+        "ci:scheduler:job:cultivation-authoritative": {
+          "name": "ci:scheduler:job:cultivation-authoritative",
+          "count": 120,
+          "lastIncrementAt": 36447
+        },
+        "ci:store:game:setCalls": {
+          "name": "ci:store:game:setCalls",
+          "count": 27,
+          "lastIncrementAt": 35981.39999997616
+        },
+        "ci:scheduler:job:queues-and-expeditions": {
+          "name": "ci:scheduler:job:queues-and-expeditions",
+          "count": 30,
+          "lastIncrementAt": 35717.69999998808
+        },
+        "ci:scheduler:job:progression-diagnostics": {
+          "name": "ci:scheduler:job:progression-diagnostics",
+          "count": 30,
+          "lastIncrementAt": 35717.69999998808
+        },
+        "ci:longtask:count": {
+          "name": "ci:longtask:count",
+          "count": 26,
+          "lastIncrementAt": 36336.89999997616
+        },
+        "ci:scheduler:catchup:clamped": {
+          "name": "ci:scheduler:catchup:clamped",
+          "count": 26,
+          "lastIncrementAt": 36337
+        },
+        "ci:long-animation-frame:count": {
+          "name": "ci:long-animation-frame:count",
+          "count": 26,
+          "lastIncrementAt": 36371.5
+        }
+      },
+      "measures": {
+        "ci:scheduler:drain": {
+          "name": "ci:scheduler:drain",
+          "count": 392,
+          "totalMs": 40.80000019073486,
+          "avgMs": 0.10408163313962976,
+          "maxMs": 0.699999988079071,
+          "minMs": 0,
+          "lastMs": 0
+        },
+        "ci:store:combat:tick": {
+          "name": "ci:store:combat:tick",
+          "count": 260,
+          "totalMs": 18.40000021457672,
+          "avgMs": 0.07076923159452585,
+          "maxMs": 0.5999999642372131,
+          "minMs": 0,
+          "lastMs": 0
+        },
+        "ci:gameLoop:tick:deltaMs": {
+          "name": "ci:gameLoop:tick:deltaMs",
+          "count": 120,
+          "totalMs": 30000,
+          "avgMs": 250,
+          "maxMs": 250,
+          "minMs": 250,
+          "lastMs": 250
+        },
+        "ci:store:game:tick:buffCleanup": {
+          "name": "ci:store:game:tick:buffCleanup",
+          "count": 120,
+          "totalMs": 0.30000001192092896,
+          "avgMs": 0.0025000000993410745,
+          "maxMs": 0.10000002384185791,
+          "minMs": 0,
+          "lastMs": 0
+        },
+        "ci:store:cultivation:clearExpiredConsumables": {
+          "name": "ci:store:cultivation:clearExpiredConsumables",
+          "count": 240,
+          "totalMs": 0,
+          "avgMs": 0,
+          "maxMs": 0,
+          "minMs": 0,
+          "lastMs": 0
+        },
+        "ci:store:game:tick:cultivationConsumableCleanup": {
+          "name": "ci:store:game:tick:cultivationConsumableCleanup",
+          "count": 120,
+          "totalMs": 0.30000007152557373,
+          "avgMs": 0.002500000596046448,
+          "maxMs": 0.10000002384185791,
+          "minMs": 0,
+          "lastMs": 0
+        },
+        "ci:store:game:tick:qi": {
+          "name": "ci:store:game:tick:qi",
+          "count": 120,
+          "totalMs": 1.7999999523162842,
+          "avgMs": 0.014999999602635702,
+          "maxMs": 0.20000004768371582,
+          "minMs": 0,
+          "lastMs": 0
+        },
+        "ci:store:game:tick:hpRegen": {
+          "name": "ci:store:game:tick:hpRegen",
+          "count": 27,
+          "totalMs": 0,
+          "avgMs": 0,
+          "maxMs": 0,
+          "minMs": 0,
+          "lastMs": 0
+        },
+        "ci:store:game:tick": {
+          "name": "ci:store:game:tick",
+          "count": 120,
+          "totalMs": 7.100000083446503,
+          "avgMs": 0.05916666736205419,
+          "maxMs": 0.30000001192092896,
+          "minMs": 0,
+          "lastMs": 0
+        },
+        "ci:gameLoop:tick": {
+          "name": "ci:gameLoop:tick",
+          "count": 120,
+          "totalMs": 7.200000047683716,
+          "avgMs": 0.0600000003973643,
+          "maxMs": 0.30000001192092896,
+          "minMs": 0,
+          "lastMs": 0
+        },
+        "ci:service:cultivation:consumables": {
+          "name": "ci:service:cultivation:consumables",
+          "count": 120,
+          "totalMs": 0.10000002384185791,
+          "avgMs": 0.0008333335320154826,
+          "maxMs": 0.10000002384185791,
+          "minMs": 0,
+          "lastMs": 0
+        },
+        "ci:service:cultivation:insight": {
+          "name": "ci:service:cultivation:insight",
+          "count": 120,
+          "totalMs": 0.10000002384185791,
+          "avgMs": 0.0008333335320154826,
+          "maxMs": 0.10000002384185791,
+          "minMs": 0,
+          "lastMs": 0
+        },
+        "ci:service:cultivation:tick": {
+          "name": "ci:service:cultivation:tick",
+          "count": 120,
+          "totalMs": 0.6000000834465027,
+          "avgMs": 0.005000000695387522,
+          "maxMs": 0.10000002384185791,
+          "minMs": 0,
+          "lastMs": 0
+        },
+        "ci:gameLoop:oneSecondJobs": {
+          "name": "ci:gameLoop:oneSecondJobs",
+          "count": 30,
+          "totalMs": 0.5,
+          "avgMs": 0.016666666666666666,
+          "maxMs": 0.10000002384185791,
+          "minMs": 0,
+          "lastMs": 0
+        },
+        "ci:store:game:tick:progressionDiagnostics": {
+          "name": "ci:store:game:tick:progressionDiagnostics",
+          "count": 30,
+          "totalMs": 2.600000023841858,
+          "avgMs": 0.08666666746139526,
+          "maxMs": 0.20000004768371582,
+          "minMs": 0,
+          "lastMs": 0.19999998807907104
+        },
+        "ci:surface:cultivation": {
+          "name": "ci:surface:cultivation",
+          "count": 52,
+          "totalMs": 5.000000298023224,
+          "avgMs": 0.096153851885062,
+          "maxMs": 0.20000004768371582,
+          "minMs": 0,
+          "lastMs": 0
+        },
+        "ci:longtask:duration": {
+          "name": "ci:longtask:duration",
+          "count": 26,
+          "totalMs": 10197,
+          "avgMs": 392.1923076923077,
+          "maxMs": 436,
+          "minMs": 353,
+          "lastMs": 353
+        },
+        "ci:long-animation-frame:duration": {
+          "name": "ci:long-animation-frame:duration",
+          "count": 26,
+          "totalMs": 10419.700000047684,
+          "avgMs": 400.7576923095263,
+          "maxMs": 461.2999999523163,
+          "minMs": 359.19999998807907,
+          "lastMs": 364.4000000357628
+        }
+      },
+      "renders": {
+        "ci:render:CultivationExactScreenOwner": {
+          "id": "ci:render:CultivationExactScreenOwner",
+          "renderCount": 52,
+          "commitCount": 26,
+          "mountCount": 0,
+          "updateCount": 26,
+          "totalActualDurationMs": 171.10000002384186,
+          "maxActualDurationMs": 7.899999976158142,
+          "totalBaseDurationMs": 168.9000000357628,
+          "lastPhase": "update",
+          "lastCommitTime": 36334.30000001192
+        },
+        "ci:render:GameLayout": {
+          "id": "ci:render:GameLayout",
+          "renderCount": 0,
+          "commitCount": 41,
+          "mountCount": 0,
+          "updateCount": 41,
+          "totalActualDurationMs": 10186.099999845028,
+          "maxActualDurationMs": 434.80000001192093,
+          "totalBaseDurationMs": 16256.69999974966,
+          "lastPhase": "update",
+          "lastCommitTime": 36334.30000001192
+        }
+      },
+      "longTasks": 26,
+      "longAnimationFrames": 26,
+      "warnings": [
+        "[GameLoop] Already running",
+        "[ContentValidation] Technique counts by path: Heaven=20, Earth=20, Martial=20",
+        "[ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=heaven: 6",
+        "[ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=earth: 6",
+        "[ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=martial: 6",
+        "[ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=heaven: 7",
+        "[ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=earth: 9",
+        "[ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=martial: 8",
+        "[ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=heaven: 9",
+        "[ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=earth: 9",
+        "[ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=martial: 10",
+        "[ContentValidation] Pavilion pool size city=3 (city_lotusford) path=heaven: 10",
+        "[ContentValidation] Pavilion pool size city=3 (city_lotusford) path=earth: 10",
+        "[ContentValidation] Pavilion pool size city=3 (city_lotusford) path=martial: 10",
+        "[ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=heaven: 10",
+        "[ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=earth: 10",
+        "[ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=martial: 10"
+      ],
+      "errors": []
+    }
+  ]
+}

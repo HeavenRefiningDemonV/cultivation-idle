@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useGameStore } from '../stores/gameStore.js';
 import { useUIStore } from '../stores/uiStore.js';
 import { useCityStore } from '../stores/cityStore.js';
@@ -10,6 +10,8 @@ import { isAllowedLiveWorldSurfaceModule } from '../systems/world/liveWorldLeakA
 import { resolveBountyDestination } from '../utils/bountyRouting.js';
 import { formatNumber } from '../utils/numbers.js';
 import { SaveService } from '../services/save/SaveService.js';
+import { PERF_LABELS } from '../services/performance/index.js';
+import { PerfProfiler, useRenderCounter } from '../services/performance/perfReact.js';
 import './Header.scss';
 
 const EMPTY_CITY_MODULES: readonly string[] = Object.freeze([]);
@@ -18,6 +20,7 @@ const EMPTY_CITY_MODULES: readonly string[] = Object.freeze([]);
  * Header component - Top bar with game stats and save indicator
  */
 export function Header() {
+  useRenderCounter(PERF_LABELS.renderHeader);
   const qi = useGameStore((state) => state.qi);
   const qiPerSecond = useGameStore((state) => state.qiPerSecond);
   const realm = useGameStore((state) => state.realm);
@@ -26,20 +29,15 @@ export function Header() {
   const headerTone = useUIStore((state) => state.headerTone);
 
   const currentCityId = useCityStore((state) => state.currentCityId);
-  const trackedByCityId = useBountyStore((state) => state.trackedByCityId);
-  const activeByCityId = useBountyStore((state) => state.activeByCityId);
-  const citiesById = useContentStore((state) => state.maps.citiesById);
-
-  const trackedId = currentCityId ? trackedByCityId[currentCityId] ?? null : null;
-  const trackedBounty = useMemo(() => {
+  const trackedId = useBountyStore((state) => (currentCityId ? state.trackedByCityId[currentCityId] ?? null : null));
+  const trackedBounty = useBountyStore((state) => {
     if (!currentCityId || !trackedId) return null;
-    const activeBounties = activeByCityId[currentCityId];
+    const activeBounties = state.activeByCityId[currentCityId];
     if (!activeBounties) return null;
     return activeBounties.find((entry) => entry.instanceId === trackedId) ?? null;
-  }, [activeByCityId, currentCityId, trackedId]);
-  const currentCityModules = useMemo(
-    () => (currentCityId ? citiesById[currentCityId]?.modules ?? EMPTY_CITY_MODULES : EMPTY_CITY_MODULES),
-    [citiesById, currentCityId],
+  });
+  const currentCityModules = useContentStore(
+    (state) => (currentCityId ? state.maps.citiesById[currentCityId]?.modules ?? EMPTY_CITY_MODULES : EMPTY_CITY_MODULES),
   );
 
   const [lastSavedText, setLastSavedText] = useState<string>('Never');
@@ -97,6 +95,7 @@ export function Header() {
   }, []);
 
   return (
+    <PerfProfiler id={PERF_LABELS.renderHeader}>
     <header className={`header ${headerTone === 'light' ? 'header--lightTitles' : ''}`}>
       <div className='headerBar'>
         <div className='headerStatBlock'>
@@ -148,5 +147,6 @@ export function Header() {
         </div>
       </div>
     </header>
+    </PerfProfiler>
   );
 }

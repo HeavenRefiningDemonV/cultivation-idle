@@ -7,6 +7,8 @@ import { useExpeditionStore } from '../../../stores/expeditionStore.js';
 import { buildExpeditionsExactSurfaceFromStores } from './buildExpeditionsExactSurface.js';
 import { ExpeditionsExactScreen } from './ExpeditionsExactScreen.js';
 import { useExpeditionsExactActionController } from './useExpeditionsExactActionController.js';
+import { PERF_LABELS, time } from '../../../services/performance/index.js';
+import { PerfProfiler, useRenderCounter } from '../../../services/performance/perfReact.js';
 import './ExpeditionsExactScreen.scss';
 
 export interface ExpeditionsExactScreenOwnerProps {
@@ -42,6 +44,7 @@ function useExactPlaneScale(containerRef: React.RefObject<HTMLElement | null>) {
 }
 
 export function ExpeditionsExactScreenOwner({ cityId, forceFixture = false }: ExpeditionsExactScreenOwnerProps) {
+  useRenderCounter(PERF_LABELS.renderExpeditionsExactScreenOwner);
   const ownerRef = useRef<HTMLDivElement | null>(null);
   const scale = useExactPlaneScale(ownerRef);
   const [selectedRouteId, setSelectedRouteId] = useState<string | null>(null);
@@ -49,28 +52,12 @@ export function ExpeditionsExactScreenOwner({ cityId, forceFixture = false }: Ex
   const [selectedSlotIndex, setSelectedSlotIndex] = useState<number | null>(null);
   const [now, setNow] = useState(() => Date.now());
 
-  const contentSignature = useContentStore((state) => [
-    state.isLoaded ? 'loaded' : 'unloaded',
-    state.citiesSorted.length,
-    state.raw?.expeditions?.types?.length ?? 0,
-    state.raw?.expeditions?.durations?.length ?? 0,
-    Object.keys(state.maps.itemsById).length,
-  ].join('|'));
+  const contentVersion = useContentStore((state) => state.contentVersion);
   const citySignature = useCityStore((state) => `${state.currentCityId}|${state.unlockedCityIds.join(',')}`);
-  const expeditionSignature = useExpeditionStore((state) => JSON.stringify({
-    slots: state.slots,
-    active: state.active.map((run) => [
-      run.slotIndex,
-      run.expeditionTypeId,
-      run.durationId,
-      run.status,
-      run.endsAt,
-    ]),
-  }));
-  const bountySignature = useBountyStore((state) => JSON.stringify({
-    tracked: cityId ? state.trackedByCityId[cityId] ?? null : null,
-    active: cityId ? state.activeByCityId[cityId]?.map((entry) => [entry.instanceId, entry.kind]) : [],
-  }));
+  const expeditionVersion = useExpeditionStore((state) => state.expeditionVersion);
+  const bountyVersion = useBountyStore((state) =>
+    cityId ? state.bountyVersionByCityId[cityId] ?? 0 : state.bountyVersion,
+  );
   const tick = useExpeditionStore((state) => state.tick);
 
   useEffect(() => {
@@ -83,19 +70,19 @@ export function ExpeditionsExactScreenOwner({ cityId, forceFixture = false }: Ex
   }, [forceFixture, tick]);
 
   const storeInvalidationKey = useMemo(
-    () => [contentSignature, citySignature, expeditionSignature, bountySignature].join('||'),
-    [bountySignature, citySignature, contentSignature, expeditionSignature],
+    () => [contentVersion, citySignature, expeditionVersion, bountyVersion].join('||'),
+    [bountyVersion, citySignature, contentVersion, expeditionVersion],
   );
 
   const surface = useMemo(() => {
     void storeInvalidationKey;
-    return buildExpeditionsExactSurfaceFromStores(cityId, {
+    return time(PERF_LABELS.surfaceExpeditions, () => buildExpeditionsExactSurfaceFromStores(cityId, {
       mode: forceFixture ? 'fixture' : 'live',
       selectedRouteId,
       selectedDurationId,
       selectedSlotIndex,
       now,
-    });
+    }));
   }, [cityId, forceFixture, now, selectedDurationId, selectedRouteId, selectedSlotIndex, storeInvalidationKey]);
 
   useEffect(() => {
@@ -124,6 +111,7 @@ export function ExpeditionsExactScreenOwner({ cityId, forceFixture = false }: Ex
   });
 
   return (
+    <PerfProfiler id={PERF_LABELS.renderExpeditionsExactScreenOwner}>
     <div
       ref={ownerRef}
       className="expeditionsExactScreenOwner"
@@ -142,5 +130,6 @@ export function ExpeditionsExactScreenOwner({ cityId, forceFixture = false }: Ex
         onSlotAction={actions.slotAction}
       />
     </div>
+    </PerfProfiler>
   );
 }

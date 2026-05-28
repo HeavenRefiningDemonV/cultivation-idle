@@ -1,0 +1,282 @@
+{
+  "focusButtons": [
+    {
+      "i": 0,
+      "cls": "cultivationExactDoctrineSeal cultivationExactDoctrineSeal--lotus",
+      "text": "Heart LawNo Heart Law selected",
+      "disabled": false,
+      "rect": {
+        "x": 1113,
+        "y": 307.609375,
+        "w": 221.09375,
+        "h": 78
+      }
+    },
+    {
+      "i": 1,
+      "cls": "cultivationExactDoctrineSeal cultivationExactDoctrineSeal--jade",
+      "text": "Breath / FocusBalanced",
+      "disabled": false,
+      "rect": {
+        "x": 1113,
+        "y": 479.609375,
+        "w": 221.09375,
+        "h": 78
+      }
+    },
+    {
+      "i": 2,
+      "cls": "lifeStartBreathChoice lifeStartBreathChoice--selected",
+      "text": "ChosenBalancedNeutral cycle. Steady Qi flow, steady comprehension, and steady stability.Best for: cultivate, recoverSele",
+      "disabled": false,
+      "rect": {
+        "x": 182.5,
+        "y": 432.921875,
+        "w": 174.15625,
+        "h": 248.859375
+      }
+    },
+    {
+      "i": 3,
+      "cls": "lifeStartBreathChoice",
+      "text": "DisciplineSafeControlled cycle. Slower Qi flow in exchange for better comprehension and better stability.Best for: prepa",
+      "disabled": false,
+      "rect": {
+        "x": 366.65625,
+        "y": 432.921875,
+        "w": 174.15625,
+        "h": 248.859375
+      }
+    },
+    {
+      "i": 4,
+      "cls": "lifeStartBreathChoice",
+      "text": "DisciplineFastAggressive cycle. Faster Qi flow in exchange for worse comprehension and worse stability.Best for: push fa",
+      "disabled": false,
+      "rect": {
+        "x": 550.8125,
+        "y": 432.921875,
+        "w": 174.15625,
+        "h": 248.859375
+      }
+    }
+  ],
+  "overlay9": 0,
+  "logs9": [
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"
+    },
+    {
+      "type": "log",
+      "text": "[App] Initializing game..."
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Initializing game..."
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Store dependencies wired"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Prestige store initialized"
+    },
+    {
+      "type": "log",
+      "text": "[SpiritRoot] Generated: Mortal fire (59% purity)"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Generated initial spirit root"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] No save found, starting new game"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Added starter items to inventory"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Starting game loop..."
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Game loop started"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Game initialized successfully"
+    },
+    {
+      "type": "log",
+      "text": "[App] Game initialized successfully"
+    },
+    {
+      "type": "log",
+      "text": "[App] Initializing game..."
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Initializing game..."
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Store dependencies wired"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Prestige store initialized"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] No save found, starting new game"
+    },
+    {
+      "type": "warning",
+      "text": "[GameLoop] Already running"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Game initialized successfully"
+    },
+    {
+      "type": "log",
+      "text": "[App] Game initialized successfully"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Technique counts by path: Heaven=20, Earth=20, Martial=20"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=heaven: 6"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=earth: 6"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=martial: 6"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=heaven: 7"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=earth: 9"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=martial: 8"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=heaven: 9"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=earth: 9"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=martial: 10"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=3 (city_lotusford) path=heaven: 10"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=3 (city_lotusford) path=earth: 10"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=3 (city_lotusford) path=martial: 10"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=heaven: 10"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=earth: 10"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=martial: 10"
+    },
+    {
+      "type": "info",
+      "text": "[Content] Loaded 5 cities, 60 techniques (H/E/M: 20/20/20)"
+    },
+    {
+      "type": "info",
+      "text": "[Content] Prestige upgrades: 27"
+    },
+    {
+      "type": "log",
+      "text": "[SaveLoad] Saving game..."
+    },
+    {
+      "type": "log",
+      "text": "[SaveLoad] Game saved successfully at 28/05/2026, 16:12:04"
+    },
+    {
+      "type": "requestfailed",
+      "text": "http://127.0.0.1:5173/audio/ui_click_primary.ogg net::ERR_ABORTED"
+    },
+    {
+      "type": "script",
+      "text": "clicked Skip intro"
+    },
+    {
+      "type": "script",
+      "text": "clicked Select heaven"
+    },
+    {
+      "type": "script",
+      "text": "clicked selected heart law card"
+    },
+    {
+      "type": "script",
+      "text": "clicked heart law next"
+    },
+    {
+      "type": "script",
+      "text": "failed selected/first focus card: locator.click: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button').filter({ hasText: /Balanced|Selected|Chosen/ }).first()\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"button\" data-doctrine-id=\"breathFocus\" class=\"cultivationExactDoctrineSeal cultivationExactDoctrineSeal--jade\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scro"
+    },
+    {
+      "type": "script",
+      "text": "failed breath next: locator.click: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button').filter({ hasText: /^Next$|Begin|Confirm|Start/ }).last()\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"button\" data-action-key=\"startCultivation\" title=\"Begin meditation through the activity gate.\" class=\"cultivationExactCommandButton cultivationExactCommandButton--secondary cultivationExactCommandButton--cultivate\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be "
+    },
+    {
+      "type": "script",
+      "text": "failed nav World: locator.click: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button').filter({ hasText: /^World$/ }).first()\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"button\" class=\"bottomNavDock__button bottomTabBarButton button-standard uiNoShift bottomTabBarButton\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b"
+    },
+    {
+      "type": "script",
+      "text": "failed nav Status: locator.click: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button').filter({ hasText: /^Status$/ }).first()\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"button\" class=\"bottomNavDock__button bottomTabBarButton button-standard uiNoShift bottomTabBarButton\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed"
+    }
+  ],
+  "store9": [
+    {
+      "key": "cultivation-idle-save-v3",
+      "length": 8856
+    }
+  ],
+  "finalStart": "Realm\nQi Condensation\nStage 1\nQi\n1.76K\nCultivation Rate\n63.16 / s\nStability\n0%\nForeground\nIdle\nNext Milestone\nBreakthrough\nNeed\nQi Cap\n100\nAction\nBreak Through\nBreakthrough Ready\nDao\nPath\nHeaven\nSpirit Root\nFire / Mortal\nHeart Law\nNo Heart Law selected\nVerse\nChapter 1\nBreath / Focus\nBalanced\nBreakthrough\nReady\nBREAKTHROUGH READINESS\nQi and gate requirements are ready.\nQi\nReady\nRealm edge\nReached\nGate item\nNot needed now\nQi 1.76K / 100\n+63.16/s\nBreak Through\nStart Cultivation\nStatus\nCultivation\nWorld\nInventory\nTechniques\nRecords\nPrestige\nSettings\nBegin Your New Life\n\nChoose your path, scripture, and initial breath focus before cultivation begins.\n\n1 · Life Path\n2 · Heart Law\n3 · Breath Focus\nLocked Path: Heaven\n\nFast cultivation and technique-led pressure. Heaven converts qi tempo into precise offensive windows, but its survival floor is thinner and greed is punished.\n\nprecision_pressure\nBreath: Balanced\nChoose Breath Focus\n\nSelect how this life will pace cultivation breath cycles.\n\nCHOSEN\nBalanced\nNeutral cycle. Steady Qi flow, steady comprehension, and steady stability.\nBest For: Cultivate, Recover\nSelected for this life\nDISCIPLINE\nSafe\nControlled cycle. Slower Qi flow in exchange for better comprehension and better stability.\nBest For: Prepare Breakthrough, Recover\nSelect focus\nDISCIPLINE\nFast\nAggressive cycle. Faster Qi flow in exchange for worse comprehension and worse stability.\nBest For: Push Fast, Cultivate\nSelect focus\n\nBREATH DISCIPLINE\n\nBalanced\n\nNeutral cycle. Steady Qi flow, steady comprehension, and steady stability.\n\nPath: Heaven • Scripture: Ember Thread Sutra\n\nBEST FOR\n\nCultivate\nRecover\n\nCAUTION\n\nGood default, but it will not specialize verse progress or short burst farming.\n\nBack\nFinish"
+}

@@ -22,6 +22,8 @@ import { buildCultivationExactSurfaceFromStores } from './buildCultivationExactS
 import { CultivationExactScreen } from './CultivationExactScreen.js';
 import { useCultivationExactActionController } from './useCultivationExactActionController.js';
 import { BreakthroughRitualOverlay } from './BreakthroughRitualOverlay.js';
+import { PERF_LABELS, time } from '../../../services/performance/index.js';
+import { PerfProfiler, useRenderCounter } from '../../../services/performance/perfReact.js';
 import './CultivationExactScreen.scss';
 
 export interface CultivationExactScreenOwnerProps {
@@ -41,6 +43,7 @@ function toSurfaceFxQuality(value: string): CultivationExactFxQuality {
 }
 
 export function CultivationExactScreenOwner({ forceFixture = false }: CultivationExactScreenOwnerProps) {
+  useRenderCounter(PERF_LABELS.renderCultivationExactScreenOwner);
   const queryMode = parseModeFromQuery();
   const mode: CultivationExactSurfaceMode = forceFixture ? 'fixture' : queryMode ?? 'live';
   const suppressExactQueryChrome = forceFixture || queryMode !== null;
@@ -89,13 +92,13 @@ export function CultivationExactScreenOwner({ forceFixture = false }: Cultivatio
       activeBuffCount: state.activeCultivationConsumables.length,
     })),
   );
-  const contentSignature = useContentStore((state) => `${state.isLoaded}:${state.raw ? 'content' : 'no-content'}:${Object.keys(state.maps.heartLawsById).length}:${Object.keys(state.maps.itemsById).length}`);
-  const inventorySignature = useInventoryStore((state) => Object.keys(state.items).map((itemId) => `${itemId}:${state.items[itemId]}`).join('|'));
-  const prestigeSignature = usePrestigeStore((state) => JSON.stringify({
+  const contentVersion = useContentStore((state) => state.contentVersion);
+  const inventoryVersion = useInventoryStore((state) => state.inventoryVersion);
+  const prestigeSnapshot = usePrestigeStore(useShallow((state) => ({
     spiritRoot: state.spiritRoot,
     highestRealmReached: state.highestRealmReached,
     prestigeCount: state.prestigeCount,
-  }));
+  })));
   const guidanceSignature = useUIStore(useShallow((state) => ({
     guidanceOath: state.settings.guidanceOath,
     jadeSlipLessons: state.settings.jadeSlipLessons,
@@ -113,7 +116,15 @@ export function CultivationExactScreenOwner({ forceFixture = false }: Cultivatio
     if (!active) return 'none';
     return `${active.type}:${active.startedAt ?? ''}:${active.sourceId ?? ''}:${active.cityId ?? ''}`;
   });
-  const runCompassSignature = JSON.stringify(runCompass.full?.bestNextActions ?? []);
+  const runCompassActionKey = useMemo(
+    () => (runCompass.full?.bestNextActions ?? [])
+      .map((action) => {
+        const entry = action as { id?: string; title?: string; label?: string; detail?: string; priority?: string | number };
+        return `${entry.id ?? ''}:${entry.title ?? entry.label ?? ''}:${entry.detail ?? ''}:${entry.priority ?? ''}`;
+      })
+      .join('|'),
+    [runCompass.full?.bestNextActions],
+  );
   const [buffNow, setBuffNow] = useState(() => Date.now());
   const [dantianFxAnchor, setDantianFxAnchor] = useState<{ x: number; y: number } | null>(null);
   const activeBuffCount = cultivationSignature.activeBuffCount;
@@ -144,27 +155,27 @@ export function CultivationExactScreenOwner({ forceFixture = false }: Cultivatio
   ]);
 
   const baseSurface = useMemo(
-    () => buildCultivationExactSurfaceFromStores({
+    () => time(PERF_LABELS.surfaceCultivation, () => buildCultivationExactSurfaceFromStores({
       mode,
       reducedMotion: prefersReducedMotion,
       fxQuality: toSurfaceFxQuality(effectiveQuality),
       runCompassFull: runCompass.full,
       nowMs: buffNow,
-    }),
+    })),
     [
       activeActivitySignature,
       buffNow,
-      contentSignature,
+      contentVersion,
       cultivationSignature,
       effectiveQuality,
       gameSignature,
       guidanceSignature,
-      inventorySignature,
+      inventoryVersion,
       mode,
       prefersReducedMotion,
-      prestigeSignature,
+      prestigeSnapshot,
       runCompass.full,
-      runCompassSignature,
+      runCompassActionKey,
     ],
   );
 
@@ -204,6 +215,7 @@ export function CultivationExactScreenOwner({ forceFixture = false }: Cultivatio
   const isReady = surface.meta.activityState === 'breakthrough_ready';
 
   return (
+    <PerfProfiler id={PERF_LABELS.renderCultivationExactScreenOwner}>
     <ScreenFxStage
       stageId={FX_STAGE_IDS.cultivation}
       className="cultivationExactFxStage"
@@ -243,5 +255,6 @@ export function CultivationExactScreenOwner({ forceFixture = false }: Cultivatio
         <PerkSelectionModal onClose={hidePerkSelection} realmIndex={perkSelectionRealm} />
       ) : null}
     </ScreenFxStage>
+    </PerfProfiler>
   );
 }

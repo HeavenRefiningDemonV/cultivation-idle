@@ -28,6 +28,8 @@ import {
   createPrestigeLedgerExactMockupFixture,
 } from './buildPrestigeLedgerExactSurface.js';
 import { usePrestigeLedgerActionController } from './usePrestigeLedgerActionController.js';
+import { PERF_LABELS, time } from '../../../services/performance/index.js';
+import { PerfProfiler, useRenderCounter } from '../../../services/performance/perfReact.js';
 
 const missingUpgradeMessage = 'This decree is no longer available.';
 
@@ -40,6 +42,7 @@ const resolvePurchaseError = (reason?: string) => {
 };
 
 export function PrestigeLedgerScreenOwner() {
+  useRenderCounter(PERF_LABELS.renderPrestigeLedgerScreenOwner);
   const fixtureMode = typeof window !== 'undefined'
     && new URLSearchParams(window.location.search).get('prestigeLedgerMode') === 'fixture';
   const totalAP = usePrestigeStore((state) => state.totalAP);
@@ -113,9 +116,9 @@ export function PrestigeLedgerScreenOwner() {
   const heartLawName = selectedHeartLawId ? heartLawsById[selectedHeartLawId]?.name ?? null : null;
 
   const surface = useMemo(() => {
-    if (fixtureMode) return createPrestigeLedgerExactMockupFixture();
+    if (fixtureMode) return time(PERF_LABELS.surfacePrestige, () => createPrestigeLedgerExactMockupFixture());
 
-    return buildPrestigeLedgerExactSurfaceFromStores({
+    return time(PERF_LABELS.surfacePrestige, () => buildPrestigeLedgerExactSurfaceFromStores({
     mode: 'live',
     prestige: {
       totalAP,
@@ -145,7 +148,7 @@ export function PrestigeLedgerScreenOwner() {
     resolvedGateCount,
     visibleUpgrades,
     postResetReclaimObjective,
-    });
+    }));
   }, [
     advisor.resetPreview,
     advisor.stateDetail,
@@ -328,6 +331,7 @@ export function PrestigeLedgerScreenOwner() {
   };
 
   return (
+    <PerfProfiler id={PERF_LABELS.renderPrestigeLedgerScreenOwner}>
     <div className={`prestigeLedgerOwner${apPulse ? ' prestigeLedgerOwner--apPulse' : ''}`}>
       <PrestigeLedgerExactScreen
         surface={surface}
@@ -407,6 +411,7 @@ export function PrestigeLedgerScreenOwner() {
         </div>
       ) : null}
     </div>
+    </PerfProfiler>
   );
 }
 

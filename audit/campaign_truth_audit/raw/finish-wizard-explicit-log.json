@@ -1,0 +1,313 @@
+{
+  "buttons10": [
+    {
+      "i": 0,
+      "text": "Next MilestoneBreakthrough",
+      "cls": "cultivationExactSealCard cultivationExactSealCard--gold",
+      "disabled": false,
+      "rect": {
+        "x": 36,
+        "y": 135.609375,
+        "w": 222,
+        "h": 104
+      }
+    },
+    {
+      "i": 1,
+      "text": "Start Cultivation",
+      "cls": "cultivationExactCommandButton cultivationExactCommandButton--secondary cultivationExactCommandButton--cultivate",
+      "disabled": false,
+      "rect": {
+        "x": 549.3125,
+        "y": 656.71875,
+        "w": 265.34375,
+        "h": 32
+      }
+    },
+    {
+      "i": 2,
+      "text": "ChosenBalancedNeutral cycle. Steady Qi flow, steady comprehension, and steady stability.Best for: cultivate, recoverSelected for this life",
+      "cls": "lifeStartBreathChoice lifeStartBreathChoice--selected",
+      "disabled": false,
+      "rect": {
+        "x": 182.5,
+        "y": 432.921875,
+        "w": 174.15625,
+        "h": 248.859375
+      }
+    }
+  ],
+  "buttonsAfter": [
+    {
+      "i": 0,
+      "text": "Next MilestoneBreakthrough",
+      "cls": "cultivationExactSealCard cultivationExactSealCard--gold",
+      "disabled": false,
+      "rect": {
+        "x": 36,
+        "y": 135.609375,
+        "w": 222,
+        "h": 104
+      }
+    },
+    {
+      "i": 10,
+      "text": "Start Cultivation",
+      "cls": "cultivationExactCommandButton cultivationExactCommandButton--secondary cultivationExactCommandButton--cultivate",
+      "disabled": false,
+      "rect": {
+        "x": 549.3125,
+        "y": 656.71875,
+        "w": 265.34375,
+        "h": 32
+      }
+    },
+    {
+      "i": 11,
+      "text": "Status",
+      "cls": "bottomNavDock__button bottomTabBarButton button-standard uiNoShift bottomTabBarButton",
+      "disabled": false,
+      "rect": {
+        "x": 102.125,
+        "y": 698.890625,
+        "w": 141.59375,
+        "h": 61.109375
+      }
+    },
+    {
+      "i": 12,
+      "text": "Cultivation",
+      "cls": "bottomNavDock__button bottomNavDock__button--active bottomTabBarButton bottomTabBarButton--active button-standard uiNoShift bottomTabBarButton",
+      "disabled": false,
+      "rect": {
+        "x": 247.71875,
+        "y": 698.890625,
+        "w": 141.59375,
+        "h": 61.109375
+      }
+    },
+    {
+      "i": 13,
+      "text": "World",
+      "cls": "bottomNavDock__button bottomTabBarButton button-standard uiNoShift bottomTabBarButton",
+      "disabled": false,
+      "rect": {
+        "x": 393.3125,
+        "y": 698.890625,
+        "w": 141.59375,
+        "h": 61.109375
+      }
+    }
+  ],
+  "overlayCount10": 0,
+  "logs10": [
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"
+    },
+    {
+      "type": "log",
+      "text": "[App] Initializing game..."
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Initializing game..."
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Store dependencies wired"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Prestige store initialized"
+    },
+    {
+      "type": "log",
+      "text": "[SpiritRoot] Generated: Mortal water (76% purity)"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Generated initial spirit root"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] No save found, starting new game"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Added starter items to inventory"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Starting game loop..."
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Game loop started"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Game initialized successfully"
+    },
+    {
+      "type": "log",
+      "text": "[App] Game initialized successfully"
+    },
+    {
+      "type": "log",
+      "text": "[App] Initializing game..."
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Initializing game..."
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Store dependencies wired"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Prestige store initialized"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] No save found, starting new game"
+    },
+    {
+      "type": "warning",
+      "text": "[GameLoop] Already running"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Game initialized successfully"
+    },
+    {
+      "type": "log",
+      "text": "[App] Game initialized successfully"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Technique counts by path: Heaven=20, Earth=20, Martial=20"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=heaven: 6"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=earth: 6"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=martial: 6"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=heaven: 7"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=earth: 9"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=martial: 8"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=heaven: 9"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=earth: 9"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=martial: 10"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=3 (city_lotusford) path=heaven: 10"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=3 (city_lotusford) path=earth: 10"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=3 (city_lotusford) path=martial: 10"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=heaven: 10"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=earth: 10"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=martial: 10"
+    },
+    {
+      "type": "info",
+      "text": "[Content] Loaded 5 cities, 60 techniques (H/E/M: 20/20/20)"
+    },
+    {
+      "type": "info",
+      "text": "[Content] Prestige upgrades: 27"
+    },
+    {
+      "type": "log",
+      "text": "[SaveLoad] Saving game..."
+    },
+    {
+      "type": "log",
+      "text": "[SaveLoad] Game saved successfully at 28/05/2026, 16:12:58"
+    },
+    {
+      "type": "requestfailed",
+      "text": "http://127.0.0.1:5173/audio/ui_click_primary.ogg net::ERR_ABORTED"
+    },
+    {
+      "type": "script",
+      "text": "clicked Skip"
+    },
+    {
+      "type": "script",
+      "text": "clicked Select heaven"
+    },
+    {
+      "type": "script",
+      "text": "clicked selected heart law card"
+    },
+    {
+      "type": "script",
+      "text": "clicked heart law next"
+    },
+    {
+      "type": "script",
+      "text": "clicked first breath card"
+    },
+    {
+      "type": "script",
+      "text": "failed breath next explicit: locator.click: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button').filter({ hasText: /^Next$/ }).last()\u001b[22m\n"
+    },
+    {
+      "type": "script",
+      "text": "failed final visible primary: locator.click: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.lifeStartWizardOverlay button, .lifeStartWizardModal button').filter({ hasText: /Begin|Confirm|Start|Complete|Enter|Next/ }).last()\u001b[22m\n"
+    },
+    {
+      "type": "script",
+      "text": "failed nav World after final: locator.click: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button').filter({ hasText: /^World$/ }).first()\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"button\" class=\"bottomNavDock__button bottomTabBarButton button-standard uiNoShift bottomTabBarButton\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b"
+    }
+  ]
+}

@@ -14,7 +14,6 @@ import { useCultivationStore } from './cultivationStore.js';
 import { getHeartLawBonuses } from '../systems/heartLaw/heartLawLogic.js';
 import { useContentStore } from './contentStore.js';
 import { useCityStore } from './cityStore.js';
-import { useInventoryStore } from './inventoryStore.js';
 import { getLiveRealmByIndex } from '../systems/progression/runtime/index.js';
 import { performPrestigeReset as performCentralPrestigeReset } from '../services/prestige/PrestigeResetService.js';
 import { useTrialStore } from './trialStore.js';
@@ -22,6 +21,8 @@ import { progressionTimingTracker } from '../services/diagnostics/progressionTim
 import { adaptProgressionAuthoredContent } from '../systems/progression/contract/contentAdapter.js';
 import { getProgressionContract } from '../systems/progression/contract/progressionContract.js';
 import { GameEvents } from '../services/events/GameEvents.js';
+import { PERF_LABELS, incrementCounter, startTimer, time } from '../services/performance/index.js';
+import { bumpVersion } from './versionCounters.js';
 /**
  * Lazy getter for inventory store to avoid circular dependency
  */
@@ -62,6 +63,9 @@ const createInitialGameState = () => ({
     activeBuffs: [],
     absorptionShield: '0',
     absorptionExpiresAt: null,
+    realmVersion: 0,
+    qiDisplayVersion: 0,
+    statsVersion: 0,
     selectedPath: null,
     focusMode: 'balanced',
     pathPerks: [],
@@ -82,6 +86,31 @@ const createInitialGameState = () => ({
     lastActiveTime: Date.now(),
     runStartTime: Date.now(),
 });
+const getQiDisplayBucket = (value) => {
+    try {
+        return D(value).floor().toString();
+    }
+    catch {
+        return '0';
+    }
+};
+const QI_DISPLAY_FLUSH_INTERVAL_MS = 1000;
+const ACTIVITY_TIME_HEARTBEAT_MS = 10_000;
+let pendingQiGain = D(0);
+let lastQiDisplayFlushAt = 0;
+function resetPendingQiGain() {
+    pendingQiGain = D(0);
+    lastQiDisplayFlushAt = 0;
+}
+const sameStats = (left, right) => left.hp === right.hp
+    && left.maxHp === right.maxHp
+    && left.atk === right.atk
+    && left.def === right.def
+    && left.crit === right.crit
+    && left.critDmg === right.critDmg
+    && left.dodge === right.dodge
+    && left.regen === right.regen
+    && left.speed === right.speed;
 function unlockContentForRealm(realmIndex) {
     try {
         const zoneStore = useZoneStore.getState();
@@ -107,64 +136,89 @@ export const useGameStore = create()(immer((set, get) => ({
     /**
      * Main game tick - called regularly to update Qi and state
      */
-    tick: (deltaTime) => {
+    tick: (deltaTime) => time(PERF_LABELS.gameStoreTick, () => {
         const tickTimestamp = Date.now();
-        get().removeExpiredBuffs();
+        time(PERF_LABELS.gameStoreTickBuffCleanup, () => get().removeExpiredBuffs());
+        const current = get();
+        const breath = getBreathModeMultipliers(useHeartLawStore.getState().breathMode);
+        time(PERF_LABELS.gameStoreTickCultivationConsumableCleanup, () => {
+            useCultivationStore.getState().clearExpiredCultivationConsumables(tickTimestamp);
+        });
+        const endQi = startTimer(PERF_LABELS.gameStoreTickQi);
+        try {
+            pendingQiGain = pendingQiGain.plus(multiply(current.qiPerSecond, (deltaTime / 1000) * breath.qiRateMult));
+        }
+        finally {
+            endQi();
+        }
+        if (lastQiDisplayFlushAt === 0) {
+            lastQiDisplayFlushAt = tickTimestamp;
+        }
+        const shouldFlushQi = pendingQiGain.greaterThan(0)
+            && tickTimestamp - lastQiDisplayFlushAt >= QI_DISPLAY_FLUSH_INTERVAL_MS;
+        const currentHp = D(current.stats.hp);
+        const maxHp = D(current.stats.maxHp);
+        const shouldRegenHp = currentHp.lessThan(maxHp) && D(current.stats.regen).greaterThan(0);
+        const shouldTouchActiveTime = tickTimestamp - current.lastActiveTime >= ACTIVITY_TIME_HEARTBEAT_MS;
+        if (!shouldFlushQi && !shouldRegenHp && !shouldTouchActiveTime) {
+            return;
+        }
+        incrementCounter(PERF_LABELS.gameStoreSetCalls);
         set((state) => {
-            // Calculate Qi gained this tick
-            const breath = getBreathModeMultipliers(useHeartLawStore.getState().breathMode);
-            useCultivationStore.getState().clearExpiredCultivationConsumables(Date.now());
-            const qiGain = multiply(state.qiPerSecond, (deltaTime / 1000) * breath.qiRateMult);
-            state.qi = add(state.qi, qiGain).toString();
-            // Regenerate HP (if needed for combat)
-            const currentHp = D(state.stats.hp);
-            const maxHp = D(state.stats.maxHp);
-            if (currentHp.lessThan(maxHp)) {
-                const regenAmount = multiply(state.stats.regen, deltaTime / 1000);
-                const newHp = Decimal.min(add(currentHp, regenAmount), maxHp);
-                state.stats.hp = newHp.toString();
+            if (shouldFlushQi) {
+                const previousQiDisplayBucket = getQiDisplayBucket(state.qi);
+                state.qi = D(state.qi).plus(pendingQiGain).toString();
+                pendingQiGain = D(0);
+                lastQiDisplayFlushAt = tickTimestamp;
+                if (getQiDisplayBucket(state.qi) !== previousQiDisplayBucket) {
+                    state.qiDisplayVersion = bumpVersion(state.qiDisplayVersion);
+                }
+            }
+            const endHpRegen = startTimer(PERF_LABELS.gameStoreTickHpRegen);
+            try {
+                if (shouldRegenHp) {
+                    const regenAmount = multiply(state.stats.regen, deltaTime / 1000);
+                    const newHp = Decimal.min(add(D(state.stats.hp), regenAmount), D(state.stats.maxHp));
+                    const nextHp = newHp.toString();
+                    if (state.stats.hp !== nextHp) {
+                        state.stats.hp = nextHp;
+                        state.statsVersion = bumpVersion(state.statsVersion);
+                    }
+                }
+            }
+            finally {
+                endHpRegen();
             }
             state.lastTickTime = tickTimestamp;
-            state.lastActiveTime = state.lastTickTime;
+            if (shouldTouchActiveTime) {
+                state.lastActiveTime = tickTimestamp;
+            }
         });
-        const content = useContentStore.getState().raw;
-        if (content) {
-            try {
-                const contract = getProgressionContract(adaptProgressionAuthoredContent(content));
-                for (const transition of contract.gateTransitions) {
-                    const trial = useContentStore.getState().maps.trialsById[transition.trialId];
-                    const trialProgress = useTrialStore.getState().getProgress(transition.trialId);
-                    const requiredItemSatisfied = trial?.requiredItemId
-                        ? useInventoryStore.getState().getItemCount(trial.requiredItemId) > 0
-                        : true;
-                    progressionTimingTracker.trackGateAvailability({
-                        runStartTime: get().runStartTime,
-                        timestamp: tickTimestamp,
-                        content,
-                        trial,
-                        trialProgress,
-                        realm: get().realm,
-                        qi: get().qi,
-                        breakthroughRequirement: get().getBreakthroughRequirement(),
-                        requiredItemSatisfied,
-                        fromRealmId: transition.fromRealmId,
-                        toRealmId: transition.toRealmId,
-                        gateIndex: (contract.majorRealms[transition.fromRealmId]?.index ?? 0) + 1,
-                        cityId: transition.cityId ?? null,
-                    });
-                }
+    }),
+    flushCultivationAccumulation: (reason = 'manual') => time(PERF_LABELS.cultivationFlushAccumulatedQi, () => {
+        const now = Date.now();
+        if (!pendingQiGain.greaterThan(0))
+            return;
+        incrementCounter(`${PERF_LABELS.cultivationFlushAccumulatedQi}:${reason}`);
+        incrementCounter(PERF_LABELS.gameStoreSetCalls);
+        set((state) => {
+            const previousQiDisplayBucket = getQiDisplayBucket(state.qi);
+            state.qi = D(state.qi).plus(pendingQiGain).toString();
+            pendingQiGain = D(0);
+            lastQiDisplayFlushAt = now;
+            if (getQiDisplayBucket(state.qi) !== previousQiDisplayBucket) {
+                state.qiDisplayVersion = bumpVersion(state.qiDisplayVersion);
             }
-            catch (error) {
-                if (import.meta.env?.DEV) {
-                    console.warn('[GameStore] Failed to evaluate progression timing gate availability', error);
-                }
-            }
-        }
-    },
+            state.lastTickTime = now;
+            state.lastActiveTime = now;
+        });
+    }),
     /**
      * Set the cultivation focus mode
      */
     setFocusMode: (mode) => {
+        if (get().focusMode === mode)
+            return;
         set((state) => {
             state.focusMode = mode;
         });
@@ -183,6 +237,7 @@ export const useGameStore = create()(immer((set, get) => ({
         }
         set((state) => {
             state.selectedPath = path;
+            state.statsVersion = bumpVersion(state.statsVersion);
         });
         // Recalculate derived values
         get().calculateQiPerSecond();
@@ -200,6 +255,7 @@ export const useGameStore = create()(immer((set, get) => ({
         }
         set((state) => {
             state.pathPerks.push(perkId);
+            state.statsVersion = bumpVersion(state.statsVersion);
         });
         // Recalculate derived values with new perk
         get().calculateQiPerSecond();
@@ -227,25 +283,28 @@ export const useGameStore = create()(immer((set, get) => ({
                 state.absorptionExpiresAt = expiresAt;
             }
             state.activeBuffs.push(newBuff);
+            state.statsVersion = bumpVersion(state.statsVersion);
         });
         get().calculatePlayerStats();
     },
     removeExpiredBuffs: () => {
         const now = Date.now();
-        let buffsChanged = false;
+        const current = get();
+        const filtered = current.activeBuffs.filter((buff) => buff.expiresAt > now);
+        const activeShield = filtered.find((buff) => buff.stat === 'absorption' && buff.remainingShield && buff.expiresAt > now);
+        const nextShield = activeShield?.remainingShield ?? '0';
+        const nextShieldExpiresAt = activeShield?.expiresAt ?? null;
+        const buffsChanged = filtered.length !== current.activeBuffs.length;
+        if (!buffsChanged
+            && current.absorptionShield === nextShield
+            && current.absorptionExpiresAt === nextShieldExpiresAt) {
+            return;
+        }
         set((state) => {
-            const filtered = state.activeBuffs.filter((buff) => buff.expiresAt > now);
-            buffsChanged = filtered.length !== state.activeBuffs.length;
             state.activeBuffs = filtered;
-            const activeShield = filtered.find((buff) => buff.stat === 'absorption' && buff.remainingShield && buff.expiresAt > now);
-            if (activeShield) {
-                state.absorptionShield = activeShield.remainingShield ?? '0';
-                state.absorptionExpiresAt = activeShield.expiresAt;
-            }
-            else {
-                state.absorptionShield = '0';
-                state.absorptionExpiresAt = null;
-            }
+            state.absorptionShield = nextShield;
+            state.absorptionExpiresAt = nextShieldExpiresAt;
+            state.statsVersion = bumpVersion(state.statsVersion);
         });
         if (buffsChanged) {
             get().calculatePlayerStats();
@@ -254,8 +313,16 @@ export const useGameStore = create()(immer((set, get) => ({
     applyAbsorptionShield: (damage) => {
         let remainingDamage = D(damage);
         let absorbed = D(0);
+        const current = get();
+        const now = Date.now();
+        const hasActiveShield = current.activeBuffs.some((buff) => buff.stat === 'absorption' && buff.expiresAt > now && buff.remainingShield);
+        if (!hasActiveShield && current.absorptionShield === '0' && current.absorptionExpiresAt === null) {
+            return {
+                remainingDamage: remainingDamage.toString(),
+                absorbed: absorbed.toString(),
+            };
+        }
         set((state) => {
-            const now = Date.now();
             const shieldBuff = state.activeBuffs.find((buff) => buff.stat === 'absorption' && buff.expiresAt > now && buff.remainingShield);
             if (shieldBuff && shieldBuff.remainingShield) {
                 const shieldRemaining = D(shieldBuff.remainingShield);
@@ -266,6 +333,7 @@ export const useGameStore = create()(immer((set, get) => ({
                 shieldBuff.remainingShield = newShieldValue;
                 state.absorptionShield = newShieldValue;
                 state.absorptionExpiresAt = shieldBuff.expiresAt;
+                state.statsVersion = bumpVersion(state.statsVersion);
                 if (D(newShieldValue).lessThanOrEqualTo(0)) {
                     state.activeBuffs = state.activeBuffs.filter((buff) => buff !== shieldBuff);
                 }
@@ -273,6 +341,7 @@ export const useGameStore = create()(immer((set, get) => ({
             else {
                 state.absorptionShield = '0';
                 state.absorptionExpiresAt = null;
+                state.statsVersion = bumpVersion(state.statsVersion);
             }
         });
         return {
@@ -284,6 +353,7 @@ export const useGameStore = create()(immer((set, get) => ({
      * Attempt a breakthrough to the next substage or realm
      */
     breakthrough: () => {
+        get().flushCultivationAccumulation('breakthrough');
         const state = get();
         const breakthroughTimestamp = Date.now();
         const currentRealmIndex = clampRealmIndexToSemesterSlice(state.realm.index);
@@ -340,7 +410,11 @@ export const useGameStore = create()(immer((set, get) => ({
             : null;
         set((state) => {
             // Deduct Qi
+            const previousQiDisplayBucket = getQiDisplayBucket(state.qi);
             state.qi = D(state.qi).minus(requiredQi).toString();
+            if (getQiDisplayBucket(state.qi) !== previousQiDisplayBucket) {
+                state.qiDisplayVersion = bumpVersion(state.qiDisplayVersion);
+            }
             // Increment total auras
             state.totalAuras += 1;
             // Check if advancing to next realm or just next substage
@@ -357,6 +431,7 @@ export const useGameStore = create()(immer((set, get) => ({
                 // Advance substage
                 state.realm.substage += 1;
             }
+            state.realmVersion = bumpVersion(state.realmVersion);
         });
         // Update highest realm in prestige store
         if (_getPrestigeStore) {
@@ -533,8 +608,11 @@ export const useGameStore = create()(immer((set, get) => ({
             qiPerSec = multiply(qiPerSec, D(bonuses.cultivateRateMult));
         }
         qiPerSec = multiply(qiPerSec, D(cultivationStore.getCultivationConsumableModifiers(Date.now()).qiRateMult));
+        const nextQiPerSecond = qiPerSec.toString();
+        if (get().qiPerSecond === nextQiPerSecond)
+            return;
         set((state) => {
-            state.qiPerSecond = qiPerSec.toString();
+            state.qiPerSecond = nextQiPerSecond;
         });
     },
     /**
@@ -727,34 +805,39 @@ export const useGameStore = create()(immer((set, get) => ({
         }
         const newHpValue = Decimal.min(hp, hp.times(hpRatio));
         const activeShield = activeBuffs.find((buff) => buff.stat === 'absorption' && buff.expiresAt > now && buff.remainingShield);
+        const nextStats = {
+            hp: newHpValue.toString(),
+            maxHp: hp.toString(),
+            atk: atk.toString(),
+            def: def.toString(),
+            crit,
+            critDmg,
+            dodge,
+            regen: regen.toString(),
+            speed,
+        };
+        const nextShield = activeShield?.remainingShield ?? '0';
+        const nextShieldExpiresAt = activeShield?.expiresAt ?? null;
+        const buffsChanged = activeBuffs.length !== state.activeBuffs.length
+            || activeBuffs.some((buff, index) => buff !== state.activeBuffs[index]);
+        const statsChanged = !sameStats(state.stats, nextStats);
+        const shieldChanged = state.absorptionShield !== nextShield || state.absorptionExpiresAt !== nextShieldExpiresAt;
+        if (!statsChanged && !buffsChanged && !shieldChanged)
+            return;
         set((state) => {
-            state.stats = {
-                hp: newHpValue.toString(),
-                maxHp: hp.toString(),
-                atk: atk.toString(),
-                def: def.toString(),
-                crit,
-                critDmg,
-                dodge,
-                regen: regen.toString(),
-                speed,
-            };
+            state.stats = nextStats;
             // Keep only valid buffs (drop expired)
             state.activeBuffs = activeBuffs;
-            if (activeShield) {
-                state.absorptionShield = activeShield.remainingShield ?? '0';
-                state.absorptionExpiresAt = activeShield.expiresAt;
-            }
-            else {
-                state.absorptionShield = '0';
-                state.absorptionExpiresAt = null;
-            }
+            state.absorptionShield = nextShield;
+            state.absorptionExpiresAt = nextShieldExpiresAt;
+            state.statsVersion = bumpVersion(state.statsVersion);
         });
     },
     /**
      * Purchase an upgrade tier
      */
     purchaseUpgrade: (type) => {
+        get().flushCultivationAccumulation('purchaseUpgrade');
         const state = get();
         const upgradeConfig = UPGRADE_COSTS[type];
         const currentTier = state.upgradeTiers[type];
@@ -766,9 +849,14 @@ export const useGameStore = create()(immer((set, get) => ({
         }
         set((state) => {
             // Deduct Qi
+            const previousQiDisplayBucket = getQiDisplayBucket(state.qi);
             state.qi = D(state.qi).minus(cost).toString();
+            if (getQiDisplayBucket(state.qi) !== previousQiDisplayBucket) {
+                state.qiDisplayVersion = bumpVersion(state.qiDisplayVersion);
+            }
             // Increment tier
             state.upgradeTiers[type] += 1;
+            state.statsVersion = bumpVersion(state.statsVersion);
         });
         // Recalculate derived values
         if (type === 'idle') {
@@ -811,6 +899,7 @@ export const useGameStore = create()(immer((set, get) => ({
      * Reset the current run (for prestige systems)
      */
     resetRun: () => {
+        resetPendingQiGain();
         const baseState = createInitialGameState();
         set((state) => {
             const preservedAuras = state.totalAuras;
@@ -828,6 +917,7 @@ export const useGameStore = create()(immer((set, get) => ({
         });
     },
     hardResetGameState: () => {
+        resetPendingQiGain();
         const baseState = createInitialGameState();
         set((state) => {
             Object.assign(state, baseState);

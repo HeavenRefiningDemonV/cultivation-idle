@@ -1,0 +1,231 @@
+{
+  "generatedAt": "2026-05-28",
+  "branch": "codex/perf-packet-3-selector-surface-cleanup",
+  "commit": "8a06616eeb177837f6db98702b648f89a3a6d2b2",
+  "findings": [
+    {
+      "id": "CI-AUDIT-001",
+      "title": "Release gate is NO_GO on the current checkout",
+      "severity": "Blocker",
+      "category": "tooling",
+      "status": "confirmed",
+      "reproduction": ["Run npm run release:gate:json"],
+      "evidence": [
+        {"type": "test", "command": "npm run release:gate:json", "result": "fail; overallPass=false; releaseReady=false; 5 unresolved blockers; 1 pending manual; 6 unaccepted waiver candidates"}
+      ],
+      "why_it_matters": "Story and final menu polish would build on a checkout the release gate explicitly marks NO_GO.",
+      "suggested_fix_direction": "Resolve or explicitly waive gate blockers with evidence before tutorial or polish work.",
+      "fix_before_story_tutorial": true,
+      "fix_before_final_menu_polish": true,
+      "dependencies": [],
+      "owner_hint": "Codex packet",
+      "linear_draft": {
+        "title": "Release gate is NO_GO for campaign truth audit baseline",
+        "description": "Current release gate reports unresolved blockers and pending manual coverage. Resolve or waive with evidence.",
+        "labels": ["audit", "blocker", "release-gate"]
+      }
+    },
+    {
+      "id": "CI-AUDIT-002",
+      "title": "Automated fresh-run stops before the expected Spirit Severing cap",
+      "severity": "Blocker",
+      "category": "progression",
+      "status": "confirmed",
+      "reproduction": ["Run npm run release:fresh-run-report:json"],
+      "evidence": [
+        {"type": "test", "command": "npm run release:fresh-run-report:json", "result": "releaseReady=false; normal route final realm was soul_formation instead of spirit_severing"}
+      ],
+      "why_it_matters": "A tutorial cannot safely teach current campaign truth when the authoritative fresh-run report does not reach the expected content cap.",
+      "suggested_fix_direction": "Decide whether Spirit Severing is the current playable cap, then repair the route or adjust the acceptance contract.",
+      "fix_before_story_tutorial": true,
+      "fix_before_final_menu_polish": true,
+      "dependencies": ["CI-AUDIT-001"],
+      "owner_hint": "Codex packet",
+      "linear_draft": {
+        "title": "Fresh-run acceptance stops at Soul Formation instead of Spirit Severing",
+        "description": "Fresh-run report did not reach the expected content cap. Determine intended cap and fix the route or report contract.",
+        "labels": ["audit", "blocker", "progression"]
+      }
+    },
+    {
+      "id": "CI-AUDIT-003",
+      "title": "Balance and route timing probes fail before Foundation entry",
+      "severity": "Blocker",
+      "category": "balance",
+      "status": "confirmed",
+      "reproduction": ["Run npm run balance:report:json", "Run npm run release:route-report:json", "Run npm run release:reclaim-route-report"],
+      "evidence": [
+        {"type": "test", "command": "npm run balance:report:json", "result": "fail; Timing probe ended without milestone: foundation_entry"},
+        {"type": "file", "path": "tests/helpers/balance/runPhaseTimingProbe.ts:161", "detail": "throws when required cumulative milestones are missing"}
+      ],
+      "why_it_matters": "First-gate, first-prestige, and second-life pacing cannot be measured reliably while the route probes cannot reach Foundation entry.",
+      "suggested_fix_direction": "Repair the timing probe setup or the underlying transition conditions, then regenerate balance measurements.",
+      "fix_before_story_tutorial": true,
+      "fix_before_final_menu_polish": true,
+      "dependencies": ["CI-AUDIT-001"],
+      "owner_hint": "Codex packet",
+      "linear_draft": {
+        "title": "Timing probes fail before Foundation entry",
+        "description": "Balance, route, and reclaim reports fail with missing foundation_entry milestone.",
+        "labels": ["audit", "blocker", "balance"]
+      }
+    },
+    {
+      "id": "CI-AUDIT-004",
+      "title": "Fresh life-start allows live Qi and Breakthrough Ready before identity completion",
+      "severity": "High",
+      "category": "player-guidance",
+      "status": "confirmed",
+      "reproduction": ["Open a clean browser context", "Load the app", "Skip the intro", "Observe Qi and Breakthrough state under the path wizard"],
+      "evidence": [
+        {"type": "screenshot", "path": "audit/campaign_truth_audit/screenshots/SS-016-life-start-path-selection.png"},
+        {"type": "runtime", "detail": "Fresh path overlay showed Path No Path selected, Qi over cap, and Breakthrough Ready"}
+      ],
+      "why_it_matters": "The first tutorial beat would be teaching identity while the mechanical loop already advances without that identity.",
+      "suggested_fix_direction": "Gate cultivation ticking and breakthrough actions until life-start path, Heart Law, and breath are completed, or explicitly explain the pre-life state.",
+      "fix_before_story_tutorial": true,
+      "fix_before_final_menu_polish": true,
+      "dependencies": [],
+      "owner_hint": "Codex packet",
+      "linear_draft": {
+        "title": "Life-start wizard does not pause live cultivation truth",
+        "description": "Fresh save can accumulate Qi and show Breakthrough Ready before path and Heart Law are completed.",
+        "labels": ["audit", "high", "life-start", "ui-truth"]
+      }
+    },
+    {
+      "id": "CI-AUDIT-005",
+      "title": "Full contract runner fails on Windows fixture emission",
+      "severity": "High",
+      "category": "tooling",
+      "status": "confirmed",
+      "reproduction": ["Run npm run test:contracts"],
+      "evidence": [
+        {"type": "test", "command": "npm run test:contracts", "result": "fail; TS5033 could not write tmp-progression-fixtures JS files"}
+      ],
+      "why_it_matters": "The audit cannot rely on the full contract suite while the fixture generation step is broken.",
+      "suggested_fix_direction": "Repair tmp fixture cleanup/write permissions or make the test runner use a clean fixture output path.",
+      "fix_before_story_tutorial": true,
+      "fix_before_final_menu_polish": true,
+      "dependencies": [],
+      "owner_hint": "Codex packet",
+      "linear_draft": {
+        "title": "Windows contract fixture emission blocks full contract suite",
+        "description": "npm run test:contracts fails before running the full suite because TypeScript cannot write tmp-progression-fixtures outputs.",
+        "labels": ["audit", "high", "tests"]
+      }
+    },
+    {
+      "id": "CI-AUDIT-006",
+      "title": "Standalone trial lifecycle tests fail on pavilion content fixture shape",
+      "severity": "High",
+      "category": "technical",
+      "status": "confirmed",
+      "reproduction": ["Run the direct compiled high-signal contract command recorded in COMMAND_LOG.md"],
+      "evidence": [
+        {"type": "test", "command": "node --loader=./scripts/relativeJsLoader.mjs --test tmp-tests/tests/contracts/trialLifecycle.test.js", "result": "3 failures; [PavilionContent] manifest root must be an object"}
+      ],
+      "why_it_matters": "Trial lifecycle guardrails cannot be trusted independently even though the narrower P0 gate parity tests pass.",
+      "suggested_fix_direction": "Fix the trial lifecycle fixture content bootstrap and rerun lifecycle tests.",
+      "fix_before_story_tutorial": true,
+      "fix_before_final_menu_polish": true,
+      "dependencies": ["CI-AUDIT-005"],
+      "owner_hint": "Codex packet",
+      "linear_draft": {
+        "title": "Trial lifecycle tests fail from pavilion manifest fixture setup",
+        "description": "Focused lifecycle tests fail with a content fixture shape error, reducing confidence in gate lifecycle coverage.",
+        "labels": ["audit", "high", "tests", "gate-trial"]
+      }
+    },
+    {
+      "id": "CI-AUDIT-007",
+      "title": "Release gate still flags legacy gate/offline/prestige waiver candidates",
+      "severity": "Medium",
+      "category": "technical",
+      "status": "likely",
+      "reproduction": ["Run npm run release:gate:json"],
+      "evidence": [
+        {"type": "test", "command": "npm run release:gate:json", "result": "warning candidates included gate namespace split, offline pipeline split, hidden prestige consumer, and partial prestige reset"}
+      ],
+      "why_it_matters": "The current focused tests are reassuring, but stale runtime-adjacent surfaces can regress campaign truth later.",
+      "suggested_fix_direction": "Convert waiver candidates into explicit accepted waivers or cleanup packets after blocker tests are green.",
+      "fix_before_story_tutorial": false,
+      "fix_before_final_menu_polish": true,
+      "dependencies": ["CI-AUDIT-001"],
+      "owner_hint": "Codex packet",
+      "linear_draft": {
+        "title": "Clean up or waive legacy gate/offline/prestige warning candidates",
+        "description": "Release gate still detects legacy or split surfaces even while focused contracts pass.",
+        "labels": ["audit", "medium", "technical-debt"]
+      }
+    },
+    {
+      "id": "CI-AUDIT-008",
+      "title": "npm audit reports high and moderate dependency vulnerabilities",
+      "severity": "Medium",
+      "category": "security",
+      "status": "confirmed",
+      "reproduction": ["Run npm audit --audit-level=moderate --json"],
+      "evidence": [
+        {"type": "test", "command": "npm audit --audit-level=moderate --json", "result": "fail; 4 vulnerabilities: high xmldom, high vite, moderate brace-expansion, moderate postcss"}
+      ],
+      "why_it_matters": "Vite dev server and parsing dependencies have known advisories. This does not dominate gameplay triage, but it is release hygiene debt.",
+      "suggested_fix_direction": "Update vulnerable dependencies with compatibility checks and rerun build/test/security audit.",
+      "fix_before_story_tutorial": false,
+      "fix_before_final_menu_polish": true,
+      "dependencies": [],
+      "owner_hint": "security",
+      "linear_draft": {
+        "title": "Address npm audit vulnerabilities",
+        "description": "npm audit reports high Vite/xmldom advisories and moderate brace-expansion/postcss advisories.",
+        "labels": ["audit", "security", "medium"]
+      }
+    },
+    {
+      "id": "CI-AUDIT-009",
+      "title": "Production build passes with asset and bundle warnings",
+      "severity": "Medium",
+      "category": "performance",
+      "status": "confirmed",
+      "reproduction": ["Run npm run build"],
+      "evidence": [
+        {"type": "test", "command": "npm run build", "result": "pass with Browserslist stale warning, unresolved InsideDungeon asset path, and chunks over 500 kB"}
+      ],
+      "why_it_matters": "The game is buildable, but asset resolution and bundle size warnings should be cleared before final polish and packaging.",
+      "suggested_fix_direction": "Create a build-warning cleanup packet after campaign blockers are addressed.",
+      "fix_before_story_tutorial": false,
+      "fix_before_final_menu_polish": true,
+      "dependencies": [],
+      "owner_hint": "Codex packet",
+      "linear_draft": {
+        "title": "Clean up build warnings before final polish",
+        "description": "Build passes but warns on unresolved InsideDungeon asset, stale Browserslist data, and large chunks.",
+        "labels": ["audit", "medium", "build"]
+      }
+    },
+    {
+      "id": "CI-AUDIT-010",
+      "title": "Focused path, gate, city, prestige, offline, and prestige catalog contracts pass",
+      "severity": "Info",
+      "category": "progression",
+      "status": "fixed-in-current-build",
+      "reproduction": ["Run the direct compiled high-signal contract command in COMMAND_LOG.md"],
+      "evidence": [
+        {"type": "test", "command": "node --loader=./scripts/relativeJsLoader.mjs --test ...", "result": "29 tests run; 26 pass; failed cases isolated to trialLifecycle content fixture setup"},
+        {"type": "file", "path": "src/stores/gameStore.ts:471", "detail": "breakthrough consumes resolver-derived gate item"},
+        {"type": "file", "path": "src/services/prestige/PrestigeResetService.ts:108", "detail": "central reset orchestrator resets per-life stores and reinitializes city baseline"}
+      ],
+      "why_it_matters": "Several prior high-risk hypotheses appear repaired in the current build, which narrows the next packets to readiness tooling, first-run UX, and route/probe failures.",
+      "suggested_fix_direction": "Preserve these contracts with green test runners while fixing remaining audit blockers.",
+      "fix_before_story_tutorial": false,
+      "fix_before_final_menu_polish": false,
+      "dependencies": [],
+      "owner_hint": "Codex packet",
+      "linear_draft": {
+        "title": "Preserve fixed core campaign contracts",
+        "description": "Path/gate/city/prestige/offline focused contracts pass and should be protected while fixing remaining blockers.",
+        "labels": ["audit", "info", "guardrail"]
+      }
+    }
+  ]
+}

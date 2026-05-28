@@ -19,6 +19,17 @@ export function mergeCultivationConsumableModifiers(consumables, now) {
 export function filterActiveCultivationConsumables(consumables, now) {
     return consumables.filter((entry) => entry.expiresAt > now).map((entry) => ({ ...entry }));
 }
+export function getNextCultivationConsumableExpiryAt(consumables, now) {
+    let nextExpiryAt = null;
+    for (const entry of consumables) {
+        if (!Number.isFinite(entry.expiresAt) || entry.expiresAt <= now)
+            continue;
+        if (nextExpiryAt === null || entry.expiresAt < nextExpiryAt) {
+            nextExpiryAt = entry.expiresAt;
+        }
+    }
+    return nextExpiryAt;
+}
 function toReadModelEntry(entry, now) {
     const familyDef = CULTIVATION_CONSUMABLE_FAMILY_REGISTRY[entry.family];
     const spec = getConsumableSpec(entry.itemId);

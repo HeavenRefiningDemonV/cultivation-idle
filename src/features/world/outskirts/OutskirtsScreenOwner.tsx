@@ -12,6 +12,8 @@ import { isSameOutskirtsActivitySource, isSameOutskirtsCombatSource } from './ge
 import { useOutskirtsActiveClock } from './hooks/useOutskirtsActiveClock.js';
 import { routeCombatAftermathTarget } from '../../combatAftermath/index.js';
 import type { OutskirtsSurfaceMode } from './types.js';
+import { PERF_LABELS, time } from '../../../services/performance/index.js';
+import { PerfProfiler, useRenderCounter } from '../../../services/performance/perfReact.js';
 import './OutskirtsExactMockupScreen.scss';
 import '../../combatAftermath/CombatAftermathCard.scss';
 
@@ -20,6 +22,7 @@ interface OutskirtsScreenOwnerProps {
 }
 
 export function OutskirtsScreenOwner({ cityId }: OutskirtsScreenOwnerProps) {
+  useRenderCounter(PERF_LABELS.renderOutskirtsScreenOwner);
   const city = useContentStore((state) => state.maps.citiesById[cityId]);
   const outskirtsById = useContentStore((state) => state.maps.outskirtsById);
   const getProgress = useOutskirtsStore((state) => state.getProgress);
@@ -76,13 +79,13 @@ export function OutskirtsScreenOwner({ cityId }: OutskirtsScreenOwnerProps) {
   }, [closeWorldBuildingModal]);
 
   const screenSurface = useMemo(
-    () => buildOutskirtsMockupSurfaceFromStores(cityId, {
+    () => time(PERF_LABELS.surfaceOutskirts, () => buildOutskirtsMockupSurfaceFromStores(cityId, {
       previewEncounterId: activityMode === 'active' ? undefined : previewEncounterId ?? undefined,
       allowEncounterPreviewSelection: activityMode !== 'active',
       medicinePouchActionEnabled: true,
       activityMode,
       nowMs: liveNowMs,
-    }),
+    })),
     [activityMode, cityId, previewEncounterId, liveNowMs],
   );
 
@@ -133,6 +136,7 @@ export function OutskirtsScreenOwner({ cityId }: OutskirtsScreenOwnerProps) {
   });
 
   return (
+    <PerfProfiler id={PERF_LABELS.renderOutskirtsScreenOwner}>
     <div className="outskirtsScreenOwner" data-testid="outskirts-view-screen" data-activity-mode={activityMode}>
       <OutskirtsExactMockupScreen
         surface={screenSurface}
@@ -153,5 +157,6 @@ export function OutskirtsScreenOwner({ cityId }: OutskirtsScreenOwnerProps) {
         onAftermathRoute={routeCombatAftermathTarget}
       />
     </div>
+    </PerfProfiler>
   );
 }

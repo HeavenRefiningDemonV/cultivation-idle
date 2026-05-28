@@ -8,6 +8,8 @@ import { useTechCollectionStore } from '../../../stores/techCollectionStore.js';
 import { ManualPavilionExactScreen } from './ManualPavilionExactScreen.js';
 import { buildManualPavilionExactSurfaceFromStores } from './buildManualPavilionExactSurface.js';
 import { useManualPavilionExactActionController } from './useManualPavilionExactActionController.js';
+import { PERF_LABELS, time } from '../../../services/performance/index.js';
+import { PerfProfiler, useRenderCounter } from '../../../services/performance/perfReact.js';
 import './ManualPavilionExactScreen.scss';
 
 export interface ManualPavilionScreenOwnerProps {
@@ -48,6 +50,7 @@ export function ManualPavilionScreenOwner({
   pavilionId = null,
   forceFixture = false,
 }: ManualPavilionScreenOwnerProps) {
+  useRenderCounter(PERF_LABELS.renderManualPavilionScreenOwner);
   const ownerRef = useRef<HTMLDivElement | null>(null);
   const scale = useExactPlaneScale(ownerRef);
   const [selectedSlotIndex, setSelectedSlotIndex] = useState<number | null>(null);
@@ -57,37 +60,16 @@ export function ManualPavilionScreenOwner({
     if (pavilionId) return pavilionId;
     return state.maps.citiesById[cityId]?.refs?.pavilionId ?? null;
   });
-  const contentSignature = useContentStore((state) => [
-    state.isLoaded ? 'loaded' : 'unloaded',
-    state.citiesSorted.length,
-    Object.keys(state.maps.pavilionsById).length,
-    Object.keys(state.maps.techniquesById).length,
-  ].join('|'));
+  const contentVersion = useContentStore((state) => state.contentVersion);
   const hasContentPavilion = useContentStore((state) => Boolean(resolvedPavilionId && state.maps.pavilionsById[resolvedPavilionId]));
-  const stockSignature = useManualPavilionStore((state) => {
-    const stock = resolvedPavilionId ? state.stockByPavilionId[resolvedPavilionId] : null;
-    if (!stock) return 'stock:none';
-    return JSON.stringify({
-      generatedAt: stock.generatedAt,
-      nextRefreshAt: stock.nextRefreshAt,
-      pity: stock.pity,
-      slots: stock.slots.map((slot) => [
-        slot.slotIndex,
-        slot.techniqueId,
-        slot.grade,
-        slot.rarity,
-        slot.sold ? 1 : 0,
-        slot.sealed ? 1 : 0,
-        slot.notSold ? 1 : 0,
-      ]),
-    });
-  });
-  const inventorySignature = useInventoryStore((state) => `${state.currencies.gold}|${state.currencies.merit}|${state.currencies.spiritStones}`);
+  const stockVersion = useManualPavilionStore((state) =>
+    state.pavilionVersionByCityId[cityId] ?? state.stockVersion,
+  );
+  const inventoryVersion = useInventoryStore((state) => state.inventoryVersion);
+  const currencyVersion = useInventoryStore((state) => state.currencyVersion);
   const satchelSignature = useManualSatchelStore((state) => `${state.manuals.length}|${state.activeStudy?.manual.id ?? 'none'}`);
-  const techSignature = useTechCollectionStore((state) => JSON.stringify({
-    unlocked: Object.keys(state.unlockedTechs).filter((techId) => state.unlockedTechs[techId]?.unlocked).length,
-    fragments: Object.entries(state.fragments).reduce((sum, [, qty]) => sum + (Number(qty) || 0), 0),
-  }));
+  const collectionVersion = useTechCollectionStore((state) => state.collectionVersion);
+  const masteryVersion = useTechCollectionStore((state) => state.masteryVersion);
   const ensureStock = useManualPavilionStore((state) => state.ensureStock);
 
   useEffect(() => {
@@ -102,18 +84,26 @@ export function ManualPavilionScreenOwner({
   }, [ensureStock, forceFixture, hasContentPavilion, resolvedPavilionId]);
 
   const storeInvalidationKey = useMemo(
-    () => [contentSignature, stockSignature, inventorySignature, satchelSignature, techSignature].join('||'),
-    [contentSignature, inventorySignature, satchelSignature, stockSignature, techSignature],
+    () => [
+      contentVersion,
+      stockVersion,
+      inventoryVersion,
+      currencyVersion,
+      satchelSignature,
+      collectionVersion,
+      masteryVersion,
+    ].join('||'),
+    [collectionVersion, contentVersion, currencyVersion, inventoryVersion, masteryVersion, satchelSignature, stockVersion],
   );
 
   const surface = useMemo(() => {
     void storeInvalidationKey;
-    return buildManualPavilionExactSurfaceFromStores(cityId, {
+    return time(PERF_LABELS.surfaceManualPavilion, () => buildManualPavilionExactSurfaceFromStores(cityId, {
       mode: forceFixture ? 'fixture' : 'live',
       pavilionId: resolvedPavilionId,
       selectedSlotIndex,
       nowMs: now,
-    });
+    }));
   }, [cityId, forceFixture, now, resolvedPavilionId, selectedSlotIndex, storeInvalidationKey]);
 
   useEffect(() => {
@@ -132,6 +122,7 @@ export function ManualPavilionScreenOwner({
   });
 
   return (
+    <PerfProfiler id={PERF_LABELS.renderManualPavilionScreenOwner}>
     <div
       ref={ownerRef}
       className="manualPavilionExactScreenOwner"
@@ -152,5 +143,6 @@ export function ManualPavilionScreenOwner({
         onOpenSatchel={actions.openSatchel}
       />
     </div>
+    </PerfProfiler>
   );
 }

@@ -15,6 +15,7 @@ import { GameEvents } from '../services/events/GameEvents.js';
 import { useActivityStore } from './activityStore.js';
 import { useCraftSessionStore } from './craftSessionStore.js';
 import { fromForgeJobMode, isForgeModeAllowed } from '../systems/forge/index.js';
+import { bumpVersion } from './versionCounters.js';
 const makeJobId = () => `${Date.now()}_${Math.random().toString(16).slice(2)}`;
 const hashSeed = (value) => {
     let hash = 0;
@@ -114,6 +115,7 @@ export const useProfessionStore = create()(immer((set, get) => ({
     talismanQueue: [],
     forgeQueue: [],
     lastTickAt: 0,
+    professionVersion: 0,
     startAlchemy: (recipeId, qty) => {
         const parsedQty = Math.floor(qty);
         if (!Number.isFinite(parsedQty) || parsedQty <= 0) {
@@ -214,6 +216,7 @@ export const useProfessionStore = create()(immer((set, get) => ({
                 endsAt,
                 cityId,
             });
+            state.professionVersion = bumpVersion(state.professionVersion);
         });
         GameEvents.emit({ type: 'crafting/queue_added', payload: { station: 'alchemy', sourceId: recipeId, qty: amount } });
         return { ok: true };
@@ -321,6 +324,7 @@ export const useProfessionStore = create()(immer((set, get) => ({
                 endsAt,
                 cityId,
             });
+            state.professionVersion = bumpVersion(state.professionVersion);
         });
         GameEvents.emit({ type: 'crafting/queue_added', payload: { station: 'talisman', sourceId: recipeId, qty: amount } });
         return { ok: true };
@@ -508,6 +512,7 @@ export const useProfessionStore = create()(immer((set, get) => ({
                 status,
                 sessionId,
             });
+            state.professionVersion = bumpVersion(state.professionVersion);
         });
         GameEvents.emit({ type: 'crafting/queue_added', payload: { station: 'forge', sourceId: blueprintId, qty: amount } });
         return { ok: true, result: { jobId, sessionId } };
@@ -554,6 +559,7 @@ export const useProfessionStore = create()(immer((set, get) => ({
                     endsAt: now,
                 }
                 : entry);
+            state.professionVersion = bumpVersion(state.professionVersion);
         });
         useActivityStore.getState().stopActivity('forge_complete');
         return { ok: true, result: { performance: finalPerformance, outcome: outcomeResult } };
@@ -620,6 +626,7 @@ export const useProfessionStore = create()(immer((set, get) => ({
         }
         set((state) => {
             state.forgeQueue = state.forgeQueue.filter((entry) => entry.id !== jobId);
+            state.professionVersion = bumpVersion(state.professionVersion);
         });
         GameEvents.emit({ type: 'crafting/queue_completed', payload: { station: 'forge', sourceId: job.blueprintId, qty: job.qty } });
         if (blueprint.type === 'craft') {
@@ -659,10 +666,14 @@ export const useProfessionStore = create()(immer((set, get) => ({
         if (now === lastTickAt)
             return;
         if (now < lastTickAt) {
-            set({ lastTickAt: now });
+            set((state) => {
+                state.lastTickAt = now;
+            });
             return;
         }
-        set({ lastTickAt: now });
+        set((state) => {
+            state.lastTickAt = now;
+        });
     },
     applyOffline: (now) => {
         get().tick(now);
@@ -700,6 +711,7 @@ export const useProfessionStore = create()(immer((set, get) => ({
                     endsAt,
                 };
             });
+            state.professionVersion = bumpVersion(state.professionVersion);
         });
         if (activeForgeSession && !sawForgeSessionMatch) {
             shouldClearForgeSession = true;
@@ -730,6 +742,7 @@ export const useProfessionStore = create()(immer((set, get) => ({
         useRecipeMasteryStore.getState().gainAlchemyMastery(job.recipeId, job.qty, 'idle');
         set((state) => {
             state.alchemyQueue = state.alchemyQueue.filter((entry) => entry.id !== jobId);
+            state.professionVersion = bumpVersion(state.professionVersion);
         });
         GameEvents.emit({ type: 'crafting/queue_completed', payload: { station: 'alchemy', sourceId: job.recipeId, qty: job.qty } });
         const cityId = job.cityId ??
@@ -770,6 +783,7 @@ export const useProfessionStore = create()(immer((set, get) => ({
         }
         set((state) => {
             state.talismanQueue = state.talismanQueue.filter((entry) => entry.id !== jobId);
+            state.professionVersion = bumpVersion(state.professionVersion);
         });
         GameEvents.emit({ type: 'crafting/queue_completed', payload: { station: 'talisman', sourceId: job.recipeId, qty: job.qty } });
         GameEvents.emit({ type: 'talisman/craft_result', payload: { ok: true } });

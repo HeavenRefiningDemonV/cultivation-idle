@@ -1,0 +1,308 @@
+{
+  "overlay11": 0,
+  "storage11": [
+    {
+      "key": "cultivation-idle-save-v3-backup-B",
+      "length": 8876
+    },
+    {
+      "key": "cultivation-idle-save-v3",
+      "length": 8940
+    },
+    {
+      "key": "cultivation-idle-save-v3-backup-C",
+      "length": 8876
+    },
+    {
+      "key": "cultivation-idle-save-v3-backup-A",
+      "length": 8940
+    }
+  ],
+  "logs11": [
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"
+    },
+    {
+      "type": "log",
+      "text": "[App] Initializing game..."
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Initializing game..."
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Store dependencies wired"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Prestige store initialized"
+    },
+    {
+      "type": "log",
+      "text": "[SpiritRoot] Generated: Common wood (55% purity)"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Generated initial spirit root"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] No save found, starting new game"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Added starter items to inventory"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Starting game loop..."
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Game loop started"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Game initialized successfully"
+    },
+    {
+      "type": "log",
+      "text": "[App] Game initialized successfully"
+    },
+    {
+      "type": "log",
+      "text": "[App] Initializing game..."
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Initializing game..."
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Store dependencies wired"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Prestige store initialized"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] No save found, starting new game"
+    },
+    {
+      "type": "warning",
+      "text": "[GameLoop] Already running"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Game initialized successfully"
+    },
+    {
+      "type": "log",
+      "text": "[App] Game initialized successfully"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Technique counts by path: Heaven=20, Earth=20, Martial=20"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=heaven: 6"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=earth: 6"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=martial: 6"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=heaven: 7"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=earth: 9"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=martial: 8"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=heaven: 9"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=earth: 9"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=martial: 10"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=3 (city_lotusford) path=heaven: 10"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=3 (city_lotusford) path=earth: 10"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=3 (city_lotusford) path=martial: 10"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=heaven: 10"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=earth: 10"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=martial: 10"
+    },
+    {
+      "type": "info",
+      "text": "[Content] Loaded 5 cities, 60 techniques (H/E/M: 20/20/20)"
+    },
+    {
+      "type": "info",
+      "text": "[Content] Prestige upgrades: 27"
+    },
+    {
+      "type": "log",
+      "text": "[SaveLoad] Saving game..."
+    },
+    {
+      "type": "log",
+      "text": "[SaveLoad] Game saved successfully at 28/05/2026, 16:14:08"
+    },
+    {
+      "type": "requestfailed",
+      "text": "http://127.0.0.1:5173/audio/ui_click_primary.ogg net::ERR_ABORTED"
+    },
+    {
+      "type": "script",
+      "text": "clicked Skip"
+    },
+    {
+      "type": "script",
+      "text": "clicked Select heaven"
+    },
+    {
+      "type": "script",
+      "text": "clicked selected heart law"
+    },
+    {
+      "type": "script",
+      "text": "clicked heart law next"
+    },
+    {
+      "type": "script",
+      "text": "clicked first breath card"
+    },
+    {
+      "type": "log",
+      "text": "[SaveLoad] Saving game..."
+    },
+    {
+      "type": "log",
+      "text": "[SaveLoad] Game saved successfully at 28/05/2026, 16:14:15"
+    },
+    {
+      "type": "log",
+      "text": "[UI] Notification added: success - Life begins: Heaven • Ember Thread Sutra • Balanced"
+    },
+    {
+      "type": "log",
+      "text": "[SaveLoad] Saving game..."
+    },
+    {
+      "type": "log",
+      "text": "[SaveLoad] Game saved successfully at 28/05/2026, 16:14:15"
+    },
+    {
+      "type": "script",
+      "text": "clicked Finish"
+    },
+    {
+      "type": "log",
+      "text": "[UI] Active tab changed to: status"
+    },
+    {
+      "type": "script",
+      "text": "clicked nav Status"
+    },
+    {
+      "type": "script",
+      "text": "failed nav Cultivation: locator.click: Timeout 6000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button').filter({ hasText: /^Cultivation$/ }).first()\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"button\" class=\"bottomNavDock__button bottomTabBarButton button-standard uiNoShift bottomTabBarButton\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n"
+    },
+    {
+      "type": "script",
+      "text": "failed nav World: locator.click: Timeout 6000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button').filter({ hasText: /^World$/ }).first()\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"button\" class=\"bottomNavDock__button bottomTabBarButton button-standard uiNoShift bottomTabBarButton\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n"
+    },
+    {
+      "type": "script",
+      "text": "failed nav Inventory: locator.click: Timeout 6000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button').filter({ hasText: /^Inventory$/ }).first()\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"button\" class=\"bottomNavDock__button bottomTabBarButton button-standard uiNoShift bottomTabBarButton\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n"
+    },
+    {
+      "type": "log",
+      "text": "[SaveLoad] Saving game..."
+    },
+    {
+      "type": "log",
+      "text": "[SaveLoad] Game saved successfully at 28/05/2026, 16:15:08"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Game autosaved"
+    },
+    {
+      "type": "script",
+      "text": "failed nav Techniques: locator.click: Timeout 6000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button').filter({ hasText: /^Techniques$/ }).first()\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"button\" class=\"bottomNavDock__button bottomTabBarButton button-standard uiNoShift bottomTabBarButton\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n"
+    },
+    {
+      "type": "script",
+      "text": "failed nav Records: locator.click: Timeout 6000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button').filter({ hasText: /^Records$/ }).first()\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"button\" class=\"bottomNavDock__button bottomTabBarButton button-standard uiNoShift bottomTabBarButton\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n"
+    },
+    {
+      "type": "script",
+      "text": "failed nav Prestige: locator.click: Timeout 6000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button').filter({ hasText: /^Prestige$/ }).first()\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"button\" class=\"bottomNavDock__button bottomTabBarButton button-standard uiNoShift bottomTabBarButton\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n"
+    },
+    {
+      "type": "script",
+      "text": "failed nav Settings: locator.click: Timeout 6000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button').filter({ hasText: /^Settings$/ }).first()\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"button\" class=\"bottomNavDock__button bottomTabBarButton button-standard uiNoShift bottomTabBarButton\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n"
+    },
+    {
+      "type": "log",
+      "text": "[SaveLoad] Saving game..."
+    },
+    {
+      "type": "log",
+      "text": "[SaveLoad] Game saved successfully at 28/05/2026, 16:16:08"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Game autosaved"
+    },
+    {
+      "type": "script",
+      "text": "failed nav World 1920: locator.click: Timeout 6000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button').filter({ hasText: /^World$/ }).first()\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"button\" class=\"bottomNavDock__button bottomTabBarButton button-standard uiNoShift bottomTabBarButton\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n"
+    }
+  ],
+  "finalStart": "REALM\nQi Condensation\nStage 1/9\nPinewind Hamlet\nPATH\nHeaven\nHEART LAW\nEmber Thread Sutra\nWood\nCommon · 55% purity\nResonant · 2.17x\nFOCUS\nBalanced\nBREATH\nBalanced\nNEXT MAJOR GOAL\nReach Foundation Establishment\n\nAdvance to substage 9 before the gate opens.\n\nMAIN BOTTLENECK\nRealm edge not reached\nRefine Qi until the next gate threshold opens.\nRefine weapon\nQI\n10.82K\nQI / S\n90.94 / s\nSTABILITY\n0/100\nHP\n173.6\nCOMBAT STRENGTH\n226.57\nATTACK\n28.21\nDEFENSE\n9.76\nCRIT RATE\n15%\nFOREGROUND\nIdle\nMILESTONE\nPreparing\n\nAdvance to substage 9 before the gate opens.\n\nQi Condensation\nStage 1/9\nNovice's Clearing\nViable — Apothecary route shows reserve pressure\nReach Foundation Establishment\nAdvance to substage 9 before the gate opens.\nHeaven\nNo stable archetype profile detected yet.\nREALM STEP\nQi Condensation\nStage 1/9\nGATE READINESS\nPreparing\nAdvance to substage 9 before the gate opens.\nNEXT MAJOR GOAL\nReach Foundation Establishment\nAdvance to substage 9 before the gate opens.\nMAIN GAP\nRealm edge not reached\nRealm edge not reached\nCITY\nPinewind Hamlet\nCurrent city anchor for routes and services.\nCULTIVATION BASE\nQI / QI CAP\n10.82K / 100\nCurrent Qi against the next breakthrough threshold.\nCultivation\nCULTIVATION RATE\n90.94 / s\nLive Qi gain rate.\nCultivation\nBREAKTHROUGH STATE\nPreparing\nAdvance to substage 9 before the gate opens.\nReadiness\nSTABILITY\n0/100\nInner stability reserve available for cultivation posture.\nHeart Law\nFOCUS / BREATH\nBalanced / Balanced\nCurrent doctrine posture for Qi, stability, and combat support.\nIdentity & Doctrine\nHEART LAW CHAPTER\nEmber Thread Sutra\nVerse I • Chapter 1\nHeart Law\nCURRENT CULTIVATION ACTIVITY\nIdle\nCultivation is not the foreground activity right now.\nCurrent Work\nMISSION REQUIREMENTS\nREALM EDGE NOT REACHED\nPrimary blocker\nAdvance to substage 9 before the gate opens.\nRefine weapon\nCURRENT STATE\nPriority 1\nBlocked\nApothecary\nViable — Apothecary route shows reserve pressure\nPOUCH FIT\nPriority 1\nApothecary\nbad\nRestock healing\nPOUCH FIT\nPriority 2\nbad\nApothecary\nbad\nLOADOUT COVERAGE\nPriority 1\nTechniques\nBalanced AI is under-supported: the current loadout lacks both survival and boss-pressure tools.\nLOADOUT WARNING\nPriority 1\nTechniques\nBalanced AI is under-supported: the current loadout lacks both survival and boss-pressure tools.\nStudy doctrine\nTOP WARNING\nPriority 2\nBalanced AI is under-supported: the current loadout lacks both survival and boss-pressure tools.\nTechniques\nBalanced AI is under-supported: the current loadout lacks both survival and boss-pressure tools.\nBEST IMPROVEMENTS\nREFINE WEAPON\nCultivation\nRefine Qi until the next gate threshold opens.\nRefine weapon\nOPEN GATE TRIAL\nGate Trial\nInspect the active gate threshold.\nOpen Gate Trial\nRESTOCK HEALING\nApothecary\nConsumable shortages should route to Apothecary Buy first when the current city stocks them and the cap can still cover the gap.\nRestock healing\nSAFETY NET\nSTATE\nToo Early\nNot at final substage yet.\nSafety Net\nPROGRESS\nSafety Net progress: 0 / 3 eligible defea"
+}

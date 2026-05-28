@@ -40,6 +40,7 @@ import {
   sanitizeDaoMandateGuidanceSettings,
 } from '../systems/ui/daoMandate/daoMandateGuidanceSettings.js';
 import { sanitizeDaoMandateLessonMemory } from '../systems/ui/daoMandate/daoMandateLessons.js';
+import { PERF_LABELS, startTimer, time } from '../services/performance/index.js';
 
 /**
  * Save system constants
@@ -160,6 +161,8 @@ function cloneManualSatchelState(source: SaveManualSatchelState): SaveManualSatc
  */
 function gatherGameState(): SaveData {
   const now = Date.now();
+  useGameStore.getState().flushCultivationAccumulation('save');
+  useHeartLawStore.getState().flushInsightProgress(now);
   const gameState = useGameStore.getState();
   const inventoryState = useInventoryStore.getState();
   const combatState = useCombatStore.getState();
@@ -844,8 +847,8 @@ function validateSaveData(data: unknown): data is SaveData {
  */
 function encryptSaveData(data: SaveData): string {
   try {
-    const jsonString = JSON.stringify(data);
-    const encrypted = CryptoJS.AES.encrypt(jsonString, ENCRYPTION_KEY).toString();
+    const jsonString = time(PERF_LABELS.saveStringify, () => JSON.stringify(data));
+    const encrypted = time(PERF_LABELS.saveEncrypt, () => CryptoJS.AES.encrypt(jsonString, ENCRYPTION_KEY).toString());
     return encrypted;
   } catch (error) {
     console.error('Encryption error:', error);
@@ -871,7 +874,7 @@ function decryptSaveData(encrypted: string): DecryptSaveResult {
     }
 
     const data = JSON.parse(jsonString);
-    const migrated = migrateSave(data);
+    const migrated = time(PERF_LABELS.saveMigration, () => migrateSave(data));
     lastLoadMigrationReport = getLastMigrationReport();
     const migrationSummary = lastLoadMigrationReport?.summaryLines.join(' | ');
     if (migrationSummary) {
@@ -922,6 +925,7 @@ export function getLastLoadFailure(): SaveLoadFailure | null {
  * Rotate backup saves (C → B → A → main)
  */
 function rotateBackups(): void {
+  const endBackupRotation = startTimer(PERF_LABELS.saveBackupRotation);
   try {
     // Get current saves
     const mainSave = localStorage.getItem(SAVE_KEY);
@@ -941,6 +945,8 @@ function rotateBackups(): void {
   } catch (error) {
     console.error('Backup rotation error:', error);
     // Don't throw - backup rotation failing shouldn't prevent saving
+  } finally {
+    endBackupRotation();
   }
 }
 
@@ -960,11 +966,12 @@ function quarantineCorruptSlot(slotKey: string, encryptedPayload: string, reason
  * Returns true if successful, false otherwise
  */
 export function saveGame(): boolean {
+  const endSave = startTimer(PERF_LABELS.saveGame);
   try {
     console.log('[SaveLoad] Saving game...');
 
     // Gather state
-    const saveData = gatherGameState();
+    const saveData = time(PERF_LABELS.saveGather, () => gatherGameState());
 
     // Encrypt
     const encrypted = encryptSaveData(saveData);
@@ -973,13 +980,15 @@ export function saveGame(): boolean {
     rotateBackups();
 
     // Save to main slot
-    localStorage.setItem(SAVE_KEY, encrypted);
+    time(PERF_LABELS.saveLocalStorage, () => localStorage.setItem(SAVE_KEY, encrypted));
 
     console.log('[SaveLoad] Game saved successfully at', new Date(saveData.timestamp).toLocaleString());
     return true;
   } catch (error) {
     console.error('[SaveLoad] Save failed:', error);
     return false;
+  } finally {
+    endSave();
   }
 }
 
@@ -1424,6 +1433,7 @@ function applySaveData(saveData: SaveData): void {
  * Returns true if successful, false otherwise
  */
 export function loadGame(): boolean {
+  const endLoad = startTimer(PERF_LABELS.saveLoad);
   try {
     console.log('[SaveLoad] Loading game...');
     clearLoadFailure();
@@ -1496,6 +1506,8 @@ export function loadGame(): boolean {
   } catch (error) {
     console.error('[SaveLoad] Load failed:', error);
     return false;
+  } finally {
+    endLoad();
   }
 }
 
@@ -1720,13 +1732,13 @@ export function exportSave(): string | null {
   try {
     console.log('[SaveLoad] Exporting save...');
 
-    const saveData = gatherGameState();
-    const jsonString = JSON.stringify(saveData);
+    const saveData = time(PERF_LABELS.saveGather, () => gatherGameState());
+    const jsonString = time(PERF_LABELS.saveStringify, () => JSON.stringify(saveData));
 
     // Double encoding: JSON → base64 → encrypt → base64
     // This makes it copy-paste friendly
     const base64Json = btoa(jsonString);
-    const encrypted = CryptoJS.AES.encrypt(base64Json, ENCRYPTION_KEY).toString();
+    const encrypted = time(PERF_LABELS.saveEncrypt, () => CryptoJS.AES.encrypt(base64Json, ENCRYPTION_KEY).toString());
     const exportString = btoa(encrypted);
 
     console.log('[SaveLoad] Save exported successfully');

@@ -2,13 +2,20 @@ import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import { useCityStore } from './cityStore.js';
 import { useContentStore } from './contentStore.js';
+import { bumpVersion } from './versionCounters.js';
 const createInitialEquipmentState = () => ({
     equippedWeaponId: null,
     equippedAccessoryId: null,
     refineLevelBySlot: { weapon: 0, accessory: 0 },
     temperBonusesBySlot: { weapon: [], accessory: [] },
     forgeToolTiers: { anvil: 1, hammer: 1, bellows: 1, quenchTub: 1 },
+    equipmentVersion: 0,
 });
+const sameTemperAffix = (left, right) => !!left
+    && left.id === right.id
+    && left.label === right.label
+    && left.stat === right.stat
+    && left.valuePct === right.valuePct;
 function resolveCityTier() {
     const cityState = useCityStore.getState();
     const contentStore = useContentStore.getState();
@@ -38,13 +45,21 @@ function refineCapForTier(tier) {
 export const useEquipmentStore = create()(immer((set, get) => ({
     ...createInitialEquipmentState(),
     equipWeapon: (itemId) => {
+        const nextItemId = itemId || null;
+        if (get().equippedWeaponId === nextItemId)
+            return;
         set((state) => {
-            state.equippedWeaponId = itemId || null;
+            state.equippedWeaponId = nextItemId;
+            state.equipmentVersion = bumpVersion(state.equipmentVersion);
         });
     },
     equipAccessory: (itemId) => {
+        const nextItemId = itemId || null;
+        if (get().equippedAccessoryId === nextItemId)
+            return;
         set((state) => {
-            state.equippedAccessoryId = itemId || null;
+            state.equippedAccessoryId = nextItemId;
+            state.equipmentVersion = bumpVersion(state.equipmentVersion);
         });
     },
     getRefineCapForCurrentProgress: () => {
@@ -68,8 +83,12 @@ export const useEquipmentStore = create()(immer((set, get) => ({
         const currentLevel = state.refineLevelBySlot[slot];
         const nextLevel = Math.min(cap, currentLevel + amount * addLevel);
         const applied = Math.max(0, nextLevel - currentLevel);
+        if (applied <= 0) {
+            return { ok: true, applied, capped: nextLevel >= cap };
+        }
         set((draft) => {
             draft.refineLevelBySlot[slot] = nextLevel;
+            draft.equipmentVersion = bumpVersion(draft.equipmentVersion);
         });
         return { ok: true, applied, capped: nextLevel >= cap };
     },
@@ -79,12 +98,16 @@ export const useEquipmentStore = create()(immer((set, get) => ({
             const next = [...list];
             const existingIndex = next.findIndex((entry) => entry.id === affix.id);
             if (existingIndex >= 0) {
+                if (sameTemperAffix(next[existingIndex], affix))
+                    return;
                 next[existingIndex] = affix;
             }
             else {
                 next.push(affix);
             }
-            draft.temperBonusesBySlot[slot] = next.slice(-3);
+            const trimmed = next.slice(-3);
+            draft.temperBonusesBySlot[slot] = trimmed;
+            draft.equipmentVersion = bumpVersion(draft.equipmentVersion);
         });
     },
     upgradeForgeTool: (tool, amount = 1) => {
@@ -93,7 +116,11 @@ export const useEquipmentStore = create()(immer((set, get) => ({
             return;
         set((draft) => {
             const current = draft.forgeToolTiers[tool] ?? 1;
-            draft.forgeToolTiers[tool] = Math.min(10, current + increment);
+            const next = Math.min(10, current + increment);
+            if (next === current)
+                return;
+            draft.forgeToolTiers[tool] = next;
+            draft.equipmentVersion = bumpVersion(draft.equipmentVersion);
         });
     },
     getTemperAffixes: (slot) => {

@@ -1,0 +1,166 @@
+[
+  {
+    "type": "debug",
+    "text": "[vite] connecting..."
+  },
+  {
+    "type": "info",
+    "text": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"
+  },
+  {
+    "type": "log",
+    "text": "[App] Initializing game..."
+  },
+  {
+    "type": "log",
+    "text": "[GameLoop] Initializing game..."
+  },
+  {
+    "type": "log",
+    "text": "[GameLoop] Store dependencies wired"
+  },
+  {
+    "type": "log",
+    "text": "[GameLoop] Prestige store initialized"
+  },
+  {
+    "type": "log",
+    "text": "[SpiritRoot] Generated: Mortal wood (62% purity)"
+  },
+  {
+    "type": "log",
+    "text": "[GameLoop] Generated initial spirit root"
+  },
+  {
+    "type": "log",
+    "text": "[GameLoop] No save found, starting new game"
+  },
+  {
+    "type": "log",
+    "text": "[GameLoop] Added starter items to inventory"
+  },
+  {
+    "type": "log",
+    "text": "[GameLoop] Starting game loop..."
+  },
+  {
+    "type": "log",
+    "text": "[GameLoop] Game loop started"
+  },
+  {
+    "type": "log",
+    "text": "[GameLoop] Game initialized successfully"
+  },
+  {
+    "type": "log",
+    "text": "[App] Game initialized successfully"
+  },
+  {
+    "type": "log",
+    "text": "[App] Initializing game..."
+  },
+  {
+    "type": "log",
+    "text": "[GameLoop] Initializing game..."
+  },
+  {
+    "type": "log",
+    "text": "[GameLoop] Store dependencies wired"
+  },
+  {
+    "type": "log",
+    "text": "[GameLoop] Prestige store initialized"
+  },
+  {
+    "type": "log",
+    "text": "[GameLoop] No save found, starting new game"
+  },
+  {
+    "type": "warning",
+    "text": "[GameLoop] Already running"
+  },
+  {
+    "type": "log",
+    "text": "[GameLoop] Game initialized successfully"
+  },
+  {
+    "type": "log",
+    "text": "[App] Game initialized successfully"
+  },
+  {
+    "type": "debug",
+    "text": "[vite] connected."
+  },
+  {
+    "type": "warning",
+    "text": "[ContentValidation] Technique counts by path: Heaven=20, Earth=20, Martial=20"
+  },
+  {
+    "type": "warning",
+    "text": "[ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=heaven: 6"
+  },
+  {
+    "type": "warning",
+    "text": "[ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=earth: 6"
+  },
+  {
+    "type": "warning",
+    "text": "[ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=martial: 6"
+  },
+  {
+    "type": "warning",
+    "text": "[ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=heaven: 7"
+  },
+  {
+    "type": "warning",
+    "text": "[ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=earth: 9"
+  },
+  {
+    "type": "warning",
+    "text": "[ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=martial: 8"
+  },
+  {
+    "type": "warning",
+    "text": "[ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=heaven: 9"
+  },
+  {
+    "type": "warning",
+    "text": "[ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=earth: 9"
+  },
+  {
+    "type": "warning",
+    "text": "[ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=martial: 10"
+  },
+  {
+    "type": "warning",
+    "text": "[ContentValidation] Pavilion pool size city=3 (city_lotusford) path=heaven: 10"
+  },
+  {
+    "type": "warning",
+    "text": "[ContentValidation] Pavilion pool size city=3 (city_lotusford) path=earth: 10"
+  },
+  {
+    "type": "warning",
+    "text": "[ContentValidation] Pavilion pool size city=3 (city_lotusford) path=martial: 10"
+  },
+  {
+    "type": "warning",
+    "text": "[ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=heaven: 10"
+  },
+  {
+    "type": "warning",
+    "text": "[ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=earth: 10"
+  },
+  {
+    "type": "warning",
+    "text": "[ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=martial: 10"
+  },
+  {
+    "type": "info",
+    "text": "[Content] Loaded 5 cities, 60 techniques (H/E/M: 20/20/20)"
+  },
+  {
+    "type": "info",
+    "text": "[Content] Prestige upgrades: 27"
+  }
+]

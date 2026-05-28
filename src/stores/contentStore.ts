@@ -50,6 +50,8 @@ import {
   getPrestigeRuntimeCatalog,
   getVisiblePrestigeUpgrades as getVisiblePrestigeUpgradesFromRuntime,
 } from '../systems/prestige/runtime/prestigeRuntimeCatalog.js';
+import { PERF_LABELS, time } from '../services/performance/index.js';
+import { bumpVersion } from './versionCounters.js';
 
 interface ContentMaps {
   citiesById: Record<string, CityDef>;
@@ -79,6 +81,8 @@ interface ContentStoreState {
   maps: ContentMaps;
   citiesSorted: CityDef[];
   techniquesByPath: Record<'heaven' | 'earth' | 'martial', TechniqueDef[]>;
+  contentVersion: number;
+  lazyPackVersions: Record<string, number>;
   load: () => Promise<boolean>;
   clearLoadedContent: () => void;
   setLoadFailure: (context: ContentLoadFailureContext, error: unknown) => void;
@@ -158,8 +162,11 @@ export const useContentStore = create<ContentStoreState>((set, get) => ({
   maps: emptyMaps,
   citiesSorted: [],
   techniquesByPath: emptyTechniquesByPath,
+  contentVersion: 0,
+  lazyPackVersions: {},
 
   clearLoadedContent: () => {
+    if (!get().isLoaded && get().raw === null) return;
     set({
       raw: null,
       economy: null,
@@ -167,6 +174,7 @@ export const useContentStore = create<ContentStoreState>((set, get) => ({
       citiesSorted: [],
       techniquesByPath: emptyTechniquesByPath,
       isLoaded: false,
+      contentVersion: bumpVersion(get().contentVersion),
     });
   },
 
@@ -204,7 +212,7 @@ export const useContentStore = create<ContentStoreState>((set, get) => ({
 
       try {
         const raw = await resolveLoadAllContent()();
-        const validated = resolveValidateLoadedContent()(raw);
+        const validated = time(PERF_LABELS.contentValidate, () => resolveValidateLoadedContent()(raw));
         const cities = validated.cities;
         const items = validated.items;
         const techniques = validated.techniques;
@@ -218,7 +226,8 @@ export const useContentStore = create<ContentStoreState>((set, get) => ({
         const heartLaws = validated.heart_laws;
         const prestigeUpgrades = validated.prestige_store.upgrades;
 
-        const maps: ContentMaps = {
+        const normalized = time(PERF_LABELS.contentNormalize, () => {
+          const maps: ContentMaps = {
           citiesById: Object.fromEntries(cities.map((city) => [city.id, city])),
           itemsById: Object.fromEntries(items.map((item) => [item.id, item])),
           techniquesById: Object.fromEntries(techniques.map((tech) => [tech.id, tech])),
@@ -233,40 +242,44 @@ export const useContentStore = create<ContentStoreState>((set, get) => ({
           runesById: Object.fromEntries(runes.map((rune) => [rune.id, rune as { id: string; [k: string]: unknown }])),
           heartLawsById: Object.fromEntries(heartLaws.map((law) => [law.id, law])),
           prestigeUpgradesById: Object.fromEntries(
-            prestigeUpgrades.map((upgrade) => [upgrade.id, upgrade]),
+          prestigeUpgrades.map((upgrade) => [upgrade.id, upgrade]),
           ),
-        };
+          };
 
-        const citiesSorted = [...cities].sort((a, b) => a.index - b.index);
+          const citiesSorted = [...cities].sort((a, b) => a.index - b.index);
 
-        const techniquesByPath: Record<'heaven' | 'earth' | 'martial', TechniqueDef[]> = {
-          heaven: [],
-          earth: [],
-          martial: [],
-        };
-        techniques.forEach((tech) => {
-          if (techniquesByPath[tech.path as 'heaven' | 'earth' | 'martial']) {
-            techniquesByPath[tech.path as 'heaven' | 'earth' | 'martial'].push(tech);
-          }
+          const techniquesByPath: Record<'heaven' | 'earth' | 'martial', TechniqueDef[]> = {
+            heaven: [],
+            earth: [],
+            martial: [],
+          };
+          techniques.forEach((tech) => {
+            if (techniquesByPath[tech.path as 'heaven' | 'earth' | 'martial']) {
+              techniquesByPath[tech.path as 'heaven' | 'earth' | 'martial'].push(tech);
+            }
+          });
+
+          return { maps, citiesSorted, techniquesByPath };
         });
 
         console.info(
-          `[Content] Loaded ${cities.length} cities, ${techniques.length} techniques (H/E/M: ${techniquesByPath.heaven.length}/${techniquesByPath.earth.length}/${techniquesByPath.martial.length})`,
+          `[Content] Loaded ${cities.length} cities, ${techniques.length} techniques (H/E/M: ${normalized.techniquesByPath.heaven.length}/${normalized.techniquesByPath.earth.length}/${normalized.techniquesByPath.martial.length})`,
         );
         console.info(`[Content] Prestige upgrades: ${prestigeUpgrades.length}`);
 
-        set({
+        time(PERF_LABELS.contentStorePublish, () => set({
           raw: validated,
           economy: validated.economy,
-          maps,
-          citiesSorted,
-          techniquesByPath,
+          maps: normalized.maps,
+          citiesSorted: normalized.citiesSorted,
+          techniquesByPath: normalized.techniquesByPath,
           isLoaded: true,
           isLoading: false,
           error: null,
           loadFailure: null,
           loadFailureDiagnostics: null,
-        });
+          contentVersion: bumpVersion(get().contentVersion),
+        }));
 
         return true;
       } catch (error) {

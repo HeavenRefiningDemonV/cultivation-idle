@@ -1,0 +1,2718 @@
+{
+  "enabled": true,
+  "source": "query",
+  "startedAt": 11699.900000035763,
+  "exportedAt": 42691.80000001192,
+  "counters": {
+    "ci:longtask:count": {
+      "name": "ci:longtask:count",
+      "count": 76,
+      "lastIncrementAt": 42279
+    },
+    "ci:long-animation-frame:count": {
+      "name": "ci:long-animation-frame:count",
+      "count": 76,
+      "lastIncrementAt": 42279
+    },
+    "ci:scheduler:drain": {
+      "name": "ci:scheduler:drain",
+      "count": 76,
+      "lastIncrementAt": 42279.10000002384
+    },
+    "ci:scheduler:job:run": {
+      "name": "ci:scheduler:job:run",
+      "count": 186,
+      "lastIncrementAt": 42279.30000001192
+    },
+    "ci:scheduler:job:cultivation-authoritative": {
+      "name": "ci:scheduler:job:cultivation-authoritative",
+      "count": 124,
+      "lastIncrementAt": 42279.200000047684
+    },
+    "ci:store:game:setCalls": {
+      "name": "ci:store:game:setCalls",
+      "count": 124,
+      "lastIncrementAt": 42279.200000047684
+    },
+    "ci:scheduler:job:skipped": {
+      "name": "ci:scheduler:job:skipped",
+      "count": 76,
+      "lastIncrementAt": 42279.30000001192
+    },
+    "ci:gameLoop:rafCallback": {
+      "name": "ci:gameLoop:rafCallback",
+      "count": 76,
+      "lastIncrementAt": 42689.10000002384
+    },
+    "ci:scheduler:job:queues-and-expeditions": {
+      "name": "ci:scheduler:job:queues-and-expeditions",
+      "count": 31,
+      "lastIncrementAt": 42279.30000001192
+    },
+    "ci:scheduler:job:progression-diagnostics": {
+      "name": "ci:scheduler:job:progression-diagnostics",
+      "count": 31,
+      "lastIncrementAt": 42279.30000001192
+    }
+  },
+  "measures": {
+    "ci:longtask:duration": {
+      "name": "ci:longtask:duration",
+      "count": 76,
+      "totalMs": 30693,
+      "avgMs": 403.85526315789474,
+      "maxMs": 441,
+      "minMs": 361,
+      "lastMs": 437
+    },
+    "ci:long-animation-frame:duration": {
+      "name": "ci:long-animation-frame:duration",
+      "count": 76,
+      "totalMs": 30945.69999974966,
+      "avgMs": 407.1802631546008,
+      "maxMs": 449.80000001192093,
+      "minMs": 376,
+      "lastMs": 417.89999997615814
+    },
+    "ci:gameLoop:tick:deltaMs": {
+      "name": "ci:gameLoop:tick:deltaMs",
+      "count": 124,
+      "totalMs": 31000,
+      "avgMs": 250,
+      "maxMs": 250,
+      "minMs": 250,
+      "lastMs": 250
+    },
+    "ci:store:game:tick:buffCleanup": {
+      "name": "ci:store:game:tick:buffCleanup",
+      "count": 124,
+      "totalMs": 0.19999992847442627,
+      "avgMs": 0.0016129026489873086,
+      "maxMs": 0.09999996423721313,
+      "minMs": 0,
+      "lastMs": 0
+    },
+    "ci:store:cultivation:clearExpiredConsumables": {
+      "name": "ci:store:cultivation:clearExpiredConsumables",
+      "count": 248,
+      "totalMs": 0.3999999165534973,
+      "avgMs": 0.0016129028893286182,
+      "maxMs": 0.10000002384185791,
+      "minMs": 0,
+      "lastMs": 0
+    },
+    "ci:store:game:tick:cultivationConsumableCleanup": {
+      "name": "ci:store:game:tick:cultivationConsumableCleanup",
+      "count": 124,
+      "totalMs": 0.3999999165534973,
+      "avgMs": 0.0032258057786572363,
+      "maxMs": 0.10000002384185791,
+      "minMs": 0,
+      "lastMs": 0
+    },
+    "ci:store:game:tick:qi": {
+      "name": "ci:store:game:tick:qi",
+      "count": 124,
+      "totalMs": 5.199999988079071,
+      "avgMs": 0.041935483774831216,
+      "maxMs": 0.19999998807907104,
+      "minMs": 0,
+      "lastMs": 0
+    },
+    "ci:store:game:tick:hpRegen": {
+      "name": "ci:store:game:tick:hpRegen",
+      "count": 124,
+      "totalMs": 0.6999999284744263,
+      "avgMs": 0.0056451607135034375,
+      "maxMs": 0.10000002384185791,
+      "minMs": 0,
+      "lastMs": 0
+    },
+    "ci:store:game:tick": {
+      "name": "ci:store:game:tick",
+      "count": 124,
+      "totalMs": 14.199999988079071,
+      "avgMs": 0.11451612893612154,
+      "maxMs": 0.3999999761581421,
+      "minMs": 0,
+      "lastMs": 0.09999996423721313
+    },
+    "ci:gameLoop:tick": {
+      "name": "ci:gameLoop:tick",
+      "count": 124,
+      "totalMs": 14.300000011920929,
+      "avgMs": 0.11532258074129781,
+      "maxMs": 0.3999999761581421,
+      "minMs": 0,
+      "lastMs": 0.09999996423721313
+    },
+    "ci:service:cultivation:consumables": {
+      "name": "ci:service:cultivation:consumables",
+      "count": 124,
+      "totalMs": 0.2999999523162842,
+      "avgMs": 0.002419354454163582,
+      "maxMs": 0.10000002384185791,
+      "minMs": 0,
+      "lastMs": 0
+    },
+    "ci:service:cultivation:insight": {
+      "name": "ci:service:cultivation:insight",
+      "count": 124,
+      "totalMs": 0.09999996423721313,
+      "avgMs": 0.0008064513244936543,
+      "maxMs": 0.09999996423721313,
+      "minMs": 0,
+      "lastMs": 0
+    },
+    "ci:service:cultivation:tick": {
+      "name": "ci:service:cultivation:tick",
+      "count": 124,
+      "totalMs": 0.699999988079071,
+      "avgMs": 0.005645161194186057,
+      "maxMs": 0.10000002384185791,
+      "minMs": 0,
+      "lastMs": 0
+    },
+    "ci:scheduler:drain": {
+      "name": "ci:scheduler:drain",
+      "count": 76,
+      "totalMs": 21.600000262260437,
+      "avgMs": 0.2842105297665847,
+      "maxMs": 0.699999988079071,
+      "minMs": 0.09999996423721313,
+      "lastMs": 0.30000001192092896
+    },
+    "ci:surface:cultivation": {
+      "name": "ci:surface:cultivation",
+      "count": 152,
+      "totalMs": 13.800000190734863,
+      "avgMs": 0.09078947493904516,
+      "maxMs": 0.40000003576278687,
+      "minMs": 0,
+      "lastMs": 0.10000002384185791
+    },
+    "ci:gameLoop:oneSecondJobs": {
+      "name": "ci:gameLoop:oneSecondJobs",
+      "count": 31,
+      "totalMs": 0.40000003576278687,
+      "avgMs": 0.012903226960089898,
+      "maxMs": 0.10000002384185791,
+      "minMs": 0,
+      "lastMs": 0
+    },
+    "ci:store:game:tick:progressionDiagnostics": {
+      "name": "ci:store:game:tick:progressionDiagnostics",
+      "count": 31,
+      "totalMs": 3.1000002026557922,
+      "avgMs": 0.10000000653728362,
+      "maxMs": 0.20000004768371582,
+      "minMs": 0,
+      "lastMs": 0.10000002384185791
+    }
+  },
+  "renderCounters": {
+    "ci:render:CultivationExactScreenOwner": {
+      "id": "ci:render:CultivationExactScreenOwner",
+      "renderCount": 152,
+      "commitCount": 76,
+      "mountCount": 0,
+      "updateCount": 76,
+      "totalActualDurationMs": 561.1999996304512,
+      "maxActualDurationMs": 9.300000011920929,
+      "totalBaseDurationMs": 552.0999996066093,
+      "lastPhase": "update",
+      "lastCommitTime": 42687.80000001192
+    },
+    "ci:render:GameLayout": {
+      "id": "ci:render:GameLayout",
+      "renderCount": 0,
+      "commitCount": 90,
+      "mountCount": 0,
+      "updateCount": 90,
+      "totalActualDurationMs": 30615.499999403954,
+      "maxActualDurationMs": 440.30000001192093,
+      "totalBaseDurationMs": 36500.20000034571,
+      "lastPhase": "update",
+      "lastCommitTime": 42687.80000001192
+    }
+  },
+  "recentEvents": [
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 14178.600000023842,
+      "detail": {
+        "name": "progression-diagnostics"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 14588.900000035763,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 14589,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 14589.100000023842,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 14981.300000011921,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 14981.400000035763,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 14981.5,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 14981.5,
+      "detail": {
+        "name": "queues-and-expeditions"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 14981.5,
+      "detail": {
+        "name": "progression-diagnostics"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 15407.200000047684,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 15407.5,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 15822.300000011921,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 15822.400000035763,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 15822.5,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 16217.600000023842,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 16217.800000011921,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 16217.800000011921,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 16217.800000011921,
+      "detail": {
+        "name": "queues-and-expeditions"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 16217.800000011921,
+      "detail": {
+        "name": "progression-diagnostics"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 16642.900000035763,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 16643,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 17074.400000035763,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 17074.5,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 17074.5,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 17074.5,
+      "detail": {
+        "name": "queues-and-expeditions"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 17074.5,
+      "detail": {
+        "name": "progression-diagnostics"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 17484.5,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 17484.700000047684,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 17484.700000047684,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 17924,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 17924.200000047684,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 18326.30000001192,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 18326.400000035763,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 18326.5,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 18326.5,
+      "detail": {
+        "name": "queues-and-expeditions"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 18326.5,
+      "detail": {
+        "name": "progression-diagnostics"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 18741.600000023842,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 18741.900000035763,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 18741.900000035763,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 19168.600000023842,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 19168.80000001192,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 19168.80000001192,
+      "detail": {
+        "name": "queues-and-expeditions"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 19168.80000001192,
+      "detail": {
+        "name": "progression-diagnostics"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 19550.100000023842,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 19550.30000001192,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 19550.400000035763,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 19944.200000047684,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 19944.5,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 19944.5,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 19944.5,
+      "detail": {
+        "name": "queues-and-expeditions"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 19944.5,
+      "detail": {
+        "name": "progression-diagnostics"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 20362.5,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 20362.600000023842,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 20748.30000001192,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 20748.5,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 20748.600000023842,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 21147.200000047684,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 21147.400000035763,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 21147.400000035763,
+      "detail": {
+        "name": "queues-and-expeditions"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 21147.400000035763,
+      "detail": {
+        "name": "progression-diagnostics"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 21536.600000023842,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 21536.700000047684,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 21536.80000001192,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 21932.900000035763,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 21933.100000023842,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 21933.200000047684,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 21933.200000047684,
+      "detail": {
+        "name": "queues-and-expeditions"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 21933.200000047684,
+      "detail": {
+        "name": "progression-diagnostics"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 22340.400000035763,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 22340.700000047684,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 22758.400000035763,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 22758.5,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 22758.5,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 23156.80000001192,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 23157,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 23157,
+      "detail": {
+        "name": "queues-and-expeditions"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 23157,
+      "detail": {
+        "name": "progression-diagnostics"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 23559.5,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 23559.700000047684,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 23559.80000001192,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 23967.30000001192,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 23967.5,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 23967.600000023842,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 23967.600000023842,
+      "detail": {
+        "name": "queues-and-expeditions"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 23967.600000023842,
+      "detail": {
+        "name": "progression-diagnostics"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 24381.30000001192,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 24381.5,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 24779.5,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 24779.600000023842,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 24779.700000047684,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 25187.900000035763,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 25188.100000023842,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 25188.100000023842,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 25188.100000023842,
+      "detail": {
+        "name": "queues-and-expeditions"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 25188.100000023842,
+      "detail": {
+        "name": "progression-diagnostics"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 25636.400000035763,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 25636.700000047684,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 26040.30000001192,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 26040.600000023842,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 26040.600000023842,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 26040.600000023842,
+      "detail": {
+        "name": "queues-and-expeditions"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 26040.600000023842,
+      "detail": {
+        "name": "progression-diagnostics"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 26438.80000001192,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 26439,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 26439.200000047684,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 26824.80000001192,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 26824.900000035763,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 27241,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 27241.200000047684,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 27241.30000001192,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 27241.30000001192,
+      "detail": {
+        "name": "queues-and-expeditions"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 27241.30000001192,
+      "detail": {
+        "name": "progression-diagnostics"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 27653,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 27653.200000047684,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 28047.30000001192,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 28047.80000001192,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 28047.80000001192,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 28047.80000001192,
+      "detail": {
+        "name": "queues-and-expeditions"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 28047.900000035763,
+      "detail": {
+        "name": "progression-diagnostics"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 28458.100000023842,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 28458.200000047684,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 28458.200000047684,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 28837.200000047684,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 28837.400000035763,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 29223,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 29223.30000001192,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 29223.30000001192,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 29223.30000001192,
+      "detail": {
+        "name": "queues-and-expeditions"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 29223.30000001192,
+      "detail": {
+        "name": "progression-diagnostics"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 29635.700000047684,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 29636,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 30047.5,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 30047.700000047684,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 30047.80000001192,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 30047.80000001192,
+      "detail": {
+        "name": "queues-and-expeditions"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 30047.80000001192,
+      "detail": {
+        "name": "progression-diagnostics"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 30450.400000035763,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 30450.600000023842,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 30450.700000047684,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 30857.600000023842,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 30857.900000035763,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 31260.100000023842,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 31260.200000047684,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 31260.30000001192,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 31260.30000001192,
+      "detail": {
+        "name": "queues-and-expeditions"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 31260.30000001192,
+      "detail": {
+        "name": "progression-diagnostics"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 31692.400000035763,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 31692.5,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 31692.600000023842,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 32087.400000035763,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 32087.600000023842,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 32087.600000023842,
+      "detail": {
+        "name": "queues-and-expeditions"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 32087.700000047684,
+      "detail": {
+        "name": "progression-diagnostics"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 32503.5,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 32503.600000023842,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 32503.700000047684,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 32931.90000003576,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 32932,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 32932.10000002384,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 32932.10000002384,
+      "detail": {
+        "name": "queues-and-expeditions"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 32932.200000047684,
+      "detail": {
+        "name": "progression-diagnostics"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 33350.90000003576,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 33351,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 33744.90000003576,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 33745.10000002384,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 33745.200000047684,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 34170.80000001192,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 34170.90000003576,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 34170.90000003576,
+      "detail": {
+        "name": "queues-and-expeditions"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 34170.90000003576,
+      "detail": {
+        "name": "progression-diagnostics"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 34589.60000002384,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 34589.80000001192,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 34589.80000001192,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 35005,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 35005.10000002384,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 35005.200000047684,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 35005.200000047684,
+      "detail": {
+        "name": "queues-and-expeditions"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 35005.30000001192,
+      "detail": {
+        "name": "progression-diagnostics"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 35412.10000002384,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 35412.5,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 35816.80000001192,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 35816.90000003576,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 35817,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 36213,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 36213.200000047684,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 36213.200000047684,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 36213.200000047684,
+      "detail": {
+        "name": "queues-and-expeditions"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 36213.200000047684,
+      "detail": {
+        "name": "progression-diagnostics"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 36632.40000003576,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 36632.60000002384,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 37060.30000001192,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 37060.5,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 37060.5,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 37060.5,
+      "detail": {
+        "name": "queues-and-expeditions"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 37060.5,
+      "detail": {
+        "name": "progression-diagnostics"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 37457.60000002384,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 37457.80000001192,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 37457.80000001192,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 37887.40000003576,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 37887.60000002384,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 38272.90000003576,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 38273.200000047684,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 38273.200000047684,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 38273.200000047684,
+      "detail": {
+        "name": "queues-and-expeditions"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 38273.200000047684,
+      "detail": {
+        "name": "progression-diagnostics"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 38674.80000001192,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 38674.80000001192,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 39093.40000003576,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 39093.5,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 39093.5,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 39093.5,
+      "detail": {
+        "name": "queues-and-expeditions"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 39093.5,
+      "detail": {
+        "name": "progression-diagnostics"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 39502.40000003576,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 39502.60000002384,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 39502.700000047684,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 39878,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 39878.200000047684,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 40258.60000002384,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 40258.80000001192,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 40258.80000001192,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 40258.80000001192,
+      "detail": {
+        "name": "queues-and-expeditions"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 40258.80000001192,
+      "detail": {
+        "name": "progression-diagnostics"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 40666.5,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 40666.60000002384,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 41055,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 41055.200000047684,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 41055.30000001192,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 41055.30000001192,
+      "detail": {
+        "name": "queues-and-expeditions"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 41055.30000001192,
+      "detail": {
+        "name": "progression-diagnostics"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 41475.10000002384,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 41475.10000002384,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 41475.200000047684,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 41838.700000047684,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 41838.90000003576,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "freshIdle",
+      "timestamp": 42278.90000003576,
+      "detail": {
+        "phase": "end",
+        "durationMs": 30164.899999976158
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 42279.10000002384,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 42279.200000047684,
+      "detail": {
+        "name": "cultivation-authoritative"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:skipped",
+      "timestamp": 42279.30000001192,
+      "detail": {
+        "name": "combat-fixed-step"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 42279.30000001192,
+      "detail": {
+        "name": "queues-and-expeditions"
+      }
+    },
+    {
+      "name": "ci:scheduler:job:run",
+      "timestamp": 42279.30000001192,
+      "detail": {
+        "name": "progression-diagnostics"
+      }
+    }
+  ],
+  "longTasks": [
+    {
+      "name": "self",
+      "startTime": 11275.200000047684,
+      "durationMs": 420
+    },
+    {
+      "name": "self",
+      "startTime": 11700,
+      "durationMs": 410
+    },
+    {
+      "name": "self",
+      "startTime": 12114.100000023842,
+      "durationMs": 398
+    },
+    {
+      "name": "self",
+      "startTime": 12515.900000035763,
+      "durationMs": 425
+    },
+    {
+      "name": "self",
+      "startTime": 12944.200000047684,
+      "durationMs": 392
+    },
+    {
+      "name": "self",
+      "startTime": 13340.300000011921,
+      "durationMs": 412
+    },
+    {
+      "name": "self",
+      "startTime": 13756.800000011921,
+      "durationMs": 418
+    },
+    {
+      "name": "self",
+      "startTime": 14178.300000011921,
+      "durationMs": 392
+    },
+    {
+      "name": "self",
+      "startTime": 14588.900000035763,
+      "durationMs": 388
+    },
+    {
+      "name": "self",
+      "startTime": 14981.200000047684,
+      "durationMs": 423
+    },
+    {
+      "name": "self",
+      "startTime": 15407.200000047684,
+      "durationMs": 410
+    },
+    {
+      "name": "self",
+      "startTime": 15822.300000011921,
+      "durationMs": 391
+    },
+    {
+      "name": "self",
+      "startTime": 16217.600000023842,
+      "durationMs": 422
+    },
+    {
+      "name": "self",
+      "startTime": 16642.900000035763,
+      "durationMs": 428
+    },
+    {
+      "name": "self",
+      "startTime": 17074.30000001192,
+      "durationMs": 407
+    },
+    {
+      "name": "self",
+      "startTime": 17484.5,
+      "durationMs": 436
+    },
+    {
+      "name": "self",
+      "startTime": 17923.900000035763,
+      "durationMs": 398
+    },
+    {
+      "name": "self",
+      "startTime": 18326.30000001192,
+      "durationMs": 412
+    },
+    {
+      "name": "self",
+      "startTime": 18741.600000023842,
+      "durationMs": 424
+    },
+    {
+      "name": "self",
+      "startTime": 19168.5,
+      "durationMs": 378
+    },
+    {
+      "name": "self",
+      "startTime": 19550.100000023842,
+      "durationMs": 391
+    },
+    {
+      "name": "self",
+      "startTime": 19944.200000047684,
+      "durationMs": 415
+    },
+    {
+      "name": "self",
+      "startTime": 20362.400000035763,
+      "durationMs": 383
+    },
+    {
+      "name": "self",
+      "startTime": 20748.30000001192,
+      "durationMs": 395
+    },
+    {
+      "name": "self",
+      "startTime": 21147.200000047684,
+      "durationMs": 386
+    },
+    {
+      "name": "self",
+      "startTime": 21536.5,
+      "durationMs": 394
+    },
+    {
+      "name": "self",
+      "startTime": 21932.900000035763,
+      "durationMs": 404
+    },
+    {
+      "name": "self",
+      "startTime": 22340.400000035763,
+      "durationMs": 415
+    },
+    {
+      "name": "self",
+      "startTime": 22758.30000001192,
+      "durationMs": 395
+    },
+    {
+      "name": "self",
+      "startTime": 23156.80000001192,
+      "durationMs": 400
+    },
+    {
+      "name": "self",
+      "startTime": 23559.5,
+      "durationMs": 404
+    },
+    {
+      "name": "self",
+      "startTime": 23967.30000001192,
+      "durationMs": 411
+    },
+    {
+      "name": "self",
+      "startTime": 24381.30000001192,
+      "durationMs": 395
+    },
+    {
+      "name": "self",
+      "startTime": 24779.400000035763,
+      "durationMs": 401
+    },
+    {
+      "name": "self",
+      "startTime": 25187.900000035763,
+      "durationMs": 441
+    },
+    {
+      "name": "self",
+      "startTime": 25636.400000035763,
+      "durationMs": 400
+    },
+    {
+      "name": "self",
+      "startTime": 26040.30000001192,
+      "durationMs": 385
+    },
+    {
+      "name": "self",
+      "startTime": 26438.80000001192,
+      "durationMs": 381
+    },
+    {
+      "name": "self",
+      "startTime": 26824.80000001192,
+      "durationMs": 412
+    },
+    {
+      "name": "self",
+      "startTime": 27240.900000035763,
+      "durationMs": 409
+    },
+    {
+      "name": "self",
+      "startTime": 27653,
+      "durationMs": 391
+    },
+    {
+      "name": "self",
+      "startTime": 28047.30000001192,
+      "durationMs": 407
+    },
+    {
+      "name": "self",
+      "startTime": 28458,
+      "durationMs": 376
+    },
+    {
+      "name": "self",
+      "startTime": 28837.200000047684,
+      "durationMs": 381
+    },
+    {
+      "name": "self",
+      "startTime": 29223,
+      "durationMs": 409
+    },
+    {
+      "name": "self",
+      "startTime": 29635.700000047684,
+      "durationMs": 409
+    },
+    {
+      "name": "self",
+      "startTime": 30047.5,
+      "durationMs": 399
+    },
+    {
+      "name": "self",
+      "startTime": 30450.400000035763,
+      "durationMs": 403
+    },
+    {
+      "name": "self",
+      "startTime": 30857.600000023842,
+      "durationMs": 399
+    },
+    {
+      "name": "self",
+      "startTime": 31260,
+      "durationMs": 429
+    },
+    {
+      "name": "self",
+      "startTime": 31692.400000035763,
+      "durationMs": 391
+    },
+    {
+      "name": "self",
+      "startTime": 32087.400000035763,
+      "durationMs": 413
+    },
+    {
+      "name": "self",
+      "startTime": 32503.400000035763,
+      "durationMs": 425
+    },
+    {
+      "name": "self",
+      "startTime": 32931.90000003576,
+      "durationMs": 416
+    },
+    {
+      "name": "self",
+      "startTime": 33350.90000003576,
+      "durationMs": 391
+    },
+    {
+      "name": "self",
+      "startTime": 33744.90000003576,
+      "durationMs": 422
+    },
+    {
+      "name": "self",
+      "startTime": 34170.700000047684,
+      "durationMs": 415
+    },
+    {
+      "name": "self",
+      "startTime": 34589.60000002384,
+      "durationMs": 412
+    },
+    {
+      "name": "self",
+      "startTime": 35005,
+      "durationMs": 404
+    },
+    {
+      "name": "self",
+      "startTime": 35412.10000002384,
+      "durationMs": 401
+    },
+    {
+      "name": "self",
+      "startTime": 35816.80000001192,
+      "durationMs": 393
+    },
+    {
+      "name": "self",
+      "startTime": 36213,
+      "durationMs": 416
+    },
+    {
+      "name": "self",
+      "startTime": 36632.30000001192,
+      "durationMs": 425
+    },
+    {
+      "name": "self",
+      "startTime": 37060.200000047684,
+      "durationMs": 394
+    },
+    {
+      "name": "self",
+      "startTime": 37457.60000002384,
+      "durationMs": 422
+    },
+    {
+      "name": "self",
+      "startTime": 37887.30000001192,
+      "durationMs": 376
+    },
+    {
+      "name": "self",
+      "startTime": 38272.90000003576,
+      "durationMs": 399
+    },
+    {
+      "name": "self",
+      "startTime": 38674.700000047684,
+      "durationMs": 414
+    },
+    {
+      "name": "self",
+      "startTime": 39093.40000003576,
+      "durationMs": 404
+    },
+    {
+      "name": "self",
+      "startTime": 39502.40000003576,
+      "durationMs": 373
+    },
+    {
+      "name": "self",
+      "startTime": 39878,
+      "durationMs": 377
+    },
+    {
+      "name": "self",
+      "startTime": 40258.60000002384,
+      "durationMs": 405
+    },
+    {
+      "name": "self",
+      "startTime": 40666.40000003576,
+      "durationMs": 386
+    },
+    {
+      "name": "self",
+      "startTime": 41055,
+      "durationMs": 417
+    },
+    {
+      "name": "self",
+      "startTime": 41475.10000002384,
+      "durationMs": 361
+    },
+    {
+      "name": "self",
+      "startTime": 41838.700000047684,
+      "durationMs": 437
+    }
+  ],
+  "longAnimationFrames": [
+    {
+      "name": "long-animation-frame",
+      "startTime": 10404.800000011921,
+      "durationMs": 433.5
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 10840.300000011921,
+      "durationMs": 431.69999998807907
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 11274.800000011921,
+      "durationMs": 422
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 11699.5,
+      "durationMs": 411.5
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 12113.700000047684,
+      "durationMs": 399.89999997615814
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 12515.700000047684,
+      "durationMs": 426.2999999523163
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 12944.100000023842,
+      "durationMs": 393.5
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 13340.200000047684,
+      "durationMs": 413.39999997615814
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 13756.700000047684,
+      "durationMs": 419.5999999642372
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 14178.200000047684,
+      "durationMs": 393.19999998807907
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 14574.5,
+      "durationMs": 404.7000000476837
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 14980.900000035763,
+      "durationMs": 424.5
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 15407,
+      "durationMs": 412.4000000357628
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 15820.800000011921,
+      "durationMs": 394.19999998807907
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 16216.200000047684,
+      "durationMs": 425.0999999642372
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 16642.80000001192,
+      "durationMs": 430.10000002384186
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 17074.200000047684,
+      "durationMs": 408.39999997615814
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 17484.30000001192,
+      "durationMs": 438
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 17923.80000001192,
+      "durationMs": 399.60000002384186
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 18324.900000035763,
+      "durationMs": 415
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 18741.30000001192,
+      "durationMs": 425.80000001192093
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 19168.5,
+      "durationMs": 379.80000001192093
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 19549.900000035763,
+      "durationMs": 392.5
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 19944.100000023842,
+      "durationMs": 416.80000001192093
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 20362.30000001192,
+      "durationMs": 384.4000000357628
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 20748.200000047684,
+      "durationMs": 396.89999997615814
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 21147,
+      "durationMs": 388
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 21536.400000035763,
+      "durationMs": 395.0999999642372
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 21932.80000001192,
+      "durationMs": 406.10000002384186
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 22340.30000001192,
+      "durationMs": 416.4000000357628
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 22758.200000047684,
+      "durationMs": 397.0999999642372
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 23156.700000047684,
+      "durationMs": 401.2999999523163
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 23559.5,
+      "durationMs": 406.2000000476837
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 23967.30000001192,
+      "durationMs": 412.9000000357628
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 24381.200000047684,
+      "durationMs": 396.5999999642372
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 24779.30000001192,
+      "durationMs": 403
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 25183.5,
+      "durationMs": 449.80000001192093
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 25636.100000023842,
+      "durationMs": 402.60000002384186
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 26040.200000047684,
+      "durationMs": 396.2999999523163
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 26438.700000047684,
+      "durationMs": 383
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 26823.200000047684,
+      "durationMs": 415.7999999523163
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 27240.80000001192,
+      "durationMs": 410.9000000357628
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 27652.900000035763,
+      "durationMs": 392.69999998807907
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 28047.200000047684,
+      "durationMs": 409.19999998807907
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 28457.900000035763,
+      "durationMs": 377.80000001192093
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 28837.100000023842,
+      "durationMs": 382.69999998807907
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 29221.700000047684,
+      "durationMs": 412.2999999523163
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 29635.600000023842,
+      "durationMs": 410.5
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 30047.400000035763,
+      "durationMs": 401
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 30450.100000023842,
+      "durationMs": 405.60000002384186
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 30857.400000035763,
+      "durationMs": 401.19999998807907
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 31259.80000001192,
+      "durationMs": 431
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 31692.200000047684,
+      "durationMs": 393.2999999523163
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 32087.30000001192,
+      "durationMs": 414.60000002384186
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 32503.30000001192,
+      "durationMs": 427.19999998807907
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 32931.80000001192,
+      "durationMs": 417.9000000357628
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 33350.80000001192,
+      "durationMs": 392.30000001192093
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 33744.700000047684,
+      "durationMs": 423.69999998807907
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 34170.200000047684,
+      "durationMs": 417.5999999642372
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 34589.40000003576,
+      "durationMs": 413.80000001192093
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 35004.80000001192,
+      "durationMs": 405.60000002384186
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 35412,
+      "durationMs": 402.7000000476837
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 35816.60000002384,
+      "durationMs": 395
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 36212.80000001192,
+      "durationMs": 418
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 36632.200000047684,
+      "durationMs": 426.5999999642372
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 37060.10000002384,
+      "durationMs": 396
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 37457.40000003576,
+      "durationMs": 423.5
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 37882.200000047684,
+      "durationMs": 388.7999999523163
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 38272.700000047684,
+      "durationMs": 400.39999997615814
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 38674.60000002384,
+      "durationMs": 416.10000002384186
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 39091.90000003576,
+      "durationMs": 407.39999997615814
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 39500.80000001192,
+      "durationMs": 376
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 39877.90000003576,
+      "durationMs": 379.30000001192093
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 40258.40000003576,
+      "durationMs": 406.5999999642372
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 40666.30000001192,
+      "durationMs": 387.5
+    },
+    {
+      "name": "long-animation-frame",
+      "startTime": 41054.90000003576,
+      "durationMs": 417.89999997615814
+    }
+  ],
+  "scenarios": {
+    "freshIdle": {
+      "name": "freshIdle",
+      "startedAt": 12113.900000035763,
+      "countersAtStart": {
+        "ci:longtask:count": 1,
+        "ci:long-animation-frame:count": 1,
+        "ci:scheduler:drain": 1,
+        "ci:scheduler:job:run": 2,
+        "ci:scheduler:job:cultivation-authoritative": 2,
+        "ci:store:game:setCalls": 2,
+        "ci:scheduler:job:skipped": 1,
+        "ci:gameLoop:rafCallback": 1
+      },
+      "notes": [],
+      "endedAt": 42278.80000001192,
+      "durationMs": 30164.899999976158,
+      "countersAtEnd": {
+        "ci:longtask:count": 75,
+        "ci:long-animation-frame:count": 75,
+        "ci:scheduler:drain": 75,
+        "ci:scheduler:job:run": 182,
+        "ci:scheduler:job:cultivation-authoritative": 122,
+        "ci:store:game:setCalls": 122,
+        "ci:scheduler:job:skipped": 75,
+        "ci:gameLoop:rafCallback": 75,
+        "ci:scheduler:job:queues-and-expeditions": 30,
+        "ci:scheduler:job:progression-diagnostics": 30
+      }
+    }
+  },
+  "notes": []
+}

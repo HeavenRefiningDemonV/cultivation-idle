@@ -8,12 +8,15 @@ import { useExpeditionStore } from '../../../stores/expeditionStore.js';
 import { useGameStore } from '../../../stores/gameStore.js';
 import { useInventoryStore } from '../../../stores/inventoryStore.js';
 import { useMedicinePouchStore } from '../../../stores/medicinePouchStore.js';
+import { useTechCollectionStore } from '../../../stores/techCollectionStore.js';
 import { useTechniqueStore } from '../../../stores/techniqueStore.js';
 import { useTrialStore } from '../../../stores/trialStore.js';
 import { buildGateTrialExactSurfaceFromStores } from './buildGateTrialExactSurface.js';
 import { GateTrialExactScreen } from './GateTrialExactScreen.js';
 import { useGateTrialExactActionController } from './useGateTrialExactActionController.js';
 import { routeCombatAftermathTarget } from '../../combatAftermath/index.js';
+import { PERF_LABELS, time } from '../../../services/performance/index.js';
+import { PerfProfiler, useRenderCounter } from '../../../services/performance/perfReact.js';
 import './GateTrialExactScreen.scss';
 import '../../combatAftermath/CombatAftermathCard.scss';
 
@@ -24,90 +27,67 @@ export interface GateTrialScreenOwnerProps {
 }
 
 export function GateTrialScreenOwner(props: GateTrialScreenOwnerProps) {
+  useRenderCounter(PERF_LABELS.renderGateTrialScreenOwner);
   const mode = props.forceFixture === false ? 'live' : 'fixture';
-  const contentVersion = useContentStore((state) => `${state.isLoaded}:${state.citiesSorted.length}:${Object.keys(state.maps.trialsById).length}`);
-  const gameRealmIndex = useGameStore((state) => state.realm.index);
-  const gameRealmSubstage = useGameStore((state) => state.realm.substage);
-  const qi = useGameStore((state) => state.qi);
+  const contentVersion = useContentStore((state) => state.contentVersion);
+  const realmVersion = useGameStore((state) => state.realmVersion);
+  const qiDisplayVersion = useGameStore((state) => state.qiDisplayVersion);
+  const statsVersion = useGameStore((state) => state.statsVersion);
   const breakthroughRequirement = useGameStore((state) => state.getBreakthroughRequirement());
-  const hp = useGameStore((state) => state.stats.hp);
-  const maxHp = useGameStore((state) => state.stats.maxHp);
-  const inventorySignature = useInventoryStore((state) => `${state.gold}:${state.spiritStones}:${state.merit}:${Object.keys(state.items).length}`);
-  const trialProgressSignature = useTrialStore((state) => JSON.stringify(state.progressByTrialId[props.trialId ?? ''] ?? state.progressByTrialId));
+  const inventoryVersion = useInventoryStore((state) => state.inventoryVersion);
+  const currencyVersion = useInventoryStore((state) => state.currencyVersion);
+  const trialProgressVersion = useTrialStore((state) =>
+    props.trialId ? state.progressVersionByTrialId[props.trialId] ?? 0 : state.progressVersion,
+  );
   const selectedLoadoutId = useTechniqueStore((state) => state.selectedLoadoutId);
-  const selectedAiProfile = useTechniqueStore((state) => state.getSelectedAiProfile());
-  const medicineSignature = useMedicinePouchStore((state) => JSON.stringify(state.slots));
-  const equipmentSignature = useEquipmentStore((state) => JSON.stringify({
-    weapon: state.equippedWeaponId,
-    accessory: state.equippedAccessoryId,
-    refine: state.refineLevelBySlot,
-    temper: state.temperBonusesBySlot,
-  }));
-  const bountySignature = useBountyStore((state) => JSON.stringify({
-    tracked: state.trackedByCityId[props.cityId] ?? null,
-    active: state.activeByCityId[props.cityId]?.map((bounty) => [
-      bounty.instanceId,
-      bounty.progress,
-      bounty.target,
-      bounty.claimed,
-    ]) ?? [],
-  }));
-  const expeditionSignature = useExpeditionStore((state) => `${state.slots}:${state.active.length}:${state.active.map((run) => `${run.slotIndex}:${run.status}:${run.endsAt}`).join('|')}`);
+  const loadoutVersion = useTechniqueStore((state) => state.loadoutVersion);
+  const aiProfileVersion = useTechniqueStore((state) => state.aiProfileVersion);
+  const slotVersion = useTechniqueStore((state) => state.slotVersion);
+  const collectionVersion = useTechCollectionStore((state) => state.collectionVersion);
+  const masteryVersion = useTechCollectionStore((state) => state.masteryVersion);
+  const pouchVersion = useMedicinePouchStore((state) => state.pouchVersion);
+  const equipmentVersion = useEquipmentStore((state) => state.equipmentVersion);
+  const bountyVersion = useBountyStore((state) => state.bountyVersionByCityId[props.cityId] ?? 0);
+  const expeditionVersion = useExpeditionStore((state) => state.expeditionVersion);
   const activeActivitySignature = useActivityStore((state) => {
     const active = state.active;
     if (!active) return 'none';
     return `${active.type}:${active.payload?.cityId ?? active.cityId ?? ''}:${active.payload?.sourceId ?? active.sourceId ?? ''}:${active.startedAt ?? ''}`;
   });
-  const combatSignature = useCombatStore((state) => {
-    const context = state.combatContext;
-    const contextKey =
-      context.type === 'trial'
-        ? `${context.type}:${context.cityId}:${context.trialId}`
-        : `${context.type ?? 'none'}`;
-
-    return [
-      state.inCombat ? 'combat' : 'idle',
-      contextKey,
-      state.currentEnemy?.id ?? '',
-      state.currentEnemy?.name ?? '',
-      state.playerHP,
-      state.playerMaxHP,
-      state.enemyHP,
-      state.enemyMaxHP,
-      state.combatStartTime,
-      state.autoAttack ? 'auto' : 'manual',
-      state.autoCombatAI ? 'ai' : 'noai',
-      state.combatLog.length,
-      state.techniqueLog.length,
-      state.events.length,
-    ].join('|');
-  });
+  const combatSessionVersion = useCombatStore((state) => state.combatSessionVersion);
+  const combatViewVersion = useCombatStore((state) => state.combatViewVersion);
+  const combatResultVersion = useCombatStore((state) => state.combatResultVersion);
   const surface = useMemo(
-    () => buildGateTrialExactSurfaceFromStores(props.cityId, {
+    () => time(PERF_LABELS.surfaceGateTrial, () => buildGateTrialExactSurfaceFromStores(props.cityId, {
       mode,
       trialId: props.trialId ?? null,
-    }),
+    })),
     [
       props.cityId,
       props.trialId,
       mode,
       contentVersion,
-      gameRealmIndex,
-      gameRealmSubstage,
-      qi,
+      realmVersion,
+      qiDisplayVersion,
       breakthroughRequirement,
-      hp,
-      maxHp,
-      inventorySignature,
-      trialProgressSignature,
+      statsVersion,
+      inventoryVersion,
+      currencyVersion,
+      trialProgressVersion,
       selectedLoadoutId,
-      selectedAiProfile,
-      medicineSignature,
-      equipmentSignature,
-      bountySignature,
-      expeditionSignature,
+      loadoutVersion,
+      aiProfileVersion,
+      slotVersion,
+      collectionVersion,
+      masteryVersion,
+      pouchVersion,
+      equipmentVersion,
+      bountyVersion,
+      expeditionVersion,
       activeActivitySignature,
-      combatSignature,
+      combatSessionVersion,
+      combatViewVersion,
+      combatResultVersion,
     ],
   );
   const actions = useGateTrialExactActionController({
@@ -118,6 +98,7 @@ export function GateTrialScreenOwner(props: GateTrialScreenOwnerProps) {
   const screenActions = surface.meta.mode === 'live' ? actions : {};
 
   return (
+    <PerfProfiler id={PERF_LABELS.renderGateTrialScreenOwner}>
     <div
       className="gateTrialScreenOwner"
       data-testid="gate-trial-screen-owner"
@@ -134,5 +115,6 @@ export function GateTrialScreenOwner(props: GateTrialScreenOwnerProps) {
     >
       <GateTrialExactScreen surface={surface} {...screenActions} onAftermathRoute={routeCombatAftermathTarget} />
     </div>
+    </PerfProfiler>
   );
 }

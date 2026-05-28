@@ -12,6 +12,8 @@ import { ForgeExactScreen } from './ForgeExactScreen.js';
 import { buildForgeExactSurfaceFromStores } from './buildForgeExactSurface.js';
 import { useForgeExactActionController } from './useForgeExactActionController.js';
 import type { ForgeExactActionResult, ForgeExactMode, ForgeExactTab } from './forgeExactTypes.js';
+import { PERF_LABELS, time } from '../../../services/performance/index.js';
+import { PerfProfiler, useRenderCounter } from '../../../services/performance/perfReact.js';
 import './ForgeExactScreen.scss';
 
 export interface ForgeExactScreenOwnerProps {
@@ -47,6 +49,7 @@ function useExactPlaneScale(containerRef: React.RefObject<HTMLElement>) {
 }
 
 export function ForgeExactScreenOwner({ cityId, forceFixture = false }: ForgeExactScreenOwnerProps) {
+  useRenderCounter(PERF_LABELS.renderForgeExactScreenOwner);
   const ownerRef = useRef<HTMLDivElement | null>(null);
   const scale = useExactPlaneScale(ownerRef);
   const [activeTab, setActiveTab] = useState<ForgeExactTab>('refine');
@@ -56,41 +59,33 @@ export function ForgeExactScreenOwner({ cityId, forceFixture = false }: ForgeExa
   const [actionResult, setActionResult] = useState<ForgeExactActionResult | null>(null);
   const [now, setNow] = useState(() => Date.now());
 
-  const contentSignature = useContentStore((state) => [
-    state.isLoaded ? 'loaded' : 'unloaded',
-    state.citiesSorted.length,
-    state.raw?.forge_blueprints?.length ?? 0,
-    Object.keys(state.maps.itemsById).length,
-  ].join('|'));
+  const contentVersion = useContentStore((state) => state.contentVersion);
   const citySignature = useCityStore((state) => `${state.currentCityId}|${state.unlockedCityIds.join(',')}`);
-  const inventorySignature = useInventoryStore((state) => JSON.stringify({ currencies: state.currencies, items: state.items }));
-  const professionSignature = useProfessionStore((state) => state.forgeQueue.map((job) => `${job.id}:${job.blueprintId}:${job.mode}:${job.status}:${job.endsAt}`).join('|'));
-  const equipmentSignature = useEquipmentStore((state) => JSON.stringify({
-    weapon: state.equippedWeaponId,
-    accessory: state.equippedAccessoryId,
-    refine: state.refineLevelBySlot,
-    temper: state.temperBonusesBySlot,
-    tools: state.forgeToolTiers,
-  }));
+  const inventoryVersion = useInventoryStore((state) => state.inventoryVersion);
+  const currencyVersion = useInventoryStore((state) => state.currencyVersion);
+  const professionVersion = useProfessionStore((state) => state.professionVersion);
+  const equipmentVersion = useEquipmentStore((state) => state.equipmentVersion);
   const activitySignature = useActivityStore((state) => state.active ? `${state.active.type}:${state.active.sourceId ?? ''}` : 'idle');
   const activeSession = useCraftSessionStore((state) => state.activeSession);
   const craftSessionSignature = useCraftSessionStore((state) => state.activeSession
     ? `${state.activeSession.station}:${state.activeSession.sourceId}:${state.activeSession.sessionId}:${state.activeSession.cursor.stepIndex}`
     : 'none');
   const storeInvalidationKey = useMemo(() => [
-    contentSignature,
+    contentVersion,
     citySignature,
-    inventorySignature,
-    professionSignature,
-    equipmentSignature,
+    inventoryVersion,
+    currencyVersion,
+    professionVersion,
+    equipmentVersion,
     activitySignature,
     craftSessionSignature,
   ].join('||'), [
-    contentSignature,
+    contentVersion,
     citySignature,
-    inventorySignature,
-    professionSignature,
-    equipmentSignature,
+    inventoryVersion,
+    currencyVersion,
+    professionVersion,
+    equipmentVersion,
     activitySignature,
     craftSessionSignature,
   ]);
@@ -103,7 +98,7 @@ export function ForgeExactScreenOwner({ cityId, forceFixture = false }: ForgeExa
   const surface = useMemo(
     () => {
       void storeInvalidationKey;
-      return buildForgeExactSurfaceFromStores(cityId, {
+      return time(PERF_LABELS.surfaceForge, () => buildForgeExactSurfaceFromStores(cityId, {
         mode: forceFixture ? 'fixture' : 'live',
         activeTab,
         activeMode,
@@ -111,7 +106,7 @@ export function ForgeExactScreenOwner({ cityId, forceFixture = false }: ForgeExa
         selectedTargetSlot,
         actionResult: actionResult ? { title: actionResult.title, lines: actionResult.lines } : null,
         now,
-      });
+      }));
     },
     [
       cityId,
@@ -164,6 +159,7 @@ export function ForgeExactScreenOwner({ cityId, forceFixture = false }: ForgeExa
   ) : null;
 
   return (
+    <PerfProfiler id={PERF_LABELS.renderForgeExactScreenOwner}>
     <div
       ref={ownerRef}
       className="forgeExactScreenOwner"
@@ -178,5 +174,6 @@ export function ForgeExactScreenOwner({ cityId, forceFixture = false }: ForgeExa
         onAction={actions.onAction}
       />
     </div>
+    </PerfProfiler>
   );
 }

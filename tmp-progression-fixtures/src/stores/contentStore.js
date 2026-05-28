@@ -4,6 +4,8 @@ import { buildContentLoadFailureDiagnostics, normalizeContentLoadFailure, } from
 import { buildLiveEconomyCatalog, buildTargetedMaterialSinkAudit, getAllPrepBudgetRegistryEntries, getAllSpendOrderPolicies, getEconomicModuleRoleEntries, buildBestSourceIndex, } from '../systems/economy/index.js';
 import { buildLiveForgeCatalog, getLiveForgeBlueprintById, getVisibleNormalizedLiveForgeBlueprints, getVisibleLiveForgeBlueprintsForCity, } from '../systems/forge/index.js';
 import { getPrestigeRuntimeCatalog, getVisiblePrestigeUpgrades as getVisiblePrestigeUpgradesFromRuntime, } from '../systems/prestige/runtime/prestigeRuntimeCatalog.js';
+import { PERF_LABELS, time } from '../services/performance/index.js';
+import { bumpVersion } from './versionCounters.js';
 const emptyMaps = {
     citiesById: {},
     itemsById: {},
@@ -45,7 +47,11 @@ export const useContentStore = create((set, get) => ({
     maps: emptyMaps,
     citiesSorted: [],
     techniquesByPath: emptyTechniquesByPath,
+    contentVersion: 0,
+    lazyPackVersions: {},
     clearLoadedContent: () => {
+        if (!get().isLoaded && get().raw === null)
+            return;
         set({
             raw: null,
             economy: null,
@@ -53,6 +59,7 @@ export const useContentStore = create((set, get) => ({
             citiesSorted: [],
             techniquesByPath: emptyTechniquesByPath,
             isLoaded: false,
+            contentVersion: bumpVersion(get().contentVersion),
         });
     },
     setLoadFailure: (context, error) => {
@@ -84,7 +91,7 @@ export const useContentStore = create((set, get) => ({
             set({ isLoading: true });
             try {
                 const raw = await resolveLoadAllContent()();
-                const validated = resolveValidateLoadedContent()(raw);
+                const validated = time(PERF_LABELS.contentValidate, () => resolveValidateLoadedContent()(raw));
                 const cities = validated.cities;
                 const items = validated.items;
                 const techniques = validated.techniques;
@@ -97,47 +104,51 @@ export const useContentStore = create((set, get) => ({
                 const runes = validated.runes;
                 const heartLaws = validated.heart_laws;
                 const prestigeUpgrades = validated.prestige_store.upgrades;
-                const maps = {
-                    citiesById: Object.fromEntries(cities.map((city) => [city.id, city])),
-                    itemsById: Object.fromEntries(items.map((item) => [item.id, item])),
-                    techniquesById: Object.fromEntries(techniques.map((tech) => [tech.id, tech])),
-                    pavilionsById: Object.fromEntries(pavilions.map((pavilion) => [pavilion.id, pavilion])),
-                    outskirtsById: Object.fromEntries(outskirts.map((outskirt) => [outskirt.id, outskirt])),
-                    enemiesById: Object.fromEntries(enemies.map((enemy) => [enemy.id, enemy])),
-                    trialsById: Object.fromEntries(trials.map((trial) => [trial.id, trial])),
-                    trialsByCityId: Object.fromEntries(trials.map((trial) => [trial.cityId, trial])),
-                    ruinsById: Object.fromEntries(ruins.map((ruin) => [ruin.id, ruin])),
-                    apothecariesById: Object.fromEntries(apothecaries.map((shop) => [shop.id, shop])),
-                    apothecariesByCityId: Object.fromEntries(apothecaries.map((shop) => [shop.cityId, shop])),
-                    runesById: Object.fromEntries(runes.map((rune) => [rune.id, rune])),
-                    heartLawsById: Object.fromEntries(heartLaws.map((law) => [law.id, law])),
-                    prestigeUpgradesById: Object.fromEntries(prestigeUpgrades.map((upgrade) => [upgrade.id, upgrade])),
-                };
-                const citiesSorted = [...cities].sort((a, b) => a.index - b.index);
-                const techniquesByPath = {
-                    heaven: [],
-                    earth: [],
-                    martial: [],
-                };
-                techniques.forEach((tech) => {
-                    if (techniquesByPath[tech.path]) {
-                        techniquesByPath[tech.path].push(tech);
-                    }
+                const normalized = time(PERF_LABELS.contentNormalize, () => {
+                    const maps = {
+                        citiesById: Object.fromEntries(cities.map((city) => [city.id, city])),
+                        itemsById: Object.fromEntries(items.map((item) => [item.id, item])),
+                        techniquesById: Object.fromEntries(techniques.map((tech) => [tech.id, tech])),
+                        pavilionsById: Object.fromEntries(pavilions.map((pavilion) => [pavilion.id, pavilion])),
+                        outskirtsById: Object.fromEntries(outskirts.map((outskirt) => [outskirt.id, outskirt])),
+                        enemiesById: Object.fromEntries(enemies.map((enemy) => [enemy.id, enemy])),
+                        trialsById: Object.fromEntries(trials.map((trial) => [trial.id, trial])),
+                        trialsByCityId: Object.fromEntries(trials.map((trial) => [trial.cityId, trial])),
+                        ruinsById: Object.fromEntries(ruins.map((ruin) => [ruin.id, ruin])),
+                        apothecariesById: Object.fromEntries(apothecaries.map((shop) => [shop.id, shop])),
+                        apothecariesByCityId: Object.fromEntries(apothecaries.map((shop) => [shop.cityId, shop])),
+                        runesById: Object.fromEntries(runes.map((rune) => [rune.id, rune])),
+                        heartLawsById: Object.fromEntries(heartLaws.map((law) => [law.id, law])),
+                        prestigeUpgradesById: Object.fromEntries(prestigeUpgrades.map((upgrade) => [upgrade.id, upgrade])),
+                    };
+                    const citiesSorted = [...cities].sort((a, b) => a.index - b.index);
+                    const techniquesByPath = {
+                        heaven: [],
+                        earth: [],
+                        martial: [],
+                    };
+                    techniques.forEach((tech) => {
+                        if (techniquesByPath[tech.path]) {
+                            techniquesByPath[tech.path].push(tech);
+                        }
+                    });
+                    return { maps, citiesSorted, techniquesByPath };
                 });
-                console.info(`[Content] Loaded ${cities.length} cities, ${techniques.length} techniques (H/E/M: ${techniquesByPath.heaven.length}/${techniquesByPath.earth.length}/${techniquesByPath.martial.length})`);
+                console.info(`[Content] Loaded ${cities.length} cities, ${techniques.length} techniques (H/E/M: ${normalized.techniquesByPath.heaven.length}/${normalized.techniquesByPath.earth.length}/${normalized.techniquesByPath.martial.length})`);
                 console.info(`[Content] Prestige upgrades: ${prestigeUpgrades.length}`);
-                set({
+                time(PERF_LABELS.contentStorePublish, () => set({
                     raw: validated,
                     economy: validated.economy,
-                    maps,
-                    citiesSorted,
-                    techniquesByPath,
+                    maps: normalized.maps,
+                    citiesSorted: normalized.citiesSorted,
+                    techniquesByPath: normalized.techniquesByPath,
                     isLoaded: true,
                     isLoading: false,
                     error: null,
                     loadFailure: null,
                     loadFailureDiagnostics: null,
-                });
+                    contentVersion: bumpVersion(get().contentVersion),
+                }));
                 return true;
             }
             catch (error) {

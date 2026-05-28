@@ -4,8 +4,13 @@ import { useContentStore } from './contentStore.js';
 import { RewardService } from '../services/rewards/index.js';
 import { useUIStore } from './uiStore.js';
 import { GameEvents } from '../services/events/GameEvents.js';
+import { bumpVersion } from './versionCounters.js';
 import { buildLiveBountyDescription, getCanonicalLiveBountyDifficultyOrder, getBountyKindKey, getSupportTemplateCityIndexById, getTemplatesForLiveBountySlot, isLiveBountyBoard, selectLiveBountyTemplate, } from '../systems/bounties/liveBountyBoard.js';
 import { LIVE_BOUNTY_BOARD_SIZE } from '../systems/world/bountyBoardContract.js';
+const bumpBountyVersion = (state, cityId) => {
+    state.bountyVersion = bumpVersion(state.bountyVersion);
+    state.bountyVersionByCityId[cityId] = bumpVersion(state.bountyVersionByCityId[cityId]);
+};
 function createUuid() {
     if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
         return crypto.randomUUID();
@@ -151,6 +156,8 @@ export const useBountyStore = create()(immer((set, get) => ({
     activeByCityId: {},
     lastRefreshAtByCityId: {},
     trackedByCityId: {},
+    bountyVersion: 0,
+    bountyVersionByCityId: {},
     generateForCity: (cityId, cityIndex) => {
         const city = useContentStore.getState().maps.citiesById[cityId];
         const cityModules = city?.modules ?? [];
@@ -171,6 +178,7 @@ export const useBountyStore = create()(immer((set, get) => ({
             if (!(cityId in state.trackedByCityId) || (tracked && !next.find((entry) => entry.instanceId === tracked))) {
                 state.trackedByCityId[cityId] = null;
             }
+            bumpBountyVersion(state, cityId);
         });
     },
     refresh: (cityId, cityIndex) => {
@@ -189,6 +197,7 @@ export const useBountyStore = create()(immer((set, get) => ({
             if (tracked && !next.find((entry) => entry.instanceId === tracked)) {
                 state.trackedByCityId[cityId] = null;
             }
+            bumpBountyVersion(state, cityId);
         });
     },
     canRefresh: (cityId, now = Date.now()) => {
@@ -213,6 +222,14 @@ export const useBountyStore = create()(immer((set, get) => ({
     },
     recordEvent: (event) => {
         const amount = Math.max(1, Math.floor(event.amount ?? 1));
+        const currentList = get().activeByCityId[event.cityId];
+        const hasProgressChange = currentList?.some((bounty) => {
+            if (bounty.claimed || bounty.kind !== event.type)
+                return false;
+            return Math.min(bounty.target, bounty.progress + amount) > bounty.progress;
+        }) ?? false;
+        if (!hasProgressChange)
+            return;
         const updates = [];
         set((state) => {
             const list = state.activeByCityId[event.cityId];
@@ -228,6 +245,7 @@ export const useBountyStore = create()(immer((set, get) => ({
                 bounty.progress = nextProgress;
                 updates.push({ name: bounty.title, delta, progress: nextProgress, target: bounty.target });
             });
+            bumpBountyVersion(state, event.cityId);
         });
         if (updates.length > 0) {
             const ui = useUIStore.getState();
@@ -268,6 +286,7 @@ export const useBountyStore = create()(immer((set, get) => ({
             if (state.trackedByCityId[cityId] === instanceId) {
                 state.trackedByCityId[cityId] = null;
             }
+            bumpBountyVersion(state, cityId);
         });
         return true;
     },
@@ -278,15 +297,23 @@ export const useBountyStore = create()(immer((set, get) => ({
         return get().activeByCityId[cityId]?.find((bounty) => bounty.instanceId === trackedId) ?? null;
     },
     setTrackedBounty: (cityId, bountyId) => {
+        const currentTracked = get().trackedByCityId[cityId] ?? null;
         if (bountyId === null) {
+            if (currentTracked === null)
+                return;
             set((state) => {
                 state.trackedByCityId[cityId] = null;
+                bumpBountyVersion(state, cityId);
             });
             return;
         }
         const exists = get().activeByCityId[cityId]?.some((entry) => entry.instanceId === bountyId);
+        const nextTracked = exists ? bountyId : null;
+        if (currentTracked === nextTracked)
+            return;
         set((state) => {
-            state.trackedByCityId[cityId] = exists ? bountyId : null;
+            state.trackedByCityId[cityId] = nextTracked;
+            bumpBountyVersion(state, cityId);
         });
     },
     hardResetBounties: () => {
@@ -294,6 +321,8 @@ export const useBountyStore = create()(immer((set, get) => ({
             activeByCityId: {},
             lastRefreshAtByCityId: {},
             trackedByCityId: {},
+            bountyVersion: 0,
+            bountyVersionByCityId: {},
         }));
     },
 })));

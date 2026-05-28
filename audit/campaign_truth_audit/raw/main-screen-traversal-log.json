@@ -1,0 +1,271 @@
+{
+  "logs8": [
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"
+    },
+    {
+      "type": "log",
+      "text": "[App] Initializing game..."
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Initializing game..."
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Store dependencies wired"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Prestige store initialized"
+    },
+    {
+      "type": "log",
+      "text": "[SpiritRoot] Generated: Mortal wood (52% purity)"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Generated initial spirit root"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] No save found, starting new game"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Added starter items to inventory"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Starting game loop..."
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Game loop started"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Game initialized successfully"
+    },
+    {
+      "type": "log",
+      "text": "[App] Game initialized successfully"
+    },
+    {
+      "type": "log",
+      "text": "[App] Initializing game..."
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Initializing game..."
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Store dependencies wired"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Prestige store initialized"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] No save found, starting new game"
+    },
+    {
+      "type": "warning",
+      "text": "[GameLoop] Already running"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Game initialized successfully"
+    },
+    {
+      "type": "log",
+      "text": "[App] Game initialized successfully"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Technique counts by path: Heaven=20, Earth=20, Martial=20"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=heaven: 6"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=earth: 6"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=martial: 6"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=heaven: 7"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=earth: 9"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=martial: 8"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=heaven: 9"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=earth: 9"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=martial: 10"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=3 (city_lotusford) path=heaven: 10"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=3 (city_lotusford) path=earth: 10"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=3 (city_lotusford) path=martial: 10"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=heaven: 10"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=earth: 10"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=martial: 10"
+    },
+    {
+      "type": "info",
+      "text": "[Content] Loaded 5 cities, 60 techniques (H/E/M: 20/20/20)"
+    },
+    {
+      "type": "info",
+      "text": "[Content] Prestige upgrades: 27"
+    },
+    {
+      "type": "log",
+      "text": "[SaveLoad] Saving game..."
+    },
+    {
+      "type": "log",
+      "text": "[SaveLoad] Game saved successfully at 28/05/2026, 16:10:24"
+    },
+    {
+      "type": "requestfailed",
+      "text": "http://127.0.0.1:5173/audio/ui_click_primary.ogg net::ERR_ABORTED"
+    },
+    {
+      "type": "script",
+      "text": "clicked Skip"
+    },
+    {
+      "type": "script",
+      "text": "clicked Select heaven"
+    },
+    {
+      "type": "script",
+      "text": "failed Heart Law Next: locator.click: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button').filter({ hasText: /^Next$/ }).last()\u001b[22m\n\u001b[2m    - locator resolved to <button disabled type=\"button\" class=\"button-primary uiNoShift\">Next</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not enabled\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visibl"
+    },
+    {
+      "type": "script",
+      "text": "failed Breath Next: locator.click: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button').filter({ hasText: /^Next$/ }).last()\u001b[22m\n\u001b[2m    - locator resolved to <button disabled type=\"button\" class=\"button-primary uiNoShift\">Next</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not enabled\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visibl"
+    },
+    {
+      "type": "script",
+      "text": "clicked wizard finish 0"
+    },
+    {
+      "type": "script",
+      "text": "clicked wizard finish 1"
+    },
+    {
+      "type": "script",
+      "text": "clicked wizard finish 2"
+    },
+    {
+      "type": "script",
+      "text": "clicked wizard finish 3"
+    },
+    {
+      "type": "script",
+      "text": "failed nav Status: locator.click: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button').filter({ hasText: /^Status$/ }).first()\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"button\" class=\"bottomNavDock__button bottomTabBarButton button-standard uiNoShift bottomTabBarButton\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed"
+    },
+    {
+      "type": "script",
+      "text": "failed nav Cultivation: locator.click: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button').filter({ hasText: /^Cultivation$/ }).first()\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"button\" aria-current=\"page\" class=\"bottomNavDock__button bottomNavDock__button--active bottomTabBarButton bottomTabBarButton--active button-standard uiNoShift bottomTabBarButton\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - ele"
+    },
+    {
+      "type": "script",
+      "text": "failed nav World: locator.click: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button').filter({ hasText: /^World$/ }).first()\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"button\" class=\"bottomNavDock__button bottomTabBarButton button-standard uiNoShift bottomTabBarButton\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b"
+    },
+    {
+      "type": "script",
+      "text": "failed nav Inventory: locator.click: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button').filter({ hasText: /^Inventory$/ }).first()\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"button\" class=\"bottomNavDock__button bottomTabBarButton button-standard uiNoShift bottomTabBarButton\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if nee"
+    },
+    {
+      "type": "script",
+      "text": "failed nav Techniques: locator.click: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button').filter({ hasText: /^Techniques$/ }).first()\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"button\" class=\"bottomNavDock__button bottomTabBarButton button-standard uiNoShift bottomTabBarButton\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if ne"
+    },
+    {
+      "type": "script",
+      "text": "failed nav Records: locator.click: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button').filter({ hasText: /^Records$/ }).first()\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"button\" class=\"bottomNavDock__button bottomTabBarButton button-standard uiNoShift bottomTabBarButton\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if neede"
+    },
+    {
+      "type": "script",
+      "text": "failed nav Prestige: locator.click: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button').filter({ hasText: /^Prestige$/ }).first()\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"button\" class=\"bottomNavDock__button bottomTabBarButton button-standard uiNoShift bottomTabBarButton\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if need"
+    },
+    {
+      "type": "log",
+      "text": "[SaveLoad] Saving game..."
+    },
+    {
+      "type": "log",
+      "text": "[SaveLoad] Game saved successfully at 28/05/2026, 16:11:23"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Game autosaved"
+    },
+    {
+      "type": "script",
+      "text": "failed nav Settings: locator.click: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button').filter({ hasText: /^Settings$/ }).first()\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"button\" class=\"bottomNavDock__button bottomTabBarButton button-standard uiNoShift bottomTabBarButton\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if need"
+    },
+    {
+      "type": "script",
+      "text": "failed nav World 1920: locator.click: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button').filter({ hasText: /^World$/ }).first()\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"button\" class=\"bottomNavDock__button bottomTabBarButton button-standard uiNoShift bottomTabBarButton\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b"
+    }
+  ],
+  "storage8": [
+    {
+      "key": "cultivation-idle-save-v3-backup-A",
+      "length": 8832
+    },
+    {
+      "key": "cultivation-idle-save-v3",
+      "length": 8832
+    }
+  ],
+  "finalTextStart": "Realm\nQi Condensation\nStage 1\nQi\n4.41K\nCultivation Rate\n63.52 / s\nStability\n0%\nForeground\nIdle\nNext Milestone\nBreakthrough\nNeed\nQi Cap\n100\nAction\nBreak Through\nBreakthrough Ready\nDao\nPath\nHeaven\nSpirit Root\nWood / Mortal\nHeart Law\nNo Heart Law selected\nVerse\nChapter 1\nBreath / Focus\nBalanced\nBreakthrough\nReady\nBREAKTHROUGH READINESS\nQi and gate requirements are ready.\nQi\nReady\nRealm edge\nReached\nGate item\nNot needed now\nQi 4.41K / 100\n+63.52/s\nBreak Through\n\nGate and Qi are aligned.\n\nStart Cultivation\nStatus\nCultivation\nWorld\nInventory\nTechniques\nRecords\nPrestige\nSettings\nBegin Your New Life\n\nChoose your path, scripture, and initial breath focus before cultivation begins.\n\n1 · Life Path\n2 · Heart Law\n3 · Breath Focus\nLocked Path: Heaven\n\nFast cultivation and technique-led pressure. Heaven converts qi tempo into precise offensive windows, but its survival floor is thinner and greed is punished.\n\nprecision_pressure\nBreath: Balanced\nChoose the sentence your soul will repeat when the Gate presses down.\n\nA path points forward. A Heart Law keeps the breath from scattering.\n\nAVAILABLE\nEmber Thread Sutra\nBurst\nStrong (+12%)\nRole: Decisive windows and pressure spikes.\nFire\nFlame\nStarter\nAvailable\nStarter scripture available immediately.\nAVAILABLE\nIron Intent Scripture\nBurst\nWeak (minor penalty)\nRole: Decisive windows and pressure spikes.\nMetal\nWeapon\nStarter\nAvailable\nStarter scripture available immediately.\nAVAILABLE\nQuiet Breath Method\nCirculation\nNeutral\nRole: Smooth cadence and flow control.\nNeutral\nBreath\nStarter\nAvailable\nStarter scripture available immediately.\nAVAILABLE\nRiver Mirror Art\nEndurance\nWeak (minor penalty)\nRole: Long-fight composure and sustain.\nWater\nMirror\nStarter\nAvailable\nStarter scripture available immediately.\nAVAILABLE\nStone Root Tempering\nStability\nWeak (minor penalty)\nRole: Defensive discipline and risk control.\nEarth\nBody\nStarter\nAvailable\nStarter scripture available immediately.\nCHOSEN FOR THIS LIFE\nVerdant Pulse Canon\nEndurance\nStrong (+12%)\nRole: Long-fight composure and sustain.\nWood\nLife\nStarter\nChosen for This Life\nChosen for this life.\nLOCKED SCRIPTURE\nBlack Tortoise Body Codex\nStability\nWeak (minor penalty)\nRole: Defensive discipline and risk control.\nEarth\nWater\nBody\nTier 1\nLocked Scripture\nLocked until Unlock Heart Laws (Tier 1) (25 AP).\nLOCKED SCRIPTURE\nHeaven Flame Manual\nBurst\nWeak (minor penalty)\nRole: Decisive windows and pressure spikes.\nFire\nHeaven\nTier 1\nLocked Scripture\nLocked until Unlock Heart Laws (Tier 1) (25 AP).\nLOCKED SCRIPTURE\nStormstep Diagram\nBurst\nNeutral\nRole: Decisive windows and pressure spikes.\nWind\nLightning\nMovement\nTier 1\nLocked Scripture\nLocked until Unlock Heart Laws (Tier 1) (25 AP).\nLOCKED SCRIPTURE\nSword-River Heart Law\nInsight\nWeak (minor penalty)\nRole: Precision setup and timing clarity.\nMetal\nWater\nSword\nTier 1\nLocked Scripture\nLocked until Unlock Heart Laws (Tier 1) (25 AP).\nLOCKED SCRIPTURE\nBloodseal Scripture\nBurst\nWeak (minor penalty)\nRole: Decisive windows and pressure spikes.\n"
+}

@@ -11,7 +11,9 @@ interface PerkSelectionModalProps {
 }
 
 export function PerkSelectionModal({ onClose, realmIndex }: PerkSelectionModalProps) {
-  const { selectedPath, selectPerk, pathPerks: currentPerks } = useGameStore();
+  const selectedPath = useGameStore((state) => state.selectedPath);
+  const selectPerk = useGameStore((state) => state.selectPerk);
+  const currentPerks = useGameStore((state) => state.pathPerks);
   const [hoveredPerk, setHoveredPerk] = useState<string | null>(null);
 
   if (!selectedPath) {

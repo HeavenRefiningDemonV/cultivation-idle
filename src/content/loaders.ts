@@ -21,6 +21,7 @@ import type {
 } from './types.js';
 import { contentUrl } from './contentPaths.js';
 import { RUNTIME_CONTENT_DIR, RUNTIME_CONTENT_FILE_BY_KEY, type RuntimeContentFileName } from './runtimeContentManifest.js';
+import { PERF_LABELS, timeAsync } from '../services/performance/index.js';
 
 export type ContentLoadFailurePhase = 'fetch' | 'parse' | 'load';
 
@@ -90,7 +91,7 @@ export async function fetchJson<T>(url: string): Promise<T> {
 async function loadFile<T>(fileName: string): Promise<T> {
   const url = contentUrl(fileName);
   try {
-    return await fetchJson<T>(url);
+    return await timeAsync(`ci:content:loadFile:${fileName}`, () => fetchJson<T>(url));
   } catch (error) {
     if (error instanceof ContentLoadError) {
       const expectedRuntimePath = `/${RUNTIME_CONTENT_DIR}/${fileName}`;
@@ -115,14 +116,16 @@ async function loadFile<T>(fileName: string): Promise<T> {
 }
 
 export async function loadAllContent(): Promise<LoadedContentRaw> {
-  const files = RUNTIME_CONTENT_FILE_BY_KEY as Record<keyof LoadedContentRaw, RuntimeContentFileName>;
+  return await timeAsync(PERF_LABELS.contentLoadAll, async () => {
+    const files = RUNTIME_CONTENT_FILE_BY_KEY as Record<keyof LoadedContentRaw, RuntimeContentFileName>;
 
-  const entries = await Promise.all(
-    Object.entries(files).map(async ([key, fileName]) => {
-      const data = await loadFile(fileName);
-      return [key, data] as const;
-    }),
-  );
+    const entries = await Promise.all(
+      Object.entries(files).map(async ([key, fileName]) => {
+        const data = await loadFile(fileName);
+        return [key, data] as const;
+      }),
+    );
 
-  return Object.fromEntries(entries) as unknown as LoadedContentRaw;
+    return Object.fromEntries(entries) as unknown as LoadedContentRaw;
+  });
 }

@@ -5,6 +5,7 @@ import { adaptProgressionAuthoredContent } from '../systems/progression/contract
 import { getProgressionContract, getTransitionByTrialId } from '../systems/progression/contract/progressionContract.js';
 import { progressionTimingTracker } from '../services/diagnostics/progressionTimingTracker.js';
 import { GameEvents } from '../services/events/GameEvents.js';
+import { bumpVersion } from './versionCounters.js';
 export const createDefaultTrialProgress = () => ({
     attempts: 0,
     sessionAttempts: 0,
@@ -46,9 +47,15 @@ export const normalizeTrialProgress = (progress) => {
             : null,
     };
 };
+const bumpTrialProgressVersion = (state, trialId) => {
+    state.progressVersion = bumpVersion(state.progressVersion);
+    state.progressVersionByTrialId[trialId] = bumpVersion(state.progressVersionByTrialId[trialId]);
+};
 export const useTrialStore = create()(immer((set, get) => ({
     activeTrialSessionId: null,
     progressByTrialId: {},
+    progressVersion: 0,
+    progressVersionByTrialId: {},
     getProgress: (trialId) => {
         const existing = get().progressByTrialId[trialId];
         if (existing)
@@ -56,10 +63,18 @@ export const useTrialStore = create()(immer((set, get) => ({
         const defaults = createDefaultTrialProgress();
         set((state) => {
             state.progressByTrialId[trialId] = defaults;
+            bumpTrialProgressVersion(state, trialId);
         });
         return defaults;
     },
     beginTrialSession: (trialId, startedAt) => {
+        const current = get().progressByTrialId[trialId];
+        if (current
+            && current.sessionAttempts === 0
+            && current.attemptStartAt === startedAt
+            && get().activeTrialSessionId === trialId) {
+            return;
+        }
         set((state) => {
             if (!state.progressByTrialId[trialId]) {
                 state.progressByTrialId[trialId] = createDefaultTrialProgress();
@@ -68,14 +83,18 @@ export const useTrialStore = create()(immer((set, get) => ({
             progress.sessionAttempts = 0;
             progress.attemptStartAt = startedAt;
             state.activeTrialSessionId = trialId;
+            bumpTrialProgressVersion(state, trialId);
         });
     },
     setAttemptStart: (trialId, startedAt) => {
+        if (get().progressByTrialId[trialId]?.attemptStartAt === startedAt)
+            return;
         set((state) => {
             if (!state.progressByTrialId[trialId]) {
                 state.progressByTrialId[trialId] = createDefaultTrialProgress();
             }
             state.progressByTrialId[trialId].attemptStartAt = startedAt;
+            bumpTrialProgressVersion(state, trialId);
         });
     },
     recordFailure: (trialId, countsTowardFailSafe = false) => {
@@ -92,6 +111,7 @@ export const useTrialStore = create()(immer((set, get) => ({
                 progress.eligibleFailures += 1;
             }
             state.activeTrialSessionId = trialId;
+            bumpTrialProgressVersion(state, trialId);
         });
     },
     recordAttemptSummary: (trialId, summary) => {
@@ -100,9 +120,12 @@ export const useTrialStore = create()(immer((set, get) => ({
                 state.progressByTrialId[trialId] = createDefaultTrialProgress();
             }
             state.progressByTrialId[trialId].lastAttemptSummary = summary;
+            bumpTrialProgressVersion(state, trialId);
         });
     },
     markCleared: (trialId) => {
+        if (get().progressByTrialId[trialId]?.resolution === 'cleared')
+            return;
         const timestamp = Date.now();
         set((state) => {
             if (!state.progressByTrialId[trialId]) {
@@ -120,6 +143,7 @@ export const useTrialStore = create()(immer((set, get) => ({
             if (state.activeTrialSessionId === trialId) {
                 state.activeTrialSessionId = null;
             }
+            bumpTrialProgressVersion(state, trialId);
         });
         const content = useContentStore.getState().raw;
         if (content) {
@@ -141,6 +165,9 @@ export const useTrialStore = create()(immer((set, get) => ({
         }
     },
     markBypassed: (trialId, bypassedAt = Date.now()) => {
+        const current = get().progressByTrialId[trialId];
+        if (current?.resolution === 'bypassed' && current.bypassedAt === bypassedAt)
+            return;
         let gateIndex = 0;
         set((state) => {
             if (!state.progressByTrialId[trialId]) {
@@ -155,6 +182,7 @@ export const useTrialStore = create()(immer((set, get) => ({
             if (state.activeTrialSessionId === trialId) {
                 state.activeTrialSessionId = null;
             }
+            bumpTrialProgressVersion(state, trialId);
         });
         const content = useContentStore.getState().raw;
         if (content) {
@@ -195,6 +223,11 @@ export const useTrialStore = create()(immer((set, get) => ({
         return progress.resolution === 'cleared' || progress.resolution === 'bypassed';
     },
     resetSession: (trialId) => {
+        const current = get().progressByTrialId[trialId];
+        if (!current && get().activeTrialSessionId !== trialId)
+            return;
+        if (current?.sessionAttempts === 0 && current.attemptStartAt === null && get().activeTrialSessionId !== trialId)
+            return;
         set((state) => {
             if (!state.progressByTrialId[trialId]) {
                 state.progressByTrialId[trialId] = createDefaultTrialProgress();
@@ -205,6 +238,7 @@ export const useTrialStore = create()(immer((set, get) => ({
             if (state.activeTrialSessionId === trialId) {
                 state.activeTrialSessionId = null;
             }
+            bumpTrialProgressVersion(state, trialId);
         });
     },
     resetTrial: (trialId) => {
@@ -213,12 +247,15 @@ export const useTrialStore = create()(immer((set, get) => ({
             if (state.activeTrialSessionId === trialId) {
                 state.activeTrialSessionId = null;
             }
+            bumpTrialProgressVersion(state, trialId);
         });
     },
     hardResetTrials: () => {
         set(() => ({
             activeTrialSessionId: null,
             progressByTrialId: {},
+            progressVersion: 0,
+            progressVersionByTrialId: {},
         }));
     },
 })));
