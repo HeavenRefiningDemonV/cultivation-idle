@@ -1,0 +1,33 @@
+{
+  "url": "http://127.0.0.1:5174/?techniquesExactMode=fixture",
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "reducedMotion": false,
+  "noHorizontalOverflow": true,
+  "scrollWidth": 1440,
+  "innerWidth": 1440,
+  "rootSelector": ".techniqueDetailModalPanel",
+  "rootAttributes": {
+    "data-headlessui-state": "open",
+    "data-open": ""
+  },
+  "testIds": [
+    "techniques-exact-page"
+  ],
+  "mp6Rows": {
+    "cultivationRiskRows": 0,
+    "cultivationReadinessSections": 0,
+    "gateRows": 0,
+    "trainingMotes": 0,
+    "daoMotes": 0,
+    "techniqueScalingRows": 1
+  },
+  "activeElement": {
+    "tagName": "DIV",
+    "text": "Starfire Bolt M Close Not equipped in Loadout 1. Favorite A1 A2 A3 A4 OVERVIEW Damage x2.4 Active Common Mortal heaven offense Rank 1 Loadout: Loadout 1 COMBAT / EFFECT BREAKDOWN Damage x2.4 Cooldown: 8s Cost: 4 (heavenMaxQiPct) Tags: fire, spell Training Hall Power 1.22x Primary Stat: dao_resonance +22.0% · Secondary Stat: divine_sense +0.0% SECONDARY / MASTERY BONUS Secondary effect locked until Mastery 75. PROGRESSION / UPGRADE Mastery Track Mastery 1/100 · Cooldown reduction: 0.0% · Cost reduction:0.0% Next unlock: Cooldown 5% Rank Progress Cap: 3 Rank cap reached for current grade. Fragments owned: 0/— Rank cap reached: no further power at this grade. Upgrade Rank Rank cap reached for current grade. SUB-INSIGHTS (TRAITS) Trait slots = min(Rarity 1, Grade cap 1) →1 No traits yet. Re-scribe to discover fresh insights. Reroll: 1× Soul Ink (Crude). Lock 1 trait: +1× Soul Ink (Crude) (choose in ritual). Reroll Sub-Insights Need Soul Ink to reroll traits. RUNES No rune sockets for this grade.",
+    "ariaLabel": null
+  },
+  "visibleText": "Techniques\n\nInner Palace Combat Form\n\n診\nLoadout gap signal\n\nfill one passive slot before the next Gate.\n\nTarget\nFoundation Gate\nArchetype\nBalanced Striker\nPath Alignment\n72%\nMastery Floor\n25\nRank Floor\nI\nLoadout 1\nBalanced\nLoadouts\n◆\nLoadout 1\nBalanced Striker\n4 equipped\n◇\nLoadout 2\nDefensive\n0 equipped\n◇\nLoadout 3\nFarmer\n0 equipped\nAI Profile\n衡\nBalanced\n盾\nSurvivor\n破\nBurst\n穗\nFarmer\n\nFarmer is poor for Gate Trials\n\nCasting Policy\n旋\nReactive\n序\nOrdered\n掌\nHold Ultimate\n\nResponds to combat state with a balanced priority mix.\n\n战\nCombat Form\nActive 1\nIron Palm\nMortal / 25 / 50\nEquip\nClear\nActive 2\nCloudstep\nEarth / 10 / 50\nEquip\nClear\nPassive 1\nQuiet Guard\nMortal / 10 / 50\nEquip\nClear\nPassive 2\nLocked\nfixed slot\nEquip\nClear\nSupport\nMending Breath\nMortal / 10 / 50\nEquip\nClear\nUltimate\nLocked\nfixed slot\nEquip\nClear\nCurrent Combat Form\n2 / 3 Active\n1 / 2 Passive\n0 / 1 Ultimate\nAI: Balanced\nPolicy: Reactive\n\nSelect a technique slip or altar slot to adjust the combat form.\n\nOwned Techniques\nAll\nPath Fit\nDamage\nGuard\nHeal\nControl\nSetup\nAdvanced Filters\nIron Palm\nDamage\nMortal\nCommon\nRank I\n25 / 50\nMartial\nDamage\n装\n推\nQuiet Guard\nGuard\nMortal\nUncommon\nRank I\n10 / 50\nEarth\nGuard\n推\nCloudstep\nStep\nEarth\nRare\nRank I\n15 / 50\nHeaven\nMobility\n装\nMending Breath\nHeal\nMortal\nCommon\nRank I\n5 / 50\nEarth\nHeal\n装\nSelected Technique\nIron Palm\nRecommended\nCore Damage Art\nMortal Grade\nCommon\nMartial Lineage\nRole\nCore Damage Art\nGrade\nMortal Grade\npaper-bound foundation\nRarity\nCommon\nplain copy\nRank\nI\nMastery\n25 / 50\nPath Fit\nStrong\nMartial doctrine resonates\nTraits\ndirect strike, stable opener\nRune Sockets\n0 / 1\nObserved Gap\nraise mastery to 50\nOpen Details\nInspect manual source\nGate Readiness Impact\nDamage\nAdequate\nSurvival\nThin\nControl\nMissing\nAI\nGood\nMedicine\nExternal\nApply Loadout\nGo to Manual Pavilion\nStatus\nCultivation\nWorld\nInventory\nTechniques\nRecords\nPrestige\nSettings\nStarfire Bolt\nM\nClose\nNot equipped in Loadout 1.\nFavorite\nA1\nA2\nA3\nA4\nOVERVIEW\n\nDamage x2.4\n\nActive\nCommon\nMortal\nheaven\noffense\nRank 1\nLoadout: Loadout 1\nCOMBAT / EFFECT BREAKDOWN\nDamage x2.4\nCooldown: 8s\nCost: 4 (heavenMaxQiPct)\nTags: fire, spell\nTraining Hall\nPower 1.22x\nPrimary Stat: dao_resonance +22.0% · Secondary Stat: divine_sense +0.0%\nSECONDARY / MASTERY BONUS\n\nSecondary effect locked until Mastery 75.\n\nPROGRESSION / UPGRADE\nMastery Track\nMastery 1/100 · Cooldown reduction: 0.0% · Cost reduction:0.0%\nNext unlock: Cooldown 5%\nRank Progress\nCap: 3\nRank cap reached for current grade.\nFragments owned: 0/—\nRank cap reached: no further power at this grade.\nUpgrade Rank\nRank cap reached for current grade.\nSUB-INSIGHTS (TRAITS)\nTrait slots = min(Rarity 1, Grade cap 1) →1\n\nNo traits yet. Re-scribe to discover fresh insights.\n\nReroll: 1× Soul Ink (Crude). Lock 1 trait: +1× Soul Ink (Crude) (choose in ritual).\nReroll Sub-Insights\nNeed Soul Ink to reroll traits.\nRUNES\nNo rune sockets for this grade."
+}

@@ -1,0 +1,9 @@
+
+> cultivation-idle@0.0.0 telemetry:summary
+> node --loader=./scripts/relativeJsLoader.mjs --experimental-strip-types scripts/summarizeBalanceTelemetry.ts
+
+Events: 23
+Lives: 2 (reclaim=0)
+Gates tracked: 1
+Prestige events: 1 (AP gained=28)
+Offline applied: 1 (seconds=7200, qi=200)

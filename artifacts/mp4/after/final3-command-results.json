@@ -1,0 +1,57 @@
+﻿[
+    {
+        "command":  "npm run test:balance-regression",
+        "exitCode":  0,
+        "log":  "artifacts/mp4/after/logs/test-balance-regression.final3.log"
+    },
+    {
+        "command":  "npm run balance:report:json",
+        "exitCode":  0,
+        "log":  "artifacts/mp4/after/logs/balance-report-json.final3.log"
+    },
+    {
+        "command":  "npm run release:route-report:json",
+        "exitCode":  0,
+        "log":  "artifacts/mp4/after/logs/release-route-report-json.final3.log"
+    },
+    {
+        "command":  "npm run release:fresh-run-report:json",
+        "exitCode":  0,
+        "log":  "artifacts/mp4/after/logs/release-fresh-run-report-json.final3.log"
+    },
+    {
+        "command":  "npm run release:reclaim-route-report",
+        "exitCode":  0,
+        "log":  "artifacts/mp4/after/logs/release-reclaim-route-report.final3.log"
+    },
+    {
+        "command":  "npm run release:reclaim-route-report -- --json",
+        "exitCode":  0,
+        "log":  "artifacts/mp4/after/logs/release-reclaim-route-report-json.final3.log"
+    },
+    {
+        "command":  "npm run release:runtime-diagnostics:json",
+        "exitCode":  0,
+        "log":  "artifacts/mp4/after/logs/release-runtime-diagnostics-json.final3.log"
+    },
+    {
+        "command":  "npm run typecheck",
+        "exitCode":  0,
+        "log":  "artifacts/mp4/after/logs/typecheck.final3.log"
+    },
+    {
+        "command":  "npm run check:icons",
+        "exitCode":  0,
+        "log":  "artifacts/mp4/after/logs/check-icons.final3.log"
+    },
+    {
+        "command":  "npm run validate:content",
+        "exitCode":  0,
+        "log":  "artifacts/mp4/after/logs/validate-content.final3.log"
+    },
+    {
+        "command":  "npm run build",
+        "exitCode":  0,
+        "log":  "artifacts/mp4/after/logs/build.final3.log"
+    }
+]

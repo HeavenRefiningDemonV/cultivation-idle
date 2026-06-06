@@ -1,0 +1,56 @@
+state: life identity complete and cultivation tab active
+url: http://127.0.0.1:5173/
+
+Realm
+Qi Condensation
+Stage 1
+Qi
+0
+Cultivation Rate
+67.53 / s
+Stability
+0%
+Foreground
+Idle
+Next Milestone
+Push Qi
+Need
+Qi Cap
+100
+Action
+Start Cultivation
+Idle
+Dao
+Path
+Heaven
+Spirit Root
+Metal / Mortal
+Heart Law
+Ember Thread Sutra
+Verse
+Chapter 1
+Breath / Focus
+Balanced
+Breakthrough
+Settled
+BREAKTHROUGH READINESS
+Reach the realm edge and fill the Qi reservoir.
+Qi
+100 short
+Realm edge
+Reached
+Gate item
+Not needed now
+Qi 0 / 100
++67.53/s
+Start Cultivation
+Break Through
+Status
+Cultivation
+World
+Inventory
+Techniques
+Records
+Prestige
+Settings
+Life begins: Heaven • Ember Thread Sutra • Balanced

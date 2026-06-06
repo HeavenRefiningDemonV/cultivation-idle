@@ -1,0 +1,42 @@
+[
+    {
+        "name":  "tsconfig-tests",
+        "command":  "npm exec tsc -- --project tsconfig.tests.json",
+        "result":  "PASS",
+        "exitCode":  0,
+        "durationMs":  12361,
+        "log":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp3\\preflight\\onboarding-ui\\logs\\tsconfig-tests.preflight.log"
+    },
+    {
+        "name":  "typecheck",
+        "command":  "npm run typecheck",
+        "result":  "PASS",
+        "exitCode":  0,
+        "durationMs":  371,
+        "log":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp3\\preflight\\onboarding-ui\\logs\\typecheck.preflight.log"
+    },
+    {
+        "name":  "check-icons",
+        "command":  "npm run check:icons",
+        "result":  "PASS",
+        "exitCode":  0,
+        "durationMs":  398,
+        "log":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp3\\preflight\\onboarding-ui\\logs\\check-icons.preflight.log"
+    },
+    {
+        "name":  "validate-content",
+        "command":  "npm run validate:content",
+        "result":  "PASS",
+        "exitCode":  0,
+        "durationMs":  1247,
+        "log":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp3\\preflight\\onboarding-ui\\logs\\validate-content.preflight.log"
+    },
+    {
+        "name":  "previous-packet-onboarding-tests",
+        "command":  "node --loader=./scripts/relativeJsLoader.mjs --test tmp-tests/tests/contracts/onboardingMilestoneContract.test.js tmp-tests/tests/integration/onboardingMigration.test.js tmp-tests/tests/contracts/onboardingPolicy.test.js tmp-tests/tests/integration/onboardingModuleGating.test.js",
+        "result":  "PASS",
+        "exitCode":  0,
+        "durationMs":  661,
+        "log":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp3\\preflight\\onboarding-ui\\logs\\previous-packet-onboarding-tests.preflight.log"
+    }
+]

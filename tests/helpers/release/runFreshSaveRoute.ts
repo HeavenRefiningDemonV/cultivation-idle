@@ -3,6 +3,7 @@ import { buildCurrentLifeSummarySurface } from '../../../src/features/prestige/l
 import { trackProgressionGateAvailabilityNow } from '../../../src/services/diagnostics/progressionGateAvailability.js';
 import { GameEvents, type GameEvent } from '../../../src/services/events/GameEvents.js';
 import { RewardService } from '../../../src/services/rewards/RewardService.js';
+import { getCanonicalCultivationStageNumber } from '../../../src/systems/progression/cultivationStageIndex.js';
 import { getTrialLifecycleSnapshot, getTrialGateRewardBundle } from '../../../src/systems/progression/runtime/index.js';
 import { getLiveRealmByIndex } from '../../../src/systems/progression/runtime/liveRealmProjection.js';
 import { useCityStore } from '../../../src/stores/cityStore.js';
@@ -130,14 +131,8 @@ const withSeededRandom = async <T>(seed: number, fn: () => Promise<T>): Promise<
 };
 
 const prepareForGateAttempt = () => {
-  for (let i = 0; i < 120; i += 1) {
-    const boughtDamage = useGameStore.getState().purchaseUpgrade('damage');
-    const boughtHp = useGameStore.getState().purchaseUpgrade('hp');
-    if (!boughtDamage && !boughtHp) {
-      break;
-    }
-  }
-
+  maintainMindAlignmentForFreshSaveRoute();
+  // This smoke grants gate clears directly; preserve breakthrough Qi so the route measures cap reachability.
   for (let i = 0; i < 600; i += 1) {
     const state = useGameStore.getState();
     const qi = Number(state.qi);
@@ -146,8 +141,26 @@ const prepareForGateAttempt = () => {
       break;
     }
     state.tick(1_000);
+    state.flushCultivationAccumulation('fresh-save-route/prepare-gate');
   }
 };
+
+function maintainMindAlignmentForFreshSaveRoute(): void {
+  const cultivation = useCultivationStore.getState();
+  const heartLawId = cultivation.selectedHeartLawId;
+  if (!heartLawId) return;
+
+  const game = useGameStore.getState();
+  const canonicalStage = getCanonicalCultivationStageNumber({
+    realmIndex: game.realm.index,
+    substage: game.realm.substage,
+  });
+  const currentLevel = cultivation.heartLawLevelById[heartLawId] ?? 1;
+  if (currentLevel === canonicalStage) return;
+
+  cultivation.setHeartLawLevel(heartLawId, canonicalStage, cultivation.heartLawXpById[heartLawId] ?? 0);
+  useGameStore.getState().calculateQiPerSecond();
+}
 
 export async function runFreshSaveRoute(routeId: FreshSaveRouteId): Promise<FreshSaveRouteResult> {
   const definition = FRESH_SAVE_ROUTE_CATALOG.find((entry) => entry.id === routeId);
@@ -218,9 +231,13 @@ export async function runFreshSaveRoute(routeId: FreshSaveRouteId): Promise<Fres
       const maxMs = 14 * 60 * 60 * 1000;
       let elapsedMs = 0;
       let previousRealmIndex = useGameStore.getState().realm.index;
+      maintainMindAlignmentForFreshSaveRoute();
+      useGameStore.getState().calculateQiPerSecond();
 
       while (elapsedMs <= maxMs && useGameStore.getState().realm.index < 5) {
+        maintainMindAlignmentForFreshSaveRoute();
         useGameStore.getState().tick(stepMs);
+        useGameStore.getState().flushCultivationAccumulation('fresh-save-route/simulated-tick');
         elapsedMs += stepMs;
         trackProgressionGateAvailabilityNow(Date.now());
 
@@ -273,6 +290,7 @@ export async function runFreshSaveRoute(routeId: FreshSaveRouteId): Promise<Fres
 
         const nextRealmIndex = useGameStore.getState().realm.index;
         if (nextRealmIndex > previousRealmIndex) {
+          maintainMindAlignmentForFreshSaveRoute();
           previousRealmIndex = nextRealmIndex;
         }
       }

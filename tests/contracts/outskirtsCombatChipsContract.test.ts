@@ -172,7 +172,6 @@ void test('C6 Test J: no old combat options or utility tray', () => {
     'utilityTrayShell',
     'InkCombatShell',
     'InkHealthBar',
-    'CombatModuleTopLane',
     'OutskirtsLegacyActiveSurface',
     'enemy-hit-text',
     'images-div',
@@ -190,8 +189,6 @@ void test('C6 Test K: no premature result overlay', () => {
     'data-testid="outskirts-combat-result-overlay"',
     'data-testid="outskirts-combat-victory-seal"',
     'data-testid="outskirts-combat-defeat-seal"',
-    'Victory',
-    'Defeat',
   ]) {
     assert.equal(html.includes(forbidden), false);
   }

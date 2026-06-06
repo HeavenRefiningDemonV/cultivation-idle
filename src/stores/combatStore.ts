@@ -12,6 +12,7 @@ import type {
   CombatTechniqueLogEntry,
   CombatEvent,
   MedicinePouchSlotKey,
+  SpiritRootElement,
 } from '../types/index.js';
 import type { TechniqueDef } from '../content/index.js';
 import type { OutskirtsDef } from '../content/index.js';
@@ -72,6 +73,23 @@ import { buildOutskirtsRewardBundle, getOutskirtsDropsConfig } from '../systems/
 import { getGateFailureMeritPolicyForTrial } from '../systems/economy/gateFailureMeritPolicy.js';
 import { buildSection5ReadinessSurface } from '../systems/readiness/section5Adapters.js';
 import { bumpVersion } from './versionCounters.js';
+import { useTrainingStore } from './trainingStore.js';
+import { useEquipmentStore } from './equipmentStore.js';
+import {
+  buildTrainingReadOnlySnapshot,
+  createTrainingRuntimeContent,
+  type TrainingReadOnlySnapshot,
+} from '../systems/training/index.js';
+import { resolveEquipmentHandlingSnapshot } from '../systems/equipment/equipmentHandlingResolver.js';
+import { resolveMedicineHandlingSnapshot } from '../systems/consumables/medicineHandlingResolver.js';
+import {
+  buildSpiritRootProgressionSnapshot,
+  getSpiritRootPairKey,
+  resolveSpiritRootCombatProc,
+  type SpiritRootCombatTrigger,
+  type SpiritRootProgressionSnapshot,
+} from '../systems/spiritRoots/index.js';
+import { resolveTechniqueScalingSnapshot } from '../systems/techniques/techniqueScalingResolver.js';
 
 
 function getHeartLawCombatMultiplier(): number {
@@ -85,6 +103,58 @@ function getHeartLawCombatMultiplier(): number {
     spiritRoot: getSpiritRootSnapshot(),
   });
   return bonuses.combatDamageMult ?? 1;
+}
+
+function getTrainingReadOnlySnapshotForCombat(): TrainingReadOnlySnapshot | null {
+  const raw = useContentStore.getState().raw;
+  if (!raw) return null;
+  const content = createTrainingRuntimeContent(raw);
+  if (content.stats.length === 0) return null;
+  const game = useGameStore.getState();
+  return buildTrainingReadOnlySnapshot({
+    content,
+    state: useTrainingStore.getState().toSaveState(),
+    selectedPath: game.selectedPath ?? null,
+    realmIndex: game.realm?.index ?? 0,
+    substageIndex: Math.max(0, (game.realm?.substage ?? 1) - 1),
+  });
+}
+
+function getHeartLawCombatTags(): string[] {
+  const heartLawState = useHeartLawStore.getState();
+  const heartLawId = heartLawState.selectedHeartLawId;
+  if (!heartLawId) return [];
+  const heartLaw = useContentStore.getState().maps.heartLawsById[heartLawId];
+  return [
+    ...(heartLaw?.daoTags ?? []),
+    ...(heartLaw?.spiritRootAffinities ?? []),
+  ].filter((tag): tag is string => typeof tag === 'string' && tag.length > 0);
+}
+
+function getSpiritRootProgressionSnapshotForCombat(): SpiritRootProgressionSnapshot | null {
+  const root = getSpiritRootSnapshot();
+  if (!root) return null;
+  const content = useContentStore.getState();
+  const rootDef = content.raw?.spirit_roots?.roots.find((entry) => entry.elementId === root.element) ?? null;
+  const heartLawState = useHeartLawStore.getState();
+  const selectedHeartLawId = heartLawState.selectedHeartLawId;
+  const heartLawDef = selectedHeartLawId ? useContentStore.getState().maps.heartLawsById[selectedHeartLawId] ?? null : null;
+  const pairKey = getSpiritRootPairKey(root.element, selectedHeartLawId);
+  const rootResonance = heartLawState.rootResonanceByPair[pairKey] ?? 0;
+
+  return buildSpiritRootProgressionSnapshot({
+    root,
+    rootDef,
+    selectedHeartLawId,
+    heartLawDef,
+    heartLawLevel: selectedHeartLawId ? heartLawState.heartLawLevelById[selectedHeartLawId] ?? 1 : 1,
+    rootResonance,
+    shape: 'single',
+    unlockedVariantIds: [],
+    trainingRatingsById: useTrainingStore.getState().statRatingsById,
+    daoHeartClarity: heartLawState.daoHeartClarity,
+    verseMastery: selectedHeartLawId ? heartLawState.verseMasteryByLawId[selectedHeartLawId] ?? 0 : 0,
+  });
 }
 
 /**
@@ -438,6 +508,26 @@ function getEffectivePlayerCombatStats(combatBuffs: CombatBuff[], now: number) {
       updated[key] = nextValue;
     });
 
+  const trainingSnapshot = getTrainingReadOnlySnapshotForCombat();
+  if (trainingSnapshot) {
+    const equipment = useEquipmentStore.getState();
+    const handling = resolveEquipmentHandlingSnapshot({
+      trainingSnapshot,
+      equipment: {
+        equippedWeaponId: equipment.equippedWeaponId,
+        equippedAccessoryId: equipment.equippedAccessoryId,
+        refineLevelBySlot: { ...equipment.refineLevelBySlot },
+        temperBonusesBySlot: {
+          weapon: [...(equipment.temperBonusesBySlot.weapon ?? [])],
+          accessory: [...(equipment.temperBonusesBySlot.accessory ?? [])],
+        },
+      },
+    });
+    updated.atk *= handling.statMultipliers.atk;
+    updated.def *= handling.statMultipliers.def;
+    updated.maxHp *= handling.statMultipliers.maxHp;
+  }
+
   updated.atk = Math.max(0, updated.atk);
   updated.def = Math.max(0, updated.def);
   updated.maxHp = Math.max(1, updated.maxHp);
@@ -491,6 +581,7 @@ const createInitialCombatState = () => ({
     intent: 100,
     maxIntent: 100,
   } as CombatResources,
+  rootProcLastAtByElementId: {} as Partial<Record<SpiritRootElement, number>>,
   techniqueLog: [] as CombatTechniqueLogEntry[],
   events: [] as CombatEvent[],
   isBoss: false,
@@ -585,7 +676,12 @@ export const useCombatStore = create<ExtendedCombatState>()(
               id: buffId,
               stat: effect.stat,
               mode: effect.mode,
-              value: effect.value * rankMult * scaling.traitMods.buffMult * scaling.runeMods.buffMult,
+              value:
+                effect.value *
+                rankMult *
+                scaling.traitMods.buffMult *
+                scaling.runeMods.buffMult *
+                scaling.mp4Scaling.totalMultiplier,
               endsAt: now + PASSIVE_BUFF_DURATION_SEC * 1000,
             });
           });
@@ -874,6 +970,26 @@ export const useCombatStore = create<ExtendedCombatState>()(
       });
     };
 
+    const resolveRootProcForCombat = (trigger: SpiritRootCombatTrigger, now: number) => {
+      const snapshot = getSpiritRootProgressionSnapshotForCombat();
+      const proc = resolveSpiritRootCombatProc({
+        snapshot,
+        now,
+        trigger,
+        rollPct: Math.random() * 100,
+        lastProcAtByElementId: get().rootProcLastAtByElementId,
+      });
+      if (!proc.didProc) return proc;
+      set((state) => {
+        state.rootProcLastAtByElementId = proc.nextLastProcAtByElementId;
+        state.combatViewVersion = bumpVersion(state.combatViewVersion);
+      });
+      if (proc.logLine) {
+        get().addLogEntry('system', proc.logLine, '#d4af37');
+      }
+      return proc;
+    };
+
     const getTechniqueScaling = (techId: string, technique?: TechniqueDef) => {
       const techCollection = useTechCollectionStore.getState();
       const progression = techCollection.getTechniqueProgressionSnapshot(techId);
@@ -886,6 +1002,20 @@ export const useCombatStore = create<ExtendedCombatState>()(
       const masteryEffectMult = techCollection.getMasteryEffectMultiplier(techId);
       const secondaryUnlocked = milestoneEffects.secondaryUnlocked;
       const secondaryPotencyMult = secondaryUnlocked ? progression.secondaryPotencyMult : 1;
+      const rootSnapshot = getSpiritRootProgressionSnapshotForCombat();
+      const heartLawState = useHeartLawStore.getState();
+      const mp4Scaling = resolveTechniqueScalingSnapshot({
+        technique,
+        trainingSnapshot: getTrainingReadOnlySnapshotForCombat(),
+        rootElementId: rootSnapshot?.elementId ?? null,
+        rootResonance: rootSnapshot
+          ? heartLawState.rootResonanceByPair[getSpiritRootPairKey(rootSnapshot.elementId, heartLawState.selectedHeartLawId)] ?? 0
+          : 0,
+        heartLawTags: getHeartLawCombatTags(),
+        heartLawLevel: heartLawState.selectedHeartLawId
+          ? heartLawState.heartLawLevelById[heartLawState.selectedHeartLawId] ?? 1
+          : 1,
+      });
 
       const cooldownReductionPct = Math.min(
         0.3,
@@ -904,6 +1034,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
         masteryEffectMult,
         secondaryUnlocked,
         secondaryPotencyMult,
+        mp4Scaling,
         isBoss,
       };
     };
@@ -957,6 +1088,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
         state.combatShield = null;
         state.combatBuffs = [];
         state.combatResources = buildCombatResources();
+        state.rootProcLastAtByElementId = {};
         state.techniqueLog = [];
 
         // Boss tracking
@@ -1115,6 +1247,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
         state.combatShield = null;
         state.combatBuffs = [];
         state.combatResources = buildCombatResources();
+        state.rootProcLastAtByElementId = {};
         state.techniqueLog = [];
 
         // Boss tracking
@@ -1176,6 +1309,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
         state.combatShield = null;
         state.combatBuffs = [];
         state.combatResources = buildCombatResources();
+        state.rootProcLastAtByElementId = {};
         state.techniqueLog = [];
         state.events = [];
         state.isBoss = false;
@@ -1207,10 +1341,16 @@ export const useCombatStore = create<ExtendedCombatState>()(
 
       const effect = spec.effect;
       const maxHp = D(state.playerMaxHP);
+      const medicineHandling = resolveMedicineHandlingSnapshot({
+        trainingSnapshot: getTrainingReadOnlySnapshotForCombat(),
+        pouch: useMedicinePouchStore.getState().toSaveState(),
+      });
+      const medicineEffectMultiplier = medicineHandling.effectMultiplier;
+      resolveRootProcForCombat('medicine', now);
 
       switch (effect.kind) {
         case 'healPct': {
-          const healAmount = maxHp.times(effect.pct);
+          const healAmount = maxHp.times(effect.pct * medicineEffectMultiplier);
           let appliedHeal = D(0);
           set((state) => {
             const current = D(state.playerHP);
@@ -1231,7 +1371,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
           break;
         }
         case 'shieldPct': {
-          const shieldGain = maxHp.times(effect.pct).toNumber();
+          const shieldGain = maxHp.times(effect.pct * medicineEffectMultiplier).toNumber();
           const expiresAt = now + effect.durationSec * 1000;
           let totalShield = shieldGain;
 
@@ -1263,7 +1403,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
         case 'cleanseOrFallbackBuff': {
           const buffStat = effect.kind === 'cleanseOrFallbackBuff' ? effect.fallbackStat : effect.stat;
           const buffMode = effect.kind === 'cleanseOrFallbackBuff' ? 'pct' : effect.mode;
-          const buffValue = effect.kind === 'cleanseOrFallbackBuff' ? effect.fallbackValue : effect.value;
+          const buffValue = (effect.kind === 'cleanseOrFallbackBuff' ? effect.fallbackValue : effect.value) * medicineEffectMultiplier;
           const buffId = `consumable:${itemId}:${buffStat}`;
           const endsAt = now + effect.durationSec * 1000;
           let refreshed = false;
@@ -1286,7 +1426,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
           break;
         }
         case 'restoreQiPct': {
-          const gain = state.combatResources.maxQi * effect.pct;
+          const gain = state.combatResources.maxQi * effect.pct * medicineEffectMultiplier;
           let applied = 0;
           set((state) => {
             const before = state.combatResources.qi;
@@ -1301,7 +1441,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
           break;
         }
         case 'restoreIntentPct': {
-          const gain = state.combatResources.maxIntent * effect.pct;
+          const gain = state.combatResources.maxIntent * effect.pct * medicineEffectMultiplier;
           let applied = 0;
           set((state) => {
             const before = state.combatResources.intent;
@@ -1353,6 +1493,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
 
       const effectiveStats = getEffectivePlayerCombatStats(state.combatBuffs, now);
       const enemy = state.currentEnemy;
+      const rootProc = resolveRootProcForCombat('basic_attack', now);
 
       // Check if enemy dodges
       const dodgeRoll = Math.random() * 100;
@@ -1366,7 +1507,8 @@ export const useCombatStore = create<ExtendedCombatState>()(
 
       // Calculate base damage: ATK * (1 - DEF/(DEF + K))
       const atk = D(effectiveStats.atk);
-      const def = D(enemy.def);
+      const effectiveEnemyDef = Math.max(0, Number(enemy.def) * (1 - Math.min(rootProc.modifiers.armorPenPct, 90) / 100));
+      const def = D(effectiveEnemyDef);
       const defReduction = def.dividedBy(def.plus(DEFENSE_CONSTANT_K));
       const baseDamage = atk.times(D(1).minus(defReduction));
 
@@ -1379,7 +1521,11 @@ export const useCombatStore = create<ExtendedCombatState>()(
       const isCrit = critRoll < effectiveStats.crit;
       const critMultiplier = isCrit ? D(effectiveStats.critDmg).dividedBy(100) : D(1);
 
-      const finalDamage = baseDamage.times(damageMultiplier).times(heartLawMultiplier).times(critMultiplier);
+      const finalDamage = baseDamage
+        .times(damageMultiplier)
+        .times(heartLawMultiplier)
+        .times(critMultiplier)
+        .times(rootProc.modifiers.damageMult);
       const currentEnemyHp = D(state.enemyHP);
       const appliedDamage = currentEnemyHp.lessThan(finalDamage) ? currentEnemyHp : finalDamage;
 
@@ -1460,7 +1606,22 @@ export const useCombatStore = create<ExtendedCombatState>()(
       const critRoll = Math.random() * 100;
       const isCrit = critRoll < enemy.crit;
       const critMultiplier = isCrit ? D(enemy.critDmg).dividedBy(100) : D(1);
-      const damageAfterCrit = baseDamage.times(critMultiplier);
+      const rootProc = resolveRootProcForCombat('incoming_damage', now);
+      const damageAfterCrit = baseDamage.times(critMultiplier).times(rootProc.modifiers.incomingDamageMult);
+      if (rootProc.modifiers.shieldPct > 0) {
+        const shieldGain = D(state.playerMaxHP).times(rootProc.modifiers.shieldPct).toNumber();
+        if (shieldGain > 0) {
+          set((state) => {
+            const expiresAt = now + 8000;
+            if (!state.combatShield) {
+              state.combatShield = { amount: shieldGain, expiresAt };
+            } else {
+              state.combatShield.amount += shieldGain;
+              state.combatShield.expiresAt = Math.max(state.combatShield.expiresAt ?? 0, expiresAt);
+            }
+          });
+        }
+      }
 
       const { remainingDamage: damageAfterCombatShield, absorbed: combatAbsorbed } = applyCombatShield(
         damageAfterCrit,
@@ -2457,6 +2618,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
       effects.forEach((effect) => {
         switch (effect.type) {
           case 'damage': {
+            const rootProc = resolveRootProcForCombat('technique_damage', now);
             const bonusPct = Math.max(0, getTalismanBonusesNow().damageBonusPct);
             const damageMultiplier = D(1).plus(D(bonusPct).dividedBy(100));
             const heartLawMultiplier = D(getHeartLawCombatMultiplier());
@@ -2467,7 +2629,13 @@ export const useCombatStore = create<ExtendedCombatState>()(
             const critMultiplier = isCrit ? D(effectiveStats.critDmg).dividedBy(100) : D(1);
             const damage = D(effectiveStats.atk)
               .times(
-                effect.mult * masteryMult * secondaryPotency * scaling.traitMods.damageMult * scaling.runeMods.damageMult,
+                effect.mult *
+                masteryMult *
+                secondaryPotency *
+                scaling.traitMods.damageMult *
+                scaling.runeMods.damageMult *
+                scaling.mp4Scaling.totalMultiplier *
+                rootProc.modifiers.damageMult,
               )
               .times(damageMultiplier)
               .times(heartLawMultiplier)
@@ -2491,10 +2659,16 @@ export const useCombatStore = create<ExtendedCombatState>()(
             break;
           }
           case 'heal': {
+            const rootProc = resolveRootProcForCombat('technique_heal', now);
             const masteryMult = scaling.masteryEffectMult ?? 1;
             const secondaryPotency = effect.source === 'secondary' ? scaling.secondaryPotencyMult : 1;
             const healAmount = maxHp.times(
-              effect.mult * masteryMult * secondaryPotency * scaling.traitMods.healMult * scaling.runeMods.healMult,
+              (effect.mult + rootProc.modifiers.healPct) *
+              masteryMult *
+              secondaryPotency *
+              scaling.traitMods.healMult *
+              scaling.runeMods.healMult *
+              scaling.mp4Scaling.totalMultiplier,
             );
             let actualHeal = healAmount;
             set((state) => {
@@ -2508,11 +2682,17 @@ export const useCombatStore = create<ExtendedCombatState>()(
             break;
           }
           case 'shield': {
+            const rootProc = resolveRootProcForCombat('technique_shield', now);
             const masteryMult = scaling.masteryEffectMult ?? 1;
             const secondaryPotency = effect.source === 'secondary' ? scaling.secondaryPotencyMult : 1;
             const shieldAmount = maxHp
               .times(
-                effect.mult * masteryMult * secondaryPotency * scaling.traitMods.shieldMult * scaling.runeMods.shieldMult,
+                (effect.mult + rootProc.modifiers.shieldPct) *
+                masteryMult *
+                secondaryPotency *
+                scaling.traitMods.shieldMult *
+                scaling.runeMods.shieldMult *
+                scaling.mp4Scaling.totalMultiplier,
               )
               .toNumber();
             const durationSec = resolveShieldDurationSec(techDef.effect) ?? DEFAULT_SHIELD_DURATION_SEC;
@@ -2538,6 +2718,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
             break;
           }
           case 'buff': {
+            resolveRootProcForCombat('technique_buff', now);
             const durationSec = effect.durationSec ?? DEFAULT_BUFF_DURATION_SEC;
             const buffId = `${techId}:${effect.stat}`;
             const masteryMult = scaling.masteryEffectMult ?? 1;
@@ -2554,7 +2735,8 @@ export const useCombatStore = create<ExtendedCombatState>()(
                   masteryMult *
                   secondaryPotency *
                   scaling.traitMods.buffMult *
-                  scaling.runeMods.buffMult,
+                  scaling.runeMods.buffMult *
+                  scaling.mp4Scaling.totalMultiplier,
                 endsAt: now + durationSec * 1000,
               });
             });

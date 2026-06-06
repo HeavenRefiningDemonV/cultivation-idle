@@ -1,6 +1,11 @@
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useUIStore } from '../stores/uiStore.js';
 import { useContentStore } from '../stores/contentStore.js';
+import { useCityStore } from '../stores/cityStore.js';
+import { useOnboardingStore } from '../stores/onboardingStore.js';
+import { useInventoryStore } from '../stores/inventoryStore.js';
+import { useMedicinePouchStore } from '../stores/medicinePouchStore.js';
+import { useTechCollectionStore } from '../stores/techCollectionStore.js';
 import { CultivateScreen } from './screens/CultivateScreen.js';
 import { StatusScreen } from './screens/StatusScreen.js';
 import { WorldScreen } from './screens/WorldScreen.js';
@@ -9,6 +14,7 @@ import { PrestigeScreen } from './screens/PrestigeScreen.js';
 import { OfflineProgressModal } from './modals/OfflineProgressModal.js';
 import { ManualSatchelModal } from './modals/ManualSatchelModal.js';
 import { TechniqueLearnedModal } from './modals/TechniqueLearnedModal.js';
+import { DaoHeartModal } from './modals/DaoHeartModal.js';
 import { SettingsScreen } from './screens/SettingsScreen.js';
 import { SystemStatusPanelOverlay } from '../app/overlays/SystemStatusPanel.js';
 import { CombatPresentationHost } from '../app/overlays/CombatPresentationHost.js';
@@ -39,6 +45,9 @@ import { LifeSummaryModal } from './modals/LifeSummaryModal.js';
 import { MigrationIssuesModal } from './modals/MigrationIssuesModal.js';
 import { OnboardingPromptHost } from './system/OnboardingPromptHost.js';
 import { OnboardingPromptRuntime } from './system/OnboardingPromptRuntime.js';
+import { MilestoneScroll } from './system/MilestoneScroll.js';
+import { TutorialLedgerDrawer } from './system/TutorialLedgerDrawer.js';
+import { UnlockCeremonyHost } from './system/UnlockCeremonyHost.js';
 import { SectionCAuditHarness, isSectionCAuditQueryEnabled } from '../dev/sectionCAudit/SectionCAuditHarness.js';
 import { Phase0CoreAuditHarness, isPhase0CoreAuditQueryEnabled } from '../dev/phase0CoreAudit/Phase0CoreAuditHarness.js';
 import { Phase6CombatAuditHarness, isPhase6CombatAuditQueryEnabled } from '../dev/phase6CombatAudit/Phase6CombatAuditHarness.js';
@@ -52,9 +61,28 @@ import { initDaoImpressionEventBridge } from '../systems/daoImpressions/index.js
 import { initFailureReflectionEventBridge } from '../systems/failureReflection/index.js';
 import { initBreakthroughEchoEventBridge } from '../features/breakthroughEchoes/index.js';
 import { initCombatAftermathEventBridge } from '../features/combatAftermath/index.js';
+import {
+  buildOnboardingTabPolicy,
+  buildOnboardingWorldModulePolicy,
+  buildOnboardingLedgerSurface,
+  buildOnboardingMilestoneSurface,
+  buildOnboardingSourceSinkGuards,
+  buildOnboardingUnlockCeremonySurface,
+  guardOnboardingTabRoute,
+  getOnboardingMilestonesFromContent,
+  initOnboardingEventBridge,
+  isOnboardingExactFixtureOrCaptureModeEnabled,
+  resolveOnboardingUnlocksThroughMilestone,
+} from '../systems/onboarding/index.js';
+import { performOnboardingRouteAction } from '../systems/onboarding/onboardingRouteActions.js';
+import type { OnboardingMilestoneActionSurface } from '../systems/onboarding/onboardingMilestoneSurface.js';
+import type { OnboardingUnlockCeremonySurface } from '../systems/onboarding/onboardingUnlockCeremony.js';
+import { DEFERRED_WORLD_MODULES } from '../systems/world/liveWorldSchema.js';
 import { PERF_LABELS } from '../services/performance/index.js';
 import { PerfProfiler, useRenderCounter } from '../services/performance/perfReact.js';
 import './GameLayout.scss';
+
+const EMPTY_CURRENT_CITY_MODULES: readonly string[] = Object.freeze([]);
 
 /**
  * Placeholder content for tabs
@@ -110,22 +138,62 @@ export function GameLayout() {
   const showCurrentChapterExhaustedModal = useUIStore((state) => state.showCurrentChapterExhaustedModal);
   const showLifeSummaryModal = useUIStore((state) => state.showLifeSummaryModal);
   const showMigrationIssuesModal = useUIStore((state) => state.showMigrationIssuesModal);
+  const showTutorialLedgerDrawer = useUIStore((state) => state.showTutorialLedgerDrawer);
+  const daoHeartModalOpen = useUIStore((state) => state.daoHeartModalOpen);
+  const daoHeartModalInitialTab = useUIStore((state) => state.daoHeartModalInitialTab);
+  const closeDaoHeartModal = useUIStore((state) => state.closeDaoHeartModal);
+  const activeOnboardingPrompt = useUIStore((state) => state.activeOnboardingPrompt);
+  const combatPresentationMode = useUIStore((state) => state.combatPresentation.mode);
   const currentChapterExhaustedAcknowledgedThisLife = useUIStore((state) => state.currentChapterExhaustedAcknowledgedThisLife);
   const openCurrentChapterExhaustedModal = useUIStore((state) => state.openCurrentChapterExhaustedModal);
   const clearCurrentChapterExhaustedAcknowledgement = useUIStore((state) => state.clearCurrentChapterExhaustedAcknowledgement);
   const setLifeStartWizardOpenForNotifications = useUIStore((state) => state.setLifeStartWizardOpenForNotifications);
+  const openTutorialLedgerDrawer = useUIStore((state) => state.openTutorialLedgerDrawer);
+  const closeTutorialLedgerDrawer = useUIStore((state) => state.closeTutorialLedgerDrawer);
+  const currentCityId = useCityStore((state) => state.currentCityId);
   const selectedPath = useGameStore((state) => state.selectedPath);
   const storyIntroSeen = useStoryStore((state) => Boolean(state.seenFlags.story_intro_seen));
   const activeStoryCutsceneId = useStoryStore((state) => state.activeCutsceneId);
   const selectedHeartLawId = useHeartLawStore((state) => state.selectedHeartLawId);
   const realmIndex = useGameStore((state) => state.realm.index);
   const prestigeCount = usePrestigeStore((state) => state.prestigeCount);
+  const onboardingActiveMilestoneId = useOnboardingStore((state) => state.activeMilestoneId);
+  const onboardingCompletedMilestoneIds = useOnboardingStore((state) => state.completedMilestoneIds);
+  const onboardingUnlockedTabs = useOnboardingStore((state) => state.unlockedTabs);
+  const onboardingUnlockedWorldModules = useOnboardingStore((state) => state.unlockedWorldModules);
+  const onboardingTeaserWorldModules = useOnboardingStore((state) => state.teaserWorldModules);
+  const onboardingQueuedCardIds = useOnboardingStore((state) => state.queuedTutorialCardIds);
+  const onboardingSeenCardIds = useOnboardingStore((state) => state.seenTutorialCardIds);
+  const onboardingLedgerEntries = useOnboardingStore((state) => state.tutorialLedgerEntries);
+  const onboardingFirstLifeOnlyComplete = useOnboardingStore((state) => state.firstLifeOnlyComplete);
+  const onboardingDevOverride = useOnboardingStore((state) => state.devOverride);
+  const onboardingFirstOutskirtsRewardClaimedAt = useOnboardingStore((state) => state.eventFacts.firstOutskirtsRewardClaimedAt);
+  const onboardingLastGateDefeat = useOnboardingStore((state) => state.eventFacts.lastGateDefeat);
+  const completeOnboardingMilestone = useOnboardingStore((state) => state.completeMilestone);
+  const markOnboardingCardSeen = useOnboardingStore((state) => state.markCardSeen);
+  const inventoryGold = useInventoryStore((state) => state.gold);
+  const medicineStockCount = useInventoryStore((state) =>
+    Object.entries(state.items).reduce((total, [itemId, qty]) => total + (itemId.startsWith('cons_') ? qty : 0), 0),
+  );
+  const herbStockCount = useInventoryStore((state) =>
+    Object.entries(state.items).reduce((total, [itemId, qty]) => total + (itemId.includes('herb') ? qty : 0), 0),
+  );
+  const eligibleTechniqueCount = useTechCollectionStore((state) =>
+    Object.values(state.unlockedTechs).filter((entry) => entry.unlocked).length,
+  );
+  const pouchEquippedCount = useMedicinePouchStore((state) =>
+    Object.values(state.slots).filter((slot) => Boolean(slot.equippedItemId)).length,
+  );
   const resetOnboardingLifeState = useUIStore((state) => state.resetOnboardingLifeState);
   const layoutBackgroundOverride = useUIStore((state) => state.layoutBackgroundOverride);
+  const onboardingContent = useContentStore((state) => state.raw);
+  const currentCityModules = useContentStore((state) => {
+    const city = currentCityId ? state.maps.citiesById[currentCityId] : null;
+    return city?.modules ?? state.citiesSorted[0]?.modules ?? EMPTY_CURRENT_CITY_MODULES;
+  });
   const fixtureCityId = useContentStore((state) => (
     state.maps.citiesById.city_pinewind_hamlet ? 'city_pinewind_hamlet' : state.citiesSorted[0]?.id ?? null
   ));
-  const isScrollable = activeTab === 'status';
   const lastPrestigeCountRef = useRef(prestigeCount);
   const fixtureRouteOpenedRef = useRef(false);
   const apothecaryExactFixtureRouteEnabled = isApothecaryExactFixtureRouteEnabled();
@@ -146,6 +214,94 @@ export function GameLayout() {
     selectedHeartLawId,
   });
   const shouldDelayLifeStartForStory = selectedPath === null && !storyIntroSeen;
+  const exactFixtureOrCaptureMode = isOnboardingExactFixtureOrCaptureModeEnabled();
+  const storyOrLifeStartBlocking = lifeStartWizardOpen || shouldDelayLifeStartForStory;
+  const tabPolicy = useMemo(
+    () => buildOnboardingTabPolicy({
+      activeMilestoneId: onboardingActiveMilestoneId,
+      unlockedTabs: onboardingUnlockedTabs,
+      firstLifeOnlyComplete: onboardingFirstLifeOnlyComplete,
+      devOverride: onboardingDevOverride,
+      isExistingAdvancedSave: realmIndex > 0,
+      storyOrLifeStartBlocking,
+      settingsAsUtility: true,
+      exactFixtureOrCaptureMode,
+      hasInventoryEvidence: typeof onboardingFirstOutskirtsRewardClaimedAt === 'number',
+    }),
+    [
+      exactFixtureOrCaptureMode,
+      onboardingActiveMilestoneId,
+      onboardingDevOverride,
+      onboardingFirstLifeOnlyComplete,
+      onboardingFirstOutskirtsRewardClaimedAt,
+      onboardingUnlockedTabs,
+      realmIndex,
+      storyOrLifeStartBlocking,
+    ],
+  );
+  const activeTabGuard = guardOnboardingTabRoute({
+    policy: tabPolicy,
+    tab: activeTab,
+    exactFixtureOrCaptureMode,
+  });
+  const renderedTab = activeTabGuard.allowed ? activeTab : tabPolicy.forcedFallbackTab;
+  const worldModulePolicy = useMemo(
+    () => buildOnboardingWorldModulePolicy({
+      activeMilestoneId: onboardingActiveMilestoneId,
+      completedMilestoneIds: onboardingCompletedMilestoneIds,
+      unlockedWorldModules: onboardingUnlockedWorldModules,
+      teaserWorldModules: onboardingTeaserWorldModules,
+      selectedCityModuleKeys: currentCityModules,
+      deferredWorldModuleKeys: DEFERRED_WORLD_MODULES,
+      firstLifeOnlyComplete: onboardingFirstLifeOnlyComplete,
+      devOverride: onboardingDevOverride,
+      isExistingAdvancedSave: realmIndex > 0,
+      exactFixtureOrCaptureMode,
+    }),
+    [
+      currentCityModules,
+      exactFixtureOrCaptureMode,
+      onboardingActiveMilestoneId,
+      onboardingCompletedMilestoneIds,
+      onboardingDevOverride,
+      onboardingFirstLifeOnlyComplete,
+      onboardingTeaserWorldModules,
+      onboardingUnlockedWorldModules,
+      realmIndex,
+    ],
+  );
+  const onboardingMilestones = useMemo(
+    () => getOnboardingMilestonesFromContent(onboardingContent),
+    [onboardingContent],
+  );
+  const sourceSinkGuards = useMemo(
+    () => buildOnboardingSourceSinkGuards({
+      activeMilestoneId: onboardingActiveMilestoneId,
+      currentCityId,
+      availableWorldModules: worldModulePolicy.availableModules,
+      teaserWorldModules: worldModulePolicy.teaserModules,
+      currencies: { gold: inventoryGold },
+      eligibleTechniqueCount,
+      medicineStockCount,
+      pouchEquippedCount,
+      herbStockCount,
+      lastGateDefeat: onboardingLastGateDefeat,
+      firstLifeOnlyComplete: onboardingFirstLifeOnlyComplete,
+    }),
+    [
+      currentCityId,
+      eligibleTechniqueCount,
+      herbStockCount,
+      inventoryGold,
+      medicineStockCount,
+      onboardingActiveMilestoneId,
+      onboardingFirstLifeOnlyComplete,
+      onboardingLastGateDefeat,
+      pouchEquippedCount,
+      worldModulePolicy.availableModules,
+      worldModulePolicy.teaserModules,
+    ],
+  );
 
   useEffect(() => {
     initRunDeltaEventBridge();
@@ -153,7 +309,25 @@ export function GameLayout() {
     initFailureReflectionEventBridge();
     initBreakthroughEchoEventBridge();
     initCombatAftermathEventBridge();
+    initOnboardingEventBridge();
   }, []);
+
+  useEffect(() => {
+    if (storyOrLifeStartBlocking || onboardingActiveMilestoneId !== 'M0_life_start') return;
+    completeOnboardingMilestone('M0_life_start');
+    const onboardingStore = useOnboardingStore.getState();
+    onboardingStore.applyUnlocks(resolveOnboardingUnlocksThroughMilestone({
+      completedMilestoneIds: onboardingStore.completedMilestoneIds,
+      activeMilestoneId: onboardingStore.activeMilestoneId,
+    }));
+  }, [completeOnboardingMilestone, onboardingActiveMilestoneId, storyOrLifeStartBlocking]);
+
+  useEffect(() => {
+    if (activeTabGuard.allowed) return;
+    const fallbackTab = activeTabGuard.fallbackTab ?? tabPolicy.forcedFallbackTab;
+    if (fallbackTab === activeTab) return;
+    setActiveTab(fallbackTab);
+  }, [activeTab, activeTabGuard.allowed, activeTabGuard.fallbackTab, setActiveTab, tabPolicy.forcedFallbackTab]);
 
   useEffect(() => {
     if (prestigeCount > lastPrestigeCountRef.current) {
@@ -226,7 +400,7 @@ export function GameLayout() {
 
   // Render content based on active tab
   const renderContent = () => {
-    switch (activeTab) {
+    switch (renderedTab) {
       case 'cultivation':
         return <CultivateScreen />;
       case 'status':
@@ -250,15 +424,16 @@ export function GameLayout() {
 
   const rootClassNames = [
     'gameLayoutRoot',
-    activeTab === 'cultivation' ? 'gameLayoutRoot--cultivation' : '',
-    activeTab === 'adventure' ? 'gameLayoutRoot--world' : '',
-    activeTab === 'techniques' ? 'gameLayoutRoot--techniques' : '',
-    activeTab === 'records' ? 'gameLayoutRoot--records gameLayoutRoot--pavilion' : '',
+    renderedTab === 'cultivation' ? 'gameLayoutRoot--cultivation' : '',
+    renderedTab === 'adventure' ? 'gameLayoutRoot--world' : '',
+    renderedTab === 'techniques' ? 'gameLayoutRoot--techniques' : '',
+    renderedTab === 'records' ? 'gameLayoutRoot--records gameLayoutRoot--pavilion' : '',
   ]
     .filter(Boolean)
     .join(' ');
 
-  const showLayoutBackgroundOverlay = activeTab === 'adventure' && !!layoutBackgroundOverride;
+  const isScrollable = renderedTab === 'status';
+  const showLayoutBackgroundOverlay = renderedTab === 'adventure' && !!layoutBackgroundOverride;
   const showSectionCAuditHarness = isSectionCAuditQueryEnabled();
   const showPhase0CoreAuditHarness = isPhase0CoreAuditQueryEnabled();
   const showPhase6CombatAuditHarness = isPhase6CombatAuditQueryEnabled();
@@ -266,7 +441,98 @@ export function GameLayout() {
   const shouldShowOfflineProgress =
     showOfflineProgressModal && showOfflineModalSetting && !suppressExactCaptureChrome;
   const shouldShowLifeStartWizard =
-    !suppressExactCaptureChrome && !shouldDelayLifeStartForStory && !shouldShowOfflineProgress;
+    lifeStartWizardOpen && !suppressExactCaptureChrome && !shouldDelayLifeStartForStory && !shouldShowOfflineProgress;
+  const guidanceSuppressionReason = useMemo(() => {
+    if (suppressExactCaptureChrome || exactFixtureOrCaptureMode) return 'exact_capture' as const;
+    if (shouldDelayLifeStartForStory || activeStoryCutsceneId) return 'story' as const;
+    if (lifeStartWizardOpen || shouldShowLifeStartWizard) return 'life_start' as const;
+    if (combatPresentationMode !== 'hidden') return 'combat' as const;
+    if (
+      shouldShowOfflineProgress ||
+      showManualSatchelModal ||
+      showTechniqueLearnedModal ||
+      showWorldBuildingModal ||
+      daoHeartModalOpen ||
+      showTutorialLedgerDrawer ||
+      showCurrentChapterExhaustedModal ||
+      showLifeSummaryModal ||
+      showMigrationIssuesModal
+    ) {
+      return 'modal' as const;
+    }
+    return null;
+  }, [
+    combatPresentationMode,
+    activeStoryCutsceneId,
+    exactFixtureOrCaptureMode,
+    lifeStartWizardOpen,
+    shouldDelayLifeStartForStory,
+    shouldShowLifeStartWizard,
+    shouldShowOfflineProgress,
+    daoHeartModalOpen,
+    showCurrentChapterExhaustedModal,
+    showLifeSummaryModal,
+    showManualSatchelModal,
+    showMigrationIssuesModal,
+    showTechniqueLearnedModal,
+    showTutorialLedgerDrawer,
+    showWorldBuildingModal,
+    suppressExactCaptureChrome,
+  ]);
+  const milestoneSurface = useMemo(
+    () => buildOnboardingMilestoneSurface({
+      milestones: onboardingMilestones,
+      activeMilestoneId: onboardingActiveMilestoneId,
+      tabPolicy,
+      worldModulePolicy,
+      currentCityId,
+      suppressedReason: guidanceSuppressionReason,
+      sourceSinkGuards,
+    }),
+    [
+      currentCityId,
+      guidanceSuppressionReason,
+      onboardingActiveMilestoneId,
+      onboardingMilestones,
+      sourceSinkGuards,
+      tabPolicy,
+      worldModulePolicy,
+    ],
+  );
+  const unlockCeremonySurface = useMemo(
+    () => buildOnboardingUnlockCeremonySurface({
+      milestones: onboardingMilestones,
+      queuedCardIds: onboardingQueuedCardIds,
+      seenCardIds: onboardingSeenCardIds,
+      suppressed: guidanceSuppressionReason !== null || activeOnboardingPrompt !== null,
+    }),
+    [
+      activeOnboardingPrompt,
+      guidanceSuppressionReason,
+      onboardingMilestones,
+      onboardingQueuedCardIds,
+      onboardingSeenCardIds,
+    ],
+  );
+  const tutorialLedgerSurface = useMemo(
+    () => buildOnboardingLedgerSurface({
+      milestones: onboardingMilestones,
+      entries: onboardingLedgerEntries,
+    }),
+    [onboardingLedgerEntries, onboardingMilestones],
+  );
+  const handleOnboardingGuidanceAction = useCallback((action: OnboardingMilestoneActionSurface) => {
+    performOnboardingRouteAction({
+      target: action.target,
+      tabPolicy,
+      worldModulePolicy,
+    });
+  }, [tabPolicy, worldModulePolicy]);
+  const handleUnlockCeremonyDismiss = useCallback((surface: OnboardingUnlockCeremonySurface) => {
+    if (surface.state !== 'active') return;
+    markOnboardingCardSeen(surface.card.cardId, surface.ledgerEntry);
+  }, [markOnboardingCardSeen]);
+  const unlockCeremonyVisible = unlockCeremonySurface?.state === 'active';
 
   useEffect(() => {
     setLifeStartWizardOpenForNotifications(lifeStartWizardOpen && shouldShowLifeStartWizard);
@@ -301,10 +567,29 @@ export function GameLayout() {
 
           {!apothecaryExactFixtureRouteEnabled && <BottomTabBar />}
 
+          <MilestoneScroll
+            surface={milestoneSurface}
+            onAction={handleOnboardingGuidanceAction}
+            onOpenLedger={openTutorialLedgerDrawer}
+          />
+          <UnlockCeremonyHost
+            surface={unlockCeremonySurface}
+            onAction={(target) => performOnboardingRouteAction({ target, tabPolicy, worldModulePolicy })}
+            onDismiss={handleUnlockCeremonyDismiss}
+          />
+          <TutorialLedgerDrawer
+            open={showTutorialLedgerDrawer && !suppressExactCaptureChrome}
+            surface={tutorialLedgerSurface}
+            onClose={closeTutorialLedgerDrawer}
+          />
+
           {shouldShowOfflineProgress && <OfflineProgressModal />}
           {showManualSatchelModal && !suppressExactCaptureChrome && <ManualSatchelModal />}
           {showTechniqueLearnedModal && !suppressExactCaptureChrome && <TechniqueLearnedModal />}
           {showWorldBuildingModal && <BuildingModalHost />}
+          {daoHeartModalOpen && !suppressExactCaptureChrome ? (
+            <DaoHeartModal onClose={closeDaoHeartModal} debugInitialTab={daoHeartModalInitialTab} />
+          ) : null}
           {showCurrentChapterExhaustedModal && !suppressExactCaptureChrome && <CurrentChapterExhaustedModal />}
           {showLifeSummaryModal && !suppressExactCaptureChrome && <LifeSummaryModal />}
           {showMigrationIssuesModal && !suppressExactCaptureChrome && <MigrationIssuesModal />}
@@ -314,7 +599,7 @@ export function GameLayout() {
           {shouldShowLifeStartWizard && <LifeStartWizardModal />}
           {!suppressExactCaptureChrome && activeStoryCutsceneId && <StoryCutsceneOverlay />}
           {!suppressExactCaptureChrome && <CityArrivalBanner />}
-          {!suppressExactCaptureChrome && <OnboardingPromptHost />}
+          {!suppressExactCaptureChrome && !unlockCeremonyVisible && <OnboardingPromptHost />}
           {!suppressExactCaptureChrome && <NotificationToasts />}
           {showSectionCAuditHarness ? <SectionCAuditHarness /> : null}
           {showPhase0CoreAuditHarness ? <Phase0CoreAuditHarness /> : null}

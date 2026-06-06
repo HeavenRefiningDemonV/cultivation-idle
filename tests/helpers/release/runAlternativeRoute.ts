@@ -221,7 +221,13 @@ export async function runFailSafeAlternativeRoute(): Promise<AlternativeRouteRes
   const spentMerit = D(currenciesBefore.merit).minus(useInventoryStore.getState().currencies.merit).toString();
   const spentSpiritStones = D(currenciesBefore.spiritStones).minus(useInventoryStore.getState().currencies.spiritStones).toString();
 
-  const breakthroughOk = useGameStore.getState().breakthrough();
+  useGameStore.getState().__setBreakthroughRiskRollForTest?.(() => 1);
+  let breakthroughOk = false;
+  try {
+    breakthroughOk = useGameStore.getState().breakthrough();
+  } finally {
+    useGameStore.getState().__setBreakthroughRiskRollForTest?.(null);
+  }
   if (!breakthroughOk) {
     failures.push({ code: 'post_bypass_breakthrough_failed', blocker: true, message: 'Could not continue route after bypass.' });
   } else {

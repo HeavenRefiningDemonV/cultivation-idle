@@ -1,0 +1,8 @@
+{
+    "command":  "npm run release:gate:json",
+    "status":  "timeout",
+    "exitCode":  null,
+    "durationSeconds":  900.043,
+    "artifact":  "artifacts/mp5/release-gate/release-gate.before.log",
+    "timeoutSeconds":  900
+}

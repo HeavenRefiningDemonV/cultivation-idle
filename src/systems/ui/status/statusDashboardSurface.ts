@@ -9,8 +9,17 @@ import { useCombatStore } from '../../../stores/combatStore.js';
 import { useContentStore } from '../../../stores/contentStore.js';
 import { useCultivationStore } from '../../../stores/cultivationStore.js';
 import { useGameStore } from '../../../stores/gameStore.js';
+import { usePrestigeStore } from '../../../stores/prestigeStore.js';
 import { useProfessionStore, type ForgeJob } from '../../../stores/professionStore.js';
 import { useExpeditionStore } from '../../../stores/expeditionStore.js';
+import { useTrainingStore } from '../../../stores/trainingStore.js';
+import { buildTrainingReadOnlySnapshot, createTrainingRuntimeContent, type TrainingReadOnlySnapshot } from '../../training/index.js';
+import {
+  buildSpiritRootObservationSurface,
+  type SpiritRootObservationSurfaceV1,
+  type SpiritRootObservationTabId,
+} from '../../../features/spiritRootObservation/index.js';
+import { getSpiritRootPairKey } from '../../spiritRoots/index.js';
 import {
   buildLiveRunCompassSurface,
   buildLiveRunCompassSurfaceV2,
@@ -34,10 +43,14 @@ import { buildStatusV2Surface, type StatusV2Surface } from './statusV2Surface.js
 import { buildStatusLedgerSurfaceFromDashboard } from './statusLedgerSurface.js';
 import type { StatusLedgerSurfaceV1 } from './statusLedgerTypes.js';
 import { D, formatNumber, formatPercentFromValue } from '../../../utils/numbers.js';
+import { getCanonicalCultivationStageNumber } from '../../progression/cultivationStageIndex.js';
+import { resolveCultivationMindAlignment } from '../../cultivation/cultivationMindAlignmentResolver.js';
 
 export type StatusRouteTarget =
   | { kind: 'tab'; tab: GameTab }
   | { kind: 'world_module'; cityId: string; moduleKey: LiveWorldModuleKey }
+  | { kind: 'status_observation'; tab: SpiritRootObservationTabId }
+  | { kind: 'dao_heart_sanctuary'; tab: 'sanctuary' | 'heartLaw' | 'study' }
   | { kind: 'none'; reason: string };
 
 export type StatusTone = 'success' | 'info' | 'warning' | 'danger' | 'muted';
@@ -209,6 +222,7 @@ const FILLER_FRAGMENTS = [
 const MODULE_BY_ACTIVITY: Partial<Record<ActiveActivity['type'], LiveWorldModuleKey>> = {
   outskirts: 'outskirts',
   trial: 'gateTrial',
+  path_training: 'trainingHall',
   ruins: 'ruins',
   forge: 'forge',
 };
@@ -229,6 +243,8 @@ function toTone(input: string | null | undefined): StatusTone {
 function routeLabel(target: StatusRouteTarget): string {
   if (target.kind === 'tab') return getShellTabLabel(target.tab);
   if (target.kind === 'world_module') return getWorldModuleLabel(target.moduleKey);
+  if (target.kind === 'status_observation') return 'Spirit Root Observation';
+  if (target.kind === 'dao_heart_sanctuary') return 'Dao Heart Sanctuary';
   return 'Unavailable';
 }
 
@@ -607,6 +623,7 @@ function buildMilestoneNodes(args: {
 function activityTarget(activity: ActiveActivity | null, currentCityId: string | null): StatusRouteTarget | null {
   if (!activity) return null;
   if (activity.type === 'meditate') return { kind: 'tab', tab: 'cultivation' };
+  if (activity.type === 'dao_heart_practice') return { kind: 'tab', tab: 'cultivation' };
   const moduleKey = MODULE_BY_ACTIVITY[activity.type];
   if (!moduleKey) return { kind: 'tab', tab: 'adventure' };
   const cityId = typeof activity.cityId === 'string' ? activity.cityId : currentCityId;
@@ -628,6 +645,10 @@ function formatActivity(activity: ActiveActivity | null, currentCityId: string |
   switch (activity.type) {
     case 'meditate':
       return { label: 'Cultivating', detail: 'Qi growth is the current foreground activity.', tone: 'success', icon: 'inkSwirl', target };
+    case 'path_training':
+      return { label: 'Path Training', detail: 'Training Hall practice is the current foreground activity.', tone: 'info', icon: 'foundationPill', target };
+    case 'dao_heart_practice':
+      return { label: 'Dao Heart practice', detail: 'Dao Heart Sanctuary practice is the current foreground activity.', tone: 'info', icon: 'inkSwirl', target };
     case 'outskirts':
       return { label: 'Outskirts', detail: `Working ${typeof activity.sourceId === 'string' ? activity.sourceId : 'the active outskirts route'}.`, tone: 'info', icon: 'artifactBundle', target };
     case 'trial':
@@ -740,7 +761,33 @@ function buildQueueRows(): StatusFactRow[] {
   return rows;
 }
 
-function buildReadinessRows(troubleshooting: StatusTroubleshootingSurface): StatusFactRow[] {
+function buildTrainingStatusRows(snapshot: TrainingReadOnlySnapshot | null): StatusFactRow[] {
+  if (!snapshot?.path) return [];
+  return [
+    {
+      id: 'path-foundation',
+      label: 'Path Foundation',
+      value: snapshot.pathFoundation.valueLabel,
+      detail: snapshot.currentBottleneck
+        ? `Current Bottleneck: ${snapshot.currentBottleneck.displayName}.`
+        : 'Training Hall foundation is available for this path.',
+      tone: snapshot.pathFoundation.progressPct >= 60 ? 'success' : snapshot.pathFoundation.progressPct >= 30 ? 'info' : 'warning',
+      icon: 'foundationPill',
+      source: 'trainingHall.readOnlySnapshot',
+    },
+    {
+      id: 'training-bottleneck',
+      label: 'Current Bottleneck',
+      value: snapshot.currentBottleneck?.displayName ?? 'None',
+      detail: `Training cap ${snapshot.realmCap}; fatigue ${Math.round(snapshot.fatigue)} (${snapshot.fatigueTier}).`,
+      tone: snapshot.fatigueTier === 'overworked' ? 'warning' : 'info',
+      icon: snapshot.fatigueTier === 'overworked' ? 'inkWarning' : 'hourglassProgress',
+      source: 'trainingHall.readOnlySnapshot',
+    },
+  ];
+}
+
+function buildReadinessRows(troubleshooting: StatusTroubleshootingSurface, trainingSnapshot: TrainingReadOnlySnapshot | null): StatusFactRow[] {
   const rows: StatusFactRow[] = [
     {
       id: 'readiness-state',
@@ -783,7 +830,7 @@ function buildReadinessRows(troubleshooting: StatusTroubleshootingSurface): Stat
       source: 'statusTroubleshootingSurface.readiness',
     }));
 
-  return [...rows, ...semanticReasons];
+  return [...rows, ...buildTrainingStatusRows(trainingSnapshot), ...semanticReasons];
 }
 
 function buildIdentityRows(troubleshooting: StatusTroubleshootingSurface): StatusFactRow[] {
@@ -907,6 +954,7 @@ export function buildStatusDashboardSurface(now = Date.now()): StatusDashboardSu
   const contentStore = useContentStore.getState();
   const cityState = useCityStore.getState();
   const uiSettings = useUIStore.getState().settings;
+  const uiState = useUIStore.getState();
   const guidanceSettings = pickDaoMandateGuidanceSettings(uiSettings);
   const rawMandate = buildLiveDaoMandateSurfaceV1({
     currentScreen: 'status',
@@ -918,6 +966,16 @@ export function buildStatusDashboardSurface(now = Date.now()): StatusDashboardSu
     storyMotionMode: uiSettings.storyMotionMode,
   });
   const currentCityId = cityState.currentCityId ?? cityState.unlockedCityIds[0] ?? null;
+  const gameState = useGameStore.getState();
+  const trainingSnapshot = contentStore.raw
+    ? buildTrainingReadOnlySnapshot({
+      content: createTrainingRuntimeContent(contentStore.raw),
+      state: useTrainingStore.getState().toSaveState(),
+      selectedPath: gameState.selectedPath,
+      realmIndex: gameState.realm.index,
+      substageIndex: Math.max(0, gameState.realm.substage - 1),
+    })
+    : null;
 
   let troubleshooting: StatusTroubleshootingSurface;
   try {
@@ -1049,7 +1107,7 @@ export function buildStatusDashboardSurface(now = Date.now()): StatusDashboardSu
       stateLabel: troubleshooting.readiness.readinessLabel,
       diagnosisLabel: troubleshooting.readiness.diagnosisLabel,
       postureLabel: troubleshooting.archetypeSummary,
-      rows: buildReadinessRows(troubleshooting),
+      rows: buildReadinessRows(troubleshooting, trainingSnapshot),
     },
     requirements: {
       title: 'Mandate Ledger',
@@ -1089,8 +1147,42 @@ export function buildStatusDashboardSurface(now = Date.now()): StatusDashboardSu
     preparation,
   } satisfies Omit<StatusDashboardSurfaceV1, 'statusLedger'>;
 
-  const gameState = useGameStore.getState();
   const cultivationState = useCultivationStore.getState();
+  const selectedHeartLawLevel = cultivationState.selectedHeartLawId
+    ? cultivationState.heartLawLevelById[cultivationState.selectedHeartLawId] ?? 1
+    : 1;
+  const prestigeState = usePrestigeStore.getState();
+  const selectedHeartLawId = cultivationState.selectedHeartLawId;
+  const heartLawDef = selectedHeartLawId ? contentStore.maps.heartLawsById[selectedHeartLawId] ?? null : null;
+  const rootDef = prestigeState.spiritRoot
+    ? contentStore.raw?.spirit_roots?.roots.find((entry) => entry.elementId === prestigeState.spiritRoot?.element) ?? null
+    : null;
+  const currentRootResonance = prestigeState.spiritRoot
+    ? cultivationState.rootResonanceByPair[getSpiritRootPairKey(prestigeState.spiritRoot.element, selectedHeartLawId)] ?? 0
+    : 0;
+  const spiritRootObservation: SpiritRootObservationSurfaceV1 = buildSpiritRootObservationSurface({
+    root: prestigeState.spiritRoot,
+    rootDef,
+    heartLaw: heartLawDef,
+    selectedHeartLawId,
+    heartLawLevel: selectedHeartLawLevel,
+    currentRootResonance,
+    shape: 'single',
+    unlockedVariantIds: [],
+    trainingRatingsById: useTrainingStore.getState().statRatingsById,
+    daoHeartClarity: cultivationState.daoHeartClarity,
+    verseMastery: selectedHeartLawId ? cultivationState.verseMasteryByLawId[selectedHeartLawId] ?? 0 : 0,
+    activeTab: uiState.spiritRootObservationActiveTab,
+  });
+  const mindAlignment = resolveCultivationMindAlignment({
+    heartLawLevel: selectedHeartLawLevel,
+    cultivationStageIndex: getCanonicalCultivationStageNumber({
+      realmIndex: gameState.realm.index,
+      substage: gameState.realm.substage,
+    }),
+    clarity: cultivationState.daoHeartClarity,
+    turbulence: cultivationState.turbulence,
+  });
   const statusLedger = buildStatusLedgerSurfaceFromDashboard(dashboardWithoutLedger, {
     generatedAt,
     contentLoaded: contentStore.isLoaded,
@@ -1116,7 +1208,12 @@ export function buildStatusDashboardSurface(now = Date.now()): StatusDashboardSu
       stabilityCap: cultivationState.stabilityCap,
       chapter: cultivationState.chapter,
       breathMode: cultivationState.breathMode,
+      daoHeartClarity: cultivationState.daoHeartClarity,
+      turbulence: cultivationState.turbulence,
     },
+    mindAlignment,
+    spiritRootObservation,
+    trainingSnapshot,
   });
 
   return {

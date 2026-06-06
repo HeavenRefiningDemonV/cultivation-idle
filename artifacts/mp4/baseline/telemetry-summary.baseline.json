@@ -1,0 +1,211 @@
+{
+  "global": {
+    "eventCount": 23,
+    "lifeCount": 2,
+    "reclaimLifeCount": 0,
+    "prestigeCount": 1,
+    "offlineAppliedCount": 1
+  },
+  "lives": [
+    {
+      "lifeId": "1780012384650:0",
+      "lifeOrdinal": 1,
+      "sessionKind": "first_life",
+      "startedAt": 1000000,
+      "gatesAvailableAtByGate": {
+        "1": 1120000
+      },
+      "majorRealmEntriesByRealm": {
+        "foundation_establishment": 1140000
+      },
+      "cityEnteredAtByCity": {
+        "city_stonecrag_town": 1145000
+      },
+      "contentCapAt": null,
+      "prestigeApGained": 28,
+      "reclaimMilestones": {}
+    },
+    {
+      "lifeId": "manual",
+      "lifeOrdinal": 1,
+      "sessionKind": "first_life",
+      "startedAt": null,
+      "gatesAvailableAtByGate": {},
+      "majorRealmEntriesByRealm": {},
+      "cityEnteredAtByCity": {},
+      "contentCapAt": null,
+      "prestigeApGained": 0,
+      "reclaimMilestones": {
+        "gate_1_available": 120000
+      }
+    }
+  ],
+  "gates": [
+    {
+      "gateIndex": 1,
+      "attempts": 2,
+      "clears": 1,
+      "defeats": 1,
+      "bypasses": 0,
+      "attemptsByReadinessBand": {
+        "unknown": 2
+      },
+      "winRateByReadinessBand": {
+        "unknown": 0.5
+      },
+      "medianClearDurationSec": 18,
+      "medianDefeatDurationSec": 20,
+      "avgBossHpPctRemainingOnDefeat": 0.4
+    }
+  ],
+  "economy": {
+    "spentBySink": {
+      "apothecary_shop": {
+        "gold": 0,
+        "merit": 0,
+        "spiritStones": 0
+      },
+      "apothecary_bundle": {
+        "gold": 0,
+        "merit": 0,
+        "spiritStones": 0
+      },
+      "alchemy_queue": {
+        "gold": 30,
+        "merit": 0,
+        "spiritStones": 0
+      },
+      "talisman_queue": {
+        "gold": 0,
+        "merit": 0,
+        "spiritStones": 0
+      },
+      "forge_service": {
+        "gold": 0,
+        "merit": 0,
+        "spiritStones": 0
+      },
+      "craft_session": {
+        "gold": 0,
+        "merit": 0,
+        "spiritStones": 0
+      },
+      "gate_fail_safe_purchase": {
+        "gold": 100,
+        "merit": 0,
+        "spiritStones": 0
+      },
+      "prestige_purchase": {
+        "gold": 0,
+        "merit": 8,
+        "spiritStones": 0
+      },
+      "heart_law_change": {
+        "gold": 0,
+        "merit": 0,
+        "spiritStones": 0
+      },
+      "breakthrough_gate_item": {
+        "gold": 0,
+        "merit": 0,
+        "spiritStones": 0
+      },
+      "other": {
+        "gold": 0,
+        "merit": 0,
+        "spiritStones": 0
+      }
+    },
+    "earnedBySource": {
+      "outskirts": {
+        "gold": 0,
+        "merit": 0,
+        "spiritStones": 0
+      },
+      "ruins_room": {
+        "gold": 0,
+        "merit": 0,
+        "spiritStones": 0
+      },
+      "ruins_chest": {
+        "gold": 0,
+        "merit": 0,
+        "spiritStones": 0
+      },
+      "ruins_rare": {
+        "gold": 0,
+        "merit": 0,
+        "spiritStones": 0
+      },
+      "bounty": {
+        "gold": 0,
+        "merit": 10,
+        "spiritStones": 0
+      },
+      "expedition": {
+        "gold": 0,
+        "merit": 0,
+        "spiritStones": 5
+      },
+      "trial_clear": {
+        "gold": 0,
+        "merit": 40,
+        "spiritStones": 0
+      },
+      "eligible_defeat_merit": {
+        "gold": 0,
+        "merit": 5,
+        "spiritStones": 0
+      },
+      "manual_pavilion": {
+        "gold": 0,
+        "merit": 0,
+        "spiritStones": 0
+      },
+      "craft_completion": {
+        "gold": 0,
+        "merit": 0,
+        "spiritStones": 0
+      },
+      "debug": {
+        "gold": 0,
+        "merit": 0,
+        "spiritStones": 0
+      },
+      "other": {
+        "gold": 0,
+        "merit": 0,
+        "spiritStones": 0
+      }
+    }
+  },
+  "support": {
+    "bountyClaimsByCityDifficultyKind": {
+      "city_pinewind_hamlet|easy|OUTSKIRTS_KILL": 1
+    },
+    "expeditionStartsByCityTypeDuration": {
+      "city_pinewind_hamlet|scout|medium": 1
+    },
+    "expeditionClaimsByCityTypeDuration": {
+      "city_pinewind_hamlet|scout|medium": 1
+    },
+    "expeditionCadenceSecMedian": 0
+  },
+  "prestige": {
+    "apGainedTotal": 28,
+    "apSpentOnUpgradesTotal": 0,
+    "reclaimMilestones": {
+      "gate_1_available": [
+        120000
+      ]
+    }
+  },
+  "offline": {
+    "totalOfflineSeconds": 7200,
+    "totalCappedOfflineSeconds": 0,
+    "averageEffectiveEfficiency": 0.75,
+    "totalQiGained": 200,
+    "queuedActionsReadyTotal": 2,
+    "expeditionsReadyTotal": 1
+  }
+}

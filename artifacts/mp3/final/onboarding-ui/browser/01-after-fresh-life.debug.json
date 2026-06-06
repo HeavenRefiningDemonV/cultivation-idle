@@ -1,0 +1,105 @@
+{
+  "query": "",
+  "hash": "",
+  "milestoneScrollInDom": true,
+  "unlockCeremonyInDom": false,
+  "gameLayoutGuidanceDebug": null,
+  "onboarding": {
+    "activeMilestoneId": "M1_cultivation_only",
+    "completedMilestoneIds": [
+      "M0_life_start"
+    ],
+    "unlockedTabs": [
+      "cultivation"
+    ],
+    "queuedTutorialCardIds": [],
+    "seenTutorialCardIds": [],
+    "firstLifeOnlyComplete": false,
+    "devOverride": null
+  },
+  "content": {
+    "isLoaded": true,
+    "error": null,
+    "onboardingMilestoneCount": 11,
+    "onboardingMilestoneIds": [
+      "M0_life_start",
+      "M1_cultivation_only",
+      "M2_status_unlock",
+      "M3_world_outskirts",
+      "M4_pavilion_satchel",
+      "M5_techniques_loadout",
+      "M6_apothecary_expedition",
+      "M7_forge",
+      "M8_ruins_bounties",
+      "M9_gate_trial",
+      "M10_foundation_graduation"
+    ]
+  },
+  "computedMilestoneSurface": {
+    "state": "active",
+    "reason": null,
+    "milestoneId": "M1_cultivation_only",
+    "eyebrow": "Next Step",
+    "phaseLabel": "Cultivation",
+    "title": "Gather your first Qi",
+    "why": "Qi fills while you cultivate. Your first breakthrough teaches the shape of the realm ladder.",
+    "route": {
+      "label": "Cultivation",
+      "target": {
+        "kind": "tab",
+        "tab": "cultivation"
+      },
+      "blocked": false,
+      "reason": null
+    },
+    "primaryAction": {
+      "label": "Open Cultivation",
+      "target": {
+        "kind": "tab",
+        "tab": "cultivation"
+      },
+      "disabled": false
+    },
+    "fallbackAction": null,
+    "rewardPreview": "Status unlocks after your first breakthrough.",
+    "details": [
+      {
+        "label": "Why this matters",
+        "body": "Qi fills while you cultivate. Your first breakthrough teaches the shape of the realm ladder."
+      },
+      {
+        "label": "Where it fits",
+        "body": "Qi comes from cultivation and is spent on breakthrough."
+      },
+      {
+        "label": "Tip",
+        "body": "For the first beat, there is no economy and no world map. Learn Qi first."
+      }
+    ]
+  },
+  "gameLayoutSourceHasMilestoneScroll": true,
+  "ui": {
+    "activeTab": "cultivation",
+    "showOfflineProgressModal": false,
+    "showManualSatchelModal": false,
+    "showTechniqueLearnedModal": false,
+    "showWorldBuildingModal": false,
+    "showTutorialLedgerDrawer": false,
+    "showCurrentChapterExhaustedModal": false,
+    "showLifeSummaryModal": false,
+    "showMigrationIssuesModal": false,
+    "activeOnboardingPrompt": null,
+    "combatPresentation": {
+      "mode": "hidden",
+      "context": null
+    }
+  },
+  "lifeIdentity": {
+    "selectedPath": "heaven",
+    "selectedHeartLawId": "heart_ember_thread_sutra",
+    "breathMode": "balanced",
+    "storyIntroSeen": true,
+    "activeCutsceneId": null,
+    "bodyClass": ""
+  }
+}

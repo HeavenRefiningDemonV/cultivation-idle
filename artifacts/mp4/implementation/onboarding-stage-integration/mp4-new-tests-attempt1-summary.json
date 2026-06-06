@@ -1,0 +1,8 @@
+{
+    "name":  "mp4-new-tests-attempt1",
+    "command":  "node --loader=./scripts/relativeJsLoader.mjs --test tmp-tests/tests/integration/onboardingFreshSaveFlow.test.js tmp-tests/tests/integration/onboardingSourceSinkGuards.test.js",
+    "status":  "PASS",
+    "exitCode":  0,
+    "durationMs":  651,
+    "log":  "artifacts\\mp4\\implementation\\onboarding-stage-integration\\logs\\mp4-new-tests.attempt1.log"
+}

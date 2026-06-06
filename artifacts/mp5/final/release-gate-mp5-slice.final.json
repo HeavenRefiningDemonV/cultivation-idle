@@ -1,0 +1,1292 @@
+﻿{
+  "schemaVersion": "7.6-release-gate",
+  "generatedAt": 1780460925118,
+  "overallPass": true,
+  "cleanPass": true,
+  "releaseReady": true,
+  "unresolvedBlockerCount": 0,
+  "acceptedWaiverCount": 0,
+  "unresolvedWaiverCandidateCount": 0,
+  "pendingManualCount": 0,
+  "checks": [
+    {
+      "checkId": "runtime_content_manifest",
+      "status": "skipped",
+      "elapsedMs": 0,
+      "commandOrBuilder": "skipped",
+      "summary": "Skipped by filter.",
+      "blockerCount": 0,
+      "warningCount": 0,
+      "pendingManualCount": 0,
+      "findings": [],
+      "evidence": []
+    },
+    {
+      "checkId": "build_audit",
+      "status": "skipped",
+      "elapsedMs": 0,
+      "commandOrBuilder": "skipped",
+      "summary": "Skipped by filter.",
+      "blockerCount": 0,
+      "warningCount": 0,
+      "pendingManualCount": 0,
+      "findings": [],
+      "evidence": []
+    },
+    {
+      "checkId": "content_validation",
+      "status": "skipped",
+      "elapsedMs": 0,
+      "commandOrBuilder": "skipped",
+      "summary": "Skipped by filter.",
+      "blockerCount": 0,
+      "warningCount": 0,
+      "pendingManualCount": 0,
+      "findings": [],
+      "evidence": []
+    },
+    {
+      "checkId": "progression_contract",
+      "status": "skipped",
+      "elapsedMs": 0,
+      "commandOrBuilder": "skipped",
+      "summary": "Skipped by filter.",
+      "blockerCount": 0,
+      "warningCount": 0,
+      "pendingManualCount": 0,
+      "findings": [],
+      "evidence": []
+    },
+    {
+      "checkId": "fresh_run_acceptance",
+      "status": "skipped",
+      "elapsedMs": 0,
+      "commandOrBuilder": "skipped",
+      "summary": "Skipped by filter.",
+      "blockerCount": 0,
+      "warningCount": 0,
+      "pendingManualCount": 0,
+      "findings": [],
+      "evidence": []
+    },
+    {
+      "checkId": "migration_matrix",
+      "status": "skipped",
+      "elapsedMs": 0,
+      "commandOrBuilder": "skipped",
+      "summary": "Skipped by filter.",
+      "blockerCount": 0,
+      "warningCount": 0,
+      "pendingManualCount": 0,
+      "findings": [],
+      "evidence": []
+    },
+    {
+      "checkId": "balance_regression",
+      "status": "skipped",
+      "elapsedMs": 0,
+      "commandOrBuilder": "skipped",
+      "summary": "Skipped by filter.",
+      "blockerCount": 0,
+      "warningCount": 0,
+      "pendingManualCount": 0,
+      "findings": [],
+      "evidence": []
+    },
+    {
+      "checkId": "route_comparison",
+      "status": "skipped",
+      "elapsedMs": 0,
+      "commandOrBuilder": "skipped",
+      "summary": "Skipped by filter.",
+      "blockerCount": 0,
+      "warningCount": 0,
+      "pendingManualCount": 0,
+      "findings": [],
+      "evidence": []
+    },
+    {
+      "checkId": "runtime_diagnostics",
+      "status": "skipped",
+      "elapsedMs": 0,
+      "commandOrBuilder": "skipped",
+      "summary": "Skipped by filter.",
+      "blockerCount": 0,
+      "warningCount": 0,
+      "pendingManualCount": 0,
+      "findings": [],
+      "evidence": []
+    },
+    {
+      "status": "pass",
+      "summary": "mp5_reset_memory passed.",
+      "blockerCount": 0,
+      "warningCount": 0,
+      "pendingManualCount": 0,
+      "findings": [],
+      "commandOrBuilder": "npm run test:mp5",
+      "evidence": [
+        "npm run test:mp5"
+      ],
+      "commandEvidence": {
+        "command": "npm run test:mp5",
+        "exitCode": 0,
+        "stdoutPreview": "\n> cultivation-idle@0.0.0 test:mp5\n> npm run ensure:vendor-links && tsc --project tsconfig.tests.json && node --loader=./scripts/relativeJsLoader.mjs --test tmp-tests/tests/contracts/mp5*.test.js tmp-tests/tests/integration/mp5*.test.js tmp-tests/tests/contracts/balanceTelemetrySchema.test.js\n\n\n> cultivation-idle@0.0.0 ensure:vendor-links\n> node scripts/linkVendorDeps.mjs\n\n(node:63728) ExperimentalWarning: `--experimental-loader` may be removed in the future; instead use `register()`:\n--import 'data:text/javascript,import { register } from \"node:module\"; import { pathToFileURL } from \"node:url\"; register(\"./scripts/relativeJsLoader.mjs\", pathToFileURL(\"./\")); register(\"./scripts/relativeJsLoader.mjs\", pathToFileURL(\"./\"));'\n(Use `node --trace-warnings ...` to show where the warning was created)\nÔ£ö balance telemetry schema exposes required kinds and taxonomies (0.6285ms)\nÔ£ö telemetry store keeps raw and balance channels separate (0.1719ms)\nÔ£ö balance schema has single truth owner in diagnostics schema file (0.4043ms)\n(node:47916) ExperimentalWarning: `--experimental-loader` may be removed in the future; instead use `register()`:\n--import 'data:text/javascript,import { register } from \"node:module\"; import { pathToFileURL } from \"node:url\"; register(\"./scripts/relativeJsLoader.mjs\", pathToFileURL(\"./\")); register(\"./scripts/relativeJsLoader.mjs\", pathToFileURL(\"./\"));'\n(Use `node --trace-warnings ...` to show where the warning was created)\nÔ£ö MP5 balance simulation covers route matrix and named exploit cases (2.0799ms)\n(node:50880) ExperimentalWarning: `--experimental-loader` may be removed in the future; instead use `register()`:\n--import 'data:text/javascript,import { register } from \"node:module\"; import { pathToFileURL } from \"node:url\"; register(\"./scripts/relativeJsLoader.mjs\", pathToFileURL(\"./\")); register(\"./scripts/relativeJsLoader.mjs\", pathToFileURL(\"./\"));'\n(Use `node --trace-warnings ...` to show where the warning was created)\nÔ£ö offline trust surface exposes Training and Dao Heart detail rows from the mutating summary (0.9164ms)\n(node:28216) ExperimentalWarning: `--experimental-loader` may be removed in the future; instead use `register()`:\n--import 'data:text/javascript,import { register } from \"node:module\"; import { pathToFileURL } from \"node:url\"; register(\"./scripts/relativeJsLoader.mjs\", pathToFileURL(\"./\")); register(\"./scripts/relat",
+        "stderrPreview": "",
+        "timedOut": false,
+        "durationMs": 14940
+      },
+      "checkId": "mp5_reset_memory",
+      "elapsedMs": 14942
+    },
+    {
+      "status": "pass",
+      "summary": "mp5_offline_trust passed.",
+      "blockerCount": 0,
+      "warningCount": 0,
+      "pendingManualCount": 0,
+      "findings": [],
+      "commandOrBuilder": "npm run test:mp5",
+      "evidence": [
+        "npm run test:mp5"
+      ],
+      "commandEvidence": {
+        "command": "npm run test:mp5",
+        "exitCode": 0,
+        "stdoutPreview": "\n> cultivation-idle@0.0.0 test:mp5\n> npm run ensure:vendor-links && tsc --project tsconfig.tests.json && node --loader=./scripts/relativeJsLoader.mjs --test tmp-tests/tests/contracts/mp5*.test.js tmp-tests/tests/integration/mp5*.test.js tmp-tests/tests/contracts/balanceTelemetrySchema.test.js\n\n\n> cultivation-idle@0.0.0 ensure:vendor-links\n> node scripts/linkVendorDeps.mjs\n\n(node:19524) ExperimentalWarning: `--experimental-loader` may be removed in the future; instead use `register()`:\n--import 'data:text/javascript,import { register } from \"node:module\"; import { pathToFileURL } from \"node:url\"; register(\"./scripts/relativeJsLoader.mjs\", pathToFileURL(\"./\")); register(\"./scripts/relativeJsLoader.mjs\", pathToFileURL(\"./\"));'\n(Use `node --trace-warnings ...` to show where the warning was created)\nÔ£ö balance telemetry schema exposes required kinds and taxonomies (0.7781ms)\nÔ£ö telemetry store keeps raw and balance channels separate (0.1803ms)\nÔ£ö balance schema has single truth owner in diagnostics schema file (0.4516ms)\n(node:42708) ExperimentalWarning: `--experimental-loader` may be removed in the future; instead use `register()`:\n--import 'data:text/javascript,import { register } from \"node:module\"; import { pathToFileURL } from \"node:url\"; register(\"./scripts/relativeJsLoader.mjs\", pathToFileURL(\"./\")); register(\"./scripts/relativeJsLoader.mjs\", pathToFileURL(\"./\"));'\n(Use `node --trace-warnings ...` to show where the warning was created)\nÔ£ö MP5 balance simulation covers route matrix and named exploit cases (1.4236ms)\n(node:47356) ExperimentalWarning: `--experimental-loader` may be removed in the future; instead use `register()`:\n--import 'data:text/javascript,import { register } from \"node:module\"; import { pathToFileURL } from \"node:url\"; register(\"./scripts/relativeJsLoader.mjs\", pathToFileURL(\"./\")); register(\"./scripts/relativeJsLoader.mjs\", pathToFileURL(\"./\"));'\n(Use `node --trace-warnings ...` to show where the warning was created)\nÔ£ö offline trust surface exposes Training and Dao Heart detail rows from the mutating summary (1.5801ms)\n(node:68016) ExperimentalWarning: `--experimental-loader` may be removed in the future; instead use `register()`:\n--import 'data:text/javascript,import { register } from \"node:module\"; import { pathToFileURL } from \"node:url\"; register(\"./scripts/relativeJsLoader.mjs\", pathToFileURL(\"./\")); register(\"./scripts/relat",
+        "stderrPreview": "",
+        "timedOut": false,
+        "durationMs": 14894
+      },
+      "checkId": "mp5_offline_trust",
+      "elapsedMs": 14896
+    },
+    {
+      "status": "pass",
+      "summary": "mp5_telemetry_schema passed.",
+      "blockerCount": 0,
+      "warningCount": 0,
+      "pendingManualCount": 0,
+      "findings": [],
+      "commandOrBuilder": "npm run validate:balance-telemetry",
+      "evidence": [
+        "npm run validate:balance-telemetry"
+      ],
+      "commandEvidence": {
+        "command": "npm run validate:balance-telemetry",
+        "exitCode": 0,
+        "stdoutPreview": "\n> cultivation-idle@0.0.0 validate:balance-telemetry\n> tsc --project tsconfig.tests.json && node --loader=./scripts/relativeJsLoader.mjs tmp-tests/scripts/validateBalanceTelemetry.js\n\nBalance Telemetry Validation\nevents=23 overall=PASS\nfamilies=9/9\nkinds=13/13\nsourceKinds(required)=4/4\nsinkKinds(required)=3/3\n",
+        "stderrPreview": "(node:6148) ExperimentalWarning: `--experimental-loader` may be removed in the future; instead use `register()`:\n--import 'data:text/javascript,import { register } from \"node:module\"; import { pathToFileURL } from \"node:url\"; register(\"./scripts/relativeJsLoader.mjs\", pathToFileURL(\"./\"));'\n(Use `node --trace-warnings ...` to show where the warning was created)\n",
+        "timedOut": false,
+        "durationMs": 14415
+      },
+      "checkId": "mp5_telemetry_schema",
+      "elapsedMs": 14417
+    },
+    {
+      "status": "pass",
+      "summary": "mp5_balance_simulations passed.",
+      "blockerCount": 0,
+      "warningCount": 0,
+      "pendingManualCount": 0,
+      "findings": [],
+      "commandOrBuilder": "npm run release:mp5-balance-simulations:json",
+      "evidence": [
+        "npm run release:mp5-balance-simulations:json"
+      ],
+      "commandEvidence": {
+        "command": "npm run release:mp5-balance-simulations:json",
+        "exitCode": 0,
+        "stdoutPreview": "\n> cultivation-idle@0.0.0 release:mp5-balance-simulations:json\n> npm run release:mp5-balance-simulations -- --json\n\n\n> cultivation-idle@0.0.0 release:mp5-balance-simulations\n> tsc --project tsconfig.tests.json && node --loader=./scripts/relativeJsLoader.mjs tmp-tests/scripts/release/buildMp5BalanceSimulationReport.js --json\n\n{\n  \"schemaVersion\": \"mp5-balance-simulation-v1\",\n  \"generatedAt\": 1780460924225,\n  \"routeScenarioCount\": 36,\n  \"exploitCaseCount\": 10,\n  \"overallPass\": true,\n  \"scenarios\": [\n    {\n      \"id\": \"first_gate.heaven.matching_root.matching_law\",\n      \"routeType\": \"first_gate\",\n      \"path\": \"heaven\",\n      \"rootFit\": \"matching_root\",\n      \"lawFit\": \"matching_law\",\n      \"score\": 124,\n      \"target\": {\n        \"min\": 86,\n        \"max\": 126\n      },\n      \"passed\": true\n    },\n    {\n      \"id\": \"first_gate.heaven.matching_root.neutral_law\",\n      \"routeType\": \"first_gate\",\n      \"path\": \"heaven\",\n      \"rootFit\": \"matching_root\",\n      \"lawFit\": \"neutral_law\",\n      \"score\": 114,\n      \"target\": {\n        \"min\": 86,\n        \"max\": 126\n      },\n      \"passed\": true\n    },\n    {\n      \"id\": \"first_gate.heaven.matching_root.mismatch_law\",\n      \"routeType\": \"first_gate\",\n      \"path\": \"heaven\",\n      \"rootFit\": \"matching_root\",\n      \"lawFit\": \"mismatch_law\",\n      \"score\": 102,\n      \"target\": {\n        \"min\": 86,\n        \"max\": 126\n      },\n      \"passed\": true\n    },\n    {\n      \"id\": \"first_gate.heaven.neutral_root.matching_law\",\n      \"routeType\": \"first_gate\",\n      \"path\": \"heaven\",\n      \"rootFit\": \"neutral_root\",\n      \"lawFit\": \"matching_law\",\n      \"score\": 116,\n      \"target\": {\n        \"min\": 86,\n        \"max\": 126\n      },\n      \"passed\": true\n    },\n    {\n      \"id\": \"first_gate.heaven.neutral_root.neutral_law\",\n      \"routeType\": \"first_gate\",\n      \"path\": \"heaven\",\n      \"rootFit\": \"neutral_root\",\n      \"lawFit\": \"neutral_law\",\n      \"score\": 106,\n      \"target\": {\n        \"min\": 86,\n        \"max\": 126\n      },\n      \"passed\": true\n    },\n    {\n      \"id\": \"first_gate.heaven.neutral_root.mismatch_law\",\n      \"routeType\": \"first_gate\",\n      \"path\": \"heaven\",\n      \"rootFit\": \"neutral_root\",\n      \"lawFit\": \"mismatch_law\",\n      \"score\": 94,\n      \"target\": {\n        \"min\": 86,\n        \"max\": 126\n      },\n      \"passed\": true\n    },\n    {\n      \"id\": \"first_gate.earth.matching_root.matching_law\",\n      \"routeType\": \"first_gate\"",
+        "stderrPreview": "(node:43040) ExperimentalWarning: `--experimental-loader` may be removed in the future; instead use `register()`:\n--import 'data:text/javascript,import { register } from \"node:module\"; import { pathToFileURL } from \"node:url\"; register(\"./scripts/relativeJsLoader.mjs\", pathToFileURL(\"./\"));'\n(Use `node --trace-warnings ...` to show where the warning was created)\n",
+        "timedOut": false,
+        "durationMs": 14523
+      },
+      "rawPayload": {
+        "schemaVersion": "mp5-balance-simulation-v1",
+        "generatedAt": 1780460924225,
+        "routeScenarioCount": 36,
+        "exploitCaseCount": 10,
+        "overallPass": true,
+        "scenarios": [
+          {
+            "id": "first_gate.heaven.matching_root.matching_law",
+            "routeType": "first_gate",
+            "path": "heaven",
+            "rootFit": "matching_root",
+            "lawFit": "matching_law",
+            "score": 124,
+            "target": {
+              "min": 86,
+              "max": 126
+            },
+            "passed": true
+          },
+          {
+            "id": "first_gate.heaven.matching_root.neutral_law",
+            "routeType": "first_gate",
+            "path": "heaven",
+            "rootFit": "matching_root",
+            "lawFit": "neutral_law",
+            "score": 114,
+            "target": {
+              "min": 86,
+              "max": 126
+            },
+            "passed": true
+          },
+          {
+            "id": "first_gate.heaven.matching_root.mismatch_law",
+            "routeType": "first_gate",
+            "path": "heaven",
+            "rootFit": "matching_root",
+            "lawFit": "mismatch_law",
+            "score": 102,
+            "target": {
+              "min": 86,
+              "max": 126
+            },
+            "passed": true
+          },
+          {
+            "id": "first_gate.heaven.neutral_root.matching_law",
+            "routeType": "first_gate",
+            "path": "heaven",
+            "rootFit": "neutral_root",
+            "lawFit": "matching_law",
+            "score": 116,
+            "target": {
+              "min": 86,
+              "max": 126
+            },
+            "passed": true
+          },
+          {
+            "id": "first_gate.heaven.neutral_root.neutral_law",
+            "routeType": "first_gate",
+            "path": "heaven",
+            "rootFit": "neutral_root",
+            "lawFit": "neutral_law",
+            "score": 106,
+            "target": {
+              "min": 86,
+              "max": 126
+            },
+            "passed": true
+          },
+          {
+            "id": "first_gate.heaven.neutral_root.mismatch_law",
+            "routeType": "first_gate",
+            "path": "heaven",
+            "rootFit": "neutral_root",
+            "lawFit": "mismatch_law",
+            "score": 94,
+            "target": {
+              "min": 86,
+              "max": 126
+            },
+            "passed": true
+          },
+          {
+            "id": "first_gate.earth.matching_root.matching_law",
+            "routeType": "first_gate",
+            "path": "earth",
+            "rootFit": "matching_root",
+            "lawFit": "matching_law",
+            "score": 121,
+            "target": {
+              "min": 86,
+              "max": 126
+            },
+            "passed": true
+          },
+          {
+            "id": "first_gate.earth.matching_root.neutral_law",
+            "routeType": "first_gate",
+            "path": "earth",
+            "rootFit": "matching_root",
+            "lawFit": "neutral_law",
+            "score": 111,
+            "target": {
+              "min": 86,
+              "max": 126
+            },
+            "passed": true
+          },
+          {
+            "id": "first_gate.earth.matching_root.mismatch_law",
+            "routeType": "first_gate",
+            "path": "earth",
+            "rootFit": "matching_root",
+            "lawFit": "mismatch_law",
+            "score": 99,
+            "target": {
+              "min": 86,
+              "max": 126
+            },
+            "passed": true
+          },
+          {
+            "id": "first_gate.earth.neutral_root.matching_law",
+            "routeType": "first_gate",
+            "path": "earth",
+            "rootFit": "neutral_root",
+            "lawFit": "matching_law",
+            "score": 113,
+            "target": {
+              "min": 86,
+              "max": 126
+            },
+            "passed": true
+          },
+          {
+            "id": "first_gate.earth.neutral_root.neutral_law",
+            "routeType": "first_gate",
+            "path": "earth",
+            "rootFit": "neutral_root",
+            "lawFit": "neutral_law",
+            "score": 103,
+            "target": {
+              "min": 86,
+              "max": 126
+            },
+            "passed": true
+          },
+          {
+            "id": "first_gate.earth.neutral_root.mismatch_law",
+            "routeType": "first_gate",
+            "path": "earth",
+            "rootFit": "neutral_root",
+            "lawFit": "mismatch_law",
+            "score": 91,
+            "target": {
+              "min": 86,
+              "max": 126
+            },
+            "passed": true
+          },
+          {
+            "id": "first_gate.martial.matching_root.matching_law",
+            "routeType": "first_gate",
+            "path": "martial",
+            "rootFit": "matching_root",
+            "lawFit": "matching_law",
+            "score": 123,
+            "target": {
+              "min": 86,
+              "max": 126
+            },
+            "passed": true
+          },
+          {
+            "id": "first_gate.martial.matching_root.neutral_law",
+            "routeType": "first_gate",
+            "path": "martial",
+            "rootFit": "matching_root",
+            "lawFit": "neutral_law",
+            "score": 113,
+            "target": {
+              "min": 86,
+              "max": 126
+            },
+            "passed": true
+          },
+          {
+            "id": "first_gate.martial.matching_root.mismatch_law",
+            "routeType": "first_gate",
+            "path": "martial",
+            "rootFit": "matching_root",
+            "lawFit": "mismatch_law",
+            "score": 101,
+            "target": {
+              "min": 86,
+              "max": 126
+            },
+            "passed": true
+          },
+          {
+            "id": "first_gate.martial.neutral_root.matching_law",
+            "routeType": "first_gate",
+            "path": "martial",
+            "rootFit": "neutral_root",
+            "lawFit": "matching_law",
+            "score": 115,
+            "target": {
+              "min": 86,
+              "max": 126
+            },
+            "passed": true
+          },
+          {
+            "id": "first_gate.martial.neutral_root.neutral_law",
+            "routeType": "first_gate",
+            "path": "martial",
+            "rootFit": "neutral_root",
+            "lawFit": "neutral_law",
+            "score": 105,
+            "target": {
+              "min": 86,
+              "max": 126
+            },
+            "passed": true
+          },
+          {
+            "id": "first_gate.martial.neutral_root.mismatch_law",
+            "routeType": "first_gate",
+            "path": "martial",
+            "rootFit": "neutral_root",
+            "lawFit": "mismatch_law",
+            "score": 93,
+            "target": {
+              "min": 86,
+              "max": 126
+            },
+            "passed": true
+          },
+          {
+            "id": "foundation_reclaim.heaven.matching_root.matching_law",
+            "routeType": "foundation_reclaim",
+            "path": "heaven",
+            "rootFit": "matching_root",
+            "lawFit": "matching_law",
+            "score": 158,
+            "target": {
+              "min": 116,
+              "max": 158
+            },
+            "passed": true
+          },
+          {
+            "id": "foundation_reclaim.heaven.matching_root.neutral_law",
+            "routeType": "foundation_reclaim",
+            "path": "heaven",
+            "rootFit": "matching_root",
+            "lawFit": "neutral_law",
+            "score": 148,
+            "target": {
+              "min": 116,
+              "max": 158
+            },
+            "passed": true
+          },
+          {
+            "id": "foundation_reclaim.heaven.matching_root.mismatch_law",
+            "routeType": "foundation_reclaim",
+            "path": "heaven",
+            "rootFit": "matching_root",
+            "lawFit": "mismatch_law",
+            "score": 136,
+            "target": {
+              "min": 116,
+              "max": 158
+            },
+            "passed": true
+          },
+          {
+            "id": "foundation_reclaim.heaven.neutral_root.matching_law",
+            "routeType": "foundation_reclaim",
+            "path": "heaven",
+            "rootFit": "neutral_root",
+            "lawFit": "matching_law",
+            "score": 150,
+            "target": {
+              "min": 116,
+              "max": 158
+            },
+            "passed": true
+          },
+          {
+            "id": "foundation_reclaim.heaven.neutral_root.neutral_law",
+            "routeType": "foundation_reclaim",
+            "path": "heaven",
+            "rootFit": "neutral_root",
+            "lawFit": "neutral_law",
+            "score": 140,
+            "target": {
+              "min": 116,
+              "max": 158
+            },
+            "passed": true
+          },
+          {
+            "id": "foundation_reclaim.heaven.neutral_root.mismatch_law",
+            "routeType": "foundation_reclaim",
+            "path": "heaven",
+            "rootFit": "neutral_root",
+            "lawFit": "mismatch_law",
+            "score": 128,
+            "target": {
+              "min": 116,
+              "max": 158
+            },
+            "passed": true
+          },
+          {
+            "id": "foundation_reclaim.earth.matching_root.matching_law",
+            "routeType": "foundation_reclaim",
+            "path": "earth",
+            "rootFit": "matching_root",
+            "lawFit": "matching_law",
+            "score": 155,
+            "target": {
+              "min": 116,
+              "max": 158
+            },
+            "passed": true
+          },
+          {
+            "id": "foundation_reclaim.earth.matching_root.neutral_law",
+            "routeType": "foundation_reclaim",
+            "path": "earth",
+            "rootFit": "matching_root",
+            "lawFit": "neutral_law",
+            "score": 145,
+            "target": {
+              "min": 116,
+              "max": 158
+            },
+            "passed": true
+          },
+          {
+            "id": "foundation_reclaim.earth.matching_root.mismatch_law",
+            "routeType": "foundation_reclaim",
+            "path": "earth",
+            "rootFit": "matching_root",
+            "lawFit": "mismatch_law",
+            "score": 133,
+            "target": {
+              "min": 116,
+              "max": 158
+            },
+            "passed": true
+          },
+          {
+            "id": "foundation_reclaim.earth.neutral_root.matching_law",
+            "routeType": "foundation_reclaim",
+            "path": "earth",
+            "rootFit": "neutral_root",
+            "lawFit": "matching_law",
+            "score": 147,
+            "target": {
+              "min": 116,
+              "max": 158
+            },
+            "passed": true
+          },
+          {
+            "id": "foundation_reclaim.earth.neutral_root.neutral_law",
+            "routeType": "foundation_reclaim",
+            "path": "earth",
+            "rootFit": "neutral_root",
+            "lawFit": "neutral_law",
+            "score": 137,
+            "target": {
+              "min": 116,
+              "max": 158
+            },
+            "passed": true
+          },
+          {
+            "id": "foundation_reclaim.earth.neutral_root.mismatch_law",
+            "routeType": "foundation_reclaim",
+            "path": "earth",
+            "rootFit": "neutral_root",
+            "lawFit": "mismatch_law",
+            "score": 125,
+            "target": {
+              "min": 116,
+              "max": 158
+            },
+            "passed": true
+          },
+          {
+            "id": "foundation_reclaim.martial.matching_root.matching_law",
+            "routeType": "foundation_reclaim",
+            "path": "martial",
+            "rootFit": "matching_root",
+            "lawFit": "matching_law",
+            "score": 157,
+            "target": {
+              "min": 116,
+              "max": 158
+            },
+            "passed": true
+          },
+          {
+            "id": "foundation_reclaim.martial.matching_root.neutral_law",
+            "routeType": "foundation_reclaim",
+            "path": "martial",
+            "rootFit": "matching_root",
+            "lawFit": "neutral_law",
+            "score": 147,
+            "target": {
+              "min": 116,
+              "max": 158
+            },
+            "passed": true
+          },
+          {
+            "id": "foundation_reclaim.martial.matching_root.mismatch_law",
+            "routeType": "foundation_reclaim",
+            "path": "martial",
+            "rootFit": "matching_root",
+            "lawFit": "mismatch_law",
+            "score": 135,
+            "target": {
+              "min": 116,
+              "max": 158
+            },
+            "passed": true
+          },
+          {
+            "id": "foundation_reclaim.martial.neutral_root.matching_law",
+            "routeType": "foundation_reclaim",
+            "path": "martial",
+            "rootFit": "neutral_root",
+            "lawFit": "matching_law",
+            "score": 149,
+            "target": {
+              "min": 116,
+              "max": 158
+            },
+            "passed": true
+          },
+          {
+            "id": "foundation_reclaim.martial.neutral_root.neutral_law",
+            "routeType": "foundation_reclaim",
+            "path": "martial",
+            "rootFit": "neutral_root",
+            "lawFit": "neutral_law",
+            "score": 139,
+            "target": {
+              "min": 116,
+              "max": 158
+            },
+            "passed": true
+          },
+          {
+            "id": "foundation_reclaim.martial.neutral_root.mismatch_law",
+            "routeType": "foundation_reclaim",
+            "path": "martial",
+            "rootFit": "neutral_root",
+            "lawFit": "mismatch_law",
+            "score": 127,
+            "target": {
+              "min": 116,
+              "max": 158
+            },
+            "passed": true
+          }
+        ],
+        "exploitCases": [
+          {
+            "id": "train_cap_only",
+            "label": "Train-cap-only cannot satisfy the MP5 route matrix by itself",
+            "prevented": true,
+            "evidence": "Neutral training-only score remains inside the first-gate envelope."
+          },
+          {
+            "id": "heart_law_overlevel",
+            "label": "Scripture Echo catch-up does not boost Heart Law above parity",
+            "prevented": true,
+            "evidence": "Multiplier returns 1 when Heart Law stage is already at or above cultivation stage."
+          },
+          {
+            "id": "high_fatigue_offline",
+            "label": "High-fatigue offline Training remains dampened",
+            "prevented": true,
+            "evidence": "fatigue95=0.51 fatigue40=1.00"
+          },
+          {
+            "id": "mismatch_builds",
+            "label": "Mismatch law/root builds stay bounded",
+            "prevented": true,
+            "evidence": "Mismatch scenario remains within the lower route envelope instead of exploding upward."
+          },
+          {
+            "id": "repeated_prestige_floor",
+            "label": "Repeated prestige floor does not stack",
+            "prevented": true,
+            "evidence": "first=12 repeated=12"
+          },
+          {
+            "id": "breakthrough_failure",
+            "label": "Calm First Breath remains a bounded risk reducer",
+            "prevented": true,
+            "evidence": "Rank 3 reducer is -3 risk and never rewrites failure outcomes."
+          },
+          {
+            "id": "no_training",
+            "label": "No Training does not receive hidden path-stat carryover",
+            "prevented": true,
+            "evidence": "No Form Memory purchase leaves raw rating unchanged."
+          },
+          {
+            "id": "no_dao_heart",
+            "label": "No Dao Heart does not receive hidden scripture catch-up",
+            "prevented": true,
+            "evidence": "No Scripture Echo purchase leaves XP multiplier at 1."
+          },
+          {
+            "id": "second_life_sweep",
+            "label": "Second-life sweep keeps Root Clarity at the authored floor",
+            "prevented": true,
+            "evidence": "Root Clarity floors grade to 3 without guaranteeing grade 4+."
+          },
+          {
+            "id": "reset_while_active",
+            "label": "Reset-while-active contract records activity and raw Training reset buckets",
+            "prevented": true,
+            "evidence": "training_raw_ratings,training_fatigue_session,dao_heart_turbulence,root_awakening_state,form_memory,scripture_echo,root_clarity_floor,calm_first_breath,old_sparring_shadows"
+          }
+        ]
+      },
+      "checkId": "mp5_balance_simulations",
+      "elapsedMs": 14526
+    },
+    {
+      "status": "pass",
+      "summary": "mp5_prestige_runtime_audit passed.",
+      "blockerCount": 0,
+      "warningCount": 0,
+      "pendingManualCount": 0,
+      "findings": [],
+      "commandOrBuilder": "npm run release:prestige-runtime-audit:json",
+      "evidence": [
+        "npm run release:prestige-runtime-audit:json"
+      ],
+      "commandEvidence": {
+        "command": "npm run release:prestige-runtime-audit:json",
+        "exitCode": 0,
+        "stdoutPreview": "\n> cultivation-idle@0.0.0 release:prestige-runtime-audit:json\n> npm run release:prestige-runtime-audit -- --json\n\n\n> cultivation-idle@0.0.0 release:prestige-runtime-audit\n> node --loader=./scripts/relativeJsLoader.mjs --experimental-strip-types scripts/release/buildPrestigeRuntimeEffectAudit.ts --write --json\n\n{\n  \"generatedAt\": 1780460925058,\n  \"rows\": [\n    {\n      \"upgradeId\": \"ap_auto_retry_bosses\",\n      \"upgradeName\": \"Auto-Retry Bosses\",\n      \"status\": \"hidden_unsupported\",\n      \"contentEffectKeys\": [\n        \"autoRetryBosses\"\n      ],\n      \"runtimeConsumers\": [],\n      \"purchaseAllowed\": false,\n      \"displayAllowed\": false,\n      \"reason\": \"Content effect has no confirmed runtime consumer in this slice, so it is hidden.\",\n      \"remediation\": \"hide\"\n    },\n    {\n      \"upgradeId\": \"ap_autobuy_consumables\",\n      \"upgradeName\": \"Auto-Buy Consumables\",\n      \"status\": \"hidden_unsupported\",\n      \"contentEffectKeys\": [\n        \"autobuyEnabled\"\n      ],\n      \"runtimeConsumers\": [],\n      \"purchaseAllowed\": false,\n      \"displayAllowed\": false,\n      \"reason\": \"Content effect has no confirmed runtime consumer in this slice, so it is hidden.\",\n      \"remediation\": \"hide\"\n    },\n    {\n      \"upgradeId\": \"ap_autosell_filter\",\n      \"upgradeName\": \"Auto-Sell Junk Filter\",\n      \"status\": \"hidden_unsupported\",\n      \"contentEffectKeys\": [\n        \"autosellEnabled\"\n      ],\n      \"runtimeConsumers\": [],\n      \"purchaseAllowed\": false,\n      \"displayAllowed\": false,\n      \"reason\": \"Content effect has no confirmed runtime consumer in this slice, so it is hidden.\",\n      \"remediation\": \"hide\"\n    },\n    {\n      \"upgradeId\": \"ap_combat_mult\",\n      \"upgradeName\": \"Combat Power Multiplier\",\n      \"status\": \"visible_live\",\n      \"contentEffectKeys\": [\n        \"combatMult\"\n      ],\n      \"runtimeConsumers\": [\n        \"combat_multiplier\"\n      ],\n      \"purchaseAllowed\": true,\n      \"displayAllowed\": true,\n      \"reason\": \"Live runtime consumer(s): combat_multiplier.\",\n      \"remediation\": \"none\"\n    },\n    {\n      \"upgradeId\": \"ap_craft_speed_boost\",\n      \"upgradeName\": \"Craft Speed Boost\",\n      \"status\": \"hidden_unsupported\",\n      \"contentEffectKeys\": [\n        \"craftSpeedMult\"\n      ],\n      \"runtimeConsumers\": [],\n      \"purchaseAllowed\": false,\n      \"displayAllowed\": false,\n      \"reason\": \"Content effect has no confirmed runtime consumer in this slice, ",
+        "stderrPreview": "(node:26040) ExperimentalWarning: `--experimental-loader` may be removed in the future; instead use `register()`:\n--import 'data:text/javascript,import { register } from \"node:module\"; import { pathToFileURL } from \"node:url\"; register(\"./scripts/relativeJsLoader.mjs\", pathToFileURL(\"./\"));'\n(Use `node --trace-warnings ...` to show where the warning was created)\n",
+        "timedOut": false,
+        "durationMs": 825
+      },
+      "rawPayload": {
+        "generatedAt": 1780460925058,
+        "rows": [
+          {
+            "upgradeId": "ap_auto_retry_bosses",
+            "upgradeName": "Auto-Retry Bosses",
+            "status": "hidden_unsupported",
+            "contentEffectKeys": [
+              "autoRetryBosses"
+            ],
+            "runtimeConsumers": [],
+            "purchaseAllowed": false,
+            "displayAllowed": false,
+            "reason": "Content effect has no confirmed runtime consumer in this slice, so it is hidden.",
+            "remediation": "hide"
+          },
+          {
+            "upgradeId": "ap_autobuy_consumables",
+            "upgradeName": "Auto-Buy Consumables",
+            "status": "hidden_unsupported",
+            "contentEffectKeys": [
+              "autobuyEnabled"
+            ],
+            "runtimeConsumers": [],
+            "purchaseAllowed": false,
+            "displayAllowed": false,
+            "reason": "Content effect has no confirmed runtime consumer in this slice, so it is hidden.",
+            "remediation": "hide"
+          },
+          {
+            "upgradeId": "ap_autosell_filter",
+            "upgradeName": "Auto-Sell Junk Filter",
+            "status": "hidden_unsupported",
+            "contentEffectKeys": [
+              "autosellEnabled"
+            ],
+            "runtimeConsumers": [],
+            "purchaseAllowed": false,
+            "displayAllowed": false,
+            "reason": "Content effect has no confirmed runtime consumer in this slice, so it is hidden.",
+            "remediation": "hide"
+          },
+          {
+            "upgradeId": "ap_combat_mult",
+            "upgradeName": "Combat Power Multiplier",
+            "status": "visible_live",
+            "contentEffectKeys": [
+              "combatMult"
+            ],
+            "runtimeConsumers": [
+              "combat_multiplier"
+            ],
+            "purchaseAllowed": true,
+            "displayAllowed": true,
+            "reason": "Live runtime consumer(s): combat_multiplier.",
+            "remediation": "none"
+          },
+          {
+            "upgradeId": "ap_craft_speed_boost",
+            "upgradeName": "Craft Speed Boost",
+            "status": "hidden_unsupported",
+            "contentEffectKeys": [
+              "craftSpeedMult"
+            ],
+            "runtimeConsumers": [],
+            "purchaseAllowed": false,
+            "displayAllowed": false,
+            "reason": "Content effect has no confirmed runtime consumer in this slice, so it is hidden.",
+            "remediation": "hide"
+          },
+          {
+            "upgradeId": "ap_extra_heartlaw_choice",
+            "upgradeName": "Extra Heart Law Choice",
+            "status": "hidden_unsupported",
+            "contentEffectKeys": [
+              "startChoiceCountAdd"
+            ],
+            "runtimeConsumers": [],
+            "purchaseAllowed": false,
+            "displayAllowed": false,
+            "reason": "Content effect has no confirmed runtime consumer in this slice, so it is hidden.",
+            "remediation": "hide"
+          },
+          {
+            "upgradeId": "ap_extra_technique_slot_1",
+            "upgradeName": "Extra Technique Slot I",
+            "status": "visible_live",
+            "contentEffectKeys": [
+              "extraTechniqueSlots"
+            ],
+            "runtimeConsumers": [
+              "extra_technique_slot"
+            ],
+            "purchaseAllowed": true,
+            "displayAllowed": true,
+            "reason": "Live runtime consumer(s): extra_technique_slot.",
+            "remediation": "none"
+          },
+          {
+            "upgradeId": "ap_extra_technique_slot_2",
+            "upgradeName": "Extra Technique Slot II",
+            "status": "visible_live",
+            "contentEffectKeys": [
+              "extraTechniqueSlots"
+            ],
+            "runtimeConsumers": [
+              "extra_technique_slot"
+            ],
+            "purchaseAllowed": true,
+            "displayAllowed": true,
+            "reason": "Live runtime consumer(s): extra_technique_slot.",
+            "remediation": "none"
+          },
+          {
+            "upgradeId": "ap_fragment_gain_boost",
+            "upgradeName": "Technique Fragment Gain",
+            "status": "hidden_unsupported",
+            "contentEffectKeys": [
+              "fragmentGainMult"
+            ],
+            "runtimeConsumers": [],
+            "purchaseAllowed": false,
+            "displayAllowed": false,
+            "reason": "Content effect has no confirmed runtime consumer in this slice, so it is hidden.",
+            "remediation": "hide"
+          },
+          {
+            "upgradeId": "ap_idle_qi_mult",
+            "upgradeName": "Idle Qi Multiplier",
+            "status": "visible_live",
+            "contentEffectKeys": [
+              "idleQiMult"
+            ],
+            "runtimeConsumers": [
+              "qi_multiplier"
+            ],
+            "purchaseAllowed": true,
+            "displayAllowed": true,
+            "reason": "Live runtime consumer(s): qi_multiplier.",
+            "remediation": "none"
+          },
+          {
+            "upgradeId": "ap_loot_filter",
+            "upgradeName": "Loot Filter Rules",
+            "status": "hidden_unsupported",
+            "contentEffectKeys": [
+              "lootFilterEnabled"
+            ],
+            "runtimeConsumers": [],
+            "purchaseAllowed": false,
+            "displayAllowed": false,
+            "reason": "Content effect has no confirmed runtime consumer in this slice, so it is hidden.",
+            "remediation": "hide"
+          },
+          {
+            "upgradeId": "ap_mastery_retention_10",
+            "upgradeName": "Mastery Retention 10%",
+            "status": "visible_live",
+            "contentEffectKeys": [
+              "masteryRetentionPct"
+            ],
+            "runtimeConsumers": [
+              "mastery_retention"
+            ],
+            "purchaseAllowed": true,
+            "displayAllowed": true,
+            "reason": "Live runtime consumer(s): mastery_retention.",
+            "remediation": "none"
+          },
+          {
+            "upgradeId": "ap_mastery_retention_25",
+            "upgradeName": "Mastery Retention 25%",
+            "status": "visible_live",
+            "contentEffectKeys": [
+              "masteryRetentionPct"
+            ],
+            "runtimeConsumers": [
+              "mastery_retention"
+            ],
+            "purchaseAllowed": true,
+            "displayAllowed": true,
+            "reason": "Live runtime consumer(s): mastery_retention.",
+            "remediation": "none"
+          },
+          {
+            "upgradeId": "ap_mastery_retention_50",
+            "upgradeName": "Mastery Retention 50%",
+            "status": "visible_live",
+            "contentEffectKeys": [
+              "masteryRetentionPct"
+            ],
+            "runtimeConsumers": [
+              "mastery_retention"
+            ],
+            "purchaseAllowed": true,
+            "displayAllowed": true,
+            "reason": "Live runtime consumer(s): mastery_retention.",
+            "remediation": "none"
+          },
+          {
+            "upgradeId": "ap_offline_efficiency",
+            "upgradeName": "Offline Efficiency",
+            "status": "visible_live",
+            "contentEffectKeys": [
+              "offlineEfficiencyAdd"
+            ],
+            "runtimeConsumers": [
+              "offline_efficiency"
+            ],
+            "purchaseAllowed": true,
+            "displayAllowed": true,
+            "reason": "Live runtime consumer(s): offline_efficiency.",
+            "remediation": "none"
+          },
+          {
+            "upgradeId": "ap_pagoda_sweep",
+            "upgradeName": "Pagoda Sweep",
+            "status": "deferred",
+            "contentEffectKeys": [
+              "pagodaSweepUnlocked"
+            ],
+            "runtimeConsumers": [],
+            "purchaseAllowed": false,
+            "displayAllowed": true,
+            "reason": "Deferred future-slice decree; blocked from live purchasing.",
+            "remediation": "label_deferred"
+          },
+          {
+            "upgradeId": "ap_pavilion_refresh_discount",
+            "upgradeName": "Pavilion Refresh Discount",
+            "status": "hidden_unsupported",
+            "contentEffectKeys": [
+              "pavilionRefreshCostMult"
+            ],
+            "runtimeConsumers": [],
+            "purchaseAllowed": false,
+            "displayAllowed": false,
+            "reason": "Content effect has no confirmed runtime consumer in this slice, so it is hidden.",
+            "remediation": "hide"
+          },
+          {
+            "upgradeId": "ap_unlock_alchemy_queue",
+            "upgradeName": "Alchemy Queue Expansion",
+            "status": "hidden_unsupported",
+            "contentEffectKeys": [
+              "alchemyQueueSlotsAdd"
+            ],
+            "runtimeConsumers": [],
+            "purchaseAllowed": false,
+            "displayAllowed": false,
+            "reason": "Content effect has no confirmed runtime consumer in this slice, so it is hidden.",
+            "remediation": "hide"
+          },
+          {
+            "upgradeId": "ap_unlock_forge_queue",
+            "upgradeName": "Forge Queue Expansion",
+            "status": "hidden_unsupported",
+            "contentEffectKeys": [
+              "forgeQueueSlotsAdd"
+            ],
+            "runtimeConsumers": [],
+            "purchaseAllowed": false,
+            "displayAllowed": false,
+            "reason": "Content effect has no confirmed runtime consumer in this slice, so it is hidden.",
+            "remediation": "hide"
+          },
+          {
+            "upgradeId": "ap_unlock_heartlaw_t1",
+            "upgradeName": "Unlock Heart Laws (Tier 1)",
+            "status": "visible_live",
+            "contentEffectKeys": [
+              "unlocks"
+            ],
+            "runtimeConsumers": [
+              "heart_law_unlock"
+            ],
+            "purchaseAllowed": true,
+            "displayAllowed": true,
+            "reason": "Live runtime consumer(s): heart_law_unlock.",
+            "remediation": "none"
+          },
+          {
+            "upgradeId": "ap_unlock_heartlaw_t2",
+            "upgradeName": "Unlock Heart Laws (Tier 2)",
+            "status": "visible_live",
+            "contentEffectKeys": [
+              "unlocks"
+            ],
+            "runtimeConsumers": [
+              "heart_law_unlock"
+            ],
+            "purchaseAllowed": true,
+            "displayAllowed": true,
+            "reason": "Live runtime consumer(s): heart_law_unlock.",
+            "remediation": "none"
+          },
+          {
+            "upgradeId": "ap_unlock_heartlaw_t3",
+            "upgradeName": "Unlock Heart Laws (Tier 3)",
+            "status": "visible_live",
+            "contentEffectKeys": [
+              "unlocks"
+            ],
+            "runtimeConsumers": [
+              "heart_law_unlock"
+            ],
+            "purchaseAllowed": true,
+            "displayAllowed": true,
+            "reason": "Live runtime consumer(s): heart_law_unlock.",
+            "remediation": "none"
+          },
+          {
+            "upgradeId": "ap_unlock_jade_core",
+            "upgradeName": "Unlock Jade Core Refinement",
+            "status": "deferred",
+            "contentEffectKeys": [
+              "jadeCoreUnlocked"
+            ],
+            "runtimeConsumers": [],
+            "purchaseAllowed": false,
+            "displayAllowed": true,
+            "reason": "Deferred future-slice decree; blocked from live purchasing.",
+            "remediation": "label_deferred"
+          },
+          {
+            "upgradeId": "ap_unlock_meridian_hall",
+            "upgradeName": "Unlock Meridian Hall",
+            "status": "deferred",
+            "contentEffectKeys": [
+              "meridianHallUnlocked"
+            ],
+            "runtimeConsumers": [],
+            "purchaseAllowed": false,
+            "displayAllowed": true,
+            "reason": "Deferred future-slice decree; blocked from live purchasing.",
+            "remediation": "label_deferred"
+          },
+          {
+            "upgradeId": "ap_unlock_pagoda",
+            "upgradeName": "Unlock Ninefold Pagoda",
+            "status": "deferred",
+            "contentEffectKeys": [
+              "pagodaUnlocked"
+            ],
+            "runtimeConsumers": [],
+            "purchaseAllowed": false,
+            "displayAllowed": true,
+            "reason": "Deferred future-slice decree; blocked from live purchasing.",
+            "remediation": "label_deferred"
+          },
+          {
+            "upgradeId": "ap_unlock_spirit_garden",
+            "upgradeName": "Unlock Spirit Garden",
+            "status": "deferred",
+            "contentEffectKeys": [
+              "spiritGardenUnlocked"
+            ],
+            "runtimeConsumers": [],
+            "purchaseAllowed": false,
+            "displayAllowed": true,
+            "reason": "Deferred future-slice decree; blocked from live purchasing.",
+            "remediation": "label_deferred"
+          },
+          {
+            "upgradeId": "ap_unlock_talisman_queue",
+            "upgradeName": "Talisman Queue Expansion",
+            "status": "hidden_unsupported",
+            "contentEffectKeys": [
+              "talismanQueueSlotsAdd"
+            ],
+            "runtimeConsumers": [],
+            "purchaseAllowed": false,
+            "displayAllowed": false,
+            "reason": "Content effect has no confirmed runtime consumer in this slice, so it is hidden.",
+            "remediation": "hide"
+          },
+          {
+            "upgradeId": "calm_first_breath",
+            "upgradeName": "Calm First Breath",
+            "status": "visible_live",
+            "contentEffectKeys": [
+              "calmFirstBreathRiskReduction"
+            ],
+            "runtimeConsumers": [
+              "breakthrough_calm_memory"
+            ],
+            "purchaseAllowed": true,
+            "displayAllowed": true,
+            "reason": "Live runtime consumer(s): breakthrough_calm_memory.",
+            "remediation": "none"
+          },
+          {
+            "upgradeId": "doctrine_archive",
+            "upgradeName": "Doctrine Archive",
+            "status": "hidden_unsupported",
+            "contentEffectKeys": [
+              "doctrineArchiveEcho"
+            ],
+            "runtimeConsumers": [],
+            "purchaseAllowed": false,
+            "displayAllowed": false,
+            "reason": "Content effect has no confirmed runtime consumer in this slice, so it is hidden.",
+            "remediation": "hide"
+          },
+          {
+            "upgradeId": "form_memory",
+            "upgradeName": "Form Memory",
+            "status": "visible_live",
+            "contentEffectKeys": [
+              "formMemoryFloor"
+            ],
+            "runtimeConsumers": [
+              "training_memory_floor"
+            ],
+            "purchaseAllowed": true,
+            "displayAllowed": true,
+            "reason": "Live runtime consumer(s): training_memory_floor.",
+            "remediation": "none"
+          },
+          {
+            "upgradeId": "old_sparring_shadows",
+            "upgradeName": "Old Sparring Shadows",
+            "status": "visible_live",
+            "contentEffectKeys": [
+              "oldSparringMasteryCatchupPct"
+            ],
+            "runtimeConsumers": [
+              "training_mastery_shadow"
+            ],
+            "purchaseAllowed": true,
+            "displayAllowed": true,
+            "reason": "Live runtime consumer(s): training_mastery_shadow.",
+            "remediation": "none"
+          },
+          {
+            "upgradeId": "root_clarity",
+            "upgradeName": "Root Clarity",
+            "status": "visible_live",
+            "contentEffectKeys": [
+              "rootClarityGradeFloor"
+            ],
+            "runtimeConsumers": [
+              "root_clarity_floor"
+            ],
+            "purchaseAllowed": true,
+            "displayAllowed": true,
+            "reason": "Live runtime consumer(s): root_clarity_floor.",
+            "remediation": "none"
+          },
+          {
+            "upgradeId": "scripture_echo",
+            "upgradeName": "Scripture Echo",
+            "status": "visible_live",
+            "contentEffectKeys": [
+              "scriptureVerseRetentionPct"
+            ],
+            "runtimeConsumers": [
+              "heart_law_scripture_echo"
+            ],
+            "purchaseAllowed": true,
+            "displayAllowed": true,
+            "reason": "Live runtime consumer(s): heart_law_scripture_echo.",
+            "remediation": "none"
+          }
+        ],
+        "visibleLiveCount": 16,
+        "deferredCount": 5,
+        "hiddenUnsupportedCount": 12,
+        "unknownBlockedCount": 0,
+        "blockers": [],
+        "warnings": []
+      },
+      "checkId": "mp5_prestige_runtime_audit",
+      "elapsedMs": 826
+    },
+    {
+      "checkId": "vocabulary_audit",
+      "status": "skipped",
+      "elapsedMs": 0,
+      "commandOrBuilder": "skipped",
+      "summary": "Skipped by filter.",
+      "blockerCount": 0,
+      "warningCount": 0,
+      "pendingManualCount": 0,
+      "findings": [],
+      "evidence": []
+    },
+    {
+      "checkId": "full_test_suite",
+      "status": "skipped",
+      "elapsedMs": 0,
+      "commandOrBuilder": "skipped",
+      "summary": "Skipped by filter.",
+      "blockerCount": 0,
+      "warningCount": 0,
+      "pendingManualCount": 0,
+      "findings": [],
+      "evidence": []
+    }
+  ],
+  "knownIssueSummary": {
+    "openBlockers": 0,
+    "acceptedWaivers": 6,
+    "postSemesterDebt": 4,
+    "resolved": 0,
+    "untrackedFindings": 0
+  },
+  "decisionSummary": {
+    "headline": "PASS",
+    "rationale": [
+      "All checks passed with no accepted waivers"
+    ]
+  },
+  "sliceSummary": {
+    "contentCapRealmId": "spirit_severing",
+    "liveCityIds": [
+      "city_pinewind_hamlet",
+      "city_stonecrag_town",
+      "city_spirit_cavern_city",
+      "city_lotusford",
+      "city_ironpeak_bastion"
+    ],
+    "liveCityCount": 5,
+    "fakeCitySixDetected": false,
+    "deferredSystems": []
+  }
+}

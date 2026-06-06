@@ -1,0 +1,60 @@
+state: fresh save opening story before life identity
+url: http://127.0.0.1:5173/
+
+Realm
+Qi Condensation
+Stage 1
+Qi
+0
+Cultivation Rate
+45.02 / s
+Stability
+0%
+Foreground
+Idle
+Next Milestone
+Push Qi
+Need
+Qi Cap
+100
+Action
+Start Cultivation
+Idle
+Dao
+Path
+No Path selected
+Spirit Root
+Metal / Mortal
+Heart Law
+No Heart Law selected
+Verse
+Chapter 1
+Breath / Focus
+Balanced
+Breakthrough
+Settled
+BREAKTHROUGH READINESS
+Reach the realm edge and fill the Qi reservoir.
+Qi
+100 short
+Realm edge
+Reached
+Gate item
+Not needed now
+Qi 0 / 100
++45.02/s
+Start Cultivation
+Break Through
+Status
+Cultivation
+World
+Inventory
+Techniques
+Records
+Prestige
+Settings
+
+Pinewind was too small to matter to immortals. That was why it survived.
+
+Skip
+Next

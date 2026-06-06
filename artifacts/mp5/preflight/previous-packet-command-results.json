@@ -1,0 +1,70 @@
+{
+    "schemaVersion":  "mp5-command-results-v1",
+    "generatedAt":  "2026-05-29T18:44:29.4129306+03:00",
+    "phase":  "previous-packet-verification",
+    "commands":  [
+                     {
+                         "command":  "npm run typecheck",
+                         "status":  "pass",
+                         "exitCode":  0,
+                         "durationSeconds":  0.393,
+                         "artifact":  "artifacts/mp5/preflight/logs-direct/typecheck.log"
+                     },
+                     {
+                         "command":  "npm run check:icons",
+                         "status":  "pass",
+                         "exitCode":  0,
+                         "durationSeconds":  0.396,
+                         "artifact":  "artifacts/mp5/preflight/logs-direct/check-icons.log"
+                     },
+                     {
+                         "command":  "npm run validate:content",
+                         "status":  "pass",
+                         "exitCode":  0,
+                         "durationSeconds":  1.123,
+                         "artifact":  "artifacts/mp5/preflight/logs-direct/validate-content.log"
+                     },
+                     {
+                         "command":  "npm run build",
+                         "status":  "pass",
+                         "exitCode":  0,
+                         "durationSeconds":  7.375,
+                         "artifact":  "artifacts/mp5/preflight/logs-direct/build.log"
+                     },
+                     {
+                         "command":  "npm run balance:report:json",
+                         "status":  "pass",
+                         "exitCode":  0,
+                         "durationSeconds":  44.515,
+                         "artifact":  "artifacts/mp5/preflight/logs-direct/balance-report-json.log"
+                     },
+                     {
+                         "command":  "npm run release:route-report:json",
+                         "status":  "pass",
+                         "exitCode":  0,
+                         "durationSeconds":  64.371,
+                         "artifact":  "artifacts/mp5/preflight/logs-direct/release-route-report-json.log"
+                     },
+                     {
+                         "command":  "npm run release:fresh-run-report:json",
+                         "status":  "pass",
+                         "exitCode":  0,
+                         "durationSeconds":  48.154,
+                         "artifact":  "artifacts/mp5/preflight/logs-direct/release-fresh-run-report-json.log"
+                     },
+                     {
+                         "command":  "npm run release:reclaim-route-report -- --json",
+                         "status":  "pass",
+                         "exitCode":  0,
+                         "durationSeconds":  32.215,
+                         "artifact":  "artifacts/mp5/preflight/logs-direct/release-reclaim-route-report-json.log"
+                     },
+                     {
+                         "command":  "npm run release:runtime-diagnostics:json",
+                         "status":  "pass",
+                         "exitCode":  0,
+                         "durationSeconds":  9.728,
+                         "artifact":  "artifacts/mp5/preflight/logs-direct/release-runtime-diagnostics-json.log"
+                     }
+                 ]
+}

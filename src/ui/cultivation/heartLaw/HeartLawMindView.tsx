@@ -58,7 +58,7 @@ export function HeartLawMindView() {
   const heartLawsById = useContentStore((state) => state.maps.heartLawsById);
   const spiritRoot = usePrestigeStore((state) => state.spiritRoot);
   const realm = useGameStore((state) => state.realm);
-  const recentDaoAwards = useDaoImpressionStore((state) => state.awards.slice(0, 3));
+  const recentDaoAwards = useDaoImpressionStore((state) => state.awards);
 
   const [selectedVerse, setSelectedVerse] = useState(chapter);
   const [showModal, setShowModal] = useState(false);

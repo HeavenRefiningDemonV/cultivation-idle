@@ -1,0 +1,800 @@
+{
+  "schemaVersion": 1,
+  "exportedAt": 1780012385004,
+  "capture": {
+    "balanceCaptureEnabled": true,
+    "maxBalanceEvents": 5000
+  },
+  "eventCount": 23,
+  "balanceEvents": [
+    {
+      "schemaVersion": 1,
+      "eventId": "manual_reclaim",
+      "emittedAt": 1184000,
+      "family": "reclaim",
+      "name": "milestone_reached",
+      "kind": "reclaim/milestone_reached",
+      "lifeId": "manual",
+      "lifeOrdinal": 2,
+      "sessionKind": "reclaim",
+      "payload": {
+        "milestoneId": "gate_1_available",
+        "elapsedMsSinceLifeStart": 120000
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "eventId": "manual_diagnosis",
+      "emittedAt": 1183000,
+      "family": "diagnosis",
+      "name": "computed",
+      "kind": "diagnosis/computed",
+      "lifeId": "manual",
+      "lifeOrdinal": 1,
+      "sessionKind": "first_life",
+      "payload": {
+        "trialId": "trial_g1",
+        "primary": "underbuilt",
+        "secondary": null,
+        "topFixKeys": [
+          "improve_weapon"
+        ]
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "eventId": "manual_readiness",
+      "emittedAt": 1182000,
+      "family": "readiness",
+      "name": "snapshot",
+      "kind": "readiness/snapshot",
+      "lifeId": "manual",
+      "lifeOrdinal": 1,
+      "sessionKind": "first_life",
+      "payload": {
+        "trialId": "trial_g1",
+        "overallBand": "recommended_met",
+        "buildBand": "recommended_met",
+        "forgeBand": "recommended_met",
+        "economicBand": "recommended_met",
+        "postureBand": "recommended_met",
+        "topShortfallCodes": []
+      }
+    },
+    {
+      "family": "offline",
+      "name": "applied",
+      "kind": "offline/applied",
+      "payload": {
+        "timestamp": 1550000,
+        "rawOfflineSeconds": 7200,
+        "effectiveOfflineSeconds": 7200,
+        "effectiveEfficiency": 0.75,
+        "wasCapped": false,
+        "qiGained": "200",
+        "queuedActionsReady": 2,
+        "expeditionsReady": 1
+      },
+      "schemaVersion": 1,
+      "eventId": "bal_20",
+      "emittedAt": 1780012384653,
+      "lifeId": "1780012384650:0",
+      "lifeOrdinal": 1,
+      "sessionKind": "first_life",
+      "prestigeCount": 0,
+      "realmIndex": 0,
+      "realmId": "qi_condensation",
+      "substage": 1,
+      "cityId": null,
+      "cityIndex": null,
+      "elapsedMsSinceLifeStart": 3
+    },
+    {
+      "family": "prestige",
+      "name": "performed",
+      "kind": "prestige/performed",
+      "payload": {
+        "apGained": 28,
+        "totalAPAfter": 50,
+        "realmReached": 4,
+        "resolvedGateCount": 3,
+        "timeSpentSec": 5000,
+        "advisorLabel": "great"
+      },
+      "schemaVersion": 1,
+      "eventId": "bal_19",
+      "emittedAt": 1780012384653,
+      "lifeId": "1780012384650:0",
+      "lifeOrdinal": 1,
+      "sessionKind": "first_life",
+      "prestigeCount": 0,
+      "realmIndex": 0,
+      "realmId": "qi_condensation",
+      "substage": 1,
+      "cityId": null,
+      "cityIndex": null,
+      "elapsedMsSinceLifeStart": 3
+    },
+    {
+      "family": "support",
+      "name": "expedition_claimed",
+      "kind": "support/expedition_claimed",
+      "payload": {
+        "slotIndex": 0,
+        "expeditionTypeId": "scout",
+        "durationId": "medium",
+        "cityId": "city_pinewind_hamlet",
+        "rewards": {
+          "currencies": {
+            "spiritStones": "5"
+          },
+          "items": []
+        }
+      },
+      "schemaVersion": 1,
+      "eventId": "bal_18",
+      "emittedAt": 1780012384653,
+      "lifeId": "1780012384650:0",
+      "lifeOrdinal": 1,
+      "sessionKind": "first_life",
+      "prestigeCount": 0,
+      "realmIndex": 0,
+      "realmId": "qi_condensation",
+      "substage": 1,
+      "cityId": null,
+      "cityIndex": null,
+      "elapsedMsSinceLifeStart": 3
+    },
+    {
+      "family": "support",
+      "name": "expedition_started",
+      "kind": "support/expedition_started",
+      "payload": {
+        "timestamp": 1180000,
+        "slotIndex": 0,
+        "expeditionTypeId": "scout",
+        "durationId": "medium",
+        "durationSeconds": 1800,
+        "cityId": "city_pinewind_hamlet"
+      },
+      "schemaVersion": 1,
+      "eventId": "bal_17",
+      "emittedAt": 1780012384653,
+      "lifeId": "1780012384650:0",
+      "lifeOrdinal": 1,
+      "sessionKind": "first_life",
+      "prestigeCount": 0,
+      "realmIndex": 0,
+      "realmId": "qi_condensation",
+      "substage": 1,
+      "cityId": null,
+      "cityIndex": null,
+      "elapsedMsSinceLifeStart": 3
+    },
+    {
+      "family": "support",
+      "name": "bounty_claimed",
+      "kind": "support/bounty_claimed",
+      "payload": {
+        "cityId": "city_pinewind_hamlet",
+        "templateId": "bounty_1",
+        "difficulty": "easy",
+        "kind": "OUTSKIRTS_KILL",
+        "rewards": {
+          "currencies": {
+            "merit": "10"
+          },
+          "items": []
+        },
+        "claimedAt": 1170000,
+        "ageSec": 1
+      },
+      "schemaVersion": 1,
+      "eventId": "bal_16",
+      "emittedAt": 1780012384653,
+      "lifeId": "1780012384650:0",
+      "lifeOrdinal": 1,
+      "sessionKind": "first_life",
+      "prestigeCount": 0,
+      "realmIndex": 0,
+      "realmId": "qi_condensation",
+      "substage": 1,
+      "cityId": null,
+      "cityIndex": null,
+      "elapsedMsSinceLifeStart": 3
+    },
+    {
+      "family": "economy",
+      "name": "currency_spent",
+      "kind": "economy/currency_spent",
+      "payload": {
+        "reason": "prestige_purchase:ap_idle_qi_mult",
+        "sinkKind": "prestige_purchase",
+        "currencies": {
+          "merit": "8"
+        },
+        "module": "prestige_purchase"
+      },
+      "schemaVersion": 1,
+      "eventId": "bal_15",
+      "emittedAt": 1780012384653,
+      "lifeId": "1780012384650:0",
+      "lifeOrdinal": 1,
+      "sessionKind": "first_life",
+      "prestigeCount": 0,
+      "realmIndex": 0,
+      "realmId": "qi_condensation",
+      "substage": 1,
+      "cityId": null,
+      "cityIndex": null,
+      "elapsedMsSinceLifeStart": 3
+    },
+    {
+      "family": "economy",
+      "name": "currency_spent",
+      "kind": "economy/currency_spent",
+      "payload": {
+        "reason": "alchemy_queue:test_recipe",
+        "sinkKind": "alchemy_queue",
+        "currencies": {
+          "gold": "30"
+        },
+        "module": "alchemy_queue"
+      },
+      "schemaVersion": 1,
+      "eventId": "bal_14",
+      "emittedAt": 1780012384652,
+      "lifeId": "1780012384650:0",
+      "lifeOrdinal": 1,
+      "sessionKind": "first_life",
+      "prestigeCount": 0,
+      "realmIndex": 0,
+      "realmId": "qi_condensation",
+      "substage": 1,
+      "cityId": null,
+      "cityIndex": null,
+      "elapsedMsSinceLifeStart": 2
+    },
+    {
+      "family": "economy",
+      "name": "currency_spent",
+      "kind": "economy/currency_spent",
+      "payload": {
+        "reason": "gate_fail_safe:trial_g2",
+        "sinkKind": "gate_fail_safe_purchase",
+        "currencies": {
+          "gold": "100"
+        },
+        "module": "gate_fail_safe"
+      },
+      "schemaVersion": 1,
+      "eventId": "bal_13",
+      "emittedAt": 1780012384652,
+      "lifeId": "1780012384650:0",
+      "lifeOrdinal": 1,
+      "sessionKind": "first_life",
+      "prestigeCount": 0,
+      "realmIndex": 0,
+      "realmId": "qi_condensation",
+      "substage": 1,
+      "cityId": null,
+      "cityIndex": null,
+      "elapsedMsSinceLifeStart": 2
+    },
+    {
+      "family": "economy",
+      "name": "currency_earned",
+      "kind": "economy/currency_earned",
+      "payload": {
+        "reason": "Gate Trial eligible defeat:trial_g1",
+        "sourceKind": "eligible_defeat_merit",
+        "currencies": {
+          "merit": "5"
+        },
+        "module": "Gate Trial eligible defeat"
+      },
+      "schemaVersion": 1,
+      "eventId": "bal_12",
+      "emittedAt": 1780012384652,
+      "lifeId": "1780012384650:0",
+      "lifeOrdinal": 1,
+      "sessionKind": "first_life",
+      "prestigeCount": 0,
+      "realmIndex": 0,
+      "realmId": "qi_condensation",
+      "substage": 1,
+      "cityId": null,
+      "cityIndex": null,
+      "elapsedMsSinceLifeStart": 2
+    },
+    {
+      "family": "economy",
+      "name": "currency_earned",
+      "kind": "economy/currency_earned",
+      "payload": {
+        "reason": "Bounty:resolved",
+        "sourceKind": "bounty",
+        "currencies": {
+          "merit": "10"
+        },
+        "module": "Bounty"
+      },
+      "schemaVersion": 1,
+      "eventId": "bal_11",
+      "emittedAt": 1780012384652,
+      "lifeId": "1780012384650:0",
+      "lifeOrdinal": 1,
+      "sessionKind": "first_life",
+      "prestigeCount": 0,
+      "realmIndex": 0,
+      "realmId": "qi_condensation",
+      "substage": 1,
+      "cityId": null,
+      "cityIndex": null,
+      "elapsedMsSinceLifeStart": 2
+    },
+    {
+      "family": "economy",
+      "name": "currency_earned",
+      "kind": "economy/currency_earned",
+      "payload": {
+        "reason": "expedition_claim:scout:medium:city=city_pinewind_hamlet",
+        "sourceKind": "expedition",
+        "currencies": {
+          "spiritStones": "5"
+        },
+        "module": "expedition_claim"
+      },
+      "schemaVersion": 1,
+      "eventId": "bal_10",
+      "emittedAt": 1780012384652,
+      "lifeId": "1780012384650:0",
+      "lifeOrdinal": 1,
+      "sessionKind": "first_life",
+      "prestigeCount": 0,
+      "realmIndex": 0,
+      "realmId": "qi_condensation",
+      "substage": 1,
+      "cityId": null,
+      "cityIndex": null,
+      "elapsedMsSinceLifeStart": 2
+    },
+    {
+      "family": "economy",
+      "name": "currency_earned",
+      "kind": "economy/currency_earned",
+      "payload": {
+        "reason": "Gate Trial clear",
+        "sourceKind": "trial_clear",
+        "currencies": {
+          "merit": "40"
+        },
+        "module": "Gate Trial clear"
+      },
+      "schemaVersion": 1,
+      "eventId": "bal_9",
+      "emittedAt": 1780012384652,
+      "lifeId": "1780012384650:0",
+      "lifeOrdinal": 1,
+      "sessionKind": "first_life",
+      "prestigeCount": 0,
+      "realmIndex": 0,
+      "realmId": "qi_condensation",
+      "substage": 1,
+      "cityId": null,
+      "cityIndex": null,
+      "elapsedMsSinceLifeStart": 2
+    },
+    {
+      "family": "trials",
+      "name": "gate_resolved",
+      "kind": "trials/gate_resolved",
+      "payload": {
+        "trialId": "trial_g1",
+        "gateIndex": 1,
+        "resolution": "cleared"
+      },
+      "schemaVersion": 1,
+      "eventId": "bal_8",
+      "emittedAt": 1780012384652,
+      "lifeId": "1780012384650:0",
+      "lifeOrdinal": 1,
+      "sessionKind": "first_life",
+      "prestigeCount": 0,
+      "realmIndex": 0,
+      "realmId": "qi_condensation",
+      "substage": 1,
+      "cityId": null,
+      "cityIndex": null,
+      "elapsedMsSinceLifeStart": 2
+    },
+    {
+      "family": "trials",
+      "name": "attempt_resolved",
+      "kind": "trials/attempt_resolved",
+      "payload": {
+        "timestamp": 1161000,
+        "trialId": "trial_g1",
+        "gateIndex": 1,
+        "attemptId": "a2",
+        "outcome": "cleared",
+        "durationSec": 18,
+        "countsTowardFailSafe": true,
+        "eligibleFailCountAfterAttempt": 1
+      },
+      "schemaVersion": 1,
+      "eventId": "bal_7",
+      "emittedAt": 1780012384652,
+      "lifeId": "1780012384650:0",
+      "lifeOrdinal": 1,
+      "sessionKind": "first_life",
+      "prestigeCount": 0,
+      "realmIndex": 0,
+      "realmId": "qi_condensation",
+      "substage": 1,
+      "cityId": null,
+      "cityIndex": null,
+      "elapsedMsSinceLifeStart": 2
+    },
+    {
+      "family": "trials",
+      "name": "attempt_resolved",
+      "kind": "trials/attempt_resolved",
+      "payload": {
+        "timestamp": 1131000,
+        "trialId": "trial_g1",
+        "gateIndex": 1,
+        "attemptId": "a1",
+        "outcome": "defeated",
+        "durationSec": 20,
+        "bossHpPctRemaining": 0.4,
+        "countsTowardFailSafe": true,
+        "eligibleFailCountAfterAttempt": 1
+      },
+      "schemaVersion": 1,
+      "eventId": "bal_6",
+      "emittedAt": 1780012384652,
+      "lifeId": "1780012384650:0",
+      "lifeOrdinal": 1,
+      "sessionKind": "first_life",
+      "prestigeCount": 0,
+      "realmIndex": 0,
+      "realmId": "qi_condensation",
+      "substage": 1,
+      "cityId": null,
+      "cityIndex": null,
+      "elapsedMsSinceLifeStart": 2
+    },
+    {
+      "family": "trials",
+      "name": "attempt_started",
+      "kind": "trials/attempt_started",
+      "payload": {
+        "timestamp": 1130000,
+        "trialId": "trial_g1",
+        "gateIndex": 1,
+        "attemptId": "a1",
+        "attemptNumberThisLife": 1,
+        "countsTowardFailSafe": true,
+        "lifecycleState": "available"
+      },
+      "schemaVersion": 1,
+      "eventId": "bal_5",
+      "emittedAt": 1780012384651,
+      "lifeId": "1780012384650:0",
+      "lifeOrdinal": 1,
+      "sessionKind": "first_life",
+      "prestigeCount": 0,
+      "realmIndex": 0,
+      "realmId": "qi_condensation",
+      "substage": 1,
+      "cityId": null,
+      "cityIndex": null,
+      "elapsedMsSinceLifeStart": 1
+    },
+    {
+      "family": "progression",
+      "name": "city_entered",
+      "kind": "progression/city_entered",
+      "payload": {
+        "cityId": "city_stonecrag_town",
+        "unlockedBecauseRealmId": "foundation_establishment"
+      },
+      "schemaVersion": 1,
+      "eventId": "bal_4",
+      "emittedAt": 1145000,
+      "lifeId": "1780012384650:0",
+      "lifeOrdinal": 1,
+      "sessionKind": "first_life",
+      "prestigeCount": 0,
+      "realmIndex": 0,
+      "realmId": "qi_condensation",
+      "substage": 1,
+      "cityId": null,
+      "cityIndex": null,
+      "elapsedMsSinceLifeStart": 145000
+    },
+    {
+      "family": "progression",
+      "name": "breakthrough",
+      "kind": "progression/breakthrough",
+      "payload": {
+        "fromRealmIndex": 0,
+        "toRealmIndex": 1,
+        "fromRealmId": "qi_condensation",
+        "toRealmId": "foundation_establishment",
+        "major": true
+      },
+      "schemaVersion": 1,
+      "eventId": "bal_3",
+      "emittedAt": 1140000,
+      "lifeId": "1780012384650:0",
+      "lifeOrdinal": 1,
+      "sessionKind": "first_life",
+      "prestigeCount": 0,
+      "realmIndex": 0,
+      "realmId": "qi_condensation",
+      "substage": 1,
+      "cityId": null,
+      "cityIndex": null,
+      "elapsedMsSinceLifeStart": 140000
+    },
+    {
+      "family": "progression",
+      "name": "gate_available",
+      "kind": "progression/gate_available",
+      "payload": {
+        "trialId": "trial_g1",
+        "gateIndex": 1,
+        "fromRealmId": "qi_condensation",
+        "toRealmId": "foundation_establishment"
+      },
+      "schemaVersion": 1,
+      "eventId": "bal_2",
+      "emittedAt": 1120000,
+      "lifeId": "1780012384650:0",
+      "lifeOrdinal": 1,
+      "sessionKind": "first_life",
+      "prestigeCount": 0,
+      "realmIndex": 0,
+      "realmId": "qi_condensation",
+      "substage": 1,
+      "cityId": null,
+      "cityIndex": null,
+      "elapsedMsSinceLifeStart": 120000
+    },
+    {
+      "family": "progression",
+      "name": "life_started",
+      "kind": "progression/life_started",
+      "payload": {
+        "trigger": "fresh_start",
+        "runStartTime": 1000000
+      },
+      "schemaVersion": 1,
+      "eventId": "bal_1",
+      "emittedAt": 1000000,
+      "lifeId": "1780012384650:0",
+      "lifeOrdinal": 1,
+      "sessionKind": "first_life",
+      "prestigeCount": 0,
+      "realmIndex": 0,
+      "realmId": "qi_condensation",
+      "substage": 1,
+      "cityId": null,
+      "cityIndex": null,
+      "elapsedMsSinceLifeStart": 0
+    }
+  ],
+  "summary": {
+    "global": {
+      "eventCount": 23,
+      "lifeCount": 2,
+      "reclaimLifeCount": 0,
+      "prestigeCount": 1,
+      "offlineAppliedCount": 1
+    },
+    "lives": [
+      {
+        "lifeId": "1780012384650:0",
+        "lifeOrdinal": 1,
+        "sessionKind": "first_life",
+        "startedAt": 1000000,
+        "gatesAvailableAtByGate": {
+          "1": 1120000
+        },
+        "majorRealmEntriesByRealm": {
+          "foundation_establishment": 1140000
+        },
+        "cityEnteredAtByCity": {
+          "city_stonecrag_town": 1145000
+        },
+        "contentCapAt": null,
+        "prestigeApGained": 28,
+        "reclaimMilestones": {}
+      },
+      {
+        "lifeId": "manual",
+        "lifeOrdinal": 1,
+        "sessionKind": "first_life",
+        "startedAt": null,
+        "gatesAvailableAtByGate": {},
+        "majorRealmEntriesByRealm": {},
+        "cityEnteredAtByCity": {},
+        "contentCapAt": null,
+        "prestigeApGained": 0,
+        "reclaimMilestones": {
+          "gate_1_available": 120000
+        }
+      }
+    ],
+    "gates": [
+      {
+        "gateIndex": 1,
+        "attempts": 2,
+        "clears": 1,
+        "defeats": 1,
+        "bypasses": 0,
+        "attemptsByReadinessBand": {
+          "unknown": 2
+        },
+        "winRateByReadinessBand": {
+          "unknown": 0.5
+        },
+        "medianClearDurationSec": 18,
+        "medianDefeatDurationSec": 20,
+        "avgBossHpPctRemainingOnDefeat": 0.4
+      }
+    ],
+    "economy": {
+      "spentBySink": {
+        "apothecary_shop": {
+          "gold": 0,
+          "merit": 0,
+          "spiritStones": 0
+        },
+        "apothecary_bundle": {
+          "gold": 0,
+          "merit": 0,
+          "spiritStones": 0
+        },
+        "alchemy_queue": {
+          "gold": 30,
+          "merit": 0,
+          "spiritStones": 0
+        },
+        "talisman_queue": {
+          "gold": 0,
+          "merit": 0,
+          "spiritStones": 0
+        },
+        "forge_service": {
+          "gold": 0,
+          "merit": 0,
+          "spiritStones": 0
+        },
+        "craft_session": {
+          "gold": 0,
+          "merit": 0,
+          "spiritStones": 0
+        },
+        "gate_fail_safe_purchase": {
+          "gold": 100,
+          "merit": 0,
+          "spiritStones": 0
+        },
+        "prestige_purchase": {
+          "gold": 0,
+          "merit": 8,
+          "spiritStones": 0
+        },
+        "heart_law_change": {
+          "gold": 0,
+          "merit": 0,
+          "spiritStones": 0
+        },
+        "breakthrough_gate_item": {
+          "gold": 0,
+          "merit": 0,
+          "spiritStones": 0
+        },
+        "other": {
+          "gold": 0,
+          "merit": 0,
+          "spiritStones": 0
+        }
+      },
+      "earnedBySource": {
+        "outskirts": {
+          "gold": 0,
+          "merit": 0,
+          "spiritStones": 0
+        },
+        "ruins_room": {
+          "gold": 0,
+          "merit": 0,
+          "spiritStones": 0
+        },
+        "ruins_chest": {
+          "gold": 0,
+          "merit": 0,
+          "spiritStones": 0
+        },
+        "ruins_rare": {
+          "gold": 0,
+          "merit": 0,
+          "spiritStones": 0
+        },
+        "bounty": {
+          "gold": 0,
+          "merit": 10,
+          "spiritStones": 0
+        },
+        "expedition": {
+          "gold": 0,
+          "merit": 0,
+          "spiritStones": 5
+        },
+        "trial_clear": {
+          "gold": 0,
+          "merit": 40,
+          "spiritStones": 0
+        },
+        "eligible_defeat_merit": {
+          "gold": 0,
+          "merit": 5,
+          "spiritStones": 0
+        },
+        "manual_pavilion": {
+          "gold": 0,
+          "merit": 0,
+          "spiritStones": 0
+        },
+        "craft_completion": {
+          "gold": 0,
+          "merit": 0,
+          "spiritStones": 0
+        },
+        "debug": {
+          "gold": 0,
+          "merit": 0,
+          "spiritStones": 0
+        },
+        "other": {
+          "gold": 0,
+          "merit": 0,
+          "spiritStones": 0
+        }
+      }
+    },
+    "support": {
+      "bountyClaimsByCityDifficultyKind": {
+        "city_pinewind_hamlet|easy|OUTSKIRTS_KILL": 1
+      },
+      "expeditionStartsByCityTypeDuration": {
+        "city_pinewind_hamlet|scout|medium": 1
+      },
+      "expeditionClaimsByCityTypeDuration": {
+        "city_pinewind_hamlet|scout|medium": 1
+      },
+      "expeditionCadenceSecMedian": 0
+    },
+    "prestige": {
+      "apGainedTotal": 28,
+      "apSpentOnUpgradesTotal": 0,
+      "reclaimMilestones": {
+        "gate_1_available": [
+          120000
+        ]
+      }
+    },
+    "offline": {
+      "totalOfflineSeconds": 7200,
+      "totalCappedOfflineSeconds": 0,
+      "averageEffectiveEfficiency": 0.75,
+      "totalQiGained": 200,
+      "queuedActionsReadyTotal": 2,
+      "expeditionsReadyTotal": 1
+    }
+  }
+}

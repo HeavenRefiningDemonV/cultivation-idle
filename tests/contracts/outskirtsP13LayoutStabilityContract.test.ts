@@ -98,7 +98,8 @@ void test('P13 bottom-zone stability keeps CTA and summary dock footprints in en
     assert.match(html, /data-testid=\"outskirts-exact-cta-slot\"/);
     assert.match(html, /data-testid=\"outskirts-start-hunt-cta\"/);
     assert.match(html, /data-testid=\"outskirts-exact-summary-dock\"/);
-    assert.match(html, /data-testid=\"outskirts-grind-summary\"/);
+    assert.match(html, /data-testid=\"outskirts-(?:grind|live)-summary\"/);
+    assert.match(html, /data-legacy-testid=\"outskirts-grind-summary\"/);
     assert.match(html, /data-testid=\"outskirts-grind-summary-chip\"/);
   }
 

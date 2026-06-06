@@ -26,6 +26,15 @@ import {
   buildPostResetReclaimObjectiveSurface,
   type PostResetReclaimObjectiveSurface,
 } from '../features/prestige/postResetReclaimObjectiveSurface.js';
+import { CANONICAL_SPIRIT_ROOT_ELEMENTS } from '../systems/spiritRoots/index.js';
+import {
+  clampSpiritRootWithRootClarity,
+  createDefaultPrestigeMemoryLedger,
+  resolvePrestigeMemoryEffects,
+  sanitizePrestigeMemoryLedger,
+  type PrestigeMemoryEffects,
+  type PrestigeMemoryLedger,
+} from '../systems/prestige/prestigeMemory.js';
 
 /**
  * Lazy getter for game store to avoid circular dependency
@@ -133,6 +142,7 @@ interface PrestigeState {
   spiritRoot: SpiritRoot | null;
   lastLifeSummary: PrestigeLifeSummarySnapshot | null;
   postResetReclaimObjective: PostResetReclaimObjectiveSurface | null;
+  memoryLedger: PrestigeMemoryLedger;
 
   // Methods
   calculateAPGain: () => number;
@@ -153,6 +163,8 @@ interface PrestigeState {
   getOfflineEfficiencyBonusAdditive: () => number;
   initializeUpgrades: () => void;
   getUpgradeEffectByStat: (stat: string) => number;
+  getPrestigeMemoryEffects: () => PrestigeMemoryEffects;
+  setPrestigeMemoryLedger: (ledger: PrestigeMemoryLedger) => void;
 
   // Spirit root methods
   generateSpiritRoot: (resetRerollCount?: boolean) => void;
@@ -173,7 +185,7 @@ const QUALITY_NAMES = ['', 'Mortal', 'Common', 'Uncommon', 'Rare', 'Legendary'];
 /**
  * Available elements
  */
-const ELEMENTS: SpiritRootElement[] = ['fire', 'water', 'earth', 'metal', 'wood'];
+const ELEMENTS: SpiritRootElement[] = [...CANONICAL_SPIRIT_ROOT_ELEMENTS];
 
 export function getSpiritRootQualityMultiplierForGrade(grade: SpiritRootGrade): number {
   return 1.0 + (grade - 1) * 0.4;
@@ -204,6 +216,7 @@ const createInitialPrestigeState = () => ({
   spiritRoot: null as SpiritRoot | null,
   lastLifeSummary: null as PrestigeLifeSummarySnapshot | null,
   postResetReclaimObjective: null as PostResetReclaimObjectiveSurface | null,
+  memoryLedger: createDefaultPrestigeMemoryLedger(),
 });
 
 function getUpgradesFromContent(): PrestigeUpgradeDef[] {
@@ -326,6 +339,18 @@ export const usePrestigeStore = create<PrestigeState>()(
       const trackedRealm = Math.max(state.highestRealmReached, gameStore.realm?.index || 0);
       const apGained = Math.max(0, state.calculateAPGain());
       const runTime = (Date.now() - state.runStartTime) / 1000;
+
+      GameEvents.emit({
+        type: 'prestige/started',
+        payload: {
+          timestamp: Date.now(),
+          realm: trackedRealm,
+          ap: state.totalAP,
+          trainedStats: {},
+          heartLawLevel: 0,
+          retainedMemory: state.memoryLedger.lastAppliedRows.length,
+        },
+      });
 
       const newRun: PrestigeRun = {
         runNumber: state.prestigeCount + 1,
@@ -483,6 +508,14 @@ export const usePrestigeStore = create<PrestigeState>()(
       return total;
     },
 
+    getPrestigeMemoryEffects: () => resolvePrestigeMemoryEffects(get().purchasesById),
+
+    setPrestigeMemoryLedger: (ledger) => {
+      set((state) => {
+        state.memoryLedger = sanitizePrestigeMemoryLedger(ledger);
+      });
+    },
+
     getQiMultiplier: () => {
       const idleBonus = get().getUpgradeEffectByStat('idleQiMult');
       return 1 + idleBonus;
@@ -532,14 +565,16 @@ export const usePrestigeStore = create<PrestigeState>()(
         30 + Math.random() * 35 + Math.random() * 35
       );
 
+      const nextRoot = clampSpiritRootWithRootClarity({ grade, element, purity }, get().purchasesById);
+
       set((state) => {
-        state.spiritRoot = { grade, element, purity };
+        state.spiritRoot = nextRoot;
         if (resetRerollCount) {
           state.rerollCount = 0;
         }
       });
 
-      console.log(`[SpiritRoot] Generated: ${QUALITY_NAMES[grade]} ${element} (${purity}% purity)`);
+      console.log(`[SpiritRoot] Generated: ${QUALITY_NAMES[nextRoot.grade]} ${element} (${purity}% purity)`);
 
       // Recalculate player stats with new spirit root
       if (_getGameStore) {

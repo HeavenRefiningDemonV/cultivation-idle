@@ -1,0 +1,91 @@
+{
+  "packet": "MP6 Dao Heart Sanctuary",
+  "generatedAt": "2026-06-05",
+  "packetLocalVerdict": "GO_WITH_BROAD_RELEASE_BLOCKERS",
+  "fullReleaseGateVerdict": "NO_GO",
+  "mp6OwnedBlockers": [],
+  "broadReleaseBlockers": [
+    {
+      "id": "fresh_run_manual_pending",
+      "area": "fresh_run_acceptance",
+      "filePaths": [
+        "docs/release/qa/fresh_save_routes.md"
+      ],
+      "summary": "Required manual fresh-run coverage is incomplete for normal, cautious, and aggressive routes.",
+      "nextPacket": "release QA/manual fresh-run coverage packet"
+    },
+    {
+      "id": "world_modal_stale_alchemy_contract",
+      "area": "full_test_suite",
+      "filePaths": [
+        "tests/integration/worldBuildingModalRouteIntent.test.ts:21",
+        "src/components/modals/WorldBuildingModal.tsx"
+      ],
+      "summary": "The test expects alchemy to render the legacy ApothecaryPanel initialSurface brew path, while runtime now routes alchemy to ApothecaryExactScreenOwner with focus brew.",
+      "nextPacket": "release-gate contract cleanup / world-modal exact-screen ownership classification"
+    },
+    {
+      "id": "migration_runner_step_drift",
+      "area": "full_test_suite",
+      "filePaths": [
+        "tests/migrations/migrationRunner.test.ts:35",
+        "tests/migrations/migrationRunner.test.ts:90",
+        "src/save/migrations/steps/v2_1_0/",
+        "src/save/migrations/steps/v2_2_0/",
+        "src/save/migrations/steps/index.ts"
+      ],
+      "summary": "The migration runner contract expects only v2.0.0 transform steps and a current-save no-op, but the current migration registry includes v2.1.0 onboarding/training and v2.2.0 prestige memory backfills.",
+      "nextPacket": "release-gate migration contract repair/classification packet"
+    },
+    {
+      "id": "release_gate_untracked_waiver_candidates",
+      "area": "release_gate",
+      "filePaths": [
+        "docs/release/build_warning_inventory.md",
+        "docs/release/known_issues.md",
+        "docs/release/go_no_go_checklist.md"
+      ],
+      "summary": "Release gate reports untracked waiver candidates for build chunk-size and progression-contract diagnostics.",
+      "nextPacket": "release-gate waiver ownership/classification packet"
+    }
+  ],
+  "packetEvidence": [
+    {
+      "command": "npm run typecheck",
+      "result": "PASS"
+    },
+    {
+      "command": "npm run check:icons",
+      "result": "PASS"
+    },
+    {
+      "command": "npm run validate:content",
+      "result": "PASS"
+    },
+    {
+      "command": "npm exec tsc -- --project tsconfig.tests.json",
+      "result": "PASS"
+    },
+    {
+      "command": "npm run test:contracts",
+      "result": "PASS"
+    },
+    {
+      "command": "npm run test:balance-regression",
+      "result": "PASS"
+    },
+    {
+      "command": "npm run build",
+      "result": "PASS"
+    },
+    {
+      "command": "npx playwright test tests/e2e/dao-heart-sanctuary.spec.ts --project=chromium",
+      "result": "PASS"
+    },
+    {
+      "command": "npm run release:gate:json",
+      "result": "NO_GO",
+      "reason": "Broad release blockers remain outside MP6 Dao Heart Sanctuary."
+    }
+  ]
+}

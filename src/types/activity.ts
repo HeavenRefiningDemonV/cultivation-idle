@@ -1,4 +1,11 @@
-export type ForegroundActivityType = 'meditate' | 'outskirts' | 'trial' | 'ruins' | 'forge';
+export type ForegroundActivityType =
+  | 'meditate'
+  | 'path_training'
+  | 'dao_heart_practice'
+  | 'outskirts'
+  | 'trial'
+  | 'ruins'
+  | 'forge';
 
 export type ForegroundActivityPayload = {
   cityId?: string;

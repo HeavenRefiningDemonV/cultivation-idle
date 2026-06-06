@@ -1,0 +1,44 @@
+﻿[
+    {
+        "name":  "release-implementation-baseline-json",
+        "command":  "npm run release:implementation-baseline:json",
+        "exitCode":  0,
+        "log":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp6\\preflight\\ui-polish\\logs\\release-implementation-baseline-json.log",
+        "durationSeconds":  2.26
+    },
+    {
+        "name":  "release-runtime-content-manifest-json",
+        "command":  "npm run release:runtime-content-manifest:json",
+        "exitCode":  0,
+        "log":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp6\\preflight\\ui-polish\\logs\\release-runtime-content-manifest-json.log",
+        "durationSeconds":  1.36
+    },
+    {
+        "name":  "typecheck",
+        "command":  "npm run typecheck",
+        "exitCode":  0,
+        "log":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp6\\preflight\\ui-polish\\logs\\typecheck.log",
+        "durationSeconds":  0.97
+    },
+    {
+        "name":  "check-icons",
+        "command":  "npm run check:icons",
+        "exitCode":  0,
+        "log":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp6\\preflight\\ui-polish\\logs\\check-icons.log",
+        "durationSeconds":  1.01
+    },
+    {
+        "name":  "validate-content",
+        "command":  "npm run validate:content",
+        "exitCode":  0,
+        "log":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp6\\preflight\\ui-polish\\logs\\validate-content.log",
+        "durationSeconds":  2.48
+    },
+    {
+        "name":  "tests-tsconfig-compile",
+        "command":  "npm exec tsc -- --project tsconfig.tests.json",
+        "exitCode":  0,
+        "log":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp6\\preflight\\ui-polish\\logs\\tests-tsconfig-compile.log",
+        "durationSeconds":  21.82
+    }
+]

@@ -3,7 +3,7 @@ import { useShallow } from 'zustand/shallow';
 import { useInventoryStore } from '../../stores/inventoryStore.js';
 import { getItemDef, useContentStore } from '../../stores/contentStore.js';
 import { useBuffStore } from '../../stores/buffStore.js';
-import { useUIStore } from '../../stores/uiStore.js';
+import { useUIStore, type WorldBuildingKey } from '../../stores/uiStore.js';
 import { useManualSatchelStore } from '../../stores/manualSatchelStore.js';
 import { useCityStore } from '../../stores/cityStore.js';
 import EquipmentDrawer from '../inventory/EquipmentDrawer.js';
@@ -87,6 +87,8 @@ export default function InventoryScreen() {
   const activateTalisman = useBuffStore((state) => state.activateTalisman);
   const openManualSatchel = useUIStore((state) => state.openManualSatchel);
   const addNotification = useUIStore((state) => state.addNotification);
+  const setActiveTab = useUIStore((state) => state.setActiveTab);
+  const openWorldBuildingModal = useUIStore((state) => state.openWorldBuildingModal);
   const satchelCount = useManualSatchelStore((state) => state.manuals.length + (state.activeStudy ? 1 : 0));
   const [activePocketId, setActivePocketId] = useState(DEFAULT_FILTERS.activePocketId);
   const [searchQuery, setSearchQuery] = useState(DEFAULT_FILTERS.searchQuery);
@@ -528,6 +530,13 @@ export default function InventoryScreen() {
     return { id: stack.itemId, type: stack.type ?? null, name: stack.name };
   }, [displayStacks, selectedStackId]);
 
+  const showFirstRunEmptyState = displayStacks.length === 0 && !isFilterActive;
+
+  const openInventorySource = (buildingKey: WorldBuildingKey) => {
+    setActiveTab('world');
+    openWorldBuildingModal({ cityId: currentCityId, buildingKey });
+  };
+
   return (
     <div
       className={`inventoryScreenRoot${isFull ? ' is-full' : ''}${isNearFull ? ' is-nearfull' : ''}${
@@ -709,6 +718,31 @@ export default function InventoryScreen() {
           </div>
           <div className="inventoryRingFrame">
             <div className="inventoryRingInner">
+              {showFirstRunEmptyState ? (
+                <section className="inventoryFirstRunEmptyState" aria-labelledby="inventory-first-run-empty-title">
+                  <span className="inventoryFirstRunEmptyState__seal" aria-hidden="true">
+                    <GameIcon icon="placeholderRingLarge" size={28} decorative />
+                  </span>
+                  <div>
+                    <h2 id="inventory-first-run-empty-title">Your satchel is still empty.</h2>
+                    <p>
+                      Items appear here after hunts, ruins, purchases, and crafting. Gate preparation will use pills,
+                      materials, catalysts, and equipment from these sources.
+                    </p>
+                  </div>
+                  <div className="inventoryFirstRunEmptyState__routes" aria-label="First inventory sources">
+                    <button type="button" className="inventoryFirstRunEmptyState__route" onClick={() => openInventorySource('outskirts')}>
+                      Go to Outskirts
+                    </button>
+                    <button type="button" className="inventoryFirstRunEmptyState__route" onClick={() => openInventorySource('apothecary')}>
+                      Open Apothecary
+                    </button>
+                    <button type="button" className="inventoryFirstRunEmptyState__route" onClick={() => openInventorySource('forge')}>
+                      Check Forge
+                    </button>
+                  </div>
+                </section>
+              ) : null}
               <div className="inventoryRingScroll" role="region" aria-label="Void Ring inventory slots">
                 <div className="inventorySlotGrid" role="grid">
                   {visibleSlots.map((slot) =>

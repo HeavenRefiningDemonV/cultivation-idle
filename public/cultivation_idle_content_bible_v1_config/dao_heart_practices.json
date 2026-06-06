@@ -1,0 +1,78 @@
+{
+  "version": "training-dao-heart-mp0-v1",
+  "practices": [
+    {
+      "id": "silent_sitting",
+      "displayName": "Silent Sitting",
+      "description": "Calm the inner palace and settle doctrine before forcing the next gate.",
+      "heartLawXpMultiplier": 0.75,
+      "clarityMultiplier": 1.35,
+      "verseMultiplier": 0.35,
+      "rootResonanceMultiplier": 0.1,
+      "turbulencePerMinute": -0.12,
+      "offlineAllowed": true,
+      "futureUse": "Long clarity training / pre-breakthrough safety."
+    },
+    {
+      "id": "verse_recitation",
+      "displayName": "Verse Recitation",
+      "description": "Repeat a known verse until the Heart Law rhythm settles into the breath.",
+      "heartLawXpMultiplier": 1,
+      "clarityMultiplier": 0.85,
+      "verseMultiplier": 1.15,
+      "rootResonanceMultiplier": 0.2,
+      "turbulencePerMinute": 0.02,
+      "offlineAllowed": true,
+      "futureUse": "Default Heart Law leveling."
+    },
+    {
+      "id": "scripture_copying",
+      "displayName": "Scripture Copying",
+      "description": "Copy doctrine by hand to bind verse mastery and spirit-root resonance.",
+      "heartLawXpMultiplier": 0.82,
+      "clarityMultiplier": 0.7,
+      "verseMultiplier": 1.25,
+      "rootResonanceMultiplier": 1.2,
+      "turbulencePerMinute": 0.03,
+      "offlineAllowed": true,
+      "futureUse": "Root resonance / seal prep / mismatch conversion."
+    },
+    {
+      "id": "breath_harmonization",
+      "displayName": "Breath Harmonization",
+      "description": "Harmonize breath with doctrine to reduce turbulence before a difficult step.",
+      "heartLawXpMultiplier": 0.78,
+      "clarityMultiplier": 0.95,
+      "verseMultiplier": 0.55,
+      "rootResonanceMultiplier": 0.6,
+      "turbulencePerMinute": -0.1,
+      "offlineAllowed": true,
+      "futureUse": "Pre-breakthrough stabilizer / Qi Purity trickle later."
+    },
+    {
+      "id": "inner_demon_debate",
+      "displayName": "Inner Demon Debate",
+      "description": "Confront an inner doubt directly, accepting turbulence for a stronger push.",
+      "heartLawXpMultiplier": 1.45,
+      "clarityMultiplier": 1.25,
+      "verseMultiplier": 0.7,
+      "rootResonanceMultiplier": 0.3,
+      "turbulencePerMinute": 0.42,
+      "offlineAllowed": false,
+      "unlockRule": "Blocked if Heart Law lags 3+ stages.",
+      "futureUse": "Short active push."
+    },
+    {
+      "id": "doctrine_trial",
+      "displayName": "Doctrine Trial",
+      "description": "Face a chapter or seal gate without spending items or currency.",
+      "heartLawXpMultiplier": "milestone",
+      "clarityMultiplier": "milestone",
+      "verseMultiplier": "milestone",
+      "rootResonanceMultiplier": "milestone",
+      "turbulencePerMinute": "variable",
+      "offlineAllowed": false,
+      "futureUse": "Chapter / seal gate; no resource cost."
+    }
+  ]
+}

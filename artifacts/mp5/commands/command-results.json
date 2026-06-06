@@ -1,0 +1,142 @@
+{
+  "generatedAt": "2026-05-29T17:28:20.891Z",
+  "wrapperNote": "final2 logs are authoritative; final logs without final2 captured an invalid bare-npm wrapper attempt",
+  "results": [
+    {
+      "command": "npm run typecheck",
+      "status": "pass",
+      "exitCode": 0,
+      "durationSeconds": 0.332,
+      "artifact": "artifacts/mp5/commands/logs/typecheck.final2.log",
+      "notes": ""
+    },
+    {
+      "command": "npm run check:icons",
+      "status": "pass",
+      "exitCode": 0,
+      "durationSeconds": 0.337,
+      "artifact": "artifacts/mp5/commands/logs/check-icons.final2.log",
+      "notes": ""
+    },
+    {
+      "command": "npm run validate:content",
+      "status": "pass",
+      "exitCode": 0,
+      "durationSeconds": 1.028,
+      "artifact": "artifacts/mp5/commands/logs/validate-content.final2.log",
+      "notes": ""
+    },
+    {
+      "command": "npm run build",
+      "status": "pass",
+      "exitCode": 0,
+      "durationSeconds": 7.208,
+      "artifact": "artifacts/mp5/commands/logs/build.final2.log",
+      "notes": ""
+    },
+    {
+      "command": "npm audit --audit-level=moderate --json",
+      "status": "pass",
+      "exitCode": 0,
+      "durationSeconds": 0.999,
+      "artifact": "artifacts/mp5/commands/logs/npm-audit-moderate.final2.log",
+      "notes": ""
+    },
+    {
+      "command": "npm run balance:report:json",
+      "status": "pass",
+      "exitCode": 0,
+      "durationSeconds": 47.289,
+      "artifact": "artifacts/mp5/commands/logs/balance-report-json.final2.log",
+      "notes": ""
+    },
+    {
+      "command": "npm run release:route-report:json",
+      "status": "pass",
+      "exitCode": 0,
+      "durationSeconds": 72.589,
+      "artifact": "artifacts/mp5/commands/logs/route-report-json.final2.log",
+      "notes": ""
+    },
+    {
+      "command": "npm run release:fresh-run-report:json",
+      "status": "pass_with_warnings",
+      "exitCode": 0,
+      "durationSeconds": 52.885,
+      "artifact": "artifacts/mp5/commands/logs/fresh-run-report-json.final2.log",
+      "notes": "automated normal route passed; manual coverage remains incomplete and blocks final GO"
+    },
+    {
+      "command": "npm run release:reclaim-route-report -- --json",
+      "status": "pass",
+      "exitCode": 0,
+      "durationSeconds": 34.796,
+      "artifact": "artifacts/mp5/commands/logs/reclaim-route-report-json.final2.log",
+      "notes": ""
+    },
+    {
+      "command": "npm run release:runtime-diagnostics:json",
+      "status": "pass",
+      "exitCode": 0,
+      "durationSeconds": 9.438,
+      "artifact": "artifacts/mp5/commands/logs/runtime-diagnostics-json.final2.log",
+      "notes": ""
+    },
+    {
+      "command": "npm run test:contracts",
+      "status": "fail",
+      "exitCode": 1,
+      "durationSeconds": 152.835,
+      "artifact": "artifacts/mp5/commands/logs/test-contracts.final2.log",
+      "notes": ""
+    },
+    {
+      "command": "npm test",
+      "status": "fail",
+      "exitCode": 1,
+      "durationSeconds": 162.506,
+      "artifact": "artifacts/mp5/commands/logs/npm-test.final2.log",
+      "notes": ""
+    },
+    {
+      "command": "npm run release:gate:json",
+      "status": "fail",
+      "exitCode": 2,
+      "durationSeconds": 385.663,
+      "artifact": "artifacts/mp5/release-gate/release-gate.after.json",
+      "notes": "headline=NO_GO; blockers=2; pendingManual=1; waiverCandidates=5; no timeout after Windows runner fix"
+    },
+    {
+      "command": "npm exec tsc -- --project tsconfig.tests.json",
+      "status": "pass",
+      "exitCode": 0,
+      "durationSeconds": 10.176,
+      "artifact": "artifacts/mp5/commands/logs/tsconfig-tests.after-wrapper.log",
+      "notes": "post-release-gate-wrapper TypeScript test compile"
+    },
+    {
+      "command": "node --loader=./scripts/relativeJsLoader.mjs --test tmp-tests/tests/contracts/releaseGateReport.test.js",
+      "status": "pass",
+      "exitCode": 0,
+      "durationSeconds": 0.157,
+      "artifact": "artifacts/mp5/commands/logs/release-gate-report-focused.after-wrapper.log",
+      "notes": "focused release-gate adapter regression coverage"
+    },
+    {
+      "command": "npm run release:gate -- --only=full_test_suite --json",
+      "status": "fail",
+      "exitCode": 2,
+      "durationSeconds": 169.723,
+      "artifact": "artifacts/mp5/release-gate/full_test_suite.exitcode-diagnostic-after-npmcli-resolution.log",
+      "notes": "isolated full-suite subcheck correctly reports npm test exitCode=1 as blocker"
+    },
+    {
+      "command": "npx playwright test tests/e2e/mp2-ui-runtime-smoke.spec.ts --project=chromium",
+      "status": "pass",
+      "exitCode": 0,
+      "durationSeconds": 240,
+      "artifact": "artifacts/mp5/browser/mp2-ui-runtime-smoke-for-mp5.log",
+      "notes": "Playwright fallback for unavailable Browser plugin; MP5 screenshots and DOM summaries preserved"
+    }
+  ]
+}

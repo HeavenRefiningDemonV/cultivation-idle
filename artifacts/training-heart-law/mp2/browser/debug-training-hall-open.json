@@ -1,0 +1,274 @@
+{
+  "firstLaw": {
+    "id": "heart_ember_thread_sutra",
+    "name": "Ember Thread Sutra",
+    "tier": "starter",
+    "archetype": "burst",
+    "daoTags": [
+      "fire",
+      "flame"
+    ],
+    "spiritRootAffinities": [
+      "fire",
+      "wood"
+    ],
+    "signature": {
+      "cultivationCharge": {
+        "resourceId": "ember",
+        "gainPerCultivateMinute": 1,
+        "cap": 60
+      },
+      "combatOpenerBuff": {
+        "durationSec": 10,
+        "atkMultPer10Charge": 0.02,
+        "burnChanceAdd": 0.1
+      }
+    },
+    "chapters": [
+      {
+        "chapter": 1,
+        "effects": {
+          "emberCapAdd": 20
+        }
+      },
+      {
+        "chapter": 2,
+        "effects": {
+          "combatOpenerAtkMultAddPer10Charge": 0.01
+        }
+      },
+      {
+        "chapter": 3,
+        "effects": {
+          "burnDamageMult": 0.1
+        }
+      },
+      {
+        "chapter": 4,
+        "effects": {
+          "heavenManualDropChance": 0.02,
+          "note": "small flavor; cap in code"
+        }
+      },
+      {
+        "chapter": 5,
+        "effects": {
+          "combatOpenerDurationAddSec": 4
+        }
+      }
+    ]
+  },
+  "selectedPath": "heaven",
+  "selectedHeartLawId": "heart_ember_thread_sutra",
+  "onboarding": {
+    "schemaVersion": "onboarding-v1",
+    "activeMilestoneId": "complete",
+    "completedMilestoneIds": [
+      "M0_life_start",
+      "M1_cultivation_only",
+      "M2_status_unlock",
+      "M3_world_outskirts",
+      "M4_pavilion_satchel",
+      "M5_techniques_loadout",
+      "M6_apothecary_expedition",
+      "M7_forge",
+      "M8_ruins_bounties",
+      "M9_gate_trial",
+      "M10_foundation_graduation"
+    ],
+    "unlockedTabs": [
+      "cultivation",
+      "status",
+      "adventure",
+      "inventory",
+      "techniques",
+      "records",
+      "prestige",
+      "settings"
+    ],
+    "unlockedWorldModules": [
+      "outskirts",
+      "trainingHall",
+      "manualPavilion",
+      "apothecary",
+      "expeditions",
+      "forge",
+      "ruins",
+      "bounties",
+      "gateTrial"
+    ],
+    "teaserWorldModules": [],
+    "seenTutorialCardIds": [],
+    "queuedTutorialCardIds": [],
+    "dismissedCoachmarkIds": [],
+    "tutorialLedgerEntries": [],
+    "eventFacts": {},
+    "firstLifeOnlyComplete": true,
+    "migratedFromVersion": null,
+    "updatedAt": 1780344299150,
+    "devOverride": {
+      "unlockAll": true,
+      "forceMilestoneId": "complete"
+    }
+  },
+  "cityModules": [
+    "outskirts",
+    "ruins",
+    "gateTrial",
+    "trainingHall",
+    "manualPavilion",
+    "apothecary",
+    "forge",
+    "bounties",
+    "expeditions"
+  ],
+  "policy": {
+    "activeMilestoneId": "complete",
+    "availableModules": [
+      "outskirts",
+      "ruins",
+      "gateTrial",
+      "trainingHall",
+      "manualPavilion",
+      "apothecary",
+      "forge",
+      "bounties",
+      "expeditions"
+    ],
+    "teaserModules": [],
+    "hiddenModules": [],
+    "deferredModules": [],
+    "lockedModules": {},
+    "moduleStates": {
+      "outskirts": "available",
+      "ruins": "available",
+      "gateTrial": "available",
+      "trainingHall": "available",
+      "manualPavilion": "available",
+      "apothecary": "available",
+      "forge": "available",
+      "bounties": "available",
+      "expeditions": "available"
+    },
+    "routeHints": {},
+    "debugReasons": [
+      "first-life onboarding no longer restricts live city modules"
+    ]
+  },
+  "guard": {
+    "allowed": true,
+    "kind": "allowed",
+    "reason": null
+  },
+  "ui": {
+    "activeTab": "adventure",
+    "headerTitle": "",
+    "headerSubtitle": "",
+    "headerTone": "dark",
+    "layoutBackgroundOverride": null,
+    "showSidePanel": false,
+    "notifications": [],
+    "pendingNotifications": [],
+    "lifeStartWizardOpenForNotifications": false,
+    "showPrestigeModal": false,
+    "showPerkSelectionModal": false,
+    "perkSelectionRealm": null,
+    "showBreakthroughAnimation": false,
+    "showOfflineProgressModal": false,
+    "offlineProgressSummary": null,
+    "showManualSatchelModal": false,
+    "showTechniqueLearnedModal": false,
+    "techniqueLearnedPayload": null,
+    "techniqueLibraryIntent": null,
+    "techniqueFocusRequest": null,
+    "lifeStartWizardContext": {
+      "lastHeartLawId": null
+    },
+    "showWorldBuildingModal": true,
+    "worldBuildingModalCityId": "city_pinewind_hamlet",
+    "worldBuildingModalKey": "trainingHall",
+    "worldBuildingModalIntent": {
+      "trainingHallExactMode": "live"
+    },
+    "showCurrentChapterExhaustedModal": false,
+    "showLifeSummaryModal": false,
+    "lifeSummaryMode": "current",
+    "showMigrationIssuesModal": false,
+    "migrationIssuePayload": null,
+    "showTutorialLedgerDrawer": false,
+    "currentChapterExhaustedAcknowledgedThisLife": false,
+    "activeOnboardingPrompt": {
+      "key": "first_pinewind_arrival:profile:first_pinewind_arrival",
+      "promptId": "first_pinewind_arrival",
+      "scope": "profile",
+      "scopeKey": "profile:first_pinewind_arrival",
+      "surface": "callout",
+      "priority": "medium",
+      "title": "Pinewind Hamlet",
+      "body": "World starts with Outskirts: earn early gold, common materials, and safe combat reps before the city reveals deeper support routes.",
+      "eyebrow": "First steps",
+      "badgeLabel": "Starter Route",
+      "cityId": "city_pinewind_hamlet",
+      "primaryAction": {
+        "label": "Open Outskirts",
+        "target": {
+          "kind": "world_module",
+          "cityId": "city_pinewind_hamlet",
+          "moduleKey": "outskirts"
+        }
+      },
+      "secondaryAction": {
+        "label": "Continue",
+        "target": {
+          "kind": "none"
+        }
+      }
+    },
+    "queuedOnboardingPrompts": [],
+    "dismissedOnboardingLifeKeys": [],
+    "dismissedOnboardingRuntimeKeys": [],
+    "pendingCityArrivalId": null,
+    "settings": {
+      "showOfflineModal": true,
+      "showCombatLog": true,
+      "requirePrestigeConfirm": true,
+      "showSystemStatusPanel": false,
+      "showCombatMinibar": true,
+      "combatMinibarExpanded": true,
+      "showCombatFloatingNumbers": true,
+      "combatAIProfile": "balanced",
+      "explainAIEnabled": false,
+      "explainAIHintsRemaining": 3,
+      "autoRetryOnDeath": false,
+      "useConsumablesInCombat": false,
+      "preferredTarget": "boss",
+      "storyMotionMode": "full",
+      "guidanceOath": "elder",
+      "jadeSlipLessons": "first_time",
+      "localLensBanners": "compact",
+      "sourceRouteDetail": "needed_only",
+      "advancedReadinessMath": "collapsed",
+      "failureCoaching": "every_gate_loss",
+      "backgroundReminders": "normal",
+      "recentOmensFeed": "compact",
+      "mandateMotionMode": "follow_story"
+    },
+    "daoMandateLessonMemory": {
+      "byConceptId": {}
+    },
+    "lastSaveAt": null,
+    "lastOfflineSummary": null,
+    "tooltipVisible": false,
+    "tooltipContent": "",
+    "tooltipPosition": {
+      "x": 0,
+      "y": 0
+    },
+    "combatPresentation": {
+      "mode": "hidden",
+      "context": null
+    }
+  },
+  "bodyText": "",
+  "testIds": []
+}

@@ -1,0 +1,1054 @@
+{
+  "viewport": "2048x1152",
+  "screen": "Outskirts Planning Exact",
+  "url": "http://127.0.0.1:5173/",
+  "documentTitle": "cultivation-idle-temp",
+  "rootTestIds": [
+    "outskirts-view-screen",
+    "outskirts-exact-page",
+    "outskirts-exact-top-region",
+    "outskirts-macro-ribbon",
+    "outskirts-settings-gear",
+    "outskirts-tactical-strip",
+    "outskirts-tactical-cell-hp",
+    "outskirts-tactical-cell-danger",
+    "outskirts-tactical-cell-loadout",
+    "outskirts-tactical-cell-aiProfile",
+    "outskirts-tactical-cell-healing",
+    "outskirts-tactical-cell-bounty",
+    "outskirts-tactical-cell-expedition",
+    "outskirts-exact-plaque-cluster",
+    "outskirts-area-plaque",
+    "outskirts-page-subtitle",
+    "outskirts-exact-body-grid",
+    "outskirts-exact-left-rail",
+    "outskirts-exact-setup-card",
+    "outskirts-exact-setup-title",
+    "outskirts-exact-setup-primary",
+    "outskirts-exact-setup-primary",
+    "outskirts-exact-setup-primary",
+    "outskirts-exact-setup-offense",
+    "outskirts-setup-stat-atk",
+    "outskirts-setup-stat-acc",
+    "outskirts-setup-stat-crit",
+    "outskirts-exact-setup-defense",
+    "outskirts-setup-stat-hp",
+    "outskirts-setup-stat-eva",
+    "outskirts-setup-stat-res",
+    "outskirts-exact-setup-pouch",
+    "outskirts-exact-setup-equipment-grid",
+    "outskirts-exact-setup-equipment-wrap",
+    "outskirts-exact-setup-equipment-slot",
+    "outskirts-exact-setup-equipment-slot",
+    "outskirts-exact-setup-equipment-slot",
+    "outskirts-exact-setup-equipment-slot",
+    "outskirts-exact-setup-equipment-slot",
+    "outskirts-exact-setup-equipment-slot",
+    "outskirts-exact-center-scenic-slot",
+    "outskirts-center-stage",
+    "outskirts-exact-scene-plane",
+    "outskirts-exact-scene-layer-base",
+    "outskirts-exact-identity-slot",
+    "outskirts-exact-encounter-identity-row",
+    "outskirts-exact-encounter-name",
+    "outskirts-exact-encounter-level",
+    "outskirts-exact-encounter-safe-chip",
+    "outskirts-exact-strip-slot",
+    "outskirts-exact-encounter-strip",
+    "outskirts-exact-encounter-strip-left-arrow",
+    "outskirts-exact-encounter-strip-node",
+    "outskirts-exact-encounter-strip-node-current",
+    "outskirts-exact-encounter-strip-node",
+    "outskirts-exact-encounter-strip-node-future",
+    "outskirts-exact-encounter-strip-node",
+    "outskirts-exact-encounter-strip-node-future",
+    "outskirts-exact-encounter-strip-node",
+    "outskirts-exact-encounter-strip-node-future",
+    "outskirts-exact-encounter-strip-node",
+    "outskirts-exact-encounter-strip-node-future",
+    "outskirts-exact-encounter-strip-node",
+    "outskirts-exact-encounter-strip-node-future",
+    "outskirts-exact-encounter-strip-right-arrow",
+    "outskirts-exact-cta-slot",
+    "outskirts-start-hunt-cta",
+    "outskirts-start-hunt-cta-label",
+    "outskirts-exact-right-rail",
+    "outskirts-exact-rewards-card",
+    "outskirts-exact-rewards-title",
+    "outskirts-exact-rewards-gold",
+    "outskirts-exact-rewards-materials",
+    "outskirts-exact-rewards-material-item",
+    "outskirts-exact-rewards-material-item",
+    "outskirts-exact-rewards-material-item",
+    "outskirts-exact-rewards-material-item",
+    "outskirts-exact-rewards-bounty",
+    "outskirts-exact-rewards-bounty-progress",
+    "outskirts-exact-rewards-efficiency",
+    "outskirts-exact-rewards-auto-repeat",
+    "outskirts-inner-palace-preview",
+    "outskirts-inner-palace-manage",
+    "outskirts-inner-palace-stage",
+    "outskirts-inner-palace-empty-slots",
+    "outskirts-exact-summary-dock",
+    "outskirts-grind-summary",
+    "outskirts-grind-summary-chip",
+    "outskirts-grind-summary-row",
+    "outskirts-grind-summary-row",
+    "outskirts-grind-summary-row"
+  ],
+  "headings": [
+    "Outskirts",
+    "Your Setup",
+    "Expected Rewards"
+  ],
+  "primaryCta": {
+    "text": "Open Outskirts",
+    "disabled": false,
+    "ariaLabel": null,
+    "rect": {
+      "x": 1693,
+      "y": 287,
+      "width": 310,
+      "height": 41,
+      "right": 2003,
+      "bottom": 328
+    }
+  },
+  "buttons": [
+    {
+      "text": "OutskirtsGold & Common MatsGold / Common MatsGold & Common Mats. Best used when you need gold, common materials, or low-risk combat reps.",
+      "disabled": false,
+      "ariaLabel": "Open Outskirts: Gold & Common Mats",
+      "rect": {
+        "x": 1095,
+        "y": 469,
+        "width": 180,
+        "height": 34,
+        "right": 1275,
+        "bottom": 503
+      }
+    },
+    {
+      "text": "RuinsTargeted MatsLocal Mats / Anchor DropTargeted Mats. Best used when you need targeted local materials and deterministic support rewards.",
+      "disabled": false,
+      "ariaLabel": "Open Ruins: Targeted Mats",
+      "rect": {
+        "x": 1378,
+        "y": 588,
+        "width": 180,
+        "height": 34,
+        "right": 1558,
+        "bottom": 622
+      }
+    },
+    {
+      "text": "Gate TrialGate ItemFoundation Pill / BreakthroughGate Item. Use this hall when the current gate item is ready for judgment.",
+      "disabled": false,
+      "ariaLabel": "Open Gate Trial: Gate Item",
+      "rect": {
+        "x": 1740,
+        "y": 764,
+        "width": 180,
+        "height": 34,
+        "right": 1920,
+        "bottom": 798
+      }
+    },
+    {
+      "text": "Manual PavilionBuild CorrectionManuals / Technique FragmentsBuild Correction. Best used when you need build correction, manuals, or technique growth.",
+      "disabled": false,
+      "ariaLabel": "Open Manual Pavilion: Build Correction",
+      "rect": {
+        "x": 1652,
+        "y": 149,
+        "width": 180,
+        "height": 34,
+        "right": 1832,
+        "bottom": 183
+      }
+    },
+    {
+      "text": "ApothecaryImmediate ReadinessHealing Stock / Preparation RemediesImmediate Readiness. Best used when you need immediate readiness through healing stock, remedies, or pouch prep.",
+      "disabled": false,
+      "ariaLabel": "Open Apothecary: Immediate Readiness",
+      "rect": {
+        "x": 551,
+        "y": 428,
+        "width": 180,
+        "height": 34,
+        "right": 731,
+        "bottom": 462
+      }
+    },
+    {
+      "text": "ForgePermanent FloorRefines / Temper / RunesPermanent Floor. Best used when you need permanent floor through refine, temper, or rune work.",
+      "disabled": false,
+      "ariaLabel": "Open Forge: Permanent Floor",
+      "rect": {
+        "x": 1138,
+        "y": 847,
+        "width": 180,
+        "height": 34,
+        "right": 1318,
+        "bottom": 881
+      }
+    },
+    {
+      "text": "BountiesMerit & RoutingMerit / Spirit StonesMerit & Routing. Best used when you need Merit, routing help, or directed support rewards.",
+      "disabled": false,
+      "ariaLabel": "Open Bounties: Merit & Routing",
+      "rect": {
+        "x": 492,
+        "y": 795,
+        "width": 178,
+        "height": 34,
+        "right": 669,
+        "bottom": 829
+      }
+    },
+    {
+      "text": "ExpeditionsPassive SupportHerbs / OrePassive Support. Best used when you need passive shortage smoothing for herbs, ore, or fragments.",
+      "disabled": false,
+      "ariaLabel": "Open Expeditions: Passive Support",
+      "rect": {
+        "x": 490,
+        "y": 852,
+        "width": 180,
+        "height": 34,
+        "right": 670,
+        "bottom": 886
+      }
+    },
+    {
+      "text": "Open Outskirts",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1693,
+        "y": 287,
+        "width": 310,
+        "height": 41,
+        "right": 2003,
+        "bottom": 328
+      }
+    },
+    {
+      "text": "Status",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 444,
+        "y": 1083,
+        "width": 142,
+        "height": 61,
+        "right": 585,
+        "bottom": 1144
+      }
+    },
+    {
+      "text": "Cultivation",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 589,
+        "y": 1083,
+        "width": 142,
+        "height": 61,
+        "right": 731,
+        "bottom": 1144
+      }
+    },
+    {
+      "text": "World",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 735,
+        "y": 1083,
+        "width": 142,
+        "height": 61,
+        "right": 876,
+        "bottom": 1144
+      }
+    },
+    {
+      "text": "Inventory",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 880,
+        "y": 1083,
+        "width": 142,
+        "height": 61,
+        "right": 1022,
+        "bottom": 1144
+      }
+    },
+    {
+      "text": "Techniques",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1026,
+        "y": 1083,
+        "width": 142,
+        "height": 61,
+        "right": 1168,
+        "bottom": 1144
+      }
+    },
+    {
+      "text": "Records",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1172,
+        "y": 1083,
+        "width": 142,
+        "height": 61,
+        "right": 1313,
+        "bottom": 1144
+      }
+    },
+    {
+      "text": "Prestige",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1317,
+        "y": 1083,
+        "width": 142,
+        "height": 61,
+        "right": 1459,
+        "bottom": 1144
+      }
+    },
+    {
+      "text": "Settings",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1463,
+        "y": 1083,
+        "width": 142,
+        "height": 61,
+        "right": 1604,
+        "bottom": 1144
+      }
+    },
+    {
+      "text": "",
+      "disabled": false,
+      "ariaLabel": "Open settings",
+      "rect": {
+        "x": 1964,
+        "y": 40,
+        "width": 30,
+        "height": 30,
+        "right": 1994,
+        "bottom": 70
+      }
+    },
+    {
+      "text": "HP328 / 328",
+      "disabled": true,
+      "ariaLabel": "HP: 328 / 328",
+      "rect": {
+        "x": 54,
+        "y": 91,
+        "width": 269,
+        "height": 64,
+        "right": 323,
+        "bottom": 155
+      }
+    },
+    {
+      "text": "DangerWatch · Lv. 11",
+      "disabled": true,
+      "ariaLabel": "Danger: Watch · Lv. 11",
+      "rect": {
+        "x": 333,
+        "y": 91,
+        "width": 269,
+        "height": 64,
+        "right": 601,
+        "bottom": 155
+      }
+    },
+    {
+      "text": "LoadoutLoadout 1",
+      "disabled": false,
+      "ariaLabel": "Loadout: Loadout 1",
+      "rect": {
+        "x": 611,
+        "y": 91,
+        "width": 269,
+        "height": 64,
+        "right": 880,
+        "bottom": 155
+      }
+    },
+    {
+      "text": "AI ProfileBalanced",
+      "disabled": false,
+      "ariaLabel": "AI Profile: Balanced",
+      "rect": {
+        "x": 890,
+        "y": 91,
+        "width": 269,
+        "height": 64,
+        "right": 1158,
+        "bottom": 155
+      }
+    },
+    {
+      "text": "Healing0 / 20",
+      "disabled": true,
+      "ariaLabel": "Healing: 0 / 20",
+      "rect": {
+        "x": 1168,
+        "y": 91,
+        "width": 269,
+        "height": 64,
+        "right": 1437,
+        "bottom": 155
+      }
+    },
+    {
+      "text": "BountyNo tracked bounty",
+      "disabled": false,
+      "ariaLabel": "Bounty: No tracked bounty",
+      "rect": {
+        "x": 1447,
+        "y": 91,
+        "width": 269,
+        "height": 64,
+        "right": 1715,
+        "bottom": 155
+      }
+    },
+    {
+      "text": "ExpeditionNo expedition",
+      "disabled": false,
+      "ariaLabel": "Expedition: No expedition",
+      "rect": {
+        "x": 1725,
+        "y": 91,
+        "width": 269,
+        "height": 64,
+        "right": 1994,
+        "bottom": 155
+      }
+    },
+    {
+      "text": "Loadout Set1",
+      "disabled": false,
+      "ariaLabel": "Loadout Set: Loadout 1",
+      "rect": {
+        "x": 66,
+        "y": 327,
+        "width": 264,
+        "height": 38,
+        "right": 329,
+        "bottom": 365
+      }
+    },
+    {
+      "text": "AI ProfileBalanced",
+      "disabled": false,
+      "ariaLabel": "AI Profile: Balanced",
+      "rect": {
+        "x": 66,
+        "y": 372,
+        "width": 264,
+        "height": 36,
+        "right": 329,
+        "bottom": 408
+      }
+    },
+    {
+      "text": "Attack FocusBoss",
+      "disabled": false,
+      "ariaLabel": "Attack Focus: Boss",
+      "rect": {
+        "x": 66,
+        "y": 415,
+        "width": 264,
+        "height": 36,
+        "right": 329,
+        "bottom": 451
+      }
+    },
+    {
+      "text": "+",
+      "disabled": false,
+      "ariaLabel": "Open medicine pouch configuration",
+      "rect": {
+        "x": 303,
+        "y": 741,
+        "width": 23,
+        "height": 23,
+        "right": 326,
+        "bottom": 764
+      }
+    },
+    {
+      "text": "Weapon —",
+      "disabled": false,
+      "ariaLabel": "Weapon: —",
+      "rect": {
+        "x": 66,
+        "y": 802,
+        "width": 84,
+        "height": 84,
+        "right": 150,
+        "bottom": 886
+      }
+    },
+    {
+      "text": "Armor —",
+      "disabled": false,
+      "ariaLabel": "Armor: —",
+      "rect": {
+        "x": 155,
+        "y": 802,
+        "width": 84,
+        "height": 84,
+        "right": 239,
+        "bottom": 886
+      }
+    },
+    {
+      "text": "Ring —",
+      "disabled": false,
+      "ariaLabel": "Ring: —",
+      "rect": {
+        "x": 245,
+        "y": 802,
+        "width": 84,
+        "height": 84,
+        "right": 329,
+        "bottom": 886
+      }
+    },
+    {
+      "text": "Talisman —",
+      "disabled": false,
+      "ariaLabel": "Talisman: —",
+      "rect": {
+        "x": 66,
+        "y": 892,
+        "width": 84,
+        "height": 84,
+        "right": 150,
+        "bottom": 976
+      }
+    },
+    {
+      "text": "Boots —",
+      "disabled": false,
+      "ariaLabel": "Boots: —",
+      "rect": {
+        "x": 155,
+        "y": 892,
+        "width": 84,
+        "height": 84,
+        "right": 239,
+        "bottom": 976
+      }
+    },
+    {
+      "text": "Charm —",
+      "disabled": false,
+      "ariaLabel": "Charm: —",
+      "rect": {
+        "x": 245,
+        "y": 892,
+        "width": 84,
+        "height": 84,
+        "right": 329,
+        "bottom": 976
+      }
+    },
+    {
+      "text": "‹",
+      "disabled": true,
+      "ariaLabel": "Preview previous encounter",
+      "rect": {
+        "x": 376,
+        "y": 920,
+        "width": 44,
+        "height": 44,
+        "right": 420,
+        "bottom": 964
+      }
+    },
+    {
+      "text": "",
+      "disabled": true,
+      "ariaLabel": "Quiet Glade Lv. 8 current selected",
+      "rect": {
+        "x": 489,
+        "y": 889,
+        "width": 73,
+        "height": 73,
+        "right": 562,
+        "bottom": 962
+      }
+    },
+    {
+      "text": "",
+      "disabled": false,
+      "ariaLabel": "Rockjaw Boar Lv. 9 future",
+      "rect": {
+        "x": 691,
+        "y": 892,
+        "width": 59,
+        "height": 59,
+        "right": 750,
+        "bottom": 951
+      }
+    },
+    {
+      "text": "",
+      "disabled": false,
+      "ariaLabel": "Snarling Wolf Lv. 11 future",
+      "rect": {
+        "x": 886,
+        "y": 892,
+        "width": 59,
+        "height": 59,
+        "right": 946,
+        "bottom": 951
+      }
+    },
+    {
+      "text": "",
+      "disabled": false,
+      "ariaLabel": "Venomcoil Lv. 13 future",
+      "rect": {
+        "x": 1082,
+        "y": 892,
+        "width": 59,
+        "height": 59,
+        "right": 1141,
+        "bottom": 951
+      }
+    },
+    {
+      "text": "",
+      "disabled": false,
+      "ariaLabel": "Shade Stalker Lv. 15 future",
+      "rect": {
+        "x": 1277,
+        "y": 892,
+        "width": 59,
+        "height": 59,
+        "right": 1336,
+        "bottom": 951
+      }
+    },
+    {
+      "text": "",
+      "disabled": false,
+      "ariaLabel": "Mire Serpent Lv. 17 future",
+      "rect": {
+        "x": 1473,
+        "y": 892,
+        "width": 59,
+        "height": 59,
+        "right": 1532,
+        "bottom": 951
+      }
+    },
+    {
+      "text": "›",
+      "disabled": false,
+      "ariaLabel": "Preview next encounter",
+      "rect": {
+        "x": 1607,
+        "y": 920,
+        "width": 44,
+        "height": 44,
+        "right": 1651,
+        "bottom": 964
+      }
+    },
+    {
+      "text": "Start Hunt",
+      "disabled": false,
+      "ariaLabel": "Start Outskirts hunt",
+      "rect": {
+        "x": 734,
+        "y": 1012,
+        "width": 560,
+        "height": 68,
+        "right": 1294,
+        "bottom": 1080
+      }
+    },
+    {
+      "text": "Tracked BountyNoneDefeat wolves in the Outskirts0 / 0",
+      "disabled": false,
+      "ariaLabel": "Open bounties",
+      "rect": {
+        "x": 1698,
+        "y": 427,
+        "width": 285,
+        "height": 99,
+        "right": 1983,
+        "bottom": 526
+      }
+    },
+    {
+      "text": "On",
+      "disabled": false,
+      "ariaLabel": "Auto-Repeat: On",
+      "rect": {
+        "x": 1933,
+        "y": 611,
+        "width": 45,
+        "height": 20,
+        "right": 1977,
+        "bottom": 631
+      }
+    },
+    {
+      "text": "Manage",
+      "disabled": false,
+      "ariaLabel": "Open techniques",
+      "rect": {
+        "x": 1933,
+        "y": 662,
+        "width": 50,
+        "height": 20,
+        "right": 1983,
+        "bottom": 681
+      }
+    },
+    {
+      "text": "++··+···",
+      "disabled": false,
+      "ariaLabel": "Open Inner Palace techniques preview",
+      "rect": {
+        "x": 1731,
+        "y": 691,
+        "width": 219,
+        "height": 219,
+        "right": 1950,
+        "bottom": 910
+      }
+    }
+  ],
+  "scrollWidth": 2048,
+  "innerWidth": 2048,
+  "scrollHeight": 1152,
+  "innerHeight": 1152,
+  "suspectedClippedText": [
+    {
+      "text": "Gold & Common Mats",
+      "rect": {
+        "x": 1183,
+        "y": 475,
+        "width": 80,
+        "height": 11,
+        "right": 1262,
+        "bottom": 486
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Gold / Common Mats",
+      "rect": {
+        "x": 1183,
+        "y": 487,
+        "width": 80,
+        "height": 11,
+        "right": 1262,
+        "bottom": 497
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Gold & Common Mats. Best used when you need gold, common materials, or low-risk combat reps.",
+      "rect": {
+        "x": 1106,
+        "y": 486,
+        "width": 1,
+        "height": 1,
+        "right": 1107,
+        "bottom": 487
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Local Mats / Anchor Drop",
+      "rect": {
+        "x": 1446,
+        "y": 606,
+        "width": 98,
+        "height": 11,
+        "right": 1545,
+        "bottom": 616
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Targeted Mats. Best used when you need targeted local materials and deterministic support rewards.",
+      "rect": {
+        "x": 1389,
+        "y": 605,
+        "width": 1,
+        "height": 1,
+        "right": 1390,
+        "bottom": 606
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Foundation Pill / Breakthrough",
+      "rect": {
+        "x": 1832,
+        "y": 782,
+        "width": 75,
+        "height": 11,
+        "right": 1907,
+        "bottom": 792
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Gate Item. Use this hall when the current gate item is ready for judgment.",
+      "rect": {
+        "x": 1751,
+        "y": 781,
+        "width": 1,
+        "height": 1,
+        "right": 1752,
+        "bottom": 782
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Build Correction",
+      "rect": {
+        "x": 1778,
+        "y": 155,
+        "width": 41,
+        "height": 11,
+        "right": 1819,
+        "bottom": 165
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Manuals / Technique Fragments",
+      "rect": {
+        "x": 1778,
+        "y": 166,
+        "width": 41,
+        "height": 11,
+        "right": 1819,
+        "bottom": 177
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Build Correction. Best used when you need build correction, manuals, or technique growth.",
+      "rect": {
+        "x": 1663,
+        "y": 165,
+        "width": 1,
+        "height": 1,
+        "right": 1664,
+        "bottom": 166
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Immediate Readiness",
+      "rect": {
+        "x": 650,
+        "y": 434,
+        "width": 68,
+        "height": 11,
+        "right": 718,
+        "bottom": 445
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Healing Stock / Preparation Remedies",
+      "rect": {
+        "x": 650,
+        "y": 446,
+        "width": 68,
+        "height": 11,
+        "right": 718,
+        "bottom": 456
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Immediate Readiness. Best used when you need immediate readiness through healing stock, remedies, or pouch prep.",
+      "rect": {
+        "x": 562,
+        "y": 445,
+        "width": 1,
+        "height": 1,
+        "right": 563,
+        "bottom": 446
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Permanent Floor. Best used when you need permanent floor through refine, temper, or rune work.",
+      "rect": {
+        "x": 1149,
+        "y": 863,
+        "width": 1,
+        "height": 1,
+        "right": 1150,
+        "bottom": 864
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Merit & Routing. Best used when you need Merit, routing help, or directed support rewards.",
+      "rect": {
+        "x": 503,
+        "y": 812,
+        "width": 1,
+        "height": 1,
+        "right": 504,
+        "bottom": 813
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Passive Support",
+      "rect": {
+        "x": 592,
+        "y": 858,
+        "width": 65,
+        "height": 11,
+        "right": 657,
+        "bottom": 869
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Passive Support. Best used when you need passive shortage smoothing for herbs, ore, or fragments.",
+      "rect": {
+        "x": 501,
+        "y": 869,
+        "width": 1,
+        "height": 1,
+        "right": 502,
+        "bottom": 870
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Select city",
+      "rect": {
+        "x": 853,
+        "y": 39,
+        "width": 1,
+        "height": 1,
+        "right": 854,
+        "bottom": 40
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Your SetupLoadout Set1AI ProfileBalancedAttack FocusBossOffenseATK47ACC92%CRIT15%DefenseHP328EVA10%RES6%Medicine Pouch0 / 20+EquipmentWeapon —Armor —Ring —Talis",
+      "rect": {
+        "x": 54,
+        "y": 274,
+        "width": 287,
+        "height": 602,
+        "right": 341,
+        "bottom": 876
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Talisman —",
+      "rect": {
+        "x": 107,
+        "y": 933,
+        "width": 1,
+        "height": 1,
+        "right": 108,
+        "bottom": 934
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Expected RewardsGold1,250 – 1,480Common MaterialsWolf PeltBeast BoneGreen HerbSpirit StoneTracked BountyNoneDefeat wolves in the Outskirts0 / 0Estimated Efficie",
+      "rect": {
+        "x": 1687,
+        "y": 274,
+        "width": 307,
+        "height": 602,
+        "right": 1994,
+        "bottom": 876
+      },
+      "overflow": "hidden/hidden/hidden"
+    }
+  ],
+  "viewportIssues": [],
+  "consoleSinceStart": [
+    "debug: [vite] connecting...",
+    "debug: [vite] connected.",
+    "info: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+    "log: [App] Initializing game...",
+    "log: [GameLoop] Initializing game...",
+    "log: [GameLoop] Store dependencies wired",
+    "log: [GameLoop] Prestige store initialized",
+    "log: [SpiritRoot] Generated: Rare water (65% purity)",
+    "log: [GameLoop] Generated initial spirit root",
+    "log: [GameLoop] No save found, starting new game",
+    "log: [GameLoop] Added starter items to inventory",
+    "log: [GameLoop] Starting game loop...",
+    "log: [GameLoop] Game loop started",
+    "log: [GameLoop] Game initialized successfully",
+    "log: [App] Game initialized successfully",
+    "log: [App] Initializing game...",
+    "log: [GameLoop] Initializing game...",
+    "log: [GameLoop] Store dependencies wired",
+    "log: [GameLoop] Prestige store initialized",
+    "log: [GameLoop] No save found, starting new game",
+    "warning: [GameLoop] Already running",
+    "log: [GameLoop] Game initialized successfully",
+    "log: [App] Game initialized successfully",
+    "warning: [ContentValidation] Technique counts by path: Heaven=20, Earth=20, Martial=20",
+    "warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=heaven: 6",
+    "warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=earth: 6",
+    "warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=martial: 6",
+    "warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=heaven: 7",
+    "warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=earth: 9",
+    "warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=martial: 8",
+    "warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=heaven: 9",
+    "warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=earth: 9",
+    "warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=martial: 10",
+    "warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=heaven: 10",
+    "warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=earth: 10",
+    "warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=martial: 10",
+    "warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=heaven: 10",
+    "warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=earth: 10",
+    "warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=martial: 10",
+    "info: [Content] Loaded 5 cities, 60 techniques (H/E/M: 20/20/20)",
+    "info: [Content] Prestige upgrades: 27",
+    "log: [SaveLoad] Saving game...",
+    "log: [SaveLoad] Game saved successfully at 5/28/2026, 11:55:30 PM",
+    "log: [SaveLoad] Saving game...",
+    "log: [SaveLoad] Game saved successfully at 5/28/2026, 11:55:36 PM",
+    "log: [UI] Notification added: success - Life begins: Heaven • Ember Thread Sutra • Balanced",
+    "log: [SaveLoad] Saving game...",
+    "log: [SaveLoad] Game saved successfully at 5/28/2026, 11:55:36 PM",
+    "log: [UI] Active tab changed to: adventure"
+  ],
+  "textSample": "Outskirts\nGOLD & COMMON MATS\nGold / Common Mats\nGold & Common Mats. Best used when you need gold, common materials, or low-risk combat reps.\nRuins\nTARGETED MATS\nLocal Mats / Anchor Drop\nTargeted Mats. Best used when you need targeted local materials and deterministic support rewards.\nGate Trial\nGATE ITEM\nFoundation Pill / Breakthrough\nGate Item. Use this hall when the current gate item is ready for judgment.\nManual Pavilion\nBUILD CORRECTION\nManuals / Technique Fragments\nBuild Correction. Best used when you need build correction, manuals, or technique growth.\nApothecary\nIMMEDIATE READINESS\nHealing Stock / Preparation Remedies\nImmediate Readiness. Best used when you need immediate readiness through healing stock, remedies, or pouch prep.\nForge\nPERMANENT FLOOR\nRefines / Temper / Runes\nPermanent Floor. Best used when you need permanent floor through refine, temper, or rune work.\nBounties\nMERIT & ROUTING\nMerit / Spirit Stones\nMerit & Routing. Best used when you need Merit, routing help, or directed support rewards.\nExpeditions\nPASSIVE SUPPORT\nHerbs / Ore\nPassive Support. Best used when you need passive shortage smoothing for herbs, ore, or fragments.\nWORLD\nCity Phase: Pinewind Hamlet - foundations\nSelect city\nPinewind Hamlet\nStonecrag Town — Locked — Reach Foundation Establishment\nSpirit Cavern City — Locked — Reach Core Formation\nLotusford — Locked — Reach Nascent Soul\nIronpeak Bastion — Locked — Reach Soul Formation\nPressure: Qi, first medicines, and a stable starter build.\nExpedition Slot Idle\n\nPINEWIND HAMLET\n\nOutskirts\n\nGold & Common Mats\n\nBest used when you need gold, common materials, or low-risk combat reps.\n\nNot the best source for targeted city materials.\n\nGold\nCommon Mats\nOpen Outskirts\nStatus\nCultivation\nWorld\nInventory\nTechniques\nRecords\nPrestige\nSettings\nHP\n328 / 328\nDanger\nWatch · Lv. 11\nLoadout\nLoadout 1\nAI Profile\nBalanced\nHealing\n0 / 20\nBounty\nNo tracked bounty\nExpedition\nNo expedition\nOutskirts\n\nGold and common materials\n\nYour Setup\nLoadout Set\n1\nAI Profile\nBalanced\nAttack Focus\nBoss\nOffense\nATK\n47\nACC\n92%\nCRIT\n15%\nDefense\nHP\n328\nEVA\n10%\nRES\n6%\nMedicine Pouch\n0 / 20\n+\nEquipment\nWeapon —\nArmor —\nRing —\nTalisman —\nBoots —\nCharm —\n\nQuiet Glade\n\nLv. 8\n\nWatch\n‹\nQuiet Glade\nLv. 8\nRockjaw Boar\nLv. 9\nSnarling Wolf\nLv. 11\nVenomcoil\nLv. 13\nShade Stalker\nLv. 15\nMire Serpent\nLv. 17\n›\nStart Hunt\nExpected Rewards\nGOLD\n1,250 – 1,480\nCOMMON MATERIALS\nWolf Pelt\nBeast Bone\nGreen Herb\nSpirit Stone\nTRACKED BOUNTY\n\nNone\n\nDefeat wolves in the Outskirts\n\n0 / 0\n\nESTIMATED EFFICIENCY\n\n~45s / run\n\n1,800 – 2,000 / hour\n\nAUTO-REPEAT\nOn\nInner Palace\n\nEquipped Techniques\n\nMANAGE\n+\n+\n·\n·\n+\n·\n·\n·\nLoadout 1 · No techniques slotted\n3 slots empty\nGrind Summary\nThis Area\n\nRuns\n200\n\nGold / hr\n1,800\n\nMain Drop\nWolf Pelt"
+}

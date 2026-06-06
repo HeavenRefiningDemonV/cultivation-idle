@@ -7,7 +7,7 @@ const studySource = readFileSync('src/ui/cultivation/StudyModeWidget.tsx', 'utf8
 
 
 test('DaoHeartModal keeps the study tab and debugInitialTab compatibility', () => {
-  assert.ok(modalSource.includes("debugInitialTab?: 'heartLaw' | 'study'"));
+  assert.ok(modalSource.includes("debugInitialTab?: 'sanctuary' | 'heartLaw' | 'study'"));
   assert.ok(modalSource.includes("id=\"dao-heart-tab-study\""));
   assert.ok(modalSource.includes("setTab('study')"));
 });

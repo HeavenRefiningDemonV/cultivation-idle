@@ -1,0 +1,12 @@
+Screen,Viewport,Reachable,Primary Issue,Priority,MP2 Action,Status,Evidence
+Ruins,1366x768,true,Blank central scene and clipped lower action,1,Local exact CSS compact/chamber enhancement,planned,artifacts/mp2/baseline/current-screenshots/1366x768/SS-101-ruins-ruins.png
+Gate Trial,1366x768,true,Right rail overlaps Trial Summary and CTA region crowded,2,Local exact CSS compact/summary separation,planned,artifacts/mp2/baseline/current-screenshots/1366x768/SS-102-gate-trial-gate-trial.png
+Techniques,1366x768,true,Exact layout overlaps and clips,3,Constrained-desktop responsive exact layout,planned,artifacts/mp2/baseline/current-screenshots/1366x768/SS-014-techniques-techniques.png
+Prestige,1366x768,true,Ledger/decree/contract text overlap and +0 AP truth buried,4,Compact ledger layout without AP tuning,planned,artifacts/mp2/baseline/current-screenshots/1366x768/SS-016-prestige-prestige.png
+Inventory,1366x768,true,First-run empty grid lacks direct source action,5,Guided empty state with route buttons,planned,artifacts/mp2/baseline/current-screenshots/1366x768/SS-013-inventory-inventory.png
+Status,1366x768,true,Duplicate warning density,6,Collapse or document partial,planned,artifacts/mp2/baseline/current-screenshots/1366x768/SS-011-status-status.png
+Outskirts,1366x768,true,Minor tactical-cell truncation,7,Evidence or local copy only,watch,artifacts/mp2/baseline/current-screenshots/1366x768/SS-100-outskirts-outskirts.png
+Apothecary,1366x768,true,No blocking defect found,8,Evidence only,watch,artifacts/mp2/baseline/current-screenshots/1366x768/SS-104-apothecary-apothecary.png
+Forge,1366x768,true,No blocking defect found,8,Evidence only,watch,artifacts/mp2/baseline/current-screenshots/1366x768/SS-105-forge-forge.png
+Bounties,1366x768,true,No blocking defect found,8,Evidence only,watch,artifacts/mp2/baseline/current-screenshots/1366x768/SS-106-bounties-bounties.png
+Expeditions,1366x768,true,Minor recommendation-card clipping risk,8,Evidence or local copy only,watch,artifacts/mp2/baseline/current-screenshots/1366x768/SS-107-expeditions-expeditions.png

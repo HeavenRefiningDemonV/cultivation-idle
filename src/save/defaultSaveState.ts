@@ -30,8 +30,10 @@ import { useHeartLawStore } from '../stores/heartLawStore.js';
 import { useManualPavilionStore } from '../stores/manualPavilionStore.js';
 import { useManualSatchelStore } from '../stores/manualSatchelStore.js';
 import { createDefaultMedicinePouchState, useMedicinePouchStore } from '../stores/medicinePouchStore.js';
+import { createDefaultOnboardingState, sanitizeOnboardingState, useOnboardingStore } from '../stores/onboardingStore.js';
 import { createDefaultCraftSessionState, useCraftSessionStore } from '../stores/craftSessionStore.js';
 import { createDefaultRecipeMasteryState, useRecipeMasteryStore } from '../stores/recipeMasteryStore.js';
+import { useTrainingStore } from '../stores/trainingStore.js';
 import { useContentStore } from '../stores/contentStore.js';
 import { useUIStore } from '../stores/uiStore.js';
 import { usePavilionStore } from '../stores/pavilionStore.js';
@@ -56,6 +58,12 @@ import {
   createDefaultDaoMandateLessonMemory,
   sanitizeDaoMandateLessonMemory,
 } from '../systems/ui/daoMandate/daoMandateLessons.js';
+import {
+  createDefaultTrainingSaveState,
+  createTrainingRuntimeContent,
+  sanitizeTrainingSaveState,
+} from '../systems/training/index.js';
+import { sanitizePrestigeMemoryLedger } from '../systems/prestige/prestigeMemory.js';
 
 import { CURRENT_SAVE_VERSION, migrateIncomingSaveForHydration } from './migrations/index.js';
 import { normalizeCitySaveState } from './cityStateNormalization.js';
@@ -78,9 +86,11 @@ const REQUIRED_SAVE_KEYS = [
   'prestigeState',
   'manualPavilionState',
   'manualSatchelState',
+  'onboardingState',
   'craftSessionState',
   'medicinePouchState',
   'recipeMasteryState',
+  'trainingState',
   'pavilionState',
   'storyState',
 ];
@@ -90,6 +100,12 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
 
 const isStringArray = (value: unknown): value is string[] =>
   Array.isArray(value) && value.every((entry) => typeof entry === 'string');
+
+const isNumberRecord = (value: unknown): value is Record<string, number> =>
+  isRecord(value) && Object.values(value).every((entry) => typeof entry === 'number' && Number.isFinite(entry));
+
+const isStringRecord = (value: unknown): value is Record<string, string> =>
+  isRecord(value) && Object.values(value).every((entry) => typeof entry === 'string');
 
 type SaveRuinsState = NonNullable<SaveData['ruinsState']>;
 type SaveRuinsRunSummary = NonNullable<SaveRuinsState['runHistory']>[number];
@@ -177,9 +193,11 @@ export function buildDefaultSaveState(): SaveData {
   const heartLawState = useHeartLawStore.getState();
   const manualPavilionState = useManualPavilionStore.getState();
   const manualSatchelState = useManualSatchelStore.getState();
+  const onboardingState = useOnboardingStore.getState();
   const craftSessionState = useCraftSessionStore.getState();
   const medicinePouchState = useMedicinePouchStore.getState();
   const recipeMasteryState = useRecipeMasteryStore.getState();
+  const trainingState = useTrainingStore.getState();
   const pavilionState = usePavilionStore.getState();
   const storyState = useStoryStore.getState();
   const uiState = useUIStore.getState();
@@ -217,6 +235,7 @@ export function buildDefaultSaveState(): SaveData {
       runStartTime: prestigeState.runStartTime,
       rerollCount: prestigeState.rerollCount,
       spiritRoot: prestigeState.spiritRoot ?? null,
+      memoryLedger: sanitizePrestigeMemoryLedger(prestigeState.memoryLedger),
     },
     inventoryState: {
       currencies: { ...inventoryState.currencies },
@@ -225,6 +244,7 @@ export function buildDefaultSaveState(): SaveData {
     craftSessionState: craftSessionState.toSaveState(),
     medicinePouchState: medicinePouchState.toSaveState(),
     recipeMasteryState: recipeMasteryState.toSaveState(),
+    trainingState: trainingState.toSaveState(),
     pavilionState: pavilionState.toSaveState(),
     storyState: storyState.toSaveState(),
     combatSettings: {
@@ -350,11 +370,37 @@ export function buildDefaultSaveState(): SaveData {
       activeCultivationConsumables: heartLawState.activeCultivationConsumables.map((entry) => ({ ...entry, modifiers: { ...entry.modifiers } })),
       insightProgressMs: heartLawState.insightProgressMs,
       insightTargetMs: heartLawState.insightTargetMs ?? null,
-    },
+      heartLawLevelById: { ...heartLawState.heartLawLevelById },
+      heartLawXpById: { ...heartLawState.heartLawXpById },
+      verseMasteryByLawId: { ...heartLawState.verseMasteryByLawId },
+      daoHeartClarity: heartLawState.daoHeartClarity,
+      turbulence: heartLawState.turbulence,
+      branchChoicesByLawId: { ...heartLawState.branchChoicesByLawId },
+      rootResonanceByPair: { ...heartLawState.rootResonanceByPair },
+      activeDaoHeartPracticeId: heartLawState.activeDaoHeartPracticeId,
+      lastDaoHeartPracticeTickAt: heartLawState.lastDaoHeartPracticeTickAt,
+      lastDaoHeartOfflineSummary: heartLawState.lastDaoHeartOfflineSummary
+        ? { ...heartLawState.lastDaoHeartOfflineSummary }
+        : null,
+      lastBreakthroughRiskSnapshot: heartLawState.lastBreakthroughRiskSnapshot
+        ? {
+            ...heartLawState.lastBreakthroughRiskSnapshot,
+            rows: heartLawState.lastBreakthroughRiskSnapshot.rows.map((row) => ({ ...row, route: row.route ? { ...row.route } : undefined })),
+            topFixes: heartLawState.lastBreakthroughRiskSnapshot.topFixes.map((row) => ({ ...row, route: row.route ? { ...row.route } : undefined })),
+          }
+        : null,
+      lastBreakthroughFailureSummary: heartLawState.lastBreakthroughFailureSummary
+        ? {
+            ...heartLawState.lastBreakthroughFailureSummary,
+            rows: heartLawState.lastBreakthroughFailureSummary.rows.map((row) => ({ ...row, route: row.route ? { ...row.route } : undefined })),
+          }
+        : null,
+      },
     manualPavilionState: {
       stockByPavilionId: cloneManualPavilionState(manualPavilionState.stockByPavilionId),
     },
     manualSatchelState: manualSatchelState.toSaveState(),
+    onboardingState: onboardingState.toSaveState(),
   };
 }
 
@@ -789,10 +835,32 @@ function isValidHeartLawState(value: unknown): value is SaveData['heartLawState'
   if ('activeCultivationConsumables' in value && value.activeCultivationConsumables !== undefined) {
     if (!Array.isArray(value.activeCultivationConsumables)) return false;
   }
-  if ('insightProgressMs' in value && value.insightProgressMs !== undefined && typeof value.insightProgressMs !== 'number') return false;
-  if ('insightTargetMs' in value && value.insightTargetMs !== null && value.insightTargetMs !== undefined && typeof value.insightTargetMs !== 'number') return false;
-  return true;
-}
+    if ('insightProgressMs' in value && value.insightProgressMs !== undefined && typeof value.insightProgressMs !== 'number') return false;
+    if ('insightTargetMs' in value && value.insightTargetMs !== null && value.insightTargetMs !== undefined && typeof value.insightTargetMs !== 'number') return false;
+    if ('heartLawLevelById' in value && value.heartLawLevelById !== undefined && !isNumberRecord(value.heartLawLevelById)) return false;
+    if ('heartLawXpById' in value && value.heartLawXpById !== undefined && !isNumberRecord(value.heartLawXpById)) return false;
+    if ('verseMasteryByLawId' in value && value.verseMasteryByLawId !== undefined && !isNumberRecord(value.verseMasteryByLawId)) return false;
+    if ('daoHeartClarity' in value && value.daoHeartClarity !== undefined && typeof value.daoHeartClarity !== 'number') return false;
+    if ('turbulence' in value && value.turbulence !== undefined && typeof value.turbulence !== 'number') return false;
+    if ('branchChoicesByLawId' in value && value.branchChoicesByLawId !== undefined && !isStringRecord(value.branchChoicesByLawId)) return false;
+    if ('rootResonanceByPair' in value && value.rootResonanceByPair !== undefined && !isNumberRecord(value.rootResonanceByPair)) return false;
+    if (
+      'activeDaoHeartPracticeId' in value &&
+      value.activeDaoHeartPracticeId !== null &&
+      value.activeDaoHeartPracticeId !== undefined &&
+      typeof value.activeDaoHeartPracticeId !== 'string'
+    ) return false;
+    if (
+      'lastDaoHeartPracticeTickAt' in value &&
+      value.lastDaoHeartPracticeTickAt !== null &&
+      value.lastDaoHeartPracticeTickAt !== undefined &&
+      typeof value.lastDaoHeartPracticeTickAt !== 'number'
+    ) return false;
+    if ('lastDaoHeartOfflineSummary' in value && value.lastDaoHeartOfflineSummary !== null && value.lastDaoHeartOfflineSummary !== undefined && !isRecord(value.lastDaoHeartOfflineSummary)) return false;
+    if ('lastBreakthroughRiskSnapshot' in value && value.lastBreakthroughRiskSnapshot !== null && value.lastBreakthroughRiskSnapshot !== undefined && !isRecord(value.lastBreakthroughRiskSnapshot)) return false;
+    if ('lastBreakthroughFailureSummary' in value && value.lastBreakthroughFailureSummary !== null && value.lastBreakthroughFailureSummary !== undefined && !isRecord(value.lastBreakthroughFailureSummary)) return false;
+    return true;
+  }
 
 function isValidMedicinePouchSlot(value: unknown): value is import('../types').MedicinePouchSlotState {
   if (!isRecord(value)) return false;
@@ -877,7 +945,7 @@ function isValidManualSatchelState(value: unknown): value is SaveData['manualSat
   return true;
 }
 
-function isValidPrestigeState(value: unknown): value is SaveData['prestigeState'] {
+function isValidPrestigeState(value: unknown): value is NonNullable<SaveData['prestigeState']> {
   if (!isRecord(value)) return false;
   if (typeof value.totalAP !== 'number') return false;
   if (typeof value.lifetimeAP !== 'number') return false;
@@ -1182,12 +1250,25 @@ export function mergeWithDefaults(partialSave: unknown): SaveData {
   const baseMedicinePouchState = defaults.medicinePouchState ?? createDefaultMedicinePouchState();
   const baseCraftSessionState = defaults.craftSessionState ?? createDefaultCraftSessionState();
   const baseRecipeMasteryState = defaults.recipeMasteryState ?? createDefaultRecipeMasteryState();
+  const baseTrainingState = defaults.trainingState ?? createDefaultTrainingSaveState();
   const baseStoryState = defaults.storyState ?? { seenFlags: {}, storyLog: [] };
+  const baseOnboardingState = defaults.onboardingState ?? createDefaultOnboardingState();
   const baseUiSettings: SaveUiSettingsState = {
     storyMotionMode: 'full',
     ...createDefaultDaoMandateGuidanceSettings(),
     daoMandateLessonMemory: createDefaultDaoMandateLessonMemory(),
   };
+  const rawActivityActive =
+    isRecord(record.activityState) && isRecord(record.activityState.active)
+      ? record.activityState.active
+      : null;
+  const activeActivityType =
+    rawActivityActive && typeof rawActivityActive.type === 'string'
+      ? rawActivityActive.type
+      : null;
+  const trainingRuntimeContent = useContentStore.getState().raw
+    ? createTrainingRuntimeContent(useContentStore.getState().raw!)
+    : null;
 
   const merged: SaveData & Record<string, unknown> = {
     ...defaults,
@@ -1203,13 +1284,26 @@ export function mergeWithDefaults(partialSave: unknown): SaveData {
         }
       : defaultsMeta,
     gameState: isRecord(record.gameState) ? { ...defaults.gameState, ...record.gameState } : defaults.gameState,
-    prestigeState: mergeSlice(record.prestigeState, defaults.prestigeState, isValidPrestigeState, 'prestigeState'),
+    prestigeState: (() => {
+      const mergedPrestige = mergeSlice(record.prestigeState, defaults.prestigeState!, isValidPrestigeState, 'prestigeState');
+      return {
+        ...mergedPrestige,
+        memoryLedger: sanitizePrestigeMemoryLedger(
+          isRecord(record.prestigeState) ? record.prestigeState.memoryLedger : mergedPrestige.memoryLedger,
+        ),
+      };
+    })(),
     inventoryState: isRecord(record.inventoryState)
       ? { ...defaults.inventoryState, ...record.inventoryState }
       : defaults.inventoryState,
     craftSessionState: mergeCraftSessionState(record.craftSessionState, baseCraftSessionState),
     medicinePouchState: mergeMedicinePouchState(record.medicinePouchState, baseMedicinePouchState),
     recipeMasteryState: mergeRecipeMasteryState(record.recipeMasteryState, baseRecipeMasteryState),
+    trainingState: sanitizeTrainingSaveState(
+      record.trainingState ?? baseTrainingState,
+      trainingRuntimeContent,
+      { activeActivityType: activeActivityType as any },
+    ),
     combatSettings: isRecord(record.combatSettings)
       ? { ...defaults.combatSettings, ...record.combatSettings }
       : defaults.combatSettings,
@@ -1298,6 +1392,7 @@ export function mergeWithDefaults(partialSave: unknown): SaveData {
       isValidManualSatchelState,
       'manualSatchelState',
     ),
+    onboardingState: sanitizeOnboardingState(record.onboardingState, baseOnboardingState),
   };
 
   if (typeof merged.timestamp !== 'number' || Number.isNaN(merged.timestamp)) {

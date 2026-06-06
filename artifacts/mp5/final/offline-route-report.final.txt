@@ -1,0 +1,13 @@
+
+> cultivation-idle@0.0.0 release:offline-route-report
+> tsc --project tsconfig.tests.json && node --loader=./scripts/relativeJsLoader.mjs tmp-tests/scripts/release/offlineRouteReport.js
+
+=== Offline-heavy Route Report (Packet 7.3b) ===
+Generated: 2026-06-03T04:14:26.579Z
+Status: pass
+Elapsed: 412 ms
+Offline windows: 2
+Comparisons:
+- offline_combat_progress: route=0 baseline=0 verdict=equal
+- offline_trial_clear_count: route=0 baseline=0 verdict=equal
+- offline_qi_vs_active_theoretical: route=882073.72 baseline=1534041.26 verdict=non_dominant

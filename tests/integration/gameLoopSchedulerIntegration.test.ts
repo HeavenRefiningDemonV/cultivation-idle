@@ -37,7 +37,7 @@ function createRafHost() {
 function createLoopDeps(): {
   deps: GameLoopDependencies;
   scheduler: SimulationScheduler;
-  calls: Record<'game' | 'cultivation' | 'combat' | 'queues' | 'diagnostics' | 'autosave', number>;
+  calls: Record<'game' | 'cultivation' | 'training' | 'combat' | 'queues' | 'diagnostics' | 'autosave', number>;
   rafHost: ReturnType<typeof createRafHost>;
 } {
   const rafHost = createRafHost();
@@ -45,6 +45,7 @@ function createLoopDeps(): {
   const calls = {
     game: 0,
     cultivation: 0,
+    training: 0,
     combat: 0,
     queues: 0,
     diagnostics: 0,
@@ -56,6 +57,7 @@ function createLoopDeps(): {
     cancelAnimationFrame: rafHost.cancelAnimationFrame,
     gameTick: () => { calls.game += 1; },
     cultivationTick: () => { calls.cultivation += 1; },
+    trainingTick: () => { calls.training += 1; },
     combatTick: () => { calls.combat += 1; },
     queueTick: () => { calls.queues += 1; },
     progressionDiagnosticsTick: () => { calls.diagnostics += 1; },
@@ -98,6 +100,7 @@ test('GameLoop visual rAF does not call authoritative gameplay ticks', () => {
   assert.deepEqual(calls, {
     game: 0,
     cultivation: 0,
+    training: 0,
     combat: 0,
     queues: 0,
     diagnostics: 0,
@@ -117,6 +120,7 @@ test('GameLoop authoritative work is reachable through scheduler drains', () => 
 
   assert.equal(calls.game, 4);
   assert.equal(calls.cultivation, 4);
+  assert.equal(calls.training, 4);
   assert.equal(calls.combat, 10);
   assert.equal(calls.queues, 1);
   assert.equal(calls.diagnostics, 1);
@@ -146,11 +150,12 @@ test('reset-style start stop start does not duplicate scheduler jobs', () => {
 test('registerSimulationSchedulerJobs wires expected cadences and combat gate', () => {
   const scheduler = new SimulationScheduler({ autoStartHost: false });
   let combatEnabled = false;
-  const calls = { game: 0, cultivation: 0, combat: 0, queues: 0, diagnostics: 0, autosave: 0 };
+  const calls = { game: 0, cultivation: 0, training: 0, combat: 0, queues: 0, diagnostics: 0, autosave: 0 };
 
   registerSimulationSchedulerJobs(scheduler, {
     gameTick: () => { calls.game += 1; },
     cultivationTick: () => { calls.cultivation += 1; },
+    trainingTick: () => { calls.training += 1; },
     combatTick: () => { calls.combat += 1; },
     queueTick: () => { calls.queues += 1; },
     progressionDiagnosticsTick: () => { calls.diagnostics += 1; },
@@ -171,6 +176,7 @@ test('registerSimulationSchedulerJobs wires expected cadences and combat gate', 
 
   assert.equal(calls.game, 4);
   assert.equal(calls.cultivation, 4);
+  assert.equal(calls.training, 4);
   assert.equal(calls.combat, 3);
   assert.equal(calls.queues, 1);
   assert.equal(calls.diagnostics, 1);
@@ -185,6 +191,7 @@ test('GameLoop source keeps rAF visual-only and moves authoritative calls to sch
   assert.match(rafSource, /requestAnimationFrame/);
   assert.equal(rafSource.includes('gameTick('), false);
   assert.equal(rafSource.includes('cultivationTick('), false);
+  assert.equal(rafSource.includes('trainingTick('), false);
   assert.equal(rafSource.includes('combatTick('), false);
   assert.equal(rafSource.includes('useGameStore.getState().tick'), false);
   assert.equal(rafSource.includes('cultivationService.tick'), false);

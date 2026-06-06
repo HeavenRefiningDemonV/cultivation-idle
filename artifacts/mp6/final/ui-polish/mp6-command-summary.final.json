@@ -1,0 +1,88 @@
+﻿[
+    {
+        "exitCode":  0,
+        "command":  "npm run release:implementation-baseline:json",
+        "name":  "preflight release:implementation-baseline:json",
+        "log":  "artifacts/mp6/preflight/ui-polish/logs/release-implementation-baseline-json.stdout.log"
+    },
+    {
+        "exitCode":  0,
+        "command":  "npm run release:runtime-content-manifest:json",
+        "name":  "preflight release:runtime-content-manifest:json",
+        "log":  "artifacts/mp6/preflight/ui-polish/logs/release-runtime-content-manifest-json.stdout.log"
+    },
+    {
+        "exitCode":  0,
+        "command":  "npm run typecheck",
+        "name":  "preflight typecheck",
+        "log":  "artifacts/mp6/preflight/ui-polish/logs/typecheck.stdout.log"
+    },
+    {
+        "exitCode":  0,
+        "command":  "npm run check:icons",
+        "name":  "preflight check:icons",
+        "log":  "artifacts/mp6/preflight/ui-polish/logs/check-icons.stdout.log"
+    },
+    {
+        "exitCode":  0,
+        "command":  "npm run validate:content",
+        "name":  "preflight validate:content",
+        "log":  "artifacts/mp6/preflight/ui-polish/logs/validate-content.stdout.log"
+    },
+    {
+        "exitCode":  0,
+        "command":  "npm exec tsc -- --project tsconfig.tests.json",
+        "name":  "preflight test TypeScript compile",
+        "log":  "artifacts/mp6/preflight/ui-polish/logs/tsconfig-tests-compile.stdout.log"
+    },
+    {
+        "exitCode":  0,
+        "command":  "node --test --loader=./scripts/relativeJsLoader.mjs --experimental-strip-types tests/contracts/mp6UiPolishSurfaceContract.test.ts ...",
+        "name":  "focused MP6 contracts",
+        "log":  "artifacts/mp6/final/ui-polish/logs/focused-contracts.final.stdout.log"
+    },
+    {
+        "exitCode":  0,
+        "command":  "npx playwright test tests/e2e/mp6-ui-polish.spec.ts --project=chromium",
+        "name":  "MP6 Playwright screenshots",
+        "log":  "artifacts/mp6/final/ui-polish/logs/playwright-mp6-ui-polish.final2.stdout.log"
+    },
+    {
+        "exitCode":  0,
+        "command":  "npm run typecheck",
+        "name":  "typecheck",
+        "log":  "artifacts/mp6/final/ui-polish/logs/typecheck.final.stdout.log"
+    },
+    {
+        "exitCode":  0,
+        "command":  "npm run check:icons",
+        "name":  "check:icons",
+        "log":  "artifacts/mp6/final/ui-polish/logs/check-icons.final.stdout.log"
+    },
+    {
+        "exitCode":  0,
+        "command":  "npm run validate:content",
+        "name":  "validate:content",
+        "log":  "artifacts/mp6/final/ui-polish/logs/validate-content.final.stdout.log"
+    },
+    {
+        "exitCode":  0,
+        "command":  "npm run build",
+        "name":  "build",
+        "log":  "artifacts/mp6/final/ui-polish/logs/build.final.stdout.log"
+    },
+    {
+        "exitCode":  1,
+        "command":  "npm run test:contracts",
+        "name":  "test:contracts",
+        "log":  "artifacts/mp6/final/ui-polish/logs/test-contracts.final2.stdout.log",
+        "blocker":  "Existing balanceRegressionScripts failure: Timing probe ended without milestone spirit_severing_entry."
+    },
+    {
+        "exitCode":  2,
+        "command":  "npm run release:gate:json",
+        "name":  "release:gate:json",
+        "log":  "artifacts/mp6/final/ui-polish/logs/release-gate-json.final2.stdout.log",
+        "blocker":  "NO_GO: 5 unresolved blockers, 1 pending manual check, 4 untracked waiver candidates."
+    }
+]

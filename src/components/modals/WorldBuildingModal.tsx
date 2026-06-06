@@ -22,6 +22,7 @@ import { ForgeExactScreenOwner } from '../../features/professions/forgeExact/ind
 import { BountiesExactScreenOwner } from '../../features/world/bountiesExact/index.js';
 import { ExpeditionsExactScreenOwner } from '../../features/world/expeditionsExact/index.js';
 import { ManualPavilionScreenOwner } from '../../features/world/manualPavilionExact/index.js';
+import { TrainingHallScreenOwner } from '../../features/trainingHall/index.js';
 import { PERF_LABELS } from '../../services/performance/index.js';
 import { PerfProfiler, useRenderCounter } from '../../services/performance/perfReact.js';
 
@@ -44,6 +45,7 @@ const WORLD_MODAL_LIVE_KEYS: ReadonlyArray<WorldBuildingKey> = [
   'expeditions',
   'outskirts',
   'gateTrial',
+  'trainingHall',
   'ruins',
 ];
 
@@ -180,11 +182,15 @@ export function WorldBuildingModal({
           />
         );
         break;
+      case 'trainingHall':
+        content = (
+          <TrainingHallScreenOwner
+            cityId={storeCityId}
+          />
+        );
+        break;
       case 'ruins':
-        content = <RuinsBuildingPanel cityId={storeCityId} />;
-        if (storeModalIntent?.ruinsExactMode === 'fixture') {
-          content = <RuinsBuildingPanel cityId={storeCityId} forceFixture />;
-        }
+        content = <RuinsBuildingPanel cityId={storeCityId} forceFixture={storeModalIntent?.ruinsExactMode === 'fixture'} />;
         break;
       default:
         content = isCombatModule(buildingKey)

@@ -118,12 +118,12 @@
 .worldModuleCard__chips {
   display: flex;
   gap: 4px;
-  min-block-size: 22px;
+  min-block-size: 24px;
 }
 
 .worldModuleCard__chipSlot {
   min-inline-size: 74px;
-  min-block-size: 22px;
+  min-block-size: 24px;
   display: inline-flex;
   align-items: center;
 }

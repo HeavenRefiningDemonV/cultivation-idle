@@ -1,0 +1,382 @@
+{
+  "viewport": "1366x768",
+  "screen": "Cultivation",
+  "url": "http://127.0.0.1:5173/",
+  "documentTitle": "cultivation-idle-temp",
+  "rootTestIds": [
+    "cultivation-exact-page",
+    "cultivation-dantian-anchor",
+    "cultivation-breakthrough-readiness",
+    "cultivation-qi-lane"
+  ],
+  "headings": [],
+  "primaryCta": {
+    "text": "Next MilestoneBreakthrough",
+    "disabled": false,
+    "ariaLabel": null,
+    "rect": {
+      "x": 36,
+      "y": 136,
+      "width": 222,
+      "height": 104,
+      "right": 258,
+      "bottom": 240
+    }
+  },
+  "buttons": [
+    {
+      "text": "Next MilestoneBreakthrough",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 36,
+        "y": 136,
+        "width": 222,
+        "height": 104,
+        "right": 258,
+        "bottom": 240
+      }
+    },
+    {
+      "text": "NeedQi Cap100",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 36,
+        "y": 254,
+        "width": 222,
+        "height": 104,
+        "right": 258,
+        "bottom": 358
+      }
+    },
+    {
+      "text": "ActionBreak Through",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 36,
+        "y": 372,
+        "width": 222,
+        "height": 104,
+        "right": 258,
+        "bottom": 476
+      }
+    },
+    {
+      "text": "Dao",
+      "disabled": false,
+      "ariaLabel": "Open Dao Heart",
+      "rect": {
+        "x": 1304,
+        "y": 74,
+        "width": 82,
+        "height": 122,
+        "right": 1386,
+        "bottom": 196
+      }
+    },
+    {
+      "text": "PathHeaven",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1114,
+        "y": 136,
+        "width": 221,
+        "height": 78,
+        "right": 1335,
+        "bottom": 214
+      }
+    },
+    {
+      "text": "Spirit RootWater / Mortal",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1114,
+        "y": 222,
+        "width": 221,
+        "height": 78,
+        "right": 1335,
+        "bottom": 300
+      }
+    },
+    {
+      "text": "Heart LawEmber Thread Sutra",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1114,
+        "y": 308,
+        "width": 221,
+        "height": 78,
+        "right": 1335,
+        "bottom": 386
+      }
+    },
+    {
+      "text": "VerseChapter 1",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1114,
+        "y": 394,
+        "width": 221,
+        "height": 78,
+        "right": 1335,
+        "bottom": 472
+      }
+    },
+    {
+      "text": "Breath / FocusBalanced",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1114,
+        "y": 480,
+        "width": 221,
+        "height": 78,
+        "right": 1335,
+        "bottom": 558
+      }
+    },
+    {
+      "text": "Break Through",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 499,
+        "y": 595,
+        "width": 369,
+        "height": 54,
+        "right": 867,
+        "bottom": 649
+      }
+    },
+    {
+      "text": "Start Cultivation",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 550,
+        "y": 657,
+        "width": 266,
+        "height": 32,
+        "right": 816,
+        "bottom": 689
+      }
+    },
+    {
+      "text": "Status",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 103,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 244,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "Cultivation",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 248,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 390,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "World",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 394,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 535,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "Inventory",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 539,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 681,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "Techniques",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 685,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 827,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "Records",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 831,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 972,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "Prestige",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 976,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 1118,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "Settings",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1122,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 1263,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "",
+      "disabled": false,
+      "ariaLabel": "Dismiss notification",
+      "rect": {
+        "x": 1305,
+        "y": 178,
+        "width": 24,
+        "height": 14,
+        "right": 1329,
+        "bottom": 192
+      }
+    }
+  ],
+  "scrollWidth": 1366,
+  "innerWidth": 1366,
+  "scrollHeight": 768,
+  "innerHeight": 768,
+  "suspectedClippedText": [
+    {
+      "text": "RealmQi CondensationStage 1Qi193.41Cultivation Rate51.57 / sStability0%ForegroundIdleNext MilestoneBreakthroughNeedQi Cap100ActionBreak ThroughBreakthrough Read",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 1366,
+        "height": 768,
+        "right": 1366,
+        "bottom": 768
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "RealmQi CondensationStage 1Qi193.41Cultivation Rate51.57 / sStability0%ForegroundIdleNext MilestoneBreakthroughNeedQi Cap100ActionBreak ThroughBreakthrough Read",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 1366,
+        "height": 768,
+        "right": 1366,
+        "bottom": 768
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Breakthrough Ready",
+      "rect": {
+        "x": 740,
+        "y": 387,
+        "width": 1,
+        "height": 1,
+        "right": 741,
+        "bottom": 388
+      },
+      "overflow": "hidden/hidden/hidden"
+    }
+  ],
+  "viewportIssues": [],
+  "consoleSinceStart": [
+    "debug: [vite] connecting...",
+    "debug: [vite] connected.",
+    "info: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+    "log: [App] Initializing game...",
+    "log: [GameLoop] Initializing game...",
+    "log: [GameLoop] Store dependencies wired",
+    "log: [GameLoop] Prestige store initialized",
+    "log: [SpiritRoot] Generated: Mortal water (66% purity)",
+    "log: [GameLoop] Generated initial spirit root",
+    "log: [GameLoop] No save found, starting new game",
+    "log: [GameLoop] Added starter items to inventory",
+    "log: [GameLoop] Starting game loop...",
+    "log: [GameLoop] Game loop started",
+    "log: [GameLoop] Game initialized successfully",
+    "log: [App] Game initialized successfully",
+    "log: [App] Initializing game...",
+    "log: [GameLoop] Initializing game...",
+    "log: [GameLoop] Store dependencies wired",
+    "log: [GameLoop] Prestige store initialized",
+    "log: [GameLoop] No save found, starting new game",
+    "warning: [GameLoop] Already running",
+    "log: [GameLoop] Game initialized successfully",
+    "log: [App] Game initialized successfully",
+    "warning: [ContentValidation] Technique counts by path: Heaven=20, Earth=20, Martial=20",
+    "warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=heaven: 6",
+    "warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=earth: 6",
+    "warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=martial: 6",
+    "warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=heaven: 7",
+    "warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=earth: 9",
+    "warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=martial: 8",
+    "warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=heaven: 9",
+    "warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=earth: 9",
+    "warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=martial: 10",
+    "warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=heaven: 10",
+    "warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=earth: 10",
+    "warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=martial: 10",
+    "warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=heaven: 10",
+    "warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=earth: 10",
+    "warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=martial: 10",
+    "info: [Content] Loaded 5 cities, 60 techniques (H/E/M: 20/20/20)",
+    "info: [Content] Prestige upgrades: 27",
+    "log: [SaveLoad] Saving game...",
+    "log: [SaveLoad] Game saved successfully at 5/29/2026, 7:35:15 PM",
+    "log: [SaveLoad] Saving game...",
+    "log: [SaveLoad] Game saved successfully at 5/29/2026, 7:35:18 PM",
+    "log: [UI] Notification added: success - Life begins: Heaven • Ember Thread Sutra • Balanced",
+    "log: [SaveLoad] Saving game...",
+    "log: [SaveLoad] Game saved successfully at 5/29/2026, 7:35:18 PM"
+  ],
+  "textSample": "Realm\nQi Condensation\nStage 1\nQi\n193.41\nCultivation Rate\n51.57 / s\nStability\n0%\nForeground\nIdle\nNext Milestone\nBreakthrough\nNeed\nQi Cap\n100\nAction\nBreak Through\nBreakthrough Ready\nDao\nPath\nHeaven\nSpirit Root\nWater / Mortal\nHeart Law\nEmber Thread Sutra\nVerse\nChapter 1\nBreath / Focus\nBalanced\nBreakthrough\nReady\nBREAKTHROUGH READINESS\nQi and gate requirements are ready.\nQi\nReady\nRealm edge\nReached\nGate item\nNot needed now\nQi 193.41 / 100\n+51.57/s\nBreak Through\nStart Cultivation\nStatus\nCultivation\nWorld\nInventory\nTechniques\nRecords\nPrestige\nSettings\nLife begins: Heaven • Ember Thread Sutra • Balanced"
+}

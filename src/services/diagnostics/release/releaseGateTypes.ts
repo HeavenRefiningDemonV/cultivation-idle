@@ -8,6 +8,11 @@ export type ReleaseGateCheckId =
   | 'balance_regression'
   | 'route_comparison'
   | 'runtime_diagnostics'
+  | 'mp5_reset_memory'
+  | 'mp5_offline_trust'
+  | 'mp5_telemetry_schema'
+  | 'mp5_balance_simulations'
+  | 'mp5_prestige_runtime_audit'
   | 'vocabulary_audit'
   | 'full_test_suite';
 
@@ -33,6 +38,8 @@ export type ReleaseGateCommandEvidence = {
   exitCode: number;
   stdoutPreview: string;
   stderrPreview: string;
+  timedOut?: boolean;
+  durationMs?: number;
 };
 
 export type ReleaseGateCheckResult = {

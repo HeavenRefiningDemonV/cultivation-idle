@@ -32,13 +32,14 @@ test('stub scenes remain legal no-asset null-return placeholders', async () => {
 test('proof surfaces continue using their screen-owned exact shell contract paths', async () => {
   const cultivation = await readSource('src/features/cultivation/exact/CultivationExactScreenOwner.tsx');
   const status = await readSource('src/components/screens/StatusScreen.tsx');
+  const statusLedger = await readSource('src/ui/status/ledger/StatusLedgerPage.tsx');
   const ruinsPanel = await readSource('src/features/world/ruinsExact/RuinsScreenOwner.tsx');
   const gateTrialPanel = await readSource('src/features/world/gateTrialExact/GateTrialScreenOwner.tsx');
 
   assert.match(cultivation, /ScreenFxStage/);
   assert.match(cultivation, /FxStagePortal/);
-  assert.match(status, /ScreenFxStage/);
-  assert.match(status, /FxStagePortal/);
+  assert.match(status, /StatusLedgerPage/);
+  assert.match(statusLedger, /statusLedgerRoot/);
   assert.match(ruinsPanel, /RuinsExactMockupScreen/);
   assert.match(gateTrialPanel, /GateTrialExactScreen/);
 });

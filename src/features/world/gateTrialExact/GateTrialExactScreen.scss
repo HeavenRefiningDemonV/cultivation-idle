@@ -30,6 +30,8 @@
   --gate-warning: #c79339;
   --gate-gold: #bba375;
   --gate-red-ink: #8a3830;
+  --gate-failure-shake-max: 3px;
+  --gate-failure-shake-duration: 120ms;
 
   position: relative;
   display: grid;
@@ -3089,4 +3091,244 @@ button.gateTrialTacticalCell:disabled {
   color: rgba(255, 242, 210, 0.78);
   font-size: 0.7rem;
   line-height: 1.25;
+}
+
+@media (max-width: 1500px), (max-height: 820px) {
+  .gateTrialExactPage {
+    --gate-page-pad-x: 18px;
+    --gate-page-pad-top: 10px;
+    --gate-page-pad-bottom: 86px;
+    --gate-left-rail-width: 330px;
+    --gate-right-rail-width: 360px;
+    --gate-gap: 14px;
+    --gate-top-height: 122px;
+    --gate-scenic-min-height: clamp(330px, 42vh, 410px);
+    --gate-bottom-rail-height: 76px;
+    --gate-cta-height: 58px;
+    --gate-left-rail-top-offset: 28px;
+    --gate-right-rail-top-offset: 0px;
+    --gate-summary-lift: 0px;
+    overflow: auto;
+  }
+
+  .gateTrialTopRegion {
+    grid-template-rows: 42px 50px;
+    row-gap: 7px;
+  }
+
+  .gateTrialTopRegion__topBand {
+    grid-template-columns: 230px minmax(0, 1fr) 340px;
+    column-gap: 18px;
+    min-height: 40px;
+  }
+
+  .gateTrialTopRegion__titleAnchor h1 {
+    font-size: 34px;
+  }
+
+  .gateTrialTopRegion__macroRibbon {
+    width: min(100%, 690px);
+    height: 28px;
+  }
+
+  .gateTrialTopRegion__statusRibbon {
+    min-height: 34px;
+    padding-inline: 10px;
+  }
+
+  .gateTrialTopRegion__tacticalStrip {
+    height: 50px;
+    min-height: 50px;
+    max-height: 50px;
+    gap: 7px;
+  }
+
+  .gateTrialTacticalCell {
+    padding: 5px 7px;
+    grid-template-columns: 24px minmax(0, 1fr) 12px;
+    column-gap: 6px;
+  }
+
+  .gateTrialTacticalCell__iconDock {
+    width: 24px;
+    height: 24px;
+  }
+
+  .gateTrialTacticalCell__label {
+    font-size: 10px;
+  }
+
+  .gateTrialTacticalCell__primary {
+    font-size: 11px;
+  }
+
+  .gateTrialExactPage__gateHeaderSlot {
+    top: 118px;
+    width: clamp(430px, 34vw, 500px);
+  }
+
+  .gateTrialGateHeader__plaqueShell {
+    min-height: 42px;
+  }
+
+  .gateTrialGateHeader__title {
+    font-size: clamp(28px, 2.4vw, 36px);
+  }
+
+  .gateTrialExactPage__leftRail,
+  .gateTrialExactPage__rightRail {
+    align-items: stretch;
+    overflow: hidden;
+  }
+
+  .gateTrialMinimumChecklist {
+    height: 100%;
+    min-height: 0;
+    padding: 18px 16px;
+    overflow: hidden;
+  }
+
+  .gateTrialMinimumChecklist__header {
+    min-height: 48px;
+    padding-right: 44px;
+  }
+
+  .gateTrialMinimumChecklist__title {
+    font-size: 24px;
+  }
+
+  .gateTrialMinimumChecklist__stamp {
+    width: 58px;
+    height: 58px;
+  }
+
+  .gateTrialMinimumChecklist__rows {
+    overflow: auto;
+  }
+
+  .gateTrialMinimumChecklist__row {
+    min-height: 74px;
+    padding-block: 8px;
+  }
+
+  .gateTrialRecommendedPanel {
+    height: 100%;
+    min-height: 0;
+    padding: 14px 14px;
+    row-gap: 8px;
+    overflow: auto;
+  }
+
+  .gateTrialRecommendedPanel__header {
+    min-height: 36px;
+  }
+
+  .gateTrialRecommendedPanel__title {
+    font-size: 22px;
+  }
+
+  .gateTrialRecommendedPanel__sectionTitle {
+    margin-bottom: 6px;
+    font-size: 14px;
+  }
+
+  .gateTrialRecommendedPanel__prepRows,
+  .gateTrialFailSafeFactRows {
+    gap: 5px;
+  }
+
+  .gateTrialRecommendedPanel__supportRun {
+    margin-top: 5px;
+    padding: 6px 8px;
+  }
+
+  .gateTrialRecommendedPanel__prepRow,
+  .gateTrialRecommendedPanel__factRow,
+  .gateTrialFailSafeFactRow {
+    min-height: 24px;
+    column-gap: 7px;
+  }
+
+  .gateTrialRecommendedPanel__prepTitle,
+  .gateTrialFailSafeFactRow__label,
+  .gateTrialFailSafeFactRow__value {
+    font-size: 12px;
+  }
+
+  .gateTrialRecommendedPanel__prepDetail,
+  .gateTrialRecommendedPanel__supportRun span {
+    font-size: 11px;
+    line-height: 1.16;
+  }
+
+  .gateTrialExactPage__summaryDock {
+    transform: none;
+    align-self: start;
+    gap: 6px;
+    overflow: hidden;
+  }
+
+  .gateTrialTrialSummary {
+    height: 144px;
+    padding: 10px 14px;
+  }
+
+  .gateTrialTrialSummary__title {
+    font-size: 18px;
+  }
+
+  .gateTrialTrialSummary__rows {
+    margin-top: 6px;
+  }
+
+  .gateTrialTrialSummary__row {
+    min-height: 21px;
+  }
+
+  .gateTrialTrialSummary__label,
+  .gateTrialTrialSummary__value {
+    font-size: 12px;
+  }
+
+  .gateTrialReadinessRail {
+    --gate-rail-medallion-size: 52px;
+    --gate-rail-final-medallion-size: 68px;
+    --gate-rail-line-y: 40px;
+  }
+
+  .gateTrialReadinessRail__track {
+    min-height: 68px;
+  }
+
+  .gateTrialReadinessRail__title {
+    font-size: 16px;
+  }
+
+  .gateTrialExactPage__ctaSlot {
+    align-items: start;
+  }
+
+  .gateTrialPrimaryCta {
+    min-height: 54px;
+  }
+
+  .gateTrialPrimaryCta__label {
+    font-size: clamp(22px, 1.9vw, 28px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gateTrialExactPage *,
+  .gateTrialExactPage *::before,
+  .gateTrialExactPage *::after {
+    animation: none;
+    transition-duration: 1ms;
+    scroll-behavior: auto;
+  }
+
+  .gateTrialScenicStage__portalBloom,
+  .gateTrialScenicStage__mist,
+  .gateTrialReadinessSeal {
+    filter: none;
+  }
 }

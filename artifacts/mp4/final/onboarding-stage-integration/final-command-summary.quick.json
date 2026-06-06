@@ -1,0 +1,50 @@
+[
+    {
+        "name":  "tsconfig-tests",
+        "command":  "npm exec tsc -- --project tsconfig.tests.json",
+        "status":  "PASS",
+        "exitCode":  0,
+        "durationMs":  12632,
+        "log":  "artifacts\\mp4\\final\\onboarding-stage-integration\\logs\\tsconfig-tests.final.log"
+    },
+    {
+        "name":  "typecheck",
+        "command":  "npm run typecheck",
+        "status":  "PASS",
+        "exitCode":  0,
+        "durationMs":  408,
+        "log":  "artifacts\\mp4\\final\\onboarding-stage-integration\\logs\\typecheck.final.log"
+    },
+    {
+        "name":  "check-icons",
+        "command":  "npm run check:icons",
+        "status":  "PASS",
+        "exitCode":  0,
+        "durationMs":  418,
+        "log":  "artifacts\\mp4\\final\\onboarding-stage-integration\\logs\\check-icons.final.log"
+    },
+    {
+        "name":  "validate-content",
+        "command":  "npm run validate:content",
+        "status":  "PASS",
+        "exitCode":  0,
+        "durationMs":  1394,
+        "log":  "artifacts\\mp4\\final\\onboarding-stage-integration\\logs\\validate-content.final.log"
+    },
+    {
+        "name":  "build",
+        "command":  "npm run build",
+        "status":  "PASS",
+        "exitCode":  0,
+        "durationMs":  9915,
+        "log":  "artifacts\\mp4\\final\\onboarding-stage-integration\\logs\\build.final.log"
+    },
+    {
+        "name":  "targeted-onboarding-suite",
+        "command":  "node --loader=./scripts/relativeJsLoader.mjs --test tmp-tests/tests/contracts/onboardingMilestoneContract.test.js tmp-tests/tests/integration/onboardingMigration.test.js tmp-tests/tests/contracts/onboardingPolicy.test.js tmp-tests/tests/integration/onboardingModuleGating.test.js tmp-tests/tests/contracts/onboardingMilestoneSurface.test.js tmp-tests/tests/integration/onboardingUiState.test.js tmp-tests/tests/integration/onboardingFreshSaveFlow.test.js tmp-tests/tests/integration/onboardingSourceSinkGuards.test.js",
+        "status":  "PASS",
+        "exitCode":  0,
+        "durationMs":  910,
+        "log":  "artifacts\\mp4\\final\\onboarding-stage-integration\\logs\\targeted-onboarding-suite.final.log"
+    }
+]

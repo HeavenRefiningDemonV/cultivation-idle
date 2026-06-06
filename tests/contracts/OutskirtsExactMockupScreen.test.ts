@@ -169,7 +169,7 @@ void test('P6 no-scope-widening smoke: side cards, strip, CTA, and summary owner
   for (const token of unchangedOwners) assert.equal(html.includes(token), true);
 });
 
-void test('C1 no visual rendering change: active combatStage data does not mount combat theater visuals', () => {
+void test('C1 active combatStage data mounts exact theater visuals without legacy owners', () => {
   const surface = buildOutskirtsMockupSurface(createActiveOutskirtsMockupFixture(), { activityMode: 'active' });
   const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
 
@@ -181,15 +181,15 @@ void test('C1 no visual rendering change: active combatStage data does not mount
     'outskirts-exact-strip-slot',
     'outskirts-exact-cta-slot',
     'outskirts-exact-summary-dock',
+    'data-testid="outskirts-combat-theater"',
+    'data-testid="outskirts-combat-health-bars"',
+    'data-testid="outskirts-combat-log-slip"',
+    'floating-hit',
   ]) {
     assert.equal(html.includes(token), true);
   }
 
   for (const forbidden of [
-    'outskirtsCombatTheater',
-    'outskirts-combat-health-bars',
-    'outskirts-combat-log-slip',
-    'floating-hit',
     'ink-combat-shell',
     'OutskirtsLegacyActiveSurface',
     'outskirts-view-active-contained',
@@ -360,7 +360,7 @@ void test('P9 encounter strip visual-state stability keeps lane footprint with m
 });
 
 void test('P9 strip includes reduced-motion guardrails without geometry drift hooks', async () => {
-  const styleSource = await readFile(new URL('../../src/features/world/outskirts/OutskirtsExactMockupScreen.scss', import.meta.url), 'utf8');
+  const styleSource = await readFile('src/features/world/outskirts/OutskirtsExactMockupScreen.scss', 'utf8');
   assert.match(styleSource, /@media \(prefers-reduced-motion: reduce\)/);
   assert.match(styleSource, /outskirtsEncounterProgressStrip__node/);
   assert.match(styleSource, /outskirtsEncounterProgressStrip__arrow/);
@@ -496,7 +496,7 @@ void test('P11 auto-repeat pill reflects boolean state and dispatches toggle cal
       toggled += 1;
     },
   });
-  const toggleRow = readChildren(card).at(-1) as { props?: { children?: unknown[] } };
+  const toggleRow = findNode(card, (node) => node.props?.['data-testid'] === 'outskirts-exact-rewards-auto-repeat') as { props?: { children?: unknown[] } } | null;
   const toggleButton = readChildren(toggleRow)[1] as { props?: { onClick?: () => void; ['aria-pressed']?: boolean } };
   toggleButton?.props?.onClick?.();
   assert.equal(toggleButton?.props?.['aria-pressed'], false);
@@ -680,16 +680,16 @@ void test('P12 Packet D no-title/no-combat regression remains locked', () => {
 });
 
 void test('Outskirts exact page has a hard height containment chain', async () => {
-  const scss = await readFile(new URL('../../src/features/world/outskirts/OutskirtsExactMockupScreen.scss', import.meta.url), 'utf8');
+  const scss = await readFile('src/features/world/outskirts/OutskirtsExactMockupScreen.scss', 'utf8');
 
-  assert.match(scss, /\.outskirtsPlanningOwner\s*\{[\s\S]*height:\s*100%;[\s\S]*min-height:\s*0;[\s\S]*overflow:\s*hidden;/);
-  assert.match(scss, /\.outskirtsPlanningOwner > \.outskirtsExactPage\s*\{[\s\S]*flex:\s*1 1 auto;[\s\S]*min-height:\s*0;/);
+  assert.match(scss, /\.outskirtsPlanningOwner,\s*\.outskirtsScreenOwner\s*\{[\s\S]*height:\s*100%;[\s\S]*min-height:\s*0;[\s\S]*overflow:\s*hidden;/);
+  assert.match(scss, /\.outskirtsPlanningOwner > \.outskirtsExactPage,\s*\.outskirtsScreenOwner > \.outskirtsExactPage\s*\{[\s\S]*flex:\s*1 1 auto;[\s\S]*min-height:\s*0;/);
   assert.match(scss, /\.outskirtsExactPage\s*\{[\s\S]*height:\s*100%;[\s\S]*min-height:\s*0;[\s\S]*box-sizing:\s*border-box;[\s\S]*overflow:\s*hidden;/);
   assert.match(scss, /\.outskirtsExactPage__bodyCluster\s*\{[\s\S]*min-height:\s*0;[\s\S]*overflow:\s*hidden;/);
 });
 
 void test('Outskirts exact body grid reserves lower action owners inside contained page', async () => {
-  const scss = await readFile(new URL('../../src/features/world/outskirts/OutskirtsExactMockupScreen.scss', import.meta.url), 'utf8');
+  const scss = await readFile('src/features/world/outskirts/OutskirtsExactMockupScreen.scss', 'utf8');
 
   assert.match(scss, /grid-template-rows:[\s\S]*minmax\(0, 1fr\)[\s\S]*minmax\(var\(--outskirts-identity-row-height\), auto\)[\s\S]*minmax\(var\(--outskirts-strip-row-min-height\), auto\)[\s\S]*minmax\(max\(var\(--outskirts-cta-row-min-height\), var\(--outskirts-summary-row-min-height\)\), auto\);/);
   assert.equal(scss.includes('--outskirts-strip-row-min-height: clamp(156px, 19vh, 220px);'), false);
@@ -699,7 +699,7 @@ void test('Outskirts exact body grid reserves lower action owners inside contain
 });
 
 void test('Outskirts exact compact-height budget keeps CTA and summary in the layout contract', async () => {
-  const scss = await readFile(new URL('../../src/features/world/outskirts/OutskirtsExactMockupScreen.scss', import.meta.url), 'utf8');
+  const scss = await readFile('src/features/world/outskirts/OutskirtsExactMockupScreen.scss', 'utf8');
 
   assert.match(scss, /@media \(max-height: 1050px\)/);
   assert.match(scss, /@media \(max-height: 900px\)/);
@@ -788,15 +788,15 @@ void test('P5 top region element count remains stable across fixture/live and bo
 });
 
 void test('P4/P5 route preservation: World modal route still mounts Outskirts screen owner', async () => {
-  const modalSource = await readFile(new URL('../../src/components/modals/WorldBuildingModal.tsx', import.meta.url), 'utf8');
-  const panelSource = await readFile(new URL('../../src/components/screens/world/buildings/OutskirtsBuildingPanel.tsx', import.meta.url), 'utf8');
+  const modalSource = await readFile('src/components/modals/WorldBuildingModal.tsx', 'utf8');
+  const panelSource = await readFile('src/components/screens/world/buildings/OutskirtsBuildingPanel.tsx', 'utf8');
 
   assert.match(modalSource, /case 'outskirts':\s*content = <OutskirtsBuildingPanel cityId=\{storeCityId\} \/>/);
   assert.match(panelSource, /OutskirtsScreenOwner/);
 });
 
 void test('P11 screen owner keeps grounded settings/start semantics and routes pouch via apothecary intent', async () => {
-  const ownerSource = await readFile(new URL('../../src/features/world/outskirts/OutskirtsScreenOwner.tsx', import.meta.url), 'utf8');
+  const ownerSource = await readFile('src/features/world/outskirts/OutskirtsScreenOwner.tsx', 'utf8');
   assert.match(ownerSource, /startActivity\('outskirts', \{ cityId, sourceId: outskirtsDef.id \}\)/);
   assert.match(ownerSource, /setAutoAttack\(true\)/);
   assert.match(ownerSource, /startCombat\(nextEnemyId,/);

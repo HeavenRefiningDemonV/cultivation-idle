@@ -1,0 +1,178 @@
+.milestoneScroll {
+  position: fixed;
+  left: 50%;
+  bottom: calc(var(--ui-bottom-nav-total, 88px) + 14px);
+  z-index: 92;
+  width: min(840px, calc(100vw - 28px));
+  transform: translateX(-50%);
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: start;
+  padding: 14px 16px;
+  border: 1px solid rgba(92, 58, 27, 0.34);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 249, 236, 0.96), rgba(242, 224, 191, 0.94)),
+    url('../../assets/texture_overlay.png');
+  background-size: auto, 360px 360px;
+  box-shadow:
+    0 16px 28px rgba(44, 28, 14, 0.22),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.32);
+  color: #2f2114;
+}
+
+.milestoneScroll__seal {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid rgba(126, 42, 32, 0.55);
+  background:
+    radial-gradient(circle at 50% 50%, rgba(151, 48, 38, 0.22), rgba(151, 48, 38, 0.08) 58%, transparent 60%),
+    rgba(255, 244, 224, 0.7);
+  box-shadow: inset 0 0 0 1px rgba(126, 42, 32, 0.28);
+}
+
+.milestoneScroll__main {
+  min-width: 0;
+  display: grid;
+  gap: 5px;
+}
+
+.milestoneScroll__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(108, 65, 31, 0.82);
+}
+
+.milestoneScroll__title {
+  margin: 0;
+  font-size: 19px;
+  line-height: 1.16;
+}
+
+.milestoneScroll__why,
+.milestoneScroll__blocked {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.milestoneScroll__why {
+  color: rgba(56, 39, 25, 0.9);
+}
+
+.milestoneScroll__blocked {
+  color: #7b3428;
+  font-weight: 600;
+}
+
+.milestoneScroll__details {
+  display: grid;
+  gap: 7px;
+}
+
+.milestoneScroll__linkButton {
+  width: fit-content;
+  border: 0;
+  background: transparent;
+  color: #6d4625;
+  padding: 0;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.milestoneScroll__linkButton:focus-visible,
+.milestoneScroll__primary:focus-visible,
+.milestoneScroll__secondary:focus-visible {
+  outline: 2px solid rgba(92, 58, 27, 0.85);
+  outline-offset: 2px;
+}
+
+.milestoneScroll__detailPanel {
+  display: grid;
+  gap: 6px;
+  padding: 8px 10px;
+  border: 1px solid rgba(112, 73, 36, 0.2);
+  border-radius: 6px;
+  background: rgba(255, 252, 242, 0.52);
+}
+
+.milestoneScroll__detailRow {
+  display: grid;
+  gap: 2px;
+}
+
+.milestoneScroll__detailRow span {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: rgba(94, 61, 34, 0.8);
+}
+
+.milestoneScroll__detailRow p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.35;
+  color: rgba(54, 39, 27, 0.9);
+}
+
+.milestoneScroll__actions {
+  min-width: 156px;
+  display: grid;
+  gap: 8px;
+}
+
+.milestoneScroll__primary,
+.milestoneScroll__secondary {
+  min-height: 34px;
+  border-radius: 6px;
+  padding: 7px 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.milestoneScroll__primary {
+  border: 1px solid rgba(79, 111, 75, 0.42);
+  background: linear-gradient(180deg, rgba(193, 168, 88, 0.96), rgba(126, 102, 43, 0.96));
+  color: #21170c;
+}
+
+.milestoneScroll__primary:disabled {
+  cursor: not-allowed;
+  filter: saturate(0.72);
+  opacity: 0.68;
+}
+
+.milestoneScroll__secondary {
+  border: 1px solid rgba(107, 70, 34, 0.28);
+  background: rgba(255, 249, 236, 0.78);
+  color: #4d321a;
+}
+
+@media (max-width: 760px) {
+  .milestoneScroll {
+    grid-template-columns: 28px minmax(0, 1fr);
+    bottom: calc(var(--ui-bottom-nav-total, 88px) + 8px);
+  }
+
+  .milestoneScroll__actions {
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    min-width: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .milestoneScroll {
+    transition: none;
+  }
+}

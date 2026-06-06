@@ -67,7 +67,7 @@ test('P7 Recent Omens normalize, dedupe, sort, and keep player-safe copy', () =>
   assert.doesNotMatch(JSON.stringify(omens), /Packet|P7|debug|adapter|placeholder|Run Compass/i);
 });
 
-test('P7 Recent Omens profile visibility keeps Sealed quiet, Elder compact, and Jade full', () => {
+test('P7 Recent Omens visibility is controlled by feed settings, not legacy profile names', () => {
   const surface = buildDaoMandateSurfaceFromRunCompassV2(
     makeRunCompassV2Fixture({
       recentDeltas: [
@@ -85,7 +85,11 @@ test('P7 Recent Omens profile visibility keeps Sealed quiet, Elder compact, and 
   const elder = applyDaoMandateVisibility(surface, { profile: 'elder', settings: { recentOmensFeed: 'compact' } });
   const jade = applyDaoMandateVisibility(surface, { profile: 'jade', settings: { recentOmensFeed: 'full' } });
 
-  assert.equal(sealed.recentOmens.length <= 1, true);
-  assert.equal(elder.recentOmens.length >= 2 && elder.recentOmens.length <= 3, true);
+  assert.equal(sealed.recentOmens.length, 5);
+  assert.equal(elder.recentOmens.length, 3);
   assert.equal(jade.recentOmens.length, 5);
+  assert.deepEqual(
+    sealed.recentOmens.map((omen) => omen.id),
+    jade.recentOmens.map((omen) => omen.id),
+  );
 });

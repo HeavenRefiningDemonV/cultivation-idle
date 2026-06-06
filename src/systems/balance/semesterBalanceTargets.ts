@@ -7,7 +7,7 @@ import type {
 
 const MINUTE_SECONDS = 60;
 const HOUR_SECONDS = 60 * MINUTE_SECONDS;
-const REALM_QI_BASELINE_RUNTIME_TUNING_MULTIPLIER = 1.19;
+const REALM_QI_BASELINE_RUNTIME_TUNING_MULTIPLIER = 1.42;
 
 export interface RealmQiBaselineInput {
   realmIndex: number;

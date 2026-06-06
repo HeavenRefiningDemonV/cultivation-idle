@@ -1,0 +1,82 @@
+{
+  "scenario": {
+    "id": "02-earth-idle",
+    "path": "earth",
+    "mode": "idle",
+    "expect": [
+      "Training Hall",
+      "Earth Body Tempering Yard",
+      "Ready to practice"
+    ]
+  },
+  "setup": {
+    "firstRegimenId": "stone_root_stance",
+    "firstRegimenName": "Stone Root Stance",
+    "primaryStatId": "rooted_guard",
+    "reducedMotion": false
+  },
+  "dom": {
+    "text": "Earth PathTraining HallEarth Body Tempering YardTemper body, meridians, and recovery until the gate floor can hold.Path Foundation0 / 16 averageCurrent Bottleneck: Armor HarmonyRegimensStone Root StanceStone Tempering YardMastery 0 / 100Iron Bone BreathingIron Bone HallMastery 0 / 100Marrow Fire CompressionMarrow FurnaceMastery 0 / 100Mountain Armor WalkArmor Walk CourtMastery 0 / 100Heavy Meridian CirculationHeavy Meridian HallMastery 0 / 100Earthen Pulse RestEarth Pulse Rest YardMastery 0 / 100Ready to practiceStone Root StanceStone Tempering YardSelect a regimen and intensity, then start Path Training.PrimaryRooted Guard0 / 16absentSecondaryBody Integrity0 / 16absentFoundationDao Stability0 / 16absentPath FoundationBody Temperingabsent0 / 16Meridian Fortitudeabsent0 / 16Blood Essenceabsent0 / 16Rooted Guardabsent0 / 16Armor Harmonyabsent0 / 16Recovery Depthabsent0 / 16Quiet0.70x / 0.04 fatigue/minSteady1x / 0.14 fatigue/minHarsh1.35x / 0.35 fatigue/minLimit1.75x / 0.75 fatigue/minStart PracticeStop Practice",
+    "path": "earth",
+    "reducedMotion": "false",
+    "regimenCount": 6,
+    "regimenPaths": [
+      "earth"
+    ],
+    "regimens": [
+      {
+        "text": "Stone Root StanceStone Tempering YardMastery 0 / 100",
+        "path": "earth",
+        "regimenId": "stone_root_stance"
+      },
+      {
+        "text": "Iron Bone BreathingIron Bone HallMastery 0 / 100",
+        "path": "earth",
+        "regimenId": "iron_bone_breathing"
+      },
+      {
+        "text": "Marrow Fire CompressionMarrow FurnaceMastery 0 / 100",
+        "path": "earth",
+        "regimenId": "marrow_fire_compression"
+      },
+      {
+        "text": "Mountain Armor WalkArmor Walk CourtMastery 0 / 100",
+        "path": "earth",
+        "regimenId": "mountain_armor_walk"
+      },
+      {
+        "text": "Heavy Meridian CirculationHeavy Meridian HallMastery 0 / 100",
+        "path": "earth",
+        "regimenId": "heavy_meridian_circulation"
+      },
+      {
+        "text": "Earthen Pulse RestEarth Pulse Rest YardMastery 0 / 100",
+        "path": "earth",
+        "regimenId": "earthen_pulse_rest"
+      }
+    ],
+    "actionButtons": [
+      {
+        "text": "Start Practice",
+        "disabled": false,
+        "title": "Start Practice"
+      },
+      {
+        "text": "Stop Practice",
+        "disabled": true,
+        "title": "No Training Hall practice is active."
+      }
+    ],
+    "alerts": [],
+    "viewport": {
+      "width": 1440,
+      "height": 1100
+    },
+    "documentSize": {
+      "width": 1440,
+      "height": 1100
+    },
+    "horizontalOverflowPx": 0
+  },
+  "screenshotPath": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\training-heart-law\\mp2\\browser\\screenshots\\02-earth-idle.png"
+}

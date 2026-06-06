@@ -1,0 +1,183 @@
+{
+  "generatedAt": 1780012430129,
+  "route": {
+    "routeId": "reclaim",
+    "automationMode": "automated_non_blocking",
+    "status": "pass",
+    "startedAt": 1780012413111,
+    "completedAt": 1780012430129,
+    "elapsedMs": 17018,
+    "checkpoints": [
+      {
+        "checkpointId": "route_started",
+        "elapsedMsSinceStart": 0,
+        "source": "runner",
+        "detail": "Running reclaim + prestige AP/hour probes."
+      },
+      {
+        "checkpointId": "custom:reclaim_probe_completed",
+        "elapsedMsSinceStart": 16789,
+        "source": "runner",
+        "detail": "Reclaim probe complete."
+      },
+      {
+        "checkpointId": "custom:prestige_surface_coherence_checked",
+        "elapsedMsSinceStart": 16873,
+        "source": "runner",
+        "detail": "advisor=true lifeSummary=true"
+      },
+      {
+        "checkpointId": "route_completed",
+        "elapsedMsSinceStart": 17018,
+        "source": "runner",
+        "detail": "foundation=0.213 core=0.174 nascent=0.275"
+      }
+    ],
+    "failures": [],
+    "warnings": [],
+    "interactionLog": [],
+    "alertAudit": [
+      {
+        "source": "run_compass",
+        "count": 1,
+        "detail": "Reclaim probe generated starter spend plans."
+      },
+      {
+        "source": "status_troubleshooting",
+        "count": 0,
+        "detail": "AP/hour rows pass."
+      }
+    ],
+    "comparisonRows": [
+      {
+        "metric": "reclaim_foundation_speedup_ratio",
+        "routeValue": 0.2125,
+        "baselineValue": 0.15,
+        "verdict": "better",
+        "detail": "Foundation reentry should materially improve vs first-life baseline."
+      },
+      {
+        "metric": "reclaim_core_speedup_ratio",
+        "routeValue": 0.1736,
+        "baselineValue": 0.15,
+        "verdict": "better",
+        "detail": "Core reentry should materially improve vs first-life baseline."
+      },
+      {
+        "metric": "reclaim_nascent_speedup_ratio",
+        "routeValue": 0.2745,
+        "baselineValue": 0.1,
+        "verdict": "better",
+        "detail": "Nascent reclaim should show visible acceleration in deep-cap scenario."
+      },
+      {
+        "metric": "reclaim_first_purchase_feel_passes",
+        "routeValue": true,
+        "baselineValue": true,
+        "verdict": "equal",
+        "detail": "First purchase feel must satisfy live prestige targets."
+      },
+      {
+        "metric": "reclaim_prestige_targets_core_window",
+        "routeValue": true,
+        "baselineValue": true,
+        "verdict": "equal",
+        "detail": "Core starter reclaim scenario should remain in target family windows."
+      },
+      {
+        "metric": "reclaim_prestige_targets_deep_cap_window",
+        "routeValue": true,
+        "baselineValue": true,
+        "verdict": "equal",
+        "detail": "Deep-cap starter reclaim scenario should remain in target family windows."
+      }
+    ],
+    "invariantChecks": [
+      {
+        "id": "reclaim_material_acceleration",
+        "passed": true,
+        "detail": "Reclaim milestones are materially faster than first-life baseline."
+      },
+      {
+        "id": "reclaim_first_purchase_feel",
+        "passed": true,
+        "detail": "First purchase feel passes live target expectations."
+      },
+      {
+        "id": "reclaim_no_unsupported_nodes",
+        "passed": true,
+        "detail": "Starter spend plans do not rely on unsupported prestige nodes."
+      },
+      {
+        "id": "reclaim_prestige_surface_coherence",
+        "passed": true,
+        "detail": "Prestige advisor and life summary surfaces are coherent."
+      },
+      {
+        "id": "reclaim_non_blocking_watchlist",
+        "passed": true,
+        "detail": "No blocker exploit-watch entries triggered."
+      }
+    ],
+    "exploitWatchlist": [
+      {
+        "code": "unsupported_prestige_node_in_starter_plan",
+        "severity": "blocker",
+        "triggered": false,
+        "detail": "No unsupported nodes used."
+      },
+      {
+        "code": "reclaim_speedup_below_material_threshold",
+        "severity": "blocker",
+        "triggered": false,
+        "detail": "Foundation/Core reclaim speedup must remain materially faster than first life."
+      },
+      {
+        "code": "first_purchase_feel_near_floor",
+        "severity": "warning",
+        "triggered": false,
+        "detail": "First-purchase improvement is close to minimum threshold."
+      },
+      {
+        "code": "ap_hour_policy_drift",
+        "severity": "warning",
+        "triggered": false,
+        "detail": "AP/hour policy rows all passing."
+      }
+    ],
+    "decisionPolicy": [
+      "Starter spend plan(core): ap_idle_qi_mult, ap_combat_mult",
+      "Starter spend plan(deep-cap): ap_idle_qi_mult, ap_idle_qi_mult, ap_idle_qi_mult, ap_idle_qi_mult, ap_idle_qi_mult, ap_combat_mult",
+      "First purchase feel bestImprovement=0.2306 threshold=0.15"
+    ],
+    "finalSnapshot": {
+      "finalRealmId": "qi_condensation",
+      "currentCityId": "city_pinewind_hamlet",
+      "unlockedCityIds": [
+        "city_pinewind_hamlet"
+      ],
+      "currentGateTrialId": "trial_novices_clearing",
+      "reachedSpiritSevering": true,
+      "reachedContentCap": false,
+      "currentChapterExhaustedTruthAvailable": false,
+      "prestigeAdvisorAvailable": true,
+      "lifeSummaryAvailable": true,
+      "noFakeCitySix": true
+    },
+    "notes": [
+      "Reclaim route reuses runReclaimProbe + runPrestigeApHourProbe and maps results into alternative-route comparison shape.",
+      "Acceleration assertions are anchored to live prestige target families, not ad-hoc constants.",
+      "This route is partially modeled for deterministic QA and explicitly reports modeled checkpoints."
+    ]
+  },
+  "starterSpendPlan": [
+    "ap_idle_qi_mult",
+    "ap_combat_mult"
+  ],
+  "milestoneTimings": {
+    "foundationSpeedupRatio": 0.2125,
+    "coreSpeedupRatio": 0.1736,
+    "nascentSpeedupRatio": 0.2745
+  },
+  "overallPass": true
+}

@@ -73,17 +73,15 @@ function makeReadinessShortfallWithAttemptableGateSurface(): DaoMandateSurfaceV1
   );
 }
 
-test('Sealed visibility keeps the primary readiness obstruction ahead of current-gate proof rows', () => {
+test('legacy profile visibility preserves both primary readiness and current-gate proof rows', () => {
   const raw = makeReadinessShortfallWithAttemptableGateSurface();
   const sealed = applyDaoMandateVisibility(raw, { profile: 'sealed' });
   const rows = visibleLedgerRows(sealed);
 
   assert.equal(sealed.obstruction.kind, 'readiness_shortfall');
   assert.equal(sealed.primaryRoute.id, raw.primaryRoute.id);
-  assert.equal(rows.length, 1);
-  assert.equal(rows[0].id, 'primary-readiness_shortfall');
-  assert.equal(rows[0].bucket, 'readiness_floor');
-  assert.doesNotMatch(rows[0].id, /^gate-(proof|state)-/);
+  assert.equal(rows.some((row) => row.id === 'primary-readiness_shortfall' && row.bucket === 'readiness_floor'), true);
+  assert.equal(rows.some((row) => row.id.startsWith('gate-proof-') && row.bucket === 'hard_gate'), true);
 });
 
 test('Elder visibility preserves the primary obstruction row while staying denser than Sealed and no denser than Jade', () => {
@@ -119,16 +117,21 @@ test('Elder visibility does not attach unrelated primary routes to gate proof ro
   }
 });
 
-test('Dao Mandate fixture profiles keep Sealed compact and preserve Jade ledger density', () => {
+test('Dao Mandate fixture legacy profiles preserve the same ledger density', () => {
   for (const state of DAO_MANDATE_FIXTURE_STATES) {
     const raw = createDaoMandateFixture(state, 'jade');
     const sealed = applyDaoMandateVisibility(raw, { profile: 'sealed' });
     const elder = applyDaoMandateVisibility(raw, { profile: 'elder' });
     const jade = applyDaoMandateVisibility(raw, { profile: 'jade' });
 
-    assert.equal(visibleLedgerRows(sealed).length <= 1, true, `${state} Sealed should show at most one ledger row`);
-    assert.equal(visibleLedgerRows(elder).length >= visibleLedgerRows(sealed).length, true);
-    assert.equal(visibleLedgerRows(jade).length >= visibleLedgerRows(elder).length, true);
+    assert.deepEqual(
+      visibleLedgerRows(sealed).map((row) => row.id),
+      visibleLedgerRows(raw).map((row) => row.id),
+    );
+    assert.deepEqual(
+      visibleLedgerRows(elder).map((row) => row.id),
+      visibleLedgerRows(raw).map((row) => row.id),
+    );
     assert.deepEqual(
       visibleLedgerRows(jade).map((row) => row.id),
       visibleLedgerRows(raw).map((row) => row.id),

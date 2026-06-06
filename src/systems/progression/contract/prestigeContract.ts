@@ -15,7 +15,12 @@ export type PrestigeRuntimeConsumer =
   | 'offline_efficiency'
   | 'heart_law_unlock'
   | 'extra_technique_slot'
-  | 'mastery_retention';
+  | 'mastery_retention'
+  | 'training_memory_floor'
+  | 'heart_law_scripture_echo'
+  | 'root_clarity_floor'
+  | 'breakthrough_calm_memory'
+  | 'training_mastery_shadow';
 
 export type PrestigeNodeRuntimeStatus =
   | 'visible_live'
@@ -51,6 +56,11 @@ export const VISIBLE_LIVE_PRESTIGE_NODE_IDS = [
   'ap_mastery_retention_10',
   'ap_mastery_retention_25',
   'ap_mastery_retention_50',
+  'form_memory',
+  'scripture_echo',
+  'root_clarity',
+  'calm_first_breath',
+  'old_sparring_shadows',
 ] as const;
 
 const PRESTIGE_UPGRADE_COSTS_BY_ID: Readonly<Record<string, readonly number[]>> = {
@@ -68,6 +78,12 @@ const PRESTIGE_UPGRADE_COSTS_BY_ID: Readonly<Record<string, readonly number[]>> 
   ap_mastery_retention_10: [40],
   ap_mastery_retention_25: [120],
   ap_mastery_retention_50: [320],
+  form_memory: [35, 90, 180],
+  scripture_echo: [40, 120, 260],
+  root_clarity: [45, 140, 280],
+  calm_first_breath: [25, 70, 160],
+  old_sparring_shadows: [50, 150],
+  doctrine_archive: [220],
   ap_unlock_alchemy_queue: [20, 60, 140],
   ap_unlock_forge_queue: [20, 60, 140],
   ap_unlock_talisman_queue: [30, 90],
@@ -108,6 +124,26 @@ export const getPrestigeRuntimeConsumers = (upgrade: PrestigeUpgradeDef): Presti
 
   if (getNumericEffect(upgrade.effect, 'masteryRetentionPct') || getNumericEffect(upgrade.effectPerLevel, 'masteryRetentionPct')) {
     consumers.add('mastery_retention');
+  }
+
+  if (getNumericEffect(upgrade.effect, 'formMemoryFloor') || getNumericEffect(upgrade.effectPerLevel, 'formMemoryFloor')) {
+    consumers.add('training_memory_floor');
+  }
+
+  if (getNumericEffect(upgrade.effect, 'scriptureVerseRetentionPct') || getNumericEffect(upgrade.effectPerLevel, 'scriptureVerseRetentionPct')) {
+    consumers.add('heart_law_scripture_echo');
+  }
+
+  if (getNumericEffect(upgrade.effect, 'rootClarityGradeFloor') || getNumericEffect(upgrade.effectPerLevel, 'rootClarityGradeFloor')) {
+    consumers.add('root_clarity_floor');
+  }
+
+  if (getNumericEffect(upgrade.effect, 'calmFirstBreathRiskReduction') || getNumericEffect(upgrade.effectPerLevel, 'calmFirstBreathRiskReduction')) {
+    consumers.add('breakthrough_calm_memory');
+  }
+
+  if (getNumericEffect(upgrade.effect, 'oldSparringMasteryCatchupPct') || getNumericEffect(upgrade.effectPerLevel, 'oldSparringMasteryCatchupPct')) {
+    consumers.add('training_mastery_shadow');
   }
 
   return Array.from(consumers);

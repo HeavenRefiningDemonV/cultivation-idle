@@ -1,0 +1,20 @@
+﻿[
+    {
+        "name":  "test-contracts",
+        "command":  "npm run test:contracts",
+        "exitCode":  null,
+        "timedOut":  false,
+        "durationMs":  166865,
+        "stdout":  "artifacts\\training-heart-law\\mp2\\final\\test-contracts.stdout.log",
+        "stderr":  "artifacts\\training-heart-law\\mp2\\final\\test-contracts.stderr.log"
+    },
+    {
+        "name":  "release-gate-json",
+        "command":  "npm run release:gate:json",
+        "exitCode":  null,
+        "timedOut":  false,
+        "durationMs":  408438,
+        "stdout":  "artifacts\\training-heart-law\\mp2\\final\\release-gate-json.stdout.log",
+        "stderr":  "artifacts\\training-heart-law\\mp2\\final\\release-gate-json.stderr.log"
+    }
+]

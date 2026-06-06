@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useShallow } from 'zustand/shallow';
 import { useActivityStore } from '../../stores/activityStore.js';
 import { useBountyStore } from '../../stores/bountyStore.js';
@@ -45,10 +46,14 @@ export function useStatusDashboardSurface() {
   })));
   const cultivation = useCultivationStore(useShallow((state) => ({
     selectedHeartLawId: state.selectedHeartLawId,
+    heartLawLevelById: state.heartLawLevelById,
+    daoHeartClarity: state.daoHeartClarity,
+    turbulence: state.turbulence,
     chapter: state.chapter,
     breathMode: state.breathMode,
     stability: state.stability,
     stabilityCap: state.stabilityCap,
+    heartLawVersion: state.heartLawVersion,
   })));
   const expedition = useExpeditionStore(useShallow((state) => ({
     slots: state.slots,
@@ -82,22 +87,24 @@ export function useStatusDashboardSurface() {
     activeTab: state.activeTab,
     autoStartCombat: state.autoStartCombat,
     settings: state.settings,
+    spiritRootObservationOpen: state.spiritRootObservationOpen,
+    spiritRootObservationActiveTab: state.spiritRootObservationActiveTab,
   })));
 
-  void activity;
-  void combat;
-  void bounty;
-  void city;
-  void content;
-  void cultivation;
-  void expedition;
-  void game;
-  void inventory;
-  void pouch;
-  void prestige;
-  void profession;
-  void trial;
-  void ui;
-
-  return buildStatusDashboardSurface();
+  return useMemo(() => buildStatusDashboardSurface(), [
+    activity,
+    combat,
+    bounty,
+    city,
+    content,
+    cultivation,
+    expedition,
+    game,
+    inventory,
+    pouch,
+    prestige,
+    profession,
+    trial,
+    ui,
+  ]);
 }

@@ -15,12 +15,14 @@ import { useInventoryStore } from '../stores/inventoryStore.js';
 import { useExpeditionStore } from '../stores/expeditionStore.js';
 import { useManualSatchelStore } from '../stores/manualSatchelStore.js';
 import { useCraftSessionStore } from '../stores/craftSessionStore.js';
+import { useTrainingStore } from '../stores/trainingStore.js';
 import { SaveService } from '../services/save/SaveService.js';
 import { cultivationService } from '../services/cultivationService.js';
 import { useUIStore } from '../stores/uiStore.js';
 import { useActivityStore } from '../stores/activityStore.js';
 import { RewardService } from '../services/rewards/index.js';
 import { COMBAT_ACTIVITY_TYPES } from '../types/activity.js';
+import { resolveForegroundGrowthMode } from './cultivation/foregroundGrowthResolver.js';
 import { PERF_LABELS, incrementCounter, recordMeasure, startTimer } from '../services/performance/index.js';
 import { SimulationScheduler, type ScheduledJobRunContext } from '../services/time/SimulationScheduler.js';
 import { trackProgressionGateAvailabilityNow } from '../services/diagnostics/progressionGateAvailability.js';
@@ -36,6 +38,7 @@ const PROGRESSION_DIAGNOSTICS_INTERVAL = 1000;
 export type SimulationJobDependencies = {
   gameTick: (elapsedMs: number) => void;
   cultivationTick: (elapsedMs: number) => void;
+  trainingTick: (elapsedMs: number) => void;
   combatTick: (elapsedMs: number) => void;
   queueTick: (nowWall: number) => void;
   progressionDiagnosticsTick: (nowWall: number) => void;
@@ -66,6 +69,12 @@ function defaultQueueTick(nowWall: number): void {
   } finally {
     endTick();
   }
+}
+
+function defaultTrainingTick(elapsedMs: number): void {
+  const foreground = resolveForegroundGrowthMode(useActivityStore.getState().active);
+  if (!foreground.trainingAllowed) return;
+  useTrainingStore.getState().tickTraining(elapsedMs);
 }
 
 function defaultAutosaveTick(): boolean {
@@ -110,6 +119,13 @@ function createDefaultGameLoopDependencies(): GameLoopDependencies {
         console.error('[GameLoop] Error in cultivation service tick:', error);
       }
     },
+    trainingTick: (elapsedMs) => {
+      try {
+        defaultTrainingTick(elapsedMs);
+      } catch (error) {
+        console.error('[GameLoop] Error in training tick:', error);
+      }
+    },
     combatTick: (elapsedMs) => {
       try {
         useCombatStore.getState().tick(elapsedMs);
@@ -140,6 +156,7 @@ export function registerSimulationSchedulerJobs(
     priority: 'critical',
     run: ({ elapsedMs }: ScheduledJobRunContext) => {
       deps.gameTick(elapsedMs);
+      deps.trainingTick(elapsedMs);
       deps.cultivationTick(elapsedMs);
     },
   });

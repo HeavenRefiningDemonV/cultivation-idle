@@ -67,6 +67,8 @@ test('city package registry entries expose the exact packet 2.7 authored contrac
     defaultQuickOpenOrder: [...CITY_ARRIVAL_QUICK_OPEN_ORDER],
     mustExposeModules: [...LIVE_CITY_MODULE_ORDER],
     lesson: 'Learn the loop.',
+    phaseRole: 'Teaches the full loop once.',
+    expeditionEmphasis: 'Keep one route running for city support.',
   });
 
   assert.equal(CITY_PACKAGE_REGISTRY_BY_ID.city_stonecrag_town.cityIndex, 1);

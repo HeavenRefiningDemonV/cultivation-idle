@@ -1,0 +1,8 @@
+﻿{
+    "json":  "artifacts/mp5/release-gate/release-gate.after2.json",
+    "exitCode":  2,
+    "remainingProcessCount":  0,
+    "command":  "npm run release:gate:json",
+    "durationSeconds":  391.094,
+    "log":  "artifacts/mp5/release-gate/release-gate.after2.log"
+}

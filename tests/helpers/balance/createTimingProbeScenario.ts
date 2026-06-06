@@ -1,7 +1,7 @@
 import { PATH_MODIFIERS } from '../../../src/constants/index.js';
 import { getValidatedEconomicContent, primeContentStore, resetEconomicRuntimeStores } from '../economy/setupEconomicRuntimeScenario.js';
 import { useCityStore } from '../../../src/stores/cityStore.js';
-import { useCultivationStore } from '../../../src/stores/cultivationStore.js';
+import { getDefaultUnlockedHeartLawIds, useCultivationStore } from '../../../src/stores/cultivationStore.js';
 import { useGameStore } from '../../../src/stores/gameStore.js';
 import { useTelemetryStore } from '../../../src/stores/telemetryStore.js';
 
@@ -26,7 +26,7 @@ export type TimingProbeScenario = {
   representativePathQiMultiplier: number;
 };
 
-export async function createTimingProbeScenario(options: { pathStrategy?: 'representative' | 'highest_qi' } = {}): Promise<TimingProbeScenario> {
+export async function createTimingProbeScenario(options: { pathStrategy?: 'representative' | 'highest_qi'; pathId?: keyof typeof PATH_MODIFIERS } = {}): Promise<TimingProbeScenario> {
   const content = await getValidatedEconomicContent();
   resetEconomicRuntimeStores();
   primeContentStore(content);
@@ -37,13 +37,20 @@ export async function createTimingProbeScenario(options: { pathStrategy?: 'repre
   useGameStore.getState().setFocusMode('balanced');
   useTelemetryStore.getState().clear();
 
-  const representative = options.pathStrategy === 'highest_qi'
-    ? chooseHighestQiPath()
-    : chooseRepresentativePath();
+  const representative = options.pathId
+    ? { path: options.pathId, qiMultiplier: PATH_MODIFIERS[options.pathId].qiMultiplier }
+    : options.pathStrategy === 'highest_qi'
+      ? chooseHighestQiPath()
+      : chooseRepresentativePath();
   const selectedPath = representative.path as keyof typeof PATH_MODIFIERS;
   if (!useGameStore.getState().selectedPath) {
     useGameStore.getState().selectPath(selectedPath as never);
   }
+  const starterHeartLawId = useCultivationStore.getState().selectedHeartLawId ?? getDefaultUnlockedHeartLawIds()[0];
+  if (starterHeartLawId && !useCultivationStore.getState().selectedHeartLawId) {
+    useCultivationStore.getState().selectHeartLaw(starterHeartLawId);
+  }
+  useCultivationStore.getState().setBreathMode('balanced');
 
   return {
     representativePath: selectedPath,

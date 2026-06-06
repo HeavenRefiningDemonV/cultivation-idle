@@ -1,0 +1,50 @@
+{
+  "url": "http://127.0.0.1:5174/?gateTrialExactMode=fixture",
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "reducedMotion": false,
+  "noHorizontalOverflow": true,
+  "scrollWidth": 1440,
+  "innerWidth": 1440,
+  "rootSelector": "[data-testid=\"training-hall-page\"]",
+  "rootAttributes": {
+    "data-testid": "training-hall-page",
+    "data-path": "heaven",
+    "data-reduced-motion": "false",
+    "data-visual-state": "idle",
+    "data-motion-mode": "animated",
+    "data-fx-particle-budget": "36"
+  },
+  "testIds": [
+    "training-hall-page",
+    "training-hall-vfx-motes",
+    "training-hall-vfx-mote",
+    "training-hall-vfx-mote",
+    "training-hall-vfx-mote",
+    "training-hall-vfx-mote",
+    "training-hall-vfx-mote",
+    "training-hall-vfx-mote",
+    "training-hall-vfx-mote",
+    "training-hall-vfx-mote",
+    "training-hall-vfx-mote",
+    "training-hall-vfx-mote",
+    "training-hall-vfx-mote",
+    "training-hall-vfx-mote"
+  ],
+  "mp6Rows": {
+    "cultivationRiskRows": 0,
+    "cultivationReadinessSections": 0,
+    "gateRows": 0,
+    "trainingMotes": 12,
+    "daoMotes": 0,
+    "techniqueScalingRows": 0
+  },
+  "activeElement": {
+    "tagName": "DIV",
+    "text": "HEAVEN PATH Training Hall Heaven Star Observatory Trace qi, law, and perception until the path foundation stops wobbling. PATH FOUNDATION 0 / 16 average Current Bottleneck: Dao Resonance Regimens Still Star Breathing Star Observatory Mastery 0 / 100 Mandate Tracing Scripture Hall Mastery 0 / 100 Spirit Lantern Watch Spirit Lantern Watch Mastery 0 / 100 Cloud Seal Weaving Seal Weaving Plate Mastery 0 / 100 Tribulation Listening Thunder Listening Pavilion Mastery 0 / 100 Star Rhythm Recitation Celestial Cadence Hall Mastery 0 / 100 READY TO PRACTICE Still Star Breathing Star Observatory Select a regimen and intensity, then start Path Training. PRIMARY Qi Control 0 / 16 absent SECONDARY Mind Clarity 0 / 16 absent FOUNDATION Qi Purity 0 / 16 absent Path Foundation Dao Resonance absent 0 / 16 Qi Control absent 0 / 16 Divine Sense absent 0 / 16 Law Weaving absent 0 / 16 Tribulation Insight absent 0 / 16 Star Rhythm absent 0 / 16 Quiet 0.70x / 0.04 fatigue/min Steady 1x / 0.14 fatigue/min Harsh 1.35x / 0.35 fatigue/min Limit 1.75x / 0.75 fatigue/min Start Practice Stop Practice",
+    "ariaLabel": "Pinewind Hamlet — Training Hall"
+  },
+  "visibleText": "Outskirts\nGOLD & COMMON MATS\nGold / Common Mats\nGold & Common Mats. Best used when you need gold, common materials, or low-risk combat reps.\nRuins\nTARGETED MATS\nLocal Mats / Anchor Drop\nTargeted Mats. Best used when you need targeted local materials and deterministic support rewards.\nGate Trial\nGATE ITEM\nFoundation Pill / Breakthrough\nGate Item. Use this hall when the current gate item is ready for judgment.\nTraining Hall\nPATH FOUNDATION\nStat Ratings / Regimen Mastery\nPath Foundation. Best used when path foundation, trained stat caps, or regimen mastery is the current gate gap.\nManual Pavilion\nBUILD CORRECTION\nManuals / Technique Fragments\nBuild Correction. Best used when you need build correction, manuals, or technique growth.\nApothecary\nIMMEDIATE READINESS\nHealing Stock / Preparation Remedies\nImmediate Readiness. Best used when you need immediate readiness through healing stock, remedies, or pouch prep.\nForge\nPERMANENT FLOOR\nRefines / Temper / Runes\nPermanent Floor. Best used when you need permanent floor through refine, temper, or rune work.\nBounties\nMERIT & ROUTING\nMerit / Spirit Stones\nMerit & Routing. Best used when you need Merit, routing help, or directed support rewards.\nExpeditions\nPASSIVE SUPPORT\nHerbs / Ore\nPassive Support. Best used when you need passive shortage smoothing for herbs, ore, or fragments.\nWORLD\nCity Phase: Pinewind Hamlet - foundations\nSelect city\nPinewind Hamlet\nStonecrag Town — Locked — Reach Foundation Establishment\nSpirit Cavern City — Locked — Reach Core Formation\nLotusford — Locked — Reach Nascent Soul\nIronpeak Bastion — Locked — Reach Soul Formation\nPressure: Qi, first medicines, and a stable starter build.\nExpedition Slot Idle\n\nPINEWIND HAMLET\n\nApothecary\n\nImmediate Readiness\n\nBest used when you need immediate readiness through healing stock, remedies, or pouch prep.\n\nHealing Stock\nPreparation Remedies\n\nRecommended here now: Apothecary.\n\nOpen Apothecary\nStatus\nCultivation\nWorld\nInventory\nTechniques\nRecords\nPrestige\nSettings\n\nHEAVEN PATH\n\nTraining Hall\nHeaven Star Observatory\n\nTrace qi, law, and perception until the path foundation stops wobbling.\n\nPATH FOUNDATION\n0 / 16 average\nCurrent Bottleneck: Dao Resonance\nRegimens\nStill Star Breathing\nStar Observatory\nMastery 0 / 100\nMandate Tracing\nScripture Hall\nMastery 0 / 100\nSpirit Lantern Watch\nSpirit Lantern Watch\nMastery 0 / 100\nCloud Seal Weaving\nSeal Weaving Plate\nMastery 0 / 100\nTribulation Listening\nThunder Listening Pavilion\nMastery 0 / 100\nStar Rhythm Recitation\nCelestial Cadence Hall\nMastery 0 / 100\n\nREADY TO PRACTICE\n\nStill Star Breathing\nStar Observatory\n\nSelect a regimen and intensity, then start Path Training.\n\nPRIMARY\nQi Control\n0 / 16\nabsent\nSECONDARY\nMind Clarity\n0 / 16\nabsent\nFOUNDATION\nQi Purity\n0 / 16\nabsent\nPath Foundation\nDao Resonance\nabsent\n0 / 16\nQi Control\nabsent\n0 / 16\nDivine Sense\nabsent\n0 / 16\nLaw Weaving\nabsent\n0 / 16\nTribulation Insight\nabsent\n0 / 16\nStar Rhythm\nabsent\n0 / 16\nQuiet\n0.70x / 0.04 fatigue/min\nSteady\n1x / 0.14 fatigue/min\nHarsh\n1.35x / 0.35 fatigue/min\nLimit\n1.75x / 0.75 fatigue/min\nStart Practice\nStop Practice"
+}

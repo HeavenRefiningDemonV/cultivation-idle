@@ -1,0 +1,6 @@
+﻿{
+    "exitCode":  2,
+    "command":  "npm run release:gate:json",
+    "durationSeconds":  385.663,
+    "log":  "artifacts/mp5/release-gate/release-gate.after-corrected.log"
+}

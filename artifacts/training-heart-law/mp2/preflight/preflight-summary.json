@@ -1,0 +1,65 @@
+﻿[
+    {
+        "name":  "git-status",
+        "command":  "git status --short",
+        "exitCode":  0,
+        "startedAt":  "2026-06-01T21:53:07.4545339+03:00",
+        "finishedAt":  "2026-06-01T21:53:07.6272435+03:00",
+        "stdout":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\training-heart-law\\mp2\\preflight\\git-status.stdout.log",
+        "stderr":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\training-heart-law\\mp2\\preflight\\git-status.stderr.log"
+    },
+    {
+        "name":  "release-implementation-baseline-json",
+        "command":  "npm run release:implementation-baseline:json",
+        "exitCode":  0,
+        "startedAt":  "2026-06-01T21:53:07.6307571+03:00",
+        "finishedAt":  "2026-06-01T21:53:08.8376791+03:00",
+        "stdout":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\training-heart-law\\mp2\\preflight\\release-implementation-baseline-json.stdout.log",
+        "stderr":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\training-heart-law\\mp2\\preflight\\release-implementation-baseline-json.stderr.log"
+    },
+    {
+        "name":  "release-runtime-content-manifest-json",
+        "command":  "npm run release:runtime-content-manifest:json",
+        "exitCode":  0,
+        "startedAt":  "2026-06-01T21:53:08.8376791+03:00",
+        "finishedAt":  "2026-06-01T21:53:09.5635678+03:00",
+        "stdout":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\training-heart-law\\mp2\\preflight\\release-runtime-content-manifest-json.stdout.log",
+        "stderr":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\training-heart-law\\mp2\\preflight\\release-runtime-content-manifest-json.stderr.log"
+    },
+    {
+        "name":  "typecheck",
+        "command":  "npm run typecheck",
+        "exitCode":  0,
+        "startedAt":  "2026-06-01T21:53:09.5635678+03:00",
+        "finishedAt":  "2026-06-01T21:53:10.0972252+03:00",
+        "stdout":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\training-heart-law\\mp2\\preflight\\typecheck.stdout.log",
+        "stderr":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\training-heart-law\\mp2\\preflight\\typecheck.stderr.log"
+    },
+    {
+        "name":  "check-icons",
+        "command":  "npm run check:icons",
+        "exitCode":  0,
+        "startedAt":  "2026-06-01T21:53:10.0972252+03:00",
+        "finishedAt":  "2026-06-01T21:53:10.6209556+03:00",
+        "stdout":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\training-heart-law\\mp2\\preflight\\check-icons.stdout.log",
+        "stderr":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\training-heart-law\\mp2\\preflight\\check-icons.stderr.log"
+    },
+    {
+        "name":  "validate-content",
+        "command":  "npm run validate:content",
+        "exitCode":  0,
+        "startedAt":  "2026-06-01T21:53:10.6209556+03:00",
+        "finishedAt":  "2026-06-01T21:53:12.0445267+03:00",
+        "stdout":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\training-heart-law\\mp2\\preflight\\validate-content.stdout.log",
+        "stderr":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\training-heart-law\\mp2\\preflight\\validate-content.stderr.log"
+    },
+    {
+        "name":  "tsconfig-tests",
+        "command":  "npm exec tsc -- --project tsconfig.tests.json",
+        "exitCode":  0,
+        "startedAt":  "2026-06-01T21:53:12.0445267+03:00",
+        "finishedAt":  "2026-06-01T21:53:22.3461688+03:00",
+        "stdout":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\training-heart-law\\mp2\\preflight\\tsconfig-tests.stdout.log",
+        "stderr":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\training-heart-law\\mp2\\preflight\\tsconfig-tests.stderr.log"
+    }
+]

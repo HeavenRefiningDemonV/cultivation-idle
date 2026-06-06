@@ -11,7 +11,7 @@ void test('Gate Trial Exact fixture screen renders all skeleton regions and mock
   const surface = createGateTrialExactMockupFixture();
   const html = renderToStaticMarkup(React.createElement(GateTrialExactScreen, { surface }));
   for (const token of ['gate-trial-exact-page','gate-trial-exact-top-region','gate-trial-exact-gate-header-slot','gate-trial-exact-left-rail','gate-trial-exact-scenic-slot','gate-trial-exact-right-rail','gate-trial-exact-readiness-rail','gate-trial-exact-cta-slot','gate-trial-exact-summary-dock','gate-trial-exact-shell-flags','gate-trial-exact-region-order']) assert.equal(html.includes(token), true);
-  for (const copy of ['Gate Trial','2 Expeditions Idle','1 Tracked Bounty','Foundation Gate','Milestone readiness check — clears the path to Foundation','Milestone Gate','Readiness Check','Safety Net Tracked','Minimum Checklist','Final Substage Reached','Qi Condensation · Late 10 / 10','Qi Cap Reached','590 / 550 Minimum Qi','Loadout Complete','3 Active / 1 Passive','Healing Floor','8 / 12 Recommended Minimum','Weapon Floor','Refine +5','VIABLE','Readiness 74 / 100','Gate Guardian · Lv. 15','Foundation Establishment Trial','Clear Reward: Gate Foundation Pill ×1','Used for Foundation Breakthrough','Recommended','Recommended Prep','Refine or temper gear','Boost stats with pills','Upgrade major techniques','Complete one Ruin support run','Fail-Safe','Eligible Failures','3 / 5','15 Merit · 800 Gold','12 Merit · 610 Gold','Safety Net Locked','Gate Corrections','Forge Weapon +5','Stock Healing','Upgrade Iron Palm','Trial Summary','Target','Foundation','Reward','Gate Foundation Pill','Next Fix','Stock healing','Foundation Gate Readiness','Qi Cap','Loadout','Weapon','Medicine','Techniques','Safety Net','Attempt Gate']) assert.equal(html.includes(copy), true);
+  for (const copy of ['Gate Trial','2 Expeditions Idle','1 Tracked Bounty','Foundation Gate','Milestone readiness check — clears the path to Foundation','Milestone Gate','Readiness Check','Safety Net Tracked','Minimum Checklist','Final Substage Reached','Qi Condensation · Late 10 / 10','Qi Cap Reached','590 / 550 Minimum Qi','Loadout Complete','3 Active / 1 Passive','Healing Floor','8 / 12 Recommended Minimum','Weapon Floor','Refine +5','VIABLE','Readiness 74 / 100','Gate Guardian · Lv. 15','Foundation Establishment Trial','Clear Reward: Gate Foundation Pill ×1','Used for Foundation Breakthrough','Recommended','Recommended Prep','Stabilize weapon floor','Boost stats with pills','Upgrade major techniques','Complete one Ruin support run','Fail-Safe','Eligible Failures','3 / 5','15 Merit · 800 Gold','12 Merit · 610 Gold','Safety Net Locked','Gate Corrections','Forge Weapon +5','Stock Healing','Upgrade Iron Palm','Trial Summary','Target','Foundation','Reward','Gate Foundation Pill','Next Fix','Stock healing','Foundation Gate Readiness','Qi Cap','Loadout','Weapon','Medicine','Techniques','Safety Net','Attempt Gate']) assert.equal(html.includes(copy), true);
 });
 
 void test('Gate Trial Exact fixture screen preserves tactical strip and readiness rail order', () => {
@@ -26,11 +26,12 @@ void test('Gate Trial Exact fixture screen preserves tactical strip and readines
   for (let i = 1; i < n.length; i += 1) assert.equal(n[i] > n[i - 1], true);
 });
 
-void test('Gate Trial Exact fixture screen renders deferred scenic stage without visible placeholder copy', () => {
+void test('Gate Trial Exact fixture screen renders approved scenic stage without visible placeholder copy', () => {
   const surface = createGateTrialExactMockupFixture();
   const html = renderToStaticMarkup(React.createElement(GateTrialExactScreen, { surface }));
-  assert.equal(html.includes('data-art-status="deferred"'), true);
-  assert.equal(html.includes('data-final-art-required="true"'), true);
+  assert.equal(html.includes('data-art-status="approved-bound"'), true);
+  assert.equal(html.includes('data-final-art-required="false"'), true);
+  assert.equal(html.includes('data-approved-plate-bound="true"'), true);
   assert.equal(html.includes('data-scene-asset-id="approvedFoundationGatePlate"'), true);
   assert.equal(html.includes('gate-trial-scenic-underpaint'), true);
   assert.equal(html.includes('gate-trial-scenic-portal'), true);

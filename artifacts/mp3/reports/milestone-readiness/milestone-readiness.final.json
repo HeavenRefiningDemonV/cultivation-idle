@@ -1,0 +1,1372 @@
+{
+  "generatedAt": "2026-05-28T23:04:51.612Z",
+  "surface": {
+    "schemaVersion": "milestone-readiness-surface-v1",
+    "generatedAtMs": 1780009491612,
+    "currentCityId": "city_pinewind_hamlet",
+    "currentCityName": "Pinewind Hamlet",
+    "currentRealmId": "qi_condensation",
+    "currentRealmName": "Qi Condensation",
+    "currentSubstageLabel": "Stage 3 / gate edge",
+    "currentMilestone": {
+      "id": "qi_condensation_to_foundation_establishment",
+      "label": "Foundation Establishment Gate",
+      "targetRealmId": "foundation_establishment",
+      "targetRealmName": "Foundation Establishment",
+      "gateId": "trial_novices_clearing",
+      "gateLabel": "Novice's Clearing",
+      "status": "blocked",
+      "summary": "Foundation Establishment milestone is gated by healing floor below target."
+    },
+    "currentBlocker": {
+      "id": "healing-floor",
+      "blockerType": "healing_floor",
+      "label": "Healing floor below target",
+      "reason": "Healing floor below target: 0/20, gap 20.",
+      "currentValue": 0,
+      "targetValue": 20,
+      "gap": 20,
+      "severity": "critical",
+      "requirementKind": "hard_requirement",
+      "mandatoryBeforeNextGate": true,
+      "bestSource": {
+        "moduleKey": "apothecary",
+        "label": "Apothecary",
+        "reason": "Consumable shortages should route to Apothecary Buy first when the current city stocks them and the cap can still cover the gap.",
+        "activityMode": "background",
+        "available": true,
+        "blockedReason": null,
+        "expectedYieldLabel": "Raises survival readiness through Healing Reserve and pouch stock.",
+        "routeAction": {
+          "label": "Apothecary",
+          "actionLabel": "Open Apothecary",
+          "reason": "Consumable shortages should route to Apothecary Buy first when the current city stocks them and the cap can still cover the gap.",
+          "moduleKey": "apothecary",
+          "cityId": "city_pinewind_hamlet",
+          "target": {
+            "kind": "world_module",
+            "cityId": "city_pinewind_hamlet",
+            "moduleKey": "apothecary"
+          },
+          "blocked": false,
+          "blockedReason": null
+        }
+      },
+      "fallbackSource": {
+        "moduleKey": "apothecary",
+        "label": "Apothecary",
+        "reason": "Brew fallback",
+        "activityMode": "background",
+        "available": true,
+        "blockedReason": null,
+        "expectedYieldLabel": "Live Apothecary Brew route using visible semester recipes.",
+        "routeAction": {
+          "label": "Apothecary",
+          "actionLabel": "Open Apothecary",
+          "reason": "Brew is the honest fallback when shop stock is capped or the item is not directly sold in the current city.",
+          "moduleKey": "apothecary",
+          "cityId": "city_pinewind_hamlet",
+          "target": {
+            "kind": "world_module",
+            "cityId": "city_pinewind_hamlet",
+            "moduleKey": "apothecary"
+          },
+          "blocked": false,
+          "blockedReason": null
+        }
+      },
+      "routeAction": {
+        "label": "Apothecary",
+        "actionLabel": "Open Apothecary",
+        "reason": "Consumable shortages should route to Apothecary Buy first when the current city stocks them and the cap can still cover the gap.",
+        "moduleKey": "apothecary",
+        "cityId": "city_pinewind_hamlet",
+        "target": {
+          "kind": "world_module",
+          "cityId": "city_pinewind_hamlet",
+          "moduleKey": "apothecary"
+        },
+        "blocked": false,
+        "blockedReason": null
+      },
+      "expectedBenefit": "Raises survival readiness through Healing Reserve and pouch stock.",
+      "relatedIds": [
+        "cons_healing_pellet_t1"
+      ],
+      "relatedScreenModuleKey": "apothecary",
+      "detailsText": "Required before the current gate; Raises survival readiness through Healing Reserve and pouch stock.",
+      "debug": {
+        "problemKind": "belowHealingFloor",
+        "spendPriorityId": "maintain_consumable_floor",
+        "primaryRecommendedRouteKey": "shop_apothecary_pinewind"
+      }
+    },
+    "blockers": [
+      {
+        "id": "healing-floor",
+        "blockerType": "healing_floor",
+        "label": "Healing floor below target",
+        "reason": "Healing floor below target: 0/20, gap 20.",
+        "currentValue": 0,
+        "targetValue": 20,
+        "gap": 20,
+        "severity": "critical",
+        "requirementKind": "hard_requirement",
+        "mandatoryBeforeNextGate": true,
+        "bestSource": {
+          "moduleKey": "apothecary",
+          "label": "Apothecary",
+          "reason": "Consumable shortages should route to Apothecary Buy first when the current city stocks them and the cap can still cover the gap.",
+          "activityMode": "background",
+          "available": true,
+          "blockedReason": null,
+          "expectedYieldLabel": "Raises survival readiness through Healing Reserve and pouch stock.",
+          "routeAction": {
+            "label": "Apothecary",
+            "actionLabel": "Open Apothecary",
+            "reason": "Consumable shortages should route to Apothecary Buy first when the current city stocks them and the cap can still cover the gap.",
+            "moduleKey": "apothecary",
+            "cityId": "city_pinewind_hamlet",
+            "target": {
+              "kind": "world_module",
+              "cityId": "city_pinewind_hamlet",
+              "moduleKey": "apothecary"
+            },
+            "blocked": false,
+            "blockedReason": null
+          }
+        },
+        "fallbackSource": {
+          "moduleKey": "apothecary",
+          "label": "Apothecary",
+          "reason": "Brew fallback",
+          "activityMode": "background",
+          "available": true,
+          "blockedReason": null,
+          "expectedYieldLabel": "Live Apothecary Brew route using visible semester recipes.",
+          "routeAction": {
+            "label": "Apothecary",
+            "actionLabel": "Open Apothecary",
+            "reason": "Brew is the honest fallback when shop stock is capped or the item is not directly sold in the current city.",
+            "moduleKey": "apothecary",
+            "cityId": "city_pinewind_hamlet",
+            "target": {
+              "kind": "world_module",
+              "cityId": "city_pinewind_hamlet",
+              "moduleKey": "apothecary"
+            },
+            "blocked": false,
+            "blockedReason": null
+          }
+        },
+        "routeAction": {
+          "label": "Apothecary",
+          "actionLabel": "Open Apothecary",
+          "reason": "Consumable shortages should route to Apothecary Buy first when the current city stocks them and the cap can still cover the gap.",
+          "moduleKey": "apothecary",
+          "cityId": "city_pinewind_hamlet",
+          "target": {
+            "kind": "world_module",
+            "cityId": "city_pinewind_hamlet",
+            "moduleKey": "apothecary"
+          },
+          "blocked": false,
+          "blockedReason": null
+        },
+        "expectedBenefit": "Raises survival readiness through Healing Reserve and pouch stock.",
+        "relatedIds": [
+          "cons_healing_pellet_t1"
+        ],
+        "relatedScreenModuleKey": "apothecary",
+        "detailsText": "Required before the current gate; Raises survival readiness through Healing Reserve and pouch stock.",
+        "debug": {
+          "problemKind": "belowHealingFloor",
+          "spendPriorityId": "maintain_consumable_floor",
+          "primaryRecommendedRouteKey": "shop_apothecary_pinewind"
+        }
+      },
+      {
+        "id": "cultivation-prep-floor",
+        "blockerType": "medicine_pouch",
+        "label": "Cultivation-prep tonic below target",
+        "reason": "Cultivation-prep tonic below target: 0/4, gap 4.",
+        "currentValue": 0,
+        "targetValue": 4,
+        "gap": 4,
+        "severity": "critical",
+        "requirementKind": "hard_requirement",
+        "mandatoryBeforeNextGate": true,
+        "bestSource": {
+          "moduleKey": "apothecary",
+          "label": "Apothecary",
+          "reason": "Consumable shortages should route to Apothecary Buy first when the current city stocks them and the cap can still cover the gap.",
+          "activityMode": "background",
+          "available": true,
+          "blockedReason": null,
+          "expectedYieldLabel": "Completes the gate preparation package before the attempt.",
+          "routeAction": {
+            "label": "Apothecary",
+            "actionLabel": "Open Apothecary",
+            "reason": "Consumable shortages should route to Apothecary Buy first when the current city stocks them and the cap can still cover the gap.",
+            "moduleKey": "apothecary",
+            "cityId": "city_pinewind_hamlet",
+            "target": {
+              "kind": "world_module",
+              "cityId": "city_pinewind_hamlet",
+              "moduleKey": "apothecary"
+            },
+            "blocked": false,
+            "blockedReason": null
+          }
+        },
+        "fallbackSource": {
+          "moduleKey": "apothecary",
+          "label": "Apothecary",
+          "reason": "Brew fallback",
+          "activityMode": "background",
+          "available": true,
+          "blockedReason": null,
+          "expectedYieldLabel": "Live Apothecary Brew route using visible semester recipes.",
+          "routeAction": {
+            "label": "Apothecary",
+            "actionLabel": "Open Apothecary",
+            "reason": "Brew is the honest fallback when shop stock is capped or the item is not directly sold in the current city.",
+            "moduleKey": "apothecary",
+            "cityId": "city_pinewind_hamlet",
+            "target": {
+              "kind": "world_module",
+              "cityId": "city_pinewind_hamlet",
+              "moduleKey": "apothecary"
+            },
+            "blocked": false,
+            "blockedReason": null
+          }
+        },
+        "routeAction": {
+          "label": "Apothecary",
+          "actionLabel": "Open Apothecary",
+          "reason": "Consumable shortages should route to Apothecary Buy first when the current city stocks them and the cap can still cover the gap.",
+          "moduleKey": "apothecary",
+          "cityId": "city_pinewind_hamlet",
+          "target": {
+            "kind": "world_module",
+            "cityId": "city_pinewind_hamlet",
+            "moduleKey": "apothecary"
+          },
+          "blocked": false,
+          "blockedReason": null
+        },
+        "expectedBenefit": "Completes the gate preparation package before the attempt.",
+        "relatedIds": [
+          "cons_qi_elixir_t1"
+        ],
+        "relatedScreenModuleKey": "apothecary",
+        "detailsText": "Required before the current gate; Completes the gate preparation package before the attempt.",
+        "debug": {
+          "problemKind": "belowCultivationPrepFloor",
+          "spendPriorityId": "maintain_consumable_floor",
+          "primaryRecommendedRouteKey": "shop_apothecary_pinewind"
+        }
+      },
+      {
+        "id": "minimum-forge-floor",
+        "blockerType": "gear_floor",
+        "label": "Minimum forge floor below target",
+        "reason": "Minimum forge floor below target: 0/4, gap 4.",
+        "currentValue": 0,
+        "targetValue": 4,
+        "gap": 4,
+        "severity": "critical",
+        "requirementKind": "hard_requirement",
+        "mandatoryBeforeNextGate": true,
+        "bestSource": {
+          "moduleKey": "forge",
+          "label": "Forge",
+          "reason": "Problem policy for belowMinimumForgeFloor routes here first.",
+          "activityMode": "background",
+          "available": true,
+          "blockedReason": null,
+          "expectedYieldLabel": "Raises the minimum Forge Floor required for the current gate.",
+          "routeAction": {
+            "label": "Forge",
+            "actionLabel": "Open Forge",
+            "reason": "Problem policy for belowMinimumForgeFloor routes here first.",
+            "moduleKey": "forge",
+            "cityId": "city_pinewind_hamlet",
+            "target": {
+              "kind": "world_module",
+              "cityId": "city_pinewind_hamlet",
+              "moduleKey": "forge"
+            },
+            "blocked": false,
+            "blockedReason": null
+          }
+        },
+        "fallbackSource": null,
+        "routeAction": {
+          "label": "Forge",
+          "actionLabel": "Open Forge",
+          "reason": "Problem policy for belowMinimumForgeFloor routes here first.",
+          "moduleKey": "forge",
+          "cityId": "city_pinewind_hamlet",
+          "target": {
+            "kind": "world_module",
+            "cityId": "city_pinewind_hamlet",
+            "moduleKey": "forge"
+          },
+          "blocked": false,
+          "blockedReason": null
+        },
+        "expectedBenefit": "Raises the minimum Forge Floor required for the current gate.",
+        "relatedIds": [
+          "weapon",
+          "accessory",
+          "temper"
+        ],
+        "relatedScreenModuleKey": "forge",
+        "detailsText": "Required before the current gate; Raises the minimum Forge Floor required for the current gate.",
+        "debug": {
+          "problemKind": "belowMinimumForgeFloor",
+          "spendPriorityId": "reach_minimum_forge_floor",
+          "primaryRecommendedRouteKey": "forge:minimum-floor"
+        }
+      },
+      {
+        "id": "merit-reserve",
+        "blockerType": "fail_safe",
+        "label": "Merit reserve below target",
+        "reason": "Merit reserve below target: 0/10, gap 10.",
+        "currentValue": 0,
+        "targetValue": 10,
+        "gap": 10,
+        "severity": "critical",
+        "requirementKind": "hard_requirement",
+        "mandatoryBeforeNextGate": true,
+        "bestSource": {
+          "moduleKey": "bounties",
+          "label": "Bounties",
+          "reason": "Merit reserve gaps must route to Bounties first.",
+          "activityMode": "background",
+          "available": true,
+          "blockedReason": null,
+          "expectedYieldLabel": "Builds Merit reserve for the Safety Net and support economy.",
+          "routeAction": {
+            "label": "Bounties",
+            "actionLabel": "Open Bounties",
+            "reason": "Merit reserve gaps must route to Bounties first.",
+            "moduleKey": "bounties",
+            "cityId": "city_pinewind_hamlet",
+            "target": {
+              "kind": "world_module",
+              "cityId": "city_pinewind_hamlet",
+              "moduleKey": "bounties"
+            },
+            "blocked": false,
+            "blockedReason": null
+          }
+        },
+        "fallbackSource": {
+          "moduleKey": "gateTrial",
+          "label": "Gate Trial",
+          "reason": "Eligible defeat fallback",
+          "activityMode": "active",
+          "available": true,
+          "blockedReason": null,
+          "expectedYieldLabel": "Eligible gate defeats provide bounded fallback Merit only when that support truth is active.",
+          "routeAction": {
+            "label": "Gate Trial",
+            "actionLabel": "Open Gate Trial",
+            "reason": "Gate-defeat fallback is allowed only when the current gate support rule is active.",
+            "moduleKey": "gateTrial",
+            "cityId": "city_pinewind_hamlet",
+            "target": {
+              "kind": "world_module",
+              "cityId": "city_pinewind_hamlet",
+              "moduleKey": "gateTrial"
+            },
+            "blocked": false,
+            "blockedReason": null
+          }
+        },
+        "routeAction": {
+          "label": "Bounties",
+          "actionLabel": "Open Bounties",
+          "reason": "Merit reserve gaps must route to Bounties first.",
+          "moduleKey": "bounties",
+          "cityId": "city_pinewind_hamlet",
+          "target": {
+            "kind": "world_module",
+            "cityId": "city_pinewind_hamlet",
+            "moduleKey": "bounties"
+          },
+          "blocked": false,
+          "blockedReason": null
+        },
+        "expectedBenefit": "Builds Merit reserve for the Safety Net and support economy.",
+        "relatedIds": [
+          "merit"
+        ],
+        "relatedScreenModuleKey": "bounties",
+        "detailsText": "Required before the current gate; Builds Merit reserve for the Safety Net and support economy.",
+        "debug": {
+          "problemKind": "belowMeritReserve",
+          "spendPriorityId": "build_merit_reserve",
+          "primaryRecommendedRouteKey": "bounties:any"
+        }
+      },
+      {
+        "id": "recommended-forge-floor",
+        "blockerType": "gear_floor",
+        "label": "Recommended forge floor below target",
+        "reason": "Recommended forge floor below target: 0/6, gap 6.",
+        "currentValue": 0,
+        "targetValue": 6,
+        "gap": 6,
+        "severity": "critical",
+        "requirementKind": "recommended_prep",
+        "mandatoryBeforeNextGate": false,
+        "bestSource": {
+          "moduleKey": "forge",
+          "label": "Forge",
+          "reason": "Problem policy for belowRecommendedForgeFloor routes here first.",
+          "activityMode": "background",
+          "available": true,
+          "blockedReason": null,
+          "expectedYieldLabel": "Raises the recommended Forge Floor and improves the attempt margin.",
+          "routeAction": {
+            "label": "Forge",
+            "actionLabel": "Open Forge",
+            "reason": "Problem policy for belowRecommendedForgeFloor routes here first.",
+            "moduleKey": "forge",
+            "cityId": "city_pinewind_hamlet",
+            "target": {
+              "kind": "world_module",
+              "cityId": "city_pinewind_hamlet",
+              "moduleKey": "forge"
+            },
+            "blocked": false,
+            "blockedReason": null
+          }
+        },
+        "fallbackSource": null,
+        "routeAction": {
+          "label": "Forge",
+          "actionLabel": "Open Forge",
+          "reason": "Problem policy for belowRecommendedForgeFloor routes here first.",
+          "moduleKey": "forge",
+          "cityId": "city_pinewind_hamlet",
+          "target": {
+            "kind": "world_module",
+            "cityId": "city_pinewind_hamlet",
+            "moduleKey": "forge"
+          },
+          "blocked": false,
+          "blockedReason": null
+        },
+        "expectedBenefit": "Raises the recommended Forge Floor and improves the attempt margin.",
+        "relatedIds": [
+          "weapon",
+          "accessory",
+          "temper",
+          "runes"
+        ],
+        "relatedScreenModuleKey": "forge",
+        "detailsText": "Recommended preparation; Raises the recommended Forge Floor and improves the attempt margin.",
+        "debug": {
+          "problemKind": "belowRecommendedForgeFloor",
+          "spendPriorityId": "reach_recommended_forge_floor",
+          "primaryRecommendedRouteKey": "forge:recommended-floor"
+        }
+      },
+      {
+        "id": "gate-prep-package",
+        "blockerType": "medicine_pouch",
+        "label": "Recommended direct gate-prep package incomplete",
+        "reason": "Recommended direct gate-prep package incomplete: 0/36, gap 36.",
+        "currentValue": 0,
+        "targetValue": 36,
+        "gap": 36,
+        "severity": "critical",
+        "requirementKind": "recommended_prep",
+        "mandatoryBeforeNextGate": false,
+        "bestSource": {
+          "moduleKey": "apothecary",
+          "label": "Apothecary",
+          "reason": "Consumable shortages should route to Apothecary Buy first when the current city stocks them and the cap can still cover the gap.",
+          "activityMode": "background",
+          "available": true,
+          "blockedReason": null,
+          "expectedYieldLabel": "Completes the gate preparation package before the attempt.",
+          "routeAction": {
+            "label": "Apothecary",
+            "actionLabel": "Open Apothecary",
+            "reason": "Consumable shortages should route to Apothecary Buy first when the current city stocks them and the cap can still cover the gap.",
+            "moduleKey": "apothecary",
+            "cityId": "city_pinewind_hamlet",
+            "target": {
+              "kind": "world_module",
+              "cityId": "city_pinewind_hamlet",
+              "moduleKey": "apothecary"
+            },
+            "blocked": false,
+            "blockedReason": null
+          }
+        },
+        "fallbackSource": {
+          "moduleKey": "apothecary",
+          "label": "Apothecary",
+          "reason": "Brew fallback",
+          "activityMode": "background",
+          "available": true,
+          "blockedReason": null,
+          "expectedYieldLabel": "Live Apothecary Brew route using visible semester recipes.",
+          "routeAction": {
+            "label": "Apothecary",
+            "actionLabel": "Open Apothecary",
+            "reason": "Brew is the honest fallback when shop stock is capped or the item is not directly sold in the current city.",
+            "moduleKey": "apothecary",
+            "cityId": "city_pinewind_hamlet",
+            "target": {
+              "kind": "world_module",
+              "cityId": "city_pinewind_hamlet",
+              "moduleKey": "apothecary"
+            },
+            "blocked": false,
+            "blockedReason": null
+          }
+        },
+        "routeAction": {
+          "label": "Apothecary",
+          "actionLabel": "Open Apothecary",
+          "reason": "Consumable shortages should route to Apothecary Buy first when the current city stocks them and the cap can still cover the gap.",
+          "moduleKey": "apothecary",
+          "cityId": "city_pinewind_hamlet",
+          "target": {
+            "kind": "world_module",
+            "cityId": "city_pinewind_hamlet",
+            "moduleKey": "apothecary"
+          },
+          "blocked": false,
+          "blockedReason": null
+        },
+        "expectedBenefit": "Completes the gate preparation package before the attempt.",
+        "relatedIds": [
+          "cons_healing_pellet_t1",
+          "cons_ironblood_pellet_t1",
+          "cons_qi_elixir_t1"
+        ],
+        "relatedScreenModuleKey": "apothecary",
+        "detailsText": "Recommended preparation; Completes the gate preparation package before the attempt.",
+        "debug": {
+          "problemKind": "missingGatePrepPackage",
+          "spendPriorityId": "buy_full_gate_prep_package",
+          "primaryRecommendedRouteKey": "shop_apothecary_pinewind"
+        }
+      },
+      {
+        "id": "targeted-material:mat_spirit_leaf",
+        "blockerType": "material_shortfall",
+        "label": "Targeted local material missing",
+        "reason": "Targeted local material missing: 0/1, gap 1.",
+        "currentValue": 0,
+        "targetValue": 1,
+        "gap": 1,
+        "severity": "critical",
+        "requirementKind": "recommended_prep",
+        "mandatoryBeforeNextGate": false,
+        "bestSource": {
+          "moduleKey": "ruins",
+          "label": "Ruins",
+          "reason": "Targeted local shortages must route to city-local Ruins first.",
+          "activityMode": "active",
+          "available": true,
+          "blockedReason": null,
+          "expectedYieldLabel": "Restores the targeted local material needed by the current sink.",
+          "routeAction": {
+            "label": "Ruins",
+            "actionLabel": "Open Ruins",
+            "reason": "Targeted local shortages must route to city-local Ruins first.",
+            "moduleKey": "ruins",
+            "cityId": "city_pinewind_hamlet",
+            "target": {
+              "kind": "world_module",
+              "cityId": "city_pinewind_hamlet",
+              "moduleKey": "ruins"
+            },
+            "blocked": false,
+            "blockedReason": null
+          }
+        },
+        "fallbackSource": {
+          "moduleKey": "expeditions",
+          "label": "Expeditions",
+          "reason": "Passive shortage smoothing",
+          "activityMode": "passive",
+          "available": true,
+          "blockedReason": null,
+          "expectedYieldLabel": "herbs expedition yields 2 and matches expeditions routing.",
+          "routeAction": {
+            "label": "Expeditions",
+            "actionLabel": "Open Expeditions",
+            "reason": "Targeted local shortages may use local expedition support as the bounded secondary route.",
+            "moduleKey": "expeditions",
+            "cityId": "city_pinewind_hamlet",
+            "target": {
+              "kind": "world_module",
+              "cityId": "city_pinewind_hamlet",
+              "moduleKey": "expeditions"
+            },
+            "blocked": false,
+            "blockedReason": null
+          }
+        },
+        "routeAction": {
+          "label": "Ruins",
+          "actionLabel": "Open Ruins",
+          "reason": "Targeted local shortages must route to city-local Ruins first.",
+          "moduleKey": "ruins",
+          "cityId": "city_pinewind_hamlet",
+          "target": {
+            "kind": "world_module",
+            "cityId": "city_pinewind_hamlet",
+            "moduleKey": "ruins"
+          },
+          "blocked": false,
+          "blockedReason": null
+        },
+        "expectedBenefit": "Restores the targeted local material needed by the current sink.",
+        "relatedIds": [
+          "mat_spirit_leaf"
+        ],
+        "relatedScreenModuleKey": "ruins",
+        "detailsText": "Recommended preparation; Restores the targeted local material needed by the current sink.",
+        "debug": {
+          "problemKind": "missingTargetedLocalMaterial",
+          "spendPriorityId": "buy_full_gate_prep_package",
+          "primaryRecommendedRouteKey": "ruin_hollow_log_den"
+        }
+      },
+      {
+        "id": "build-correction",
+        "blockerType": "technique_loadout",
+        "label": "Build-correction reserve missing",
+        "reason": "Build-correction reserve missing: 0/1, gap 1.",
+        "currentValue": 0,
+        "targetValue": 1,
+        "gap": 1,
+        "severity": "critical",
+        "requirementKind": "recommended_prep",
+        "mandatoryBeforeNextGate": false,
+        "bestSource": {
+          "moduleKey": "expeditions",
+          "label": "Expeditions",
+          "reason": "Technique fragments and manual scraps should be sourced through scout support, not flattened into generic combat farming.",
+          "activityMode": "passive",
+          "available": true,
+          "blockedReason": null,
+          "expectedYieldLabel": "Adds doctrine and technique options that can close a build/loadout gap.",
+          "routeAction": {
+            "label": "Expeditions",
+            "actionLabel": "Open Expeditions",
+            "reason": "Technique fragments and manual scraps should be sourced through scout support, not flattened into generic combat farming.",
+            "moduleKey": "expeditions",
+            "cityId": "city_pinewind_hamlet",
+            "target": {
+              "kind": "world_module",
+              "cityId": "city_pinewind_hamlet",
+              "moduleKey": "expeditions"
+            },
+            "blocked": false,
+            "blockedReason": null
+          }
+        },
+        "fallbackSource": {
+          "moduleKey": "manualPavilion",
+          "label": "Manual Pavilion",
+          "reason": "Correction destination",
+          "activityMode": "background",
+          "available": true,
+          "blockedReason": null,
+          "expectedYieldLabel": "Manual Pavilion is the destination for spending build-correction support once fragments are acquired.",
+          "routeAction": {
+            "label": "Manual Pavilion",
+            "actionLabel": "Open Manual Pavilion",
+            "reason": "Build-correction gaps should surface Manual Pavilion as the destination module, with scout support feeding it.",
+            "moduleKey": "manualPavilion",
+            "cityId": "city_pinewind_hamlet",
+            "target": {
+              "kind": "world_module",
+              "cityId": "city_pinewind_hamlet",
+              "moduleKey": "manualPavilion"
+            },
+            "blocked": false,
+            "blockedReason": null
+          }
+        },
+        "routeAction": {
+          "label": "Expeditions",
+          "actionLabel": "Open Expeditions",
+          "reason": "Technique fragments and manual scraps should be sourced through scout support, not flattened into generic combat farming.",
+          "moduleKey": "expeditions",
+          "cityId": "city_pinewind_hamlet",
+          "target": {
+            "kind": "world_module",
+            "cityId": "city_pinewind_hamlet",
+            "moduleKey": "expeditions"
+          },
+          "blocked": false,
+          "blockedReason": null
+        },
+        "expectedBenefit": "Adds doctrine and technique options that can close a build/loadout gap.",
+        "relatedIds": [
+          "mat_technique_fragment",
+          "crate_manual_scraps",
+          "frag_manual_mortal"
+        ],
+        "relatedScreenModuleKey": "expeditions",
+        "detailsText": "Recommended preparation; Adds doctrine and technique options that can close a build/loadout gap.",
+        "debug": {
+          "problemKind": "buildCorrectionGap",
+          "spendPriorityId": "build_correction_and_optional_runes",
+          "primaryRecommendedRouteKey": "scout"
+        }
+      }
+    ],
+    "bestActions": [
+      {
+        "id": "action-1-apothecary-belowHealingFloor",
+        "label": "Apothecary - buy stock for the current gate",
+        "destinationModuleKey": "apothecary",
+        "reason": "Consumable shortages should route to Apothecary Buy first when the current city stocks them and the cap can still cover the gap.",
+        "expectedBenefit": "Raises survival readiness through Healing Reserve and pouch stock.",
+        "activityMode": "background",
+        "routeAction": {
+          "label": "Apothecary",
+          "actionLabel": "Open Apothecary",
+          "reason": "Consumable shortages should route to Apothecary Buy first when the current city stocks them and the cap can still cover the gap.",
+          "moduleKey": "apothecary",
+          "cityId": "city_pinewind_hamlet",
+          "target": {
+            "kind": "world_module",
+            "cityId": "city_pinewind_hamlet",
+            "moduleKey": "apothecary"
+          },
+          "blocked": false,
+          "blockedReason": null
+        },
+        "available": true,
+        "blockedReason": null,
+        "relatedIds": [
+          "cons_healing_pellet_t1"
+        ],
+        "priorityBand": 1
+      },
+      {
+        "id": "action-2-apothecary-belowHealingFloor",
+        "label": "Apothecary - brew missing preparation",
+        "destinationModuleKey": "apothecary",
+        "reason": "Brew is the honest fallback when shop stock is capped or the item is not directly sold in the current city.",
+        "expectedBenefit": "Raises survival readiness through Healing Reserve and pouch stock.",
+        "activityMode": "background",
+        "routeAction": {
+          "label": "Apothecary",
+          "actionLabel": "Open Apothecary",
+          "reason": "Brew is the honest fallback when shop stock is capped or the item is not directly sold in the current city.",
+          "moduleKey": "apothecary",
+          "cityId": "city_pinewind_hamlet",
+          "target": {
+            "kind": "world_module",
+            "cityId": "city_pinewind_hamlet",
+            "moduleKey": "apothecary"
+          },
+          "blocked": false,
+          "blockedReason": null
+        },
+        "available": true,
+        "blockedReason": null,
+        "relatedIds": [
+          "cons_healing_pellet_t1"
+        ],
+        "priorityBand": 1
+      },
+      {
+        "id": "action-3-apothecary-belowCultivationPrepFloor",
+        "label": "Apothecary - buy stock for the current gate",
+        "destinationModuleKey": "apothecary",
+        "reason": "Consumable shortages should route to Apothecary Buy first when the current city stocks them and the cap can still cover the gap.",
+        "expectedBenefit": "Completes the gate preparation package before the attempt.",
+        "activityMode": "background",
+        "routeAction": {
+          "label": "Apothecary",
+          "actionLabel": "Open Apothecary",
+          "reason": "Consumable shortages should route to Apothecary Buy first when the current city stocks them and the cap can still cover the gap.",
+          "moduleKey": "apothecary",
+          "cityId": "city_pinewind_hamlet",
+          "target": {
+            "kind": "world_module",
+            "cityId": "city_pinewind_hamlet",
+            "moduleKey": "apothecary"
+          },
+          "blocked": false,
+          "blockedReason": null
+        },
+        "available": true,
+        "blockedReason": null,
+        "relatedIds": [
+          "cons_qi_elixir_t1"
+        ],
+        "priorityBand": 1
+      }
+    ],
+    "recommendedPrep": [
+      {
+        "id": "prep-recommended-forge-floor",
+        "label": "Recommended forge floor below target",
+        "blockerType": "gear_floor",
+        "currentValue": 0,
+        "targetValue": 6,
+        "expectedBenefit": "Raises the recommended Forge Floor and improves the attempt margin.",
+        "routeAction": {
+          "label": "Forge",
+          "actionLabel": "Open Forge",
+          "reason": "Problem policy for belowRecommendedForgeFloor routes here first.",
+          "moduleKey": "forge",
+          "cityId": "city_pinewind_hamlet",
+          "target": {
+            "kind": "world_module",
+            "cityId": "city_pinewind_hamlet",
+            "moduleKey": "forge"
+          },
+          "blocked": false,
+          "blockedReason": null
+        }
+      },
+      {
+        "id": "prep-gate-prep-package",
+        "label": "Recommended direct gate-prep package incomplete",
+        "blockerType": "medicine_pouch",
+        "currentValue": 0,
+        "targetValue": 36,
+        "expectedBenefit": "Completes the gate preparation package before the attempt.",
+        "routeAction": {
+          "label": "Apothecary",
+          "actionLabel": "Open Apothecary",
+          "reason": "Consumable shortages should route to Apothecary Buy first when the current city stocks them and the cap can still cover the gap.",
+          "moduleKey": "apothecary",
+          "cityId": "city_pinewind_hamlet",
+          "target": {
+            "kind": "world_module",
+            "cityId": "city_pinewind_hamlet",
+            "moduleKey": "apothecary"
+          },
+          "blocked": false,
+          "blockedReason": null
+        }
+      },
+      {
+        "id": "prep-targeted-material:mat_spirit_leaf",
+        "label": "Targeted local material missing",
+        "blockerType": "material_shortfall",
+        "currentValue": 0,
+        "targetValue": 1,
+        "expectedBenefit": "Restores the targeted local material needed by the current sink.",
+        "routeAction": {
+          "label": "Ruins",
+          "actionLabel": "Open Ruins",
+          "reason": "Targeted local shortages must route to city-local Ruins first.",
+          "moduleKey": "ruins",
+          "cityId": "city_pinewind_hamlet",
+          "target": {
+            "kind": "world_module",
+            "cityId": "city_pinewind_hamlet",
+            "moduleKey": "ruins"
+          },
+          "blocked": false,
+          "blockedReason": null
+        }
+      }
+    ],
+    "safetyNet": {
+      "label": "Safety Net",
+      "reserveStatus": "below_minimum",
+      "currentMerit": "0",
+      "targetMeritReserve": "10",
+      "currentSpiritStones": "0",
+      "spiritStoneMinimumReserve": "0",
+      "failSafeThreshold": 3,
+      "failSafeAffordableNow": false,
+      "expectedMeritAfterThreeEligibleDefeats": "6",
+      "routeAction": {
+        "label": "Bounties",
+        "actionLabel": "Open Bounties",
+        "reason": "Build Merit and support reserves for the Safety Net.",
+        "moduleKey": "bounties",
+        "cityId": "city_pinewind_hamlet",
+        "target": {
+          "kind": "world_module",
+          "cityId": "city_pinewind_hamlet",
+          "moduleKey": "bounties"
+        },
+        "blocked": false,
+        "blockedReason": null
+      },
+      "reason": "Merit and support currency keep the Safety Net honest without changing combat ownership."
+    },
+    "failureDiagnosis": null,
+    "sourceSinkHighlights": [
+      {
+        "id": "cons_healing_pellet_t1",
+        "label": "Healing Pellet",
+        "kind": "item",
+        "purpose": "Used in the current or near-future Apothecary gate package.",
+        "currentRelevance": "Solves current blocker: this is part of the active shortage route.",
+        "bestSourceLabel": "Apothecary",
+        "bestSinkLabel": "Gate prep minimum",
+        "routeAction": {
+          "label": "Apothecary",
+          "actionLabel": "Open Apothecary",
+          "reason": "Consumable shortages should route to Apothecary Buy first when the current city stocks them and the cap can still cover the gap.",
+          "moduleKey": "apothecary",
+          "cityId": "city_pinewind_hamlet",
+          "target": {
+            "kind": "world_module",
+            "cityId": "city_pinewind_hamlet",
+            "moduleKey": "apothecary"
+          },
+          "blocked": false,
+          "blockedReason": null
+        }
+      },
+      {
+        "id": "cons_qi_elixir_t1",
+        "label": "Qi Elixir",
+        "kind": "item",
+        "purpose": "Used in the current or near-future Apothecary gate package.",
+        "currentRelevance": "Solves current blocker: this is part of the active shortage route.",
+        "bestSourceLabel": "Apothecary",
+        "bestSinkLabel": "Gate prep minimum",
+        "routeAction": {
+          "label": "Apothecary",
+          "actionLabel": "Open Apothecary",
+          "reason": "Consumable shortages should route to Apothecary Buy first when the current city stocks them and the cap can still cover the gap.",
+          "moduleKey": "apothecary",
+          "cityId": "city_pinewind_hamlet",
+          "target": {
+            "kind": "world_module",
+            "cityId": "city_pinewind_hamlet",
+            "moduleKey": "apothecary"
+          },
+          "blocked": false,
+          "blockedReason": null
+        }
+      },
+      {
+        "id": "merit",
+        "label": "Merit",
+        "kind": "merit",
+        "purpose": "Merit turns directed city work into Safety Net and support-route readiness.",
+        "currentRelevance": "Solves current blocker: this is part of the active shortage route.",
+        "bestSourceLabel": "Bounties",
+        "bestSinkLabel": "Safety Net reserve",
+        "routeAction": {
+          "label": "Bounties",
+          "actionLabel": "Open Bounties",
+          "reason": "Merit reserve gaps must route to Bounties first.",
+          "moduleKey": "bounties",
+          "cityId": null,
+          "target": null,
+          "blocked": true,
+          "blockedReason": "No current city is selected."
+        }
+      },
+      {
+        "id": "cons_ironblood_pellet_t1",
+        "label": "Ironblood Pellet",
+        "kind": "item",
+        "purpose": "Used in the current or near-future Apothecary gate package.",
+        "currentRelevance": "Solves current blocker: this is part of the active shortage route.",
+        "bestSourceLabel": "Apothecary",
+        "bestSinkLabel": "Gate prep minimum",
+        "routeAction": {
+          "label": "Apothecary",
+          "actionLabel": "Open Apothecary",
+          "reason": "Consumable shortages should route to Apothecary Buy first when the current city stocks them and the cap can still cover the gap.",
+          "moduleKey": "apothecary",
+          "cityId": "city_pinewind_hamlet",
+          "target": {
+            "kind": "world_module",
+            "cityId": "city_pinewind_hamlet",
+            "moduleKey": "apothecary"
+          },
+          "blocked": false,
+          "blockedReason": null
+        }
+      }
+    ],
+    "moduleRoleHighlights": [
+      {
+        "activityKey": "cultivation",
+        "label": "Cultivation",
+        "roleSubtitle": "Sacred center for realm, Qi, stability, and the next threshold.",
+        "roleKind": "cultivation",
+        "activityMode": "active",
+        "primaryOutputs": [
+          "Qi",
+          "realm progress",
+          "breakthrough handoff"
+        ],
+        "primarySinksSupported": [
+          "Gate catalysts",
+          "current milestone"
+        ],
+        "currentMilestoneRelevance": "primary",
+        "currentReason": "Shows whether inner progress is ready or support systems still need work.",
+        "routeLabel": "Open Cultivation"
+      },
+      {
+        "activityKey": "status",
+        "label": "Status",
+        "roleSubtitle": "Command ledger for the current milestone, blocker, and best fixes.",
+        "roleKind": "diagnostic",
+        "activityMode": "ledger",
+        "primaryOutputs": [
+          "current blocker",
+          "best improvements",
+          "safety net status"
+        ],
+        "primarySinksSupported": [
+          "All current milestone decisions"
+        ],
+        "currentMilestoneRelevance": "primary",
+        "currentReason": "Ranks one current fix before secondary options.",
+        "routeLabel": "Open Status"
+      },
+      {
+        "activityKey": "world",
+        "label": "World",
+        "roleSubtitle": "City service network for choosing the right support system.",
+        "roleKind": "city_hub",
+        "activityMode": "ledger",
+        "primaryOutputs": [
+          "module routes",
+          "service availability"
+        ],
+        "primarySinksSupported": [
+          "Current blocker routing"
+        ],
+        "currentMilestoneRelevance": "primary",
+        "currentReason": "Turns the ranked blocker into a concrete city destination.",
+        "routeLabel": "Open World"
+      },
+      {
+        "activityKey": "outskirts",
+        "label": "Outskirts",
+        "roleSubtitle": "Gold, common materials, and low-risk combat repetitions.",
+        "roleKind": "active_source",
+        "activityMode": "active",
+        "primaryOutputs": [
+          "Gold",
+          "common materials",
+          "safe combat reps"
+        ],
+        "primarySinksSupported": [
+          "Apothecary",
+          "Forge",
+          "Safety Net reserves"
+        ],
+        "currentMilestoneRelevance": "fallback",
+        "currentReason": "Outskirts can only be a tertiary fallback for targeted local materials when the live role profile already exposes a rare spike there.",
+        "routeLabel": "Open Outskirts"
+      },
+      {
+        "activityKey": "ruins",
+        "label": "Ruins",
+        "roleSubtitle": "Deterministic targeted-material support for local shortages.",
+        "roleKind": "targeted_source",
+        "activityMode": "active",
+        "primaryOutputs": [
+          "targeted materials",
+          "anchor drops"
+        ],
+        "primarySinksSupported": [
+          "Forge",
+          "Apothecary",
+          "local prep"
+        ],
+        "currentMilestoneRelevance": "fallback",
+        "currentReason": "Targeted local shortages must route to city-local Ruins first.",
+        "routeLabel": "Open Ruins"
+      },
+      {
+        "activityKey": "gateTrial",
+        "label": "Gate Trial",
+        "roleSubtitle": "Milestone readiness check, decisive gate, Safety Net, and catalyst source.",
+        "roleKind": "gate",
+        "activityMode": "active",
+        "primaryOutputs": [
+          "Gate catalyst",
+          "failure diagnosis",
+          "Safety Net progress"
+        ],
+        "primarySinksSupported": [
+          "Breakthrough handoff"
+        ],
+        "currentMilestoneRelevance": "secondary",
+        "currentReason": "Gate-defeat fallback is allowed only when the current gate support rule is active.",
+        "routeLabel": "Open Gate Trial"
+      },
+      {
+        "activityKey": "manualPavilion",
+        "label": "Manual Pavilion",
+        "roleSubtitle": "Doctrine acquisition for manuals, path fit, and build correction.",
+        "roleKind": "build",
+        "activityMode": "background",
+        "primaryOutputs": [
+          "manuals",
+          "fragments",
+          "doctrine options"
+        ],
+        "primarySinksSupported": [
+          "Techniques",
+          "loadout readiness"
+        ],
+        "currentMilestoneRelevance": "fallback",
+        "currentReason": "Build-correction gaps should surface Manual Pavilion as the destination module, with scout support feeding it.",
+        "routeLabel": "Open Manual Pavilion"
+      },
+      {
+        "activityKey": "techniques",
+        "label": "Techniques",
+        "roleSubtitle": "Build expression through learned techniques, loadouts, and AI posture.",
+        "roleKind": "build",
+        "activityMode": "ledger",
+        "primaryOutputs": [
+          "equipped techniques",
+          "loadout posture",
+          "AI fit"
+        ],
+        "primarySinksSupported": [
+          "Gate combat readiness"
+        ],
+        "currentMilestoneRelevance": "secondary",
+        "currentReason": "Turns manuals into actual combat behavior for the next gate.",
+        "routeLabel": "Open Techniques"
+      },
+      {
+        "activityKey": "apothecary",
+        "label": "Apothecary",
+        "roleSubtitle": "Preparation room for pouch stock, pills, and immediate survival readiness.",
+        "roleKind": "prep",
+        "activityMode": "background",
+        "primaryOutputs": [
+          "Healing Reserve",
+          "pouch stock",
+          "prep consumables"
+        ],
+        "primarySinksSupported": [
+          "Gate survival",
+          "failure recovery"
+        ],
+        "currentMilestoneRelevance": "primary",
+        "currentReason": "Consumable shortages should route to Apothecary Buy first when the current city stocks them and the cap can still cover the gap.",
+        "routeLabel": "Open Apothecary"
+      },
+      {
+        "activityKey": "forge",
+        "label": "Forge",
+        "roleSubtitle": "Permanent gear floor and power baseline for gate attempts.",
+        "roleKind": "gear",
+        "activityMode": "background",
+        "primaryOutputs": [
+          "Forge Floor",
+          "refine progress",
+          "temper progress"
+        ],
+        "primarySinksSupported": [
+          "Gate damage and survival floor"
+        ],
+        "currentMilestoneRelevance": "secondary",
+        "currentReason": "Problem policy for belowMinimumForgeFloor routes here first.",
+        "routeLabel": "Open Forge"
+      },
+      {
+        "activityKey": "bounties",
+        "label": "Bounties",
+        "roleSubtitle": "Directed tasks for Merit, support currency, and shortage routing.",
+        "roleKind": "task",
+        "activityMode": "background",
+        "primaryOutputs": [
+          "Merit",
+          "gold",
+          "support tasks"
+        ],
+        "primarySinksSupported": [
+          "Safety Net reserves",
+          "support economy"
+        ],
+        "currentMilestoneRelevance": "secondary",
+        "currentReason": "Merit reserve gaps must route to Bounties first.",
+        "routeLabel": "Open Bounties"
+      },
+      {
+        "activityKey": "expeditions",
+        "label": "Expeditions",
+        "roleSubtitle": "Background shortage relief for herbs, ore, and doctrine support.",
+        "roleKind": "background",
+        "activityMode": "background",
+        "primaryOutputs": [
+          "passive material yield",
+          "shortage smoothing"
+        ],
+        "primarySinksSupported": [
+          "Apothecary",
+          "Forge",
+          "Manual Pavilion"
+        ],
+        "currentMilestoneRelevance": "fallback",
+        "currentReason": "Targeted local shortages may use local expedition support as the bounded secondary route.",
+        "routeLabel": "Open Expeditions"
+      },
+      {
+        "activityKey": "inventory",
+        "label": "Inventory",
+        "roleSubtitle": "Item ledger for purpose, source, sink, and preparation stock.",
+        "roleKind": "ledger",
+        "activityMode": "ledger",
+        "primaryOutputs": [
+          "item purpose",
+          "provenance",
+          "current relevance"
+        ],
+        "primarySinksSupported": [
+          "All resource decisions"
+        ],
+        "currentMilestoneRelevance": "secondary",
+        "currentReason": "Explains what each resource is for and where it should go next.",
+        "routeLabel": "Open Inventory"
+      },
+      {
+        "activityKey": "prestige",
+        "label": "Prestige",
+        "roleSubtitle": "Outer-loop reset and long-term acceleration, held until lifetime proof matters.",
+        "roleKind": "meta",
+        "activityMode": "meta",
+        "primaryOutputs": [
+          "Ascension Points",
+          "future acceleration"
+        ],
+        "primarySinksSupported": [
+          "next-life planning"
+        ],
+        "currentMilestoneRelevance": "not_relevant",
+        "currentReason": "Current milestone prep should be resolved before final AP timing advice.",
+        "routeLabel": "Open Prestige"
+      }
+    ],
+    "debug": {
+      "sourceModules": [
+        "apothecary"
+      ],
+      "notes": [
+        "economicReadinessBand=below_minimum",
+        "majorShortfallCount=8"
+      ],
+      "unresolvedDataGaps": []
+    }
+  },
+  "guidance": {
+    "status": {
+      "headline": "Foundation Establishment Gate",
+      "summary": "Healing floor below target. Best Source: Apothecary.",
+      "primaryBlockerId": "healing-floor",
+      "primaryRoute": {
+        "label": "Apothecary",
+        "actionLabel": "Open Apothecary",
+        "reason": "Consumable shortages should route to Apothecary Buy first when the current city stocks them and the cap can still cover the gap.",
+        "moduleKey": "apothecary",
+        "cityId": "city_pinewind_hamlet",
+        "target": {
+          "kind": "world_module",
+          "cityId": "city_pinewind_hamlet",
+          "moduleKey": "apothecary"
+        },
+        "blocked": false,
+        "blockedReason": null
+      },
+      "details": [
+        "Foundation Establishment milestone is gated by healing floor below target.",
+        "Required before the current gate; Raises survival readiness through Healing Reserve and pouch stock."
+      ]
+    },
+    "cultivation": {
+      "headline": "Current Bottleneck",
+      "summary": "Healing floor below target. Apothecary can help before the next gate.",
+      "primaryBlockerId": "healing-floor",
+      "primaryRoute": {
+        "label": "Apothecary",
+        "actionLabel": "Open Apothecary",
+        "reason": "Consumable shortages should route to Apothecary Buy first when the current city stocks them and the cap can still cover the gap.",
+        "moduleKey": "apothecary",
+        "cityId": "city_pinewind_hamlet",
+        "target": {
+          "kind": "world_module",
+          "cityId": "city_pinewind_hamlet",
+          "moduleKey": "apothecary"
+        },
+        "blocked": false,
+        "blockedReason": null
+      },
+      "details": [
+        "Raises survival readiness through Healing Reserve and pouch stock."
+      ]
+    },
+    "gateTrial": {
+      "headline": "Gate Readiness",
+      "summary": "Top Fix: Apothecary - Raises survival readiness through Healing Reserve and pouch stock.",
+      "primaryBlockerId": "healing-floor",
+      "primaryRoute": {
+        "label": "Apothecary",
+        "actionLabel": "Open Apothecary",
+        "reason": "Consumable shortages should route to Apothecary Buy first when the current city stocks them and the cap can still cover the gap.",
+        "moduleKey": "apothecary",
+        "cityId": "city_pinewind_hamlet",
+        "target": {
+          "kind": "world_module",
+          "cityId": "city_pinewind_hamlet",
+          "moduleKey": "apothecary"
+        },
+        "blocked": false,
+        "blockedReason": null
+      },
+      "details": [
+        "Merit and support currency keep the Safety Net honest without changing combat ownership.",
+        "Required before the current gate; Raises survival readiness through Healing Reserve and pouch stock."
+      ]
+    },
+    "world": {
+      "headline": "Recommended City Service",
+      "summary": "Apothecary - buy stock for the current gate: Raises survival readiness through Healing Reserve and pouch stock.",
+      "primaryBlockerId": "healing-floor",
+      "primaryRoute": {
+        "label": "Apothecary",
+        "actionLabel": "Open Apothecary",
+        "reason": "Consumable shortages should route to Apothecary Buy first when the current city stocks them and the cap can still cover the gap.",
+        "moduleKey": "apothecary",
+        "cityId": "city_pinewind_hamlet",
+        "target": {
+          "kind": "world_module",
+          "cityId": "city_pinewind_hamlet",
+          "moduleKey": "apothecary"
+        },
+        "blocked": false,
+        "blockedReason": null
+      },
+      "recommendedModuleKey": "apothecary",
+      "details": [
+        "Consumable shortages should route to Apothecary Buy first when the current city stocks them and the cap can still cover the gap.",
+        "Brew is the honest fallback when shop stock is capped or the item is not directly sold in the current city.",
+        "Consumable shortages should route to Apothecary Buy first when the current city stocks them and the cap can still cover the gap."
+      ]
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+    "name":  "release-fresh-run-report-json",
+    "command":  "npm run release:fresh-run-report:json",
+    "status":  "PASS",
+    "exitCode":  0,
+    "durationMs":  66292,
+    "log":  "artifacts\\mp4\\final\\onboarding-stage-integration\\logs\\fresh-run-report-json.final.log"
+}

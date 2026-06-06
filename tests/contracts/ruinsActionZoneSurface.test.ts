@@ -15,7 +15,7 @@ void test('ruins action state keeps truthful Start/Stop semantics and no fake Co
 });
 
 void test('ruins CTA zone keeps one dominant action and secondary auto-repeat control', async () => {
-  const source = await readFile(new URL('../../src/features/ruins/ui/RuinsCtaZone.tsx', import.meta.url), 'utf8');
+  const source = await readFile('src/features/ruins/ui/RuinsCtaZone.tsx', 'utf8');
 
   assert.match(source, /deriveRuinsActionState/);
   assert.match(source, /ruinsCtaZone__primary/);

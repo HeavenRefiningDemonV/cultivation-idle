@@ -1,0 +1,448 @@
+.trainingHallPage {
+  --training-hall-mote-opacity: 0.18;
+
+  position: relative;
+  min-height: min(82vh, 860px);
+  color: #2e2114;
+  background:
+    radial-gradient(circle at 20% 10%, rgba(128, 86, 31, 0.22), transparent 32%),
+    linear-gradient(135deg, #f4dfad 0%, #d7b56c 44%, #7c4f29 100%);
+  padding: clamp(16px, 2vw, 28px);
+  overflow: hidden;
+}
+
+.trainingHallPage > *:not(.trainingHallVfxMotes) {
+  position: relative;
+  z-index: 1;
+}
+
+.trainingHallVfxMotes {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.trainingHallVfxMotes span {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  opacity: var(--training-hall-mote-opacity);
+  background: radial-gradient(circle, rgba(255, 244, 185, 0.9), rgba(185, 123, 45, 0.22) 58%, transparent 72%);
+}
+
+.trainingHallVfxMotes span:nth-child(3n + 1) {
+  left: 14%;
+  top: 24%;
+}
+
+.trainingHallVfxMotes span:nth-child(3n + 2) {
+  left: 52%;
+  top: 14%;
+}
+
+.trainingHallVfxMotes span:nth-child(3n + 3) {
+  left: 78%;
+  top: 44%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .trainingHallPage[data-motion-mode="animated"] .trainingHallVfxMotes span {
+    animation: trainingHallMoteDrift 7.5s ease-in-out infinite;
+  }
+
+  .trainingHallPage[data-motion-mode="animated"] .trainingHallVfxMotes span:nth-child(2n) {
+    animation-delay: -2.4s;
+  }
+}
+
+@keyframes trainingHallMoteDrift {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  50% {
+    transform: translate3d(10px, -14px, 0);
+  }
+}
+
+.trainingHallHero,
+.trainingHallLayout,
+.trainingHallControls,
+.trainingHallAlerts {
+  width: min(1180px, 100%);
+  margin-inline: auto;
+}
+
+.trainingHallHero {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: flex-start;
+  border-bottom: 1px solid rgba(69, 43, 18, 0.28);
+  padding-bottom: 16px;
+}
+
+.trainingHallHero h2 {
+  margin: 0;
+  font-size: clamp(1.8rem, 3vw, 3rem);
+  line-height: 1.02;
+  letter-spacing: 0;
+}
+
+.trainingHallRoomTitle {
+  display: block;
+  margin-top: 4px;
+  font-size: clamp(1.05rem, 1.8vw, 1.35rem);
+  line-height: 1.2;
+  color: #4f341c;
+}
+
+.trainingHallHero p,
+.trainingHallStageDetail,
+.trainingHallEmpty {
+  margin: 6px 0 0;
+  color: #5d4225;
+}
+
+.trainingHallEyebrow,
+.trainingHallFoundation span,
+.trainingHallStageHeader p,
+.trainingHallStatLineLabel {
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  color: #6d2017;
+}
+
+.trainingHallFoundation {
+  min-width: 220px;
+  padding: 12px 14px;
+  border: 1px solid rgba(84, 49, 19, 0.28);
+  background: rgba(255, 247, 216, 0.58);
+}
+
+.trainingHallFoundation strong,
+.trainingHallFoundation small {
+  display: block;
+}
+
+.trainingHallAlerts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.trainingHallAlert {
+  border-left: 4px solid #9f6b22;
+  background: rgba(255, 246, 218, 0.72);
+  padding: 10px 12px;
+}
+
+.trainingHallAlert strong,
+.trainingHallAlert span {
+  display: block;
+}
+
+.trainingHallAlert.is-warning {
+  border-left-color: #9b271c;
+}
+
+.trainingHallAlert.is-success {
+  border-left-color: #2f6c48;
+}
+
+.trainingHallLayout {
+  display: grid;
+  grid-template-columns: minmax(210px, 0.72fr) minmax(320px, 1.4fr) minmax(220px, 0.82fr);
+  gap: 16px;
+  margin-top: 16px;
+  align-items: stretch;
+}
+
+.trainingHallRail,
+.trainingHallStage,
+.trainingHallStats {
+  border: 1px solid rgba(73, 45, 20, 0.3);
+  background: rgba(255, 244, 210, 0.62);
+  padding: 14px;
+}
+
+.trainingHallRail h3,
+.trainingHallStats h3,
+.trainingHallStageHeader h3 {
+  margin: 0 0 10px;
+  letter-spacing: 0;
+}
+
+.trainingHallRegimen,
+.trainingHallIntensityButton,
+.trainingHallActionButton {
+  font: inherit;
+  color: inherit;
+  border: 1px solid rgba(74, 44, 20, 0.34);
+  background: rgba(255, 250, 226, 0.78);
+  cursor: pointer;
+}
+
+.trainingHallRegimen:focus-visible,
+.trainingHallIntensityButton:focus-visible,
+.trainingHallActionButton:focus-visible {
+  outline: 3px solid rgba(47, 108, 72, 0.34);
+  outline-offset: 2px;
+}
+
+.trainingHallRegimen {
+  width: 100%;
+  min-height: 76px;
+  text-align: left;
+  padding: 10px;
+  margin-bottom: 8px;
+}
+
+.trainingHallRegimen.is-selected,
+.trainingHallIntensityButton.is-selected {
+  border-color: #2f6c48;
+  box-shadow: inset 0 0 0 2px rgba(47, 108, 72, 0.2);
+}
+
+.trainingHallRegimen.is-locked {
+  cursor: default;
+  border-style: dashed;
+  background: rgba(83, 61, 38, 0.12);
+  color: #4e3b2a;
+}
+
+.trainingHallRegimenName,
+.trainingHallRegimenRoom,
+.trainingHallRegimenMastery {
+  display: block;
+}
+
+.trainingHallRegimenRoom,
+.trainingHallRegimenMastery {
+  font-size: 0.78rem;
+  color: #624628;
+}
+
+.trainingHallStage {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 380px;
+  background:
+    linear-gradient(rgba(255, 241, 203, 0.72), rgba(255, 241, 203, 0.72)),
+    repeating-linear-gradient(135deg, rgba(82, 48, 21, 0.1) 0 1px, transparent 1px 18px);
+}
+
+.trainingHallStageHeader span {
+  color: #72512e;
+}
+
+.trainingHallStageStats {
+  display: grid;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.trainingHallStatLine {
+  display: grid;
+  grid-template-columns: 82px minmax(120px, 1fr) auto auto;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 10px;
+  background: rgba(255, 250, 226, 0.68);
+}
+
+.trainingHallStatLine.is-capped,
+.trainingHallPathStat.is-capped {
+  border-left: 4px solid #a33a24;
+}
+
+.trainingHallCurrentForm,
+.trainingHallSupportRow,
+.trainingHallFutureStat {
+  display: grid;
+  gap: 4px;
+  padding: 9px 10px;
+  background: rgba(255, 250, 226, 0.68);
+  border: 1px solid rgba(71, 45, 19, 0.14);
+}
+
+.trainingHallCurrentForm span,
+.trainingHallSupportRow span,
+.trainingHallFutureStats h4,
+.trainingHallLockedRail h4,
+.trainingHallSupport h4 {
+  margin: 0;
+  text-transform: uppercase;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  color: #6d2017;
+}
+
+.trainingHallCurrentForm small,
+.trainingHallSupportRow small,
+.trainingHallFutureStat p {
+  margin: 0;
+  color: #624628;
+}
+
+.trainingHallPathStat {
+  display: grid;
+  gap: 6px;
+  min-height: 62px;
+  padding: 9px 0;
+  border-bottom: 1px solid rgba(71, 45, 19, 0.18);
+}
+
+.trainingHallPathStat div:first-child {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.trainingHallPathStat span,
+.trainingHallPathStat small {
+  color: #624628;
+}
+
+.trainingHallLockedRail,
+.trainingHallFutureStats,
+.trainingHallSupport {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.trainingHallFutureStat {
+  border-style: dashed;
+  background:
+    linear-gradient(90deg, rgba(255, 250, 226, 0.7), rgba(92, 69, 43, 0.1)),
+    repeating-linear-gradient(135deg, rgba(82, 48, 21, 0.08) 0 1px, transparent 1px 12px);
+}
+
+.trainingHallFutureStat div,
+.trainingHallSupportRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 6px 10px;
+  align-items: baseline;
+}
+
+.trainingHallFutureStat p,
+.trainingHallSupportRow small {
+  grid-column: 1 / -1;
+}
+
+.trainingHallFutureStat span {
+  color: #6d2017;
+  font-size: 0.78rem;
+}
+
+.trainingHallSupportRow.is-neutral_default strong {
+  color: #5d4225;
+}
+
+.trainingHallSupportRow.is-upstream strong {
+  color: #2f6c48;
+}
+
+.trainingHallPathStatMeter {
+  height: 7px;
+  background: rgba(72, 46, 22, 0.18);
+}
+
+.trainingHallPathStatMeter span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #2f6c48, #c19a3b);
+}
+
+.trainingHallControls {
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.trainingHallIntensity {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(104px, 1fr));
+  gap: 8px;
+  flex: 1;
+}
+
+.trainingHallIntensityButton {
+  min-height: 56px;
+  padding: 8px 10px;
+}
+
+.trainingHallIntensityButton span,
+.trainingHallIntensityButton small {
+  display: block;
+}
+
+.trainingHallActions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  max-width: 300px;
+}
+
+.trainingHallActionButton {
+  min-width: 128px;
+  padding: 10px 14px;
+}
+
+.trainingHallActionHint {
+  flex-basis: 100%;
+  color: #624628;
+}
+
+.trainingHallActionButton.is-primary {
+  background: #2f6c48;
+  color: #fff9e8;
+  border-color: #225437;
+}
+
+.trainingHallActionButton:disabled,
+.trainingHallIntensityButton:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+@media (max-width: 900px) {
+  .trainingHallHero,
+  .trainingHallControls {
+    flex-direction: column;
+  }
+
+  .trainingHallLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .trainingHallIntensity {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trainingHallVfxMotes span {
+    animation: none;
+    opacity: 0;
+  }
+
+  .trainingHallRegimen,
+  .trainingHallIntensityButton,
+  .trainingHallActionButton {
+    transition: none;
+  }
+}

@@ -3,7 +3,7 @@ import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import test from 'node:test';
 
-import { validateLoadedContent } from '../../src/content/index.js';
+import { RUNTIME_CONTENT_FILE_BY_KEY, validateLoadedContent } from '../../src/content/index.js';
 import {
   auditTechniqueTaxonomy,
   auditTechniqueTaxonomyFromDefinitions,
@@ -24,26 +24,10 @@ async function readJson(fileName: string) {
 }
 
 async function loadValidatedContent() {
-  return validateLoadedContent({
-    economy: await readJson('economy.json'),
-    cities: await readJson('cities.json'),
-    items: await readJson('items.json'),
-    techniques: await readJson('techniques.json'),
-    pavilions: await readJson('pavilions.json'),
-    outskirts: await readJson('outskirts.json'),
-    enemies: await readJson('enemies.json'),
-    trials: await readJson('trials.json'),
-    ruins: await readJson('ruins.json'),
-    alchemy_recipes: await readJson('alchemy_recipes.json'),
-    forge_blueprints: await readJson('forge_blueprints.json'),
-    runes: await readJson('runes.json'),
-    talisman_recipes: await readJson('talisman_recipes.json'),
-    apothecary_shops: await readJson('apothecary_shops.json'),
-    expeditions: await readJson('expeditions.json'),
-    bounties: await readJson('bounties.json'),
-    heart_laws: await readJson('heart_laws.json'),
-    prestige_store: await readJson('prestige_store.json'),
-  } as never);
+  const entries = await Promise.all(
+    Object.entries(RUNTIME_CONTENT_FILE_BY_KEY).map(async ([key, fileName]) => [key, await readJson(fileName)] as const),
+  );
+  return validateLoadedContent(Object.fromEntries(entries) as never);
 }
 
 function primeContentStore(content: Awaited<ReturnType<typeof loadValidatedContent>>) {

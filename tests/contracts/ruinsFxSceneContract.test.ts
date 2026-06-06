@@ -6,8 +6,8 @@ import { buildFxSceneContract } from '../../src/ui/fx/runtime.js';
 import { FX_STAGE_IDS } from '../../src/ui/fx/constants.js';
 
 test('ruins fx scene contract uses bounded local atmosphere families', async () => {
-  const source = await readFile(new URL('../../src/ui/fx/scenes/RuinsFxScene.tsx', import.meta.url), 'utf8');
-  const style = await readFile(new URL('../../src/ui/fx/scenes/RuinsFxScene.scss', import.meta.url), 'utf8');
+  const source = await readFile('src/ui/fx/scenes/RuinsFxScene.tsx', 'utf8');
+  const style = await readFile('src/ui/fx/scenes/RuinsFxScene.scss', 'utf8');
 
   assert.match(source, /ruinsFxScene__haze/);
   assert.match(source, /ruinsFxScene__torchGlow/);

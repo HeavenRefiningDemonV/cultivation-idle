@@ -1,0 +1,70 @@
+[
+  {
+    "name": "tsconfig-tests",
+    "command": "npm exec tsc -- --project tsconfig.tests.json",
+    "status": "PASS",
+    "exitCode": 0,
+    "log": "artifacts/mp4/final/onboarding-stage-integration/logs/tsconfig-tests.final.log"
+  },
+  {
+    "name": "typecheck",
+    "command": "npm run typecheck",
+    "status": "PASS",
+    "exitCode": 0,
+    "log": "artifacts/mp4/final/onboarding-stage-integration/logs/typecheck.final.log"
+  },
+  {
+    "name": "check-icons",
+    "command": "npm run check:icons",
+    "status": "PASS",
+    "exitCode": 0,
+    "log": "artifacts/mp4/final/onboarding-stage-integration/logs/check-icons.final.log"
+  },
+  {
+    "name": "validate-content",
+    "command": "npm run validate:content",
+    "status": "PASS",
+    "exitCode": 0,
+    "log": "artifacts/mp4/final/onboarding-stage-integration/logs/validate-content.final.log"
+  },
+  {
+    "name": "build",
+    "command": "npm run build",
+    "status": "PASS",
+    "exitCode": 0,
+    "log": "artifacts/mp4/final/onboarding-stage-integration/logs/build.final.log",
+    "notes": "Vite emitted the existing chunk-size warning; command exited 0."
+  },
+  {
+    "name": "targeted-onboarding-suite",
+    "command": "node --loader=./scripts/relativeJsLoader.mjs --test tmp-tests/tests/contracts/onboardingMilestoneContract.test.js tmp-tests/tests/integration/onboardingMigration.test.js tmp-tests/tests/contracts/onboardingPolicy.test.js tmp-tests/tests/integration/onboardingModuleGating.test.js tmp-tests/tests/contracts/onboardingMilestoneSurface.test.js tmp-tests/tests/integration/onboardingUiState.test.js tmp-tests/tests/integration/onboardingFreshSaveFlow.test.js tmp-tests/tests/integration/onboardingSourceSinkGuards.test.js",
+    "status": "PASS",
+    "exitCode": 0,
+    "testCount": 33,
+    "log": "artifacts/mp4/final/onboarding-stage-integration/logs/targeted-onboarding-suite.final.log"
+  },
+  {
+    "name": "release-fresh-run-report-json",
+    "command": "npm run release:fresh-run-report:json",
+    "status": "PASS",
+    "exitCode": 0,
+    "log": "artifacts/mp4/final/onboarding-stage-integration/logs/fresh-run-report-json.final.log",
+    "notes": "Automated route passed, but manual coverage remains incomplete for normal, cautious, and aggressive routes; releaseReady=false."
+  },
+  {
+    "name": "test-contracts",
+    "command": "npm run test:contracts",
+    "status": "FAIL",
+    "exitCode": 1,
+    "log": "artifacts/mp4/final/onboarding-stage-integration/logs/test-contracts.final.log",
+    "notes": "Broad pre-existing contract debt remains outside the MP4 targeted onboarding slice."
+  },
+  {
+    "name": "release-gate-json",
+    "command": "npm run release:gate:json",
+    "status": "FAIL",
+    "exitCode": 2,
+    "log": "artifacts/mp4/final/onboarding-stage-integration/logs/release-gate-json.final.log",
+    "notes": "Gate produced NO_GO with 3 unresolved blockers, 1 pending-manual check, and 5 untracked/unaccepted waiver candidates."
+  }
+]

@@ -1,0 +1,6 @@
+﻿{
+    "exitCode":  2,
+    "command":  "npm run release:gate -- --only=full_test_suite --json",
+    "durationSeconds":  169.723,
+    "log":  "artifacts/mp5/release-gate/full_test_suite.exitcode-diagnostic-after-npmcli-resolution.log"
+}

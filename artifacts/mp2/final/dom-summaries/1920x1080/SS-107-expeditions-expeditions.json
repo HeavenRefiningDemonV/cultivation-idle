@@ -1,0 +1,735 @@
+{
+  "viewport": "1920x1080",
+  "screen": "Expeditions",
+  "url": "http://127.0.0.1:5173/",
+  "documentTitle": "cultivation-idle-temp",
+  "rootTestIds": [
+    "expeditions-exact-screen-owner",
+    "expeditions-exact-page",
+    "expeditions-exact-plane",
+    "expeditions-exact-header",
+    "expeditions-exact-status-plaque",
+    "expeditions-exact-slots",
+    "expeditions-exact-slot-0",
+    "expeditions-exact-slot-1",
+    "expeditions-exact-slot-2",
+    "expeditions-exact-slot-3",
+    "expeditions-exact-route-map",
+    "expeditions-exact-available-routes",
+    "expeditions-exact-route-forage",
+    "expeditions-exact-route-mine",
+    "expeditions-exact-route-scout",
+    "expeditions-exact-ledger",
+    "expeditions-exact-bottom-actions"
+  ],
+  "headings": [
+    "Expeditions",
+    "Expeditions",
+    "Dispatch Slots",
+    "Recommended:",
+    "Prestige slot +1",
+    "Prestige slot +1",
+    "Prestige slot +1",
+    "Route Map",
+    "Available Routes",
+    "Forage Route",
+    "Mine Route",
+    "Scout Route",
+    "Dispatch Ledger",
+    "No Route Complete",
+    "Forage Route"
+  ],
+  "primaryCta": {
+    "text": "Open Expeditions",
+    "disabled": false,
+    "ariaLabel": null,
+    "rect": {
+      "x": 1565,
+      "y": 281,
+      "width": 310,
+      "height": 41,
+      "right": 1875,
+      "bottom": 322
+    }
+  },
+  "buttons": [
+    {
+      "text": "OutskirtsGold & Common MatsGold / Common MatsGold & Common Mats. Best used when you need gold, common materials, or low-risk combat reps.",
+      "disabled": false,
+      "ariaLabel": "Open Outskirts: Gold & Common Mats",
+      "rect": {
+        "x": 1021,
+        "y": 437,
+        "width": 180,
+        "height": 34,
+        "right": 1201,
+        "bottom": 471
+      }
+    },
+    {
+      "text": "RuinsTargeted MatsLocal Mats / Anchor DropTargeted Mats. Best used when you need targeted local materials and deterministic support rewards.",
+      "disabled": false,
+      "ariaLabel": "Open Ruins: Targeted Mats",
+      "rect": {
+        "x": 1285,
+        "y": 547,
+        "width": 180,
+        "height": 34,
+        "right": 1465,
+        "bottom": 581
+      }
+    },
+    {
+      "text": "Gate TrialGate ItemFoundation Pill / BreakthroughGate Item. Use this hall when the current gate item is ready for judgment.",
+      "disabled": false,
+      "ariaLabel": "Open Gate Trial: Gate Item",
+      "rect": {
+        "x": 1625,
+        "y": 711,
+        "width": 180,
+        "height": 34,
+        "right": 1805,
+        "bottom": 745
+      }
+    },
+    {
+      "text": "Manual PavilionBuild CorrectionManuals / Technique FragmentsBuild Correction. Best used when you need build correction, manuals, or technique growth.",
+      "disabled": false,
+      "ariaLabel": "Open Manual Pavilion: Build Correction",
+      "rect": {
+        "x": 1542,
+        "y": 138,
+        "width": 180,
+        "height": 34,
+        "right": 1722,
+        "bottom": 172
+      }
+    },
+    {
+      "text": "ApothecaryImmediate ReadinessHealing Stock / Preparation RemediesImmediate Readiness. Best used when you need immediate readiness through healing stock, remedies, or pouch prep.",
+      "disabled": false,
+      "ariaLabel": "Open Apothecary: Immediate Readiness",
+      "rect": {
+        "x": 511,
+        "y": 398,
+        "width": 180,
+        "height": 34,
+        "right": 691,
+        "bottom": 432
+      }
+    },
+    {
+      "text": "ForgePermanent FloorRefines / Temper / RunesPermanent Floor. Best used when you need permanent floor through refine, temper, or rune work.",
+      "disabled": false,
+      "ariaLabel": "Open Forge: Permanent Floor",
+      "rect": {
+        "x": 1061,
+        "y": 788,
+        "width": 180,
+        "height": 34,
+        "right": 1241,
+        "bottom": 822
+      }
+    },
+    {
+      "text": "BountiesMerit & RoutingMerit / Spirit StonesMerit & Routing. Best used when you need Merit, routing help, or directed support rewards.",
+      "disabled": false,
+      "ariaLabel": "Open Bounties: Merit & Routing",
+      "rect": {
+        "x": 456,
+        "y": 740,
+        "width": 178,
+        "height": 34,
+        "right": 634,
+        "bottom": 774
+      }
+    },
+    {
+      "text": "ExpeditionsPassive SupportHerbs / OrePassive Support. Best used when you need passive shortage smoothing for herbs, ore, or fragments.",
+      "disabled": false,
+      "ariaLabel": "Open Expeditions: Passive Support",
+      "rect": {
+        "x": 455,
+        "y": 793,
+        "width": 180,
+        "height": 34,
+        "right": 635,
+        "bottom": 827
+      }
+    },
+    {
+      "text": "Open Expeditions",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1565,
+        "y": 281,
+        "width": 310,
+        "height": 41,
+        "right": 1875,
+        "bottom": 322
+      }
+    },
+    {
+      "text": "Status",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 380,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 521,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "Cultivation",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 525,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 667,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "World",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 671,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 812,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "Inventory",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 816,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 958,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "Techniques",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 962,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 1104,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "Records",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1108,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 1249,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "Prestige",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1253,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 1395,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "Settings",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1399,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 1540,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "",
+      "disabled": false,
+      "ariaLabel": "I IDLE: Recommended: Forage",
+      "rect": {
+        "x": 75,
+        "y": 177,
+        "width": 416,
+        "height": 156,
+        "right": 491,
+        "bottom": 333
+      }
+    },
+    {
+      "text": "",
+      "disabled": true,
+      "ariaLabel": "II LOCKED: Prestige slot +1 Complete trial to unlock",
+      "rect": {
+        "x": 525,
+        "y": 177,
+        "width": 416,
+        "height": 156,
+        "right": 942,
+        "bottom": 333
+      }
+    },
+    {
+      "text": "",
+      "disabled": true,
+      "ariaLabel": "III LOCKED: Prestige slot +1 Complete trial to unlock",
+      "rect": {
+        "x": 975,
+        "y": 177,
+        "width": 416,
+        "height": 156,
+        "right": 1392,
+        "bottom": 333
+      }
+    },
+    {
+      "text": "",
+      "disabled": true,
+      "ariaLabel": "IV LOCKED: Prestige slot +1 Complete trial to unlock",
+      "rect": {
+        "x": 1426,
+        "y": 177,
+        "width": 416,
+        "height": 156,
+        "right": 1842,
+        "bottom": 333
+      }
+    },
+    {
+      "text": "Select Route",
+      "disabled": false,
+      "ariaLabel": "Select Route",
+      "rect": {
+        "x": 1155,
+        "y": 494,
+        "width": 148,
+        "height": 45,
+        "right": 1303,
+        "bottom": 539
+      }
+    },
+    {
+      "text": "Select Route",
+      "disabled": false,
+      "ariaLabel": "Select Route",
+      "rect": {
+        "x": 1155,
+        "y": 647,
+        "width": 148,
+        "height": 45,
+        "right": 1303,
+        "bottom": 692
+      }
+    },
+    {
+      "text": "Select Route",
+      "disabled": false,
+      "ariaLabel": "Select Route",
+      "rect": {
+        "x": 1155,
+        "y": 814,
+        "width": 148,
+        "height": 45,
+        "right": 1303,
+        "bottom": 859
+      }
+    },
+    {
+      "text": "Claim Expedition",
+      "disabled": true,
+      "ariaLabel": "Claim Expedition",
+      "rect": {
+        "x": 1436,
+        "y": 560,
+        "width": 375,
+        "height": 45,
+        "right": 1811,
+        "bottom": 605
+      }
+    },
+    {
+      "text": "Auto-fill Recommended",
+      "disabled": false,
+      "ariaLabel": "Auto-fill Recommended",
+      "rect": {
+        "x": 1436,
+        "y": 762,
+        "width": 375,
+        "height": 45,
+        "right": 1811,
+        "bottom": 807
+      }
+    },
+    {
+      "text": "Dispatch Expedition",
+      "disabled": false,
+      "ariaLabel": "Dispatch Expedition",
+      "rect": {
+        "x": 469,
+        "y": 947,
+        "width": 464,
+        "height": 79,
+        "right": 933,
+        "bottom": 1026
+      }
+    },
+    {
+      "text": "Claim All Ready",
+      "disabled": true,
+      "ariaLabel": "Claim All Ready",
+      "rect": {
+        "x": 989,
+        "y": 947,
+        "width": 464,
+        "height": 79,
+        "right": 1453,
+        "bottom": 1026
+      }
+    }
+  ],
+  "scrollWidth": 1920,
+  "innerWidth": 1920,
+  "scrollHeight": 1080,
+  "innerHeight": 1080,
+  "suspectedClippedText": [
+    {
+      "text": "Gold & Common Mats",
+      "rect": {
+        "x": 1109,
+        "y": 443,
+        "width": 80,
+        "height": 11,
+        "right": 1188,
+        "bottom": 453
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Gold / Common Mats",
+      "rect": {
+        "x": 1109,
+        "y": 454,
+        "width": 80,
+        "height": 11,
+        "right": 1188,
+        "bottom": 465
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Gold & Common Mats. Best used when you need gold, common materials, or low-risk combat reps.",
+      "rect": {
+        "x": 1032,
+        "y": 453,
+        "width": 1,
+        "height": 1,
+        "right": 1033,
+        "bottom": 454
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Local Mats / Anchor Drop",
+      "rect": {
+        "x": 1354,
+        "y": 565,
+        "width": 98,
+        "height": 11,
+        "right": 1452,
+        "bottom": 575
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Targeted Mats. Best used when you need targeted local materials and deterministic support rewards.",
+      "rect": {
+        "x": 1296,
+        "y": 564,
+        "width": 1,
+        "height": 1,
+        "right": 1297,
+        "bottom": 565
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Foundation Pill / Breakthrough",
+      "rect": {
+        "x": 1717,
+        "y": 728,
+        "width": 75,
+        "height": 11,
+        "right": 1792,
+        "bottom": 739
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Gate Item. Use this hall when the current gate item is ready for judgment.",
+      "rect": {
+        "x": 1636,
+        "y": 727,
+        "width": 1,
+        "height": 1,
+        "right": 1637,
+        "bottom": 728
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Build Correction",
+      "rect": {
+        "x": 1668,
+        "y": 144,
+        "width": 41,
+        "height": 11,
+        "right": 1709,
+        "bottom": 155
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Manuals / Technique Fragments",
+      "rect": {
+        "x": 1668,
+        "y": 156,
+        "width": 41,
+        "height": 11,
+        "right": 1709,
+        "bottom": 166
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Build Correction. Best used when you need build correction, manuals, or technique growth.",
+      "rect": {
+        "x": 1553,
+        "y": 155,
+        "width": 1,
+        "height": 1,
+        "right": 1554,
+        "bottom": 156
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Immediate Readiness",
+      "rect": {
+        "x": 611,
+        "y": 404,
+        "width": 68,
+        "height": 11,
+        "right": 678,
+        "bottom": 415
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Healing Stock / Preparation Remedies",
+      "rect": {
+        "x": 611,
+        "y": 416,
+        "width": 68,
+        "height": 11,
+        "right": 678,
+        "bottom": 426
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Immediate Readiness. Best used when you need immediate readiness through healing stock, remedies, or pouch prep.",
+      "rect": {
+        "x": 522,
+        "y": 415,
+        "width": 1,
+        "height": 1,
+        "right": 523,
+        "bottom": 416
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Permanent Floor. Best used when you need permanent floor through refine, temper, or rune work.",
+      "rect": {
+        "x": 1072,
+        "y": 804,
+        "width": 1,
+        "height": 1,
+        "right": 1073,
+        "bottom": 805
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Merit & Routing. Best used when you need Merit, routing help, or directed support rewards.",
+      "rect": {
+        "x": 467,
+        "y": 756,
+        "width": 1,
+        "height": 1,
+        "right": 468,
+        "bottom": 757
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Passive Support",
+      "rect": {
+        "x": 556,
+        "y": 799,
+        "width": 65,
+        "height": 11,
+        "right": 622,
+        "bottom": 809
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Passive Support. Best used when you need passive shortage smoothing for herbs, ore, or fragments.",
+      "rect": {
+        "x": 466,
+        "y": 809,
+        "width": 1,
+        "height": 1,
+        "right": 467,
+        "bottom": 810
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Select city",
+      "rect": {
+        "x": 789,
+        "y": 39,
+        "width": 1,
+        "height": 1,
+        "right": 790,
+        "bottom": 40
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "ExpeditionsPassive route dispatch · Slots, yield smoothing, and claim-ready support.Pinewind Hamlet · 0 Active · 1 Idle · 0 Claim ReadyDispatch SlotsIIDLERecomm",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 1920,
+        "height": 1080,
+        "right": 1920,
+        "bottom": 1080
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "HamletHerb ridgeOre creekOld roadScout rise",
+      "rect": {
+        "x": 75,
+        "y": 437,
+        "width": 510,
+        "height": 427,
+        "right": 585,
+        "bottom": 863
+      },
+      "overflow": "hidden/hidden/hidden"
+    }
+  ],
+  "viewportIssues": [],
+  "consoleSinceStart": [
+    "debug: [vite] connecting...",
+    "debug: [vite] connected.",
+    "info: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+    "log: [App] Initializing game...",
+    "log: [GameLoop] Initializing game...",
+    "log: [GameLoop] Store dependencies wired",
+    "log: [GameLoop] Prestige store initialized",
+    "log: [SpiritRoot] Generated: Common fire (52% purity)",
+    "log: [GameLoop] Generated initial spirit root",
+    "log: [GameLoop] No save found, starting new game",
+    "log: [GameLoop] Added starter items to inventory",
+    "log: [GameLoop] Starting game loop...",
+    "log: [GameLoop] Game loop started",
+    "log: [GameLoop] Game initialized successfully",
+    "log: [App] Game initialized successfully",
+    "log: [App] Initializing game...",
+    "log: [GameLoop] Initializing game...",
+    "log: [GameLoop] Store dependencies wired",
+    "log: [GameLoop] Prestige store initialized",
+    "log: [GameLoop] No save found, starting new game",
+    "warning: [GameLoop] Already running",
+    "log: [GameLoop] Game initialized successfully",
+    "log: [App] Game initialized successfully",
+    "warning: [ContentValidation] Technique counts by path: Heaven=20, Earth=20, Martial=20",
+    "warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=heaven: 6",
+    "warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=earth: 6",
+    "warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=martial: 6",
+    "warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=heaven: 7",
+    "warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=earth: 9",
+    "warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=martial: 8",
+    "warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=heaven: 9",
+    "warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=earth: 9",
+    "warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=martial: 10",
+    "warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=heaven: 10",
+    "warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=earth: 10",
+    "warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=martial: 10",
+    "warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=heaven: 10",
+    "warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=earth: 10",
+    "warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=martial: 10",
+    "info: [Content] Loaded 5 cities, 60 techniques (H/E/M: 20/20/20)",
+    "info: [Content] Prestige upgrades: 27",
+    "log: [SaveLoad] Saving game...",
+    "log: [SaveLoad] Game saved successfully at 5/28/2026, 11:53:41 PM",
+    "log: [SaveLoad] Saving game...",
+    "log: [SaveLoad] Game saved successfully at 5/28/2026, 11:53:45 PM",
+    "log: [UI] Notification added: success - Life begins: Heaven • Ember Thread Sutra • Balanced",
+    "log: [SaveLoad] Saving game...",
+    "log: [SaveLoad] Game saved successfully at 5/28/2026, 11:53:45 PM",
+    "log: [UI] Active tab changed to: status",
+    "log: [UI] Active tab changed to: adventure",
+    "log: [UI] Active tab changed to: inventory",
+    "warning: [Inventory] Missing item definition for rusty_sword",
+    "warning: [Inventory] Missing item definition for worn_talisman",
+    "warning: [Inventory] Missing item definition for health_pill",
+    "warning: [Inventory] Missing item definition for spirit_stone",
+    "log: [UI] Active tab changed to: techniques",
+    "log: [SaveLoad] Saving game...",
+    "log: [SaveLoad] Game saved successfully at 5/28/2026, 11:54:38 PM",
+    "log: [GameLoop] Game autosaved",
+    "log: [UI] Active tab changed to: records",
+    "log: [UI] Active tab changed to: prestige",
+    "log: [UI] Active tab changed to: settings",
+    "log: [UI] Active tab changed to: adventure",
+    "warning: [audio] Unable to play sound ui_click_secondary NotSupportedError: Failed to load because no supported source was found."
+  ],
+  "textSample": "Outskirts\nGOLD & COMMON MATS\nGold / Common Mats\nGold & Common Mats. Best used when you need gold, common materials, or low-risk combat reps.\nRuins\nTARGETED MATS\nLocal Mats / Anchor Drop\nTargeted Mats. Best used when you need targeted local materials and deterministic support rewards.\nGate Trial\nGATE ITEM\nFoundation Pill / Breakthrough\nGate Item. Use this hall when the current gate item is ready for judgment.\nManual Pavilion\nBUILD CORRECTION\nManuals / Technique Fragments\nBuild Correction. Best used when you need build correction, manuals, or technique growth.\nApothecary\nIMMEDIATE READINESS\nHealing Stock / Preparation Remedies\nImmediate Readiness. Best used when you need immediate readiness through healing stock, remedies, or pouch prep.\nForge\nPERMANENT FLOOR\nRefines / Temper / Runes\nPermanent Floor. Best used when you need permanent floor through refine, temper, or rune work.\nBounties\nMERIT & ROUTING\nMerit / Spirit Stones\nMerit & Routing. Best used when you need Merit, routing help, or directed support rewards.\nExpeditions\nPASSIVE SUPPORT\nHerbs / Ore\nPassive Support. Best used when you need passive shortage smoothing for herbs, ore, or fragments.\nWORLD\nCity Phase: Pinewind Hamlet - foundations\nSelect city\nPinewind Hamlet\nStonecrag Town — Locked — Reach Foundation Establishment\nSpirit Cavern City — Locked — Reach Core Formation\nLotusford — Locked — Reach Nascent Soul\nIronpeak Bastion — Locked — Reach Soul Formation\nPressure: Qi, first medicines, and a stable starter build.\nExpedition Slot Idle\n\nPINEWIND HAMLET\n\nExpeditions\n\nPassive Support\n\nBest used when you need passive shortage smoothing for herbs, ore, or fragments.\n\nHerbs\nOre\n\nExpedition slot idle.\n\nOpen Expeditions\nStatus\nCultivation\nWorld\nInventory\nTechniques\nRecords\nPrestige\nSettings\nExpeditions\n\nPassive route dispatch · Slots, yield smoothing, and claim-ready support.\n\nPinewind Hamlet · 0 Active · 1 Idle · 0 Claim Ready\nDispatch Slots\nI\nIDLE\nRecommended:\n\nForage\n\nII\nLOCKED\nPrestige slot +1\n\nComplete trial to unlock\n\nIII\nLOCKED\nPrestige slot +1\n\nComplete trial to unlock\n\nIV\nLOCKED\nPrestige slot +1\n\nComplete trial to unlock\n\nRoute Map\nHamlet\nHerb ridge\nOre creek\nOld road\nScout rise\n\nLocal yield identity: herbs, ore, fragments, utility stock.\n\nAvailable Routes\nRECOMMENDED\nForage Route\n\nHerbs · Healing support\n\nDuration: Short / Medium\n\n×4\n×2\n×1\nSelect Route\nMine Route\n\nOre · Forge floor\n\nDuration: Medium / Long\n\n×4\n×2\nSelect Route\nScout Route\n\nFragments · Bounty routing / Manual support\n\nDuration: Short\n\n×12\n×25\nSelect Route\nDispatch Ledger\nClaim Ready\nNo Route Complete\n\nNo expedition is ready to claim yet.\n\nClaim Expedition\nRecommended Now\nForage Route\n\nBest overlap with healing support and idle slots.\n\nAuto-fill Recommended\n\nKeep one slot occupied when possible.\n\nDispatch Expedition\nClaim All Ready"
+}

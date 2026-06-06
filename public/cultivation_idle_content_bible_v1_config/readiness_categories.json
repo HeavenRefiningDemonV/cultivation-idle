@@ -1,0 +1,54 @@
+{
+  "version": "training-dao-heart-mp0-v1",
+  "categories": [
+    {
+      "id": "realm_qi",
+      "displayName": "Realm / Qi",
+      "maxScore": 20,
+      "description": "Realm, substage, Qi condition, and breakthrough threshold context.",
+      "sourceSystems": ["cultivation"]
+    },
+    {
+      "id": "heart_law_stability",
+      "displayName": "Heart Law / Stability",
+      "maxScore": 18,
+      "description": "Heart Law level, doctrine stability, clarity, and turbulence context.",
+      "sourceSystems": ["cultivation", "daoHeart"]
+    },
+    {
+      "id": "techniques_loadout",
+      "displayName": "Techniques / Loadout",
+      "maxScore": 18,
+      "description": "Technique mastery, loadout fit, and future scaling context.",
+      "sourceSystems": ["techniques", "manualPavilion"]
+    },
+    {
+      "id": "equipment_forge",
+      "displayName": "Equipment / Forge",
+      "maxScore": 15,
+      "description": "Forge floor, equipment readiness, and gear handling context.",
+      "sourceSystems": ["forge", "inventory"]
+    },
+    {
+      "id": "medicine_prep",
+      "displayName": "Medicine / Prep",
+      "maxScore": 12,
+      "description": "Healing reserve, pouch fit, and support item preparation.",
+      "sourceSystems": ["apothecary", "inventory"]
+    },
+    {
+      "id": "path_training",
+      "displayName": "Path Training",
+      "maxScore": 12,
+      "description": "Future expanded stat and Training Hall contribution.",
+      "sourceSystems": ["trainingHall"]
+    },
+    {
+      "id": "safety_net_support",
+      "displayName": "Safety Net / Support",
+      "maxScore": 5,
+      "description": "Fallback support, reserve checks, and fail-safe context.",
+      "sourceSystems": ["bounties", "expeditions", "gateTrial"]
+    }
+  ]
+}

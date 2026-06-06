@@ -135,24 +135,40 @@ function BreakthroughReadinessPanel({
       className={`cultivationExactBreakthroughReadiness cultivationExactBreakthroughReadiness--${readiness.state}`}
       data-region="breakthrough-readiness"
       data-testid="cultivation-breakthrough-readiness"
+      data-risk-band={readiness.risk?.band ?? 'none'}
+      data-confirmation-required={readiness.risk?.confirmationRequired ? 'true' : 'false'}
       aria-label={readiness.title}
     >
       <span className="cultivationExactBreakthroughReadiness__title">{readiness.title}</span>
       <strong className="cultivationExactBreakthroughReadiness__headline">{readiness.headline}</strong>
       <div className="cultivationExactBreakthroughReadiness__rows" role="list">
         {readiness.rows.map((row) => (
-          <span key={row.id} className={`cultivationExactBreakthroughReadiness__row cultivationExactBreakthroughReadiness__row--${row.tone ?? 'neutral'}`} role="listitem">
+          <span
+            key={row.id}
+            className={`cultivationExactBreakthroughReadiness__row cultivationExactBreakthroughReadiness__row--${row.tone ?? 'neutral'}`}
+            data-row-id={row.id}
+            data-tone={row.tone ?? 'neutral'}
+            role="listitem"
+            aria-label={`${row.label}: ${row.value}`}
+          >
             <span>{row.label}</span>
             <strong>{row.value}</strong>
           </span>
         ))}
       </div>
-      {readiness.primaryAction ? (
-        <CommandButton button={readiness.primaryAction} kind="drawer" onCommandAction={onCommandAction} />
-      ) : null}
-    </section>
-  );
-}
+        {readiness.primaryAction ? (
+          <CommandButton button={readiness.primaryAction} kind="drawer" onCommandAction={onCommandAction} />
+        ) : null}
+        {readiness.topFixActions && readiness.topFixActions.length > 0 ? (
+          <div className="cultivationExactBreakthroughReadiness__fixes" aria-label="Best Improvements">
+            {readiness.topFixActions.map((action) => (
+              <CommandButton key={`${action.actionKey}-${action.label}`} button={action} kind="drawer" onCommandAction={onCommandAction} />
+            ))}
+          </div>
+        ) : null}
+      </section>
+    );
+  }
 
 export function CultivationExactScreen({
   surface,

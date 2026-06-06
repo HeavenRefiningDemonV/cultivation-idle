@@ -5,13 +5,13 @@ import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 
 import { buildOutskirtsMockupSurface } from '../../src/features/world/outskirts/buildOutskirtsMockupSurface.js';
-import { createOutskirtsMockupFixture } from '../../src/features/world/outskirts/fixtures/createOutskirtsMockupFixture.js';
+import { createActiveOutskirtsMockupFixture, createOutskirtsMockupFixture } from '../../src/features/world/outskirts/fixtures/createOutskirtsMockupFixture.js';
 import { OUTSKIRTS_ALLOWED_PLANNING_SHELL } from '../../src/features/world/outskirts/outskirtsMockupPresentation.js';
 import { OutskirtsExactMockupScreen } from '../../src/features/world/outskirts/OutskirtsExactMockupScreen.js';
 import { OutskirtsStartHuntCta } from '../../src/features/world/outskirts/components/OutskirtsStartHuntCta.js';
 
 void test('C0 active surface model contract keeps exact-shell ownership and stop CTA intent', () => {
-  const fixture = createOutskirtsMockupFixture({ isOutskirtsActive: true });
+  const fixture = createActiveOutskirtsMockupFixture();
   const surface = buildOutskirtsMockupSurface(fixture, { activityMode: 'active' });
 
   assert.equal(surface.meta.activityMode, 'active');
@@ -32,7 +32,7 @@ void test('C0 active surface model contract keeps exact-shell ownership and stop
 });
 
 void test('C0 active exact page render contract keeps exact screen mounted and blocks legacy tokens', () => {
-  const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture({ isOutskirtsActive: true }), { activityMode: 'active' });
+  const surface = buildOutskirtsMockupSurface(createActiveOutskirtsMockupFixture(), { activityMode: 'active' });
   const html = renderToStaticMarkup(React.createElement(OutskirtsExactMockupScreen, { surface }));
 
   assert.equal(html.includes('data-testid="outskirts-exact-page"'), true);

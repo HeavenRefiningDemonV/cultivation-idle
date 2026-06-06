@@ -58,7 +58,7 @@ test('checklist, recommended panel, fail-safe, and Gate Corrections match the mo
   assert.equal(surface.recommendedPanel.title, 'Recommended');
   assert.equal(surface.recommendedPanel.recommendedPrepTitle, 'Recommended Prep');
   assert.equal(surface.recommendedPanel.prepRows.length, 4);
-  assert.equal(surface.recommendedPanel.prepRows.map((row) => `${row.title}:${row.status}:${row.routeTarget ?? 'none'}`).join('|'), 'Refine or temper gear:success:forge|Boost stats with pills:success:apothecary|Upgrade major techniques:success:techniques|Complete one Ruin support run:warning:ruins');
+  assert.equal(surface.recommendedPanel.prepRows.map((row) => `${row.title}:${row.status}:${row.routeTarget ?? 'none'}`).join('|'), 'Stabilize weapon floor:success:forge|Boost stats with pills:success:apothecary|Upgrade major techniques:success:techniques|Complete one Ruin support run:warning:ruins');
   assert.equal(surface.recommendedPanel.failSafeTitle, 'Fail-Safe');
   assert.equal(surface.recommendedPanel.failSafeRows.map((row) => `${row.label}:${row.value}`).join('|'), 'Eligible Failures:3 / 5|Cost:15 Merit · 800 Gold|Reserve:12 Merit · 610 Gold');
   assert.equal(surface.recommendedPanel.safetyNetButton.visible, true);
@@ -75,8 +75,8 @@ test('checklist, recommended panel, fail-safe, and Gate Corrections match the mo
 test('scenic stage, readiness seal, reward, summary, rail, and CTA are locked', () => {
   const surface = createGateTrialExactMockupFixture();
   assert.equal(surface.scenicStage.sceneAssetId, 'approvedFoundationGatePlate');
-  assert.equal(surface.scenicStage.artStatus, 'deferred');
-  assert.equal(surface.scenicStage.requiresFinalArtBinding, true);
+  assert.equal(surface.scenicStage.artStatus, 'approved-bound');
+  assert.equal(surface.scenicStage.requiresFinalArtBinding, false);
   assert.equal(surface.scenicStage.visualFlags.usesOldCombatPathScene, false);
   assert.equal(surface.scenicStage.visualFlags.usesOutskirtsScene, false);
   assert.equal(surface.scenicStage.visualFlags.usesRuinsScene, false);

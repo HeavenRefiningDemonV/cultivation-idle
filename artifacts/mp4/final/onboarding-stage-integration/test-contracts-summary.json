@@ -1,0 +1,8 @@
+{
+    "name":  "test-contracts",
+    "command":  "npm run test:contracts",
+    "status":  "FAIL",
+    "exitCode":  1,
+    "durationMs":  181731,
+    "log":  "artifacts\\mp4\\final\\onboarding-stage-integration\\logs\\test-contracts.final.log"
+}

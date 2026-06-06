@@ -40,13 +40,16 @@ export function buildCurrentGateEconomyContext(input: {
   const currentRealm = getLiveRealmByIndex(input.realmIndex);
   const nextRealm = getNextLiveRealm(input.realmIndex);
   const isContentCap = isAtSemesterCap(input.realmIndex) || !nextRealm;
-  const currentRealmConfig = input.content.economy.majorRealms.find((realm) => realm.id === currentRealm.id) ?? null;
+  const economyMajorRealms = input.content.economy?.majorRealms ?? [];
+  const trials = input.content.trials ?? [];
+  const cities = input.content.cities ?? [];
+  const currentRealmConfig = economyMajorRealms.find((realm) => realm.id === currentRealm.id) ?? null;
   const nextRealmConfig = nextRealm
-    ? input.content.economy.majorRealms.find((realm) => realm.id === nextRealm.id) ?? null
+    ? economyMajorRealms.find((realm) => realm.id === nextRealm.id) ?? null
     : null;
-  const trial = input.content.trials.find((entry) => fromRealmIdForTrial(entry) === currentRealm.id) ?? null;
+  const trial = trials.find((entry) => fromRealmIdForTrial(entry) === currentRealm.id) ?? null;
   const contextCityId = trial?.cityId ?? input.cityId ?? null;
-  const contextCity = contextCityId ? input.content.cities.find((city) => city.id === contextCityId) ?? null : null;
+  const contextCity = contextCityId ? cities.find((city) => city.id === contextCityId) ?? null : null;
 
   if (isContentCap) {
     return {

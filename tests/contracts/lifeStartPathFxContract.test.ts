@@ -28,7 +28,8 @@ test('life-start path exposes explicit fx quality and reduced-motion attributes 
 test('path atmosphere stylesheet defines distinct high\/low\/reduced behaviors without layout geometry mutation hooks', () => {
   const source = read('src/components/modals/LifeStartWizardModal.scss');
 
-  assert.match(source, /data-fx-quality='high'[\s\S]*lifePathLaneBreath/);
+  assert.match(source, /@keyframes\s+lifePathLaneBreath/);
+  assert.match(source, /data-fx-quality='high'[\s\S]*lifePathCommitAura/);
   assert.match(source, /data-fx-quality='low'[\s\S]*lifePathTriptych::before/);
   assert.match(source, /data-fx-quality='reducedMotion'[\s\S]*animation:\s*none/);
   assert.match(source, /data-reduced-motion='true'[\s\S]*lifePathTriptych::before/);

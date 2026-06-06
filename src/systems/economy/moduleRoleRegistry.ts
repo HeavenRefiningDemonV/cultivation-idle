@@ -53,6 +53,14 @@ export const MODULE_ROLE_REGISTRY: readonly EconomicModuleRoleEntry[] = [
     activityMode: 'background',
   },
   {
+    moduleKey: 'trainingHall',
+    roleTag: 'Path Foundation',
+    bestUsedWhen: 'You need trained stat foundation, regimen mastery, or cap visibility before a gate.',
+    economicCategory: 'readiness',
+    moduleKind: 'support_loop',
+    activityMode: 'foreground',
+  },
+  {
     moduleKey: 'forge',
     roleTag: 'Permanent Floor',
     bestUsedWhen: 'You need permanent refine, temper, or rune floor progress.',

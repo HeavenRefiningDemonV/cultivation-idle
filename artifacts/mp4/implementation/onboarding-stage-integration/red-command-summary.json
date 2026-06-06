@@ -1,0 +1,8 @@
+{
+    "name":  "mp4-tests-red-tsconfig",
+    "command":  "npm exec tsc -- --project tsconfig.tests.json",
+    "status":  "EXPECTED_FAIL",
+    "exitCode":  2,
+    "durationMs":  13136,
+    "log":  "artifacts\\mp4\\implementation\\onboarding-stage-integration\\logs\\mp4-tests.red-tsconfig.log"
+}

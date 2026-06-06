@@ -27,6 +27,13 @@ import { getTrialGateRewardBundle, getTrialLifecycleSnapshot } from '../systems/
 import { pickEnemyFromPool } from '../components/screens/world/worldUtils.js';
 import { GameEvents } from '../services/events/GameEvents.js';
 import type { OnboardingPromptInstance, OnboardingPromptPriority } from '../systems/ui/onboardingPromptRegistry.js';
+import { useOnboardingStore } from './onboardingStore.js';
+import { DEFERRED_WORLD_MODULES } from '../systems/world/liveWorldSchema.js';
+import { buildOnboardingWorldModulePolicy } from '../systems/onboarding/onboardingWorldModulePolicy.js';
+import {
+  guardOnboardingWorldModuleRoute,
+  isOnboardingExactFixtureOrCaptureModeEnabled,
+} from '../systems/onboarding/onboardingRouteGuards.js';
 import {
   applyNotificationPolicy,
   DEFAULT_NOTIFICATION_DURATION_MS,
@@ -34,6 +41,7 @@ import {
   promotePendingNotifications,
   type NotificationOptions,
 } from '../systems/ui/notificationPolicy.js';
+import type { SpiritRootObservationTabId } from '../features/spiritRootObservation/index.js';
 
 /**
  * UI notification types
@@ -65,6 +73,7 @@ export type GameTab =
 export type WorldBuildingKey =
   | 'outskirts'
   | 'gateTrial'
+  | 'trainingHall'
   | 'ruins'
   | 'apothecary'
   | 'manualPavilion'
@@ -84,8 +93,10 @@ export type WorldBuildingModalIntent = null | {
   expeditionsExactMode?: 'live' | 'fixture' | 'legacy';
   ruinsExactMode?: 'live' | 'fixture';
   gateTrialExactMode?: 'live' | 'fixture';
+  trainingHallExactMode?: 'live' | 'fixture';
 };
 export type LifeSummaryModalMode = 'current' | 'last_completed';
+export type DaoHeartModalTabId = 'sanctuary' | 'heartLaw' | 'study';
 export type MigrationIssueModalPayload = {
   title: string;
   summary: string;
@@ -105,6 +116,7 @@ export const getWorldBuildingIntentKey = (intent: WorldBuildingModalIntent): str
   expeditionsExactMode: intent?.expeditionsExactMode ?? null,
   ruinsExactMode: intent?.ruinsExactMode ?? null,
   gateTrialExactMode: intent?.gateTrialExactMode ?? null,
+  trainingHallExactMode: intent?.trainingHallExactMode ?? null,
 });
 
 export interface UISettingsState extends DaoMandateGuidanceSettings {
@@ -190,6 +202,11 @@ interface UIStateBase {
   lifeSummaryMode: LifeSummaryModalMode;
   showMigrationIssuesModal: boolean;
   migrationIssuePayload: MigrationIssueModalPayload | null;
+  showTutorialLedgerDrawer: boolean;
+  daoHeartModalOpen: boolean;
+  daoHeartModalInitialTab: DaoHeartModalTabId;
+  spiritRootObservationOpen: boolean;
+  spiritRootObservationActiveTab: SpiritRootObservationTabId;
   currentChapterExhaustedAcknowledgedThisLife: boolean;
   activeOnboardingPrompt: OnboardingPromptInstance | null;
   queuedOnboardingPrompts: OnboardingPromptInstance[];
@@ -272,6 +289,10 @@ export interface UIState extends UIStateBase {
   closeLifeSummaryModal: () => void;
   openMigrationIssuesModal: (payload: MigrationIssueModalPayload) => void;
   closeMigrationIssuesModal: () => void;
+  openTutorialLedgerDrawer: () => void;
+  closeTutorialLedgerDrawer: () => void;
+  openDaoHeartModal: (tab?: DaoHeartModalTabId) => void;
+  closeDaoHeartModal: () => void;
   acknowledgeCurrentChapterExhausted: () => void;
   clearCurrentChapterExhaustedAcknowledgement: () => void;
   queueOnboardingPrompt: (prompt: OnboardingPromptInstance) => void;
@@ -297,6 +318,9 @@ export interface UIState extends UIStateBase {
   clearTechniqueLibraryIntent: () => void;
   setLifeStartWizardContext: (lastHeartLawId: string | null) => void;
   clearLifeStartWizardContext: () => void;
+  openSpiritRootObservation: (tab?: SpiritRootObservationTabId) => void;
+  closeSpiritRootObservation: () => void;
+  setSpiritRootObservationTab: (tab: SpiritRootObservationTabId) => void;
   hardResetUI: () => void;
 }
 
@@ -331,6 +355,11 @@ const INITIAL_UI_STATE: UIStateBase = {
   lifeSummaryMode: 'current',
   showMigrationIssuesModal: false,
   migrationIssuePayload: null,
+  showTutorialLedgerDrawer: false,
+  daoHeartModalOpen: false,
+  daoHeartModalInitialTab: 'sanctuary',
+  spiritRootObservationOpen: false,
+  spiritRootObservationActiveTab: 'profile',
   currentChapterExhaustedAcknowledgedThisLife: false,
   activeOnboardingPrompt: null,
   queuedOnboardingPrompts: [],
@@ -982,6 +1011,33 @@ export const useUIStore = create<UIState>()(
       ) {
         return;
       }
+      if (typeof window !== 'undefined') {
+        const city = useContentStore.getState().maps.citiesById[cityId];
+        if (city) {
+          const onboarding = useOnboardingStore.getState();
+          const onboardingPolicy = buildOnboardingWorldModulePolicy({
+            activeMilestoneId: onboarding.activeMilestoneId,
+            completedMilestoneIds: onboarding.completedMilestoneIds,
+            unlockedWorldModules: onboarding.unlockedWorldModules,
+            teaserWorldModules: onboarding.teaserWorldModules,
+            selectedCityModuleKeys: city.modules,
+            deferredWorldModuleKeys: DEFERRED_WORLD_MODULES,
+            firstLifeOnlyComplete: onboarding.firstLifeOnlyComplete,
+            devOverride: onboarding.devOverride,
+            isExistingAdvancedSave: useGameStore.getState().realm.index > 0,
+            exactFixtureOrCaptureMode: isOnboardingExactFixtureOrCaptureModeEnabled(),
+          });
+          const onboardingGuard = guardOnboardingWorldModuleRoute({
+            policy: onboardingPolicy,
+            moduleKey: normalizedBuildingKey,
+            intent: incomingIntent,
+          });
+          if (!onboardingGuard.allowed) {
+            get().addNotification('warning', onboardingGuard.reason ?? 'This city service unlocks later.');
+            return;
+          }
+        }
+      }
       set((state) => {
         state.showWorldBuildingModal = true;
         state.worldBuildingModalCityId = cityId;
@@ -1066,6 +1122,57 @@ export const useUIStore = create<UIState>()(
       set((state) => {
         state.showMigrationIssuesModal = false;
         state.migrationIssuePayload = null;
+      });
+    },
+
+    openTutorialLedgerDrawer: () => {
+      if (get().showTutorialLedgerDrawer) return;
+      set((state) => {
+        state.showTutorialLedgerDrawer = true;
+      });
+    },
+
+    closeTutorialLedgerDrawer: () => {
+      if (!get().showTutorialLedgerDrawer) return;
+      set((state) => {
+        state.showTutorialLedgerDrawer = false;
+      });
+    },
+
+    openDaoHeartModal: (tab = 'sanctuary') => {
+      set((state) => {
+        state.activeTab = 'cultivation';
+        state.daoHeartModalOpen = true;
+        state.daoHeartModalInitialTab = tab;
+      });
+    },
+
+    closeDaoHeartModal: () => {
+      if (!get().daoHeartModalOpen) return;
+      set((state) => {
+        state.daoHeartModalOpen = false;
+      });
+    },
+
+    openSpiritRootObservation: (tab = 'profile') => {
+      set((state) => {
+        state.activeTab = 'status';
+        state.spiritRootObservationOpen = true;
+        state.spiritRootObservationActiveTab = tab;
+      });
+    },
+
+    closeSpiritRootObservation: () => {
+      if (!get().spiritRootObservationOpen) return;
+      set((state) => {
+        state.spiritRootObservationOpen = false;
+      });
+    },
+
+    setSpiritRootObservationTab: (tab) => {
+      if (get().spiritRootObservationActiveTab === tab) return;
+      set((state) => {
+        state.spiritRootObservationActiveTab = tab;
       });
     },
 

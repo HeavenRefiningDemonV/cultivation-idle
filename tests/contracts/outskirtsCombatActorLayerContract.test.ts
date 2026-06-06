@@ -58,6 +58,7 @@ void test('C4 Test D: unknown enemy art renders mist fallback without fake enemy
       ...createActiveOutskirtsMockupFixture().combatStage,
       enemy: {
         ...createActiveOutskirtsMockupFixture().combatStage.enemy,
+        id: null,
         name: 'Unknown Foe',
         actorImageKey: 'outskirts/enemy/unknown',
       },

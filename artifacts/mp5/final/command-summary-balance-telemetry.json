@@ -1,0 +1,56 @@
+﻿[
+    {
+        "slug":  "test-contracts",
+        "command":  "npm run test:contracts",
+        "exitCode":  1,
+        "timedOut":  false,
+        "durationMs":  53495,
+        "stdout":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp5\\final\\commands\\test-contracts.stdout.log",
+        "stderr":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp5\\final\\commands\\test-contracts.stderr.log"
+    },
+    {
+        "slug":  "test-balance-regression",
+        "command":  "npm run test:balance-regression",
+        "exitCode":  1,
+        "timedOut":  false,
+        "durationMs":  48637,
+        "stdout":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp5\\final\\commands\\test-balance-regression.stdout.log",
+        "stderr":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp5\\final\\commands\\test-balance-regression.stderr.log"
+    },
+    {
+        "slug":  "balance-report-json",
+        "command":  "npm run balance:report:json",
+        "exitCode":  1,
+        "timedOut":  false,
+        "durationMs":  78510,
+        "stdout":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp5\\final\\commands\\balance-report-json.stdout.log",
+        "stderr":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp5\\final\\commands\\balance-report-json.stderr.log"
+    },
+    {
+        "slug":  "validate-balance-telemetry",
+        "command":  "npm run validate:balance-telemetry",
+        "exitCode":  0,
+        "timedOut":  false,
+        "durationMs":  13445,
+        "stdout":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp5\\final\\commands\\validate-balance-telemetry.stdout.log",
+        "stderr":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp5\\final\\commands\\validate-balance-telemetry.stderr.log"
+    },
+    {
+        "slug":  "telemetry-export",
+        "command":  "npm run telemetry:export",
+        "exitCode":  0,
+        "timedOut":  false,
+        "durationMs":  1419,
+        "stdout":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp5\\final\\commands\\telemetry-export.stdout.log",
+        "stderr":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp5\\final\\commands\\telemetry-export.stderr.log"
+    },
+    {
+        "slug":  "telemetry-summary",
+        "command":  "npm run telemetry:summary",
+        "exitCode":  0,
+        "timedOut":  false,
+        "durationMs":  1533,
+        "stdout":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp5\\final\\commands\\telemetry-summary.stdout.log",
+        "stderr":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp5\\final\\commands\\telemetry-summary.stderr.log"
+    }
+]

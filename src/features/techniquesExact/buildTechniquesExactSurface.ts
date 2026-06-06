@@ -4,6 +4,7 @@ import { useContentStore } from '../../stores/contentStore.js';
 import { useGameStore } from '../../stores/gameStore.js';
 import { useTechCollectionStore } from '../../stores/techCollectionStore.js';
 import { useTechniqueStore, type TechniqueLoadout } from '../../stores/techniqueStore.js';
+import { useTrainingStore } from '../../stores/trainingStore.js';
 import type { AiProfile, CastingPolicy, CultivationPath, TechniqueSlotType } from '../../types/index.js';
 import { AI_PROFILE_OPTIONS } from '../../systems/combat/aiProfiles.js';
 import { buildDoctrineSnapshot } from '../../systems/doctrine/index.js';
@@ -20,6 +21,8 @@ import { getPathAlignmentStrengthForTechnique, getTechniqueTaxonomyProfile } fro
 import type { TechniqueFamily } from '../../systems/builds/techniqueFamilies.js';
 import type { TechniqueProgressionSnapshot } from '../../systems/builds/index.js';
 import { buildCurrentGateEconomyContext } from '../../systems/progression/currentGateEconomyContext.js';
+import { buildTechniqueScalingTooltipRows } from '../../systems/techniques/techniqueScalingTooltipAdapter.js';
+import { buildTrainingReadOnlySnapshot, createTrainingRuntimeContent, type TrainingReadOnlySnapshot } from '../../systems/training/index.js';
 import {
   resolveTechniqueVisualIdentity,
   type TechniqueVisualIdentity,
@@ -671,6 +674,15 @@ export function buildTechniquesExactSurfaceFromStores(
   const selectedProgression = selectedTechniqueId ? collection.getTechniqueProgressionSnapshot(selectedTechniqueId) : null;
   const selectedTaxonomy = selectedTechniqueId ? getTechniqueTaxonomyProfile(selectedTechniqueId) : null;
   const manualCityId = resolveManualPavilionCityIdForTechniquesExact();
+  const trainingSnapshot = content.raw
+    ? buildTrainingReadOnlySnapshot({
+      content: createTrainingRuntimeContent(content.raw),
+      state: useTrainingStore.getState().toSaveState(),
+      selectedPath: game.selectedPath,
+      realmIndex: game.realm.index,
+      substageIndex: Math.max(0, game.realm.substage - 1),
+    })
+    : null;
 
   return {
     meta: {
@@ -761,6 +773,7 @@ export function buildTechniquesExactSurfaceFromStores(
       selectedProgression,
       selectedTaxonomy,
       manualCityId,
+      trainingSnapshot,
       debug,
     }),
     readinessImpact: {
@@ -927,6 +940,7 @@ function buildInspector(args: {
   selectedProgression: TechniqueProgressionSnapshot | null;
   selectedTaxonomy: ReturnType<typeof getTechniqueTaxonomyProfile>;
   manualCityId: string | null;
+  trainingSnapshot: TrainingReadOnlySnapshot | null;
   debug: NonNullable<TechniquesExactSurfaceV1['debug']>;
 }): TechniquesExactSurfaceV1['inspector'] {
   if (!args.selectedTechniqueId || !args.selectedTechniqueDef || !args.selectedProgression) {
@@ -962,6 +976,17 @@ function buildInspector(args: {
     def: args.selectedTechniqueDef,
     progression: args.selectedProgression,
   });
+  const trainingRows = buildTechniqueScalingTooltipRows({
+    technique: args.selectedTechniqueDef,
+    trainingSnapshot: args.trainingSnapshot,
+  }).map((row) => fact(
+    'training-hall',
+    row.label,
+    row.value,
+    'bronze',
+    undefined,
+    badgeFactExtras('training-hall', row.detail),
+  ));
   return {
     title: 'Selected Technique',
     selectedName: args.selectedTechniqueDef.name ?? args.selectedTechniqueId,
@@ -984,6 +1009,7 @@ function buildInspector(args: {
       fact('path-fit', 'Path Fit', fit, pathFitTone(fit), undefined, badgeFactExtras('path-fit', fit === 'Strong' ? `${visualIdentity.pathDisplayLabel} resonates` : 'doctrine fit is partial')),
       fact('traits', 'Traits', traits),
       fact('runes', 'Rune Sockets', `${args.selectedProgression.appliedRuneCount} / ${args.selectedProgression.runeSockets}`),
+      ...trainingRows,
     ],
     recommendedAction: recommended,
     openDetailsButton: createButton('open-details', 'Open Details', 'secondary'),

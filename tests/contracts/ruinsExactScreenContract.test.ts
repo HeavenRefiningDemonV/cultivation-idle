@@ -26,8 +26,8 @@ void test('ruins exact top region contract renders fixture top lane and preserve
 
 
 void test('ruins exact scenic stage source guard has no forbidden scenic imports', () => {
-  const screenSource = readFileSync(new URL('../../src/features/world/ruinsExact/RuinsExactMockupScreen.ts', import.meta.url), 'utf8');
-  const scenicSource = readFileSync(new URL('../../src/features/world/ruinsExact/components/RuinsScenicStage.ts', import.meta.url), 'utf8');
+  const screenSource = readFileSync('src/features/world/ruinsExact/RuinsExactMockupScreen.ts', 'utf8');
+  const scenicSource = readFileSync('src/features/world/ruinsExact/components/RuinsScenicStage.ts', 'utf8');
   assert.equal(screenSource.includes('RuinsScenicStage'), true);
   assert.equal(screenSource.includes('ruins-exact-center-scenic-slot'), true);
   assert.equal(screenSource.includes('RuinsSummaryCard'), false);
@@ -49,6 +49,6 @@ void test('ruins exact right rail renders targeted materials card contract', () 
 });
 
 void test('ruins exact right rail source does not import legacy summary path', () => {
-  const screenSourceRight = readFileSync(new URL('../../src/features/world/ruinsExact/RuinsExactMockupScreen.ts', import.meta.url), 'utf8');
+  const screenSourceRight = readFileSync('src/features/world/ruinsExact/RuinsExactMockupScreen.ts', 'utf8');
   for (const forbidden of ['RuinsSummaryCard', 'TrackedBountyProgressLine', 'RuinsProgress', 'RuinsCtaZone', 'CombatModuleTopLane']) assert.equal(screenSourceRight.includes(forbidden), false);
 });

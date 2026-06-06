@@ -1,0 +1,10 @@
+﻿{
+    "remainingProcesses":  {
+
+                           },
+    "exitCode":  2,
+    "remainingProcessCount":  0,
+    "command":  "npm run release:gate -- --only=full_test_suite --json",
+    "durationSeconds":  30.815,
+    "log":  "artifacts/mp5/release-gate/subchecks/full_test_suite.timeout-diagnostic-ps-arg-fix.log"
+}

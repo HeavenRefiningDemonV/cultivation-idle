@@ -13,6 +13,17 @@ test('balance telemetry schema exposes required kinds and taxonomies', () => {
   assert.ok(BALANCE_TELEMETRY_KINDS.includes('progression/life_started'));
   assert.ok(BALANCE_TELEMETRY_KINDS.includes('trials/attempt_resolved'));
   assert.ok(BALANCE_TELEMETRY_KINDS.includes('offline/applied'));
+  assert.ok(BALANCE_TELEMETRY_KINDS.includes('training/started'));
+  assert.ok(BALANCE_TELEMETRY_KINDS.includes('training/grade_changed'));
+  assert.ok(BALANCE_TELEMETRY_KINDS.includes('training/cap_hit'));
+  assert.ok(BALANCE_TELEMETRY_KINDS.includes('training/offline_applied'));
+  assert.ok(BALANCE_TELEMETRY_KINDS.includes('dao_heart/started'));
+  assert.ok(BALANCE_TELEMETRY_KINDS.includes('dao_heart/level_changed'));
+  assert.ok(BALANCE_TELEMETRY_KINDS.includes('dao_heart/offline_applied'));
+  assert.ok(BALANCE_TELEMETRY_KINDS.includes('breakthrough/attempted'));
+  assert.ok(BALANCE_TELEMETRY_KINDS.includes('prestige/started'));
+  assert.ok(BALANCE_TELEMETRY_KINDS.includes('prestige/memory_applied'));
+  assert.ok(BALANCE_TELEMETRY_KINDS.includes('prestige/reset_bucket_applied'));
   assert.ok(ECONOMY_SOURCE_KINDS.includes('eligible_defeat_merit'));
   assert.ok(ECONOMY_SINK_KINDS.includes('gate_fail_safe_purchase'));
 });

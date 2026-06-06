@@ -1,0 +1,960 @@
+{
+  "viewport": "1920x1080",
+  "screen": "Ruins",
+  "url": "http://127.0.0.1:5173/",
+  "documentTitle": "cultivation-idle-temp",
+  "rootTestIds": [
+    "ruins-view-screen",
+    "ruins-exact-page",
+    "ruins-exact-top-region",
+    "ruins-page-title",
+    "ruins-macro-ribbon",
+    "ruins-settings-gear",
+    "ruins-tactical-strip",
+    "ruins-tactical-cell-hp",
+    "ruins-tactical-cell-depth",
+    "ruins-tactical-cell-loadout",
+    "ruins-tactical-cell-aiProfile",
+    "ruins-tactical-cell-healing",
+    "ruins-tactical-cell-bounty",
+    "ruins-tactical-cell-expedition",
+    "ruins-exact-plaque-cluster",
+    "ruins-area-plaque",
+    "ruins-page-subtitle",
+    "ruins-role-chips",
+    "ruins-exact-body-grid",
+    "ruins-exact-left-rail",
+    "ruins-kit-card",
+    "ruins-kit-title",
+    "ruins-kit-setup-row-loadoutSet",
+    "ruins-kit-setup-row-aiProfile",
+    "ruins-kit-setup-row-explorationFocus",
+    "ruins-kit-stat-section-offense",
+    "ruins-kit-stat-row-atk",
+    "ruins-kit-stat-row-acc",
+    "ruins-kit-stat-row-crt",
+    "ruins-kit-stat-section-defense",
+    "ruins-kit-stat-row-hp",
+    "ruins-kit-stat-row-eva",
+    "ruins-kit-stat-row-res",
+    "ruins-kit-pouch-row",
+    "ruins-kit-pouch-action",
+    "ruins-kit-equipment-grid",
+    "ruins-kit-equipment-slot-weapon",
+    "ruins-kit-equipment-slot-manual",
+    "ruins-kit-equipment-slot-ring",
+    "ruins-kit-equipment-slot-boots",
+    "ruins-kit-equipment-slot-charm",
+    "ruins-kit-equipment-slot-talisman",
+    "ruins-exact-center-scenic-slot",
+    "ruins-exact-scenic-stage",
+    "ruins-exact-scenic-frame",
+    "ruins-exact-scenic-plate",
+    "ruins-exact-right-rail",
+    "ruins-exact-targeted-materials-card",
+    "ruins-exact-targeted-materials-title",
+    "ruins-exact-lead-materials",
+    "ruins-exact-lead-material-tile",
+    "ruins-exact-lead-material-tile",
+    "ruins-exact-guaranteed-anchor",
+    "ruins-exact-rare-pity",
+    "ruins-exact-rare-pity-dot",
+    "ruins-exact-rare-pity-dot",
+    "ruins-exact-rare-pity-dot",
+    "ruins-exact-rare-pity-dot",
+    "ruins-exact-rare-pity-dot",
+    "ruins-exact-rare-pity-dot",
+    "ruins-exact-rare-pity-dot",
+    "ruins-exact-rare-pity-dot",
+    "ruins-exact-rare-pity-dot",
+    "ruins-exact-rare-pity-dot",
+    "ruins-exact-rare-pity-dot",
+    "ruins-exact-rare-pity-dot",
+    "ruins-exact-auto-repeat",
+    "ruins-exact-targeted-materials-footer",
+    "ruins-exact-route-slot",
+    "ruins-exact-room-route-strip",
+    "ruins-route-title",
+    "ruins-route-anchor-chip",
+    "ruins-route-connector-lane",
+    "ruins-route-node-list",
+    "ruins-route-node-current",
+    "ruins-route-node",
+    "ruins-route-node",
+    "ruins-route-node",
+    "ruins-route-node",
+    "ruins-exact-cta-slot",
+    "ruins-primary-cta",
+    "ruins-primary-cta-label",
+    "ruins-exact-summary-dock",
+    "ruins-exploration-summary",
+    "ruins-exploration-summary-row",
+    "ruins-exploration-summary-row",
+    "ruins-exploration-summary-row",
+    "ruins-exploration-summary-row"
+  ],
+  "headings": [
+    "Ruins",
+    "Ruins",
+    "Ruin Kit",
+    "Targeted Materials",
+    "Hollow Log Den Route"
+  ],
+  "primaryCta": {
+    "text": "Open Ruins",
+    "disabled": false,
+    "ariaLabel": null,
+    "rect": {
+      "x": 1565,
+      "y": 303,
+      "width": 310,
+      "height": 41,
+      "right": 1875,
+      "bottom": 344
+    }
+  },
+  "buttons": [
+    {
+      "text": "OutskirtsGold & Common MatsGold / Common MatsGold & Common Mats. Best used when you need gold, common materials, or low-risk combat reps.",
+      "disabled": false,
+      "ariaLabel": "Open Outskirts: Gold & Common Mats",
+      "rect": {
+        "x": 1021,
+        "y": 437,
+        "width": 180,
+        "height": 34,
+        "right": 1201,
+        "bottom": 471
+      }
+    },
+    {
+      "text": "RuinsTargeted MatsLocal Mats / Anchor DropTargeted Mats. Best used when you need targeted local materials and deterministic support rewards.",
+      "disabled": false,
+      "ariaLabel": "Open Ruins: Targeted Mats",
+      "rect": {
+        "x": 1285,
+        "y": 547,
+        "width": 180,
+        "height": 34,
+        "right": 1465,
+        "bottom": 581
+      }
+    },
+    {
+      "text": "Gate TrialGate ItemFoundation Pill / BreakthroughGate Item. Use this hall when the current gate item is ready for judgment.",
+      "disabled": false,
+      "ariaLabel": "Open Gate Trial: Gate Item",
+      "rect": {
+        "x": 1625,
+        "y": 711,
+        "width": 180,
+        "height": 34,
+        "right": 1805,
+        "bottom": 745
+      }
+    },
+    {
+      "text": "Manual PavilionBuild CorrectionManuals / Technique FragmentsBuild Correction. Best used when you need build correction, manuals, or technique growth.",
+      "disabled": false,
+      "ariaLabel": "Open Manual Pavilion: Build Correction",
+      "rect": {
+        "x": 1542,
+        "y": 138,
+        "width": 180,
+        "height": 34,
+        "right": 1722,
+        "bottom": 172
+      }
+    },
+    {
+      "text": "ApothecaryImmediate ReadinessHealing Stock / Preparation RemediesImmediate Readiness. Best used when you need immediate readiness through healing stock, remedies, or pouch prep.",
+      "disabled": false,
+      "ariaLabel": "Open Apothecary: Immediate Readiness",
+      "rect": {
+        "x": 511,
+        "y": 398,
+        "width": 180,
+        "height": 34,
+        "right": 691,
+        "bottom": 432
+      }
+    },
+    {
+      "text": "ForgePermanent FloorRefines / Temper / RunesPermanent Floor. Best used when you need permanent floor through refine, temper, or rune work.",
+      "disabled": false,
+      "ariaLabel": "Open Forge: Permanent Floor",
+      "rect": {
+        "x": 1061,
+        "y": 788,
+        "width": 180,
+        "height": 34,
+        "right": 1241,
+        "bottom": 822
+      }
+    },
+    {
+      "text": "BountiesMerit & RoutingMerit / Spirit StonesMerit & Routing. Best used when you need Merit, routing help, or directed support rewards.",
+      "disabled": false,
+      "ariaLabel": "Open Bounties: Merit & Routing",
+      "rect": {
+        "x": 456,
+        "y": 740,
+        "width": 178,
+        "height": 34,
+        "right": 634,
+        "bottom": 774
+      }
+    },
+    {
+      "text": "ExpeditionsPassive SupportHerbs / OrePassive Support. Best used when you need passive shortage smoothing for herbs, ore, or fragments.",
+      "disabled": false,
+      "ariaLabel": "Open Expeditions: Passive Support",
+      "rect": {
+        "x": 455,
+        "y": 793,
+        "width": 180,
+        "height": 34,
+        "right": 635,
+        "bottom": 827
+      }
+    },
+    {
+      "text": "Open Ruins",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1565,
+        "y": 303,
+        "width": 310,
+        "height": 41,
+        "right": 1875,
+        "bottom": 344
+      }
+    },
+    {
+      "text": "Status",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 380,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 521,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "Cultivation",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 525,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 667,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "World",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 671,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 812,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "Inventory",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 816,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 958,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "Techniques",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 962,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 1104,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "Records",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1108,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 1249,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "Prestige",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1253,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 1395,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "Settings",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1399,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 1540,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "",
+      "disabled": false,
+      "ariaLabel": "Open settings",
+      "rect": {
+        "x": 1833,
+        "y": 32,
+        "width": 34,
+        "height": 34,
+        "right": 1866,
+        "bottom": 65
+      }
+    },
+    {
+      "text": "HP131 / 131",
+      "disabled": false,
+      "ariaLabel": "HP: 131 / 131",
+      "rect": {
+        "x": 54,
+        "y": 78,
+        "width": 249,
+        "height": 64,
+        "right": 302,
+        "bottom": 142
+      }
+    },
+    {
+      "text": "DepthRoom 1 / 5 · Lv. 11",
+      "disabled": false,
+      "ariaLabel": "Depth: Room 1 / 5 · Lv. 11",
+      "rect": {
+        "x": 314,
+        "y": 78,
+        "width": 249,
+        "height": 64,
+        "right": 563,
+        "bottom": 142
+      }
+    },
+    {
+      "text": "LoadoutLoadout 1",
+      "disabled": false,
+      "ariaLabel": "Loadout: Loadout 1",
+      "rect": {
+        "x": 575,
+        "y": 78,
+        "width": 249,
+        "height": 64,
+        "right": 824,
+        "bottom": 142
+      }
+    },
+    {
+      "text": "AI ProfileBalanced",
+      "disabled": false,
+      "ariaLabel": "AI Profile: Balanced",
+      "rect": {
+        "x": 836,
+        "y": 78,
+        "width": 249,
+        "height": 64,
+        "right": 1084,
+        "bottom": 142
+      }
+    },
+    {
+      "text": "Healing0 / 20",
+      "disabled": false,
+      "ariaLabel": "Healing: 0 / 20",
+      "rect": {
+        "x": 1096,
+        "y": 78,
+        "width": 249,
+        "height": 64,
+        "right": 1345,
+        "bottom": 142
+      }
+    },
+    {
+      "text": "BountyNo tracked bounty",
+      "disabled": false,
+      "ariaLabel": "Bounty: No tracked bounty",
+      "rect": {
+        "x": 1357,
+        "y": 78,
+        "width": 249,
+        "height": 64,
+        "right": 1606,
+        "bottom": 142
+      }
+    },
+    {
+      "text": "Expedition2 Idle",
+      "disabled": false,
+      "ariaLabel": "Expedition: 2 Idle",
+      "rect": {
+        "x": 1618,
+        "y": 78,
+        "width": 249,
+        "height": 64,
+        "right": 1866,
+        "bottom": 142
+      }
+    },
+    {
+      "text": "Loadout Set1+",
+      "disabled": false,
+      "ariaLabel": "Loadout Set: 1",
+      "rect": {
+        "x": 71,
+        "y": 338,
+        "width": 252,
+        "height": 37,
+        "right": 323,
+        "bottom": 376
+      }
+    },
+    {
+      "text": "AI ProfileBalanced",
+      "disabled": false,
+      "ariaLabel": "AI Profile: Balanced",
+      "rect": {
+        "x": 71,
+        "y": 381,
+        "width": 252,
+        "height": 37,
+        "right": 323,
+        "bottom": 419
+      }
+    },
+    {
+      "text": "Exploration FocusMaterials",
+      "disabled": true,
+      "ariaLabel": "Exploration Focus: Materials",
+      "rect": {
+        "x": 71,
+        "y": 425,
+        "width": 252,
+        "height": 37,
+        "right": 323,
+        "bottom": 462
+      }
+    },
+    {
+      "text": "+",
+      "disabled": false,
+      "ariaLabel": "Open medicine pouch",
+      "rect": {
+        "x": 300,
+        "y": 765,
+        "width": 23,
+        "height": 23,
+        "right": 323,
+        "bottom": 788
+      }
+    },
+    {
+      "text": "Weapon —",
+      "disabled": false,
+      "ariaLabel": "Weapon: —",
+      "rect": {
+        "x": 71,
+        "y": 833,
+        "width": 77,
+        "height": 77,
+        "right": 148,
+        "bottom": 910
+      }
+    },
+    {
+      "text": "Manual —",
+      "disabled": false,
+      "ariaLabel": "Manual: —",
+      "rect": {
+        "x": 158,
+        "y": 833,
+        "width": 77,
+        "height": 77,
+        "right": 235,
+        "bottom": 910
+      }
+    },
+    {
+      "text": "Ring —",
+      "disabled": false,
+      "ariaLabel": "Ring: —",
+      "rect": {
+        "x": 245,
+        "y": 833,
+        "width": 77,
+        "height": 77,
+        "right": 323,
+        "bottom": 910
+      }
+    },
+    {
+      "text": "Boots —",
+      "disabled": false,
+      "ariaLabel": "Boots: —",
+      "rect": {
+        "x": 71,
+        "y": 868,
+        "width": 77,
+        "height": 77,
+        "right": 148,
+        "bottom": 946
+      }
+    },
+    {
+      "text": "Charm —",
+      "disabled": false,
+      "ariaLabel": "Charm: —",
+      "rect": {
+        "x": 158,
+        "y": 868,
+        "width": 77,
+        "height": 77,
+        "right": 235,
+        "bottom": 946
+      }
+    },
+    {
+      "text": "Talisman —",
+      "disabled": false,
+      "ariaLabel": "Talisman: —",
+      "rect": {
+        "x": 245,
+        "y": 868,
+        "width": 77,
+        "height": 77,
+        "right": 323,
+        "bottom": 946
+      }
+    },
+    {
+      "text": "Off",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1789,
+        "y": 715,
+        "width": 54,
+        "height": 22,
+        "right": 1843,
+        "bottom": 737
+      }
+    },
+    {
+      "text": "Enter Ruins",
+      "disabled": false,
+      "ariaLabel": "Enter Hollow Log Den",
+      "rect": {
+        "x": 650,
+        "y": 1030,
+        "width": 611,
+        "height": 65,
+        "right": 1262,
+        "bottom": 1095
+      }
+    }
+  ],
+  "scrollWidth": 1920,
+  "innerWidth": 1920,
+  "scrollHeight": 1080,
+  "innerHeight": 1080,
+  "suspectedClippedText": [
+    {
+      "text": "Gold & Common Mats",
+      "rect": {
+        "x": 1109,
+        "y": 443,
+        "width": 80,
+        "height": 11,
+        "right": 1188,
+        "bottom": 453
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Gold / Common Mats",
+      "rect": {
+        "x": 1109,
+        "y": 454,
+        "width": 80,
+        "height": 11,
+        "right": 1188,
+        "bottom": 465
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Gold & Common Mats. Best used when you need gold, common materials, or low-risk combat reps.",
+      "rect": {
+        "x": 1032,
+        "y": 453,
+        "width": 1,
+        "height": 1,
+        "right": 1033,
+        "bottom": 454
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Local Mats / Anchor Drop",
+      "rect": {
+        "x": 1354,
+        "y": 565,
+        "width": 98,
+        "height": 11,
+        "right": 1452,
+        "bottom": 575
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Targeted Mats. Best used when you need targeted local materials and deterministic support rewards.",
+      "rect": {
+        "x": 1296,
+        "y": 564,
+        "width": 1,
+        "height": 1,
+        "right": 1297,
+        "bottom": 565
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Foundation Pill / Breakthrough",
+      "rect": {
+        "x": 1717,
+        "y": 728,
+        "width": 75,
+        "height": 11,
+        "right": 1792,
+        "bottom": 739
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Gate Item. Use this hall when the current gate item is ready for judgment.",
+      "rect": {
+        "x": 1636,
+        "y": 727,
+        "width": 1,
+        "height": 1,
+        "right": 1637,
+        "bottom": 728
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Build Correction",
+      "rect": {
+        "x": 1668,
+        "y": 144,
+        "width": 41,
+        "height": 11,
+        "right": 1709,
+        "bottom": 155
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Manuals / Technique Fragments",
+      "rect": {
+        "x": 1668,
+        "y": 156,
+        "width": 41,
+        "height": 11,
+        "right": 1709,
+        "bottom": 166
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Build Correction. Best used when you need build correction, manuals, or technique growth.",
+      "rect": {
+        "x": 1553,
+        "y": 155,
+        "width": 1,
+        "height": 1,
+        "right": 1554,
+        "bottom": 156
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Immediate Readiness",
+      "rect": {
+        "x": 611,
+        "y": 404,
+        "width": 68,
+        "height": 11,
+        "right": 678,
+        "bottom": 415
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Healing Stock / Preparation Remedies",
+      "rect": {
+        "x": 611,
+        "y": 416,
+        "width": 68,
+        "height": 11,
+        "right": 678,
+        "bottom": 426
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Immediate Readiness. Best used when you need immediate readiness through healing stock, remedies, or pouch prep.",
+      "rect": {
+        "x": 522,
+        "y": 415,
+        "width": 1,
+        "height": 1,
+        "right": 523,
+        "bottom": 416
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Permanent Floor. Best used when you need permanent floor through refine, temper, or rune work.",
+      "rect": {
+        "x": 1072,
+        "y": 804,
+        "width": 1,
+        "height": 1,
+        "right": 1073,
+        "bottom": 805
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Merit & Routing. Best used when you need Merit, routing help, or directed support rewards.",
+      "rect": {
+        "x": 467,
+        "y": 756,
+        "width": 1,
+        "height": 1,
+        "right": 468,
+        "bottom": 757
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Passive Support",
+      "rect": {
+        "x": 556,
+        "y": 799,
+        "width": 65,
+        "height": 11,
+        "right": 622,
+        "bottom": 809
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Passive Support. Best used when you need passive shortage smoothing for herbs, ore, or fragments.",
+      "rect": {
+        "x": 466,
+        "y": 809,
+        "width": 1,
+        "height": 1,
+        "right": 467,
+        "bottom": 810
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Select city",
+      "rect": {
+        "x": 789,
+        "y": 39,
+        "width": 1,
+        "height": 1,
+        "right": 790,
+        "bottom": 40
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "RuinsHP131 / 131DepthRoom 1 / 5 · Lv. 11LoadoutLoadout 1AI ProfileBalancedHealing0 / 20BountyNo tracked bountyExpedition2 IdleHollow Log DenTargeted local mater",
+      "rect": {
+        "x": 20,
+        "y": 13,
+        "width": 1880,
+        "height": 1054,
+        "right": 1900,
+        "bottom": 1067
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Ruin KitLoadout Set1+AI ProfileBalancedExploration FocusMaterialsOffenseATK23ACC92%CRT15%DefenseHP131EVA10%RES3%Medicine Pouch0 / 20+EquipmentWeapon —Manual —Ri",
+      "rect": {
+        "x": 54,
+        "y": 259,
+        "width": 286,
+        "height": 652,
+        "right": 340,
+        "bottom": 911
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Exploration Focus",
+      "rect": {
+        "x": 119,
+        "y": 436,
+        "width": 83,
+        "height": 14,
+        "right": 202,
+        "bottom": 450
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Talisman —",
+      "rect": {
+        "x": 284,
+        "y": 906,
+        "width": 1,
+        "height": 1,
+        "right": 285,
+        "bottom": 907
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Beast Materials",
+      "rect": {
+        "x": 1732,
+        "y": 455,
+        "width": 103,
+        "height": 16,
+        "right": 1835,
+        "bottom": 471
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Core Fragment x1",
+      "rect": {
+        "x": 1706,
+        "y": 548,
+        "width": 122,
+        "height": 19,
+        "right": 1828,
+        "bottom": 567
+      },
+      "overflow": "hidden/hidden/hidden"
+    }
+  ],
+  "viewportIssues": [],
+  "consoleSinceStart": [
+    "debug: [vite] connecting...",
+    "debug: [vite] connected.",
+    "info: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+    "log: [App] Initializing game...",
+    "log: [GameLoop] Initializing game...",
+    "log: [GameLoop] Store dependencies wired",
+    "log: [GameLoop] Prestige store initialized",
+    "log: [SpiritRoot] Generated: Common fire (52% purity)",
+    "log: [GameLoop] Generated initial spirit root",
+    "log: [GameLoop] No save found, starting new game",
+    "log: [GameLoop] Added starter items to inventory",
+    "log: [GameLoop] Starting game loop...",
+    "log: [GameLoop] Game loop started",
+    "log: [GameLoop] Game initialized successfully",
+    "log: [App] Game initialized successfully",
+    "log: [App] Initializing game...",
+    "log: [GameLoop] Initializing game...",
+    "log: [GameLoop] Store dependencies wired",
+    "log: [GameLoop] Prestige store initialized",
+    "log: [GameLoop] No save found, starting new game",
+    "warning: [GameLoop] Already running",
+    "log: [GameLoop] Game initialized successfully",
+    "log: [App] Game initialized successfully",
+    "warning: [ContentValidation] Technique counts by path: Heaven=20, Earth=20, Martial=20",
+    "warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=heaven: 6",
+    "warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=earth: 6",
+    "warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=martial: 6",
+    "warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=heaven: 7",
+    "warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=earth: 9",
+    "warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=martial: 8",
+    "warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=heaven: 9",
+    "warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=earth: 9",
+    "warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=martial: 10",
+    "warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=heaven: 10",
+    "warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=earth: 10",
+    "warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=martial: 10",
+    "warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=heaven: 10",
+    "warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=earth: 10",
+    "warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=martial: 10",
+    "info: [Content] Loaded 5 cities, 60 techniques (H/E/M: 20/20/20)",
+    "info: [Content] Prestige upgrades: 27",
+    "log: [SaveLoad] Saving game...",
+    "log: [SaveLoad] Game saved successfully at 5/28/2026, 11:53:41 PM",
+    "log: [SaveLoad] Saving game...",
+    "log: [SaveLoad] Game saved successfully at 5/28/2026, 11:53:45 PM",
+    "log: [UI] Notification added: success - Life begins: Heaven • Ember Thread Sutra • Balanced",
+    "log: [SaveLoad] Saving game...",
+    "log: [SaveLoad] Game saved successfully at 5/28/2026, 11:53:45 PM",
+    "log: [UI] Active tab changed to: status",
+    "log: [UI] Active tab changed to: adventure",
+    "log: [UI] Active tab changed to: inventory",
+    "warning: [Inventory] Missing item definition for rusty_sword",
+    "warning: [Inventory] Missing item definition for worn_talisman",
+    "warning: [Inventory] Missing item definition for health_pill",
+    "warning: [Inventory] Missing item definition for spirit_stone",
+    "log: [UI] Active tab changed to: techniques",
+    "log: [SaveLoad] Saving game...",
+    "log: [SaveLoad] Game saved successfully at 5/28/2026, 11:54:38 PM",
+    "log: [GameLoop] Game autosaved",
+    "log: [UI] Active tab changed to: records",
+    "log: [UI] Active tab changed to: prestige",
+    "log: [UI] Active tab changed to: settings",
+    "log: [UI] Active tab changed to: adventure"
+  ],
+  "textSample": "Outskirts\nGOLD & COMMON MATS\nGold / Common Mats\nGold & Common Mats. Best used when you need gold, common materials, or low-risk combat reps.\nRuins\nTARGETED MATS\nLocal Mats / Anchor Drop\nTargeted Mats. Best used when you need targeted local materials and deterministic support rewards.\nGate Trial\nGATE ITEM\nFoundation Pill / Breakthrough\nGate Item. Use this hall when the current gate item is ready for judgment.\nManual Pavilion\nBUILD CORRECTION\nManuals / Technique Fragments\nBuild Correction. Best used when you need build correction, manuals, or technique growth.\nApothecary\nIMMEDIATE READINESS\nHealing Stock / Preparation Remedies\nImmediate Readiness. Best used when you need immediate readiness through healing stock, remedies, or pouch prep.\nForge\nPERMANENT FLOOR\nRefines / Temper / Runes\nPermanent Floor. Best used when you need permanent floor through refine, temper, or rune work.\nBounties\nMERIT & ROUTING\nMerit / Spirit Stones\nMerit & Routing. Best used when you need Merit, routing help, or directed support rewards.\nExpeditions\nPASSIVE SUPPORT\nHerbs / Ore\nPassive Support. Best used when you need passive shortage smoothing for herbs, ore, or fragments.\nWORLD\nCity Phase: Pinewind Hamlet - foundations\nSelect city\nPinewind Hamlet\nStonecrag Town — Locked — Reach Foundation Establishment\nSpirit Cavern City — Locked — Reach Core Formation\nLotusford — Locked — Reach Nascent Soul\nIronpeak Bastion — Locked — Reach Soul Formation\nPressure: Qi, first medicines, and a stable starter build.\nExpedition Slot Idle\n\nPINEWIND HAMLET\n\nRuins\n\nTargeted Mats\n\nBest used when you need targeted local materials and deterministic support rewards.\n\nGold is secondary here; the run is for targeted local materials and support stability.\n\nLocal Mats\nAnchor Drop\nOpen Ruins\nStatus\nCultivation\nWorld\nInventory\nTechniques\nRecords\nPrestige\nSettings\nRuins\nHP\n131 / 131\nDepth\nRoom 1 / 5 · Lv. 11\nLoadout\nLoadout 1\nAI Profile\nBalanced\nHealing\n0 / 20\nBounty\nNo tracked bounty\nExpedition\n2 Idle\nHollow Log Den\n\nTargeted local materials and guaranteed anchor rewards\n\nTargeted Mats\nDeterministic Support\nRuin Kit\nLoadout Set\n1\n+\nAI Profile\nBalanced\nExploration Focus\nMaterials\nOffense\nATK\n23\nACC\n92%\nCRT\n15%\nDefense\nHP\n131\nEVA\n10%\nRES\n3%\nMedicine Pouch\n0 / 20\n+\nEquipment\nWeapon —\nManual —\nRing —\nBoots —\nCharm —\nTalisman —\nTargeted Materials\nLead Materials\nSpirit Leaf\nBeast Materials\nGuaranteed Anchor\nCore Fragment x1\nFinal Chest\nRare Pity\n0 / 12\nAuto-Repeat\nOff\n\nRepeats after Final Chest\n\nBest used for targeted local materials, not gold.\n\nHollow Log Den Route\nAnchor Chest in 5\nRoot Mouth\nRoom 1\nSpirit Nest\nRoom 2\nSealed Cache\nRoom 3\nDen Guardian\nLv. 11\nFinal Chest\nAnchor\nEnter Ruins\nExploration Summary\n\nRooms\n0 / 5\n\nAnchor\nFinal Chest\n\nPity\n0 / 12\n\nMain Target\nSpirit Leaf"
+}

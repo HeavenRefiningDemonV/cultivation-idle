@@ -12,4 +12,15 @@ export * from './types.js';
 export type { LoadedContentRaw, ContentLoadFailurePhase } from './loaders.js';
 export type { RuntimeContentFileName, RuntimeContentKey } from './runtimeContentManifest.js';
 export type { ValidatedContent } from './validators.js';
+export type {
+  OnboardingCompletionDescriptor,
+  OnboardingMilestoneContent,
+  OnboardingMilestoneId,
+  OnboardingMilestonesConfig,
+  OnboardingObjectiveDescriptor,
+  OnboardingRouteTarget,
+  OnboardingTutorialCardDescriptor,
+  OnboardingUnlockDescriptor,
+  SaveOnboardingState,
+} from '../systems/onboarding/onboardingTypes.js';
 export * from '../systems/forge/index.js';

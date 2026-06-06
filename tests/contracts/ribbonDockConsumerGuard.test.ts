@@ -23,12 +23,17 @@ test('GameLayout mounts BottomTabBar as the live global nav path', () => {
   assert.match(file, /<BottomTabBar \/>/);
 });
 
-test('World and Prestige TopRibbon titles normalize through canonical shell tab labels', () => {
+test('World and Prestige delegate page-local chrome while BottomTabBar owns canonical tab labels', () => {
   const worldFile = read('src/components/screens/WorldScreen.tsx');
   const prestigeFile = read('src/components/screens/PrestigeScreen.tsx');
+  const bottomTabBar = read('src/components/BottomTabBar.tsx');
 
-  assert.match(worldFile, /title=\{getShellTabLabel\('adventure'\)\}/);
-  assert.match(prestigeFile, /title=\{getShellTabLabel\('prestige'\)\}/);
+  assert.match(worldFile, /<WorldOverlayRibbon/);
+  assert.match(worldFile, /<WorldOverlayInspector/);
+  assert.match(prestigeFile, /<PrestigeLedgerScreenOwner/);
+  assert.match(bottomTabBar, /'adventure'/);
+  assert.match(bottomTabBar, /'prestige'/);
+  assert.match(bottomTabBar, /return getShellTabLabel\(tab\)/);
 });
 
 test('legacy Sidebar and TabNav surfaces exist but are not mounted by GameLayout', () => {

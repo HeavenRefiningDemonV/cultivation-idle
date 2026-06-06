@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent as ReactKeyboardEvent, type MouseEvent } from 'react';
 import { StudyModeWidget } from '../../ui/cultivation/StudyModeWidget.js';
 import { HeartLawMindView } from '../../ui/cultivation/heartLaw/HeartLawMindView.js';
+import { DaoHeartSanctuaryView } from '../../features/daoHeartSanctuary/DaoHeartSanctuaryView.js';
 import { useContentStore } from '../../stores/contentStore.js';
 import { useCultivationStore } from '../../stores/cultivationStore.js';
 import { useFxQuality } from '../../ui/fx/FxQualityProvider.js';
@@ -8,7 +9,7 @@ import './DaoHeartModal.scss';
 
 interface DaoHeartModalProps {
   onClose: () => void;
-  debugInitialTab?: 'heartLaw' | 'study';
+  debugInitialTab?: 'sanctuary' | 'heartLaw' | 'study';
 }
 
 type DaoElement = 'fire' | 'water' | 'wood' | 'metal' | 'earth' | 'neutral';
@@ -62,8 +63,10 @@ const DAO_PALETTES: Record<DaoElement, { accent: string; accent2: string; washA:
   },
 };
 
-export function DaoHeartModal({ onClose, debugInitialTab = 'heartLaw' }: DaoHeartModalProps) {
-  const [tab, setTab] = useState<'heartLaw' | 'study'>(debugInitialTab);
+type DaoHeartModalTab = 'sanctuary' | 'heartLaw' | 'study';
+
+export function DaoHeartModal({ onClose, debugInitialTab = 'sanctuary' }: DaoHeartModalProps) {
+  const [tab, setTab] = useState<DaoHeartModalTab>(debugInitialTab);
   const { effectiveQuality } = useFxQuality();
   const previousFocusRef = useRef<HTMLElement | null>(null);
   const modalRef = useRef<HTMLDivElement | null>(null);
@@ -132,7 +135,7 @@ export function DaoHeartModal({ onClose, debugInitialTab = 'heartLaw' }: DaoHear
     }
   };
 
-  const handleTabKeyDown = (event: ReactKeyboardEvent<HTMLButtonElement>, nextTab: 'heartLaw' | 'study') => {
+  const handleTabKeyDown = (event: ReactKeyboardEvent<HTMLButtonElement>, nextTab: DaoHeartModalTab) => {
     if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
     event.preventDefault();
     setTab(nextTab);
@@ -181,6 +184,18 @@ export function DaoHeartModal({ onClose, debugInitialTab = 'heartLaw' }: DaoHear
                 <button
                   type="button"
                   role="tab"
+                  id="dao-heart-tab-sanctuary"
+                  aria-controls="dao-heart-panel-sanctuary"
+                  aria-selected={tab === 'sanctuary'}
+                  className={`daoHeartModalTab uiNoShift ${tab === 'sanctuary' ? 'daoHeartModalTab--active' : ''}`}
+                  onClick={() => setTab('sanctuary')}
+                  onKeyDown={(event) => handleTabKeyDown(event, 'heartLaw')}
+                >
+                  Sanctuary
+                </button>
+                <button
+                  type="button"
+                  role="tab"
                   id="dao-heart-tab-heart-law"
                   aria-controls="dao-heart-panel-heart-law"
                   aria-selected={tab === 'heartLaw'}
@@ -198,7 +213,7 @@ export function DaoHeartModal({ onClose, debugInitialTab = 'heartLaw' }: DaoHear
                   aria-selected={tab === 'study'}
                   className={`daoHeartModalTab uiNoShift ${tab === 'study' ? 'daoHeartModalTab--active' : ''}`}
                   onClick={() => setTab('study')}
-                  onKeyDown={(event) => handleTabKeyDown(event, 'heartLaw')}
+                  onKeyDown={(event) => handleTabKeyDown(event, 'sanctuary')}
                 >
                   Study
                 </button>
@@ -216,6 +231,17 @@ export function DaoHeartModal({ onClose, debugInitialTab = 'heartLaw' }: DaoHear
           </div>
 
           <div className="daoHeartModalBody">
+            {tab === 'sanctuary' ? (
+              <section
+                className="daoHeartModalSection daoHeartModalSection--sanctuary"
+                role="tabpanel"
+                id="dao-heart-panel-sanctuary"
+                aria-labelledby="dao-heart-tab-sanctuary"
+              >
+                <DaoHeartSanctuaryView />
+              </section>
+            ) : null}
+
             {tab === 'heartLaw' ? (
               <section
                 className="daoHeartModalSection daoHeartModalSection--heartLaw"

@@ -1,0 +1,96 @@
+﻿scripts\release\auditStoreSelectors.ts:122:  if (/localStorage\.setItem/.test(context) || normalized.includes('/SettingsScreen.tsx')) {
+src\content\contentPaths.ts:6:  const baseUrl = import.meta.env.BASE_URL ?? '/';
+scripts\release\buildPerformanceBaselineReport.ts:69:    localStorageWrites: StaticMatch[];
+scripts\release\buildPerformanceBaselineReport.ts:281:    localStorageWrites: findMatches(root, sourceFiles, /\blocalStorage\.setItem\b/),
+scripts\release\buildPerformanceBaselineReport.ts:357:      evidence: 'Save gather/stringify/encrypt/localStorage timers are available in runtime snapshots.',
+src\content\loaders.ts:68:    cache: import.meta.env.DEV ? 'no-store' : undefined,
+src\utils\saveload.ts:931:    const mainSave = localStorage.getItem(SAVE_KEY);
+src\utils\saveload.ts:932:    const backupA = localStorage.getItem(BACKUP_A_KEY);
+src\utils\saveload.ts:933:    const backupB = localStorage.getItem(BACKUP_B_KEY);
+src\utils\saveload.ts:937:      localStorage.setItem(BACKUP_C_KEY, backupB);
+src\utils\saveload.ts:940:      localStorage.setItem(BACKUP_B_KEY, backupA);
+src\utils\saveload.ts:943:      localStorage.setItem(BACKUP_A_KEY, mainSave);
+src\utils\saveload.ts:956:    localStorage.setItem(quarantineKey, encryptedPayload);
+src\utils\saveload.ts:957:    localStorage.removeItem(slotKey);
+src\utils\saveload.ts:965: * Save game to localStorage
+src\utils\saveload.ts:983:    time(PERF_LABELS.saveLocalStorage, () => localStorage.setItem(SAVE_KEY, encrypted));
+src\utils\saveload.ts:1431: * Load game from localStorage
+src\utils\saveload.ts:1447:      const encrypted = localStorage.getItem(key);
+src\utils\saveload.ts:1523:    localStorage.removeItem(SAVE_KEY);
+src\utils\saveload.ts:1524:    localStorage.removeItem(BACKUP_A_KEY);
+src\utils\saveload.ts:1525:    localStorage.removeItem(BACKUP_B_KEY);
+src\utils\saveload.ts:1526:    localStorage.removeItem(BACKUP_C_KEY);
+src\utils\saveload.ts:1590:    localStorage.removeItem(SAVE_KEY);
+src\utils\saveload.ts:1591:    localStorage.removeItem(BACKUP_A_KEY);
+src\utils\saveload.ts:1592:    localStorage.removeItem(BACKUP_B_KEY);
+src\utils\saveload.ts:1593:    localStorage.removeItem(BACKUP_C_KEY);
+src\utils\saveload.ts:1808:    // Save to localStorage
+src\utils\saveload.ts:1871:    const mainSave = localStorage.getItem(SAVE_KEY);
+src\utils\saveload.ts:1872:    const backupA = localStorage.getItem(BACKUP_A_KEY);
+src\utils\saveload.ts:1873:    const backupB = localStorage.getItem(BACKUP_B_KEY);
+src\utils\saveload.ts:1874:    const backupC = localStorage.getItem(BACKUP_C_KEY);
+src\utils\saveload.ts:1891:    const encrypted = localStorage.getItem(SAVE_KEY);
+scripts\release\capturePhase6CombatEvidence.ts:133:  const haystack = `${text}\n${document.body?.className ?? ''}\n${document.body?.innerHTML ?? ''}`;
+src\services\performance\perfLabels.ts:65:  saveLocalStorage: 'ci:save:localStorage',
+src\services\performance\perfConfig.ts:1:export type PerfEnableSource = 'disabled' | 'development' | 'query' | 'localStorage' | 'test' | 'script';
+src\services\performance\perfConfig.ts:55:    if (window.localStorage?.getItem(PERF_LOCAL_STORAGE_KEY) === '1') {
+src\services\performance\perfConfig.ts:56:      return { ...DEFAULT_PERF_CONFIG, enabled: true, source: 'localStorage' };
+src\services\performance\perfConfig.ts:59:    // localStorage can be blocked; disabled instrumentation should never crash.
+src\features\manuals\pavilionStockGenerator.ts:582:if (import.meta.env?.DEV) {
+src\dev\sectionCAudit\SectionCAuditHarness.tsx:192:  const enabled = import.meta.env.DEV && new URLSearchParams(window.location.search).get('uiAudit') === 'section-c';
+src\dev\sectionCAudit\SectionCAuditHarness.tsx:357:  if (!import.meta.env.DEV || typeof window === 'undefined') return false;
+src\services\diagnostics\progressionGateAvailability.ts:43:      if (import.meta.env?.DEV) {
+src\services\diagnostics\buildContentLoadFailureDiagnostics.ts:81:    appMode: import.meta.env?.MODE ?? 'unknown',
+src\dev\phase6CombatAudit\Phase6CombatAuditHarness.tsx:668:  const enabled = import.meta.env.DEV && new URLSearchParams(window.location.search).get('uiAudit') === 'phase-6-combat';
+src\dev\phase6CombatAudit\Phase6CombatAuditHarness.tsx:814:  if (!import.meta.env.DEV || typeof window === 'undefined') return false;
+src\components\screens\SettingsScreen.tsx:113:  const isDev = import.meta.env.DEV;
+src\components\screens\SettingsScreen.tsx:141:    if (!import.meta.env.DEV) return;
+src\components\screens\SettingsScreen.tsx:185:      version: import.meta.env?.VITE_APP_VERSION ?? 'unknown',
+src\components\screens\SettingsScreen.tsx:186:      mode: import.meta.env?.MODE ?? 'unknown',
+src\components\screens\SettingsScreen.tsx:430:                disabled={!contentIsLoaded || !import.meta.env.DEV}
+src\components\screens\InventoryScreen.tsx:204:    const stored = localStorage.getItem(INVENTORY_FILTERS_KEY);
+src\components\screens\InventoryScreen.tsx:246:    localStorage.setItem(INVENTORY_FILTERS_KEY, JSON.stringify(payload));
+src\dev\phase0CoreAudit\Phase0CoreAuditHarness.tsx:192:  const enabled = import.meta.env.DEV && new URLSearchParams(window.location.search).get('uiAudit') === 'phase-0';
+src\dev\phase0CoreAudit\Phase0CoreAuditHarness.tsx:308:  if (!import.meta.env.DEV || typeof window === 'undefined') return false;
+src\dev\p5Closeout\P5CloseoutHarness.tsx:29:  if (typeof window === 'undefined' || !import.meta.env.DEV) return null;
+tests\integration\breakthroughRitualFlow.test.ts:49:  assert.equal(overlay.includes('dangerouslySetInnerHTML'), false);
+src\services\audio\AudioService.ts:148:      if (import.meta.env.DEV) {
+src\services\audio\AudioService.ts:178:      if (import.meta.env.DEV) {
+src\services\audio\AudioService.ts:250:      if (import.meta.env.DEV) {
+src\features\pavilion\loadPavilionManifest.ts:6:    cache: import.meta.env.DEV ? 'no-store' : undefined,
+src\save\defaultSaveState.ts:1343:  if (typeof import.meta === 'undefined' || !import.meta.env?.DEV) return;
+src\features\story\StorySlideRenderer.tsx:51:          if (!import.meta.env.DEV || typeof window === 'undefined') return;
+src\ui\fx\ScreenFxStage.tsx:11:const IS_DEV = import.meta.env.DEV;
+tests\helpers\release\saveReloadHarness.ts:58:  if (!globalThis.localStorage) {
+tests\helpers\release\saveReloadHarness.ts:59:    (globalThis as typeof globalThis & { localStorage: Storage }).localStorage = new MemoryStorage();
+tests\helpers\release\saveReloadHarness.ts:102:  localStorage.clear();
+src\ui\shell\TopRibbon.tsx:102:  if (import.meta.env.DEV && header && (title !== undefined || subtitle !== undefined || eyebrow !== undefined || meta !== undefined)) {
+src\ui\shell\RitualModalFrame.tsx:80:  if (import.meta.env.DEV && header && (title !== undefined || subtitle !== undefined || meta !== undefined)) {
+src\ui\shell\InspectorPanel.tsx:98:  if (import.meta.env.DEV && header && (title !== undefined || eyebrow !== undefined || subtitle !== undefined || actions !== undefined)) {
+src\ui\fx\pixi\PixiUiStage.tsx:10:const IS_DEV = import.meta.env.DEV;
+src\ui\fx\FxStagePortal.tsx:7:const IS_DEV = import.meta.env.DEV;
+src\ui\fx\FxQualityProvider.tsx:21:const IS_DEV = import.meta.env.DEV;
+src\ui\fx\dev\fxDebug.ts:30:  if (!import.meta.env.DEV || typeof window === 'undefined') {
+src\ui\cultivation\CultivationHeaderRibbon.tsx:45:    const stored = window.localStorage.getItem(storageKey);
+src\ui\cultivation\CultivationHeaderRibbon.tsx:59:    window.localStorage.setItem(storageKey, collapsed ? '1' : '0');
+src\components\modals\LifeStartWizardModal.tsx:49:  const forcedOpen = import.meta.env.DEV && debugForceOpen;
+src\components\modals\LifeStartWizardModal.tsx:50:  const forcedStep = import.meta.env.DEV ? debugForceStep : undefined;
+tests\integration\release\saveReloadSafetyMatrix.test.ts:88:  const rawMain = localStorage.getItem(SAVE_KEY);
+tests\integration\release\saveReloadSafetyMatrix.test.ts:94:  localStorage.setItem(SAVE_KEY, encryptSlotJson(firstPayload));
+tests\integration\release\saveReloadSafetyMatrix.test.ts:106:  const normalizedSave = decryptSlotJson(localStorage.getItem(SAVE_KEY)!);
+tests\integration\release\saveReloadSafetyMatrix.test.ts:121:  const main = localStorage.getItem(SAVE_KEY);
+tests\integration\release\saveReloadSafetyMatrix.test.ts:123:  localStorage.setItem(BACKUP_A_KEY, main!);
+tests\integration\release\saveReloadSafetyMatrix.test.ts:124:  localStorage.setItem(SAVE_KEY, 'corrupted-main-save');
+tests\e2e\mp2-ui-runtime-smoke.spec.ts:252:    window.localStorage.clear();
+tests\e2e\mp2-ui-runtime-smoke.spec.ts:253:    window.sessionStorage.clear();
+tests\e2e\mp1-route-proof.spec.ts:37:    window.localStorage.clear();
+tests\e2e\mp1-route-proof.spec.ts:38:    window.sessionStorage.clear();
+tests\e2e\menu-interactions.spec.ts:37:    window.localStorage.clear();
+tests\e2e\menu-interactions.spec.ts:38:    window.sessionStorage.clear();
+tests\contracts\daoOmenCopyGuard.test.ts:196:    /from ['"].*react|React\b|\.tsx|useGameStore|useUIStore|useCombatStore|useTrialStore|usePrestigeStore|RewardService|CombatStore|ActivityStore|TrialStore|PrestigeResetService|components\/screens|src\/ui|features\/.*Screen|window\b|document\b|localStorage|fetch\b|XMLHttpRequest|eval\b|Function\(|child_process|fs\.writeFile|grantRewards|spendCurrency|recordFailure|markCleared|markBypassed|resetPrestige/;
+tests\contracts\daoOmenSharedComponentsContract.test.ts:36:  /localStorage|sessionStorage|fetch\(|XMLHttpRequest|new WebSocket/,
+tests\contracts\daoOmenSharedComponentsContract.test.ts:37:  /innerHTML|dangerouslySetInnerHTML|eval\(|Function\(/,
+src\stores\prestigeStore.ts:641:if (import.meta.env?.DEV && typeof window !== 'undefined') {
+src\systems\offline.ts:104:  if (import.meta.env?.DEV) {
+tests\contracts\GateTrialExactIconography.fixture.test.ts:52:    'dangerouslySetInnerHTML',
+tests\contracts\perfLoggerContract.test.ts:66:    localStorageValue: 'raw-local-storage',

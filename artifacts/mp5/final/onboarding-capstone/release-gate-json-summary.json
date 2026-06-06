@@ -1,0 +1,11 @@
+{
+    "name":  "release-gate-json",
+    "command":  "npm run release:gate:json",
+    "status":  "FAIL",
+    "exitCode":  null,
+    "timedOut":  false,
+    "timeoutMs":  660000,
+    "durationSeconds":  324.885,
+    "stdoutLog":  "artifacts\\mp5\\final\\onboarding-capstone\\logs\\release-gate-json.final.stdout.log",
+    "stderrLog":  "artifacts\\mp5\\final\\onboarding-capstone\\logs\\release-gate-json.final.stderr.log"
+}

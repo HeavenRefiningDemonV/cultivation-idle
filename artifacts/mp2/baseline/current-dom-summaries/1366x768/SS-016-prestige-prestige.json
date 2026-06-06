@@ -1,0 +1,380 @@
+{
+  "viewport": "1366x768",
+  "name": "Prestige",
+  "url": "http://127.0.0.1:5173/",
+  "documentTitle": "cultivation-idle-temp",
+  "rootTestIds": [
+    "prestige-ledger-exact-page"
+  ],
+  "headings": [
+    "Prestige",
+    "Current Life Ledger",
+    "Life Identity",
+    "Progress Record",
+    "Reincarnation Decree",
+    "Next Life Preview",
+    "Recommended Decrees",
+    "Reclaim Forecast",
+    "Early reclaim estimate",
+    "Reset Contract",
+    "Resets this life",
+    "Carries forward",
+    "Rebuilt next life",
+    "Hybrid retained"
+  ],
+  "primaryCta": {
+    "text": "Open Decree Library",
+    "disabled": false,
+    "ariaLabel": null,
+    "rect": {
+      "x": 528,
+      "y": 631,
+      "width": 280,
+      "height": 43,
+      "right": 808,
+      "bottom": 674
+    }
+  },
+  "buttons": [
+    {
+      "text": "AP Receipt",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 43,
+        "y": 239,
+        "width": 280,
+        "height": 37,
+        "right": 323,
+        "bottom": 276
+      }
+    },
+    {
+      "text": "Projected gain+0 AP",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 43,
+        "y": 342,
+        "width": 280,
+        "height": 46,
+        "right": 323,
+        "bottom": 388
+      }
+    },
+    {
+      "text": "View Life Summary",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 43,
+        "y": 388,
+        "width": 280,
+        "height": 43,
+        "right": 323,
+        "bottom": 431
+      }
+    },
+    {
+      "text": "Reincarnation Locked",
+      "disabled": true,
+      "ariaLabel": null,
+      "rect": {
+        "x": 415,
+        "y": 559,
+        "width": 505,
+        "height": 58,
+        "right": 921,
+        "bottom": 617
+      }
+    },
+    {
+      "text": "Open Decree Library",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 528,
+        "y": 631,
+        "width": 280,
+        "height": 43,
+        "right": 808,
+        "bottom": 674
+      }
+    },
+    {
+      "text": "Root MemoryEffect: Idle Qi +6%Why: Best first reclaim speed.Lv 0/10Runtime: LiveCost5 AP",
+      "disabled": false,
+      "ariaLabel": "Inspect Idle Qi Multiplier",
+      "rect": {
+        "x": 1012,
+        "y": 372,
+        "width": 312,
+        "height": 111,
+        "right": 1324,
+        "bottom": 483
+      }
+    },
+    {
+      "text": "Inspect",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1012,
+        "y": 372,
+        "width": 312,
+        "height": 111,
+        "right": 1324,
+        "bottom": 483
+      }
+    },
+    {
+      "text": "Combat MemoryEffect: Combat power +5%Why: Softens gate retries.Lv 0/10Runtime: LiveCost5 AP",
+      "disabled": false,
+      "ariaLabel": "Inspect Combat Power Multiplier",
+      "rect": {
+        "x": 1012,
+        "y": 495,
+        "width": 312,
+        "height": 111,
+        "right": 1324,
+        "bottom": 606
+      }
+    },
+    {
+      "text": "Inspect",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1012,
+        "y": 495,
+        "width": 312,
+        "height": 111,
+        "right": 1324,
+        "bottom": 606
+      }
+    },
+    {
+      "text": "Technique WarrantEffect: Extra technique slotWhy: Improves build flexibility.Lv 0/1Runtime: LiveCost35 AP",
+      "disabled": false,
+      "ariaLabel": "Inspect Extra Technique Slot I",
+      "rect": {
+        "x": 1012,
+        "y": 618,
+        "width": 312,
+        "height": 125,
+        "right": 1324,
+        "bottom": 743
+      }
+    },
+    {
+      "text": "Inspect",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1012,
+        "y": 618,
+        "width": 312,
+        "height": 125,
+        "right": 1324,
+        "bottom": 743
+      }
+    },
+    {
+      "text": "Open Full Decree Library",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1036,
+        "y": 325,
+        "width": 264,
+        "height": 43,
+        "right": 1300,
+        "bottom": 368
+      }
+    },
+    {
+      "text": "Status",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 103,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 244,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "Cultivation",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 248,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 390,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "World",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 394,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 535,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "Inventory",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 539,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 681,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "Techniques",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 685,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 827,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "Records",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 831,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 972,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "Prestige",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 976,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 1118,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "Settings",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1122,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 1263,
+        "bottom": 760
+      }
+    }
+  ],
+  "scrollWidth": 1366,
+  "innerWidth": 1366,
+  "scrollHeight": 768,
+  "innerHeight": 768,
+  "suspectedClippedText": [
+    {
+      "text": "APPrestigeReincarnation LedgerQi CondensationFoundationCore FormationNascent SoulSoul TransformationVoid AscensionMajor realms and gates reached this lifeAP Res",
+      "rect": {
+        "x": 18,
+        "y": 10,
+        "width": 1330,
+        "height": 88,
+        "right": 1348,
+        "bottom": 98
+      },
+      "overflow": "hidden/hidden/hidden"
+    }
+  ],
+  "viewportIssues": [],
+  "consoleSinceStart": [
+    "1366x768 debug: [vite] connecting...",
+    "1366x768 debug: [vite] connected.",
+    "1366x768 info: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+    "1366x768 log: [App] Initializing game...",
+    "1366x768 log: [GameLoop] Initializing game...",
+    "1366x768 log: [GameLoop] Store dependencies wired",
+    "1366x768 log: [GameLoop] Prestige store initialized",
+    "1366x768 log: [SpiritRoot] Generated: Mortal earth (71% purity)",
+    "1366x768 log: [GameLoop] Generated initial spirit root",
+    "1366x768 log: [GameLoop] No save found, starting new game",
+    "1366x768 log: [GameLoop] Added starter items to inventory",
+    "1366x768 log: [GameLoop] Starting game loop...",
+    "1366x768 log: [GameLoop] Game loop started",
+    "1366x768 log: [GameLoop] Game initialized successfully",
+    "1366x768 log: [App] Game initialized successfully",
+    "1366x768 log: [App] Initializing game...",
+    "1366x768 log: [GameLoop] Initializing game...",
+    "1366x768 log: [GameLoop] Store dependencies wired",
+    "1366x768 log: [GameLoop] Prestige store initialized",
+    "1366x768 log: [GameLoop] No save found, starting new game",
+    "1366x768 warning: [GameLoop] Already running",
+    "1366x768 log: [GameLoop] Game initialized successfully",
+    "1366x768 log: [App] Game initialized successfully",
+    "1366x768 warning: [ContentValidation] Technique counts by path: Heaven=20, Earth=20, Martial=20",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=heaven: 6",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=earth: 6",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=martial: 6",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=heaven: 7",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=earth: 9",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=martial: 8",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=heaven: 9",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=earth: 9",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=martial: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=heaven: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=earth: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=martial: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=heaven: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=earth: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=martial: 10",
+    "1366x768 info: [Content] Loaded 5 cities, 60 techniques (H/E/M: 20/20/20)",
+    "1366x768 info: [Content] Prestige upgrades: 27",
+    "1366x768 log: [SaveLoad] Saving game...",
+    "1366x768 log: [SaveLoad] Game saved successfully at 28/05/2026, 22:56:33",
+    "1366x768 log: [SaveLoad] Saving game...",
+    "1366x768 log: [SaveLoad] Game saved successfully at 28/05/2026, 22:56:35",
+    "1366x768 log: [UI] Notification added: success - Life begins: Heaven • Ember Thread Sutra • Balanced",
+    "1366x768 log: [SaveLoad] Saving game...",
+    "1366x768 log: [SaveLoad] Game saved successfully at 28/05/2026, 22:56:35",
+    "1366x768 log: [UI] Active tab changed to: status",
+    "1366x768 log: [UI] Active tab changed to: adventure",
+    "1366x768 log: [UI] Active tab changed to: inventory",
+    "1366x768 warning: [Inventory] Missing item definition for rusty_sword",
+    "1366x768 warning: [Inventory] Missing item definition for worn_talisman",
+    "1366x768 warning: [Inventory] Missing item definition for health_pill",
+    "1366x768 warning: [Inventory] Missing item definition for spirit_stone",
+    "1366x768 log: [UI] Active tab changed to: techniques",
+    "1366x768 log: [UI] Active tab changed to: records",
+    "1366x768 log: [UI] Active tab changed to: prestige"
+  ],
+  "textSample": "AP\nPrestige\nReincarnation Ledger\nQi Condensation\nFoundation\nCore Formation\nNascent Soul\nSoul Transformation\nVoid Ascension\nMajor realms and gates reached this life\nAP Reserve\n0\nLifetime AP\n0\nLives\n0\nCurrent Life Ledger\nLife Identity\nPath:\nHeaven\nSpirit Root:\nEarth · Mortal · 71% purity\nHeart Law:\nEmber Thread Sutra\nHighest Realm:\nQi Condensation 1/9\nProgress Record\nGates resolved:\n0\nCities reached:\nPinewind Hamlet\nCurrent wall:\nCore Formation required\nAP Receipt\nToo early for Reincarnation\n+0 AP\nProjected gain\n+0 AP\nView Life Summary\nReincarnation Decree\nAP\nTOO EARLY\n+0 AP\n\nCore Formation is required before the ledger can be sealed.\n\nPush this life to Core Formation before beginning Reincarnation.\n\nAP\nReincarnation Locked\nOpen Decree Library\nNext Life Preview\nBuild a clean first-life route before treating reincarnation as the main objective.\nFaster early Qi recovery\nFirst city baseline rebuilt\nPermanent edicts re-applied\nRecommended Decrees\nRoot Memory\nEffect: Idle Qi +6%\nWhy: Best first reclaim speed.\nLv 0/10\nRuntime: Live\nCost\n5 AP\nInspect\nCombat Memory\nEffect: Combat power +5%\nWhy: Softens gate retries.\nLv 0/10\nRuntime: Live\nCost\n5 AP\nInspect\nTechnique Warrant\nEffect: Extra technique slot\nWhy: Improves build flexibility.\nLv 0/1\nRuntime: Live\nCost\n35 AP\nInspect\nOpen Full Decree Library\nReclaim Forecast\nAP\nEstablish the first route\n\nBuild a clean first-life route before treating reincarnation as the main objective.\n\nEarly reclaim estimate\nNo prior Foundation time recorded\nNo speed bonus measured yet\n\nForecast uses current AP bonuses and target envelopes only.\n\nConfidence: low\nOffline progress does not progress combat.\nReincarnation is locked until the prestige unlock realm is reached.\nPotential AP gain is zero; resetting now would not create meaningful permanent progress.\nReset Contract\nAP\nResets this life\nRealm body and Qi progress: The active realm run, Qi pool, and per-life run counters return to a new-life baseline.\nCultivation active state: Heart Law selection, study state, comprehension, and active cultivation timers are cleared for the new life.\nInventory and currencies: Items and per-life currencies are reset by the inventory owner before the new-life baseline is restored.\nEquipment and loadout state: Equipped gear and refinement state are hard-reset with the old body.\nGate trial progress: Trial attempts, clears, bypasses, and active trial sessions are life-scoped.\nCarries forward\nAscension Points (AP): Available AP, earned AP, and the new ritual gain remain in the prestige ledger.\nLifetime AP: Lifetime AP earned stays permanent for prestige history and future balancing.\nPurchased decrees: Runtime-live prestige purchases remain owned and are reapplied after the reset.\nRun history and life count: Prestige count and bounded run history remain in the ledger.\nCompleted-life summary: The prepared life summary is captured before reset and remains viewable afterward.\nRebuilt next life\nCity baseline (starter city): City progression is reset and initialized from live content, starting at the first city.\nSpirit root (new roll): The prior root is remembered in the life summary, but the next life rolls a fresh root.\nHeart Law decree unlocks: Purchased Heart Law tiers are recomputed from live prestige effects when the new life begins.\nTechnique slot decrees: Purchased technique-slot decrees are recomputed and applied to the technique store.\nHybrid retained\nNo mastery retention decree active: Technique and recipe mastery reset completely until a Root Memory retention decree is purchased.\nStatus\nCultivation\nWorld\nInventory\nTechniques\nRecords\nPrestige\nSettings"
+}

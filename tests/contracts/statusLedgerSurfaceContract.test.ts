@@ -92,7 +92,7 @@ test('Status Ledger exposes structured doctrine, spirit root, and build preparat
   assert.ok(ledger.hero.spiritRoot, 'hero.spiritRoot should exist.');
   assert.match(
     ledger.hero.spiritRoot.element,
-    /^(fire|water|earth|metal|wood|dormant)$/,
+    /^(wood|fire|earth|metal|water|wind|lightning|ice|light|shadow|soul|void|time|astral|dormant)$/,
     'hero spiritRoot should expose a normalized element key.',
   );
   assert.equal(ledger.hero.spiritRoot.elementLabel.toLowerCase(), ledger.hero.spiritRoot.element);

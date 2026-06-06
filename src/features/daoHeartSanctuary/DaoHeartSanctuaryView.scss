@@ -1,0 +1,477 @@
+.daoHeartSanctuary {
+  --dao-heart-mote-opacity: 0.18;
+
+  position: relative;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 14px;
+  max-height: calc(100vh - 245px);
+  overflow: hidden;
+  color: rgba(28, 22, 14, 0.94);
+}
+
+.daoHeartSanctuary > *:not(.daoHeartSanctuary__vfxMotes) {
+  position: relative;
+  z-index: 1;
+}
+
+.daoHeartSanctuary__vfxMotes {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.daoHeartSanctuary__vfxMotes span {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  opacity: var(--dao-heart-mote-opacity);
+  background: radial-gradient(circle, rgba(253, 244, 196, 0.86), rgba(162, 70, 55, 0.22) 62%, transparent 72%);
+}
+
+.daoHeartSanctuary__vfxMotes span:nth-child(4n + 1) {
+  left: 22%;
+  top: 20%;
+}
+
+.daoHeartSanctuary__vfxMotes span:nth-child(4n + 2) {
+  left: 44%;
+  top: 58%;
+}
+
+.daoHeartSanctuary__vfxMotes span:nth-child(4n + 3) {
+  left: 70%;
+  top: 26%;
+}
+
+.daoHeartSanctuary__vfxMotes span:nth-child(4n + 4) {
+  left: 82%;
+  top: 70%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .daoHeartSanctuary[data-motion-mode="animated"] .daoHeartSanctuary__vfxMotes span {
+    animation: daoHeartMoteDrift 8s ease-in-out infinite;
+  }
+
+  .daoHeartSanctuary[data-motion-mode="animated"] .daoHeartSanctuary__ring {
+    animation: daoHeartRingBreath 9s ease-in-out infinite;
+  }
+}
+
+@keyframes daoHeartMoteDrift {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  50% {
+    transform: translate3d(-8px, 12px, 0);
+  }
+}
+
+@keyframes daoHeartRingBreath {
+  0%, 100% {
+    transform: scale(0.99);
+  }
+
+  50% {
+    transform: scale(1.02);
+  }
+}
+
+.daoHeartSanctuary__identity {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(93, 69, 35, 0.24);
+}
+
+.daoHeartSanctuary__identityCopy {
+  max-width: 520px;
+}
+
+.daoHeartSanctuary__eyebrow {
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: rgba(92, 62, 23, 0.72);
+}
+
+.daoHeartSanctuary__identity h3 {
+  margin: 2px 0 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 24px;
+}
+
+.daoHeartSanctuary__identity p,
+.daoHeartSanctuary__actionButtons p {
+  margin: 4px 0 0;
+  font-size: 13px;
+  line-height: 1.35;
+  color: rgba(55, 41, 23, 0.76);
+}
+
+.daoHeartSanctuary__identity dl {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(112px, auto));
+  gap: 8px;
+  margin: 0;
+  max-width: 640px;
+}
+
+.daoHeartSanctuary__identity dl div,
+.daoHeartSanctuary__metric,
+.daoHeartSanctuary__branchBox,
+.daoHeartSanctuary__forecastStrip div {
+  border: 1px solid rgba(93, 69, 35, 0.18);
+  background: rgba(255, 251, 239, 0.52);
+  padding: 8px 10px;
+}
+
+.daoHeartSanctuary__metric {
+  min-height: 0;
+}
+
+.daoHeartSanctuary__identity dt,
+.daoHeartSanctuary__metric span,
+.daoHeartSanctuary__branchBox span {
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(68, 51, 28, 0.72);
+}
+
+.daoHeartSanctuary__identity dd,
+.daoHeartSanctuary__metric strong,
+.daoHeartSanctuary__branchBox strong {
+  display: block;
+  margin: 2px 0 0;
+  font-size: 16px;
+  color: rgba(30, 24, 16, 0.96);
+}
+
+.daoHeartSanctuary__identity dd {
+  overflow-wrap: anywhere;
+}
+
+.daoHeartSanctuary__layout {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.85fr) minmax(260px, 1.35fr) minmax(190px, 0.9fr);
+  gap: 14px;
+  align-items: stretch;
+  min-height: 0;
+}
+
+.daoHeartSanctuary__practiceRail,
+.daoHeartSanctuary__riskRail {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: min(430px, calc(100vh - 510px));
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.daoHeartSanctuary__practice {
+  flex: 0 0 auto;
+  min-height: 86px;
+  display: grid;
+  justify-items: start;
+  gap: 3px;
+  border: 1px solid rgba(111, 80, 35, 0.28);
+  background: rgba(253, 247, 229, 0.68);
+  color: rgba(34, 25, 14, 0.92);
+  padding: 8px 10px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.daoHeartSanctuary__practice:focus-visible,
+.daoHeartSanctuary__actions button:focus-visible {
+  outline: 3px solid rgba(38, 111, 77, 0.32);
+  outline-offset: 2px;
+}
+
+.daoHeartSanctuary__practice--active {
+  border-color: rgba(38, 111, 77, 0.58);
+  box-shadow: inset 3px 0 0 rgba(38, 111, 77, 0.66);
+}
+
+.daoHeartSanctuary__practice:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+.daoHeartSanctuary__practice span {
+  font-weight: 800;
+}
+
+.daoHeartSanctuary__practice small,
+.daoHeartSanctuary__metric small,
+.daoHeartSanctuary__branchBox small,
+.daoHeartSanctuary__seal span,
+.daoHeartSanctuary__forecastStrip span {
+  font-size: 12px;
+  line-height: 1.25;
+  color: rgba(57, 44, 26, 0.72);
+}
+
+.daoHeartSanctuary__practice em,
+.daoHeartSanctuary__practice i,
+.daoHeartSanctuary__metric em {
+  font-size: 11px;
+  font-style: normal;
+  line-height: 1.25;
+  color: rgba(70, 51, 27, 0.8);
+}
+
+.daoHeartSanctuary__mandala {
+  min-height: 0;
+  height: min(430px, calc(100vh - 510px));
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid rgba(93, 69, 35, 0.18);
+  background:
+    radial-gradient(circle at 50% 40%, rgba(253, 247, 222, 0.86), rgba(227, 207, 159, 0.46) 62%, rgba(193, 157, 91, 0.24)),
+    linear-gradient(180deg, rgba(253, 249, 236, 0.82), rgba(219, 199, 158, 0.46));
+}
+
+.daoHeartSanctuary__chapterNodes {
+  position: absolute;
+  inset: 14px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(64px, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  z-index: 1;
+}
+
+.daoHeartSanctuary__chapterNodes li {
+  min-height: 46px;
+  padding: 6px 7px;
+  border: 1px solid rgba(97, 70, 31, 0.2);
+  background: rgba(255, 252, 239, 0.58);
+  color: rgba(46, 34, 19, 0.86);
+}
+
+.daoHeartSanctuary__chapterNodes li[data-state="completed"] {
+  box-shadow: inset 3px 0 0 rgba(38, 111, 77, 0.52);
+}
+
+.daoHeartSanctuary__chapterNodes li[data-state="current"] {
+  box-shadow: inset 3px 0 0 rgba(183, 123, 35, 0.64);
+}
+
+.daoHeartSanctuary__chapterNodes span {
+  display: block;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.daoHeartSanctuary__chapterNodes small {
+  display: block;
+  margin-top: 2px;
+  font-size: 11px;
+  color: rgba(57, 44, 26, 0.68);
+}
+
+.daoHeartSanctuary__ring {
+  position: absolute;
+  width: min(78%, 360px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1px solid rgba(88, 62, 26, 0.26);
+}
+
+.daoHeartSanctuary__ring span {
+  position: absolute;
+  inset: 14%;
+  border-radius: 50%;
+  border: 1px solid rgba(88, 62, 26, 0.18);
+}
+
+.daoHeartSanctuary__ring span:nth-child(2) {
+  inset: 27%;
+}
+
+.daoHeartSanctuary__ring span:nth-child(3) {
+  inset: 40%;
+}
+
+.daoHeartSanctuary__scroll,
+.daoHeartSanctuary__seal {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  padding: 12px 16px;
+  background: rgba(255, 252, 238, 0.68);
+  border: 1px solid rgba(107, 77, 34, 0.24);
+}
+
+.daoHeartSanctuary__scroll {
+  transform: translateY(-18px);
+}
+
+.daoHeartSanctuary__seal {
+  position: absolute;
+  bottom: 76px;
+  width: min(78%, 360px);
+  text-align: center;
+}
+
+.daoHeartSanctuary__mandalaReadout {
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: 16px;
+  display: grid;
+  gap: 4px;
+  z-index: 1;
+}
+
+.daoHeartSanctuary__mandalaReadout span {
+  padding: 6px 8px;
+  border: 1px solid rgba(94, 67, 31, 0.16);
+  background: rgba(255, 253, 241, 0.62);
+  font-size: 12px;
+  line-height: 1.25;
+  color: rgba(52, 38, 21, 0.78);
+}
+
+.daoHeartSanctuary__metric--good {
+  box-shadow: inset 3px 0 0 rgba(41, 117, 75, 0.68);
+}
+
+.daoHeartSanctuary__metric--warning {
+  box-shadow: inset 3px 0 0 rgba(176, 112, 28, 0.68);
+}
+
+.daoHeartSanctuary__metric--danger {
+  box-shadow: inset 3px 0 0 rgba(157, 46, 37, 0.72);
+}
+
+.daoHeartSanctuary__branchBox {
+  flex: 0 0 auto;
+  display: grid;
+  gap: 3px;
+}
+
+.daoHeartSanctuary__metric {
+  flex: 0 0 auto;
+}
+
+.daoHeartSanctuary__branchBox[data-state="available"] {
+  box-shadow: inset 3px 0 0 rgba(183, 123, 35, 0.6);
+}
+
+.daoHeartSanctuary__branchBox[data-state="selected"] {
+  box-shadow: inset 3px 0 0 rgba(38, 111, 77, 0.62);
+}
+
+.daoHeartSanctuary[data-turbulence-band="fractured"] .daoHeartSanctuary__mandala {
+  box-shadow: inset 0 0 0 2px rgba(157, 46, 37, 0.18);
+}
+
+.daoHeartSanctuary[data-seal-state="lagging"] .daoHeartSanctuary__seal,
+.daoHeartSanctuary[data-seal-state="fractured"] .daoHeartSanctuary__seal {
+  border-color: rgba(157, 46, 37, 0.36);
+}
+
+.daoHeartSanctuary__actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 10px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(93, 69, 35, 0.18);
+  background: rgba(250, 245, 235, 0.88);
+}
+
+.daoHeartSanctuary__forecastStrip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(120px, 1fr));
+  gap: 6px;
+}
+
+.daoHeartSanctuary__forecastStrip strong {
+  display: block;
+  font-size: 12px;
+  color: rgba(34, 25, 14, 0.9);
+}
+
+.daoHeartSanctuary__actionButtons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+  max-width: 480px;
+}
+
+.daoHeartSanctuary__actions button,
+.daoHeartSanctuary__actionButtons button {
+  border: 1px solid rgba(90, 66, 31, 0.3);
+  background: rgba(255, 250, 235, 0.72);
+  padding: 8px 12px;
+  font-weight: 800;
+  color: rgba(32, 24, 14, 0.9);
+  cursor: pointer;
+}
+
+.daoHeartSanctuary__actions button:disabled,
+.daoHeartSanctuary__actionButtons button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 900px) {
+  .daoHeartSanctuary__identity,
+  .daoHeartSanctuary__layout {
+    grid-template-columns: 1fr;
+  }
+
+  .daoHeartSanctuary__identity {
+    display: grid;
+  }
+
+  .daoHeartSanctuary__identity dl,
+  .daoHeartSanctuary__actions,
+  .daoHeartSanctuary__forecastStrip {
+    grid-template-columns: 1fr;
+  }
+
+  .daoHeartSanctuary__chapterNodes {
+    grid-template-columns: repeat(2, minmax(96px, 1fr));
+  }
+
+  .daoHeartSanctuary__actionButtons {
+    justify-content: stretch;
+    max-width: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .daoHeartSanctuary__vfxMotes span,
+  .daoHeartSanctuary__ring {
+    animation: none;
+  }
+
+  .daoHeartSanctuary__vfxMotes span {
+    opacity: 0;
+  }
+
+  .daoHeartSanctuary__practice,
+  .daoHeartSanctuary__actions button {
+    transition: none;
+  }
+}

@@ -1,0 +1,13 @@
+
+> cultivation-idle@0.0.0 release:reclaim-route-report
+> tsc --project tsconfig.tests.json && node --loader=./scripts/relativeJsLoader.mjs tmp-tests/scripts/release/reclaimRouteReport.js
+
+=== Reclaim Route Report (Packet 7.3e) ===
+Generated: 2026-06-03T04:15:18.752Z
+Status: pass
+Overall pass: true
+Starter spend plan: ap_idle_qi_mult, ap_combat_mult
+Milestone speedups:
+- foundation: 0.2125
+- core: 0.1736
+- nascent: 0.2745

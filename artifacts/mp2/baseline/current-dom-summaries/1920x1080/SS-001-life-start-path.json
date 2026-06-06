@@ -1,0 +1,344 @@
+{
+  "viewport": "1920x1080",
+  "name": "Life Start Path",
+  "url": "http://127.0.0.1:5173/",
+  "documentTitle": "cultivation-idle-temp",
+  "rootTestIds": [
+    "cultivation-exact-page",
+    "cultivation-dantian-anchor",
+    "cultivation-breakthrough-readiness",
+    "cultivation-qi-lane",
+    "life-path-card-heaven",
+    "life-path-card-earth",
+    "life-path-card-martial"
+  ],
+  "headings": [
+    "Choose the first stroke of your Dao."
+  ],
+  "primaryCta": {
+    "text": "Next MilestonePush Qi",
+    "disabled": false,
+    "ariaLabel": null,
+    "rect": {
+      "x": 79,
+      "y": 211,
+      "width": 301,
+      "height": 117,
+      "right": 380,
+      "bottom": 327
+    }
+  },
+  "buttons": [
+    {
+      "text": "Next MilestonePush Qi",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 79,
+        "y": 211,
+        "width": 301,
+        "height": 117,
+        "right": 380,
+        "bottom": 327
+      }
+    },
+    {
+      "text": "NeedQi Cap100",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 79,
+        "y": 346,
+        "width": 301,
+        "height": 117,
+        "right": 380,
+        "bottom": 462
+      }
+    },
+    {
+      "text": "ActionStart Cultivation",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 79,
+        "y": 481,
+        "width": 301,
+        "height": 117,
+        "right": 380,
+        "bottom": 597
+      }
+    },
+    {
+      "text": "Dao",
+      "disabled": false,
+      "ariaLabel": "Open Dao Heart",
+      "rect": {
+        "x": 1793,
+        "y": 134,
+        "width": 111,
+        "height": 132,
+        "right": 1904,
+        "bottom": 266
+      }
+    },
+    {
+      "text": "PathNo Path selected",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1563,
+        "y": 211,
+        "width": 284,
+        "height": 89,
+        "right": 1847,
+        "bottom": 299
+      }
+    },
+    {
+      "text": "Spirit RootMetal / Common",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1563,
+        "y": 310,
+        "width": 284,
+        "height": 89,
+        "right": 1847,
+        "bottom": 398
+      }
+    },
+    {
+      "text": "Heart LawNo Heart Law selected",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1563,
+        "y": 409,
+        "width": 284,
+        "height": 89,
+        "right": 1847,
+        "bottom": 498
+      }
+    },
+    {
+      "text": "VerseChapter 1",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1563,
+        "y": 509,
+        "width": 284,
+        "height": 89,
+        "right": 1847,
+        "bottom": 597
+      }
+    },
+    {
+      "text": "Breath / FocusBalanced",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1563,
+        "y": 608,
+        "width": 284,
+        "height": 89,
+        "right": 1847,
+        "bottom": 697
+      }
+    },
+    {
+      "text": "Start Cultivation",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 701,
+        "y": 889,
+        "width": 518,
+        "height": 72,
+        "right": 1219,
+        "bottom": 961
+      }
+    },
+    {
+      "text": "Break Through",
+      "disabled": true,
+      "ariaLabel": null,
+      "rect": {
+        "x": 780,
+        "y": 961,
+        "width": 360,
+        "height": 37,
+        "right": 1140,
+        "bottom": 998
+      }
+    },
+    {
+      "text": "Select",
+      "disabled": false,
+      "ariaLabel": "Select heaven path",
+      "rect": {
+        "x": 403,
+        "y": 942,
+        "width": 280,
+        "height": 56,
+        "right": 683,
+        "bottom": 998
+      }
+    },
+    {
+      "text": "Select",
+      "disabled": false,
+      "ariaLabel": "Select earth path",
+      "rect": {
+        "x": 820,
+        "y": 942,
+        "width": 280,
+        "height": 56,
+        "right": 1100,
+        "bottom": 998
+      }
+    },
+    {
+      "text": "Select",
+      "disabled": false,
+      "ariaLabel": "Select martial path",
+      "rect": {
+        "x": 1237,
+        "y": 942,
+        "width": 280,
+        "height": 56,
+        "right": 1517,
+        "bottom": 998
+      }
+    }
+  ],
+  "scrollWidth": 1920,
+  "innerWidth": 1920,
+  "scrollHeight": 1080,
+  "innerHeight": 1080,
+  "suspectedClippedText": [
+    {
+      "text": "RealmQi CondensationStage 1Qi0Cultivation Rate58.58 / sStability0%ForegroundIdleNext MilestonePush QiNeedQi Cap100ActionStart CultivationIdleDaoPathNo Path sele",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 1920,
+        "height": 1080,
+        "right": 1920,
+        "bottom": 1080
+      },
+      "overflow": "hidden/hidden/hidden"
+    }
+  ],
+  "viewportIssues": [],
+  "consoleSinceStart": [
+    "1366x768 debug: [vite] connecting...",
+    "1366x768 debug: [vite] connected.",
+    "1366x768 info: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+    "1366x768 log: [App] Initializing game...",
+    "1366x768 log: [GameLoop] Initializing game...",
+    "1366x768 log: [GameLoop] Store dependencies wired",
+    "1366x768 log: [GameLoop] Prestige store initialized",
+    "1366x768 log: [SpiritRoot] Generated: Mortal earth (71% purity)",
+    "1366x768 log: [GameLoop] Generated initial spirit root",
+    "1366x768 log: [GameLoop] No save found, starting new game",
+    "1366x768 log: [GameLoop] Added starter items to inventory",
+    "1366x768 log: [GameLoop] Starting game loop...",
+    "1366x768 log: [GameLoop] Game loop started",
+    "1366x768 log: [GameLoop] Game initialized successfully",
+    "1366x768 log: [App] Game initialized successfully",
+    "1366x768 log: [App] Initializing game...",
+    "1366x768 log: [GameLoop] Initializing game...",
+    "1366x768 log: [GameLoop] Store dependencies wired",
+    "1366x768 log: [GameLoop] Prestige store initialized",
+    "1366x768 log: [GameLoop] No save found, starting new game",
+    "1366x768 warning: [GameLoop] Already running",
+    "1366x768 log: [GameLoop] Game initialized successfully",
+    "1366x768 log: [App] Game initialized successfully",
+    "1366x768 warning: [ContentValidation] Technique counts by path: Heaven=20, Earth=20, Martial=20",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=heaven: 6",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=earth: 6",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=martial: 6",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=heaven: 7",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=earth: 9",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=martial: 8",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=heaven: 9",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=earth: 9",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=martial: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=heaven: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=earth: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=martial: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=heaven: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=earth: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=martial: 10",
+    "1366x768 info: [Content] Loaded 5 cities, 60 techniques (H/E/M: 20/20/20)",
+    "1366x768 info: [Content] Prestige upgrades: 27",
+    "1366x768 log: [SaveLoad] Saving game...",
+    "1366x768 log: [SaveLoad] Game saved successfully at 28/05/2026, 22:56:33",
+    "1366x768 log: [SaveLoad] Saving game...",
+    "1366x768 log: [SaveLoad] Game saved successfully at 28/05/2026, 22:56:35",
+    "1366x768 log: [UI] Notification added: success - Life begins: Heaven • Ember Thread Sutra • Balanced",
+    "1366x768 log: [SaveLoad] Saving game...",
+    "1366x768 log: [SaveLoad] Game saved successfully at 28/05/2026, 22:56:35",
+    "1366x768 log: [UI] Active tab changed to: status",
+    "1366x768 log: [UI] Active tab changed to: adventure",
+    "1366x768 log: [UI] Active tab changed to: inventory",
+    "1366x768 warning: [Inventory] Missing item definition for rusty_sword",
+    "1366x768 warning: [Inventory] Missing item definition for worn_talisman",
+    "1366x768 warning: [Inventory] Missing item definition for health_pill",
+    "1366x768 warning: [Inventory] Missing item definition for spirit_stone",
+    "1366x768 log: [UI] Active tab changed to: techniques",
+    "1366x768 log: [UI] Active tab changed to: records",
+    "1366x768 log: [UI] Active tab changed to: prestige",
+    "1366x768 log: [UI] Active tab changed to: settings",
+    "1366x768 log: [UI] Active tab changed to: adventure",
+    "1366x768 warning: [audio] Unable to play sound ui_click_secondary NotSupportedError: Failed to load because no supported source was found.",
+    "1366x768 log: [SaveLoad] Saving game...",
+    "1366x768 log: [SaveLoad] Game saved successfully at 28/05/2026, 22:57:32",
+    "1366x768 log: [GameLoop] Game autosaved",
+    "1920x1080 debug: [vite] connecting...",
+    "1920x1080 debug: [vite] connected.",
+    "1920x1080 info: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+    "1920x1080 log: [App] Initializing game...",
+    "1920x1080 log: [GameLoop] Initializing game...",
+    "1920x1080 log: [GameLoop] Store dependencies wired",
+    "1920x1080 log: [GameLoop] Prestige store initialized",
+    "1920x1080 log: [SpiritRoot] Generated: Common metal (58% purity)",
+    "1920x1080 log: [GameLoop] Generated initial spirit root",
+    "1920x1080 log: [GameLoop] No save found, starting new game",
+    "1920x1080 log: [GameLoop] Added starter items to inventory",
+    "1920x1080 log: [GameLoop] Starting game loop...",
+    "1920x1080 log: [GameLoop] Game loop started",
+    "1920x1080 log: [GameLoop] Game initialized successfully",
+    "1920x1080 log: [App] Game initialized successfully",
+    "1920x1080 log: [App] Initializing game...",
+    "1920x1080 log: [GameLoop] Initializing game...",
+    "1920x1080 log: [GameLoop] Store dependencies wired",
+    "1920x1080 log: [GameLoop] Prestige store initialized",
+    "1920x1080 log: [GameLoop] No save found, starting new game",
+    "1920x1080 warning: [GameLoop] Already running",
+    "1920x1080 log: [GameLoop] Game initialized successfully",
+    "1920x1080 log: [App] Game initialized successfully",
+    "1920x1080 warning: [ContentValidation] Technique counts by path: Heaven=20, Earth=20, Martial=20",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=heaven: 6",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=earth: 6",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=martial: 6",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=heaven: 7",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=earth: 9",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=martial: 8",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=heaven: 9",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=earth: 9",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=martial: 10",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=heaven: 10",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=earth: 10",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=martial: 10",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=heaven: 10",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=earth: 10",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=martial: 10",
+    "1920x1080 info: [Content] Loaded 5 cities, 60 techniques (H/E/M: 20/20/20)",
+    "1920x1080 info: [Content] Prestige upgrades: 27",
+    "1920x1080 log: [SaveLoad] Saving game...",
+    "1920x1080 log: [SaveLoad] Game saved successfully at 28/05/2026, 22:57:37"
+  ],
+  "textSample": "Realm\nQi Condensation\nStage 1\nQi\n0\nCultivation Rate\n58.58 / s\nStability\n0%\nForeground\nIdle\nNext Milestone\nPush Qi\nNeed\nQi Cap\n100\nAction\nStart Cultivation\nIdle\nDao\nPath\nNo Path selected\nSpirit Root\nMetal / Common\nHeart Law\nNo Heart Law selected\nVerse\nChapter 1\nBreath / Focus\nBalanced\nBreakthrough\nSettled\nBREAKTHROUGH READINESS\nReach the realm edge and fill the Qi reservoir.\nQi\n100 short\nRealm edge\nReached\nGate item\nNot needed now\nQi 0 / 100\n+58.58/s\nStart Cultivation\n\nQi Cap 100\n\nBreak Through\n\nRETURNING PAGE\n\nChoose the first stroke of your Dao.\n\nThe page opens, but it does not choose.\n\nHEAVEN\n\nRefined, celestial, technique-forward.\n\nFast cultivation and technique-led pressure. Heaven converts qi tempo into precise offensive windows, but its survival floor is thinner and greed is punished.\n\nQi 50%\nATK 30%\nQi Flow\nPrecision\nBurst Pressure\nHEAVEN\n\nUnderstand the pattern before it devours you.\n\nSelect\nEARTH\n\nEndure until the world admits you exist.\n\nSelect\nMARTIAL\n\nCut a road where the Gate left none.\n\nSelect"
+}

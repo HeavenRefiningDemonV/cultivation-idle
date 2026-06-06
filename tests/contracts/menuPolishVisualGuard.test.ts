@@ -30,13 +30,14 @@ test('Technique empty state is intentional and does not use glyph-icon filter la
   assert.match(scss, /min-height:\s*clamp\(220px,\s*26vh,\s*340px\)/);
 });
 
-test('Status desktop surface uses broad diagnostic width instead of a narrow document stack', () => {
-  const scss = readRepoFile('src/components/screens/StatusScreen.scss');
+test('Status desktop surface uses broad ledger width instead of a narrow document stack', () => {
+  const scss = readRepoFile('src/ui/status/ledger/StatusLedgerPage.scss');
 
   assert.doesNotMatch(scss, /max-width:\s*1240px/);
-  assert.match(scss, /min\(1900px,\s*calc\(100vw - clamp\(28px,\s*3\.5vw,\s*72px\)\)\)/);
-  assert.match(scss, /\.statusV2Canvas/);
-  assert.match(scss, /\.statusV2Grid/);
+  assert.match(scss, /min\(1720px,\s*calc\(100vw - clamp\(36px,\s*4\.5vw,\s*96px\)\)\)/);
+  assert.match(scss, /\.statusLedgerCanvas/);
+  assert.match(scss, /\.statusLedgerGrid/);
+  assert.doesNotMatch(scss, /statusV2/);
   assert.doesNotMatch(scss, /statusActionStrip::before/);
 });
 

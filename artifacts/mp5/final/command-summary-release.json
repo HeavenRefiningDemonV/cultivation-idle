@@ -1,0 +1,74 @@
+﻿[
+    {
+        "slug":  "release-offline-route-report",
+        "command":  "npm run release:offline-route-report",
+        "exitCode":  0,
+        "timedOut":  false,
+        "durationMs":  15531,
+        "stdout":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp5\\final\\commands\\release-offline-route-report.stdout.log",
+        "stderr":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp5\\final\\commands\\release-offline-route-report.stderr.log"
+    },
+    {
+        "slug":  "release-reclaim-route-report",
+        "command":  "npm run release:reclaim-route-report",
+        "exitCode":  0,
+        "timedOut":  false,
+        "durationMs":  52178,
+        "stdout":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp5\\final\\commands\\release-reclaim-route-report.stdout.log",
+        "stderr":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp5\\final\\commands\\release-reclaim-route-report.stderr.log"
+    },
+    {
+        "slug":  "release-fresh-run-report-json",
+        "command":  "npm run release:fresh-run-report:json",
+        "exitCode":  0,
+        "timedOut":  false,
+        "durationMs":  73313,
+        "stdout":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp5\\final\\commands\\release-fresh-run-report-json.stdout.log",
+        "stderr":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp5\\final\\commands\\release-fresh-run-report-json.stderr.log"
+    },
+    {
+        "slug":  "release-migration-matrix-json",
+        "command":  "npm run release:migration-matrix:json",
+        "exitCode":  0,
+        "timedOut":  false,
+        "durationMs":  14266,
+        "stdout":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp5\\final\\commands\\release-migration-matrix-json.stdout.log",
+        "stderr":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp5\\final\\commands\\release-migration-matrix-json.stderr.log"
+    },
+    {
+        "slug":  "release-runtime-diagnostics-json",
+        "command":  "npm run release:runtime-diagnostics:json",
+        "exitCode":  0,
+        "timedOut":  false,
+        "durationMs":  14264,
+        "stdout":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp5\\final\\commands\\release-runtime-diagnostics-json.stdout.log",
+        "stderr":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp5\\final\\commands\\release-runtime-diagnostics-json.stderr.log"
+    },
+    {
+        "slug":  "release-prestige-runtime-audit-json",
+        "command":  "npm run release:prestige-runtime-audit:json",
+        "exitCode":  0,
+        "timedOut":  false,
+        "durationMs":  1107,
+        "stdout":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp5\\final\\commands\\release-prestige-runtime-audit-json.stdout.log",
+        "stderr":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp5\\final\\commands\\release-prestige-runtime-audit-json.stderr.log"
+    },
+    {
+        "slug":  "release-gate-json",
+        "command":  "npm run release:gate:json",
+        "exitCode":  2,
+        "timedOut":  false,
+        "durationMs":  517190,
+        "stdout":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp5\\final\\commands\\release-gate-json.stdout.log",
+        "stderr":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp5\\final\\commands\\release-gate-json.stderr.log"
+    },
+    {
+        "slug":  "npm-audit-moderate-json",
+        "command":  "npm audit --audit-level=moderate --json",
+        "exitCode":  0,
+        "timedOut":  false,
+        "durationMs":  1895,
+        "stdout":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp5\\final\\commands\\npm-audit-moderate-json.stdout.log",
+        "stderr":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp5\\final\\commands\\npm-audit-moderate-json.stderr.log"
+    }
+]

@@ -1,9 +1,25 @@
 import type { IconId } from '../../../ui/icons/index.js';
+import type { SpiritRootObservationSurfaceV1 } from '../../../features/spiritRootObservation/index.js';
 import type { StatusRequirementKind, StatusRouteTarget } from './statusDashboardSurface.js';
 
 export type StatusLedgerTone = 'success' | 'info' | 'warning' | 'danger' | 'muted' | 'jade' | 'gold';
 
-export type StatusSpiritRootElement = 'fire' | 'water' | 'earth' | 'metal' | 'wood' | 'dormant';
+export type StatusSpiritRootElement =
+  | 'wood'
+  | 'fire'
+  | 'earth'
+  | 'metal'
+  | 'water'
+  | 'wind'
+  | 'lightning'
+  | 'ice'
+  | 'light'
+  | 'shadow'
+  | 'soul'
+  | 'void'
+  | 'time'
+  | 'astral'
+  | 'dormant';
 
 export type StatusLedgerCardId =
   | 'milestone'
@@ -27,7 +43,7 @@ export interface StatusLedgerActionSurface {
   disabledReason: string | null;
   tone: StatusLedgerTone;
   primary?: boolean;
-  source: 'run_compass' | 'readiness' | 'economy' | 'activity' | 'prestige' | 'fallback' | 'safety_net';
+  source: 'run_compass' | 'readiness' | 'economy' | 'activity' | 'prestige' | 'fallback' | 'safety_net' | 'status';
 }
 
 export interface StatusLedgerFactRow {
@@ -63,6 +79,7 @@ export interface StatusSpiritRootSurface {
   resonanceLabel: string | null;
   icon: IconId;
   tone: StatusLedgerTone;
+  observationAction: StatusLedgerActionSurface | null;
 }
 
 export interface StatusBuildPrepGroupSurface {
@@ -79,6 +96,58 @@ export interface StatusLedgerRequirementRow extends StatusLedgerFactRow {
   gapLabel: string | null;
   priorityLabel: string | null;
   sourceModuleLabel: string | null;
+}
+
+export type StatusCurrentStateBlockState = 'healthy' | 'attention' | 'danger' | 'locked' | 'unknown';
+
+export type StatusCauseSeverity = 'healthy' | 'info' | 'warning' | 'danger' | 'blocked';
+
+export interface StatusCauseRowSurface {
+  id: string;
+  severity: StatusCauseSeverity;
+  label: string;
+  value: string;
+  consequence: string;
+  primaryFix: StatusLedgerActionSurface | null;
+  detail: string;
+  sourceSystem: string;
+}
+
+export interface StatusCurrentStateBlockSurface {
+  id: string;
+  title: string;
+  valueLabel: string;
+  state: StatusCurrentStateBlockState;
+  consequence: string;
+  route: StatusLedgerActionSurface | null;
+  detailRows: StatusCauseRowSurface[];
+  icon: IconId;
+}
+
+export interface StatusCurrentStateSurfaceV1 {
+  version: 'status-current-state-v1';
+  rootTestId: 'status-current-state';
+  summary: {
+    label: string;
+    detail: string;
+  };
+  blocks: {
+    cultivation: StatusCurrentStateBlockSurface;
+    daoHeart: StatusCurrentStateBlockSurface;
+    spiritRoot: StatusCurrentStateBlockSurface & {
+      observationRoute: 'status-root-observation';
+    };
+    training: StatusCurrentStateBlockSurface;
+    buildPrep: StatusCurrentStateBlockSurface;
+    activeWork: StatusCurrentStateBlockSurface;
+  };
+  nextBottleneck: {
+    primary: StatusLedgerActionSurface;
+    secondary: StatusLedgerActionSurface[];
+    detailRows: StatusCauseRowSurface[];
+  };
+  sharedCauseRows: StatusCauseRowSurface[];
+  buffDebuffRows: StatusCauseRowSurface[];
 }
 
 export interface StatusLedgerMilestoneNode {
@@ -127,6 +196,8 @@ export interface StatusLedgerSurfaceV1 {
     breathTile: StatusDoctrineTileSurface;
     cityTile: StatusDoctrineTileSurface;
   };
+  currentState: StatusCurrentStateSurfaceV1;
+  spiritRootObservation: SpiritRootObservationSurfaceV1;
   metrics: StatusLedgerFactRow[];
   milestone: {
     id: 'milestone';

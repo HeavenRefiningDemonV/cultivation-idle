@@ -1,0 +1,379 @@
+import { create } from 'zustand';
+import { loadAllContent, ContentLoadError, normalizeForgeBlueprint, validateLoadedContent, isRefineBlueprint, isRuneBlueprint, } from '../content/index.js';
+import { buildContentLoadFailureDiagnostics, normalizeContentLoadFailure, } from '../services/diagnostics/buildContentLoadFailureDiagnostics.js';
+import { buildLiveEconomyCatalog, buildTargetedMaterialSinkAudit, getAllPrepBudgetRegistryEntries, getAllSpendOrderPolicies, getEconomicModuleRoleEntries, buildBestSourceIndex, } from '../systems/economy/index.js';
+import { buildLiveForgeCatalog, getLiveForgeBlueprintById, getVisibleNormalizedLiveForgeBlueprints, getVisibleLiveForgeBlueprintsForCity, } from '../systems/forge/index.js';
+import { getPrestigeRuntimeCatalog, getVisiblePrestigeUpgrades as getVisiblePrestigeUpgradesFromRuntime, } from '../systems/prestige/runtime/prestigeRuntimeCatalog.js';
+import { PERF_LABELS, time } from '../services/performance/index.js';
+import { bumpVersion } from './versionCounters.js';
+const emptyMaps = {
+    citiesById: {},
+    itemsById: {},
+    techniquesById: {},
+    pavilionsById: {},
+    outskirtsById: {},
+    enemiesById: {},
+    trialsById: {},
+    trialsByCityId: {},
+    ruinsById: {},
+    runesById: {},
+    heartLawsById: {},
+    prestigeUpgradesById: {},
+    apothecariesById: {},
+    apothecariesByCityId: {},
+};
+const emptyTechniquesByPath = {
+    heaven: [],
+    earth: [],
+    martial: [],
+};
+let inFlight = null;
+let loadAllContentOverride = null;
+let validateLoadedContentOverride = null;
+const resolveLoadAllContent = () => loadAllContentOverride ?? loadAllContent;
+const resolveValidateLoadedContent = () => validateLoadedContentOverride ?? validateLoadedContent;
+export function __setContentStoreLoadTestOverrides(overrides) {
+    loadAllContentOverride = overrides.loadAllContent ?? null;
+    validateLoadedContentOverride = overrides.validateLoadedContent ?? null;
+}
+export const useContentStore = create((set, get) => ({
+    isLoading: false,
+    isLoaded: false,
+    error: null,
+    loadFailure: null,
+    loadFailureDiagnostics: null,
+    raw: null,
+    economy: null,
+    maps: emptyMaps,
+    citiesSorted: [],
+    techniquesByPath: emptyTechniquesByPath,
+    contentVersion: 0,
+    lazyPackVersions: {},
+    clearLoadedContent: () => {
+        if (!get().isLoaded && get().raw === null)
+            return;
+        set({
+            raw: null,
+            economy: null,
+            maps: emptyMaps,
+            citiesSorted: [],
+            techniquesByPath: emptyTechniquesByPath,
+            isLoaded: false,
+            contentVersion: bumpVersion(get().contentVersion),
+        });
+    },
+    setLoadFailure: (context, error) => {
+        get().clearLoadedContent();
+        set({
+            error: context.message,
+            loadFailure: context,
+            loadFailureDiagnostics: buildContentLoadFailureDiagnostics(context, error),
+            isLoading: false,
+            isLoaded: false,
+        });
+    },
+    clearLoadFailure: () => {
+        set({
+            error: null,
+            loadFailure: null,
+            loadFailureDiagnostics: null,
+        });
+    },
+    load: async () => {
+        if (get().isLoaded) {
+            return true;
+        }
+        if (inFlight) {
+            return inFlight;
+        }
+        inFlight = (async () => {
+            get().clearLoadFailure();
+            set({ isLoading: true });
+            try {
+                const raw = await resolveLoadAllContent()();
+                const validated = time(PERF_LABELS.contentValidate, () => resolveValidateLoadedContent()(raw));
+                const cities = validated.cities;
+                const items = validated.items;
+                const techniques = validated.techniques;
+                const pavilions = validated.pavilions;
+                const outskirts = validated.outskirts;
+                const enemies = validated.enemies;
+                const trials = validated.trials;
+                const ruins = validated.ruins;
+                const apothecaries = validated.apothecary_shops;
+                const runes = validated.runes;
+                const heartLaws = validated.heart_laws;
+                const prestigeUpgrades = validated.prestige_store.upgrades;
+                const normalized = time(PERF_LABELS.contentNormalize, () => {
+                    const maps = {
+                        citiesById: Object.fromEntries(cities.map((city) => [city.id, city])),
+                        itemsById: Object.fromEntries(items.map((item) => [item.id, item])),
+                        techniquesById: Object.fromEntries(techniques.map((tech) => [tech.id, tech])),
+                        pavilionsById: Object.fromEntries(pavilions.map((pavilion) => [pavilion.id, pavilion])),
+                        outskirtsById: Object.fromEntries(outskirts.map((outskirt) => [outskirt.id, outskirt])),
+                        enemiesById: Object.fromEntries(enemies.map((enemy) => [enemy.id, enemy])),
+                        trialsById: Object.fromEntries(trials.map((trial) => [trial.id, trial])),
+                        trialsByCityId: Object.fromEntries(trials.map((trial) => [trial.cityId, trial])),
+                        ruinsById: Object.fromEntries(ruins.map((ruin) => [ruin.id, ruin])),
+                        apothecariesById: Object.fromEntries(apothecaries.map((shop) => [shop.id, shop])),
+                        apothecariesByCityId: Object.fromEntries(apothecaries.map((shop) => [shop.cityId, shop])),
+                        runesById: Object.fromEntries(runes.map((rune) => [rune.id, rune])),
+                        heartLawsById: Object.fromEntries(heartLaws.map((law) => [law.id, law])),
+                        prestigeUpgradesById: Object.fromEntries(prestigeUpgrades.map((upgrade) => [upgrade.id, upgrade])),
+                    };
+                    const citiesSorted = [...cities].sort((a, b) => a.index - b.index);
+                    const techniquesByPath = {
+                        heaven: [],
+                        earth: [],
+                        martial: [],
+                    };
+                    techniques.forEach((tech) => {
+                        if (techniquesByPath[tech.path]) {
+                            techniquesByPath[tech.path].push(tech);
+                        }
+                    });
+                    return { maps, citiesSorted, techniquesByPath };
+                });
+                console.info(`[Content] Loaded ${cities.length} cities, ${techniques.length} techniques (H/E/M: ${normalized.techniquesByPath.heaven.length}/${normalized.techniquesByPath.earth.length}/${normalized.techniquesByPath.martial.length})`);
+                console.info(`[Content] Prestige upgrades: ${prestigeUpgrades.length}`);
+                time(PERF_LABELS.contentStorePublish, () => set({
+                    raw: validated,
+                    economy: validated.economy,
+                    maps: normalized.maps,
+                    citiesSorted: normalized.citiesSorted,
+                    techniquesByPath: normalized.techniquesByPath,
+                    isLoaded: true,
+                    isLoading: false,
+                    error: null,
+                    loadFailure: null,
+                    loadFailureDiagnostics: null,
+                    contentVersion: bumpVersion(get().contentVersion),
+                }));
+                return true;
+            }
+            catch (error) {
+                const context = normalizeContentLoadFailure({
+                    phase: error instanceof ContentLoadError ? error.phase : 'load',
+                    error,
+                    fileName: error instanceof ContentLoadError ? error.fileName : null,
+                    attemptCount: (get().loadFailure?.attemptCount ?? 0) + 1,
+                });
+                get().setLoadFailure(context, error);
+                return false;
+            }
+            finally {
+                inFlight = null;
+            }
+        })();
+        return inFlight;
+    },
+    getCity: (id) => {
+        const { isLoaded, maps } = get();
+        if (!isLoaded) {
+            throw new Error('[ContentStore] Content not loaded');
+        }
+        const city = maps.citiesById[id];
+        if (!city) {
+            throw new Error(`[ContentStore] Unknown city id ${id}`);
+        }
+        return city;
+    },
+    getItem: (id) => {
+        const { isLoaded, maps } = get();
+        if (!isLoaded) {
+            throw new Error('[ContentStore] Content not loaded');
+        }
+        const item = maps.itemsById[id];
+        if (!item) {
+            throw new Error(`[ContentStore] Unknown item id ${id}`);
+        }
+        return item;
+    },
+    getTechnique: (id) => {
+        const { isLoaded, maps } = get();
+        if (!isLoaded) {
+            throw new Error('[ContentStore] Content not loaded');
+        }
+        const technique = maps.techniquesById[id];
+        if (!technique) {
+            throw new Error(`[ContentStore] Unknown technique id ${id}`);
+        }
+        return technique;
+    },
+    getPavilion: (id) => {
+        const { isLoaded, maps } = get();
+        if (!isLoaded) {
+            throw new Error('[ContentStore] Content not loaded');
+        }
+        return maps.pavilionsById[id];
+    },
+    getApothecaryShop: (id) => {
+        const { isLoaded, maps } = get();
+        if (!isLoaded) {
+            throw new Error('[ContentStore] Content not loaded');
+        }
+        return maps.apothecariesById[id];
+    },
+    getEconomyConfig: () => {
+        const { isLoaded, economy } = get();
+        if (!isLoaded || !economy) {
+            throw new Error('[ContentStore] Content not loaded');
+        }
+        return economy;
+    },
+    getBountyConfig: () => {
+        const { isLoaded, raw } = get();
+        if (!isLoaded || !raw?.bounties) {
+            throw new Error('[ContentStore] Content not loaded');
+        }
+        return raw.bounties;
+    },
+    getExpeditionsContent: () => {
+        const { isLoaded, raw } = get();
+        if (!isLoaded || !raw?.expeditions) {
+            throw new Error('[ContentStore] Content not loaded');
+        }
+        return raw.expeditions;
+    },
+    getExpeditionDurations: () => {
+        return get().getExpeditionsContent().durations ?? [];
+    },
+    getExpeditionTypes: () => {
+        return get().getExpeditionsContent().types ?? [];
+    },
+    getExpeditionCityYields: (cityIndex) => {
+        const content = get().getExpeditionsContent();
+        return content.cityYields.find((entry) => entry.cityIndex === cityIndex) ?? null;
+    },
+    getHeartLaw: (id) => {
+        const { isLoaded, maps } = get();
+        if (!isLoaded) {
+            throw new Error('[ContentStore] Content not loaded');
+        }
+        const law = maps.heartLawsById[id];
+        if (!law) {
+            throw new Error(`[ContentStore] Unknown heart law id ${id}`);
+        }
+        return law;
+    },
+    listHeartLaws: () => {
+        const { isLoaded, raw } = get();
+        if (!isLoaded || !raw?.heart_laws) {
+            throw new Error('[ContentStore] Content not loaded');
+        }
+        return [...raw.heart_laws].sort((a, b) => {
+            const tierA = a.tier ?? '';
+            const tierB = b.tier ?? '';
+            if (tierA !== tierB)
+                return tierA.localeCompare(tierB);
+            return a.name.localeCompare(b.name);
+        });
+    },
+    getPrestigeStoreConfig: () => {
+        const { isLoaded, raw } = get();
+        if (!isLoaded || !raw?.prestige_store) {
+            throw new Error('[ContentStore] Content not loaded');
+        }
+        return raw.prestige_store;
+    },
+    getAllPrestigeUpgrades: () => {
+        return get().getPrestigeStoreConfig().upgrades ?? [];
+    },
+    getVisiblePrestigeUpgrades: () => {
+        const { raw } = get();
+        return getVisiblePrestigeUpgradesFromRuntime(raw);
+    },
+    getPrestigeRuntimeCatalog: () => {
+        const { raw } = get();
+        return getPrestigeRuntimeCatalog(raw);
+    },
+    getLiveEconomyCatalog: () => {
+        const { isLoaded, raw } = get();
+        if (!isLoaded || !raw) {
+            throw new Error('[ContentStore] Content not loaded');
+        }
+        return buildLiveEconomyCatalog(raw);
+    },
+    getTargetedMaterialSinkAudit: () => {
+        const { isLoaded, raw } = get();
+        if (!isLoaded || !raw) {
+            throw new Error('[ContentStore] Content not loaded');
+        }
+        return buildTargetedMaterialSinkAudit(raw);
+    },
+    getPrepBudgetRegistry: () => getAllPrepBudgetRegistryEntries(),
+    getSpendOrderPolicies: () => getAllSpendOrderPolicies(),
+    getEconomicModuleRoles: () => getEconomicModuleRoleEntries(),
+    getBestSourceIndex: () => {
+        const { isLoaded, raw } = get();
+        if (!isLoaded || !raw) {
+            throw new Error('[ContentStore] Content not loaded');
+        }
+        return buildBestSourceIndex(raw);
+    },
+    getPavilionRecordsManifest: () => {
+        const { isLoaded, raw } = get();
+        if (!isLoaded || !raw?.pavilion_records) {
+            throw new Error('[ContentStore] Pavilion records not loaded');
+        }
+        return raw.pavilion_records;
+    },
+}));
+export function getItemDef(itemId) {
+    const maps = useContentStore.getState().maps;
+    return maps?.itemsById?.[itemId] ?? null;
+}
+export function formatPrice(price) {
+    if (!price)
+        return '';
+    const parts = [];
+    if (price.gold)
+        parts.push(`${price.gold} Gold`);
+    if (price.spiritStones)
+        parts.push(`${price.spiritStones} Spirit Stones`);
+    if (price.merit)
+        parts.push(`${price.merit} Merit`);
+    return parts.join(' / ');
+}
+export function listTalismanRecipes() {
+    return useContentStore.getState().raw?.talisman_recipes ?? [];
+}
+export function listRawForgeBlueprints() {
+    const blueprints = useContentStore.getState().raw?.forge_blueprints ?? [];
+    return blueprints.map((blueprint) => normalizeForgeBlueprint(blueprint));
+}
+export function listForgeBlueprints() {
+    const raw = useContentStore.getState().raw;
+    if (!raw)
+        return [];
+    return getVisibleNormalizedLiveForgeBlueprints(raw);
+}
+export function getForgeBlueprint(id) {
+    const raw = useContentStore.getState().raw;
+    const blueprint = getLiveForgeBlueprintById(raw, id);
+    return blueprint ? normalizeForgeBlueprint(blueprint) : undefined;
+}
+export function getRawForgeBlueprint(id) {
+    return listRawForgeBlueprints().find((blueprint) => blueprint.id === id);
+}
+export function getLiveForgeCatalog() {
+    const raw = useContentStore.getState().raw;
+    if (!raw)
+        return null;
+    return buildLiveForgeCatalog(raw);
+}
+export function listForgeBlueprintsForCity(options = {}) {
+    const { cityId, cityIndex, tier } = options;
+    const raw = useContentStore.getState().raw;
+    if (!raw)
+        return [];
+    if (cityId) {
+        return getVisibleLiveForgeBlueprintsForCity(raw, cityId).map((blueprint) => normalizeForgeBlueprint(blueprint));
+    }
+    const gatingIndex = cityIndex ?? tier;
+    if (typeof gatingIndex === 'number') {
+        return getVisibleNormalizedLiveForgeBlueprints(raw).filter((blueprint) => blueprint.cityIndex === gatingIndex);
+    }
+    return getVisibleNormalizedLiveForgeBlueprints(raw);
+}
+export { isRuneBlueprint, isRefineBlueprint };

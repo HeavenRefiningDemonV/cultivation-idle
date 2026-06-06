@@ -5,10 +5,13 @@ import {
 } from '../content/tuning/cultivationTuning.js';
 import { useActivityStore } from '../stores/activityStore.js';
 import { useCultivationStore } from '../stores/cultivationStore.js';
+import { useGameStore } from '../stores/gameStore.js';
 import { useTechCollectionStore } from '../stores/techCollectionStore.js';
 import type { InsightChoiceId } from '../types/index.js';
 import { buildCultivationConsumableCarryoverWindows } from '../systems/consumables/cultivationConsumableEffects.js';
 import { PERF_LABELS, time } from './performance/index.js';
+import { resolveCultivationMindAlignment } from '../systems/cultivation/cultivationMindAlignmentResolver.js';
+import { getCanonicalCultivationStageNumber } from '../systems/progression/cultivationStageIndex.js';
 
 function ensureInsightScheduled(now: number) {
   const store = useCultivationStore.getState();
@@ -20,7 +23,7 @@ function autoResolveInsight(now: number) {
   const store = useCultivationStore.getState();
   if (!store.insight) return;
   if (store.insight.expiresAt > now) return;
-  useCultivationStore.getState().resolveInsight('auto');
+  useCultivationStore.getState().resolveInsight('auto', now);
 }
 
 function applyContinuousGains(deltaMs: number, now = Date.now(), ignoreActivityGate = false) {
@@ -39,6 +42,21 @@ function applyContinuousGains(deltaMs: number, now = Date.now(), ignoreActivityG
   const comprehensionGain = COMPREHENSION_PER_MINUTE_BASE * deltaMinutes * breath.comprehensionMult * modifiers.comprehensionGainMult;
   if (comprehensionGain > 0) {
     time(PERF_LABELS.cultivationServiceHeartLaw, () => heart.addComprehension(comprehensionGain, 'meditation'));
+  }
+  const game = useGameStore.getState();
+  const heartLawLevel = heart.heartLawLevelById[heart.selectedHeartLawId] ?? 1;
+  const mindAlignment = resolveCultivationMindAlignment({
+    heartLawLevel,
+    cultivationStageIndex: getCanonicalCultivationStageNumber({
+      realmIndex: game.realm.index,
+      substage: game.realm.substage,
+    }),
+    clarity: heart.daoHeartClarity,
+    turbulence: heart.turbulence,
+  });
+  const turbulencePressure = mindAlignment.turbulenceDeltaPerMinute * deltaMinutes;
+  if (turbulencePressure > 0) {
+    time(PERF_LABELS.cultivationServiceHeartLaw, () => heart.addTurbulence(turbulencePressure));
   }
 
   const studyTechniqueId = heart.studyTechniqueId;
@@ -76,6 +94,15 @@ function processInsights(startAt: number, endAt: number) {
 
     const nextWindowEnd = windows.find((window) => window.startedAt <= cursor && window.endedAt > cursor)?.endedAt ?? endAt;
     const nextInsight = heart.nextInsightAt ?? endAt;
+    if (nextInsight <= cursor) {
+      const modifiers = heart.getCultivationConsumableModifiers(cursor);
+      heart.advanceInsightTimer(Math.max(1, heart.insightTargetMs ?? 1), cursor, modifiers.insightFrequencyMult);
+      if (!useCultivationStore.getState().insight) {
+        useCultivationStore.getState().scheduleNextInsight(cursor);
+        cursor = Math.min(endAt, cursor + 1);
+      }
+      continue;
+    }
     const stepEnd = Math.min(endAt, nextWindowEnd, nextInsight);
     const delta = Math.max(0, stepEnd - cursor);
     if (delta > 0) {

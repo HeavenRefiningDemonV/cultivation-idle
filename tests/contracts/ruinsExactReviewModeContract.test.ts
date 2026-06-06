@@ -40,7 +40,8 @@ void test('Ruins review mode threading stays explicit and live-default safe', as
   assert.match(ownerSource, /mode: forceFixture \? 'fixture' : 'live'/);
 
   assert.match(harnessSource, /function parseRuinsExactModeFromQuery\(\): RuinsExactMode/);
-  assert.match(harnessSource, /worldBuildingModalIntent: surface === 'ruins' \? \{ ruinsExactMode \} : null/);
+  assert.match(harnessSource, /const intent =[\s\S]*surface === 'ruins'[\s\S]*\? \{ ruinsExactMode \}[\s\S]*: surface === 'gate-trial'[\s\S]*\? \{ gateTrialExactMode: gateTrialExactMode \}[\s\S]*: null;/);
+  assert.match(harnessSource, /worldBuildingModalIntent: intent,/);
   assert.match(harnessSource, /if \(surface === 'ruins' && slot === 'interaction' && ruinsExactMode === 'live'\) \{/);
 
   assert.match(captureSource, /ruinsExactMode: 'fixture' \| 'live' \| null/);

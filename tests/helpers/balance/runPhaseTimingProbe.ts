@@ -9,10 +9,12 @@ import {
 import { getProgressionContract, getTransitionByFromRealm } from '../../../src/systems/progression/contract/progressionContract.js';
 import type { MajorRealmId } from '../../../src/systems/progression/contract/contractTypes.js';
 import { adaptProgressionAuthoredContent } from '../../../src/systems/progression/contract/contentAdapter.js';
+import { getCanonicalCultivationStageNumber } from '../../../src/systems/progression/cultivationStageIndex.js';
 import { getLiveRealmByIndex } from '../../../src/systems/progression/runtime/liveRealmProjection.js';
 import { getTrialLifecycleSnapshot } from '../../../src/systems/progression/runtime/trialLifecycle.js';
 import { useCityStore } from '../../../src/stores/cityStore.js';
 import { useContentStore } from '../../../src/stores/contentStore.js';
+import { useCultivationStore } from '../../../src/stores/cultivationStore.js';
 import { useGameStore } from '../../../src/stores/gameStore.js';
 import { useInventoryStore } from '../../../src/stores/inventoryStore.js';
 import { useTrialStore } from '../../../src/stores/trialStore.js';
@@ -45,7 +47,24 @@ const getRealmIdFromIndex = (realmIndex: number): string => {
   return getLiveRealmByIndex(realmIndex).id;
 };
 
-export async function runPhaseTimingProbe(options: { pathStrategy?: 'representative' | 'highest_qi' } = {}): Promise<PhaseTimingProbeResult> {
+function maintainMindAlignmentForTimingProbe(): void {
+  const cultivation = useCultivationStore.getState();
+  const heartLawId = cultivation.selectedHeartLawId;
+  if (!heartLawId) return;
+
+  const game = useGameStore.getState();
+  const canonicalStage = getCanonicalCultivationStageNumber({
+    realmIndex: game.realm.index,
+    substage: game.realm.substage,
+  });
+  const currentLevel = cultivation.heartLawLevelById[heartLawId] ?? 1;
+  if (currentLevel === canonicalStage) return;
+
+  cultivation.setHeartLawLevel(heartLawId, canonicalStage, cultivation.heartLawXpById[heartLawId] ?? 0);
+  useGameStore.getState().calculateQiPerSecond();
+}
+
+export async function runPhaseTimingProbe(options: { pathStrategy?: 'representative' | 'highest_qi'; pathId?: 'heaven' | 'earth' | 'martial' } = {}): Promise<PhaseTimingProbeResult> {
   const scenario = await createTimingProbeScenario(options);
   const content = useContentStore.getState().raw;
   if (!content) {
@@ -86,10 +105,15 @@ export async function runPhaseTimingProbe(options: { pathStrategy?: 'representat
   const seenGateAvailability = new Set<string>();
   const resolvedGates = new Set<string>();
   let previousRealmIndex = useGameStore.getState().realm.index;
+  useGameStore.getState().__setBreakthroughRiskRollForTest?.(() => 1);
+  maintainMindAlignmentForTimingProbe();
+  useGameStore.getState().calculateQiPerSecond();
 
   try {
     while (elapsedMs <= maxMs && useGameStore.getState().realm.index < 5) {
+      maintainMindAlignmentForTimingProbe();
       useGameStore.getState().tick(stepMs);
+      useGameStore.getState().flushCultivationAccumulation('phase-timing-probe/simulated-tick');
       elapsedMs += stepMs;
 
       const game = useGameStore.getState();
@@ -97,6 +121,7 @@ export async function runPhaseTimingProbe(options: { pathStrategy?: 'representat
       const activeTransition = getTransitionByFromRealm(contract, fromRealmId as MajorRealmId);
 
       if (activeTransition) {
+        const gateIndex = contract.gateTransitions.findIndex((transition) => transition.trialId === activeTransition.trialId) + 1;
         const trial = useContentStore.getState().maps.trialsById[activeTransition.trialId];
         const trialProgress = useTrialStore.getState().getProgress(activeTransition.trialId);
         const requiredItemSatisfied = trial?.requiredItemId
@@ -114,6 +139,21 @@ export async function runPhaseTimingProbe(options: { pathStrategy?: 'representat
 
         if (lifecycle.canStart && !seenGateAvailability.has(activeTransition.trialId)) {
           seenGateAvailability.add(activeTransition.trialId);
+          progressionTimingTracker.trackGateAvailability({
+            runStartTime,
+            timestamp: runStartTime + elapsedMs,
+            content,
+            trial,
+            trialProgress,
+            realm: game.realm,
+            qi: game.qi,
+            breakthroughRequirement: game.getBreakthroughRequirement(),
+            requiredItemSatisfied,
+            fromRealmId: activeTransition.fromRealmId,
+            toRealmId: activeTransition.toRealmId,
+            gateIndex,
+            cityId: activeTransition.cityId ?? trial?.cityId ?? useCityStore.getState().currentCityId,
+          });
           milestoneOrder.push(`gate_available:${activeTransition.toRealmId}`);
           cumulativeMilestoneSeconds[`gate_available:${activeTransition.toRealmId}`] = elapsedMs / 1000;
           if (activeTransition.fromRealmId === GATE_1_TRANSITION.fromRealmId) {
@@ -123,6 +163,16 @@ export async function runPhaseTimingProbe(options: { pathStrategy?: 'representat
 
         if (lifecycle.canStart && !resolvedGates.has(activeTransition.trialId)) {
           useTrialStore.getState().markCleared(activeTransition.trialId);
+          progressionTimingTracker.emitGateResolved({
+            runStartTime,
+            timestamp: runStartTime + elapsedMs,
+            trialId: activeTransition.trialId,
+            fromRealmId: activeTransition.fromRealmId,
+            toRealmId: activeTransition.toRealmId,
+            gateIndex,
+            cityId: activeTransition.cityId ?? trial?.cityId ?? useCityStore.getState().currentCityId,
+            resolution: 'cleared',
+          });
           resolvedGates.add(activeTransition.trialId);
           milestoneOrder.push(`gate_resolved:${activeTransition.toRealmId}`);
           cumulativeMilestoneSeconds[`gate_resolved:${activeTransition.toRealmId}`] = elapsedMs / 1000;
@@ -140,6 +190,7 @@ export async function runPhaseTimingProbe(options: { pathStrategy?: 'representat
 
       const nextRealmIndex = useGameStore.getState().realm.index;
       if (nextRealmIndex > previousRealmIndex) {
+        maintainMindAlignmentForTimingProbe();
         const milestoneId = MAJOR_ENTRY_MILESTONE_BY_REALM_INDEX[nextRealmIndex];
         if (milestoneId && cumulativeMilestoneSeconds[milestoneId] === undefined) {
           cumulativeMilestoneSeconds[milestoneId] = elapsedMs / 1000;
@@ -156,6 +207,7 @@ export async function runPhaseTimingProbe(options: { pathStrategy?: 'representat
     }
   } finally {
     GameEvents.offAny(onAny);
+    useGameStore.getState().__setBreakthroughRiskRollForTest?.(null);
   }
 
   const requiredMilestones = getCumulativeMajorEntryTargetSeconds().map((entry) => entry.milestoneId);

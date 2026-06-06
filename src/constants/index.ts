@@ -151,7 +151,7 @@ export const REALMS: RealmDefinition[] = [
  */
 export const PATH_MODIFIERS: Record<string, PathModifiers> = {
   heaven: {
-    qiMultiplier: 1.5,      // 50% more Qi generation
+    qiMultiplier: 1.4,      // 40% more Qi generation
     hpMultiplier: 0.8,       // 20% less HP
     atkMultiplier: 1.3,      // 30% more attack
     defMultiplier: 0.9,      // 10% less defense
@@ -159,7 +159,7 @@ export const PATH_MODIFIERS: Record<string, PathModifiers> = {
     dodgeBonus: 5,           // +5% dodge
   },
   earth: {
-    qiMultiplier: 1.0,       // Normal Qi generation
+    qiMultiplier: 1.19,      // 19% more Qi generation
     hpMultiplier: 1.5,       // 50% more HP
     atkMultiplier: 0.9,      // 10% less attack
     defMultiplier: 1.4,      // 40% more defense

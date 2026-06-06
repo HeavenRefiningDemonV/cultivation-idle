@@ -100,6 +100,13 @@ function openForgeModule(cityId: string) {
   });
 }
 
+function openTrainingHallModule(cityId: string) {
+  useUIStore.getState().openWorldBuildingModal({
+    cityId,
+    buildingKey: 'trainingHall',
+  });
+}
+
 function openRuinsModule(cityId: string) {
   useUIStore.getState().openWorldBuildingModal({
     cityId,
@@ -340,6 +347,9 @@ export function useGateTrialExactActionController(
       case 'expeditions':
         openExpeditionsModule(cityId);
         return;
+      case 'trainingHall':
+        openTrainingHallModule(cityId);
+        return;
       case 'cultivation':
         openCultivationTab();
         return;
@@ -423,6 +433,9 @@ export function useGateTrialExactActionController(
     switch (nodeId) {
       case 'qiCap':
         openCultivationTab();
+        return;
+      case 'pathTraining':
+        openTrainingHallModule(cityId);
         return;
       case 'loadout':
       case 'techniques':

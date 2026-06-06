@@ -1,4 +1,5 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { buildProgressionContract, adaptProgressionAuthoredContent, type RawProgressionContentLike } from '../../../systems/progression/contract/index.js';
@@ -12,27 +13,146 @@ type CommandResult = {
   exitCode: number;
   stdout: string;
   stderr: string;
+  timedOut?: boolean;
+  durationMs?: number;
 };
 
 export type ReleaseGateAdapterContext = {
   runCommand?: (command: string, args: string[]) => CommandResult;
 };
 
+const resolveCommand = (command: string, args: string[]): { executable: string; executableArgs: string[] } => {
+  if (command !== 'npm') {
+    return { executable: command, executableArgs: args };
+  }
+
+  if (process.platform === 'win32') {
+    const npmExecPath = process.env.npm_execpath;
+    const bundledNpmCli = path.join(path.dirname(process.execPath), 'node_modules', 'npm', 'bin', 'npm-cli.js');
+    const npmCliPath = npmExecPath && existsSync(npmExecPath) ? npmExecPath : bundledNpmCli;
+    if (existsSync(npmCliPath)) {
+      return {
+        executable: process.env.npm_node_execpath ?? process.execPath,
+        executableArgs: [npmCliPath, ...args],
+      };
+    }
+  }
+
+  return {
+    executable: process.platform === 'win32' ? 'npm.cmd' : 'npm',
+    executableArgs: args,
+  };
+};
+
+const killProcessTree = (pid: number | undefined): void => {
+  if (!pid || process.platform !== 'win32') {
+    return;
+  }
+
+  spawnSync('taskkill', ['/pid', String(pid), '/t', '/f'], {
+    encoding: 'utf8',
+    stdio: 'ignore',
+  });
+};
+
+const psQuote = (value: string): string => `'${value.replace(/'/g, "''")}'`;
+const windowsArgument = (value: string): string => `"${value.replace(/"/g, '\\"')}"`;
+
+const runWindowsCommandWithTimeout = (executable: string, executableArgs: string[], timeoutMs: number): CommandResult => {
+  const tempDir = mkdtempSync(path.join(tmpdir(), 'release-gate-command-'));
+  const stdoutPath = path.join(tempDir, 'stdout.log');
+  const stderrPath = path.join(tempDir, 'stderr.log');
+  const startedAt = Date.now();
+
+  const psScript = [
+    '$ErrorActionPreference = "Continue"',
+    `$stdoutPath = ${psQuote(stdoutPath)}`,
+    `$stderrPath = ${psQuote(stderrPath)}`,
+    '$psi = New-Object System.Diagnostics.ProcessStartInfo',
+    `$psi.FileName = ${psQuote(executable)}`,
+    `$psi.Arguments = ${psQuote(executableArgs.map(windowsArgument).join(' '))}`,
+    `$psi.WorkingDirectory = ${psQuote(process.cwd())}`,
+    '$psi.UseShellExecute = $false',
+    '$psi.RedirectStandardOutput = $true',
+    '$psi.RedirectStandardError = $true',
+    '$psi.CreateNoWindow = $true',
+    '$process = New-Object System.Diagnostics.Process',
+    '$process.StartInfo = $psi',
+    '[void]$process.Start()',
+    '$stdoutTask = $process.StandardOutput.ReadToEndAsync()',
+    '$stderrTask = $process.StandardError.ReadToEndAsync()',
+    `$completed = $process.WaitForExit(${timeoutMs})`,
+    'if (-not $completed) {',
+    '  & taskkill.exe /PID $process.Id /T /F *> $null',
+    '  [void]$process.WaitForExit(5000)',
+    '  [System.IO.File]::WriteAllText($stdoutPath, $stdoutTask.Result)',
+    '  [System.IO.File]::WriteAllText($stderrPath, $stderrTask.Result)',
+    '  exit 124',
+    '}',
+    '[void]$stdoutTask.Wait(5000)',
+    '[void]$stderrTask.Wait(5000)',
+    '[System.IO.File]::WriteAllText($stdoutPath, $stdoutTask.Result)',
+    '[System.IO.File]::WriteAllText($stderrPath, $stderrTask.Result)',
+    'exit $process.ExitCode',
+  ].join('; ');
+
+  const result = spawnSync('powershell.exe', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-Command', psScript], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+    maxBuffer: 20 * 1024 * 1024,
+    env: process.env,
+    timeout: timeoutMs + 30_000,
+    killSignal: 'SIGTERM',
+  });
+
+  const durationMs = Date.now() - startedAt;
+  const wrapperTimedOut = (result.error as NodeJS.ErrnoException | undefined)?.code === 'ETIMEDOUT';
+  const timedOut = wrapperTimedOut || result.status === 124;
+
+  try {
+    return {
+      exitCode: timedOut ? 124 : result.status ?? 1,
+      stdout: readFileSync(stdoutPath, 'utf8'),
+      stderr: timedOut
+        ? `${readFileSync(stderrPath, 'utf8')}\nCommand timed out after ${timeoutMs}ms.`.trim()
+        : readFileSync(stderrPath, 'utf8'),
+      timedOut,
+      durationMs,
+    };
+  } finally {
+    rmSync(tempDir, { recursive: true, force: true });
+  }
+};
+
 const defaultRunner = (command: string, args: string[]): CommandResult => {
-  const executable = process.platform === 'win32' && command === 'npm' ? 'cmd.exe' : command;
-  const executableArgs = process.platform === 'win32' && command === 'npm'
-    ? ['/d', '/s', '/c', ['npm', ...args].join(' ')]
-    : args;
+  const { executable, executableArgs } = resolveCommand(command, args);
+  const timeoutMs = Number(process.env.RELEASE_GATE_COMMAND_TIMEOUT_MS ?? 180_000);
+  if (process.platform === 'win32') {
+    return runWindowsCommandWithTimeout(executable, executableArgs, timeoutMs);
+  }
+
+  const startedAt = Date.now();
   const result = spawnSync(executable, executableArgs, {
     cwd: process.cwd(),
     encoding: 'utf8',
     maxBuffer: 20 * 1024 * 1024,
     env: process.env,
+    timeout: timeoutMs,
+    killSignal: 'SIGTERM',
   });
+  const durationMs = Date.now() - startedAt;
+  const timedOut = (result.error as NodeJS.ErrnoException | undefined)?.code === 'ETIMEDOUT';
+  if (timedOut) {
+    killProcessTree((result as { pid?: number }).pid);
+  }
   return {
-    exitCode: result.status ?? 1,
+    exitCode: timedOut ? 124 : result.status ?? 1,
     stdout: result.stdout ?? '',
-    stderr: result.stderr ?? '',
+    stderr: timedOut
+      ? `${result.stderr ?? ''}\nCommand timed out after ${timeoutMs}ms.`.trim()
+      : result.stderr ?? '',
+    timedOut,
+    durationMs,
   };
 };
 
@@ -89,6 +209,8 @@ function commandCheckBase(checkId: ReleaseGateCheckId, command: string, commandR
       exitCode: commandResult.exitCode,
       stdoutPreview: commandResult.stdout.slice(0, 2400),
       stderrPreview: commandResult.stderr.slice(0, 2400),
+      timedOut: commandResult.timedOut,
+      durationMs: commandResult.durationMs,
     },
   };
 }
@@ -213,6 +335,11 @@ export async function runReleaseGateAdapter(checkId: ReleaseGateCheckId, context
     balance_regression: { command: 'npm', args: ['run', 'balance:report:json'], json: true },
     route_comparison: { command: 'npm', args: ['run', 'release:route-report:json'], json: true },
     runtime_diagnostics: { command: 'npm', args: ['run', 'release:runtime-diagnostics:json'], json: true },
+    mp5_reset_memory: { command: 'npm', args: ['run', 'test:mp5'], json: false },
+    mp5_offline_trust: { command: 'npm', args: ['run', 'test:mp5'], json: false },
+    mp5_telemetry_schema: { command: 'npm', args: ['run', 'validate:balance-telemetry'], json: false },
+    mp5_balance_simulations: { command: 'npm', args: ['run', 'release:mp5-balance-simulations:json'], json: true },
+    mp5_prestige_runtime_audit: { command: 'npm', args: ['run', 'release:prestige-runtime-audit:json'], json: true },
     vocabulary_audit: { command: 'npm', args: ['run', 'release:vocab-audit:json'], json: true },
     full_test_suite: { command: 'npm', args: ['run', 'test'], json: false },
   };
@@ -228,6 +355,19 @@ export async function runReleaseGateAdapter(checkId: ReleaseGateCheckId, context
   }
 
   if (checkId === 'full_test_suite') {
+    if (commandResult.timedOut) {
+      findings.push(makeFinding(checkId, 'test_suite_timeout', `npm run test timed out after ${commandResult.durationMs ?? 'unknown'}ms.`, 'blocker', 'command', false, commandLabel));
+      return {
+        status: 'fail',
+        summary: 'Full test suite timed out.',
+        blockerCount: findings.length,
+        warningCount: 0,
+        pendingManualCount: 0,
+        findings,
+        ...commandCheckBase(checkId, commandLabel, commandResult),
+        rawPayload,
+      };
+    }
     if (commandResult.exitCode !== 0) {
       findings.push(makeFinding(checkId, 'test_suite_failed', 'npm run test failed.', 'blocker', 'command', false, commandLabel));
     }
@@ -346,6 +486,48 @@ export async function runReleaseGateAdapter(checkId: ReleaseGateCheckId, context
       } else if (warningCount > 0) {
         findings.push(makeFinding(checkId, 'runtime_diagnostics_warnings', `Runtime diagnostics reported ${warningCount} warning-level findings.`, 'waiver_candidate', 'builder', true, commandLabel));
       }
+    }
+  }
+
+  if (checkId === 'mp5_balance_simulations' && rawPayload && typeof rawPayload === 'object') {
+    const payload = rawPayload as { overallPass?: boolean; routeScenarioCount?: number; exploitCaseCount?: number; exploitCases?: Array<{ id: string; prevented: boolean }> };
+    const failedExploitIds = (payload.exploitCases ?? []).filter((entry) => !entry.prevented).map((entry) => entry.id);
+    if (!payload.overallPass || payload.routeScenarioCount !== 36 || payload.exploitCaseCount !== 10 || failedExploitIds.length > 0) {
+      findings.push(makeFinding(
+        checkId,
+        'mp5_balance_simulations_failed',
+        `MP5 balance simulations failed or lost coverage: routes=${payload.routeScenarioCount ?? 'unknown'} exploits=${payload.exploitCaseCount ?? 'unknown'} failedExploits=${failedExploitIds.join(',') || 'none'}.`,
+        'blocker',
+        'builder',
+        false,
+        commandLabel,
+      ));
+    }
+  }
+
+  if (checkId === 'mp5_prestige_runtime_audit' && rawPayload && typeof rawPayload === 'object') {
+    const payload = rawPayload as {
+      blockers?: string[];
+      unknownBlockedCount?: number;
+      rows?: Array<{ upgradeId: string; status: string; runtimeConsumers?: string[] }>;
+    };
+    const blockers = payload.blockers ?? [];
+    const requiredLive = ['form_memory', 'scripture_echo', 'root_clarity', 'calm_first_breath', 'old_sparring_shadows'];
+    const missingLive = requiredLive.filter((id) => {
+      const row = payload.rows?.find((entry) => entry.upgradeId === id);
+      return row?.status !== 'visible_live' || (row.runtimeConsumers?.length ?? 0) === 0;
+    });
+    const doctrineArchive = payload.rows?.find((entry) => entry.upgradeId === 'doctrine_archive');
+    if (blockers.length > 0 || (payload.unknownBlockedCount ?? 0) > 0 || missingLive.length > 0 || doctrineArchive?.status !== 'hidden_unsupported') {
+      findings.push(makeFinding(
+        checkId,
+        'mp5_prestige_runtime_audit_failed',
+        `MP5 prestige runtime audit failed: blockers=${blockers.length} unknown=${payload.unknownBlockedCount ?? 0} missingLive=${missingLive.join(',') || 'none'} doctrine=${doctrineArchive?.status ?? 'missing'}.`,
+        'blocker',
+        'builder',
+        false,
+        commandLabel,
+      ));
     }
   }
 

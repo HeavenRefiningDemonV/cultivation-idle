@@ -11,9 +11,12 @@ import {
   useTechCollectionStore,
 } from '../../stores/techCollectionStore.js';
 import { useTechniqueStore, type SlotType } from '../../stores/techniqueStore.js';
+import { useTrainingStore } from '../../stores/trainingStore.js';
 import { useInventoryStore } from '../../stores/inventoryStore.js';
 import { useUIStore } from '../../stores/uiStore.js';
 import { normalizeTechniqueEffects, summarizeEffects } from '../../systems/techniques/effects.js';
+import { buildTechniqueScalingTooltipRows } from '../../systems/techniques/techniqueScalingTooltipAdapter.js';
+import { buildTrainingReadOnlySnapshot, createTrainingRuntimeContent } from '../../systems/training/index.js';
 import { RankUpgradeRitualModal } from './RankUpgradeRitualModal.js';
 import { TraitRerollModal } from './TraitRerollModal.js';
 import { GameEvents } from '../../services/events/GameEvents.js';
@@ -120,7 +123,25 @@ export function TechniqueDetailModal({
   const techniquesById = useContentStore((state) => state.maps.techniquesById);
   const itemsById = useContentStore((state) => state.maps.itemsById);
   const runesById = useContentStore((state) => state.maps.runesById);
+  const rawContent = useContentStore((state) => state.raw);
   const realmIndex = useGameStore((state) => state.realm.index);
+  const substageIndex = useGameStore((state) => Math.max(0, state.realm.substage - 1));
+  const selectedPath = useGameStore((state) => state.selectedPath);
+  const trainingSnapshotSignature = useTrainingStore((state) => [
+    state.schemaVersion,
+    state.activeRegimenId ?? '',
+    state.activeIntensityId ?? '',
+    Math.floor(state.fatigue),
+    state.lastTickAt ?? '',
+    state.lastOfflineSummary?.completedAt ?? '',
+    Object.entries(state.statRatingsById).map(([id, rating]) => `${id}:${rating}`).sort().join(','),
+    Object.entries(state.statXpById).map(([id, xp]) => `${id}:${Math.floor(xp)}`).sort().join(','),
+    Object.entries(state.regimenMasteryXpById).map(([id, xp]) => `${id}:${Math.floor(xp)}`).sort().join(','),
+  ].join('|'));
+  const trainingState = useMemo(
+    () => useTrainingStore.getState().toSaveState(),
+    [trainingSnapshotSignature],
+  );
   const loadouts = useTechniqueStore((state) => state.loadouts);
   const selectedLoadoutId = useTechniqueStore((state) => state.selectedLoadoutId);
   const equipTechnique = useTechniqueStore((state) => state.equipTechnique);
@@ -152,6 +173,19 @@ export function TechniqueDetailModal({
     () => resolveTechnique(techniquesById, techniqueId),
     [techniqueId, techniquesById],
   );
+  const trainingScalingRows = useMemo(() => {
+    if (!rawContent) return [];
+    return buildTechniqueScalingTooltipRows({
+      technique,
+      trainingSnapshot: buildTrainingReadOnlySnapshot({
+        content: createTrainingRuntimeContent(rawContent),
+        state: trainingState,
+        selectedPath,
+        realmIndex,
+        substageIndex,
+      }),
+    });
+  }, [rawContent, realmIndex, selectedPath, substageIndex, technique, trainingState]);
 
   useEffect(() => {
     if (!techniqueId) return;
@@ -799,6 +833,17 @@ export function TechniqueDetailModal({
                 </div>
                 <div>Tags: {technique?.tags?.length ? technique.tags.join(', ') : '—'}</div>
               </div>
+              {trainingScalingRows.length > 0 && (
+                <div className="techniqueDetailModalTrainingRows" aria-label="Training Hall scaling preview">
+                  {trainingScalingRows.map((row) => (
+                    <div key={row.label} className="techniqueDetailModalTrainingRow">
+                      <strong>{row.label}</strong>
+                      <span>{row.value}</span>
+                      <small>{row.detail}</small>
+                    </div>
+                  ))}
+                </div>
+              )}
               <div className="techniqueDetailModalSubsection">
                 <div className="techniqueDetailModalSubheading">Secondary / Mastery Bonus</div>
                 {masteryLevel >= 75 ? (

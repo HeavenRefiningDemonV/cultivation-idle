@@ -75,6 +75,6 @@ void test('route mapping and quarantine/deferred art contracts stay locked', () 
   assert.equal(fx.scenicStage.requiresFinalArtBinding, true);
   assert.equal(fx.scenicStage.reservedApprovedSourcePath.includes('ruins-hollow-log-den-approved-exact.png'), true);
 
-  const src = readFileSync(new URL('../../src/features/world/ruinsExact/RuinsExactMockupScreen.ts', import.meta.url), 'utf8');
+  const src = readFileSync('src/features/world/ruinsExact/RuinsExactMockupScreen.ts', 'utf8');
   for (const forbidden of ['RuinsSummaryCard', 'RuinsProgress', 'RuinsCtaZone', 'CombatModuleTopLane', 'InkCombatShell', 'combatPathModule', 'ruinsPanel__']) assert.equal(src.includes(forbidden), false);
 });

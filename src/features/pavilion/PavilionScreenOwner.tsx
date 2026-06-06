@@ -18,6 +18,8 @@ import { PERF_LABELS, time } from '../../services/performance/index.js';
 import { PerfProfiler, useRenderCounter } from '../../services/performance/perfReact.js';
 import './PavilionExactScreen.scss';
 
+const EMPTY_CITY_MODULES: readonly string[] = Object.freeze([]);
+
 function pathLabel(path: string | null): string {
   if (path === 'heaven') return 'Heaven Path';
   if (path === 'earth') return 'Earth Path';
@@ -38,7 +40,7 @@ export function PavilionScreenOwner() {
   const currentCityId = useCityStore((state) => state.currentCityId);
   const cityModules = useCityStore((state) => {
     const cityId = state.currentCityId;
-    return cityId ? useContentStore.getState().maps.citiesById[cityId]?.modules ?? [] : [];
+    return cityId ? useContentStore.getState().maps.citiesById[cityId]?.modules ?? EMPTY_CITY_MODULES : EMPTY_CITY_MODULES;
   });
   const selectedLoadoutId = useTechniqueStore((state) => state.selectedLoadoutId);
   const pouchVersion = useMedicinePouchStore((state) => state.pouchVersion);

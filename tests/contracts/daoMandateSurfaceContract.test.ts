@@ -93,7 +93,7 @@ test('Dao Mandate fixtures expose stable complete surfaces for every required st
 
     assert.equal(surface.meta.version, 1);
     assert.equal(surface.meta.mode, 'fixture');
-    assert.equal(surface.meta.guidanceProfile, 'jade');
+    assert.equal(surface.meta.guidanceProfile, 'elder');
     assert.ok(surface.milestone.id.includes(state));
     assert.ok(surface.milestone.label.length > 0);
     assert.ok(surface.obstruction.label.length > 0);

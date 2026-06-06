@@ -1,0 +1,86 @@
+{
+    "generatedAt":  "2026-05-30T21:40:09.8232773+03:00",
+    "commands":  [
+                     {
+                         "name":  "tsconfig-tests",
+                         "command":  "npm exec tsc -- --project tsconfig.tests.json",
+                         "status":  "PASS",
+                         "exitCode":  0,
+                         "durationMs":  13159,
+                         "stdoutLog":  "artifacts/mp3/final/onboarding-ui/logs/tsconfig-tests.final3.stdout.log",
+                         "stderrLog":  "artifacts/mp3/final/onboarding-ui/logs/tsconfig-tests.final3.stderr.log"
+                     },
+                     {
+                         "name":  "typecheck",
+                         "command":  "npm run typecheck",
+                         "status":  "PASS",
+                         "exitCode":  0,
+                         "durationMs":  1026,
+                         "stdoutLog":  "artifacts/mp3/final/onboarding-ui/logs/typecheck.final3.stdout.log",
+                         "stderrLog":  "artifacts/mp3/final/onboarding-ui/logs/typecheck.final3.stderr.log"
+                     },
+                     {
+                         "name":  "check-icons",
+                         "command":  "npm run check:icons",
+                         "status":  "PASS",
+                         "exitCode":  0,
+                         "durationMs":  1036,
+                         "stdoutLog":  "artifacts/mp3/final/onboarding-ui/logs/check-icons.final3.stdout.log",
+                         "stderrLog":  "artifacts/mp3/final/onboarding-ui/logs/check-icons.final3.stderr.log"
+                     },
+                     {
+                         "name":  "validate-content",
+                         "command":  "npm run validate:content",
+                         "status":  "PASS",
+                         "exitCode":  0,
+                         "durationMs":  2037,
+                         "stdoutLog":  "artifacts/mp3/final/onboarding-ui/logs/validate-content.final3.stdout.log",
+                         "stderrLog":  "artifacts/mp3/final/onboarding-ui/logs/validate-content.final3.stderr.log"
+                     },
+                     {
+                         "name":  "build",
+                         "command":  "npm run build",
+                         "status":  "PASS",
+                         "exitCode":  0,
+                         "durationMs":  10120,
+                         "stdoutLog":  "artifacts/mp3/final/onboarding-ui/logs/build.final3.stdout.log",
+                         "stderrLog":  "artifacts/mp3/final/onboarding-ui/logs/build.final3.stderr.log"
+                     },
+                     {
+                         "name":  "targeted-onboarding-ui",
+                         "command":  "node --loader=./scripts/relativeJsLoader.mjs --test tmp-tests/tests/contracts/onboardingMilestoneSurface.test.js tmp-tests/tests/integration/onboardingUiState.test.js tmp-tests/tests/contracts/onboardingMilestoneContract.test.js tmp-tests/tests/integration/onboardingMigration.test.js tmp-tests/tests/contracts/onboardingPolicy.test.js tmp-tests/tests/integration/onboardingModuleGating.test.js",
+                         "status":  "PASS",
+                         "exitCode":  0,
+                         "log":  "artifacts/mp3/final/onboarding-ui/logs/targeted-onboarding-ui.final2.log",
+                         "note":  "30 tests passed after final GameLayout suppression fix"
+                     },
+                     {
+                         "name":  "mp3-onboarding-ui-smoke",
+                         "command":  "npx playwright test tests/e2e/mp3-onboarding-ui-smoke.spec.ts --project=chromium",
+                         "status":  "PASS",
+                         "exitCode":  0,
+                         "log":  "artifacts/mp3/final/onboarding-ui/logs/mp3-onboarding-ui-smoke.final.log",
+                         "screenshots":  "artifacts/mp3/final/onboarding-ui/browser/screenshots"
+                     },
+                     {
+                         "name":  "test-contracts",
+                         "command":  "npm run test:contracts",
+                         "status":  "TIMEOUT",
+                         "exitCode":  null,
+                         "timedOut":  true,
+                         "durationMs":  900258,
+                         "stdoutLog":  "artifacts/mp3/final/onboarding-ui/logs/test-contracts.final3.stdout.log",
+                         "stderrLog":  "artifacts/mp3/final/onboarding-ui/logs/test-contracts.final3.stderr.log"
+                     },
+                     {
+                         "name":  "release-gate-json",
+                         "command":  "npm run release:gate:json",
+                         "status":  "TIMEOUT",
+                         "exitCode":  null,
+                         "timedOut":  true,
+                         "durationMs":  421873,
+                         "stdoutLog":  "artifacts/mp3/final/onboarding-ui/logs/release-gate-json.final2.stdout.log",
+                         "stderrLog":  "artifacts/mp3/final/onboarding-ui/logs/release-gate-json.final2.stderr.log"
+                     }
+                 ]
+}

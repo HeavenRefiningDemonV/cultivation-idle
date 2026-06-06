@@ -1,0 +1,41 @@
+- generic "City map":
+  - 'button "Open Outskirts: Gold & Common Mats"':
+    - generic: Outskirts
+    - generic: Gold & Common Mats
+    - generic: Gold / Common Mats
+    - generic: Gold & Common Mats. Best used when you need gold, common materials, or low-risk combat reps.
+  - 'button "Open Manual Pavilion: Build Correction"':
+    - generic: Manual Pavilion
+    - generic: Build Correction
+    - generic: Manuals / Technique Fragments
+    - generic: Build Correction. Best used when you need build correction, manuals, or technique growth.
+- region "World overlay ribbon":
+  - generic: World
+  - generic: "City Phase: Pinewind Hamlet - foundations"
+  - generic: Select city
+  - combobox "Select city":
+    - option "Pinewind Hamlet" [selected]
+    - option "Stonecrag Town — Locked — Reach Foundation Establishment" [disabled]
+    - option "Spirit Cavern City — Locked — Reach Core Formation" [disabled]
+    - option "Lotusford — Locked — Reach Nascent Soul" [disabled]
+    - option "Ironpeak Bastion — Locked — Reach Soul Formation" [disabled]
+  - generic: "Pressure: Qi, first medicines, and a stable starter build."
+- region "World module inspector":
+  - paragraph: Pinewind Hamlet
+  - heading "Manual Pavilion" [level=3]
+  - paragraph: Build Correction
+  - paragraph: Best used when you need build correction, manuals, or technique growth.
+  - list:
+    - listitem: Manuals
+    - listitem: Technique Fragments
+  - paragraph: Claim Outskirts gains, then reach the Manual Pavilion milestone.
+  - button "Open Manual Pavilion"
+- navigation "Primary navigation":
+  - button "Status":
+    - generic: Status
+  - button "Cultivation":
+    - generic: Cultivation
+  - button "World" [active]:
+    - generic: World
+  - button "Settings":
+    - generic: Settings

@@ -89,6 +89,13 @@ const ROLE_DEFINITIONS: Record<P3ModuleKey, RoleDefinition> = {
     sinkTags: ['Breakthrough', 'Safety Net'],
     payoff: 'The gate resolves or the next fix becomes explicit.',
   },
+  trainingHall: {
+    title: 'Path Foundation',
+    normalRole: 'Path stat practice, regimen mastery, fatigue visibility, and cap awareness.',
+    sourceTags: ['Stat ratings', 'Regimen mastery'],
+    sinkTags: ['Gate readiness', 'Technique preview'],
+    payoff: 'A path foundation or bottleneck row becomes clearer before the gate.',
+  },
   apothecary: {
     title: 'Immediate Survival',
     normalRole: 'Healing stock, support pills, and medicine pouch readiness.',

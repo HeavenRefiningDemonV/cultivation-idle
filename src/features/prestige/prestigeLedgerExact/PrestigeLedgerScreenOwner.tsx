@@ -2,19 +2,27 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 import { useContentStore, getItemDef } from '../../../stores/contentStore.js';
 import { useGameStore } from '../../../stores/gameStore.js';
 import { useHeartLawStore } from '../../../stores/heartLawStore.js';
+import { useCultivationStore } from '../../../stores/cultivationStore.js';
 import { useInventoryStore } from '../../../stores/inventoryStore.js';
 import { usePrestigeStore } from '../../../stores/prestigeStore.js';
 import { useTrialStore } from '../../../stores/trialStore.js';
 import { useCityStore } from '../../../stores/cityStore.js';
+import { useTrainingStore } from '../../../stores/trainingStore.js';
 import { useUIStore, type GameTab } from '../../../stores/uiStore.js';
 import { RewardService } from '../../../services/rewards/index.js';
 import { D } from '../../../utils/numbers.js';
 import type { PrestigeUpgradeDef } from '../../../content/index.js';
 import { getLiveRealmNameByIndex } from '../../../systems/progression/runtime/index.js';
+import { createTrainingRuntimeContent, trainingStatCap } from '../../../systems/training/index.js';
 import {
   countResolvedSemesterGateTrials,
   extractLiveTrialIds,
 } from '../../../systems/prestige/prestigeApReadModel.js';
+import {
+  buildSpiritRootMemoryKey,
+  type PrestigeReclaimCurrentRoute,
+} from '../../../systems/prestige/prestigeMemoryResolver.js';
+import { getSpiritRootPairKey } from '../../../systems/spiritRoots/index.js';
 import { buildPrestigeLifeSummarySnapshot } from '../lifeSummarySurface.js';
 import { getPrestigeAdvisorSurface } from '../prestigeAdvisorSurface.js';
 import { buildPrestigeForecastSurfaceV2 } from '../prestigeForecastSurface.js';
@@ -51,6 +59,7 @@ export function PrestigeLedgerScreenOwner() {
   const highestRealmReached = usePrestigeStore((state) => state.highestRealmReached);
   const spiritRoot = usePrestigeStore((state) => state.spiritRoot);
   const purchasesById = usePrestigeStore((state) => state.purchasesById);
+  const memoryLedger = usePrestigeStore((state) => state.memoryLedger);
   const lastLifeSummary = usePrestigeStore((state) => state.lastLifeSummary);
   const postResetReclaimObjective = usePrestigeStore((state) => state.postResetReclaimObjective);
   const dismissPostResetReclaimObjective = usePrestigeStore((state) => state.dismissPostResetReclaimObjective);
@@ -67,6 +76,12 @@ export function PrestigeLedgerScreenOwner() {
   const realm = useGameStore((state) => state.realm);
   const selectedPath = useGameStore((state) => state.selectedPath);
   const selectedHeartLawId = useHeartLawStore((state) => state.selectedHeartLawId);
+  const daoHeartSelectedLawId = useCultivationStore((state) => state.selectedHeartLawId);
+  const heartLawLevelById = useCultivationStore((state) => state.heartLawLevelById);
+  const verseMasteryByLawId = useCultivationStore((state) => state.verseMasteryByLawId);
+  const rootResonanceByPair = useCultivationStore((state) => state.rootResonanceByPair);
+  const activeRegimenId = useTrainingStore((state) => state.activeRegimenId);
+  const statRatingsById = useTrainingStore((state) => state.statRatingsById);
   const requirePrestigeConfirm = useUIStore((state) => state.settings.requirePrestigeConfirm);
   const setLifeStartWizardContext = useUIStore((state) => state.setLifeStartWizardContext);
   const openLifeSummaryModal = useUIStore((state) => state.openLifeSummaryModal);
@@ -98,6 +113,7 @@ export function PrestigeLedgerScreenOwner() {
   const advisor = getPrestigeAdvisorSurface();
   const forecast = buildPrestigeForecastSurfaceV2();
   const visibleUpgrades = useMemo(() => getVisiblePrestigeUpgrades(), [getVisiblePrestigeUpgrades, contentRaw]);
+  const trainingContent = useMemo(() => (contentRaw ? createTrainingRuntimeContent(contentRaw) : null), [contentRaw]);
 
   const resolvedGateCount = useMemo(() => {
     const liveTrialIds = extractLiveTrialIds(contentRaw?.trials);
@@ -114,6 +130,108 @@ export function PrestigeLedgerScreenOwner() {
   }, [citiesById, currentCityId, unlockedCityIds]);
 
   const heartLawName = selectedHeartLawId ? heartLawsById[selectedHeartLawId]?.name ?? null : null;
+  const reclaimRoute = useMemo<PrestigeReclaimCurrentRoute>(() => {
+    const activeHeartLawId = daoHeartSelectedLawId ?? selectedHeartLawId;
+    const selectedRegimen = activeRegimenId
+      ? trainingContent?.regimensById[activeRegimenId] ?? null
+      : null;
+    const pathRegimen = selectedPath
+      ? selectedRegimen?.path === selectedPath
+        ? selectedRegimen
+        : trainingContent?.regimens.find((regimen) => regimen.path === selectedPath) ?? null
+      : null;
+    const rootKey = spiritRoot
+      ? buildSpiritRootMemoryKey({
+          rootElement: spiritRoot.element,
+          shape: 'single',
+          variantKey: `grade_${spiritRoot.grade}`,
+          lawPair: activeHeartLawId,
+        })
+      : null;
+    const trialById = new Map((contentRaw?.trials ?? []).map((trial) => [trial.id, trial]));
+    const resolvedTrialIds = Object.entries(progressByTrialId)
+      .filter(([, progress]) => progress.cleared || progress.resolution === 'cleared' || progress.resolution === 'bypassed')
+      .map(([trialId]) => trialId)
+      .sort();
+    const gateChainId = resolvedTrialIds.length > 0
+      ? resolvedTrialIds.map((trialId) => trialById.get(trialId)?.gateItemId ?? trialId).join('__')
+      : null;
+    const currentTrial = (contentRaw?.trials ?? []).find((trial) => trial.cityId === currentCityId)
+      ?? (contentRaw?.trials ?? [])[0]
+      ?? null;
+    const currentTrialProgress = currentTrial ? progressByTrialId[currentTrial.id] : null;
+    const lawLevel = activeHeartLawId ? heartLawLevelById[activeHeartLawId] ?? 1 : 0;
+    const chapterBand = `chapter_${Math.max(1, Math.ceil(Math.max(1, lawLevel) / 5))}`;
+
+    return {
+      lifeId: `life-${Math.max(1, prestigeCount + 1)}`,
+      realmIndex: realm.index,
+      path: selectedPath && pathRegimen
+        ? {
+            pathId: selectedPath,
+            statId: pathRegimen.primaryStatId,
+            regimenId: pathRegimen.id,
+            realmBand: `realm_${Math.max(0, Math.floor(realm.index))}`,
+            currentRating: statRatingsById[pathRegimen.primaryStatId] ?? 0,
+            currentRealmCap: trainingStatCap({
+              realmIndex: realm.index,
+              substageIndex: Math.max(0, realm.substage - 1),
+            }),
+          }
+        : null,
+      heartLaw: activeHeartLawId
+        ? {
+            heartLawId: activeHeartLawId,
+            chapterBand,
+            verseId: `verse_${chapterBand}`,
+            lawLevel,
+            verseMastery: verseMasteryByLawId[activeHeartLawId] ?? 0,
+            unlocked: true,
+          }
+        : null,
+      spiritRoot: spiritRoot
+        ? {
+            rootElement: spiritRoot.element,
+            shape: 'single',
+            variantKey: `grade_${spiritRoot.grade}`,
+            lawPair: activeHeartLawId,
+            rootResonance: rootResonanceByPair[getSpiritRootPairKey(spiritRoot.element, activeHeartLawId)] ?? 0,
+          }
+        : null,
+      gate: currentTrial
+        ? {
+            trialId: currentTrial.id,
+            gateId: currentTrial.gateItemId,
+            cityId: currentTrial.cityId,
+            gateCleared: Boolean(currentTrialProgress?.cleared || currentTrialProgress?.resolution === 'cleared' || currentTrialProgress?.resolution === 'bypassed'),
+            reached: Boolean(currentTrialProgress),
+          }
+        : null,
+      composite: {
+        pathId: selectedPath,
+        heartLawId: activeHeartLawId,
+        rootKey,
+        gateChainId,
+      },
+    };
+  }, [
+    activeRegimenId,
+    contentRaw?.trials,
+    currentCityId,
+    daoHeartSelectedLawId,
+    heartLawLevelById,
+    prestigeCount,
+    progressByTrialId,
+    realm.index,
+    realm.substage,
+    rootResonanceByPair,
+    selectedHeartLawId,
+    selectedPath,
+    spiritRoot,
+    statRatingsById,
+    trainingContent,
+    verseMasteryByLawId,
+  ]);
 
   const surface = useMemo(() => {
     if (fixtureMode) return time(PERF_LABELS.surfacePrestige, () => createPrestigeLedgerExactMockupFixture());
@@ -132,6 +250,7 @@ export function PrestigeLedgerScreenOwner() {
       spiritRoot,
       breakdown: apBreakdown,
       purchasesById,
+      memoryLedger,
     },
     game: {
       selectedPath,
@@ -147,6 +266,7 @@ export function PrestigeLedgerScreenOwner() {
     cityNamesReached,
     resolvedGateCount,
     visibleUpgrades,
+    reclaimRoute,
     postResetReclaimObjective,
     }));
   }, [
@@ -163,9 +283,11 @@ export function PrestigeLedgerScreenOwner() {
     highestRealmReached,
     lastLifeSummary,
     lifetimeAP,
+    memoryLedger,
     prestigeCount,
     purchasesById,
     postResetReclaimObjective,
+    reclaimRoute,
     realm,
     resolvedGateCount,
     selectedPath,

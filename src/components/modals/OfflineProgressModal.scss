@@ -60,6 +60,17 @@
   overflow-wrap: anywhere;
 }
 
+.offlineProgressModalSummaryRowStacked {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 4px;
+}
+
+.offlineProgressModalSummaryRowStacked > span:last-child {
+  overflow-wrap: anywhere;
+  font-size: 14px;
+  line-height: 1.35;
+}
+
 .offlineProgressModalSummarySmall {
   font-size: 14px;
   color: #000000;

@@ -1,6 +1,7 @@
 import { VERSE_COMPREHENSION_THRESHOLD } from '../../content/tuning/cultivationTuning.js';
 import type { HeartLawAffinityRules, HeartLawEffectPayload } from '../../content/index.js';
 import type { SpiritRootElement } from '../../types/index.js';
+import { CANONICAL_SPIRIT_ROOT_ELEMENTS } from '../spiritRoots/index.js';
 import type { NormalizedHeartLawEffect } from './heartLawTypes.js';
 
 const DOMAIN_WEIGHTS = {
@@ -78,13 +79,7 @@ const RAW_KEY_DOMAIN: Readonly<Record<string, NormalizedHeartLawEffect['domain']
   cap: 'utility',
 });
 
-export const LIVE_SPIRIT_ROOT_ELEMENTS: readonly SpiritRootElement[] = Object.freeze([
-  'fire',
-  'water',
-  'earth',
-  'metal',
-  'wood',
-]);
+export const LIVE_SPIRIT_ROOT_ELEMENTS: readonly SpiritRootElement[] = CANONICAL_SPIRIT_ROOT_ELEMENTS;
 
 export const SUPPORTED_HEART_LAW_RAW_KEYS: readonly string[] = Object.freeze([
   'cultivateQiMult',

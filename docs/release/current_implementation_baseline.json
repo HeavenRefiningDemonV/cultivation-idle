@@ -1,35 +1,35 @@
 {
   "schemaVersion": "implementation-baseline-v1",
-  "generatedAt": "2026-05-28T12:54:47.678Z",
+  "generatedAt": "2026-06-05T13:43:58.479Z",
   "cwd": "C:\\Users\\abdul\\Desktop\\cultivation-idle",
   "packageName": "cultivation-idle",
   "packageVersion": "0.0.0",
   "nodeVersion": "v24.14.0",
   "npmVersion": "11.9.0",
   "git": {
-    "branch": "codex/perf-packet-3-selector-surface-cleanup",
+    "branch": "Latest",
     "dirty": true,
     "statusPreview": [
-      "M docs/release/build_warning_inventory.md",
+      "M .gitignore",
+      " M AGENTS.md",
+      " M docs/codex-packet-rules.md",
+      " M docs/release/build_warning_inventory.md",
       " M docs/release/current_implementation_baseline.json",
       " M docs/release/current_implementation_baseline.md",
       " M docs/release/go_no_go_checklist.md",
       " M docs/release/known_issues.md",
       " M docs/release/p4_prestige_runtime_effect_audit.json",
       " M docs/release/p4_prestige_runtime_effect_audit.md",
-      " M docs/release/performance_smoke_checklist.md",
-      " M docs/release/release_handoff_bundle.md",
+      " M docs/release/playwright-report/index.html",
       " M docs/release/runtime_content_manifest.md",
       " M docs/release/signoff_sheet.md",
+      " M package-lock.json",
       " M package.json",
-      " M src/components/GameLayout.tsx",
-      " M src/components/Header.tsx",
-      " M src/components/Sidebar.tsx",
-      " M src/components/TechniquePanel.tsx",
-      " M src/components/TechniquesPanel.tsx",
-      " M src/components/combat/CombatMinibar.tsx",
-      " M src/components/modals/PerkSelectionModal.tsx",
-      " M src/components/modals/WorldBuildingModal.tsx"
+      " M public/cultivation_idle_content_bible_v1_config/cities.json",
+      " M public/cultivation_idle_content_bible_v1_config/prestige_store.json",
+      " M public/cultivation_idle_content_bible_v1_config/techniques.json",
+      " M scripts/exportBalanceTelemetry.ts",
+      " M scripts/generateProgressionContractDoc.ts"
     ]
   },
   "checks": [
@@ -119,7 +119,7 @@
       "summary": "All runtime content files required by the manifest are present and non-empty.",
       "evidence": [
         "source=public/cultivation_idle_content_bible_v1_config",
-        "requiredFiles=19",
+        "requiredFiles=25",
         "missingFiles=0",
         "emptyFiles=0"
       ]
@@ -128,10 +128,10 @@
       "id": "runtime_content_files",
       "title": "Runtime content source files",
       "status": "pass",
-      "summary": "All 19 runtime content files are present.",
+      "summary": "All 25 runtime content files are present.",
       "evidence": [
         "public/cultivation_idle_content_bible_v1_config: present",
-        "requiredFiles=19",
+        "requiredFiles=25",
         "missingFiles=0"
       ]
     },
@@ -139,7 +139,7 @@
       "id": "test_sources",
       "title": "Test sources",
       "status": "pass",
-      "summary": "698 TypeScript test source files found under tests/.",
+      "summary": "750 TypeScript test source files found under tests/.",
       "evidence": [
         "tests/**/*.ts"
       ]

@@ -152,9 +152,9 @@ export const createFirstPinewindArrivalPrompt = (cityId: string): OnboardingProm
     surface: definition.surface,
     priority: definition.priority,
     title: 'Pinewind Hamlet',
-    body: 'World teaches the loop: Outskirts for gold/common mats, Ruins for targeted mats, Gate Trial for gate proof.',
+    body: 'World starts with Outskirts: earn early gold, common materials, and safe combat reps before the city reveals deeper support routes.',
     eyebrow: 'First steps',
-    badgeLabel: 'Starter Loop',
+    badgeLabel: 'Starter Route',
     cityId,
     primaryAction: {
       label: 'Open Outskirts',
@@ -210,7 +210,7 @@ export const createFirstGateAvailablePrompt = (args: {
     title: 'First Gate Available',
     body: 'This is your first real milestone wall. Check readiness before brute-forcing the gate.',
     eyebrow: args.cityName,
-    badgeLabel: 'Gate Proof',
+    badgeLabel: 'Gate Readiness',
     cityId: args.cityId,
     primaryAction: {
       label: 'Open Gate Trial',
@@ -236,7 +236,7 @@ export const createFirstMajorFailurePrompt = (args: {
     surface: definition.surface,
     priority: definition.priority,
     title: 'Defeat is feedback',
-    body: 'Read the diagnosis and follow the Mandate correction before retrying. The gate is teaching you what this life is missing.',
+    body: 'Read the failure diagnosis and fix the named gap before retrying. The gate is teaching you what this life is missing.',
     badgeLabel: 'Gate Trial',
     cityId: args.cityId,
     primaryAction: {

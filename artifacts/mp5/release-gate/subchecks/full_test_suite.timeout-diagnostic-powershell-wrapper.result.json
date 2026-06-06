@@ -1,0 +1,10 @@
+﻿{
+    "remainingProcesses":  {
+
+                           },
+    "exitCode":  0,
+    "remainingProcessCount":  0,
+    "command":  "npm run release:gate -- --only=full_test_suite --json",
+    "durationSeconds":  0.602,
+    "log":  "artifacts/mp5/release-gate/subchecks/full_test_suite.timeout-diagnostic-powershell-wrapper.log"
+}

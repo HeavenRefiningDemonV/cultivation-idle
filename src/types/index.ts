@@ -14,6 +14,14 @@ import type {
 } from "../systems/ui/daoMandate/daoMandateGuidanceSettings.js";
 import type { DaoMandateGuidanceProfile } from "../systems/ui/daoMandate/daoMandateTypes.js";
 import type { DaoMandateLessonMemory } from "../systems/ui/daoMandate/daoMandateLessons.js";
+import type { SaveOnboardingState } from "../systems/onboarding/onboardingTypes.js";
+import type { SaveTrainingState } from "../systems/training/trainingTypes.js";
+import type { PrestigeMemoryLedger } from "../systems/prestige/prestigeMemory.js";
+import type {
+  BreakthroughRiskCauseRow,
+  BreakthroughRiskSnapshot,
+  DaoHeartActivityId,
+} from "../content/types.js";
 
 /**
  * Cultivation path types
@@ -248,12 +256,13 @@ export interface GameState {
     remainingDamage: string;
     absorbed: string;
   };
-  resetRun: () => void;
-  performPrestigeReset: () => void;
-  purchaseUpgrade: (type: "idle" | "damage" | "hp") => boolean;
-  getBreakthroughRequirement: () => string;
-  hardResetGameState: () => void;
-}
+    resetRun: () => void;
+    performPrestigeReset: () => void;
+    purchaseUpgrade: (type: "idle" | "damage" | "hp") => boolean;
+    getBreakthroughRequirement: () => string;
+    hardResetGameState: () => void;
+    __setBreakthroughRiskRollForTest?: ((roll: (() => number) | null) => void);
+  }
 
 /**
  * Save data structure
@@ -335,7 +344,7 @@ export interface SaveExpeditionRun {
   status: "running" | "complete";
 }
 
-export interface SaveHeartLawState {
+  export interface SaveHeartLawState {
   selectedHeartLawId: string | null;
   chapter: number;
   comprehension: number;
@@ -363,9 +372,43 @@ export interface SaveHeartLawState {
     };
     consumedOnMajorBreakthrough?: boolean;
   }>;
-  insightProgressMs?: number;
-  insightTargetMs?: number | null;
-}
+    insightProgressMs?: number;
+    insightTargetMs?: number | null;
+    heartLawLevelById?: Record<string, number>;
+    heartLawXpById?: Record<string, number>;
+    verseMasteryByLawId?: Record<string, number>;
+    daoHeartClarity?: number;
+    turbulence?: number;
+    branchChoicesByLawId?: Record<string, string>;
+    rootResonanceByPair?: Record<string, number>;
+    activeDaoHeartPracticeId?: DaoHeartActivityId | null;
+    lastDaoHeartPracticeTickAt?: number | null;
+    lastDaoHeartOfflineSummary?: DaoHeartOfflineSummary | null;
+    lastBreakthroughRiskSnapshot?: BreakthroughRiskSnapshot | null;
+    lastBreakthroughFailureSummary?: BreakthroughFailureSummary | null;
+  }
+
+  export interface DaoHeartOfflineSummary {
+    practiceId: DaoHeartActivityId;
+    appliedMs: number;
+    heartLawXpGain: number;
+    clarityGain: number;
+    turbulenceGain: number;
+    completedAt: number;
+    blockedReason?: string;
+  }
+
+  export interface BreakthroughFailureSummary {
+    reason: "risk_failure" | "turbulence_blocked" | "blocked";
+    timestamp: number;
+    riskPercent: number;
+    band: BreakthroughRiskSnapshot["band"];
+    qiLost: string;
+    turbulenceAdded: number;
+    injury: "none" | "minor" | "major";
+    rows: BreakthroughRiskCauseRow[];
+    message: string;
+  }
 
 export interface SaveActivityState {
   active: {
@@ -472,6 +515,7 @@ export interface SaveData {
     runStartTime: number;
     rerollCount: number;
     spiritRoot: SpiritRoot | null;
+    memoryLedger?: PrestigeMemoryLedger;
   };
 
   // Inventory state
@@ -487,6 +531,7 @@ export interface SaveData {
   craftSessionState?: CraftSessionSaveState;
   medicinePouchState: MedicinePouchState;
   recipeMasteryState?: SaveRecipeMasteryState;
+  trainingState?: SaveTrainingState;
 
   // Combat settings (not combat state, just settings)
   combatSettings: {
@@ -542,6 +587,7 @@ export interface SaveData {
 
   manualPavilionState: ManualPavilionSaveState;
   manualSatchelState: SaveManualSatchelState;
+  onboardingState?: SaveOnboardingState;
   storyState?: StorySaveState;
 
   activityState?: SaveActivityState;
@@ -1085,6 +1131,7 @@ export interface CombatState {
   combatShield: CombatShield | null;
   combatBuffs: CombatBuff[];
   combatResources: CombatResources;
+  rootProcLastAtByElementId: Partial<Record<SpiritRootElement, number>>;
   techniqueLog: CombatTechniqueLogEntry[];
   events: CombatEvent[];
 
@@ -1231,7 +1278,21 @@ export interface InventoryState {
 /**
  * Spirit root element types
  */
-export type SpiritRootElement = "fire" | "water" | "earth" | "metal" | "wood";
+export type SpiritRootElement =
+  | "wood"
+  | "fire"
+  | "earth"
+  | "metal"
+  | "water"
+  | "wind"
+  | "lightning"
+  | "ice"
+  | "light"
+  | "shadow"
+  | "soul"
+  | "void"
+  | "time"
+  | "astral";
 
 /**
  * Spirit root quality grade

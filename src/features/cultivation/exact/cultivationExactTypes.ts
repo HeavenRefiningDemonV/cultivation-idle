@@ -4,6 +4,8 @@ import type {
   RunCompassTabTarget,
   RunCompassSurface,
 } from '../../../systems/ui/runCompass/index.js';
+import type { CultivationMindAlignmentSnapshot } from '../../../systems/cultivation/cultivationMindAlignmentResolver.js';
+import type { SpiritRootObservationTabId } from '../../spiritRootObservation/index.js';
 import type { SpiritRootElement } from '../../../types/index.js';
 
 export type CultivationExactSurfaceMode = 'fixture' | 'live';
@@ -28,7 +30,8 @@ export type CultivationExactFxQuality = 'off' | 'low' | 'medium' | 'high';
 
 export type CultivationRouteTarget =
   | { kind: 'tab'; tab: RunCompassTabTarget }
-  | { kind: 'world_module'; cityId: string; moduleKey: string };
+  | { kind: 'world_module'; cityId: string; moduleKey: string }
+  | { kind: 'status_observation'; tab: SpiritRootObservationTabId };
 
 export interface CultivationRibbonCellSurface {
   id: 'realm' | 'qi' | 'rate' | 'stability' | 'foreground';
@@ -56,7 +59,25 @@ export interface CultivationDoctrineSealSurface {
   value: string;
   subvalue?: string;
   iconKey: string;
-  tone: 'path' | 'fire' | 'water' | 'earth' | 'metal' | 'wood' | 'lotus' | 'jade' | 'neutral';
+  tone:
+    | 'path'
+    | 'wood'
+    | 'fire'
+    | 'earth'
+    | 'metal'
+    | 'water'
+    | 'wind'
+    | 'lightning'
+    | 'ice'
+    | 'light'
+    | 'shadow'
+    | 'soul'
+    | 'void'
+    | 'time'
+    | 'astral'
+    | 'lotus'
+    | 'jade'
+    | 'neutral';
   opensDrawer: 'doctrine';
 }
 
@@ -78,7 +99,13 @@ export interface CultivationRingLayerSurface {
 export type CultivationButtonActionKey =
   | 'startCultivation'
   | 'stopCultivation'
+  | 'openDaoHeart'
+  | 'openTrainingHall'
   | 'openGateTrial'
+  | 'openApothecary'
+  | 'openForge'
+  | 'openSpiritRootObservation'
+  | 'rest'
   | 'breakThrough'
   | 'openPrestige'
   | 'none';
@@ -117,6 +144,13 @@ export interface CultivationBreakthroughReadinessSurfaceV1 {
   detail: string;
   rows: CultivationDrawerRowSurface[];
   primaryAction?: CultivationButtonSurface | null;
+  risk?: {
+    percent: number;
+    band: string;
+    failurePreview: string;
+    confirmationRequired: boolean;
+  } | null;
+  topFixActions?: CultivationButtonSurface[];
 }
 
 export interface CultivationDrawerSurface {
@@ -262,10 +296,12 @@ export interface CultivationExactBuildSnapshot {
   atContentCap: boolean;
   canPrestige: boolean;
   activeBuffSummary: string;
-  runCompassActions: RunCompassActionLine[];
-  runCompassFull?: RunCompassSurface | null;
-  runCompassCompact?: RunCompassCompactSurface | null;
-}
+    runCompassActions: RunCompassActionLine[];
+    runCompassFull?: RunCompassSurface | null;
+    runCompassCompact?: RunCompassCompactSurface | null;
+    breakthroughRisk?: import('../../../systems/breakthrough/breakthroughStabilityResolver.js').BreakthroughStabilitySnapshot | null;
+    mindAlignment?: CultivationMindAlignmentSnapshot | null;
+  }
 
 export interface BuildCultivationExactSurfaceOptions {
   mode?: CultivationExactSurfaceMode;

@@ -2,6 +2,8 @@ import type { MigrationStep } from '../migrationTypes.js';
 import { CURRENT_SAVE_VERSION } from '../saveVersion.js';
 import { createStepResult, touch, warning } from './v2_0_0/shared.js';
 import { v2_0_0MigrationPack } from './v2_0_0/index.js';
+import { v2_1_0MigrationPack } from './v2_1_0/index.js';
+import { v2_2_0MigrationPack } from './v2_2_0/index.js';
 
 const legacyDetectionStep: MigrationStep = {
   id: 'm0_report_source_version',
@@ -31,4 +33,9 @@ const legacyDetectionStep: MigrationStep = {
   },
 };
 
-export const migrationSteps: MigrationStep[] = [legacyDetectionStep, ...v2_0_0MigrationPack];
+export const migrationSteps: MigrationStep[] = [
+  legacyDetectionStep,
+  ...v2_0_0MigrationPack,
+  ...v2_1_0MigrationPack,
+  ...v2_2_0MigrationPack,
+];

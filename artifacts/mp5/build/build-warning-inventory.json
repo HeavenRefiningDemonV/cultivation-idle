@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "mp5-build-warning-inventory-v1",
+  "generatedAt": "2026-05-29T17:28:20.891Z",
+  "buildStatus": "pass_with_advisory_warning",
+  "blockers": [],
+  "warnings": [
+    {
+      "id": "BUNDLE-CHUNK-SIZE-MP5-001",
+      "source": "vite",
+      "status": "post_release_debt",
+      "owner": "release_engineering",
+      "text": "Some chunks are larger than 500 kB after minification.",
+      "evidence": "artifacts/mp5/build/build.after-asset-fix.log"
+    }
+  ],
+  "fixed": [
+    "Browserslist/caniuse-lite stale-data warning removed.",
+    "CombatPresentation InsideDungeon.png path corrected."
+  ]
+}

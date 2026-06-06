@@ -127,6 +127,22 @@
     radial-gradient(circle at 45% 40%, rgba(255, 226, 207, 0.9) 0 28%, rgba(139, 48, 40, 0.82) 30% 68%, rgba(235, 226, 190, 0.92) 70%);
 }
 
+.cityMapHubHotspotTrigger {
+  --scenic-label-min-inline: 128px;
+  --scenic-label-min-block: 32px;
+  --scenic-label-state-inline: 32px;
+}
+
+.cityMapHubHotspotTrigger.scenicLabel--recommended {
+  border-color: rgba(139, 98, 36, 0.62);
+  box-shadow: 0 5px 14px rgba(118, 82, 29, 0.24);
+}
+
+.cityMapHubHotspotTrigger.scenicLabel--active {
+  border-color: rgba(139, 48, 40, 0.66);
+  box-shadow: 0 5px 14px rgba(139, 48, 40, 0.18);
+}
+
 .cityMapHubHotspotLabel {
   white-space: nowrap;
 }

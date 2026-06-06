@@ -1,0 +1,117 @@
+{
+  "schemaVersion": "mp2-blocker-status-v1",
+  "packet": "MP2",
+  "generatedAt": "2026-05-29T00:10:12+03:00",
+  "branch": "Latest",
+  "commit": "969de0ab4602a37ba3edf6ed6233419328f21924",
+  "decision": "partial",
+  "releaseGate": "not_run_timeout",
+  "screens": [
+    {
+      "id": "cultivation",
+      "status": "pass",
+      "evidence": ["artifacts/mp2/final/screenshots/1366x768/SS-010-cultivation-cultivation.png"]
+    },
+    {
+      "id": "inventory",
+      "status": "partial",
+      "evidence": ["artifacts/mp2/final/screenshots/1366x768/SS-013-inventory-inventory.png"]
+    },
+    {
+      "id": "techniques",
+      "status": "pass",
+      "evidence": ["artifacts/mp2/final/screenshots/1366x768/SS-014-techniques-techniques.png"]
+    },
+    {
+      "id": "prestige",
+      "status": "pass",
+      "evidence": ["artifacts/mp2/final/screenshots/1366x768/SS-016-prestige-prestige.png"]
+    },
+    {
+      "id": "gate_trial",
+      "status": "partial",
+      "evidence": ["artifacts/mp2/final/screenshots/1366x768/SS-102-gate-trial-gate-trial.png"]
+    },
+    {
+      "id": "ruins",
+      "status": "pass",
+      "evidence": ["artifacts/mp2/final/screenshots/1366x768/SS-101-ruins-ruins.png"]
+    }
+  ],
+  "blockers": [
+    {
+      "id": "P1-008",
+      "status": "partial",
+      "evidence": ["artifacts/mp2/final/screen-matrix.final.json"],
+      "remainingWork": "Advanced Gate Trial state captures are not complete.",
+      "nextOwnerPacket": "MP2"
+    },
+    {
+      "id": "P1-014",
+      "status": "partial",
+      "evidence": ["artifacts/mp2/final/screenshots/1366x768/SS-102-gate-trial-gate-trial.png"],
+      "remainingWork": "Planning/locked state clipping repaired; active/defeat/clear/bypass fixture proof remains.",
+      "nextOwnerPacket": "MP2"
+    },
+    {
+      "id": "P1-015",
+      "status": "fixed",
+      "evidence": ["artifacts/mp2/final/screenshots/1366x768/SS-101-ruins-ruins.png"],
+      "remainingWork": "Final Ruins scenic art remains future art backlog.",
+      "nextOwnerPacket": "MP3"
+    },
+    {
+      "id": "P1-016",
+      "status": "fixed",
+      "evidence": ["artifacts/mp2/final/screenshots/1366x768/SS-013-inventory-inventory.png"],
+      "remainingWork": "",
+      "nextOwnerPacket": "MP2"
+    },
+    {
+      "id": "P1-017",
+      "status": "fixed",
+      "evidence": ["artifacts/mp2/final/screenshots/1366x768/SS-014-techniques-techniques.png"],
+      "remainingWork": "",
+      "nextOwnerPacket": "MP2"
+    },
+    {
+      "id": "P1-023",
+      "status": "fixed",
+      "evidence": ["artifacts/mp2/final/screenshots/1366x768/SS-016-prestige-prestige.png"],
+      "remainingWork": "AP/timing tuning remains MP4.",
+      "nextOwnerPacket": "MP4"
+    }
+  ],
+  "commands": [
+    {
+      "command": "npm run typecheck",
+      "status": "pass",
+      "artifact": "artifacts/mp2/final/logs/typecheck.final.log"
+    },
+    {
+      "command": "npm run check:icons",
+      "status": "pass",
+      "artifact": "artifacts/mp2/final/logs/check-icons.final.log"
+    },
+    {
+      "command": "npm run validate:content",
+      "status": "pass",
+      "artifact": "artifacts/mp2/final/logs/validate-content.final.log"
+    },
+    {
+      "command": "npm run build",
+      "status": "pass",
+      "artifact": "artifacts/mp2/final/logs/build.final.log"
+    },
+    {
+      "command": "npx playwright test tests/e2e/mp2-ui-runtime-smoke.spec.ts",
+      "status": "pass",
+      "artifact": "artifacts/mp2/final/logs/mp2-ui-runtime-smoke.final.log"
+    },
+    {
+      "command": "npm run release:gate:json",
+      "status": "timeout",
+      "artifact": "artifacts/mp2/final/logs/release-gate.final.log"
+    }
+  ]
+}

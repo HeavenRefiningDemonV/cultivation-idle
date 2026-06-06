@@ -1,0 +1,161 @@
+{
+  "generatedAt": "2026-05-29T00:34:40.676Z",
+  "rows": [
+    {
+      "pathId": "earth",
+      "qiMultiplier": 1.19,
+      "gate1AvailableSeconds": 3283,
+      "foundationEntrySeconds": 3283,
+      "capSeconds": 40277,
+      "capWithinBand": true,
+      "finalRealmId": "spirit_severing",
+      "finalCityId": "city_ironpeak_bastion",
+      "phaseDurations": [
+        {
+          "phaseId": "pinewind_phase_target_seconds",
+          "actualSeconds": 3283,
+          "targetSeconds": 3300,
+          "driftSeconds": -17,
+          "withinValidationSlack": true
+        },
+        {
+          "phaseId": "stonecrag_phase_target_seconds",
+          "actualSeconds": 4774,
+          "targetSeconds": 4800,
+          "driftSeconds": -26,
+          "withinValidationSlack": true
+        },
+        {
+          "phaseId": "spirit_cavern_phase_target_seconds",
+          "actualSeconds": 7160,
+          "targetSeconds": 7200,
+          "driftSeconds": -40,
+          "withinValidationSlack": true
+        },
+        {
+          "phaseId": "lotusford_phase_target_seconds",
+          "actualSeconds": 10143,
+          "targetSeconds": 10200,
+          "driftSeconds": -57,
+          "withinValidationSlack": true
+        },
+        {
+          "phaseId": "ironpeak_phase_target_seconds",
+          "actualSeconds": 14917,
+          "targetSeconds": 15000,
+          "driftSeconds": -83,
+          "withinValidationSlack": true
+        }
+      ],
+      "eventCounts": {
+        "gateAvailable": 5,
+        "gateResolved": 5,
+        "majorBreakthrough": 5
+      }
+    },
+    {
+      "pathId": "martial",
+      "qiMultiplier": 1.2,
+      "gate1AvailableSeconds": 3256,
+      "foundationEntrySeconds": 3256,
+      "capSeconds": 39939,
+      "capWithinBand": true,
+      "finalRealmId": "spirit_severing",
+      "finalCityId": "city_ironpeak_bastion",
+      "phaseDurations": [
+        {
+          "phaseId": "pinewind_phase_target_seconds",
+          "actualSeconds": 3256,
+          "targetSeconds": 3300,
+          "driftSeconds": -44,
+          "withinValidationSlack": true
+        },
+        {
+          "phaseId": "stonecrag_phase_target_seconds",
+          "actualSeconds": 4734,
+          "targetSeconds": 4800,
+          "driftSeconds": -66,
+          "withinValidationSlack": true
+        },
+        {
+          "phaseId": "spirit_cavern_phase_target_seconds",
+          "actualSeconds": 7101,
+          "targetSeconds": 7200,
+          "driftSeconds": -99,
+          "withinValidationSlack": true
+        },
+        {
+          "phaseId": "lotusford_phase_target_seconds",
+          "actualSeconds": 10056,
+          "targetSeconds": 10200,
+          "driftSeconds": -144,
+          "withinValidationSlack": true
+        },
+        {
+          "phaseId": "ironpeak_phase_target_seconds",
+          "actualSeconds": 14792,
+          "targetSeconds": 15000,
+          "driftSeconds": -208,
+          "withinValidationSlack": true
+        }
+      ],
+      "eventCounts": {
+        "gateAvailable": 5,
+        "gateResolved": 5,
+        "majorBreakthrough": 5
+      }
+    },
+    {
+      "pathId": "heaven",
+      "qiMultiplier": 1.4,
+      "gate1AvailableSeconds": 2791,
+      "foundationEntrySeconds": 2791,
+      "capSeconds": 34236,
+      "capWithinBand": true,
+      "finalRealmId": "spirit_severing",
+      "finalCityId": "city_ironpeak_bastion",
+      "phaseDurations": [
+        {
+          "phaseId": "pinewind_phase_target_seconds",
+          "actualSeconds": 2791,
+          "targetSeconds": 3300,
+          "driftSeconds": -509,
+          "withinValidationSlack": false
+        },
+        {
+          "phaseId": "stonecrag_phase_target_seconds",
+          "actualSeconds": 4058,
+          "targetSeconds": 4800,
+          "driftSeconds": -742,
+          "withinValidationSlack": false
+        },
+        {
+          "phaseId": "spirit_cavern_phase_target_seconds",
+          "actualSeconds": 6086,
+          "targetSeconds": 7200,
+          "driftSeconds": -1114,
+          "withinValidationSlack": false
+        },
+        {
+          "phaseId": "lotusford_phase_target_seconds",
+          "actualSeconds": 8622,
+          "targetSeconds": 10200,
+          "driftSeconds": -1578,
+          "withinValidationSlack": false
+        },
+        {
+          "phaseId": "ironpeak_phase_target_seconds",
+          "actualSeconds": 12679,
+          "targetSeconds": 15000,
+          "driftSeconds": -2321,
+          "withinValidationSlack": false
+        }
+      ],
+      "eventCounts": {
+        "gateAvailable": 5,
+        "gateResolved": 5,
+        "majorBreakthrough": 5
+      }
+    }
+  ]
+}

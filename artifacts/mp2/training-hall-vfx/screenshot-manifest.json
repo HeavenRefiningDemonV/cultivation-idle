@@ -1,0 +1,62 @@
+{
+  "generatedAt": "2026-06-04T13:50:18.467Z",
+  "packet": "Mega Prompt 2",
+  "captures": [
+    {
+      "id": "fresh-heaven-realm-0",
+      "screenshot": "artifacts/mp2/training-hall-vfx/screenshots/animated/fresh-heaven-realm-0-1440x1000.png",
+      "domSummary": "artifacts/mp2/training-hall-vfx/dom-summaries/animated/fresh-heaven-realm-0-1440x1000.json",
+      "reducedMotion": false,
+      "rootAttributes": {
+        "data-testid": "training-hall-page",
+        "data-path": "heaven",
+        "data-reduced-motion": "false",
+        "data-visual-state": "idle",
+        "data-motion-mode": "animated",
+        "data-fx-particle-budget": "36"
+      },
+      "visibleTextSample": "Outskirts\nGOLD & COMMON MATS\nGold / Common Mats\nGold & Common Mats. Best used when you need gold, common materials, or low-risk combat reps.\nRuins\nTARGETED MATS\nLocal Mats / Anchor Drop\nTargeted Mats. Best used when you need targeted local materials and deterministic support rewards.\nGate Trial\nGATE ITEM\nFoundation Pill / Breakthrough\nGate Item. Use this hall when the current gate item is ready for judgment.\nTraining Hall\nPATH FOUNDATION\nStat Ratings / Regimen Mastery\nPath Foundation. Best used when path foundation, trained stat caps, or regimen mastery is the current gate gap.\nManual Pavilion\nBUILD CORRECTION\nManuals / Technique Fragments\nBuild Correction. Best used when you need build correction, manuals, or technique growth.\nApothecary\nIMMEDIATE READINESS\nHealing Stock / Preparation Remedies\nImmediate Readiness. Best used when you need immediate readiness through healing stock, remedies, or pouch prep.\nForge\nPERMANENT FLOOR\nRefines / Temper / Runes\nPermanent Floor. Best used when yo",
+      "notes": [
+        "realm 0 Heaven path",
+        "one unlocked regimen plus future silhouettes"
+      ]
+    },
+    {
+      "id": "active-high-fatigue-capped",
+      "screenshot": "artifacts/mp2/training-hall-vfx/screenshots/animated/active-high-fatigue-capped-1440x1000.png",
+      "domSummary": "artifacts/mp2/training-hall-vfx/dom-summaries/animated/active-high-fatigue-capped-1440x1000.json",
+      "reducedMotion": false,
+      "rootAttributes": {
+        "data-testid": "training-hall-page",
+        "data-path": "heaven",
+        "data-reduced-motion": "false",
+        "data-visual-state": "active",
+        "data-motion-mode": "animated",
+        "data-fx-particle-budget": "36"
+      },
+      "visibleTextSample": "Outskirts\nGOLD & COMMON MATS\nGold / Common Mats\nGold & Common Mats. Best used when you need gold, common materials, or low-risk combat reps.\nRuins\nTARGETED MATS\nLocal Mats / Anchor Drop\nTargeted Mats. Best used when you need targeted local materials and deterministic support rewards.\nGate Trial\nGATE ITEM\nFoundation Pill / Breakthrough\nGate Item. Use this hall when the current gate item is ready for judgment.\nTraining Hall\nPATH FOUNDATION\nStat Ratings / Regimen Mastery\nPath Foundation. Best used when path foundation, trained stat caps, or regimen mastery is the current gate gap.\nManual Pavilion\nBUILD CORRECTION\nManuals / Technique Fragments\nBuild Correction. Best used when you need build correction, manuals, or technique growth.\nApothecary\nIMMEDIATE READINESS\nHealing Stock / Preparation Remedies\nImmediate Readiness. Best used when you need immediate readiness through healing stock, remedies, or pouch prep.\nForge\nPERMANENT FLOOR\nRefines / Temper / Runes\nPermanent Floor. Best used when yo",
+      "notes": [
+        "active foreground Training activity",
+        "high fatigue and current realm cap alerts"
+      ]
+    },
+    {
+      "id": "fresh-heaven-reduced-motion",
+      "screenshot": "artifacts/mp2/training-hall-vfx/screenshots/reduced-motion/fresh-heaven-reduced-motion-1440x1000.png",
+      "domSummary": "artifacts/mp2/training-hall-vfx/dom-summaries/reduced-motion/fresh-heaven-reduced-motion-1440x1000.json",
+      "reducedMotion": true,
+      "rootAttributes": {
+        "data-testid": "training-hall-page",
+        "data-path": "heaven",
+        "data-reduced-motion": "true",
+        "data-visual-state": "idle",
+        "data-motion-mode": "static",
+        "data-fx-particle-budget": "36"
+      },
+      "visibleTextSample": "Outskirts\nGOLD & COMMON MATS\nGold / Common Mats\nGold & Common Mats. Best used when you need gold, common materials, or low-risk combat reps.\nRuins\nTARGETED MATS\nLocal Mats / Anchor Drop\nTargeted Mats. Best used when you need targeted local materials and deterministic support rewards.\nGate Trial\nGATE ITEM\nFoundation Pill / Breakthrough\nGate Item. Use this hall when the current gate item is ready for judgment.\nTraining Hall\nPATH FOUNDATION\nStat Ratings / Regimen Mastery\nPath Foundation. Best used when path foundation, trained stat caps, or regimen mastery is the current gate gap.\nManual Pavilion\nBUILD CORRECTION\nManuals / Technique Fragments\nBuild Correction. Best used when you need build correction, manuals, or technique growth.\nApothecary\nIMMEDIATE READINESS\nHealing Stock / Preparation Remedies\nImmediate Readiness. Best used when you need immediate readiness through healing stock, remedies, or pouch prep.\nForge\nPERMANENT FLOOR\nRefines / Temper / Runes\nPermanent Floor. Best used when yo",
+      "notes": [
+        "reduced motion static Training Hall state"
+      ]
+    }
+  ]
+}

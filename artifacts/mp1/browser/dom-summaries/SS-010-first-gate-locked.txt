@@ -1,0 +1,162 @@
+state: first Gate Trial live surface after fresh life
+url: http://127.0.0.1:5173/
+
+Outskirts
+GOLD & COMMON MATS
+Gold / Common Mats
+Gold & Common Mats. Best used when you need gold, common materials, or low-risk combat reps.
+Ruins
+TARGETED MATS
+Local Mats / Anchor Drop
+Targeted Mats. Best used when you need targeted local materials and deterministic support rewards.
+Gate Trial
+GATE ITEM
+Foundation Pill / Breakthrough
+Gate Item. Use this hall when the current gate item is ready for judgment.
+Manual Pavilion
+BUILD CORRECTION
+Manuals / Technique Fragments
+Build Correction. Best used when you need build correction, manuals, or technique growth.
+Apothecary
+IMMEDIATE READINESS
+Healing Stock / Preparation Remedies
+Immediate Readiness. Best used when you need immediate readiness through healing stock, remedies, or pouch prep.
+Forge
+PERMANENT FLOOR
+Refines / Temper / Runes
+Permanent Floor. Best used when you need permanent floor through refine, temper, or rune work.
+Bounties
+MERIT & ROUTING
+Merit / Spirit Stones
+Merit & Routing. Best used when you need Merit, routing help, or directed support rewards.
+Expeditions
+PASSIVE SUPPORT
+Herbs / Ore
+Passive Support. Best used when you need passive shortage smoothing for herbs, ore, or fragments.
+WORLD
+City Phase: Pinewind Hamlet - foundations
+Select city
+Pinewind Hamlet
+Stonecrag Town — Locked — Reach Foundation Establishment
+Spirit Cavern City — Locked — Reach Core Formation
+Lotusford — Locked — Reach Nascent Soul
+Ironpeak Bastion — Locked — Reach Soul Formation
+Pressure: Qi, first medicines, and a stable starter build.
+Expedition Slot Idle
+
+PINEWIND HAMLET
+
+Gate Trial
+
+Gate Item
+
+Use this hall when the current gate item is ready for judgment.
+
+Foundation Pill
+Breakthrough
+Open Gate Trial
+Status
+Cultivation
+World
+Inventory
+Techniques
+Records
+Prestige
+Settings
+Gate Trial
+Early Qi
+Middle Qi
+Late Qi
+Peak Qi
+Foundation Gate
+Early Foundation
+Middle Foundation
+Late Foundation
+Core Gate
+1 Expedition Idle · 0 Tracked Bounties
+HP
+136 / 136
+Gate
+Foundation · Lv. 15
+Loadout
+Loadout 1
+AI Profile
+Balanced
+Healing
+0 / 20
+Bounty
+No tracked bounty
+Expedition
+1 Idle
+Foundation Gate
+
+Milestone readiness check — clears the path to Foundation
+
+Milestone Gate
+Readiness Check
+Safety Net Tracked
+Minimum Checklist
+Locked
+Final Substage Reached
+Mortal · 1 / 9
+Qi Cap Reached
+84 / 100 Minimum Qi
+Loadout Complete
+0 Active / 0 Passive
+Healing Floor
+0 / 12 Recommended Minimum
+Weapon Floor
+Refine +0 / +5
+LOCKED
+Readiness 0 / 100
+Forest Sentinel · Lv. 15
+
+Foundation Establishment Trial
+
+Clear Reward: Foundation Pill ×1
+Used for Foundation Breakthrough
+Recommended
+Recommended Prep
+Stabilize weapon floor
+Weapon refine is below +5.
+Boost stats with pills
+Healing stock is below the recommended floor.
+Upgrade major techniques
+Fill at least two active and one passive slot.
+Complete one Ruin support run
+Target one ruins run if Forge or medicine stock remains the gate blocker.
+Ruins support source ready
+Target one ruins run if Forge or medicine stock remains the gate blocker.
+Fail-Safe
+Eligible Failures
+0 / 3
+Cost
+10 Merit · 25K Gold · 0 Spirit Stones
+Reserve
+0 Merit · 1K Gold · 0 Spirit Stones
+Safety Net Locked
+Gate Corrections
+Forge Weapon +5
+Stock Healing
+Upgrade Iron Palm
+Foundation Gate Readiness
+Qi Cap
+Loadout
+Weapon
+Medicine
+Techniques
+Safety Net
+Gate
+Gate Locked
+Trial Summary
+Target
+Foundation
+Readiness
+0 / 100
+Failures
+0 / 3
+Reward
+Foundation Pill
+Next Fix
+Forge weapon
+Life begins: Heaven • Ember Thread Sutra • Balanced

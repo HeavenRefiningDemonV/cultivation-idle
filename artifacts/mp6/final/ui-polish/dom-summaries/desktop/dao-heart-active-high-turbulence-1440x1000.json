@@ -1,0 +1,58 @@
+{
+  "url": "http://127.0.0.1:5174/?cultivationExactMode=live",
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "reducedMotion": false,
+  "noHorizontalOverflow": true,
+  "scrollWidth": 1440,
+  "innerWidth": 1440,
+  "rootSelector": "[data-ui=\"dao-heart-sanctuary\"]",
+  "rootAttributes": {
+    "data-ui": "dao-heart-sanctuary",
+    "data-motion-mode": "animated",
+    "data-turbulence-band": "fractured",
+    "data-seal-state": "fractured",
+    "data-fx-particle-budget": "48"
+  },
+  "testIds": [
+    "cultivation-exact-page",
+    "cultivation-dantian-anchor",
+    "cultivation-breakthrough-readiness",
+    "cultivation-qi-lane",
+    "dao-heart-sanctuary-vfx-motes",
+    "dao-heart-sanctuary-vfx-mote",
+    "dao-heart-sanctuary-vfx-mote",
+    "dao-heart-sanctuary-vfx-mote",
+    "dao-heart-sanctuary-vfx-mote",
+    "dao-heart-sanctuary-vfx-mote",
+    "dao-heart-sanctuary-vfx-mote",
+    "dao-heart-sanctuary-vfx-mote",
+    "dao-heart-sanctuary-vfx-mote",
+    "dao-heart-sanctuary-vfx-mote",
+    "dao-heart-sanctuary-vfx-mote",
+    "dao-heart-sanctuary-vfx-mote",
+    "dao-heart-sanctuary-vfx-mote",
+    "dao-heart-sanctuary-vfx-mote",
+    "dao-heart-sanctuary-vfx-mote",
+    "dao-heart-sanctuary-vfx-mote",
+    "dao-heart-sanctuary-vfx-mote",
+    "dao-heart-sanctuary-vfx-mote",
+    "dao-heart-sanctuary-vfx-mote"
+  ],
+  "mp6Rows": {
+    "cultivationRiskRows": 3,
+    "cultivationReadinessSections": 1,
+    "gateRows": 0,
+    "trainingMotes": 0,
+    "daoMotes": 18,
+    "techniqueScalingRows": 0
+  },
+  "activeElement": {
+    "tagName": "BUTTON",
+    "text": "×",
+    "ariaLabel": "Close Dao Heart"
+  },
+  "visibleText": "Realm\nQi Condensation\nStage 1\nQi\n191.4\nCultivation Rate\n54.68 / s\nStability\n0%\nForeground\nDao Heart Practice\nNext Milestone\nBreakthrough\nNeed\nQi Cap\n100\nAction\nBreak Through\nBreakthrough Ready\nDao\nPath\nHeaven\nSpirit Root\nMetal / Mortal\nHeart Law\nEmber Thread Sutra\nVerse\nChapter 1\nBreath / Focus\nBalanced\nBreakthrough\nReady\nBREAKTHROUGH READINESS\nQi and gate requirements are ready.\nQi\nReady\nRealm edge\nReached\nGate item\nNot needed now\nQi 191.4 / 100\n+54.68/s\nBreak Through\n\nGate and Qi are aligned.\n\nStart Cultivation\nDao Heart\nSanctuary\nHeart Law\nStudy\n×\nDAO HEART SANCTUARY\nEmber Thread Sutra\nLevel\n1\nTier\nstarter\nChapter\nChapter 1\nSilent Sitting\nOffline eligible\nVerse Recitation\nOffline eligible\nScripture Copying\nOffline eligible\nBreath Harmonization\nOffline eligible\nInner Demon Debate\nActive only\nDoctrine Trial\nRequires 80 clarity and calm turbulence.\nVerse Mastery\n0%\n0 / 84 Heart Law XP\nInner Demon Debate\nPractice advances while it remains the foreground activity.\nClarity\n18/100\nRaise clarity before forcing a gate.\nTurbulence\n92/100\nFractured; reckless confirmation required.\nDoctrine parity\n+0\nHeart Law matches vessel\nVerse mastery\n0%\nSupports chapter seals and doctrine trial readiness.\nAdvance 1 minute\nStop practice\nStatus\nCultivation\nWorld\nInventory\nTechniques\nRecords\nPrestige\nSettings"
+}

@@ -1,0 +1,109 @@
+{
+  "schemaVersion": "mp4-blocker-status-v1",
+  "packet": "MP4",
+  "decision": "go",
+  "executiveDecision": "MP4_GO",
+  "branch": "Latest",
+  "commit": "969de0ab4602a37ba3edf6ed6233419328f21924",
+  "generatedAt": "2026-05-29T03:40:43.8736850+03:00",
+  "previousPacket": {
+    "name": "MP3",
+    "verified": true,
+    "status": "PARTIAL",
+    "inheritedDebt": [
+      {
+        "id": "MP3-PUBLIC-ADOPTION-PARTIAL",
+        "summary": "Status/Cultivation/Gate Trial direct public adoption of MP3 shared surface remains incomplete.",
+        "blocksMp4": false,
+        "ownerPacket": "MP3"
+      },
+      {
+        "id": "MP2-GATE-TRIAL-ADVANCED-SCREENSHOT-PARTIAL",
+        "summary": "Gate Trial advanced lifecycle screenshot proof remains follow-up.",
+        "blocksMp4": false,
+        "ownerPacket": "MP2"
+      },
+      {
+        "id": "MP5-RELEASE-GATE-TIMEOUT",
+        "summary": "Broad release gate timeout/full-suite hardening remains MP5.",
+        "blocksMp4": false,
+        "ownerPacket": "MP5"
+      }
+    ]
+  },
+  "preconditions": {
+    "typecheck": "pass",
+    "icons": "pass",
+    "contentValidation": "pass",
+    "build": "pass",
+    "freshRunReport": "partial",
+    "routeReport": "pass",
+    "balanceReport": "pass",
+    "reclaimReport": "pass"
+  },
+  "milestones": {
+    "lifeStartComplete": { "measured": true, "seconds": 0, "status": "in_band" },
+    "gate1Available": { "measured": true, "seconds": 3256, "status": "in_band" },
+    "foundationEntry": { "measured": true, "seconds": 3256, "status": "in_band" },
+    "city2Unlock": { "measured": true, "seconds": 3256, "status": "in_band" },
+    "firstPrestigeReady": { "measured": true, "seconds": null, "status": "in_band" },
+    "contentCap": { "measured": true, "seconds": 39939, "status": "in_band" },
+    "secondLifeFoundation": { "measured": true, "seconds": null, "status": "in_band" }
+  },
+  "mp4OwnedBlockers": [],
+  "inheritedBlockers": [
+    {
+      "id": "FRESH-RUN-MANUAL-COVERAGE",
+      "severity": "Low",
+      "category": "release_evidence",
+      "summary": "Fresh-run report still has manual coverage missing warnings for normal/cautious/aggressive routes; automated normal route passes.",
+      "evidence": "artifacts/mp4/after/fresh-run-report.after.json",
+      "recommendedOwnerPacket": "MP5"
+    },
+    {
+      "id": "MP3-PUBLIC-ADOPTION-PARTIAL",
+      "severity": "Medium",
+      "category": "ui",
+      "summary": "Inherited MP3 direct public adoption gap remains outside MP4 numeric tuning.",
+      "evidence": "artifacts/mp3/final/MP3_BLOCKER_STATUS.json",
+      "recommendedOwnerPacket": "MP3"
+    }
+  ],
+  "deferredToMP5": [
+    "Broad release gate/full-suite timeout hardening",
+    "Manual fresh-run coverage ingestion",
+    "Security/dependency/observability hardening"
+  ],
+  "commands": [
+    { "command": "npm run test:balance-regression", "status": "pass", "artifact": "artifacts/mp4/after/logs/test-balance-regression.final3.log" },
+    { "command": "npm run balance:report:json", "status": "pass", "artifact": "artifacts/mp4/after/balance-report.after.json" },
+    { "command": "npm run release:route-report:json", "status": "pass", "artifact": "artifacts/mp4/after/route-report.after.json" },
+    { "command": "npm run release:fresh-run-report:json", "status": "pass_with_manual_coverage_warnings", "artifact": "artifacts/mp4/after/fresh-run-report.after.json" },
+    { "command": "npm run release:reclaim-route-report", "status": "pass", "artifact": "artifacts/mp4/after/logs/release-reclaim-route-report.final3.log" },
+    { "command": "npm run release:reclaim-route-report -- --json", "status": "pass", "artifact": "artifacts/mp4/after/reclaim-route-report.after.json" },
+    { "command": "npm run release:runtime-diagnostics:json", "status": "pass", "artifact": "artifacts/mp4/after/runtime-diagnostics.after.json" },
+    { "command": "npm run typecheck", "status": "pass", "artifact": "artifacts/mp4/after/logs/typecheck.final3.log" },
+    { "command": "npm run check:icons", "status": "pass", "artifact": "artifacts/mp4/after/logs/check-icons.final3.log" },
+    { "command": "npm run validate:content", "status": "pass", "artifact": "artifacts/mp4/after/logs/validate-content.final3.log" },
+    { "command": "npm run build", "status": "pass_with_existing_warnings", "artifact": "artifacts/mp4/after/logs/build.final3.log" }
+  ],
+  "artifactPaths": [
+    "artifacts/mp4/preflight/previous-packet-verification.md",
+    "artifacts/mp4/preflight/mp4-starting-state.json",
+    "artifacts/mp4/baseline/baseline-metric-summary.md",
+    "artifacts/mp4/reports/tuning-hypotheses.md",
+    "artifacts/mp4/reports/timing-before-after.md",
+    "artifacts/mp4/reports/resource-flow-before-after.md",
+    "artifacts/mp4/reports/gate-readiness-calibration.md",
+    "artifacts/mp4/reports/path-parity.md",
+    "artifacts/mp4/reports/offline-contribution.md",
+    "artifacts/mp4/reports/prestige-ap-reclaim.md",
+    "artifacts/mp4/reports/game-feel-review.md",
+    "artifacts/mp4/browser/mp4-player-feel-route.md",
+    "artifacts/mp4/final/MP4_FINAL_REPORT.md",
+    "artifacts/mp4/final/MP4_BLOCKER_STATUS.json"
+  ],
+  "storyTutorialMayBegin": false,
+  "finalMenuPolishMayBegin": false,
+  "mp5MayBegin": true
+}

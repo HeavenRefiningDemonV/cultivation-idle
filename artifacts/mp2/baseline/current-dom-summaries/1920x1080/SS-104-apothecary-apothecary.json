@@ -1,0 +1,932 @@
+{
+  "viewport": "1920x1080",
+  "name": "Apothecary",
+  "url": "http://127.0.0.1:5173/",
+  "documentTitle": "cultivation-idle-temp",
+  "rootTestIds": [
+    "apothecary-exact-screen-owner",
+    "apothecary-exact-page",
+    "apothecary-exact-plane",
+    "apothecary-exact-room-atmosphere",
+    "apothecary-exact-header",
+    "apothecary-exact-city-chip",
+    "apothecary-exact-prep-strip",
+    "apothecary-exact-prescription",
+    "apothecary-exact-warnings",
+    "apothecary-exact-buy-lane",
+    "apothecary-exact-brew-lane",
+    "apothecary-exact-pouch-card",
+    "apothecary-exact-pouch-object",
+    "apothecary-exact-bottom-actions",
+    "apothecary-exact-primary-cta",
+    "apothecary-exact-return-gate",
+    "apothecary-exact-attempt-fit"
+  ],
+  "headings": [
+    "Apothecary",
+    "Apothecary",
+    "Prescription for Foundation Gate",
+    "Buy Stock",
+    "Brew Remedies",
+    "Medicine Pouch",
+    "Attempt Fit"
+  ],
+  "primaryCta": {
+    "text": "Open Apothecary",
+    "disabled": false,
+    "ariaLabel": null,
+    "rect": {
+      "x": 1565,
+      "y": 281,
+      "width": 310,
+      "height": 41,
+      "right": 1875,
+      "bottom": 322
+    }
+  },
+  "buttons": [
+    {
+      "text": "OutskirtsGold & Common MatsGold / Common MatsGold & Common Mats. Best used when you need gold, common materials, or low-risk combat reps.",
+      "disabled": false,
+      "ariaLabel": "Open Outskirts: Gold & Common Mats",
+      "rect": {
+        "x": 1021,
+        "y": 437,
+        "width": 180,
+        "height": 34,
+        "right": 1201,
+        "bottom": 471
+      }
+    },
+    {
+      "text": "RuinsTargeted MatsLocal Mats / Anchor DropTargeted Mats. Best used when you need targeted local materials and deterministic support rewards.",
+      "disabled": false,
+      "ariaLabel": "Open Ruins: Targeted Mats",
+      "rect": {
+        "x": 1285,
+        "y": 547,
+        "width": 180,
+        "height": 34,
+        "right": 1465,
+        "bottom": 581
+      }
+    },
+    {
+      "text": "Gate TrialGate ItemFoundation Pill / BreakthroughGate Item. Use this hall when the current gate item is ready for judgment.",
+      "disabled": false,
+      "ariaLabel": "Open Gate Trial: Gate Item",
+      "rect": {
+        "x": 1625,
+        "y": 711,
+        "width": 180,
+        "height": 34,
+        "right": 1805,
+        "bottom": 745
+      }
+    },
+    {
+      "text": "Manual PavilionBuild CorrectionManuals / Technique FragmentsBuild Correction. Best used when you need build correction, manuals, or technique growth.",
+      "disabled": false,
+      "ariaLabel": "Open Manual Pavilion: Build Correction",
+      "rect": {
+        "x": 1542,
+        "y": 138,
+        "width": 180,
+        "height": 34,
+        "right": 1722,
+        "bottom": 172
+      }
+    },
+    {
+      "text": "ApothecaryImmediate ReadinessHealing Stock / Preparation RemediesImmediate Readiness. Best used when you need immediate readiness through healing stock, remedies, or pouch prep.",
+      "disabled": false,
+      "ariaLabel": "Open Apothecary: Immediate Readiness",
+      "rect": {
+        "x": 511,
+        "y": 398,
+        "width": 180,
+        "height": 34,
+        "right": 691,
+        "bottom": 432
+      }
+    },
+    {
+      "text": "ForgePermanent FloorRefines / Temper / RunesPermanent Floor. Best used when you need permanent floor through refine, temper, or rune work.",
+      "disabled": false,
+      "ariaLabel": "Open Forge: Permanent Floor",
+      "rect": {
+        "x": 1061,
+        "y": 788,
+        "width": 180,
+        "height": 34,
+        "right": 1241,
+        "bottom": 822
+      }
+    },
+    {
+      "text": "BountiesMerit & RoutingMerit / Spirit StonesMerit & Routing. Best used when you need Merit, routing help, or directed support rewards.",
+      "disabled": false,
+      "ariaLabel": "Open Bounties: Merit & Routing",
+      "rect": {
+        "x": 456,
+        "y": 740,
+        "width": 178,
+        "height": 34,
+        "right": 634,
+        "bottom": 774
+      }
+    },
+    {
+      "text": "ExpeditionsPassive SupportHerbs / OrePassive Support. Best used when you need passive shortage smoothing for herbs, ore, or fragments.",
+      "disabled": false,
+      "ariaLabel": "Open Expeditions: Passive Support",
+      "rect": {
+        "x": 455,
+        "y": 793,
+        "width": 180,
+        "height": 34,
+        "right": 635,
+        "bottom": 827
+      }
+    },
+    {
+      "text": "Open Apothecary",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1565,
+        "y": 281,
+        "width": 310,
+        "height": 41,
+        "right": 1875,
+        "bottom": 322
+      }
+    },
+    {
+      "text": "Status",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 380,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 521,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "Cultivation",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 525,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 667,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "World",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 671,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 812,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "Inventory",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 816,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 958,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "Techniques",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 962,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 1104,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "Records",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1108,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 1249,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "Prestige",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1253,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 1395,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "Settings",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1399,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 1540,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 960,
+        "y": 540,
+        "width": 16,
+        "height": 6,
+        "right": 976,
+        "bottom": 546
+      }
+    },
+    {
+      "text": "Buy",
+      "disabled": false,
+      "ariaLabel": "Buy",
+      "rect": {
+        "x": 1120,
+        "y": 297,
+        "width": 71,
+        "height": 28,
+        "right": 1191,
+        "bottom": 325
+      }
+    },
+    {
+      "text": "Brew",
+      "disabled": false,
+      "ariaLabel": "Brew",
+      "rect": {
+        "x": 1196,
+        "y": 297,
+        "width": 71,
+        "height": 28,
+        "right": 1267,
+        "bottom": 325
+      }
+    },
+    {
+      "text": "Source",
+      "disabled": true,
+      "ariaLabel": "Source",
+      "rect": {
+        "x": 1272,
+        "y": 297,
+        "width": 71,
+        "height": 28,
+        "right": 1343,
+        "bottom": 325
+      }
+    },
+    {
+      "text": "Buy",
+      "disabled": false,
+      "ariaLabel": "Buy",
+      "rect": {
+        "x": 1120,
+        "y": 333,
+        "width": 71,
+        "height": 28,
+        "right": 1191,
+        "bottom": 361
+      }
+    },
+    {
+      "text": "Brew",
+      "disabled": false,
+      "ariaLabel": "Brew",
+      "rect": {
+        "x": 1196,
+        "y": 333,
+        "width": 71,
+        "height": 28,
+        "right": 1267,
+        "bottom": 361
+      }
+    },
+    {
+      "text": "Source",
+      "disabled": true,
+      "ariaLabel": "Source",
+      "rect": {
+        "x": 1272,
+        "y": 333,
+        "width": 71,
+        "height": 28,
+        "right": 1343,
+        "bottom": 361
+      }
+    },
+    {
+      "text": "Buy",
+      "disabled": false,
+      "ariaLabel": "Buy",
+      "rect": {
+        "x": 1120,
+        "y": 369,
+        "width": 71,
+        "height": 28,
+        "right": 1191,
+        "bottom": 397
+      }
+    },
+    {
+      "text": "Brew",
+      "disabled": false,
+      "ariaLabel": "Brew",
+      "rect": {
+        "x": 1196,
+        "y": 369,
+        "width": 71,
+        "height": 28,
+        "right": 1267,
+        "bottom": 397
+      }
+    },
+    {
+      "text": "Source",
+      "disabled": true,
+      "ariaLabel": "Source",
+      "rect": {
+        "x": 1272,
+        "y": 369,
+        "width": 71,
+        "height": 28,
+        "right": 1343,
+        "bottom": 397
+      }
+    },
+    {
+      "text": "Buy to Floor",
+      "disabled": false,
+      "ariaLabel": "Buy to Floor",
+      "rect": {
+        "x": 433,
+        "y": 653,
+        "width": 73,
+        "height": 36,
+        "right": 506,
+        "bottom": 688
+      }
+    },
+    {
+      "text": "Buy ×8",
+      "disabled": true,
+      "ariaLabel": "Buy ×8",
+      "rect": {
+        "x": 433,
+        "y": 716,
+        "width": 73,
+        "height": 36,
+        "right": 506,
+        "bottom": 752
+      }
+    },
+    {
+      "text": "Buy ×8",
+      "disabled": true,
+      "ariaLabel": "Buy ×8",
+      "rect": {
+        "x": 433,
+        "y": 780,
+        "width": 73,
+        "height": 36,
+        "right": 506,
+        "bottom": 816
+      }
+    },
+    {
+      "text": "Source Herb",
+      "disabled": false,
+      "ariaLabel": "Source Herb",
+      "rect": {
+        "x": 1031,
+        "y": 653,
+        "width": 90,
+        "height": 36,
+        "right": 1121,
+        "bottom": 688
+      }
+    },
+    {
+      "text": "Source Beast Blood",
+      "disabled": false,
+      "ariaLabel": "Source Beast Blood",
+      "rect": {
+        "x": 1031,
+        "y": 716,
+        "width": 90,
+        "height": 36,
+        "right": 1121,
+        "bottom": 752
+      }
+    },
+    {
+      "text": "Source Herb",
+      "disabled": false,
+      "ariaLabel": "Source Herb",
+      "rect": {
+        "x": 1031,
+        "y": 780,
+        "width": 90,
+        "height": 36,
+        "right": 1121,
+        "bottom": 816
+      }
+    },
+    {
+      "text": "Configure Pouch",
+      "disabled": false,
+      "ariaLabel": "Configure Pouch",
+      "rect": {
+        "x": 1282,
+        "y": 782,
+        "width": 326,
+        "height": 33,
+        "right": 1608,
+        "bottom": 815
+      }
+    },
+    {
+      "text": "Auto-fill Recommended",
+      "disabled": false,
+      "ariaLabel": "Auto-fill Recommended",
+      "rect": {
+        "x": 1282,
+        "y": 823,
+        "width": 326,
+        "height": 33,
+        "right": 1608,
+        "bottom": 856
+      }
+    },
+    {
+      "text": "Buy Missing",
+      "disabled": false,
+      "ariaLabel": "Buy Missing",
+      "rect": {
+        "x": 64,
+        "y": 941,
+        "width": 178,
+        "height": 62,
+        "right": 242,
+        "bottom": 1003
+      }
+    },
+    {
+      "text": "Brew Missing",
+      "disabled": true,
+      "ariaLabel": "Brew Missing",
+      "rect": {
+        "x": 251,
+        "y": 941,
+        "width": 178,
+        "height": 62,
+        "right": 429,
+        "bottom": 1003
+      }
+    },
+    {
+      "text": "Source Ingredients",
+      "disabled": false,
+      "ariaLabel": "Source Ingredients",
+      "rect": {
+        "x": 439,
+        "y": 941,
+        "width": 178,
+        "height": 62,
+        "right": 617,
+        "bottom": 1003
+      }
+    },
+    {
+      "text": "Prepare Foundation Package",
+      "disabled": false,
+      "ariaLabel": "Prepare Foundation Package",
+      "rect": {
+        "x": 675,
+        "y": 930,
+        "width": 488,
+        "height": 81,
+        "right": 1163,
+        "bottom": 1011
+      }
+    },
+    {
+      "text": "Return to Gate Trial",
+      "disabled": false,
+      "ariaLabel": "Return to Gate Trial",
+      "rect": {
+        "x": 1205,
+        "y": 941,
+        "width": 156,
+        "height": 62,
+        "right": 1360,
+        "bottom": 1003
+      }
+    }
+  ],
+  "scrollWidth": 1920,
+  "innerWidth": 1920,
+  "scrollHeight": 1080,
+  "innerHeight": 1080,
+  "suspectedClippedText": [
+    {
+      "text": "Gold & Common Mats",
+      "rect": {
+        "x": 1109,
+        "y": 443,
+        "width": 80,
+        "height": 11,
+        "right": 1188,
+        "bottom": 453
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Gold / Common Mats",
+      "rect": {
+        "x": 1109,
+        "y": 454,
+        "width": 80,
+        "height": 11,
+        "right": 1188,
+        "bottom": 465
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Gold & Common Mats. Best used when you need gold, common materials, or low-risk combat reps.",
+      "rect": {
+        "x": 1032,
+        "y": 453,
+        "width": 1,
+        "height": 1,
+        "right": 1033,
+        "bottom": 454
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Local Mats / Anchor Drop",
+      "rect": {
+        "x": 1354,
+        "y": 565,
+        "width": 98,
+        "height": 11,
+        "right": 1452,
+        "bottom": 575
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Targeted Mats. Best used when you need targeted local materials and deterministic support rewards.",
+      "rect": {
+        "x": 1296,
+        "y": 564,
+        "width": 1,
+        "height": 1,
+        "right": 1297,
+        "bottom": 565
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Foundation Pill / Breakthrough",
+      "rect": {
+        "x": 1717,
+        "y": 728,
+        "width": 75,
+        "height": 11,
+        "right": 1792,
+        "bottom": 739
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Gate Item. Use this hall when the current gate item is ready for judgment.",
+      "rect": {
+        "x": 1636,
+        "y": 727,
+        "width": 1,
+        "height": 1,
+        "right": 1637,
+        "bottom": 728
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Build Correction",
+      "rect": {
+        "x": 1668,
+        "y": 144,
+        "width": 41,
+        "height": 11,
+        "right": 1709,
+        "bottom": 155
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Manuals / Technique Fragments",
+      "rect": {
+        "x": 1668,
+        "y": 156,
+        "width": 41,
+        "height": 11,
+        "right": 1709,
+        "bottom": 166
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Build Correction. Best used when you need build correction, manuals, or technique growth.",
+      "rect": {
+        "x": 1553,
+        "y": 155,
+        "width": 1,
+        "height": 1,
+        "right": 1554,
+        "bottom": 156
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Immediate Readiness",
+      "rect": {
+        "x": 611,
+        "y": 404,
+        "width": 68,
+        "height": 11,
+        "right": 678,
+        "bottom": 415
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Healing Stock / Preparation Remedies",
+      "rect": {
+        "x": 611,
+        "y": 416,
+        "width": 68,
+        "height": 11,
+        "right": 678,
+        "bottom": 426
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Immediate Readiness. Best used when you need immediate readiness through healing stock, remedies, or pouch prep.",
+      "rect": {
+        "x": 522,
+        "y": 415,
+        "width": 1,
+        "height": 1,
+        "right": 523,
+        "bottom": 416
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Permanent Floor. Best used when you need permanent floor through refine, temper, or rune work.",
+      "rect": {
+        "x": 1072,
+        "y": 804,
+        "width": 1,
+        "height": 1,
+        "right": 1073,
+        "bottom": 805
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Merit & Routing. Best used when you need Merit, routing help, or directed support rewards.",
+      "rect": {
+        "x": 467,
+        "y": 756,
+        "width": 1,
+        "height": 1,
+        "right": 468,
+        "bottom": 757
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Passive Support",
+      "rect": {
+        "x": 556,
+        "y": 799,
+        "width": 65,
+        "height": 11,
+        "right": 622,
+        "bottom": 809
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Passive Support. Best used when you need passive shortage smoothing for herbs, ore, or fragments.",
+      "rect": {
+        "x": 466,
+        "y": 809,
+        "width": 1,
+        "height": 1,
+        "right": 467,
+        "bottom": 810
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Select city",
+      "rect": {
+        "x": 789,
+        "y": 39,
+        "width": 1,
+        "height": 1,
+        "right": 790,
+        "bottom": 40
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "ApothecaryUse gold and reagents to prepare the next serious attempt.Pinewind Hamlet · 1 Expedition Idle · 0 Tracked BountiesNext TestFoundation GateReadiness0 /",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 1920,
+        "height": 1080,
+        "right": 1920,
+        "bottom": 1080
+      },
+      "overflow": "hidden/hidden/hidden"
+    }
+  ],
+  "viewportIssues": [],
+  "consoleSinceStart": [
+    "1366x768 debug: [vite] connecting...",
+    "1366x768 debug: [vite] connected.",
+    "1366x768 info: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+    "1366x768 log: [App] Initializing game...",
+    "1366x768 log: [GameLoop] Initializing game...",
+    "1366x768 log: [GameLoop] Store dependencies wired",
+    "1366x768 log: [GameLoop] Prestige store initialized",
+    "1366x768 log: [SpiritRoot] Generated: Mortal earth (71% purity)",
+    "1366x768 log: [GameLoop] Generated initial spirit root",
+    "1366x768 log: [GameLoop] No save found, starting new game",
+    "1366x768 log: [GameLoop] Added starter items to inventory",
+    "1366x768 log: [GameLoop] Starting game loop...",
+    "1366x768 log: [GameLoop] Game loop started",
+    "1366x768 log: [GameLoop] Game initialized successfully",
+    "1366x768 log: [App] Game initialized successfully",
+    "1366x768 log: [App] Initializing game...",
+    "1366x768 log: [GameLoop] Initializing game...",
+    "1366x768 log: [GameLoop] Store dependencies wired",
+    "1366x768 log: [GameLoop] Prestige store initialized",
+    "1366x768 log: [GameLoop] No save found, starting new game",
+    "1366x768 warning: [GameLoop] Already running",
+    "1366x768 log: [GameLoop] Game initialized successfully",
+    "1366x768 log: [App] Game initialized successfully",
+    "1366x768 warning: [ContentValidation] Technique counts by path: Heaven=20, Earth=20, Martial=20",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=heaven: 6",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=earth: 6",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=martial: 6",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=heaven: 7",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=earth: 9",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=martial: 8",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=heaven: 9",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=earth: 9",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=martial: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=heaven: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=earth: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=martial: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=heaven: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=earth: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=martial: 10",
+    "1366x768 info: [Content] Loaded 5 cities, 60 techniques (H/E/M: 20/20/20)",
+    "1366x768 info: [Content] Prestige upgrades: 27",
+    "1366x768 log: [SaveLoad] Saving game...",
+    "1366x768 log: [SaveLoad] Game saved successfully at 28/05/2026, 22:56:33",
+    "1366x768 log: [SaveLoad] Saving game...",
+    "1366x768 log: [SaveLoad] Game saved successfully at 28/05/2026, 22:56:35",
+    "1366x768 log: [UI] Notification added: success - Life begins: Heaven • Ember Thread Sutra • Balanced",
+    "1366x768 log: [SaveLoad] Saving game...",
+    "1366x768 log: [SaveLoad] Game saved successfully at 28/05/2026, 22:56:35",
+    "1366x768 log: [UI] Active tab changed to: status",
+    "1366x768 log: [UI] Active tab changed to: adventure",
+    "1366x768 log: [UI] Active tab changed to: inventory",
+    "1366x768 warning: [Inventory] Missing item definition for rusty_sword",
+    "1366x768 warning: [Inventory] Missing item definition for worn_talisman",
+    "1366x768 warning: [Inventory] Missing item definition for health_pill",
+    "1366x768 warning: [Inventory] Missing item definition for spirit_stone",
+    "1366x768 log: [UI] Active tab changed to: techniques",
+    "1366x768 log: [UI] Active tab changed to: records",
+    "1366x768 log: [UI] Active tab changed to: prestige",
+    "1366x768 log: [UI] Active tab changed to: settings",
+    "1366x768 log: [UI] Active tab changed to: adventure",
+    "1366x768 warning: [audio] Unable to play sound ui_click_secondary NotSupportedError: Failed to load because no supported source was found.",
+    "1366x768 log: [SaveLoad] Saving game...",
+    "1366x768 log: [SaveLoad] Game saved successfully at 28/05/2026, 22:57:32",
+    "1366x768 log: [GameLoop] Game autosaved",
+    "1920x1080 debug: [vite] connecting...",
+    "1920x1080 debug: [vite] connected.",
+    "1920x1080 info: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+    "1920x1080 log: [App] Initializing game...",
+    "1920x1080 log: [GameLoop] Initializing game...",
+    "1920x1080 log: [GameLoop] Store dependencies wired",
+    "1920x1080 log: [GameLoop] Prestige store initialized",
+    "1920x1080 log: [SpiritRoot] Generated: Common metal (58% purity)",
+    "1920x1080 log: [GameLoop] Generated initial spirit root",
+    "1920x1080 log: [GameLoop] No save found, starting new game",
+    "1920x1080 log: [GameLoop] Added starter items to inventory",
+    "1920x1080 log: [GameLoop] Starting game loop...",
+    "1920x1080 log: [GameLoop] Game loop started",
+    "1920x1080 log: [GameLoop] Game initialized successfully",
+    "1920x1080 log: [App] Game initialized successfully",
+    "1920x1080 log: [App] Initializing game...",
+    "1920x1080 log: [GameLoop] Initializing game...",
+    "1920x1080 log: [GameLoop] Store dependencies wired",
+    "1920x1080 log: [GameLoop] Prestige store initialized",
+    "1920x1080 log: [GameLoop] No save found, starting new game",
+    "1920x1080 warning: [GameLoop] Already running",
+    "1920x1080 log: [GameLoop] Game initialized successfully",
+    "1920x1080 log: [App] Game initialized successfully",
+    "1920x1080 warning: [ContentValidation] Technique counts by path: Heaven=20, Earth=20, Martial=20",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=heaven: 6",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=earth: 6",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=martial: 6",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=heaven: 7",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=earth: 9",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=martial: 8",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=heaven: 9",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=earth: 9",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=martial: 10",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=heaven: 10",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=earth: 10",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=martial: 10",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=heaven: 10",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=earth: 10",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=martial: 10",
+    "1920x1080 info: [Content] Loaded 5 cities, 60 techniques (H/E/M: 20/20/20)",
+    "1920x1080 info: [Content] Prestige upgrades: 27",
+    "1920x1080 log: [SaveLoad] Saving game...",
+    "1920x1080 log: [SaveLoad] Game saved successfully at 28/05/2026, 22:57:37",
+    "1920x1080 log: [SaveLoad] Saving game...",
+    "1920x1080 log: [SaveLoad] Game saved successfully at 28/05/2026, 22:57:40",
+    "1920x1080 log: [UI] Notification added: success - Life begins: Heaven • Ember Thread Sutra • Balanced",
+    "1920x1080 log: [SaveLoad] Saving game...",
+    "1920x1080 log: [SaveLoad] Game saved successfully at 28/05/2026, 22:57:40",
+    "1920x1080 log: [UI] Active tab changed to: status",
+    "1920x1080 log: [UI] Active tab changed to: adventure",
+    "1920x1080 log: [UI] Active tab changed to: inventory",
+    "1920x1080 warning: [Inventory] Missing item definition for rusty_sword",
+    "1920x1080 warning: [Inventory] Missing item definition for worn_talisman",
+    "1920x1080 warning: [Inventory] Missing item definition for health_pill",
+    "1920x1080 warning: [Inventory] Missing item definition for spirit_stone",
+    "1920x1080 log: [UI] Active tab changed to: techniques",
+    "1920x1080 log: [UI] Active tab changed to: records",
+    "1920x1080 log: [UI] Active tab changed to: prestige",
+    "1920x1080 log: [UI] Active tab changed to: settings",
+    "1920x1080 log: [UI] Active tab changed to: adventure",
+    "1920x1080 warning: [audio] Unable to play sound ui_click_secondary NotSupportedError: Failed to load because no supported source was found."
+  ],
+  "textSample": "Outskirts\nGOLD & COMMON MATS\nGold / Common Mats\nGold & Common Mats. Best used when you need gold, common materials, or low-risk combat reps.\nRuins\nTARGETED MATS\nLocal Mats / Anchor Drop\nTargeted Mats. Best used when you need targeted local materials and deterministic support rewards.\nGate Trial\nGATE ITEM\nFoundation Pill / Breakthrough\nGate Item. Use this hall when the current gate item is ready for judgment.\nManual Pavilion\nBUILD CORRECTION\nManuals / Technique Fragments\nBuild Correction. Best used when you need build correction, manuals, or technique growth.\nApothecary\nIMMEDIATE READINESS\nHealing Stock / Preparation Remedies\nImmediate Readiness. Best used when you need immediate readiness through healing stock, remedies, or pouch prep.\nForge\nPERMANENT FLOOR\nRefines / Temper / Runes\nPermanent Floor. Best used when you need permanent floor through refine, temper, or rune work.\nBounties\nMERIT & ROUTING\nMerit / Spirit Stones\nMerit & Routing. Best used when you need Merit, routing help, or directed support rewards.\nExpeditions\nPASSIVE SUPPORT\nHerbs / Ore\nPassive Support. Best used when you need passive shortage smoothing for herbs, ore, or fragments.\nWORLD\nCity Phase: Pinewind Hamlet - foundations\nSelect city\nPinewind Hamlet\nStonecrag Town — Locked — Reach Foundation Establishment\nSpirit Cavern City — Locked — Reach Core Formation\nLotusford — Locked — Reach Nascent Soul\nIronpeak Bastion — Locked — Reach Soul Formation\nPressure: Qi, first medicines, and a stable starter build.\nExpedition Slot Idle\n\nPINEWIND HAMLET\n\nApothecary\n\nImmediate Readiness\n\nBest used when you need immediate readiness through healing stock, remedies, or pouch prep.\n\nHealing Stock\nPreparation Remedies\n\nRecommended here now: Apothecary.\n\nOpen Apothecary\nStatus\nCultivation\nWorld\nInventory\nTechniques\nRecords\nPrestige\nSettings\nApothecary\n\nUse gold and reagents to prepare the next serious attempt.\n\nPinewind Hamlet · 1 Expedition Idle · 0 Tracked Bounties\nNext Test\nFoundation Gate\nReadiness\n0 / 100\nHealing Floor\n0 / 12\nSpecialty Stock\n0 / 4\nPouch\n0 / 3 Set\nGold\n1000\nQueue\nIdle\nPrescription for Foundation Gate\n\nRecommended stock before attempting the gate.\n\nItem\nOwned\nRecommended\nMissing\nActions\nHealing Pellet\n0\n20\n20\nBuy\nBrew\nSource\nIronblood Pellet\n0\n8\n8\nBuy\nBrew\nSource\nQi Elixir\n0\n8\n8\nBuy\nBrew\nSource\nHealing below floor\nNo city specialty stock\nBreakthrough prep missing\nBuy Stock\n\nFast · costs gold · limited city supply\n\nHealing Pellet\n40\nCity stock: Open\nBuy to Floor\nIronblood Pellet\n250\nCity stock: 10\nBuy ×8\nQi Elixir\n300\nCity stock: 10\nBuy ×8\nBrew Remedies\n\nEfficient · uses reagents · queue-based\n\nHealing Pellet ×21\nCommon Herb Bundle\n0 / 14\nSource Herb\nIronblood Pellet ×8\nBeast Blood\n0 / 16\nSource Beast Blood\nQi Elixir ×8\nCommon Herb Bundle\n0 / 24\nSource Herb\nMedicine Pouch\n\n0 / 3 slots configured\n\nHealing: empty\nUtility: empty\nSpecialty: empty\nGate Fit: Underfilled\nConfigure Pouch\nAuto-fill Recommended\nBuy Missing\nBrew Missing\nSource Ingredients\nPrepare Foundation Package\nReturn to Gate Trial\nAttempt Fit\nNext Fix:\nStock Healing\nGate Fit:\nRisky\nMissing:\n20 Healing · 8 Ironblood · 8 Qi · Pouch Slots"
+}

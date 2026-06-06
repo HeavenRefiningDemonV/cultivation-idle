@@ -816,7 +816,27 @@
 .techniquesExactEmptyState {
   display: grid;
   place-items: center;
+  align-content: center;
+  gap: 7px;
+  min-height: 100%;
+  padding: 18px;
+  text-align: center;
   color: var(--tech-ink-soft);
+}
+
+.techniquesExactEmptyState strong {
+  color: var(--tech-ink);
+  font-size: clamp(16px, 1vw, 20px);
+}
+
+.techniquesExactEmptyState span {
+  max-width: 520px;
+  line-height: 1.28;
+}
+
+.techniquesExactEmptyState__button {
+  width: min(280px, 100%);
+  margin-top: 4px;
 }
 
 .techniquesExactRightRail {
@@ -1078,6 +1098,254 @@
       "left right"
       "library library";
     overflow: auto;
+  }
+}
+
+@media (max-width: 1500px), (max-height: 820px) {
+  .techniquesExactPage {
+    --tech-left-rail-width: 278px;
+    --tech-right-rail-width: 332px;
+    --tech-top-height: 104px;
+    --tech-library-height: 178px;
+    --tech-gap: 8px;
+    padding: 8px 14px 84px;
+    overflow: auto;
+  }
+
+  .techniquesExactTop {
+    grid-template-columns: minmax(210px, 0.5fr) minmax(260px, 0.78fr) minmax(0, 1fr) minmax(220px, 0.58fr);
+    padding: 7px 10px;
+  }
+
+  .techniquesExactTitleBlock h1 {
+    font-size: clamp(34px, 3vw, 46px);
+  }
+
+  .techniquesExactTitleBlock p {
+    margin-top: 5px;
+    font-size: 14px;
+  }
+
+  .techniquesExactDiagnosis {
+    grid-template-columns: 46px minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .techniquesExactDiagnosis__seal {
+    width: 44px;
+    height: 44px;
+    font-size: 20px;
+  }
+
+  .techniquesExactDiagnosis h2 {
+    font-size: 20px;
+  }
+
+  .techniquesExactDiagnosis p {
+    margin-bottom: 5px;
+    font-size: 14px;
+    line-height: 1.15;
+  }
+
+  .techniquesExactTopBadges {
+    grid-template-columns: minmax(120px, 1fr) minmax(104px, 0.75fr);
+    gap: 7px;
+  }
+
+  .techniquesExactPlaque,
+  .techniquesExactAiSeal {
+    min-height: 46px;
+    padding: 6px 8px;
+    font-size: 17px;
+  }
+
+  .techniquesExactLeftRail,
+  .techniquesExactInspector,
+  .techniquesExactReadiness {
+    padding: 9px;
+  }
+
+  .techniquesExactLeftRail {
+    gap: 9px;
+    grid-template-rows: auto minmax(116px, 0.82fr) auto auto;
+  }
+
+  .techniquesExactLeftRail h2,
+  .techniquesExactRailSection h3,
+  .techniquesExactInspector h2,
+  .techniquesExactReadiness h2,
+  .techniquesExactLibrary h2,
+  .techniquesExactFormMetrics h2 {
+    font-size: 17px;
+    padding: 4px 8px;
+  }
+
+  .techniquesExactLoadoutRow {
+    min-height: 52px;
+    grid-template-columns: 28px minmax(0, 1fr) 58px;
+  }
+
+  .techniquesExactAiGrid,
+  .techniquesExactCastingGrid {
+    gap: 6px;
+    margin-top: 6px;
+  }
+
+  .techniquesExactAiButton,
+  .techniquesExactCastingButton {
+    height: 56px;
+    grid-template-rows: 24px 1fr;
+  }
+
+  .techniquesExactAiButton span,
+  .techniquesExactCastingButton span {
+    width: 24px;
+    height: 24px;
+  }
+
+  .techniquesExactWarning,
+  .techniquesExactCastingHelper {
+    min-height: 28px;
+    margin-top: 5px;
+    padding: 5px 7px;
+    font-size: 12px;
+  }
+
+  .techniquesExactAltar__ring {
+    inset: 12px clamp(46px, 6vw, 82px);
+  }
+
+  .techniquesExactAltar__orb {
+    width: clamp(124px, 12vw, 170px);
+  }
+
+  .techniquesExactAltar__orb > span {
+    font-size: clamp(44px, 5vw, 68px);
+  }
+
+  .techniquesExactSlot {
+    width: clamp(104px, 8.6vw, 128px);
+    height: 92px;
+  }
+
+  .techniquesExactSlot[data-slot="active-0"] { left: 25%; top: 4%; }
+  .techniquesExactSlot[data-slot="active-1"] { right: 18%; top: 6%; }
+  .techniquesExactSlot[data-slot="passive-0"] { left: 9%; top: 35%; }
+  .techniquesExactSlot[data-slot="passive-1"] { right: 6%; top: 35%; }
+  .techniquesExactSlot[data-slot="passive-2"] { left: 26%; bottom: 9%; }
+  .techniquesExactSlot[data-slot="ultimate-0"] { right: 18%; bottom: 9%; }
+  .techniquesExactSlot[data-slot="support-0"] { left: 26%; bottom: 9%; }
+
+  .techniquesExactSlot__button {
+    height: 68px;
+    grid-template-columns: 32px minmax(0, 1fr);
+    grid-template-rows: 16px 1fr 16px;
+    gap: 1px 6px;
+  }
+
+  .techniquesExactSlot__label,
+  .techniquesExactSlot__button small {
+    font-size: 11px;
+  }
+
+  .techniquesExactSlot__icon {
+    width: 30px;
+    height: 30px;
+  }
+
+  .techniquesExactSlot__actions {
+    height: 22px;
+    margin-top: 2px;
+  }
+
+  .techniquesExactSlot__actions button {
+    font-size: 11px;
+  }
+
+  .techniquesExactFormMetrics {
+    width: min(610px, 88%);
+    margin-bottom: 4px;
+    padding: 5px 10px;
+  }
+
+  .techniquesExactFormMetrics > div {
+    min-height: 20px;
+    gap: 10px;
+    font-size: 14px;
+  }
+
+  .techniquesExactFeedback {
+    min-height: 18px;
+    margin-top: 3px;
+    font-size: 13px;
+  }
+
+  .techniquesExactLibrary__header {
+    grid-template-columns: 190px minmax(0, 1fr) 130px;
+    gap: 7px;
+    padding: 6px 8px;
+  }
+
+  .techniquesExactFilterChips {
+    gap: 5px;
+    overflow: hidden;
+  }
+
+  .techniquesExactFilterChip {
+    height: 26px;
+    padding-inline: 8px;
+  }
+
+  .techniquesExactTechniqueRows {
+    grid-auto-rows: 38px;
+    padding: 0 8px 8px;
+  }
+
+  .techniquesExactRightRail {
+    grid-template-rows: minmax(318px, 1fr) minmax(194px, 0.5fr);
+    gap: 8px;
+  }
+
+  .techniquesExactInspector {
+    grid-template-rows: auto auto minmax(0, 1fr) auto auto auto;
+    gap: 5px;
+  }
+
+  .techniquesExactInspector__hero {
+    min-height: 62px;
+    grid-template-columns: 48px minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  .techniquesExactInspector__icon {
+    width: 42px;
+    height: 42px;
+  }
+
+  .techniquesExactInspector__hero strong {
+    font-size: 22px;
+  }
+
+  .techniquesExactFactList,
+  .techniquesExactReadinessRows {
+    gap: 4px;
+  }
+
+  .techniquesExactFactRow,
+  .techniquesExactReadinessRows > div {
+    min-height: 24px;
+    grid-template-columns: minmax(84px, 0.62fr) minmax(0, 1fr);
+  }
+
+  .techniquesExactRecommendation {
+    min-height: 44px;
+    padding: 6px 8px;
+  }
+
+  .techniquesExactPrimaryButton,
+  .techniquesExactSecondaryButton,
+  .techniquesExactManualButton {
+    min-height: 32px;
   }
 }
 

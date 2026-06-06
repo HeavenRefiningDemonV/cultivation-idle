@@ -1,10 +1,28 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import test from 'node:test';
 
-const listScript = path.resolve(process.cwd(), 'tmp-progression-fixtures', 'scripts', 'listProgressionFixtures.js');
-const validateScript = path.resolve(process.cwd(), 'tmp-progression-fixtures', 'scripts', 'validateProgressionFixtures.js');
+const fixtureOutputRoot = path.resolve(process.cwd(), '.tmp', 'progression-fixtures');
+const listScript = path.join(fixtureOutputRoot, 'scripts', 'listProgressionFixtures.js');
+const validateScript = path.join(fixtureOutputRoot, 'scripts', 'validateProgressionFixtures.js');
+
+test('progression fixture output avoids the tracked legacy temp tree', () => {
+  const tsconfig = JSON.parse(readFileSync(path.resolve(process.cwd(), 'tsconfig.progression-fixtures.json'), 'utf8')) as {
+    compilerOptions?: { outDir?: string };
+  };
+  const pkg = JSON.parse(readFileSync(path.resolve(process.cwd(), 'package.json'), 'utf8')) as {
+    scripts?: Record<string, string>;
+  };
+
+  assert.equal(tsconfig.compilerOptions?.outDir, './.tmp/progression-fixtures');
+  assert.match(pkg.scripts?.['build:progression-fixtures'] ?? '', /tsconfig\.progression-fixtures\.json/);
+  assert.match(pkg.scripts?.['progression:fixtures'] ?? '', /\.tmp\/progression-fixtures\/scripts\/listProgressionFixtures\.js/);
+  assert.match(pkg.scripts?.['validate:progression-fixtures'] ?? '', /\.tmp\/progression-fixtures\/scripts\/validateProgressionFixtures\.js/);
+  assert.match(pkg.scripts?.['progression:matrix'] ?? '', /\.tmp\/progression-fixtures\/scripts\/validateProgressionFixtures\.js --matrix/);
+  assert.match(pkg.scripts?.['test:progression-fixtures'] ?? '', /\.tmp\/progression-fixtures\/tests\/contracts\/\*\.js/);
+});
 
 test('fixture listing script supports human and JSON output', () => {
   const human = spawnSync(process.execPath, [listScript, '--packet=1.3'], {

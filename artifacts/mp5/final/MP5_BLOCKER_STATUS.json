@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "mp5-blocker-status-v1",
+  "generatedAt": "2026-06-03",
+  "mp5Targeted": {
+    "verdict": "GO",
+    "blockers": [],
+    "evidence": [
+      "artifacts/mp5/final/release-gate-mp5-slice.final.json",
+      "artifacts/mp5/final/commands/test-mp5.stdout.log",
+      "artifacts/mp5/final/mp5-balance-simulations.final.json",
+      "artifacts/mp5/final/telemetry-export.final.json",
+      "artifacts/mp5/final/offline-route-report.final.txt"
+    ]
+  },
+  "fullRelease": {
+    "verdict": "NO_GO",
+    "overallPass": false,
+    "releaseReady": false,
+    "unresolvedBlockerCount": 5,
+    "unresolvedWaiverCandidateCount": 4,
+    "pendingManualCount": 1,
+    "blockers": [
+      {
+        "id": "fresh_run_manual_pending",
+        "area": "fresh_run_acceptance",
+        "message": "Required manual fresh-run coverage is incomplete.",
+        "evidence": "artifacts/mp5/final/fresh-run-report.final.json"
+      },
+      {
+        "id": "migration_matrix_failed",
+        "area": "migration_matrix",
+        "message": "Migration matrix failed fixture current-save.",
+        "evidence": "artifacts/mp5/final/migration-matrix.final.json"
+      },
+      {
+        "id": "balance_regression_command_failed",
+        "area": "balance_regression",
+        "message": "npm run balance:report:json returned non-zero.",
+        "evidence": "artifacts/mp5/final/commands/balance-report-json.stderr.log"
+      },
+      {
+        "id": "route_comparison_command_failed",
+        "area": "route_comparison",
+        "message": "npm run release:route-report:json returned non-zero inside the full release gate.",
+        "evidence": "artifacts/mp5/final/release-gate.final.json"
+      },
+      {
+        "id": "test_suite_timeout",
+        "area": "full_test_suite",
+        "message": "npm run test timed out after 180530 ms inside the full release gate.",
+        "evidence": "artifacts/mp5/final/release-gate.final.json"
+      }
+    ],
+    "capturedFailureText": [
+      "Error: Timing probe ended without milestone: spirit_severing_entry"
+    ]
+  }
+}

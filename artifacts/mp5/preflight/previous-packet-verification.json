@@ -1,0 +1,121 @@
+{
+    "schemaVersion":  "mp5-previous-packet-verification-v1",
+    "packet":  "MP5",
+    "previousPacket":  "MP4",
+    "verified":  true,
+    "decision":  "MP4_GO",
+    "currentBranch":  "Latest",
+    "currentCommit":  "969de0ab4602a37ba3edf6ed6233419328f21924",
+    "artifactCommit":  "969de0ab4602a37ba3edf6ed6233419328f21924",
+    "artifactCommitMatchesCheckout":  true,
+    "mp4MayBeginMp5":  true,
+    "storyTutorialMayBeginBeforeMp5":  false,
+    "finalMenuPolishMayBeginBeforeMp5":  false,
+    "commands":  [
+                     {
+                         "command":  "npm run typecheck",
+                         "status":  "pass",
+                         "exitCode":  0,
+                         "durationSeconds":  0.393,
+                         "artifact":  "artifacts/mp5/preflight/logs-direct/typecheck.log"
+                     },
+                     {
+                         "command":  "npm run check:icons",
+                         "status":  "pass",
+                         "exitCode":  0,
+                         "durationSeconds":  0.396,
+                         "artifact":  "artifacts/mp5/preflight/logs-direct/check-icons.log"
+                     },
+                     {
+                         "command":  "npm run validate:content",
+                         "status":  "pass",
+                         "exitCode":  0,
+                         "durationSeconds":  1.123,
+                         "artifact":  "artifacts/mp5/preflight/logs-direct/validate-content.log"
+                     },
+                     {
+                         "command":  "npm run build",
+                         "status":  "pass",
+                         "exitCode":  0,
+                         "durationSeconds":  7.375,
+                         "artifact":  "artifacts/mp5/preflight/logs-direct/build.log"
+                     },
+                     {
+                         "command":  "npm run balance:report:json",
+                         "status":  "pass",
+                         "exitCode":  0,
+                         "durationSeconds":  44.515,
+                         "artifact":  "artifacts/mp5/preflight/logs-direct/balance-report-json.log"
+                     },
+                     {
+                         "command":  "npm run release:route-report:json",
+                         "status":  "pass",
+                         "exitCode":  0,
+                         "durationSeconds":  64.371,
+                         "artifact":  "artifacts/mp5/preflight/logs-direct/release-route-report-json.log"
+                     },
+                     {
+                         "command":  "npm run release:fresh-run-report:json",
+                         "status":  "pass",
+                         "exitCode":  0,
+                         "durationSeconds":  48.154,
+                         "artifact":  "artifacts/mp5/preflight/logs-direct/release-fresh-run-report-json.log"
+                     },
+                     {
+                         "command":  "npm run release:reclaim-route-report -- --json",
+                         "status":  "pass",
+                         "exitCode":  0,
+                         "durationSeconds":  32.215,
+                         "artifact":  "artifacts/mp5/preflight/logs-direct/release-reclaim-route-report-json.log"
+                     },
+                     {
+                         "command":  "npm run release:runtime-diagnostics:json",
+                         "status":  "pass",
+                         "exitCode":  0,
+                         "durationSeconds":  9.728,
+                         "artifact":  "artifacts/mp5/preflight/logs-direct/release-runtime-diagnostics-json.log"
+                     }
+                 ],
+    "inheritedDebt":  [
+                          {
+                              "id":  "FRESH-RUN-MANUAL-COVERAGE",
+                              "ownerPacket":  "MP5",
+                              "blocksMp5":  false,
+                              "blocksFinalGo":  true,
+                              "mp5Disposition":  "fix_or_formally_waive",
+                              "evidence":  "artifacts/mp4/after/fresh-run-report.after.json",
+                              "summary":  "Manual coverage missing warnings remain for normal/cautious/aggressive fresh-run routes even though automated normal route passes."
+                          },
+                          {
+                              "id":  "MP3-PUBLIC-ADOPTION-PARTIAL",
+                              "ownerPacket":  "MP3",
+                              "blocksMp5":  false,
+                              "blocksFinalGo":  false,
+                              "mp5Disposition":  "track_defer_unless_browser_regression",
+                              "evidence":  "artifacts/mp3/final/MP3_BLOCKER_STATUS.json",
+                              "summary":  "Status/Cultivation/Gate Trial direct public adoption partial inherited from MP3; MP4 classified it nonblocking for numeric tuning."
+                          },
+                          {
+                              "id":  "MP2-GATE-TRIAL-ADVANCED-SCREENSHOT-PARTIAL",
+                              "ownerPacket":  "MP2",
+                              "blocksMp5":  false,
+                              "blocksFinalGo":  false,
+                              "mp5Disposition":  "track_and_cover_if_browser_harness_available",
+                              "evidence":  "artifacts/mp4/final/MP4_BLOCKER_STATUS.json",
+                              "summary":  "Advanced Gate Trial lifecycle screenshot proof remains follow-up."
+                          },
+                          {
+                              "id":  "MP5-RELEASE-GATE-TIMEOUT",
+                              "ownerPacket":  "MP5",
+                              "blocksMp5":  false,
+                              "blocksFinalGo":  true,
+                              "mp5Disposition":  "fix_or_classify_in_mp5_release_gate_phase",
+                              "evidence":  "artifacts/mp4/final/MP4_BLOCKER_STATUS.json",
+                              "summary":  "Broad release gate/full-suite timeout hardening was intentionally deferred to MP5."
+                          }
+                      ],
+    "blockingFindings":  [
+
+                         ],
+    "mp5CanProceed":  true
+}

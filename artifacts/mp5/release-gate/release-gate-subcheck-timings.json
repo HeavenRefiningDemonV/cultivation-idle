@@ -1,0 +1,101 @@
+[
+  {
+    "checkId": "runtime_content_manifest",
+    "status": "pass",
+    "elapsedMs": 3,
+    "blockerCount": 0,
+    "warningCount": 0,
+    "pendingManualCount": 0,
+    "commandOrBuilder": "buildRuntimeContentManifestReport"
+  },
+  {
+    "checkId": "build_audit",
+    "status": "warning",
+    "elapsedMs": 17505,
+    "blockerCount": 0,
+    "warningCount": 1,
+    "pendingManualCount": 0,
+    "commandOrBuilder": "npm run release:build-audit:json"
+  },
+  {
+    "checkId": "content_validation",
+    "status": "pass",
+    "elapsedMs": 1283,
+    "blockerCount": 0,
+    "warningCount": 0,
+    "pendingManualCount": 0,
+    "commandOrBuilder": "npm run validate:content"
+  },
+  {
+    "checkId": "progression_contract",
+    "status": "warning",
+    "elapsedMs": 12,
+    "blockerCount": 0,
+    "warningCount": 4,
+    "pendingManualCount": 0,
+    "commandOrBuilder": "buildProgressionContract + collectProgressionDiagnostics"
+  },
+  {
+    "checkId": "fresh_run_acceptance",
+    "status": "pending_manual",
+    "elapsedMs": 54713,
+    "blockerCount": 1,
+    "warningCount": 3,
+    "pendingManualCount": 1,
+    "commandOrBuilder": "npm run release:fresh-run-report:json"
+  },
+  {
+    "checkId": "migration_matrix",
+    "status": "pass",
+    "elapsedMs": 10485,
+    "blockerCount": 0,
+    "warningCount": 0,
+    "pendingManualCount": 0,
+    "commandOrBuilder": "npm run release:migration-matrix:json"
+  },
+  {
+    "checkId": "balance_regression",
+    "status": "pass",
+    "elapsedMs": 50092,
+    "blockerCount": 0,
+    "warningCount": 0,
+    "pendingManualCount": 0,
+    "commandOrBuilder": "npm run balance:report:json"
+  },
+  {
+    "checkId": "route_comparison",
+    "status": "warning",
+    "elapsedMs": 73427,
+    "blockerCount": 0,
+    "warningCount": 1,
+    "pendingManualCount": 0,
+    "commandOrBuilder": "npm run release:route-report:json"
+  },
+  {
+    "checkId": "runtime_diagnostics",
+    "status": "pass",
+    "elapsedMs": 10135,
+    "blockerCount": 0,
+    "warningCount": 0,
+    "pendingManualCount": 0,
+    "commandOrBuilder": "npm run release:runtime-diagnostics:json"
+  },
+  {
+    "checkId": "vocabulary_audit",
+    "status": "pass",
+    "elapsedMs": 884,
+    "blockerCount": 0,
+    "warningCount": 0,
+    "pendingManualCount": 0,
+    "commandOrBuilder": "npm run release:vocab-audit:json"
+  },
+  {
+    "checkId": "full_test_suite",
+    "status": "fail",
+    "elapsedMs": 166357,
+    "blockerCount": 1,
+    "warningCount": 0,
+    "pendingManualCount": 0,
+    "commandOrBuilder": "npm run test"
+  }
+]

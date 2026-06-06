@@ -1,0 +1,40 @@
+{
+  "url": "http://127.0.0.1:5174/?cultivationExactMode=fixture",
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "reducedMotion": false,
+  "noHorizontalOverflow": true,
+  "scrollWidth": 1440,
+  "innerWidth": 1440,
+  "rootSelector": "[data-testid=\"cultivation-exact-page\"]",
+  "rootAttributes": {
+    "data-testid": "cultivation-exact-page",
+    "data-state": "cultivating",
+    "data-mode": "fixture",
+    "data-root-test-id": "cultivation-exact-page",
+    "data-fx-quality": "medium",
+    "data-reduced-motion": "false"
+  },
+  "testIds": [
+    "cultivation-exact-page",
+    "cultivation-dantian-anchor",
+    "cultivation-breakthrough-readiness",
+    "cultivation-qi-lane"
+  ],
+  "mp6Rows": {
+    "cultivationRiskRows": 3,
+    "cultivationReadinessSections": 1,
+    "gateRows": 0,
+    "trainingMotes": 0,
+    "daoMotes": 0,
+    "techniqueScalingRows": 0
+  },
+  "activeElement": {
+    "tagName": "BODY",
+    "text": "Realm Qi Condensation Stage 7 Qi 5.5M Cultivation Rate 292.25 / s Stability 0% Foreground Cultivating Next Milestone Push Qi Need Qi Cap 24.4M Action Continue Cultivation Cultivating Dao Path Heaven Spirit Root Fire / Rare Heart Law Ember Thread Sutra Verse Chapter 1 Breath / Focus Balanced Breakthrough Cultivating BREAKTHROUGH READINESS Qi is still gathering toward the next threshold. Qi 18.9M short Realm edge Reached Gate item Not needed now Qi 5.5M / 24.4M +292.25/s Stop Cultivation Qi Cap 24.4M Break Through Status Cultivation World Inventory Techniques Records Prestige Settings",
+    "ariaLabel": null
+  },
+  "visibleText": "Realm\nQi Condensation\nStage 7\nQi\n5.5M\nCultivation Rate\n292.25 / s\nStability\n0%\nForeground\nCultivating\nNext Milestone\nPush Qi\nNeed\nQi Cap\n24.4M\nAction\nContinue Cultivation\nCultivating\nDao\nPath\nHeaven\nSpirit Root\nFire / Rare\nHeart Law\nEmber Thread Sutra\nVerse\nChapter 1\nBreath / Focus\nBalanced\nBreakthrough\nCultivating\nBREAKTHROUGH READINESS\nQi is still gathering toward the next threshold.\nQi\n18.9M short\nRealm edge\nReached\nGate item\nNot needed now\nQi 5.5M / 24.4M\n+292.25/s\nStop Cultivation\n\nQi Cap 24.4M\n\nBreak Through\nStatus\nCultivation\nWorld\nInventory\nTechniques\nRecords\nPrestige\nSettings"
+}

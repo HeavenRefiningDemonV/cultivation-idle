@@ -119,7 +119,7 @@ void test('Gate Trial Exact G4 renders recommended prep, fail-safe, and Gate Cor
   for (const copy of [
     'Recommended',
     'Recommended Prep',
-    'Refine or temper gear',
+    'Stabilize weapon floor',
     'Boost stats with pills',
     'Upgrade major techniques',
     'Complete one Ruin support run',

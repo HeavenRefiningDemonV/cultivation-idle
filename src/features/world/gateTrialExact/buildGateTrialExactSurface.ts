@@ -31,6 +31,7 @@ import { useInventoryStore, type InventoryState } from '../../../stores/inventor
 import { useMedicinePouchStore } from '../../../stores/medicinePouchStore.js';
 import { useRuinsStore } from '../../../stores/ruinsStore.js';
 import { useTechniqueStore } from '../../../stores/techniqueStore.js';
+import { useTrainingStore } from '../../../stores/trainingStore.js';
 import { useTrialStore, type TrialProgress } from '../../../stores/trialStore.js';
 import { resolveModuleRef } from '../../../components/screens/world/worldUtils.js';
 import { getTrialGateItemId, getTrialGateRewardBundle } from '../../../systems/progression/runtime/gateResolver.js';
@@ -47,6 +48,7 @@ import {
 import { buildFailureReflectionSurface, useFailureReflectionStore } from '../../../systems/failureReflection/index.js';
 import { buildLiveCombatAftermathSurface } from '../../combatAftermath/index.js';
 import { getTrialGateIndex } from '../../../services/diagnostics/balanceTelemetryService.js';
+import { buildTrainingReadOnlySnapshot, createTrainingRuntimeContent, type TrainingReadOnlySnapshot } from '../../../systems/training/index.js';
 
 import {
   GATE_TRIAL_EXACT_REGION_ORDER,
@@ -113,6 +115,7 @@ interface LiveResolvedContext {
   gateItemDisplayName: string;
   missingDataFallbacks: string[];
   postFailureSuggestionCount: number;
+  trainingSnapshot: TrainingReadOnlySnapshot | null;
 }
 
 function createExactShellFlags(): GateTrialExactSurfaceV1['shell'] {
@@ -920,6 +923,13 @@ function resolveLiveContext(cityId: string, trialId: string | null): LiveResolve
   const bossName = contentStore.maps.enemiesById[trialDef.bossId]?.name ?? readinessSurface?.bossName ?? 'Gate Guardian';
   if (!contentStore.maps.enemiesById[trialDef.bossId]) missingDataFallbacks.push('Boss name used Gate Guardian fallback.');
   if (!gateItemId) missingDataFallbacks.push('Gate reward item unavailable.');
+  const trainingSnapshot = buildTrainingReadOnlySnapshot({
+    content: createTrainingRuntimeContent(contentStore.raw),
+    state: useTrainingStore.getState().toSaveState(),
+    selectedPath: game.selectedPath,
+    realmIndex: game.realm.index,
+    substageIndex: Math.max(0, game.realm.substage - 1),
+  });
 
   const scoreFallbackInput = {
     activeEquippedCount,
@@ -961,6 +971,7 @@ function resolveLiveContext(cityId: string, trialId: string | null): LiveResolve
     gateItemDisplayName,
     missingDataFallbacks,
     postFailureSuggestionCount,
+    trainingSnapshot,
   };
 }
 
@@ -1197,6 +1208,10 @@ function buildLiveRecommendedPanel(context: LiveResolvedContext): GateTrialExact
   const loadoutComplete = context.metrics.activeEquippedCount >= 2 && context.metrics.passiveEquippedCount >= 1;
   const boostStatsMet = context.metrics.healingQty >= 12 || useMedicinePouchStore.getState().slots.utility.equippedItemId !== null;
   const refineGearMet = context.metrics.weaponRefineLevel >= 5 || context.metrics.hasTemperedGear;
+  const pathTrainingMet = (context.trainingSnapshot?.pathFoundation.progressPct ?? 0) >= 40;
+  const pathTrainingDetail = context.trainingSnapshot?.path
+    ? `${context.trainingSnapshot.pathFoundation.valueLabel}; bottleneck ${context.trainingSnapshot.currentBottleneck?.displayName ?? 'none'}.`
+    : 'Choose a path before Training Hall foundation can be read.';
   const topFixes = buildLiveTopFixes(context);
   const supportRun = buildGateTrialSupportRunSurface(context);
   const safetyNetButton: GateTrialButtonSurface = context.lifecycle.isResolved
@@ -1246,6 +1261,7 @@ function buildLiveRecommendedPanel(context: LiveResolvedContext): GateTrialExact
     recommendedPrepTitle: 'Recommended Prep',
     prepRows: [
       makeChecklistRow('refineGear', 'Stabilize weapon floor', refineGearMet ? 'Gear floor looks stable.' : 'Weapon refine is below +5.', statusFromBoolean(refineGearMet), refineGearMet ? 'statusCheck' : 'statusWarning', 'forge'),
+      makeChecklistRow('pathTraining', 'Raise Path Training', pathTrainingDetail, statusFromBoolean(pathTrainingMet), pathTrainingMet ? 'statusCheck' : 'statusWarning', 'trainingHall'),
       makeChecklistRow('boostStats', 'Boost stats with pills', boostStatsMet ? 'Healing or support medicine prepared.' : 'Healing stock is below the recommended floor.', statusFromBoolean(boostStatsMet), boostStatsMet ? 'statusCheck' : 'statusWarning', 'apothecary'),
       makeChecklistRow('upgradeTechniques', 'Upgrade major techniques', loadoutComplete ? 'Loadout floor is filled.' : 'Fill at least two active and one passive slot.', statusFromBoolean(loadoutComplete), loadoutComplete ? 'statusCheck' : 'statusWarning', 'techniques'),
       makeChecklistRow('ruinSupportRun', 'Complete one Ruin support run', supportRun.detail, supportRun.source === LIVE_SOURCE ? 'success' : 'warning', supportRun.source === LIVE_SOURCE ? 'statusCheck' : 'statusWarning', 'ruins'),

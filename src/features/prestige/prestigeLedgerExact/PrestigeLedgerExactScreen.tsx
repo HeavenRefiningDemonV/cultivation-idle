@@ -25,6 +25,11 @@ export function PrestigeLedgerExactScreen({
 }: PrestigeLedgerExactScreenProps) {
   const reclaimObjective = surface.postResetReclaimObjective ?? null;
   const primaryReclaimAction = reclaimObjective?.firstActions[0] ?? null;
+  const compactIdentityRows = surface.currentLifeLedger.identityRows.slice(0, 2);
+  const compactWallRow = surface.currentLifeLedger.progressRows.find((row) => /wall|required|ready/i.test(row.label))
+    ?? surface.currentLifeLedger.progressRows.find((row) => row.emphasis === 'warning')
+    ?? surface.currentLifeLedger.progressRows[0]
+    ?? null;
 
   return (
     <main
@@ -101,6 +106,25 @@ export function PrestigeLedgerExactScreen({
       <section className="prestigeLedgerCard prestigeLedgerCard--ledger parchmentPanel" aria-labelledby="prestige-ledger-current-title">
         <div className="prestigeLedgerCard__stamp" aria-hidden="true" />
         <h2 id="prestige-ledger-current-title">{surface.currentLifeLedger.title}</h2>
+
+        <div className="prestigeLedgerCompactTruth" aria-label="Current life compact truth">
+          {compactIdentityRows.map((row) => (
+            <div key={`compact-${row.label}`} className="prestigeLedgerCompactTruth__row">
+              <span>{row.label}</span>
+              <strong>{row.value}</strong>
+            </div>
+          ))}
+          {compactWallRow ? (
+            <div className="prestigeLedgerCompactTruth__row prestigeLedgerCompactTruth__row--warning">
+              <span>{compactWallRow.label}</span>
+              <strong>{compactWallRow.value}</strong>
+            </div>
+          ) : null}
+          <div className="prestigeLedgerCompactTruth__ap">
+            <span>{surface.currentLifeLedger.projectedGainLabel}</span>
+            <strong>{surface.currentLifeLedger.projectedGainValue}</strong>
+          </div>
+        </div>
 
         <section className="prestigeLedgerSection">
           <h3>Life Identity</h3>
@@ -208,6 +232,65 @@ export function PrestigeLedgerExactScreen({
 
       <aside className="prestigeLedgerCard prestigeLedgerCard--preview parchmentPanel" aria-label="Next life preview and recommended decrees">
         <div className="prestigeLedgerCard__mountain" aria-hidden="true" />
+        <section
+          id="prestige-reclaim-memory"
+          className="prestigeReclaimMemoryPanel"
+          data-testid={surface.reclaimMemory.rootTestId}
+          aria-label="Prestige Reclaim Memory"
+        >
+          <header className="prestigeReclaimMemoryPanel__header">
+            <div>
+              <h2>{surface.reclaimMemory.title}</h2>
+              <p>{surface.reclaimMemory.currentRouteLabel}</p>
+            </div>
+            <button type="button" className="prestigeLedgerButton prestigeLedgerButton--secondary" aria-controls="prestige-reclaim-memory">
+              Open Reclaim Memory
+            </button>
+          </header>
+          <div className="prestigeReclaimMemoryPanel__summary" aria-label="Reclaim memory summary">
+            <span>Active: {surface.reclaimMemory.summary.activeCount}</span>
+            <span>Partial: {surface.reclaimMemory.summary.partialCount}</span>
+            <span>Dormant: {surface.reclaimMemory.summary.dormantCount}</span>
+            <span>Reclaimed: {surface.reclaimMemory.summary.atPriorBestCount}</span>
+          </div>
+          {surface.reclaimMemory.emptyState ? (
+            <p className="prestigeReclaimMemoryPanel__empty">{surface.reclaimMemory.emptyState}</p>
+          ) : (
+            <div className="prestigeReclaimMemoryPanel__rows">
+              {surface.reclaimMemory.rows.slice(0, 4).map((row) => (
+                <article key={row.id} className={`prestigeReclaimMemoryRow prestigeReclaimMemoryRow--${row.state}`}>
+                  <div className="prestigeReclaimMemoryRow__title">
+                    <span>{row.title}</span>
+                    <strong>{row.stateLabel}</strong>
+                  </div>
+                  <p>{row.playerReason}</p>
+                  <dl className="prestigeReclaimMemoryRow__inspector">
+                    <div>
+                      <dt>Effect</dt>
+                      <dd>{row.inspector.mechanicalEffectLabel}</dd>
+                    </div>
+                    <div>
+                      <dt>Stop</dt>
+                      <dd>{row.stopConditionLabel}</dd>
+                    </div>
+                    <div>
+                      <dt>Safety</dt>
+                      <dd>{row.inspector.safetyLabel}</dd>
+                    </div>
+                  </dl>
+                  <div className="prestigeReclaimMemoryRow__actions">
+                    {row.actions.map((action) => (
+                      <button key={action.label} type="button" className="prestigeLedgerButton prestigeLedgerButton--secondary">
+                        {action.label}
+                      </button>
+                    ))}
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
+        </section>
+
         <section className="prestigeLedgerPreview">
           <h2>Next Life Preview</h2>
           <ul>

@@ -24,8 +24,10 @@ import { getDefaultUnlockedHeartLawIds, useHeartLawStore } from '../stores/heart
 import { useManualPavilionStore } from '../stores/manualPavilionStore.js';
 import { useManualSatchelStore } from '../stores/manualSatchelStore.js';
 import { useMedicinePouchStore } from '../stores/medicinePouchStore.js';
+import { useOnboardingStore } from '../stores/onboardingStore.js';
 import { useCraftSessionStore } from '../stores/craftSessionStore.js';
 import { useRecipeMasteryStore } from '../stores/recipeMasteryStore.js';
+import { useTrainingStore } from '../stores/trainingStore.js';
 import { usePavilionStore } from '../stores/pavilionStore.js';
 import { useStoryStore } from '../features/story/storyStore.js';
 import { useContentStore } from '../stores/contentStore.js';
@@ -40,6 +42,8 @@ import {
   sanitizeDaoMandateGuidanceSettings,
 } from '../systems/ui/daoMandate/daoMandateGuidanceSettings.js';
 import { sanitizeDaoMandateLessonMemory } from '../systems/ui/daoMandate/daoMandateLessons.js';
+import { createTrainingRuntimeContent, sanitizeTrainingSaveState } from '../systems/training/index.js';
+import { sanitizePrestigeMemoryLedger } from '../systems/prestige/prestigeMemory.js';
 import { PERF_LABELS, startTimer, time } from '../services/performance/index.js';
 
 /**
@@ -55,6 +59,18 @@ type SaveRuinsState = NonNullable<SaveData['ruinsState']>;
 type SaveRuinsRunSummary = NonNullable<SaveRuinsState['runHistory']>[number];
 
 let lastLoadedSaveData: SaveData | null = null;
+
+function sanitizeFiniteNumberRecord(value: unknown, maxValue?: number): Record<string, number> {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return {};
+  return Object.fromEntries(
+    Object.entries(value as Record<string, unknown>)
+      .filter(([key, entry]) => key.trim().length > 0 && typeof entry === 'number' && Number.isFinite(entry))
+      .map(([key, entry]) => [
+        key,
+        maxValue === undefined ? entry as number : Math.min(maxValue, Math.max(0, entry as number)),
+      ]),
+  );
+}
 let lastLoadMigrationReport: import('../save/migrations/index.js').MigrationRunReport | null = null;
 export type SaveLoadFailureCode =
   | 'NO_VALID_SAVE_FOUND'
@@ -182,9 +198,11 @@ function gatherGameState(): SaveData {
   const heartLawState = useHeartLawStore.getState();
   const manualPavilionState = useManualPavilionStore.getState();
   const manualSatchelState = useManualSatchelStore.getState();
+  const onboardingState = useOnboardingStore.getState();
   const medicinePouchState = useMedicinePouchStore.getState();
   const craftSessionState = useCraftSessionStore.getState();
   const recipeMasteryState = useRecipeMasteryStore.getState();
+  const trainingState = useTrainingStore.getState();
   const pavilionState = usePavilionStore.getState();
   const storyState = useStoryStore.getState();
   const activityState = useActivityStore.getState();
@@ -227,6 +245,7 @@ function gatherGameState(): SaveData {
       runStartTime: prestigeState.runStartTime,
       rerollCount: prestigeState.rerollCount,
       spiritRoot: prestigeState.spiritRoot,
+      memoryLedger: sanitizePrestigeMemoryLedger(prestigeState.memoryLedger),
     },
 
     inventoryState: {
@@ -237,6 +256,7 @@ function gatherGameState(): SaveData {
     craftSessionState: craftSessionState.toSaveState(),
     medicinePouchState: medicinePouchState.toSaveState(),
     recipeMasteryState: recipeMasteryState.toSaveState(),
+    trainingState: trainingState.toSaveState(),
     pavilionState: pavilionState.toSaveState(),
     storyState: storyState.toSaveState(),
 
@@ -308,6 +328,13 @@ function gatherGameState(): SaveData {
       activeCultivationConsumables: heartLawState.activeCultivationConsumables.map((entry) => ({ ...entry, modifiers: { ...entry.modifiers } })),
       insightProgressMs: heartLawState.insightProgressMs,
       insightTargetMs: heartLawState.insightTargetMs ?? null,
+      heartLawLevelById: { ...heartLawState.heartLawLevelById },
+      heartLawXpById: { ...heartLawState.heartLawXpById },
+      verseMasteryByLawId: { ...heartLawState.verseMasteryByLawId },
+      daoHeartClarity: heartLawState.daoHeartClarity,
+      turbulence: heartLawState.turbulence,
+      branchChoicesByLawId: { ...heartLawState.branchChoicesByLawId },
+      rootResonanceByPair: { ...heartLawState.rootResonanceByPair },
     },
 
     manualPavilionState: {
@@ -315,6 +342,7 @@ function gatherGameState(): SaveData {
     },
 
     manualSatchelState: cloneManualSatchelState(manualSatchelState.toSaveState()),
+    onboardingState: onboardingState.toSaveState(),
 
     techniqueState: {
       loadouts: techniqueState.loadouts,
@@ -1027,9 +1055,20 @@ function applySaveData(saveData: SaveData): void {
       saveData.techCollectionState ?? defaults.techCollectionState ?? { unlockedTechs: {}, fragments: {}, rngSeed: undefined };
     const activityState = saveData.activityState ?? defaults.activityState ?? { active: null, lastChangedAt: null, history: [] };
     const savedActivity = (activityState.active as ActiveActivity | null | undefined) ?? null;
-    const sanitizedActivity = savedActivity && COMBAT_ACTIVITY_TYPES.includes(savedActivity.type)
+    let sanitizedActivity = savedActivity && COMBAT_ACTIVITY_TYPES.includes(savedActivity.type)
       ? null
       : savedActivity;
+    const trainingRuntimeContent = useContentStore.getState().raw
+      ? createTrainingRuntimeContent(useContentStore.getState().raw!)
+      : null;
+    const trainingState = sanitizeTrainingSaveState(
+      saveData.trainingState ?? defaults.trainingState,
+      trainingRuntimeContent,
+      { activeActivityType: sanitizedActivity?.type ?? null },
+    );
+    if (sanitizedActivity?.type === 'path_training' && (!trainingState.activeRegimenId || !trainingState.activeIntensityId)) {
+      sanitizedActivity = null;
+    }
     const outskirtsState =
       saveData.outskirtsState ?? defaults.outskirtsState ?? { progressByOutskirtsId: {}, autoContinue: true, stopAtBoss: false };
     const heartLawState =
@@ -1056,6 +1095,7 @@ function applySaveData(saveData: SaveData): void {
   const recipeMasteryState = saveData.recipeMasteryState ?? defaults.recipeMasteryState ?? { alchemy: {} };
   const pavilionState = saveData.pavilionState ?? defaults.pavilionState;
   const storyState = saveData.storyState ?? defaults.storyState;
+  const onboardingState = saveData.onboardingState ?? defaults.onboardingState;
 
     // Restore spirit root (fallback to reroll for old saves)
     const spiritRoot = saveData.prestigeState?.spiritRoot ?? saveData.gameState.spiritRoot;
@@ -1088,6 +1128,7 @@ function applySaveData(saveData: SaveData): void {
         state.highestRealmReached = prestigeState.highestRealmReached;
         state.runStartTime = prestigeState.runStartTime;
         state.rerollCount = prestigeState.rerollCount;
+        state.memoryLedger = sanitizePrestigeMemoryLedger(prestigeState.memoryLedger);
       });
     }
 
@@ -1309,6 +1350,25 @@ function applySaveData(saveData: SaveData): void {
         typeof (heartLawState as any).insightTargetMs === 'number' && Number.isFinite((heartLawState as any).insightTargetMs)
           ? (heartLawState as any).insightTargetMs
           : null,
+      heartLawLevelById: sanitizeFiniteNumberRecord((heartLawState as any).heartLawLevelById),
+      heartLawXpById: sanitizeFiniteNumberRecord((heartLawState as any).heartLawXpById),
+      verseMasteryByLawId: sanitizeFiniteNumberRecord((heartLawState as any).verseMasteryByLawId, 100),
+      daoHeartClarity:
+        typeof (heartLawState as any).daoHeartClarity === 'number' && Number.isFinite((heartLawState as any).daoHeartClarity)
+          ? Math.min(100, Math.max(0, (heartLawState as any).daoHeartClarity))
+          : 0,
+      turbulence:
+        typeof (heartLawState as any).turbulence === 'number' && Number.isFinite((heartLawState as any).turbulence)
+          ? Math.min(100, Math.max(0, (heartLawState as any).turbulence))
+          : 0,
+      branchChoicesByLawId:
+        (heartLawState as any).branchChoicesByLawId && typeof (heartLawState as any).branchChoicesByLawId === 'object'
+          ? Object.fromEntries(
+              Object.entries((heartLawState as any).branchChoicesByLawId)
+                .filter((entry): entry is [string, string] => typeof entry[1] === 'string'),
+            )
+          : {},
+      rootResonanceByPair: sanitizeFiniteNumberRecord((heartLawState as any).rootResonanceByPair, 100),
     });
 
     const manualSatchelState = saveData.manualSatchelState ?? defaults.manualSatchelState ?? {
@@ -1319,6 +1379,7 @@ function applySaveData(saveData: SaveData): void {
     const manualPavilionState = saveData.manualPavilionState ?? defaults.manualPavilionState;
     useManualPavilionStore.getState().hydrate(manualPavilionState);
     useManualSatchelStore.getState().hydrate(manualSatchelState);
+    useOnboardingStore.getState().hydrate(onboardingState);
 
     const hydratedRuinProgress = Object.fromEntries(
       Object.entries(ruinsState.progressByRuinId ?? {}).map(([ruinId, progress]) => [
@@ -1395,6 +1456,7 @@ function applySaveData(saveData: SaveData): void {
       lastChangedAt: activityState.lastChangedAt ?? null,
       history: Array.isArray(activityState.history) ? ([...activityState.history] as any) : [],
     });
+    useTrainingStore.getState().hydrateFromSave(trainingState, { activeActivityType: sanitizedActivity?.type ?? null });
 
     useOutskirtsStore.setState({
       progressByOutskirtsId: {
@@ -1534,6 +1596,7 @@ export function deleteSave(): boolean {
     useCraftSessionStore.getState().hardReset();
     useMedicinePouchStore.getState().hardReset();
     useRecipeMasteryStore.getState().hardReset();
+    useTrainingStore.getState().hardResetTraining();
     usePavilionStore.getState().hardResetPavilionUiOnly();
     useStoryStore.getState().hydrateFromSave();
 
@@ -1623,6 +1686,12 @@ export function deleteSaveAndHardReset(): void {
     useRecipeMasteryStore.getState().hardReset();
   } catch (error) {
     console.warn('[deleteSaveAndHardReset] Failed to reset recipe mastery', error);
+  }
+
+  try {
+    useTrainingStore.getState().hardResetTraining();
+  } catch (error) {
+    console.warn('[deleteSaveAndHardReset] Failed to reset training state', error);
   }
 
   try {

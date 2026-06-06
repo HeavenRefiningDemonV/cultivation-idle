@@ -32,6 +32,18 @@ export function OfflineProgressModal() {
             <span>Efficiency</span>
             <span className={'offlineProgressModalEmphasis'}>{surface.efficiency.label}</span>
           </div>
+          {surface.foregroundFocus && (
+            <>
+              <div className={'offlineProgressModalSummaryRow'}>
+                <span>Foreground Focus</span>
+                <span className={'offlineProgressModalEmphasis'}>{surface.foregroundFocus.label}</span>
+              </div>
+              <div className={'offlineProgressModalSummaryRow offlineProgressModalSummaryRowStacked'}>
+                <span>Paused systems</span>
+                <span>{surface.foregroundFocus.pausedLabel}</span>
+              </div>
+            </>
+          )}
           {visibleRows.map((row) => (
             <div key={row.kind} className={'offlineProgressModalSummaryRow'}>
               <span>{row.label}</span>

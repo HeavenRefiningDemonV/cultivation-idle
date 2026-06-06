@@ -1,7 +1,7 @@
 # Release Sign-off Sheet
 
 ## Release candidate identity
-- generatedAt: 2026-05-28T12:57:25.063Z
+- generatedAt: 2026-06-05T16:10:25.135Z
 - releaseDecision: NO_GO
 - cleanPass: false
 - acceptedWaiverCount: 0
@@ -96,6 +96,11 @@
 | build_audit_blocker | blocker | blocker | from_check | blocker | fix before GO | balance_regression |
 | build_audit_blocker | blocker | blocker | from_check | blocker | fix before GO | route_comparison |
 | build_audit_blocker | blocker | blocker | from_check | blocker | fix before GO | runtime_diagnostics |
+| build_audit_blocker | blocker | blocker | from_check | blocker | fix before GO | mp5_reset_memory |
+| build_audit_blocker | blocker | blocker | from_check | blocker | fix before GO | mp5_offline_trust |
+| build_audit_blocker | blocker | blocker | from_check | blocker | fix before GO | mp5_telemetry_schema |
+| build_audit_blocker | blocker | blocker | from_check | blocker | fix before GO | mp5_balance_simulations |
+| build_audit_blocker | blocker | blocker | from_check | blocker | fix before GO | mp5_prestige_runtime_audit |
 | build_audit_blocker | blocker | blocker | from_check | blocker | fix before GO | vocabulary_audit |
 | build_audit_blocker | blocker | blocker | from_check | blocker | fix before GO | full_test_suite |
 

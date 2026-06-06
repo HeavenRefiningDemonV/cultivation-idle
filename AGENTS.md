@@ -28,6 +28,7 @@ React + TypeScript + Vite with Zustand for state, Headless UI for primitives, an
 - Favor small, cohesive modules over monoliths; share reusable UI primitives instead of duplicating patterns.
 
 ## Loop integration / Codex packet guardrails
+- Always identify the active packet before editing. Keep work inside that packet; document adjacent issues instead of fixing them opportunistically.
 - Treat progression contract, gate resolver, trial lifecycle, city progression runtime, RewardService, CombatStore, and PrestigeResetService as source-truth systems. Do not duplicate their logic in screens.
 - Exact screens and feature screens should render typed surfaces. Store reads and action wiring belong in owners, controllers, or builders; pure visual components should not mutate stores.
 - Reward application must remain centralized in RewardService. UI code must never grant currencies, items, manuals, fragments, comprehension, or gate proof directly.
@@ -37,6 +38,14 @@ React + TypeScript + Vite with Zustand for state, Headless UI for primitives, an
 - Every implementation packet should leave evidence: commands run, tests added or updated, changed files, unresolved blockers, and skipped checks with reasons.
 - Avoid greenfield rewrites. Prefer adapters, typed surfaces, manifests, tests, and release checks over broad replacement.
 - No destructive art/UI cutover: do not remove old scenic/base art or exact-screen visual ownership until a completed replacement is visible, wired, and accepted for that exact screen.
+
+## Release/test guardrails
+- Do not hide release blockers by deleting assertions, lowering severity, accepting unowned waivers, or skipping failing checks.
+- Do not lower or redefine playable content-cap targets just to make reports pass.
+- A waiver is valid only with owner, reason, evidence, and expiry condition; pending waivers do not unblock release.
+- Preserve release evidence under documented artifact paths: command logs, release JSON, route/balance/reclaim reports, screenshots, visual diffs, and security/audit output.
+- After release/test/fixture changes, run the targeted command that failed, repeat repaired commands when they involve generated output, and run the applicable baseline commands: `npm run typecheck`, `npm run check:icons`, `npm run validate:content`, `npm run build`, `npm run test:contracts`, and `npm run release:gate:json`.
+- No emoji glyphs as UI icons. Use existing icon systems, SVG, CSS medallions, or approved assets.
 
 ## Status V3 old-look recovery and public Dao/Omen decommission guardrails
 

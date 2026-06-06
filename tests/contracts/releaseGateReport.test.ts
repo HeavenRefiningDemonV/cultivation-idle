@@ -150,6 +150,25 @@ void test('route comparison adapter accepts string warnings without converting t
   assert.equal(result.findings[0]?.message, 'high_skill:timing_outside_locked_envelope');
 });
 
+void test('full test suite adapter reports command timeout as a specific release blocker', async () => {
+  const result = await runReleaseGateAdapter('full_test_suite', {
+    runCommand: () => ({
+      exitCode: 124,
+      stdout: '',
+      stderr: 'Command timed out after 180000ms.',
+      timedOut: true,
+      durationMs: 180_000,
+    }),
+  });
+
+  assert.equal(result.status, 'fail');
+  assert.equal(result.blockerCount, 1);
+  assert.equal(result.summary, 'Full test suite timed out.');
+  assert.equal(result.findings[0]?.title, 'test_suite_timeout');
+  assert.equal(result.findings[0]?.message, 'npm run test timed out after 180000ms.');
+  assert.equal(result.commandEvidence?.timedOut, true);
+});
+
 void test('known issues markdown classifies waivers/debt by matched ledger entries and keeps unmatched findings untracked', async () => {
   const overrides = Object.fromEntries(
     RELEASE_GATE_MANIFEST.map((entry) => [entry.checkId, async () => stubResult(entry.checkId, 'pass')]),

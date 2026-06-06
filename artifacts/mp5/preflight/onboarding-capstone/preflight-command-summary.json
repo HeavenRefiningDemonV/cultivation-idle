@@ -1,0 +1,42 @@
+[
+    {
+        "name":  "tsconfig-tests",
+        "command":  "npm exec tsc -- --project tsconfig.tests.json",
+        "status":  "PASS",
+        "exitCode":  0,
+        "durationSeconds":  13.504,
+        "log":  "artifacts\\mp5\\preflight\\onboarding-capstone\\logs\\tsconfig-tests.preflight.log"
+    },
+    {
+        "name":  "typecheck",
+        "command":  "npm run typecheck",
+        "status":  "PASS",
+        "exitCode":  0,
+        "durationSeconds":  0.716,
+        "log":  "artifacts\\mp5\\preflight\\onboarding-capstone\\logs\\typecheck.preflight.log"
+    },
+    {
+        "name":  "check-icons",
+        "command":  "npm run check:icons",
+        "status":  "PASS",
+        "exitCode":  0,
+        "durationSeconds":  0.715,
+        "log":  "artifacts\\mp5\\preflight\\onboarding-capstone\\logs\\check-icons.preflight.log"
+    },
+    {
+        "name":  "validate-content",
+        "command":  "npm run validate:content",
+        "status":  "PASS",
+        "exitCode":  0,
+        "durationSeconds":  1.735,
+        "log":  "artifacts\\mp5\\preflight\\onboarding-capstone\\logs\\validate-content.preflight.log"
+    },
+    {
+        "name":  "targeted-onboarding-suite",
+        "command":  "node --loader=./scripts/relativeJsLoader.mjs --test tmp-tests/tests/contracts/onboardingMilestoneContract.test.js tmp-tests/tests/integration/onboardingMigration.test.js tmp-tests/tests/contracts/onboardingPolicy.test.js tmp-tests/tests/integration/onboardingModuleGating.test.js tmp-tests/tests/contracts/onboardingMilestoneSurface.test.js tmp-tests/tests/integration/onboardingUiState.test.js tmp-tests/tests/integration/onboardingFreshSaveFlow.test.js tmp-tests/tests/integration/onboardingSourceSinkGuards.test.js",
+        "status":  "PASS",
+        "exitCode":  0,
+        "durationSeconds":  0.978,
+        "log":  "artifacts\\mp5\\preflight\\onboarding-capstone\\logs\\targeted-onboarding-suite.preflight.log"
+    }
+]

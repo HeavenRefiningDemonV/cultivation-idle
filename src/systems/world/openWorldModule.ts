@@ -3,8 +3,17 @@ import { useCityStore } from '../../stores/cityStore.js';
 import { useContentStore } from '../../stores/contentStore.js';
 import { useActivityStore } from '../../stores/activityStore.js';
 import { useCombatStore } from '../../stores/combatStore.js';
+import { useGameStore } from '../../stores/gameStore.js';
+import { useOnboardingStore } from '../../stores/onboardingStore.js';
 import { SEMESTER_SLICE_CONTRACT } from '../progression/contract/semesterSlice.js';
 import { inspectWorldFacingModuleTarget } from './liveWorldLeakAudit.js';
+import { DEFERRED_WORLD_MODULES } from './liveWorldSchema.js';
+import { buildOnboardingWorldModulePolicy } from '../onboarding/onboardingWorldModulePolicy.js';
+import {
+  guardOnboardingWorldModuleRoute,
+  isOnboardingExactFixtureOrCaptureModeEnabled,
+  shouldEnforceOnboardingRouteGuards,
+} from '../onboarding/onboardingRouteGuards.js';
 import {
   getWorldTravelBlockMessage,
   getWorldTravelGuard,
@@ -26,7 +35,7 @@ export function isCombatModule(moduleKey: string): boolean {
   return COMBAT_MODULE_KEYS.has(moduleKey);
 }
 
-export function openWorldModule({ cityId, moduleKey, open = true, intent }: OpenWorldModuleArgs): void {
+export function openWorldModule({ cityId, moduleKey, open = true, source, intent }: OpenWorldModuleArgs): void {
   const uiStore = useUIStore.getState();
   const cityStore = useCityStore.getState();
   const contentStore = useContentStore.getState();
@@ -43,6 +52,33 @@ export function openWorldModule({ cityId, moduleKey, open = true, intent }: Open
 
   const city = contentStore.maps.citiesById[cityId];
   if (!city || !city.modules.includes(normalizedModuleKey)) return;
+
+  if (shouldEnforceOnboardingRouteGuards(source)) {
+    const onboardingStore = useOnboardingStore.getState();
+    const onboardingPolicy = buildOnboardingWorldModulePolicy({
+      activeMilestoneId: onboardingStore.activeMilestoneId,
+      completedMilestoneIds: onboardingStore.completedMilestoneIds,
+      unlockedWorldModules: onboardingStore.unlockedWorldModules,
+      teaserWorldModules: onboardingStore.teaserWorldModules,
+      selectedCityModuleKeys: city.modules,
+      deferredWorldModuleKeys: DEFERRED_WORLD_MODULES,
+      firstLifeOnlyComplete: onboardingStore.firstLifeOnlyComplete,
+      devOverride: onboardingStore.devOverride,
+      isExistingAdvancedSave: useGameStore.getState().realm.index > 0,
+      exactFixtureOrCaptureMode: isOnboardingExactFixtureOrCaptureModeEnabled(),
+    });
+    const onboardingGuard = guardOnboardingWorldModuleRoute({
+      policy: onboardingPolicy,
+      moduleKey: normalizedModuleKey,
+      intent,
+      source,
+    });
+
+    if (!onboardingGuard.allowed) {
+      uiStore.addNotification('warning', onboardingGuard.reason ?? 'This city service unlocks later.');
+      return;
+    }
+  }
 
   const travelGuard = getWorldTravelGuard({
     targetCityId: cityId,

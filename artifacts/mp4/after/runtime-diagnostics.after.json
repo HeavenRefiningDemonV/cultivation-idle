@@ -1,0 +1,216 @@
+{
+  "schemaVersion": "7.4c-runtime-cli",
+  "generatedAt": 1780015139638,
+  "scenarios": {
+    "clean_baseline": {
+      "schemaVersion": "7.4c",
+      "generatedAt": 1780015139636,
+      "overallPass": true,
+      "errorCount": 0,
+      "warningCount": 0,
+      "repairableCount": 0,
+      "nonRepairableCount": 0,
+      "groupedSections": [],
+      "issues": [],
+      "notes": [
+        "Safe repair boundary is conservative: only unambiguous clamps/removals are auto-repaired.",
+        "Scenario intent: Loaded clean runtime state should produce no error-level diagnostics."
+      ],
+      "scenarioStatus": "PASS",
+      "expectedNegative": false,
+      "expectedIssueIds": [],
+      "actualIssueIds": [],
+      "unexpectedIssueIds": [],
+      "missingExpectedIssueIds": [],
+      "releaseGateBlocking": false,
+      "summary": "Clean runtime scenario produced no error-level diagnostics."
+    },
+    "seeded_runtime_residue": {
+      "schemaVersion": "7.4c",
+      "generatedAt": 1780015139638,
+      "overallPass": false,
+      "errorCount": 3,
+      "warningCount": 0,
+      "repairableCount": 3,
+      "nonRepairableCount": 0,
+      "groupedSections": [
+        {
+          "id": "inventory",
+          "errorCount": 1,
+          "warningCount": 0,
+          "repairableCount": 1,
+          "entries": [
+            {
+              "id": "inventory_item_invalid_bad_item",
+              "severity": "error",
+              "message": "Item bad_item has invalid quantity (-10)",
+              "hint": "Quantities should be whole numbers and non-negative.",
+              "domain": "inventory",
+              "repairable": true,
+              "safeRepairActionId": "clamp_inventory"
+            }
+          ]
+        },
+        {
+          "id": "manuals",
+          "errorCount": 1,
+          "warningCount": 0,
+          "repairableCount": 1,
+          "entries": [
+            {
+              "id": "manual_missing_tech_0",
+              "severity": "error",
+              "message": "Manual entry missing technique id",
+              "domain": "manuals",
+              "repairable": true,
+              "safeRepairActionId": "remove_invalid_manual"
+            }
+          ]
+        },
+        {
+          "id": "techniques",
+          "errorCount": 1,
+          "warningCount": 0,
+          "repairableCount": 1,
+          "entries": [
+            {
+              "id": "fragment_invalid_bad_tech",
+              "severity": "error",
+              "message": "Fragment count for bad_tech is invalid (-2)",
+              "hint": "Fragments should be non-negative integers.",
+              "domain": "techniques",
+              "repairable": true,
+              "safeRepairActionId": "clamp_fragments"
+            }
+          ]
+        }
+      ],
+      "issues": [
+        {
+          "id": "inventory_item_invalid_bad_item",
+          "severity": "error",
+          "message": "Item bad_item has invalid quantity (-10)",
+          "hint": "Quantities should be whole numbers and non-negative.",
+          "domain": "inventory",
+          "repairable": true,
+          "safeRepairActionId": "clamp_inventory"
+        },
+        {
+          "id": "manual_missing_tech_0",
+          "severity": "error",
+          "message": "Manual entry missing technique id",
+          "domain": "manuals",
+          "repairable": true,
+          "safeRepairActionId": "remove_invalid_manual"
+        },
+        {
+          "id": "fragment_invalid_bad_tech",
+          "severity": "error",
+          "message": "Fragment count for bad_tech is invalid (-2)",
+          "hint": "Fragments should be non-negative integers.",
+          "domain": "techniques",
+          "repairable": true,
+          "safeRepairActionId": "clamp_fragments"
+        }
+      ],
+      "notes": [
+        "Safe repair boundary is conservative: only unambiguous clamps/removals are auto-repaired.",
+        "Scenario intent: Seeded residue fixture proves safe-repair diagnostics catch known repairable save residue."
+      ],
+      "scenarioStatus": "EXPECTED_NEGATIVE_PASS",
+      "expectedNegative": true,
+      "expectedIssueIds": [
+        "fragment_invalid_bad_tech",
+        "inventory_item_invalid_bad_item",
+        "manual_missing_tech_0"
+      ],
+      "actualIssueIds": [
+        "fragment_invalid_bad_tech",
+        "inventory_item_invalid_bad_item",
+        "manual_missing_tech_0"
+      ],
+      "unexpectedIssueIds": [],
+      "missingExpectedIssueIds": [],
+      "releaseGateBlocking": false,
+      "summary": "Expected-negative runtime scenario emitted only the documented diagnostics."
+    },
+    "content_failure_snapshot": {
+      "schemaVersion": "7.4c",
+      "generatedAt": 1780015139638,
+      "overallPass": false,
+      "errorCount": 2,
+      "warningCount": 0,
+      "repairableCount": 1,
+      "nonRepairableCount": 1,
+      "groupedSections": [
+        {
+          "id": "content",
+          "errorCount": 1,
+          "warningCount": 0,
+          "repairableCount": 0,
+          "entries": [
+            {
+              "id": "content_not_loaded",
+              "severity": "error",
+              "domain": "content",
+              "message": "Content store is not loaded.",
+              "hint": "Check content startup diagnostics."
+            }
+          ]
+        },
+        {
+          "id": "manuals",
+          "errorCount": 1,
+          "warningCount": 0,
+          "repairableCount": 1,
+          "entries": [
+            {
+              "id": "manual_missing_tech_0",
+              "severity": "error",
+              "message": "Manual entry missing technique id",
+              "domain": "manuals",
+              "repairable": true,
+              "safeRepairActionId": "remove_invalid_manual"
+            }
+          ]
+        }
+      ],
+      "issues": [
+        {
+          "id": "manual_missing_tech_0",
+          "severity": "error",
+          "message": "Manual entry missing technique id",
+          "domain": "manuals",
+          "repairable": true,
+          "safeRepairActionId": "remove_invalid_manual"
+        },
+        {
+          "id": "content_not_loaded",
+          "severity": "error",
+          "domain": "content",
+          "message": "Content store is not loaded.",
+          "hint": "Check content startup diagnostics."
+        }
+      ],
+      "notes": [
+        "Safe repair boundary is conservative: only unambiguous clamps/removals are auto-repaired.",
+        "Scenario intent: Content-failure fixture proves startup/content diagnostics surface missing loaded content and invalid manual residue."
+      ],
+      "scenarioStatus": "EXPECTED_NEGATIVE_PASS",
+      "expectedNegative": true,
+      "expectedIssueIds": [
+        "content_not_loaded",
+        "manual_missing_tech_0"
+      ],
+      "actualIssueIds": [
+        "content_not_loaded",
+        "manual_missing_tech_0"
+      ],
+      "unexpectedIssueIds": [],
+      "missingExpectedIssueIds": [],
+      "releaseGateBlocking": false,
+      "summary": "Expected-negative runtime scenario emitted only the documented diagnostics."
+    }
+  },
+  "blockerScenarioCount": 0
+}

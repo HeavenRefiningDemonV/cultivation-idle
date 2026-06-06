@@ -1,0 +1,81 @@
+{
+  "scenario": {
+    "id": "04-active-practice",
+    "path": "heaven",
+    "mode": "active",
+    "expect": [
+      "Practice active",
+      "Practicing"
+    ]
+  },
+  "setup": {
+    "firstRegimenId": "still_star_breathing",
+    "firstRegimenName": "Still Star Breathing",
+    "primaryStatId": "qi_control",
+    "reducedMotion": false
+  },
+  "dom": {
+    "text": "Heaven PathTraining HallHeaven Star ObservatoryTrace qi, law, and perception until the path foundation stops wobbling.Path Foundation0 / 16 averageCurrent Bottleneck: Dao ResonanceRegimensStill Star BreathingStar ObservatoryMastery 0 / 100Mandate TracingScripture HallMastery 0 / 100Spirit Lantern WatchSpirit Lantern WatchMastery 0 / 100Cloud Seal WeavingSeal Weaving PlateMastery 0 / 100Tribulation ListeningThunder Listening PavilionMastery 0 / 100Star Rhythm RecitationCelestial Cadence HallMastery 0 / 100Practice activeStill Star BreathingStar ObservatoryPath Training owns the foreground activity gate until stopped.PrimaryQi Control0 / 16absentSecondaryMind Clarity0 / 16absentFoundationQi Purity0 / 16absentPath FoundationDao Resonanceabsent0 / 16Qi Controlabsent0 / 16Divine Senseabsent0 / 16Law Weavingabsent0 / 16Tribulation Insightabsent0 / 16Star Rhythmabsent0 / 16Quiet0.70x / 0.04 fatigue/minSteady1x / 0.14 fatigue/minHarsh1.35x / 0.35 fatigue/minLimit1.75x / 0.75 fatigue/minPracticingStop PracticeThis regimen is already active.",
+    "path": "heaven",
+    "reducedMotion": "false",
+    "regimenCount": 6,
+    "regimenPaths": [
+      "heaven"
+    ],
+    "regimens": [
+      {
+        "text": "Still Star BreathingStar ObservatoryMastery 0 / 100",
+        "path": "heaven",
+        "regimenId": "still_star_breathing"
+      },
+      {
+        "text": "Mandate TracingScripture HallMastery 0 / 100",
+        "path": "heaven",
+        "regimenId": "mandate_tracing"
+      },
+      {
+        "text": "Spirit Lantern WatchSpirit Lantern WatchMastery 0 / 100",
+        "path": "heaven",
+        "regimenId": "spirit_lantern_watch"
+      },
+      {
+        "text": "Cloud Seal WeavingSeal Weaving PlateMastery 0 / 100",
+        "path": "heaven",
+        "regimenId": "cloud_seal_weaving"
+      },
+      {
+        "text": "Tribulation ListeningThunder Listening PavilionMastery 0 / 100",
+        "path": "heaven",
+        "regimenId": "tribulation_listening"
+      },
+      {
+        "text": "Star Rhythm RecitationCelestial Cadence HallMastery 0 / 100",
+        "path": "heaven",
+        "regimenId": "star_rhythm_recitation"
+      }
+    ],
+    "actionButtons": [
+      {
+        "text": "Practicing",
+        "disabled": true,
+        "title": "This regimen is already active."
+      },
+      {
+        "text": "Stop Practice",
+        "disabled": false,
+        "title": "Stop Practice"
+      }
+    ],
+    "alerts": [],
+    "viewport": {
+      "width": 1440,
+      "height": 1100
+    },
+    "documentSize": {
+      "width": 1440,
+      "height": 1100
+    },
+    "horizontalOverflowPx": 0
+  },
+  "screenshotPath": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\training-heart-law\\mp2\\browser\\screenshots\\04-active-practice.png"
+}

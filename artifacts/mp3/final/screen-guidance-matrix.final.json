@@ -1,0 +1,75 @@
+{
+  "generatedAt": "2026-05-28T23:01:36.717Z",
+  "flows": [
+    {
+      "flow": "Status shared guidance",
+      "viewport": "1366x768",
+      "artifactPath": "artifacts/mp3/browser/screenshots/status-shared-guidance-1366x768.png",
+      "domSummary": "artifacts/mp3/browser/dom-summaries/status-shared-guidance-1366x768.json",
+      "consoleClean": true,
+      "noHorizontalOverflow": true,
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "flow": "Cultivation shared guidance",
+      "viewport": "1366x768",
+      "artifactPath": "artifacts/mp3/browser/screenshots/cultivation-shared-guidance-1366x768.png",
+      "domSummary": "artifacts/mp3/browser/dom-summaries/cultivation-shared-guidance-1366x768.json",
+      "consoleClean": true,
+      "noHorizontalOverflow": true,
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "flow": "World shared guidance",
+      "viewport": "1366x768",
+      "artifactPath": "artifacts/mp3/browser/screenshots/world-shared-guidance-1366x768.png",
+      "domSummary": "artifacts/mp3/browser/dom-summaries/world-shared-guidance-1366x768.json",
+      "consoleClean": true,
+      "noHorizontalOverflow": true,
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "flow": "World recommended module route",
+      "viewport": "1366x768",
+      "artifactPath": "artifacts/mp3/browser/screenshots/world-recommended-module-route-1366x768.png",
+      "domSummary": "artifacts/mp3/browser/dom-summaries/world-recommended-module-route-1366x768.json",
+      "consoleClean": true,
+      "noHorizontalOverflow": true,
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "flow": "Status shared guidance",
+      "viewport": "1920x1080",
+      "artifactPath": "artifacts/mp3/browser/screenshots/status-shared-guidance-1920x1080.png",
+      "domSummary": "artifacts/mp3/browser/dom-summaries/status-shared-guidance-1920x1080.json",
+      "consoleClean": true,
+      "noHorizontalOverflow": true,
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "flow": "Cultivation shared guidance",
+      "viewport": "1920x1080",
+      "artifactPath": "artifacts/mp3/browser/screenshots/cultivation-shared-guidance-1920x1080.png",
+      "domSummary": "artifacts/mp3/browser/dom-summaries/cultivation-shared-guidance-1920x1080.json",
+      "consoleClean": true,
+      "noHorizontalOverflow": true,
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "flow": "World shared guidance",
+      "viewport": "1920x1080",
+      "artifactPath": "artifacts/mp3/browser/screenshots/world-shared-guidance-1920x1080.png",
+      "domSummary": "artifacts/mp3/browser/dom-summaries/world-shared-guidance-1920x1080.json",
+      "consoleClean": true,
+      "noHorizontalOverflow": true,
+      "status": "pass",
+      "notes": ""
+    }
+  ]
+}

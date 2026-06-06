@@ -59,6 +59,104 @@
       "capAt": 1.0
     },
     {
+      "id": "form_memory",
+      "name": "Form Memory",
+      "description": "Reborn bodies remember the first shape of the chosen path without carrying raw stat XP.",
+      "category": "laws",
+      "type": "multilevel",
+      "maxLevel": 3,
+      "levels": 3,
+      "costs": [
+        35,
+        90,
+        180
+      ],
+      "effectPerLevel": {
+        "formMemoryFloor": 4
+      }
+    },
+    {
+      "id": "scripture_echo",
+      "name": "Scripture Echo",
+      "description": "A chosen Heart Law can recover a bounded verse echo and early XP catch-up when repeated.",
+      "category": "laws",
+      "type": "multilevel",
+      "maxLevel": 3,
+      "levels": 3,
+      "costs": [
+        40,
+        120,
+        260
+      ],
+      "effect": {
+        "scriptureVerseRetentionPct": 0.1
+      }
+    },
+    {
+      "id": "root_clarity",
+      "name": "Root Clarity",
+      "description": "The next spirit root roll gains a bounded grade floor without preserving the old root.",
+      "category": "laws",
+      "type": "multilevel",
+      "maxLevel": 3,
+      "levels": 3,
+      "costs": [
+        45,
+        140,
+        280
+      ],
+      "effect": {
+        "rootClarityGradeFloor": 2
+      }
+    },
+    {
+      "id": "calm_first_breath",
+      "name": "Calm First Breath",
+      "description": "Parity with Heart Law steadies the first breath before a breakthrough.",
+      "category": "laws",
+      "type": "multilevel",
+      "maxLevel": 3,
+      "levels": 3,
+      "costs": [
+        25,
+        70,
+        160
+      ],
+      "effectPerLevel": {
+        "calmFirstBreathRiskReduction": 1
+      }
+    },
+    {
+      "id": "old_sparring_shadows",
+      "name": "Old Sparring Shadows",
+      "description": "Previously mastered regimens recover mastery faster until the old milestone is reached.",
+      "category": "laws",
+      "type": "multilevel",
+      "maxLevel": 2,
+      "levels": 2,
+      "costs": [
+        50,
+        150
+      ],
+      "effect": {
+        "oldSparringMasteryCatchupPct": 0.2
+      }
+    },
+    {
+      "id": "doctrine_archive",
+      "name": "Doctrine Archive",
+      "description": "Future archive for one bounded prior-law echo. Hidden until a live consumer is accepted.",
+      "category": "laws",
+      "type": "unlock",
+      "maxLevel": 1,
+      "costs": [
+        220
+      ],
+      "effect": {
+        "doctrineArchiveEcho": true
+      }
+    },
+    {
       "id": "ap_unlock_heartlaw_t1",
       "name": "Unlock Heart Laws (Tier 1)",
       "type": "unlock",

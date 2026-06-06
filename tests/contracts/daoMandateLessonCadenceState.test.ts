@@ -133,9 +133,10 @@ test('repeat-until-learned lessons suppress dismissed same trigger and learned c
   );
 });
 
-test('Status V2 retires the persistent Jade Slip wall from default Status', () => {
+test('default Status Ledger keeps the persistent Jade Slip wall retired', () => {
   const source = readFileSync('src/components/screens/StatusScreen.tsx', 'utf8');
-  assert.match(source, /statusV2Root/);
+  assert.match(source, /StatusLedgerPage/);
+  assert.match(source, /statusLedger/);
   assert.doesNotMatch(source, /JadeSlipHelp/);
   assert.doesNotMatch(source, /dismissDaoMandateLesson/);
   assert.doesNotMatch(source, /markDaoMandateLessonLearned/);

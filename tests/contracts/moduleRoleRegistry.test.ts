@@ -12,7 +12,7 @@ test('module-role registry covers every live economy-facing module with concise 
   const entries = getEconomicModuleRoleEntries();
   assert.deepEqual(
     entries.map((entry) => entry.moduleKey),
-    ['outskirts', 'ruins', 'apothecary', 'forge', 'bounties', 'expeditions', 'manualPavilion', 'gateTrial'],
+    ['outskirts', 'ruins', 'apothecary', 'trainingHall', 'forge', 'bounties', 'expeditions', 'manualPavilion', 'gateTrial'],
   );
 
   assert.deepEqual(getEconomicModuleRole('outskirts'), {
@@ -24,6 +24,7 @@ test('module-role registry covers every live economy-facing module with concise 
     activityMode: 'foreground',
   });
   assert.equal(getEconomicModuleRole('gateTrial')?.economicCategory, 'milestone');
+  assert.equal(getEconomicModuleRole('trainingHall')?.economicCategory, 'readiness');
   assert.equal(getEconomicModuleRole('apothecary')?.moduleKind, 'conversion_station');
 });
 

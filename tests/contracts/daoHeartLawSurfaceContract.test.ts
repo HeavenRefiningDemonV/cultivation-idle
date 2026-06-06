@@ -5,8 +5,11 @@ import { readFileSync } from 'node:fs';
 const modalSource = readFileSync('src/components/modals/DaoHeartModal.tsx', 'utf8');
 const mindViewSource = readFileSync('src/ui/cultivation/heartLaw/HeartLawMindView.tsx', 'utf8');
 
-test('DaoHeartModal still owns live tab scaffold and keeps heartLaw tab selectable', () => {
+test('DaoHeartModal owns Sanctuary as the default tab and keeps heartLaw tab selectable', () => {
   assert.ok(modalSource.includes("role=\"tablist\""));
+  assert.ok(modalSource.includes("debugInitialTab?: 'sanctuary' | 'heartLaw' | 'study'"));
+  assert.ok(modalSource.includes("id=\"dao-heart-tab-sanctuary\""));
+  assert.ok(modalSource.includes("<DaoHeartSanctuaryView />"));
   assert.ok(modalSource.includes("id=\"dao-heart-tab-heart-law\""));
   assert.ok(modalSource.includes("setTab('heartLaw')"));
 });

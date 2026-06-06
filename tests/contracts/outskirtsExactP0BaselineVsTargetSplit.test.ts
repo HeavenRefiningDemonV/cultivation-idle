@@ -25,13 +25,15 @@ void test('P0 docs explicitly separate baseline evidence truth and target fixtur
 });
 
 void test('P0 target now reflects screen-owned exact host/layout owner files', async () => {
-  const [scss, modalSurface, panel] = await Promise.all([
+  const [scss, modalSurface, panel, owner] = await Promise.all([
     readFile('src/components/modals/WorldBuildingModal.scss', 'utf8'),
     readFile('src/systems/ui/world/worldBuildingModalEntrySurface.ts', 'utf8'),
     readFile('src/components/screens/world/buildings/OutskirtsBuildingPanel.tsx', 'utf8'),
+    readFile('src/features/world/outskirts/OutskirtsScreenOwner.tsx', 'utf8'),
   ]);
 
   assert.match(scss, /\.worldBuildingModal--outskirts-exact\.worldBuildingModal--screen-owned/);
   assert.match(modalSurface, /case 'outskirts':[\s\S]*shellFamily\s*=\s*'outskirts-scenic';[\s\S]*shellMode\s*=\s*'screen-owned';/);
-  assert.match(panel, /OutskirtsExactMockupScreen/);
+  assert.match(panel, /OutskirtsScreenOwner/);
+  assert.match(owner, /OutskirtsExactMockupScreen/);
 });

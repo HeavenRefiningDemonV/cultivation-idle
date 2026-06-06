@@ -79,7 +79,7 @@ test('human renderer includes grouped sections, source version kind, and fixture
   assert.equal(human.includes('Primary risk fixtures:'), true);
   assert.equal(human.includes('Compatibility fixtures:'), true);
   assert.equal(human.includes('legacy-hidden-craft-outputs'), true);
-  assert.equal(human.includes('source: 2.0.0 (current)'), true);
+  assert.equal(human.includes('source: 2.2.0 (current)'), true);
   assert.equal(/- PASS legacy-path-conflict/.test(human), true);
 });
 

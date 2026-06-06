@@ -1,0 +1,8 @@
+{
+    "name":  "release-gate-json",
+    "command":  "npm run release:gate:json",
+    "status":  "FAIL",
+    "exitCode":  2,
+    "durationMs":  450049,
+    "log":  "artifacts\\mp4\\final\\onboarding-stage-integration\\logs\\release-gate-json.final.log"
+}

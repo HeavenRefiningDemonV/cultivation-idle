@@ -1,0 +1,273 @@
+{
+  "schemaVersion": "7.3f",
+  "generatedAt": 1780015031600,
+  "baselineKind": "representative_phase_timing_probe",
+  "overallPass": true,
+  "routeSummaries": [
+    {
+      "routeId": "fail_safe",
+      "title": "Fail-safe / Safety Net verification",
+      "status": "pass",
+      "automationMode": "automated_non_blocking",
+      "whatItProves": [
+        "eligible defeats gate availability",
+        "bypass purchase routes through live fix action and trial lifecycle state",
+        "bypass resolves to bypassed (not cleared) and run can continue"
+      ],
+      "elapsedMs": 304,
+      "finalRealmId": "foundation_establishment",
+      "finalCityId": "city_stonecrag_town",
+      "unlockedCityIds": [
+        "city_pinewind_hamlet",
+        "city_stonecrag_town"
+      ],
+      "reachedSpiritSevering": false,
+      "reachedContentCap": false,
+      "blockerCount": 0,
+      "warningCount": 0
+    },
+    {
+      "routeId": "offline_heavy",
+      "title": "Offline-heavy verification",
+      "status": "pass",
+      "automationMode": "automated_non_blocking",
+      "whatItProves": [
+        "offline pipeline affects cultivation/professions/expeditions only",
+        "combat and trial clears do not progress from offline",
+        "offline route remains coherent and in-slice"
+      ],
+      "elapsedMs": 213,
+      "finalRealmId": "qi_condensation",
+      "finalCityId": "city_pinewind_hamlet",
+      "unlockedCityIds": [
+        "city_pinewind_hamlet"
+      ],
+      "reachedSpiritSevering": false,
+      "reachedContentCap": false,
+      "blockerCount": 0,
+      "warningCount": 0
+    },
+    {
+      "routeId": "low_attention",
+      "title": "Low-attention verification",
+      "status": "pass",
+      "automationMode": "automated_non_blocking",
+      "whatItProves": [
+        "run compass/status/world alerts provide actionable signals",
+        "interaction budget remains bounded",
+        "route remains viable without constant babysitting"
+      ],
+      "elapsedMs": 324,
+      "finalRealmId": "qi_condensation",
+      "finalCityId": "city_pinewind_hamlet",
+      "unlockedCityIds": [
+        "city_pinewind_hamlet"
+      ],
+      "reachedSpiritSevering": false,
+      "reachedContentCap": false,
+      "blockerCount": 0,
+      "warningCount": 0
+    },
+    {
+      "routeId": "high_skill",
+      "title": "High-skill / optimizer route verification",
+      "status": "warning_only",
+      "automationMode": "automated_non_blocking",
+      "whatItProves": [
+        "skillful route pace improves meaningful checkpoints versus representative baseline",
+        "economy guidance surfaces can be followed without bypass dominance",
+        "exploit-watchlist checks remain non-triggered under tuned constraints"
+      ],
+      "elapsedMs": 27869,
+      "finalRealmId": "spirit_severing",
+      "finalCityId": "city_ironpeak_bastion",
+      "unlockedCityIds": [
+        "city_pinewind_hamlet",
+        "city_stonecrag_town",
+        "city_spirit_cavern_city",
+        "city_lotusford",
+        "city_ironpeak_bastion"
+      ],
+      "reachedSpiritSevering": true,
+      "reachedContentCap": true,
+      "blockerCount": 0,
+      "warningCount": 1
+    },
+    {
+      "routeId": "reclaim",
+      "title": "Reclaim route verification",
+      "status": "pass",
+      "automationMode": "automated_non_blocking",
+      "whatItProves": [
+        "reclaim milestones are materially faster than first-life baseline",
+        "starter spend plan and first-purchase feel satisfy live prestige target family",
+        "prestige advisor/life summary surfaces remain coherent during report capture"
+      ],
+      "elapsedMs": 19368,
+      "finalRealmId": "qi_condensation",
+      "finalCityId": "city_pinewind_hamlet",
+      "unlockedCityIds": [
+        "city_pinewind_hamlet"
+      ],
+      "reachedSpiritSevering": true,
+      "reachedContentCap": false,
+      "blockerCount": 0,
+      "warningCount": 0
+    }
+  ],
+  "comparisonRows": [
+    {
+      "metric": "route_viability_status",
+      "category": "viability",
+      "valuesByRoute": {
+        "fail_safe": "pass",
+        "offline_heavy": "pass",
+        "low_attention": "pass",
+        "high_skill": "warning_only",
+        "reclaim": "pass"
+      },
+      "baseline": "all routes pass or warning_only",
+      "detail": "Top-level route viability per packet-7.3 route class."
+    },
+    {
+      "metric": "checkpoint_pace_delta_foundation_seconds",
+      "category": "checkpoint_pace",
+      "valuesByRoute": {
+        "high_skill": 465
+      },
+      "baseline": ">= 0 (representative baseline)",
+      "detail": "High-skill route should not regress foundation pace."
+    },
+    {
+      "metric": "reserve_bypass_guardrail",
+      "category": "reserve_bypass",
+      "valuesByRoute": {
+        "fail_safe": true,
+        "high_skill": true
+      },
+      "baseline": "true",
+      "detail": "Fail-safe and high-skill must keep bypass emergency-only."
+    },
+    {
+      "metric": "low_attention_interaction_count",
+      "category": "attention",
+      "valuesByRoute": {
+        "low_attention": 3
+      },
+      "baseline": "<= 6",
+      "detail": "Low-attention budget remains bounded."
+    },
+    {
+      "metric": "offline_trial_clear_count",
+      "category": "offline",
+      "valuesByRoute": {
+        "offline_heavy": 0
+      },
+      "baseline": "0",
+      "detail": "Offline-heavy route must not clear trials."
+    },
+    {
+      "metric": "reclaim_speedup_ratios",
+      "category": "reclaim",
+      "valuesByRoute": {
+        "reclaim": "0.2125/0.1736/0.2745"
+      },
+      "baseline": ">= 0.15 / >= 0.15 / >= 0.10",
+      "detail": "Reclaim route should show material milestone acceleration."
+    },
+    {
+      "metric": "exploit_watchlist_trigger_count",
+      "category": "exploit",
+      "valuesByRoute": {
+        "fail_safe": 0,
+        "offline_heavy": 0,
+        "low_attention": 0,
+        "high_skill": 1,
+        "reclaim": 0
+      },
+      "baseline": "0 blocker triggers",
+      "detail": "Structured exploit-watchlist rollup for each route."
+    }
+  ],
+  "blockers": [],
+  "warnings": [
+    "high_skill:timing_outside_locked_envelope:Triggered if fewer than 70% of optimized phase windows stay inside validation slack (coverage=0.00)."
+  ],
+  "exploitWatchlist": [
+    {
+      "code": "bypass_outperforming_honest_prep",
+      "severity": "blocker",
+      "triggered": false,
+      "detail": "Triggered if bypass is no longer emergency-only.",
+      "routeId": "high_skill"
+    },
+    {
+      "code": "reserve_depletion_without_pressure",
+      "severity": "warning",
+      "triggered": false,
+      "detail": "Triggered if reserve gaps no longer route through support loops.",
+      "routeId": "high_skill"
+    },
+    {
+      "code": "single_recommendation_loop_dominance",
+      "severity": "warning",
+      "triggered": false,
+      "detail": "Triggered when gate_trial dominates despite unresolved shortfalls.",
+      "routeId": "high_skill"
+    },
+    {
+      "code": "timing_outside_locked_envelope",
+      "severity": "warning",
+      "triggered": true,
+      "detail": "Triggered if fewer than 70% of optimized phase windows stay inside validation slack (coverage=0.00).",
+      "routeId": "high_skill"
+    },
+    {
+      "code": "ap_hour_undermines_packet_6_7_assumptions",
+      "severity": "warning",
+      "triggered": false,
+      "detail": "Triggered if cap AP/hour falls outside live policy expectations.",
+      "routeId": "high_skill"
+    },
+    {
+      "code": "unsupported_prestige_node_in_starter_plan",
+      "severity": "blocker",
+      "triggered": false,
+      "detail": "No unsupported nodes used.",
+      "routeId": "reclaim"
+    },
+    {
+      "code": "reclaim_speedup_below_material_threshold",
+      "severity": "blocker",
+      "triggered": false,
+      "detail": "Foundation/Core reclaim speedup must remain materially faster than first life.",
+      "routeId": "reclaim"
+    },
+    {
+      "code": "first_purchase_feel_near_floor",
+      "severity": "warning",
+      "triggered": false,
+      "detail": "First-purchase improvement is close to minimum threshold.",
+      "routeId": "reclaim"
+    },
+    {
+      "code": "ap_hour_policy_drift",
+      "severity": "warning",
+      "triggered": false,
+      "detail": "AP/hour policy rows all passing.",
+      "routeId": "reclaim"
+    }
+  ],
+  "notes": [
+    "Baseline anchor uses representative phase-timing probe where packet-7.1 normal-route export is not directly available.",
+    "High-skill and reclaim rows combine runtime-hydrated and target-model evidence; see route notes for boundaries."
+  ],
+  "finalTruthSummary": {
+    "failSafeEmergencyOnly": true,
+    "offlineMeaningfulButBounded": true,
+    "lowAttentionViable": true,
+    "highSkillRewardedWithoutDominance": true,
+    "reclaimMateriallyFaster": true,
+    "noFakeCitySixAcrossRoutes": true
+  }
+}

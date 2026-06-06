@@ -1,0 +1,64 @@
+ M .gitignore
+ M AGENTS.md
+ M docs/release/build_warning_inventory.md
+ M docs/release/go_no_go_checklist.md
+ M docs/release/known_issues.md
+ M docs/release/playwright-report/index.html
+ M docs/release/signoff_sheet.md
+ M package.json
+ M scripts/generateProgressionContractDoc.ts
+ M scripts/progressionContractReport.ts
+ M src/components/screens/InventoryScreen.scss
+ M src/components/screens/InventoryScreen.tsx
+ M src/components/screens/WorldScreen.tsx
+ M src/features/prestige/prestigeLedgerExact/PrestigeLedgerExactScreen.scss
+ M src/features/prestige/prestigeLedgerExact/PrestigeLedgerExactScreen.tsx
+ M src/features/techniquesExact/TechniquesExactScreen.scss
+ M src/features/techniquesExact/TechniquesExactScreen.tsx
+ M src/features/world/gateTrialExact/GateTrialExactScreen.scss
+ M src/features/world/ruinsExact/RuinsExactMockupScreen.scss
+ M src/stores/gameStore.ts
+ M src/systems/economy/index.ts
+ M src/systems/ui/status/statusLedgerSurface.ts
+ M test-results/.last-run.json
+ D test-results/menu-interactions-menu-int-1eb1b-ies-and-Expeditions-modules-chromium/error-context.md
+ D test-results/menu-interactions-menu-int-1eb1b-ies-and-Expeditions-modules-chromium/test-failed-1.png
+ D test-results/menu-interactions-menu-int-eda59--render-a-reachable-surface-chromium/error-context.md
+ D test-results/menu-interactions-menu-int-eda59--render-a-reachable-surface-chromium/test-failed-1.png
+ D test-results/menu-interactions-menu-int-eda59--render-a-reachable-surface-chromium/trace.zip
+ M tests/contracts/apothecaryLiveRoster.test.ts
+ M tests/contracts/cultivationConsumables.test.ts
+ M tests/contracts/outskirtsSummarySurface.test.ts
+ M tests/contracts/pathAlignmentMetadata.test.ts
+ M tests/contracts/progressionContract.test.ts
+ M tests/contracts/progressionFixtureScripts.test.ts
+ M tests/contracts/progressionSemanticValidator.test.ts
+ M tests/contracts/ruinsSummarySurface.test.ts
+ M tests/contracts/trialLifecycle.test.ts
+ M tests/helpers/balance/createTimingProbeScenario.ts
+ M tests/helpers/balance/runPhaseTimingProbe.ts
+ M tests/helpers/progression/loadContract.ts
+ M tests/helpers/release/runFreshSaveRoute.ts
+ M tests/integration/bountyRuntimeTestUtils.ts
+ M tests/integration/expeditionRuntimeTestUtils.ts
+ M tests/integration/heartLawRuntimeBridge.test.ts
+ M tests/integration/spiritRootResonanceBridge.test.ts
+ M tests/integration/techniqueTaxonomyContentBridge.test.ts
+ M tsconfig.progression-fixtures.json
+?? artifacts/mp0/
+?? artifacts/mp1/
+?? artifacts/mp2/
+?? artifacts/mp3/
+?? docs/release/current_readiness.md
+?? docs/release/mp0_baseline_report.md
+?? docs/release/mp1_route_truth_report.md
+?? docs/release/mp2_ui_runtime_smoke_report.md
+?? docs/release/mp3_incentive_economy_reward_guidance_report.md
+?? src/systems/economy/milestoneReadinessSurface.ts
+?? src/systems/lifeStart/
+?? tests/contracts/lifeIdentityPredicate.test.ts
+?? tests/contracts/milestoneReadinessSurfaceContract.test.ts
+?? tests/e2e/mp1-route-proof.spec.ts
+?? tests/e2e/mp2-ui-runtime-smoke.spec.ts
+?? tests/integration/freshSaveRouteHarness.test.ts
+?? tests/integration/lifeStartMechanicalPause.test.ts

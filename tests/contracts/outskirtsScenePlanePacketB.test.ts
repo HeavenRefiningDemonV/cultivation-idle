@@ -74,7 +74,7 @@ void test('Packet C keeps tactical strip continuity while removing visible page 
 });
 
 void test('Packet B scenic stylesheet removes legacy scenic card-shell selector', async () => {
-  const scss = await readFile(new URL('../../src/features/world/outskirts/OutskirtsExactMockupScreen.scss', import.meta.url), 'utf8');
+  const scss = await readFile('src/features/world/outskirts/OutskirtsExactMockupScreen.scss', 'utf8');
   assert.equal(scss.includes('.outskirtsScenicStage'), false);
   assert.equal(scss.includes('.outskirtsScenePlane'), true);
 });

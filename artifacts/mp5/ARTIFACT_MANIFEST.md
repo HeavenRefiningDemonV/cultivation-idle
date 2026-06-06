@@ -1,0 +1,28 @@
+# MP5 Artifact Manifest
+
+Generated: 2026-05-29T17:32:23.556Z
+Branch: Latest
+Commit: 969de0ab4602a37ba3edf6ed6233419328f21924
+Decision: NO_GO_RELEASE_BLOCKERS_REMAIN
+
+| Path | Exists | SHA256 |
+|---|---:|---|
+| `artifacts/mp5/preflight/previous-packet-verification.json` | true | `2af9ef55de1eb34afe2ea372db773936f6f484f9d45a67fdf2d3fce74fd02600` |
+| `artifacts/mp5/preflight/previous-packet-verification.md` | true | `d4e1dd4b3ac5f3d6e47f605b8a17310555e291b365dadfa4dbe5b7fca02b3376` |
+| `artifacts/mp5/commands/command-results.json` | true | `d7fb1a4513ade00f587a45e6dcaa9b8272975e903f119aa0ea5b4d0e4749787f` |
+| `artifacts/mp5/commands/command-log.md` | true | `858db3e675aca8937f25068a4f00a0b0f6b8b3d9b3902a43ba8fbcf84a1c9e9e` |
+| `artifacts/mp5/release-gate/release-gate.after.json` | true | `079ada15c439808b08ba1283d786d1bd11d09c5613680cebf17a28103e9806bf` |
+| `artifacts/mp5/release-gate/release-gate.after.md` | true | `58d11ef469870d972a6781c96f40b22445262c95babfba768325c6059a71c7d6` |
+| `artifacts/mp5/release-gate/release-gate-timeout-diagnosis.md` | true | `528978437d1dc32f5eed4981956bed9ce154563ff7321e38e6992e3d2b616e88` |
+| `artifacts/mp5/security/npm-audit.before.json` | true | `927b4199ab93b8a2fdb0bd1dcb5165c42b2a3ef7ea269f4d68da6ff5f1b132e5` |
+| `artifacts/mp5/security/npm-audit.after.json` | true | `da022e4d1ff0ad1842c9484bc165fd866e322c83cebc1f1d126e133ef8ea6953` |
+| `artifacts/mp5/security/npm-audit-summary.md` | true | `cce72b37f84afd465dee5e79343a2134d7025218aa18b70f84524eaabcc3fe28` |
+| `artifacts/mp5/build/build-warning-inventory.md` | true | `ccd7c3ae6d96e39cf2c9dd10879943e9a7430dceb5eb104519cedc524a16aea2` |
+| `artifacts/mp5/browser/browser-matrix.json` | true | `cccd7e27163deca1d5c37f84465e84af5eb65f1ad9fbc0049cf06fde20796ce7` |
+| `artifacts/mp5/browser/console-summary.md` | true | `5bc1faa6c8a12765512739df9de73e81f296bcf27d0cc625d4fbd60fcec303cb` |
+| `artifacts/mp5/observability/sentry-status.md` | true | `793532cef58a93af63addbfb5c4a7af27d8e12084895ce1ba8f844e6e620bdc4` |
+| `artifacts/mp5/ci/github-actions-artifacts.md` | true | `c4403b7869946d0cfe73c7af6463841a7529c42587d57183a7fa8009226321a1` |
+| `artifacts/mp5/review/follow-up-issues.md` | true | `f960cdd2c4e5513c37a1ec3f7fe8477143df64c51bd5d020d08fdf5c02814e99` |
+| `artifacts/mp5/final/MP5_BLOCKER_STATUS.json` | true | `8a066e527b015d307de1398029a845002dcf4b5c8ec80d96b29c572f17c17580` |
+| `artifacts/mp5/final/MP5_FINAL_REPORT.md` | true | `b14c3b582b6e257cb9d179920076e2ab5388b1423f802a0ad590b56dbb23d286` |
+| `artifacts/mp5/final/FINAL_GO_NO_GO.md` | true | `a3093be6698d1072ec25b772d481f33e770e3bf83ce872e8fb5f08ee39867658` |

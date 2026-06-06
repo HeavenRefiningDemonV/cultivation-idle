@@ -1,0 +1,304 @@
+{
+  "viewport": "1366x768",
+  "name": "Life Start Path",
+  "url": "http://127.0.0.1:5173/",
+  "documentTitle": "cultivation-idle-temp",
+  "rootTestIds": [
+    "cultivation-exact-page",
+    "cultivation-dantian-anchor",
+    "cultivation-breakthrough-readiness",
+    "cultivation-qi-lane",
+    "life-path-card-heaven",
+    "life-path-card-earth",
+    "life-path-card-martial"
+  ],
+  "headings": [
+    "Choose the first stroke of your Dao."
+  ],
+  "primaryCta": {
+    "text": "Next MilestonePush Qi",
+    "disabled": false,
+    "ariaLabel": null,
+    "rect": {
+      "x": 36,
+      "y": 136,
+      "width": 222,
+      "height": 104,
+      "right": 258,
+      "bottom": 240
+    }
+  },
+  "buttons": [
+    {
+      "text": "Next MilestonePush Qi",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 36,
+        "y": 136,
+        "width": 222,
+        "height": 104,
+        "right": 258,
+        "bottom": 240
+      }
+    },
+    {
+      "text": "NeedQi Cap100",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 36,
+        "y": 254,
+        "width": 222,
+        "height": 104,
+        "right": 258,
+        "bottom": 358
+      }
+    },
+    {
+      "text": "ActionStart Cultivation",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 36,
+        "y": 372,
+        "width": 222,
+        "height": 104,
+        "right": 258,
+        "bottom": 476
+      }
+    },
+    {
+      "text": "Dao",
+      "disabled": false,
+      "ariaLabel": "Open Dao Heart",
+      "rect": {
+        "x": 1304,
+        "y": 74,
+        "width": 82,
+        "height": 122,
+        "right": 1386,
+        "bottom": 196
+      }
+    },
+    {
+      "text": "PathNo Path selected",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1114,
+        "y": 136,
+        "width": 221,
+        "height": 78,
+        "right": 1335,
+        "bottom": 214
+      }
+    },
+    {
+      "text": "Spirit RootEarth / Mortal",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1114,
+        "y": 222,
+        "width": 221,
+        "height": 78,
+        "right": 1335,
+        "bottom": 300
+      }
+    },
+    {
+      "text": "Heart LawNo Heart Law selected",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1114,
+        "y": 308,
+        "width": 221,
+        "height": 78,
+        "right": 1335,
+        "bottom": 386
+      }
+    },
+    {
+      "text": "VerseChapter 1",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1114,
+        "y": 394,
+        "width": 221,
+        "height": 78,
+        "right": 1335,
+        "bottom": 472
+      }
+    },
+    {
+      "text": "Breath / FocusBalanced",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1114,
+        "y": 480,
+        "width": 221,
+        "height": 78,
+        "right": 1335,
+        "bottom": 558
+      }
+    },
+    {
+      "text": "Start Cultivation",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 499,
+        "y": 595,
+        "width": 369,
+        "height": 54,
+        "right": 867,
+        "bottom": 649
+      }
+    },
+    {
+      "text": "Break Through",
+      "disabled": true,
+      "ariaLabel": null,
+      "rect": {
+        "x": 550,
+        "y": 657,
+        "width": 266,
+        "height": 32,
+        "right": 816,
+        "bottom": 689
+      }
+    },
+    {
+      "text": "Select",
+      "disabled": false,
+      "ariaLabel": "Select heaven path",
+      "rect": {
+        "x": 192,
+        "y": 699,
+        "width": 280,
+        "height": 56,
+        "right": 472,
+        "bottom": 755
+      }
+    },
+    {
+      "text": "Select",
+      "disabled": false,
+      "ariaLabel": "Select earth path",
+      "rect": {
+        "x": 543,
+        "y": 699,
+        "width": 280,
+        "height": 56,
+        "right": 823,
+        "bottom": 755
+      }
+    },
+    {
+      "text": "Select",
+      "disabled": false,
+      "ariaLabel": "Select martial path",
+      "rect": {
+        "x": 894,
+        "y": 699,
+        "width": 280,
+        "height": 56,
+        "right": 1174,
+        "bottom": 755
+      }
+    }
+  ],
+  "scrollWidth": 1366,
+  "innerWidth": 1366,
+  "scrollHeight": 768,
+  "innerHeight": 768,
+  "suspectedClippedText": [
+    {
+      "text": "RealmQi CondensationStage 1Qi0Cultivation Rate45.28 / sStability0%ForegroundIdleNext MilestonePush QiNeedQi Cap100ActionStart CultivationIdleDaoPathNo Path sele",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 1366,
+        "height": 768,
+        "right": 1366,
+        "bottom": 768
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "RealmQi CondensationStage 1Qi0Cultivation Rate45.28 / sStability0%ForegroundIdleNext MilestonePush QiNeedQi Cap100ActionStart CultivationIdleDaoPathNo Path sele",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 1366,
+        "height": 768,
+        "right": 1366,
+        "bottom": 768
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Returning PageChoose the first stroke of your Dao.The page opens, but it does not choose.HeavenRefined, celestial, technique-forward.Fast cultivation and techni",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 1366,
+        "height": 768,
+        "right": 1366,
+        "bottom": 768
+      },
+      "overflow": "hidden/hidden/hidden"
+    }
+  ],
+  "viewportIssues": [],
+  "consoleSinceStart": [
+    "1366x768 debug: [vite] connecting...",
+    "1366x768 debug: [vite] connected.",
+    "1366x768 info: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+    "1366x768 log: [App] Initializing game...",
+    "1366x768 log: [GameLoop] Initializing game...",
+    "1366x768 log: [GameLoop] Store dependencies wired",
+    "1366x768 log: [GameLoop] Prestige store initialized",
+    "1366x768 log: [SpiritRoot] Generated: Mortal earth (71% purity)",
+    "1366x768 log: [GameLoop] Generated initial spirit root",
+    "1366x768 log: [GameLoop] No save found, starting new game",
+    "1366x768 log: [GameLoop] Added starter items to inventory",
+    "1366x768 log: [GameLoop] Starting game loop...",
+    "1366x768 log: [GameLoop] Game loop started",
+    "1366x768 log: [GameLoop] Game initialized successfully",
+    "1366x768 log: [App] Game initialized successfully",
+    "1366x768 log: [App] Initializing game...",
+    "1366x768 log: [GameLoop] Initializing game...",
+    "1366x768 log: [GameLoop] Store dependencies wired",
+    "1366x768 log: [GameLoop] Prestige store initialized",
+    "1366x768 log: [GameLoop] No save found, starting new game",
+    "1366x768 warning: [GameLoop] Already running",
+    "1366x768 log: [GameLoop] Game initialized successfully",
+    "1366x768 log: [App] Game initialized successfully",
+    "1366x768 warning: [ContentValidation] Technique counts by path: Heaven=20, Earth=20, Martial=20",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=heaven: 6",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=earth: 6",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=martial: 6",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=heaven: 7",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=earth: 9",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=martial: 8",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=heaven: 9",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=earth: 9",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=martial: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=heaven: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=earth: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=martial: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=heaven: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=earth: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=martial: 10",
+    "1366x768 info: [Content] Loaded 5 cities, 60 techniques (H/E/M: 20/20/20)",
+    "1366x768 info: [Content] Prestige upgrades: 27",
+    "1366x768 log: [SaveLoad] Saving game...",
+    "1366x768 log: [SaveLoad] Game saved successfully at 28/05/2026, 22:56:33"
+  ],
+  "textSample": "Realm\nQi Condensation\nStage 1\nQi\n0\nCultivation Rate\n45.28 / s\nStability\n0%\nForeground\nIdle\nNext Milestone\nPush Qi\nNeed\nQi Cap\n100\nAction\nStart Cultivation\nIdle\nDao\nPath\nNo Path selected\nSpirit Root\nEarth / Mortal\nHeart Law\nNo Heart Law selected\nVerse\nChapter 1\nBreath / Focus\nBalanced\nBreakthrough\nSettled\nBREAKTHROUGH READINESS\nReach the realm edge and fill the Qi reservoir.\nQi\n100 short\nRealm edge\nReached\nGate item\nNot needed now\nQi 0 / 100\n+45.28/s\nStart Cultivation\nBreak Through\n\nRETURNING PAGE\n\nChoose the first stroke of your Dao.\n\nThe page opens, but it does not choose.\n\nHEAVEN\n\nRefined, celestial, technique-forward.\n\nFast cultivation and technique-led pressure. Heaven converts qi tempo into precise offensive windows, but its survival floor is thinner and greed is punished.\n\nQi 50%\nATK 30%\nQi Flow\nPrecision\nBurst Pressure\nHEAVEN\n\nUnderstand the pattern before it devours you.\n\nSelect\nEARTH\n\nEndure until the world admits you exist.\n\nSelect\nMARTIAL\n\nCut a road where the Gate left none.\n\nSelect"
+}

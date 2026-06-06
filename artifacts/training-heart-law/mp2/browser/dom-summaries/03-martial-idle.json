@@ -1,0 +1,82 @@
+{
+  "scenario": {
+    "id": "03-martial-idle",
+    "path": "martial",
+    "mode": "idle",
+    "expect": [
+      "Training Hall",
+      "Martial Sparring Court",
+      "Ready to practice"
+    ]
+  },
+  "setup": {
+    "firstRegimenId": "thousand_cut_form",
+    "firstRegimenName": "Thousand-Cut Form",
+    "primaryStatId": "weapon_intent",
+    "reducedMotion": false
+  },
+  "dom": {
+    "text": "Martial PathTraining HallMartial Sparring CourtDrill weapon intent, rhythm, and counters without changing combat formulas.Path Foundation0 / 16 averageCurrent Bottleneck: Battle RhythmRegimensThousand-Cut FormWeapon HallMastery 0 / 100Drumbeat FootworkSparring CourtMastery 0 / 100Shadow SparringShadow RingMastery 0 / 100Empty-Hand RecoveryRecovery MatMastery 0 / 100Killing Line MeditationIntent Line ChamberMastery 0 / 100Stance Chain DisciplineChain Form YardMastery 0 / 100Ready to practiceThousand-Cut FormWeapon HallSelect a regimen and intensity, then start Path Training.PrimaryWeapon Intent0 / 16absentSecondaryPrecision0 / 16absentFoundationBody Integrity0 / 16absentPath FoundationWeapon Intentabsent0 / 16Battle Rhythmabsent0 / 16Flow Stepabsent0 / 16Precisionabsent0 / 16Counter Senseabsent0 / 16Killing Momentumabsent0 / 16Quiet0.70x / 0.04 fatigue/minSteady1x / 0.14 fatigue/minHarsh1.35x / 0.35 fatigue/minLimit1.75x / 0.75 fatigue/minStart PracticeStop Practice",
+    "path": "martial",
+    "reducedMotion": "false",
+    "regimenCount": 6,
+    "regimenPaths": [
+      "martial"
+    ],
+    "regimens": [
+      {
+        "text": "Thousand-Cut FormWeapon HallMastery 0 / 100",
+        "path": "martial",
+        "regimenId": "thousand_cut_form"
+      },
+      {
+        "text": "Drumbeat FootworkSparring CourtMastery 0 / 100",
+        "path": "martial",
+        "regimenId": "drumbeat_footwork"
+      },
+      {
+        "text": "Shadow SparringShadow RingMastery 0 / 100",
+        "path": "martial",
+        "regimenId": "shadow_sparring"
+      },
+      {
+        "text": "Empty-Hand RecoveryRecovery MatMastery 0 / 100",
+        "path": "martial",
+        "regimenId": "empty_hand_recovery"
+      },
+      {
+        "text": "Killing Line MeditationIntent Line ChamberMastery 0 / 100",
+        "path": "martial",
+        "regimenId": "killing_line_meditation"
+      },
+      {
+        "text": "Stance Chain DisciplineChain Form YardMastery 0 / 100",
+        "path": "martial",
+        "regimenId": "stance_chain_discipline"
+      }
+    ],
+    "actionButtons": [
+      {
+        "text": "Start Practice",
+        "disabled": false,
+        "title": "Start Practice"
+      },
+      {
+        "text": "Stop Practice",
+        "disabled": true,
+        "title": "No Training Hall practice is active."
+      }
+    ],
+    "alerts": [],
+    "viewport": {
+      "width": 1440,
+      "height": 1100
+    },
+    "documentSize": {
+      "width": 1440,
+      "height": 1100
+    },
+    "horizontalOverflowPx": 0
+  },
+  "screenshotPath": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\training-heart-law\\mp2\\browser\\screenshots\\03-martial-idle.png"
+}

@@ -115,6 +115,30 @@ export const formatGameEventSummary = (event: GameEvent): string => {
     case 'prestige/performed': {
       return `Prestige performed: +${event.payload.apGained} AP`;
     }
+    case 'training/started':
+      return `Training started: ${event.payload.regimenId} / ${event.payload.intensity}`;
+    case 'training/grade_changed':
+      return `Training grade: ${event.payload.statId} ${event.payload.oldGrade}->${event.payload.newGrade}`;
+    case 'training/cap_hit':
+      return `Training cap hit: ${event.payload.statId} ${event.payload.rating}`;
+    case 'training/offline_applied':
+      return `Offline Training: ${Math.floor(event.payload.appliedMs / 60000)}m`;
+    case 'dao_heart/started':
+      return `Dao Heart started: ${event.payload.activityId}`;
+    case 'dao_heart/level_changed':
+      return `Heart Law level: ${event.payload.lawId} ${event.payload.oldLevel}->${event.payload.newLevel}`;
+    case 'dao_heart/offline_applied':
+      return `Offline Dao Heart: ${Math.floor(event.payload.appliedMs / 60000)}m`;
+    case 'breakthrough/attempted':
+      return `Breakthrough attempted: ${event.payload.fromRealm} / ${event.payload.result}`;
+    case 'gate/attempted':
+      return `Gate attempted: ${event.payload.trialId} / ${event.payload.result}`;
+    case 'prestige/started':
+      return `Prestige started: realm ${event.payload.realm}`;
+    case 'prestige/memory_applied':
+      return `Prestige memory applied: ${event.payload.effectId}`;
+    case 'prestige/reset_bucket_applied':
+      return `Prestige reset bucket: ${event.payload.bucketId}`;
     case 'offline/applied': {
       const { rawOfflineSeconds, qiGained, queuedActionsReady, expeditionsReady } = event.payload;
       return `Offline applied: ${Math.floor(rawOfflineSeconds / 3600)}h / Qi + ${qiGained} + ${queuedActionsReady} queues + ${expeditionsReady} expedition`;

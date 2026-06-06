@@ -1,0 +1,68 @@
+{
+  "packet": "MP4",
+  "previousPacket": "MP3",
+  "previousPacketDecision": "partial",
+  "mp4MayProceed": true,
+  "branch": "Latest",
+  "commit": "969de0ab4602a37ba3edf6ed6233419328f21924",
+  "generatedAt": "2026-05-29T02:58:56.9444622+03:00",
+  "dirtyState": {
+    "wasDirtyBeforeMp4": true,
+    "summary": "Existing modified/untracked MP0-MP3 and user files were present before MP4 artifacts and tuning."
+  },
+  "bundleInputs": {
+    "repoRootFilesPresent": false,
+    "zipRead": "C:\\Users\\abdul\\Desktop\\cultivation-idle-mp4-prompt-input-bundle-20260529-022108.zip",
+    "filesReadFromZip": [
+      "START_HERE_MP4.md",
+      "README_MP4_PROMPT_INPUT_BUNDLE.md",
+      "GIT_CONTEXT.md"
+    ]
+  },
+  "preflightCommands": [
+    { "command": "npm run typecheck", "status": "pass", "artifact": "artifacts/mp4/baseline/logs/typecheck.log" },
+    { "command": "npm run check:icons", "status": "pass", "artifact": "artifacts/mp4/baseline/logs/check-icons.log" },
+    { "command": "npm run validate:content", "status": "pass", "artifact": "artifacts/mp4/baseline/logs/validate-content.log" },
+    { "command": "npm exec tsc -- --project tsconfig.tests.json", "status": "pass", "artifact": "artifacts/mp4/baseline/logs/tsconfig-tests.log" },
+    { "command": "node --loader=./scripts/relativeJsLoader.mjs --test tmp-tests/tests/contracts/milestoneReadinessSurfaceContract.test.js", "status": "pass", "artifact": "artifacts/mp4/baseline/logs/mp3-targeted-milestone-readiness.log" },
+    { "command": "npm run build", "status": "pass_with_warnings", "artifact": "artifacts/mp4/baseline/logs/build.log" },
+    { "command": "npm run release:runtime-diagnostics:json", "status": "pass", "artifact": "artifacts/mp4/baseline/runtime-diagnostics.baseline.json" },
+    { "command": "npm run balance:report:json", "status": "fail_tuning_value_drift", "artifact": "artifacts/mp4/baseline/balance-report.baseline.json" },
+    { "command": "npm run release:route-report:json", "status": "pass_with_timing_warning", "artifact": "artifacts/mp4/baseline/route-report.baseline.json" },
+    { "command": "npm run release:fresh-run-report:json", "status": "pass_with_manual_coverage_warnings", "artifact": "artifacts/mp4/baseline/fresh-run-report.baseline.json" },
+    { "command": "npm run release:reclaim-route-report", "status": "pass", "artifact": "artifacts/mp4/baseline/logs/release-reclaim-route-report.log" },
+    { "command": "npm run release:reclaim-route-report -- --json", "status": "pass", "artifact": "artifacts/mp4/baseline/reclaim-route-report.baseline.json" },
+    { "command": "npm run test:balance-regression", "status": "fail_tuning_value_drift", "artifact": "artifacts/mp4/baseline/logs/test-balance-regression.log" },
+    { "command": "npm run validate:balance-telemetry", "status": "pass", "artifact": "artifacts/mp4/baseline/logs/validate-balance-telemetry.log" },
+    { "command": "npm run telemetry:export -- --input artifacts/mp4/baseline/telemetry-input.baseline.json --out-dir artifacts/mp4/baseline/telemetry-export", "status": "pass", "artifact": "artifacts/mp4/baseline/telemetry.baseline.json" },
+    { "command": "npm run telemetry:summary -- --input artifacts/mp4/baseline/telemetry-input.baseline.json --json", "status": "pass", "artifact": "artifacts/mp4/baseline/telemetry-summary.baseline.json" }
+  ],
+  "inheritedBlockers": [
+    {
+      "id": "MP3-PUBLIC-ADOPTION-PARTIAL",
+      "summary": "Status/Cultivation/Gate Trial may still mostly render older guidance surfaces rather than directly rendering MP3 shared readiness/source surface.",
+      "ownerPacket": "MP3",
+      "blocksMp4": false
+    },
+    {
+      "id": "MP2-GATE-TRIAL-ADVANCED-SCREENSHOT-PARTIAL",
+      "summary": "Gate Trial advanced lifecycle screenshot proof remains follow-up.",
+      "ownerPacket": "MP2",
+      "blocksMp4": false
+    },
+    {
+      "id": "MP5-RELEASE-GATE-TIMEOUT",
+      "summary": "Broad release gate timeout / full-suite debt remains MP5 hardening.",
+      "ownerPacket": "MP5",
+      "blocksMp4": false
+    }
+  ],
+  "mp4OwnedBlockers": [
+    {
+      "id": "MP4-TIMING-DRIFT",
+      "summary": "Balance regression phase timings are consistently too fast and cap time is below the minimum content-cap envelope.",
+      "classification": "tuning_value_drift"
+    }
+  ],
+  "stopReason": null
+}

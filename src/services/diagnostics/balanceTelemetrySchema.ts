@@ -70,7 +70,10 @@ export type BalanceTelemetryFamily =
   | 'support'
   | 'prestige'
   | 'reclaim'
-  | 'offline';
+  | 'offline'
+  | 'training'
+  | 'dao_heart'
+  | 'breakthrough';
 
 export type BalanceTelemetryName =
   | 'life_started'
@@ -93,7 +96,16 @@ export type BalanceTelemetryName =
   | 'performed'
   | 'upgrade_purchased'
   | 'milestone_reached'
-  | 'applied';
+  | 'applied'
+  | 'started'
+  | 'grade_changed'
+  | 'cap_hit'
+  | 'offline_applied'
+  | 'level_changed'
+  | 'attempted'
+  | 'memory_applied'
+  | 'reset_bucket_applied'
+  | 'gate_attempted';
 
 export type BalanceTelemetryKind = `${BalanceTelemetryFamily}/${BalanceTelemetryName}`;
 
@@ -139,9 +151,21 @@ export type BalanceTelemetryEvent =
   | (BalanceTelemetryMeta & { kind: 'support/expedition_started'; family: 'support'; name: 'expedition_started'; payload: { slotIndex: number; expeditionTypeId: string; durationId: string; durationSeconds: number; cityId: string } })
   | (BalanceTelemetryMeta & { kind: 'support/expedition_claimed'; family: 'support'; name: 'expedition_claimed'; payload: { slotIndex: number; expeditionTypeId: string; durationId: string; cityId: string; rareDropItemId?: string; rewards: { currencies: CurrencySnapshot; items: ItemSnapshot } } })
   | (BalanceTelemetryMeta & { kind: 'prestige/performed'; family: 'prestige'; name: 'performed'; payload: { apGained: number; totalAPAfter: number; realmReached: number; resolvedGateCount: number; timeSpentSec: number; advisorLabel?: string } })
+  | (BalanceTelemetryMeta & { kind: 'prestige/started'; family: 'prestige'; name: 'started'; payload: { realm: number; ap: number; trainedStats: Record<string, number>; heartLawLevel: number; retainedMemory: number } })
+  | (BalanceTelemetryMeta & { kind: 'prestige/memory_applied'; family: 'prestige'; name: 'memory_applied'; payload: { effectId: string; rank: number; value: number; targetId?: string } })
+  | (BalanceTelemetryMeta & { kind: 'prestige/reset_bucket_applied'; family: 'prestige'; name: 'reset_bucket_applied'; payload: { bucketId: string; kind: 'reset' | 'carry' | 'rebuilt' | 'hybrid'; label: string } })
   | (BalanceTelemetryMeta & { kind: 'prestige/upgrade_purchased'; family: 'prestige'; name: 'upgrade_purchased'; payload: { upgradeId: string; nextLevel: number; apCost: number; remainingAP: number } })
   | (BalanceTelemetryMeta & { kind: 'reclaim/milestone_reached'; family: 'reclaim'; name: 'milestone_reached'; payload: { milestoneId: string; elapsedMsSinceLifeStart: number; sourceResetCheckpoint?: string } })
-  | (BalanceTelemetryMeta & { kind: 'offline/applied'; family: 'offline'; name: 'applied'; payload: { rawOfflineSeconds: number; effectiveOfflineSeconds: number; effectiveEfficiency: number; wasCapped: boolean; qiGained: string; queuedActionsReady: number; expeditionsReady: number } });
+  | (BalanceTelemetryMeta & { kind: 'offline/applied'; family: 'offline'; name: 'applied'; payload: { rawOfflineSeconds: number; effectiveOfflineSeconds: number; effectiveEfficiency: number; wasCapped: boolean; qiGained: string; queuedActionsReady: number; expeditionsReady: number } })
+  | (BalanceTelemetryMeta & { kind: 'training/started'; family: 'training'; name: 'started'; payload: { path: string; regimenId: string; intensity: string; realmId: string; ratingSnapshot: Record<string, number>; fatigue: number } })
+  | (BalanceTelemetryMeta & { kind: 'training/grade_changed'; family: 'training'; name: 'grade_changed'; payload: { statId: string; oldGrade: number; newGrade: number; minutesSinceLastGrade: number; realmId: string } })
+  | (BalanceTelemetryMeta & { kind: 'training/cap_hit'; family: 'training'; name: 'cap_hit'; payload: { statId: string; realmId: string; rating: number; masteryRank: number } })
+  | (BalanceTelemetryMeta & { kind: 'training/offline_applied'; family: 'training'; name: 'offline_applied'; payload: { appliedMs: number; ratingGainedById: Record<string, number>; statXpGainedById: Record<string, number>; masteryXpGainedByRegimenId: Record<string, number>; fatigueGained: number; intensityDowngrades: number; blockedReason?: string } })
+  | (BalanceTelemetryMeta & { kind: 'dao_heart/started'; family: 'dao_heart'; name: 'started'; payload: { lawId: string; activityId: string; parityDelta: number; turbulence: number; clarity: number } })
+  | (BalanceTelemetryMeta & { kind: 'dao_heart/level_changed'; family: 'dao_heart'; name: 'level_changed'; payload: { lawId: string; oldLevel: number; newLevel: number; parityDelta: number } })
+  | (BalanceTelemetryMeta & { kind: 'dao_heart/offline_applied'; family: 'dao_heart'; name: 'offline_applied'; payload: { lawId: string; activityId: string; appliedMs: number; heartLawXpGain: number; verseMasteryGain: number; clarityGain: number; turbulenceGain: number; levelsGained: number; blockedReason?: string } })
+  | (BalanceTelemetryMeta & { kind: 'breakthrough/attempted'; family: 'breakthrough'; name: 'attempted'; payload: { fromRealm: string; risk: number; causeRows: Array<{ id: string; value: number }>; parityDelta: number; fatigue: number; result: 'success' | 'failure' | 'blocked' } })
+  | (BalanceTelemetryMeta & { kind: 'trials/gate_attempted'; family: 'trials'; name: 'gate_attempted'; payload: { trialId: string; readinessScore: number; categoryScores: Record<string, number>; path: string | null; lawId: string | null; result: 'cleared' | 'defeated' | 'blocked' | 'bypassed' } });
 
 export const BALANCE_TELEMETRY_KINDS: readonly BalanceTelemetryKind[] = [
   'progression/life_started',
@@ -162,7 +186,19 @@ export const BALANCE_TELEMETRY_KINDS: readonly BalanceTelemetryKind[] = [
   'support/expedition_started',
   'support/expedition_claimed',
   'prestige/performed',
+  'prestige/started',
+  'prestige/memory_applied',
+  'prestige/reset_bucket_applied',
   'prestige/upgrade_purchased',
   'reclaim/milestone_reached',
   'offline/applied',
+  'training/started',
+  'training/grade_changed',
+  'training/cap_hit',
+  'training/offline_applied',
+  'dao_heart/started',
+  'dao_heart/level_changed',
+  'dao_heart/offline_applied',
+  'breakthrough/attempted',
+  'trials/gate_attempted',
 ] as const;

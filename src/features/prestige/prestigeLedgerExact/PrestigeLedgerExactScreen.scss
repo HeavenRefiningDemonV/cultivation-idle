@@ -369,6 +369,160 @@
   padding: 22px;
 }
 
+.prestigeReclaimMemoryPanel {
+  display: grid;
+  gap: 12px;
+  min-height: 188px;
+  margin-bottom: 18px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(91, 64, 38, 0.24);
+}
+
+.prestigeReclaimMemoryPanel__header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: start;
+}
+
+.prestigeReclaimMemoryPanel__header h2 {
+  margin: 0;
+}
+
+.prestigeReclaimMemoryPanel__header p,
+.prestigeReclaimMemoryPanel__empty,
+.prestigeReclaimMemoryRow p {
+  margin: 5px 0 0;
+  color: var(--prestige-muted);
+  font-size: 12px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.prestigeReclaimMemoryPanel__header .prestigeLedgerButton {
+  min-width: 142px;
+  white-space: normal;
+}
+
+.prestigeReclaimMemoryPanel__summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.prestigeReclaimMemoryPanel__summary span {
+  min-height: 30px;
+  display: grid;
+  place-items: center;
+  padding: 5px 6px;
+  border: 1px solid rgba(91, 64, 38, 0.24);
+  border-radius: 6px;
+  background: rgba(250, 240, 221, 0.64);
+  color: var(--prestige-ink);
+  font-size: 11px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.prestigeReclaimMemoryPanel__rows {
+  display: grid;
+  gap: 10px;
+}
+
+.prestigeReclaimMemoryRow {
+  min-height: 138px;
+  display: grid;
+  gap: 8px;
+  padding: 11px 12px;
+  border: 1px solid rgba(91, 64, 38, 0.28);
+  border-left-width: 5px;
+  border-radius: 8px;
+  background: rgba(250, 240, 221, 0.58);
+}
+
+.prestigeReclaimMemoryRow--active {
+  border-left-color: var(--prestige-jade);
+}
+
+.prestigeReclaimMemoryRow--partial_component_only {
+  border-left-color: var(--prestige-gold);
+}
+
+.prestigeReclaimMemoryRow--dormant,
+.prestigeReclaimMemoryRow--at_prior_best {
+  border-left-color: var(--prestige-cinnabar);
+}
+
+.prestigeReclaimMemoryRow__title {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) max-content;
+  gap: 10px;
+  align-items: baseline;
+}
+
+.prestigeReclaimMemoryRow__title span,
+.prestigeReclaimMemoryRow__title strong {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.prestigeReclaimMemoryRow__title span {
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.prestigeReclaimMemoryRow__title strong {
+  font-size: 11px;
+  text-align: right;
+}
+
+.prestigeReclaimMemoryRow__inspector {
+  display: grid;
+  gap: 5px;
+  margin: 0;
+}
+
+.prestigeReclaimMemoryRow__inspector div {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  gap: 8px;
+}
+
+.prestigeReclaimMemoryRow__inspector dt,
+.prestigeReclaimMemoryRow__inspector dd {
+  margin: 0;
+  min-width: 0;
+  font-size: 11px;
+  line-height: 1.28;
+  overflow-wrap: anywhere;
+}
+
+.prestigeReclaimMemoryRow__inspector dt {
+  font-weight: 900;
+  color: var(--prestige-ink);
+}
+
+.prestigeReclaimMemoryRow__actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.prestigeReclaimMemoryRow__actions .prestigeLedgerButton {
+  min-width: 108px;
+  font-size: 12px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .prestigeReclaimMemoryPanel,
+  .prestigeReclaimMemoryRow,
+  .prestigeReclaimMemoryPanel *,
+  .prestigeReclaimMemoryRow * {
+    transition-duration: 0ms !important;
+    animation-duration: 0ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
 .prestigeLedgerCard h2,
 .prestigeLedgerPreview h2,
 .prestigeLedgerRecommendations h2 {
@@ -402,6 +556,10 @@
   border: 1px solid rgba(163, 58, 46, 0.58);
   border-radius: 50%;
   opacity: 0.62;
+}
+
+.prestigeLedgerCompactTruth {
+  display: none;
 }
 
 .prestigeLedgerSection {
@@ -1301,6 +1459,303 @@
 
   .prestigeLedgerRow {
     grid-template-columns: minmax(96px, 0.42fr) minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 1500px), (max-height: 820px) {
+  .prestigeLedgerExactPage {
+    --prestige-pad-x: 18px;
+    --prestige-pad-top: 10px;
+    --prestige-gap-x: 14px;
+    --prestige-gap-y: 10px;
+    --prestige-header-height: 86px;
+    --prestige-forecast-height: auto;
+    --prestige-bottom-contract-height: auto;
+    height: auto;
+    min-height: 100%;
+    overflow: auto;
+    padding-bottom: 88px;
+    grid-template-rows: var(--prestige-header-height) auto minmax(430px, auto) auto auto;
+  }
+
+  .prestigeLedgerHeader {
+    padding: 9px 14px;
+    gap: 14px;
+  }
+
+  .prestigeLedgerHeader h1 {
+    font-size: 32px;
+  }
+
+  .prestigeLedgerHeader__subtitle {
+    margin-top: 5px;
+    font-size: 16px;
+  }
+
+  .prestigeLedgerThread__node strong {
+    font-size: 10px;
+  }
+
+  .prestigeLedgerChip {
+    min-height: 58px;
+    padding: 7px 10px;
+  }
+
+  .prestigeLedgerCard--ledger,
+  .prestigeLedgerCard--preview {
+    max-height: 430px;
+    overflow: auto;
+  }
+
+  .prestigeLedgerCard--ledger {
+    font-family: Georgia, 'Times New Roman', serif;
+  }
+
+  .prestigeLedgerCard--ledger * {
+    font-family: Georgia, 'Times New Roman', serif;
+  }
+
+  .prestigeLedgerCard {
+    padding: 16px 18px;
+  }
+
+  .prestigeLedgerCard h2,
+  .prestigeLedgerPreview h2,
+  .prestigeLedgerRecommendations h2 {
+    font-size: 24px;
+  }
+
+  .prestigeLedgerRows {
+    gap: 7px;
+  }
+
+  .prestigeLedgerRow {
+    min-height: 30px;
+    gap: 7px;
+    align-items: start;
+    font-size: 13px;
+    line-height: 1.28;
+  }
+
+  .prestigeLedgerCard--ledger .prestigeLedgerRows {
+    gap: 8px;
+  }
+
+  .prestigeLedgerCard--ledger .prestigeLedgerRow {
+    min-height: 0;
+    padding-block: 11px;
+    grid-template-columns: 1fr;
+    gap: 5px;
+    line-height: 1.38;
+    border-bottom: 1px solid rgba(91, 64, 38, 0.13);
+  }
+
+  .prestigeLedgerCard--ledger .prestigeLedgerRow span,
+  .prestigeLedgerCard--ledger .prestigeLedgerRow strong {
+    display: block;
+    line-height: 1.25;
+  }
+
+  .prestigeLedgerCard--ledger .prestigeLedgerSection {
+    gap: 14px;
+    margin-top: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(91, 64, 38, 0.16);
+  }
+
+  .prestigeLedgerCard--ledger .prestigeLedgerSection:last-of-type {
+    border-bottom: 0;
+  }
+
+  .prestigeLedgerCard--ledger > .prestigeLedgerSection,
+  .prestigeLedgerCard--ledger > .prestigeLedgerReceipt {
+    display: none;
+  }
+
+  .prestigeLedgerCompactTruth {
+    display: grid;
+    gap: 10px;
+    margin-top: 18px;
+    padding: 14px 12px;
+    border: 1px solid rgba(91, 64, 38, 0.22);
+    background: rgba(250, 240, 221, 0.56);
+  }
+
+  .prestigeLedgerCompactTruth__row {
+    display: grid;
+    gap: 3px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(91, 64, 38, 0.16);
+  }
+
+  .prestigeLedgerCompactTruth__row span,
+  .prestigeLedgerCompactTruth__ap span {
+    color: var(--prestige-muted);
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .prestigeLedgerCompactTruth__row strong,
+  .prestigeLedgerCompactTruth__ap strong {
+    color: var(--prestige-ink);
+    font-size: 15px;
+    overflow-wrap: anywhere;
+  }
+
+  .prestigeLedgerCompactTruth__row--warning strong {
+    color: var(--prestige-cinnabar);
+  }
+
+  .prestigeLedgerCompactTruth__ap {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .prestigeLedgerCompactTruth__ap strong {
+    min-width: 112px;
+    min-height: 40px;
+    display: grid;
+    place-items: center;
+    border: 2px solid rgba(163, 58, 46, 0.75);
+    color: var(--prestige-cinnabar);
+    background: rgba(255, 244, 225, 0.65);
+    font-size: 27px;
+  }
+
+  .prestigeLedgerSection {
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  .prestigeLedgerSection h3 {
+    font-size: 18px;
+    line-height: 1.12;
+  }
+
+  .prestigeLedgerRow span,
+  .prestigeLedgerRow strong,
+  .prestigeLedgerReceipt__row span,
+  .prestigeLedgerReceipt__row strong {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .prestigeLedgerReceipt {
+    gap: 7px;
+    margin-top: 14px;
+    padding: 9px 12px;
+  }
+
+  .prestigeLedgerReceipt__total {
+    min-height: 50px;
+  }
+
+  .prestigeLedgerReceipt__title span:first-child {
+    font-size: 18px;
+  }
+
+  .prestigeLedgerReceipt__rows {
+    padding: 7px 10px 0;
+  }
+
+  .prestigeLedgerReceipt__row {
+    padding: 5px 2px;
+    font-size: 13px;
+  }
+
+  .prestigeLedgerReceipt__total {
+    min-height: 42px;
+  }
+
+  .prestigeLedgerReceipt__total span {
+    font-size: 15px;
+  }
+
+  .prestigeLedgerReceipt__total strong {
+    min-width: 112px;
+    min-height: 38px;
+  }
+
+  .prestigeLedgerDecree {
+    min-height: 430px;
+    padding: 30px 48px 26px;
+    grid-template-rows: auto minmax(250px, auto) auto auto minmax(58px, auto);
+  }
+
+  .prestigeLedgerDecree__header h2 {
+    font-size: 34px;
+  }
+
+  .prestigeLedgerSeal {
+    width: clamp(250px, 21vw, 300px);
+    margin-top: 0;
+  }
+
+  .prestigeLedgerSeal__inner {
+    padding: 28px 34px;
+    gap: 7px;
+  }
+
+  .prestigeLedgerSeal__ap {
+    font-size: clamp(48px, 4vw, 62px);
+  }
+
+  .prestigeLedgerSeal p {
+    font-size: 16px;
+    line-height: 1.22;
+  }
+
+  .prestigeLedgerDecree__advisory {
+    font-size: 17px;
+    line-height: 1.2;
+  }
+
+  .prestigeLedgerPrimaryPlaque {
+    min-height: 48px;
+    font-size: 22px;
+  }
+
+  .prestigeLedgerPreview {
+    gap: 10px;
+    padding-bottom: 10px;
+  }
+
+  .prestigeLedgerRecommendations__list {
+    gap: 8px;
+  }
+
+  .prestigeLedgerForecast {
+    min-height: 0;
+    padding: 14px 18px;
+  }
+
+  .prestigeLedgerForecast__lines {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .prestigeLedgerContract {
+    min-height: 0;
+    padding: 12px 22px;
+    grid-template-columns: 210px minmax(0, 1fr);
+    overflow: visible;
+  }
+
+  .prestigeLedgerContract__tablets {
+    gap: 10px;
+  }
+
+  .prestigeLedgerTablet {
+    padding: 8px 12px;
+  }
+
+  .prestigeLedgerTablet h3 {
+    font-size: 16px;
+  }
+
+  .prestigeLedgerTablet li {
+    font-size: 12px;
   }
 }
 

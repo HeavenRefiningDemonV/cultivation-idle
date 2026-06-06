@@ -1,0 +1,102 @@
+{
+  "routeId": "SS-030",
+  "label": "World recommendations",
+  "viewport": "1920x1080",
+  "url": "http://127.0.0.1:5173/",
+  "title": "cultivation-idle-temp",
+  "headings": [
+    "Apothecary"
+  ],
+  "primaryButtons": [
+    {
+      "text": "OutskirtsGold & Common MatsGold / Common MatsGold & Common Mats. Best used when you need gold, common materials, or low-risk combat reps.",
+      "ariaLabel": "Open Outskirts: Gold & Common Mats",
+      "disabled": false
+    },
+    {
+      "text": "RuinsTargeted MatsLocal Mats / Anchor DropTargeted Mats. Best used when you need targeted local materials and deterministic support rewards.",
+      "ariaLabel": "Open Ruins: Targeted Mats",
+      "disabled": false
+    },
+    {
+      "text": "Gate TrialGate ItemFoundation Pill / BreakthroughGate Item. Use this hall when the current gate item is ready for judgment.",
+      "ariaLabel": "Open Gate Trial: Gate Item",
+      "disabled": false
+    },
+    {
+      "text": "Manual PavilionBuild CorrectionManuals / Technique FragmentsBuild Correction. Best used when you need build correction, manuals, or technique growth.",
+      "ariaLabel": "Open Manual Pavilion: Build Correction",
+      "disabled": false
+    },
+    {
+      "text": "ApothecaryImmediate ReadinessHealing Stock / Preparation RemediesImmediate Readiness. Best used when you need immediate readiness through healing stock, remedies, or pouch prep.",
+      "ariaLabel": "Open Apothecary: Immediate Readiness",
+      "disabled": false
+    },
+    {
+      "text": "ForgePermanent FloorRefines / Temper / RunesPermanent Floor. Best used when you need permanent floor through refine, temper, or rune work.",
+      "ariaLabel": "Open Forge: Permanent Floor",
+      "disabled": false
+    },
+    {
+      "text": "BountiesMerit & RoutingMerit / Spirit StonesMerit & Routing. Best used when you need Merit, routing help, or directed support rewards.",
+      "ariaLabel": "Open Bounties: Merit & Routing",
+      "disabled": false
+    },
+    {
+      "text": "ExpeditionsPassive SupportHerbs / OrePassive Support. Best used when you need passive shortage smoothing for herbs, ore, or fragments.",
+      "ariaLabel": "Open Expeditions: Passive Support",
+      "disabled": false
+    },
+    {
+      "text": "Open Apothecary",
+      "ariaLabel": null,
+      "disabled": false
+    },
+    {
+      "text": "Status",
+      "ariaLabel": null,
+      "disabled": false
+    },
+    {
+      "text": "Cultivation",
+      "ariaLabel": null,
+      "disabled": false
+    },
+    {
+      "text": "World",
+      "ariaLabel": null,
+      "disabled": false
+    },
+    {
+      "text": "Inventory",
+      "ariaLabel": null,
+      "disabled": false
+    },
+    {
+      "text": "Techniques",
+      "ariaLabel": null,
+      "disabled": false
+    },
+    {
+      "text": "Records",
+      "ariaLabel": null,
+      "disabled": false
+    },
+    {
+      "text": "Prestige",
+      "ariaLabel": null,
+      "disabled": false
+    }
+  ],
+  "testIds": [],
+  "scrollWidth": 1920,
+  "innerWidth": 1920,
+  "scrollHeight": 1080,
+  "innerHeight": 1080,
+  "noHorizontalOverflow": true,
+  "forbiddenVisible": [],
+  "placeholderVisible": false,
+  "consoleErrorCount": 0,
+  "textSample": "Outskirts\nGOLD & COMMON MATS\nGold / Common Mats\nGold & Common Mats. Best used when you need gold, common materials, or low-risk combat reps.\nRuins\nTARGETED MATS\nLocal Mats / Anchor Drop\nTargeted Mats. Best used when you need targeted local materials and deterministic support rewards.\nGate Trial\nGATE ITEM\nFoundation Pill / Breakthrough\nGate Item. Use this hall when the current gate item is ready for judgment.\nManual Pavilion\nBUILD CORRECTION\nManuals / Technique Fragments\nBuild Correction. Best used when you need build correction, manuals, or technique growth.\nApothecary\nIMMEDIATE READINESS\nHealing Stock / Preparation Remedies\nImmediate Readiness. Best used when you need immediate readiness through healing stock, remedies, or pouch prep.\nForge\nPERMANENT FLOOR\nRefines / Temper / Runes\nPermanent Floor. Best used when you need permanent floor through refine, temper, or rune work.\nBounties\nMERIT & ROUTING\nMerit / Spirit Stones\nMerit & Routing. Best used when you need Merit, routing help, or directed support rewards.\nExpeditions\nPASSIVE SUPPORT\nHerbs / Ore\nPassive Support. Best used when you need passive shortage smoothing for herbs, ore, or fragments.\nWORLD\nCity Phase: Pinewind Hamlet - foundations\nSelect city\nPinewind Hamlet\nStonecrag Town — Locked — Reach Foundation Establishment\nSpirit Cavern City — Locked — Reach Core Formation\nLotusford — Locked — Reach Nascent Soul\nIronpeak Bastion — Locked — Reach Soul Formation\nPressure: Qi, first medicines, and a stable starter build.\nExpedition Slot Idle\n\nPINEWIND HAMLET\n\nApothecary\n\nImmediate Readiness\n\nBest used when you need immediate readiness through healing stock, remedies, or pouch prep.\n\nHealing Stock\nPreparation Remedies\n\nRecommended here now: Apothecary.\n\nOpen Apothecary\nStatus\nCultivation\nWorld\nInventory\nTechniques\nRecords\nPrestige\nSettings"
+}

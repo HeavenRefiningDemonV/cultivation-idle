@@ -11,6 +11,7 @@ import { runStoreSelectorAudit } from '../../scripts/release/auditStoreSelectors
 const repoPath = (...parts: string[]) => path.resolve(process.cwd(), ...parts);
 
 const SELECTOR_STABILITY_FILES = [
+  'src/components/GameLayout.tsx',
   'src/components/screens/BountyBoardPanel.tsx',
   'src/components/Header.tsx',
   'src/components/screens/WorldScreen.tsx',
@@ -19,6 +20,10 @@ const SELECTOR_STABILITY_FILES = [
   'src/components/screens/AlchemyPanel.tsx',
   'src/components/screens/TalismanPanel.tsx',
   'src/components/system/CityArrivalBanner.tsx',
+  'src/features/daoHeartSanctuary/DaoHeartSanctuaryView.tsx',
+  'src/features/pavilion/PavilionScreenOwner.tsx',
+  'src/ui/cultivation/heartLaw/HeartLawMindView.tsx',
+  'src/ui/status/useStatusDashboardSurface.ts',
 ] as const;
 
 const TRACKED_BOUNTY_FILES = [
@@ -27,7 +32,13 @@ const TRACKED_BOUNTY_FILES = [
   'src/components/screens/BountyBoardPanel.tsx',
 ] as const;
 
-const STORE_SELECTOR_NAMES = ['useContentStore', 'useBountyStore', 'useCityStore', 'useUIStore'] as const;
+const STORE_SELECTOR_NAMES = [
+  'useContentStore',
+  'useBountyStore',
+  'useCityStore',
+  'useUIStore',
+  'useDaoImpressionStore',
+] as const;
 
 const readSource = async (relativePath: string): Promise<string> =>
   fs.readFile(repoPath(relativePath), 'utf8');
@@ -107,6 +118,37 @@ test('touched world/support files do not use fresh fallback arrays or objects in
       );
     }
   }
+});
+
+test('touched screen selectors do not derive fresh array snapshots inside Zustand selectors', async () => {
+  for (const relativePath of SELECTOR_STABILITY_FILES) {
+    if (!(await fileExists(relativePath))) continue;
+    const source = await readSource(relativePath);
+
+    for (const storeName of STORE_SELECTOR_NAMES) {
+      const selectorBodies = collectStoreCallBodies(source, storeName);
+      assert.equal(
+        selectorBodies.some((body) => /\.slice\s*\(/.test(body)),
+        false,
+        `${relativePath} should not call .slice() inside ${storeName} selectors`,
+      );
+    }
+  }
+});
+
+test('Status dashboard hook memoizes the derived surface after stable subscriptions', async () => {
+  const source = await readSource('src/ui/status/useStatusDashboardSurface.ts');
+
+  assert.doesNotMatch(
+    source,
+    /return\s+buildStatusDashboardSurface\(\s*\)\s*;/,
+    'useStatusDashboardSurface should not return a freshly built surface outside useMemo',
+  );
+  assert.match(
+    source,
+    /return\s+useMemo\s*\(/,
+    'useStatusDashboardSurface should memoize buildStatusDashboardSurface from stable subscriptions',
+  );
 });
 
 test('touched world-era components do not use grouped Zustand selector objects without shallow handling', async () => {

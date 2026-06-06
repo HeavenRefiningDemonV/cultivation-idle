@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { buildRuinsExactSurfaceFromStores } from '../../src/features/world/ruinsExact/buildRuinsExactSurface.js';
 
 void test('live binding source uses dropsPerRoom pool and final chest guaranteed', () => {
-  const source = readFileSync(new URL('../../src/features/world/ruinsExact/buildRuinsExactSurface.ts', import.meta.url), 'utf8');
+  const source = readFileSync('src/features/world/ruinsExact/buildRuinsExactSurface.ts', 'utf8');
   assert.equal(source.includes('dropsPerRoom?.pool'), true);
   assert.equal(source.includes('finalChestDrops?.guaranteed'), true);
   assert.equal(source.includes('bossChestRareFailures'), true);
@@ -12,8 +12,8 @@ void test('live binding source uses dropsPerRoom pool and final chest guaranteed
 });
 
 void test('exact owner/action controller quarantine old ruins components', () => {
-  const owner = readFileSync(new URL('../../src/features/world/ruinsExact/RuinsScreenOwner.tsx', import.meta.url), 'utf8');
-  const controller = readFileSync(new URL('../../src/features/world/ruinsExact/useRuinsExactActionController.ts', import.meta.url), 'utf8');
+  const owner = readFileSync('src/features/world/ruinsExact/RuinsScreenOwner.tsx', 'utf8');
+  const controller = readFileSync('src/features/world/ruinsExact/useRuinsExactActionController.ts', 'utf8');
   for (const forbidden of ['RuinsCtaZone', 'RuinsProgress', 'RuinsSummaryCard', 'deriveRuinsActionState', 'CombatModuleTopLane']) {
     assert.equal(owner.includes(forbidden) || controller.includes(forbidden), false);
   }

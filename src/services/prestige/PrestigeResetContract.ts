@@ -1,3 +1,5 @@
+import { resolvePrestigeMemoryEffects } from '../../systems/prestige/prestigeMemory.js';
+
 export type PrestigeResetBucketKind = 'reset' | 'carry' | 'rebuilt' | 'hybrid';
 
 export type PrestigeResetBucketLine = {
@@ -160,6 +162,38 @@ export const PRESTIGE_RESET_CONTRACT_BUCKETS = Object.freeze([
     confidence: 'high',
   }),
   line({
+    id: 'training_raw_ratings',
+    kind: 'reset',
+    label: 'Training raw ratings and stat XP',
+    detail: 'Training stat ratings and stat XP are per-life power and reset; Form Memory may reapply only a bounded floor.',
+    source: 'prestige_reset_service',
+    confidence: 'high',
+  }),
+  line({
+    id: 'training_fatigue_session',
+    kind: 'reset',
+    label: 'Training fatigue and active session',
+    detail: 'Fatigue, active regimen, active intensity, tick timers, and offline summaries are cleared at reincarnation.',
+    source: 'prestige_reset_service',
+    confidence: 'high',
+  }),
+  line({
+    id: 'dao_heart_turbulence',
+    kind: 'reset',
+    label: 'Dao Heart clarity and turbulence',
+    detail: 'Dao Heart clarity, turbulence, active practice, and current-life risk snapshots reset with the old life.',
+    source: 'prestige_reset_service',
+    confidence: 'high',
+  }),
+  line({
+    id: 'root_awakening_state',
+    kind: 'reset',
+    label: 'Root awakening and resonance',
+    detail: 'Root resonance and prior-life awakening state reset; only explicit root clarity floors affect the next roll.',
+    source: 'prestige_reset_service',
+    confidence: 'high',
+  }),
+  line({
     id: 'combat_state',
     kind: 'reset',
     label: 'Combat state',
@@ -224,6 +258,14 @@ export const PRESTIGE_RESET_CONTRACT_BUCKETS = Object.freeze([
     confidence: 'high',
   }),
   line({
+    id: 'root_clarity_floor',
+    kind: 'rebuilt',
+    label: 'Root Clarity floor',
+    detail: 'Purchased Root Clarity clamps the next spirit-root grade floor to the MP5 rank value without retaining the old root.',
+    source: 'prestige_store',
+    confidence: 'high',
+  }),
+  line({
     id: 'heart_law_unlocks',
     kind: 'rebuilt',
     label: 'Heart Law decree unlocks',
@@ -267,6 +309,8 @@ const activeRetentionLine = (carryOver: number): PrestigeResetBucketLine => line
   confidence: 'high',
 });
 
+const memoryLine = (input: PrestigeResetBucketLine): PrestigeResetBucketLine => line(input);
+
 export function classifyPrestigeResetBucket(id: string): PrestigeResetBucketLine | null {
   return PRESTIGE_RESET_CONTRACT_BUCKETS.find((line) => line.id === id) ?? null;
 }
@@ -275,8 +319,49 @@ export function getPrestigeResetContractSurface(input?: {
   purchasesById?: Record<string, number>;
 }): PrestigeResetContractSurface {
   const carryOver = deriveMasteryRetentionCarryOver(input?.purchasesById ?? {});
+  const effects = resolvePrestigeMemoryEffects(input?.purchasesById ?? {});
   const buckets = [...PRESTIGE_RESET_CONTRACT_BUCKETS];
   const hybrid = carryOver > 0 ? [activeRetentionLine(carryOver)] : [NO_RETENTION_LINE];
+  if (effects.formMemoryRank > 0) {
+    hybrid.push(memoryLine({
+      id: 'form_memory',
+      kind: 'hybrid',
+      label: `Form Memory floor +${effects.formMemoryFloor}`,
+      detail: 'A bounded starting path stat floor is applied within the current realm cap; raw stat XP is not retained.',
+      source: 'prestige_reset_service',
+      confidence: 'high',
+    }));
+  }
+  if (effects.scriptureEchoRank > 0) {
+    hybrid.push(memoryLine({
+      id: 'scripture_echo',
+      kind: 'hybrid',
+      label: `Scripture Echo ${Math.round(effects.scriptureVerseRetentionPct * 100)}%`,
+      detail: 'Same-law verse mastery echo and Heart Law XP catch-up are retained only through explicit memory.',
+      source: 'prestige_reset_service',
+      confidence: 'high',
+    }));
+  }
+  if (effects.calmFirstBreathRank > 0) {
+    hybrid.push(memoryLine({
+      id: 'calm_first_breath',
+      kind: 'hybrid',
+      label: `Calm First Breath -${effects.calmFirstBreathRiskReduction} risk`,
+      detail: 'Breakthrough risk reduction applies only when Heart Law is at parity with cultivation.',
+      source: 'derived',
+      confidence: 'high',
+    }));
+  }
+  if (effects.oldSparringRank > 0) {
+    hybrid.push(memoryLine({
+      id: 'old_sparring_shadows',
+      kind: 'hybrid',
+      label: `Old Sparring Shadows +${Math.round(effects.oldSparringMasteryCatchupMultiplier * 100)}%`,
+      detail: 'Regimen mastery catch-up applies only until the previous milestone is reached.',
+      source: 'prestige_reset_service',
+      confidence: 'high',
+    }));
+  }
 
   return {
     reset: buckets.filter((line) => line.kind === 'reset'),

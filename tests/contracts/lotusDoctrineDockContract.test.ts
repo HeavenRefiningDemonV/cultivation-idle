@@ -16,7 +16,7 @@ test('doctrine verse row carries a fixed-size lotus icon plus visible paired tex
   assert.match(verseSource, /QiLotusIcon state=\{lotusState\} className="verseMiniBar__lotusIcon" fixed/);
 
   assert.match(lotusStyles, /\.qiLotusIcon\[data-fixed="1"\]\s*\{/);
-  assert.match(lotusStyles, /width:\s*20px;/);
-  assert.match(lotusStyles, /height:\s*20px;/);
+  assert.match(lotusStyles, /width:\s*var\(--qi-lotus-size,\s*36px\);/);
+  assert.match(lotusStyles, /height:\s*var\(--qi-lotus-size,\s*36px\);/);
   assert.match(lotusStyles, /data-fixed="1"\]\[data-state="ready"\][\s\S]*animation:\s*none;/);
 });

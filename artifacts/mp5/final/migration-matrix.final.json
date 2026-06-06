@@ -1,0 +1,2224 @@
+﻿{
+    "suiteVersion":  "7.2b",
+    "generatedAt":  1780460206333,
+    "targetVersion":  "2.2.0",
+    "overallPass":  false,
+    "primaryRiskPass":  true,
+    "compatibilityPass":  false,
+    "totalFixtures":  13,
+    "failedFixtureIds":  [
+                             "current-save"
+                         ],
+    "issueSummary":  {
+                         "totalIssues":  2,
+                         "byGroup":  {
+                                         "primary_risk":  0,
+                                         "compatibility":  2
+                                     },
+                         "totalWarnings":  156,
+                         "totalErrors":  0
+                     },
+    "entries":  [
+                    {
+                        "fixtureId":  "legacy-path-conflict",
+                        "title":  "Path conflict resolves to canonical selectedPath",
+                        "group":  "primary_risk",
+                        "riskClassId":  "path_conflict",
+                        "sourceVersion":  "0.0.0",
+                        "sourceVersionKind":  "legacy-unversioned",
+                        "dryRun":  {
+                                       "activeStepIds":  [
+                                                             "v2_0_0_seed_version_and_meta",
+                                                             "v2_0_0_normalize_path_truth",
+                                                             "v2_0_0_plan_gate_item_alias_migration",
+                                                             "v2_0_0_plan_trial_resolution_normalization",
+                                                             "v2_0_0_normalize_city_progression_state",
+                                                             "v2_0_0_plan_partial_reset_residue_cleanup",
+                                                             "v2_0_0_plan_offline_unification",
+                                                             "v2_1_0_backfill_onboarding_state",
+                                                             "v2_1_0_backfill_training_state",
+                                                             "v2_2_0_backfill_prestige_memory_ledger"
+                                                         ],
+                                       "plannedStepIds":  [
+                                                              "v2_0_0_plan_semester_slice_clamp"
+                                                          ],
+                                       "reportOnlyStepIds":  [
+                                                                 "m0_report_source_version"
+                                                             ],
+                                       "warningCount":  7,
+                                       "errorCount":  0,
+                                       "touchedPaths":  [
+                                                            "version",
+                                                            "meta",
+                                                            "meta.lastActiveAtMs",
+                                                            "gameState.lifePath",
+                                                            "gameState.realm.index",
+                                                            "gameState.realm.name",
+                                                            "trialState.progressByTrialId.trial_novices_clearing",
+                                                            "cityState.unlockedCityIds",
+                                                            "cityState.currentCityId",
+                                                            "cityState.selectedModuleByCity",
+                                                            "equipmentState",
+                                                            "onboardingState",
+                                                            "trainingState",
+                                                            "prestigeState.memoryLedger"
+                                                        ],
+                                       "finalVersion":  "2.2.0"
+                                   },
+                        "apply":  {
+                                      "activeStepIds":  [
+                                                            "v2_0_0_seed_version_and_meta",
+                                                            "v2_0_0_normalize_path_truth",
+                                                            "v2_0_0_plan_gate_item_alias_migration",
+                                                            "v2_0_0_plan_trial_resolution_normalization",
+                                                            "v2_0_0_normalize_city_progression_state",
+                                                            "v2_0_0_plan_partial_reset_residue_cleanup",
+                                                            "v2_0_0_plan_offline_unification",
+                                                            "v2_1_0_backfill_onboarding_state",
+                                                            "v2_1_0_backfill_training_state",
+                                                            "v2_2_0_backfill_prestige_memory_ledger"
+                                                        ],
+                                      "plannedStepIds":  [
+                                                             "v2_0_0_plan_semester_slice_clamp"
+                                                         ],
+                                      "reportOnlyStepIds":  [
+                                                                "m0_report_source_version"
+                                                            ],
+                                      "warningCount":  7,
+                                      "errorCount":  0,
+                                      "touchedPaths":  [
+                                                           "version",
+                                                           "meta",
+                                                           "meta.lastActiveAtMs",
+                                                           "gameState.lifePath",
+                                                           "gameState.realm.index",
+                                                           "gameState.realm.name",
+                                                           "trialState.progressByTrialId.trial_novices_clearing",
+                                                           "cityState.unlockedCityIds",
+                                                           "cityState.currentCityId",
+                                                           "cityState.selectedModuleByCity",
+                                                           "equipmentState",
+                                                           "onboardingState",
+                                                           "trainingState",
+                                                           "prestigeState.memoryLedger"
+                                                       ],
+                                      "finalVersion":  "2.2.0"
+                                  },
+                        "semanticSnapshot":  {
+                                                 "fixtureId":  "legacy-path-conflict",
+                                                 "riskClassId":  "path_conflict",
+                                                 "sourceVersion":  "0.0.0",
+                                                 "sourceVersionKind":  "legacy-unversioned",
+                                                 "finalVersion":  "2.2.0",
+                                                 "selectedPath":  "martial",
+                                                 "realmIndex":  0,
+                                                 "realmName":  "Qi Condensation",
+                                                 "highestRealmReached":  null,
+                                                 "currentCityId":  "city_pinewind_hamlet",
+                                                 "unlockedCityIds":  [
+                                                                         "city_pinewind_hamlet"
+                                                                     ],
+                                                 "firstTrialResolution":  null,
+                                                 "legacyGateAliasIdsRemaining":  [
+
+                                                                                 ],
+                                                 "hiddenPrestigePurchaseIdsRemaining":  [
+
+                                                                                        ],
+                                                 "hiddenCraftOutputIdsRemaining":  [
+
+                                                                                   ],
+                                                 "offlineTimestampSnapshot":  {
+                                                                                  "metaLastActiveAtMs":  1736035200000,
+                                                                                  "gameLastActiveTime":  1736035200000,
+                                                                                  "gameLastTickTime":  1736035200000
+                                                                              },
+                                                 "offlineTimestampsAligned":  true,
+                                                 "noFakeCitySix":  true
+                                             },
+                        "expectationResults":  [
+                                                   {
+                                                       "key":  "selectedPath",
+                                                       "pass":  true,
+                                                       "expected":  "martial",
+                                                       "actual":  "martial",
+                                                       "message":  "selectedPath matches expected canonical truth."
+                                                   },
+                                                   {
+                                                       "key":  "finalVersionIsCurrent",
+                                                       "pass":  true,
+                                                       "expected":  "2.2.0",
+                                                       "actual":  "2.2.0",
+                                                       "message":  "final save version reaches current target."
+                                                   },
+                                                   {
+                                                       "key":  "expectedPrimaryStepIds",
+                                                       "pass":  true,
+                                                       "expected":  "v2_0_0_normalize_path_truth",
+                                                       "actual":  "all present",
+                                                       "message":  "primary migration steps executed for fixture."
+                                                   },
+                                                   {
+                                                       "key":  "errorCount",
+                                                       "pass":  true,
+                                                       "expected":  "0",
+                                                       "actual":  "0",
+                                                       "message":  "error count matches expected posture."
+                                                   }
+                                               ],
+                        "overallPass":  true,
+                        "issues":  [
+
+                                   ]
+                    },
+                    {
+                        "fixtureId":  "legacy-path-only",
+                        "title":  "Legacy lifePath-only saves are backfilled",
+                        "group":  "compatibility",
+                        "riskClassId":  "path_alias_backfill",
+                        "sourceVersion":  "0.0.0",
+                        "sourceVersionKind":  "legacy-unversioned",
+                        "dryRun":  {
+                                       "activeStepIds":  [
+                                                             "v2_0_0_seed_version_and_meta",
+                                                             "v2_0_0_normalize_path_truth",
+                                                             "v2_0_0_plan_gate_item_alias_migration",
+                                                             "v2_0_0_plan_trial_resolution_normalization",
+                                                             "v2_0_0_normalize_city_progression_state",
+                                                             "v2_0_0_plan_partial_reset_residue_cleanup",
+                                                             "v2_0_0_plan_offline_unification",
+                                                             "v2_1_0_backfill_onboarding_state",
+                                                             "v2_1_0_backfill_training_state",
+                                                             "v2_2_0_backfill_prestige_memory_ledger"
+                                                         ],
+                                       "plannedStepIds":  [
+                                                              "v2_0_0_plan_semester_slice_clamp"
+                                                          ],
+                                       "reportOnlyStepIds":  [
+                                                                 "m0_report_source_version"
+                                                             ],
+                                       "warningCount":  7,
+                                       "errorCount":  0,
+                                       "touchedPaths":  [
+                                                            "version",
+                                                            "gameState.selectedPath",
+                                                            "gameState.lifePath",
+                                                            "gameState.realm.index",
+                                                            "gameState.realm.name",
+                                                            "trialState.progressByTrialId.trial_novices_clearing",
+                                                            "cityState.unlockedCityIds",
+                                                            "cityState.currentCityId",
+                                                            "cityState.selectedModuleByCity",
+                                                            "equipmentState",
+                                                            "meta.lastActiveAtMs",
+                                                            "onboardingState",
+                                                            "trainingState",
+                                                            "prestigeState.memoryLedger"
+                                                        ],
+                                       "finalVersion":  "2.2.0"
+                                   },
+                        "apply":  {
+                                      "activeStepIds":  [
+                                                            "v2_0_0_seed_version_and_meta",
+                                                            "v2_0_0_normalize_path_truth",
+                                                            "v2_0_0_plan_gate_item_alias_migration",
+                                                            "v2_0_0_plan_trial_resolution_normalization",
+                                                            "v2_0_0_normalize_city_progression_state",
+                                                            "v2_0_0_plan_partial_reset_residue_cleanup",
+                                                            "v2_0_0_plan_offline_unification",
+                                                            "v2_1_0_backfill_onboarding_state",
+                                                            "v2_1_0_backfill_training_state",
+                                                            "v2_2_0_backfill_prestige_memory_ledger"
+                                                        ],
+                                      "plannedStepIds":  [
+                                                             "v2_0_0_plan_semester_slice_clamp"
+                                                         ],
+                                      "reportOnlyStepIds":  [
+                                                                "m0_report_source_version"
+                                                            ],
+                                      "warningCount":  7,
+                                      "errorCount":  0,
+                                      "touchedPaths":  [
+                                                           "version",
+                                                           "gameState.selectedPath",
+                                                           "gameState.lifePath",
+                                                           "gameState.realm.index",
+                                                           "gameState.realm.name",
+                                                           "trialState.progressByTrialId.trial_novices_clearing",
+                                                           "cityState.unlockedCityIds",
+                                                           "cityState.currentCityId",
+                                                           "cityState.selectedModuleByCity",
+                                                           "equipmentState",
+                                                           "meta.lastActiveAtMs",
+                                                           "onboardingState",
+                                                           "trainingState",
+                                                           "prestigeState.memoryLedger"
+                                                       ],
+                                      "finalVersion":  "2.2.0"
+                                  },
+                        "semanticSnapshot":  {
+                                                 "fixtureId":  "legacy-path-only",
+                                                 "riskClassId":  "path_alias_backfill",
+                                                 "sourceVersion":  "0.0.0",
+                                                 "sourceVersionKind":  "legacy-unversioned",
+                                                 "finalVersion":  "2.2.0",
+                                                 "selectedPath":  "earth",
+                                                 "realmIndex":  0,
+                                                 "realmName":  "Qi Condensation",
+                                                 "highestRealmReached":  null,
+                                                 "currentCityId":  "city_pinewind_hamlet",
+                                                 "unlockedCityIds":  [
+                                                                         "city_pinewind_hamlet"
+                                                                     ],
+                                                 "firstTrialResolution":  null,
+                                                 "legacyGateAliasIdsRemaining":  [
+
+                                                                                 ],
+                                                 "hiddenPrestigePurchaseIdsRemaining":  [
+
+                                                                                        ],
+                                                 "hiddenCraftOutputIdsRemaining":  [
+
+                                                                                   ],
+                                                 "offlineTimestampSnapshot":  {
+                                                                                  "metaLastActiveAtMs":  1736035100000,
+                                                                                  "gameLastActiveTime":  1736035100000,
+                                                                                  "gameLastTickTime":  1736035100000
+                                                                              },
+                                                 "offlineTimestampsAligned":  true,
+                                                 "noFakeCitySix":  true
+                                             },
+                        "expectationResults":  [
+                                                   {
+                                                       "key":  "selectedPath",
+                                                       "pass":  true,
+                                                       "expected":  "earth",
+                                                       "actual":  "earth",
+                                                       "message":  "selectedPath matches expected canonical truth."
+                                                   },
+                                                   {
+                                                       "key":  "finalVersionIsCurrent",
+                                                       "pass":  true,
+                                                       "expected":  "2.2.0",
+                                                       "actual":  "2.2.0",
+                                                       "message":  "final save version reaches current target."
+                                                   },
+                                                   {
+                                                       "key":  "expectedPrimaryStepIds",
+                                                       "pass":  true,
+                                                       "expected":  "v2_0_0_normalize_path_truth",
+                                                       "actual":  "all present",
+                                                       "message":  "primary migration steps executed for fixture."
+                                                   },
+                                                   {
+                                                       "key":  "errorCount",
+                                                       "pass":  true,
+                                                       "expected":  "0",
+                                                       "actual":  "0",
+                                                       "message":  "error count matches expected posture."
+                                                   }
+                                               ],
+                        "overallPass":  true,
+                        "issues":  [
+
+                                   ]
+                    },
+                    {
+                        "fixtureId":  "legacy-gate-item-ids",
+                        "title":  "Legacy gate item aliases remap to canonical gate_* IDs",
+                        "group":  "primary_risk",
+                        "riskClassId":  "gate_item_alias",
+                        "sourceVersion":  "2.0.0",
+                        "sourceVersionKind":  "legacy-versioned",
+                        "dryRun":  {
+                                       "activeStepIds":  [
+                                                             "v2_0_0_seed_version_and_meta",
+                                                             "v2_0_0_normalize_path_truth",
+                                                             "v2_0_0_plan_gate_item_alias_migration",
+                                                             "v2_0_0_plan_trial_resolution_normalization",
+                                                             "v2_0_0_normalize_city_progression_state",
+                                                             "v2_0_0_plan_partial_reset_residue_cleanup",
+                                                             "v2_0_0_plan_offline_unification",
+                                                             "v2_1_0_backfill_onboarding_state",
+                                                             "v2_1_0_backfill_training_state",
+                                                             "v2_2_0_backfill_prestige_memory_ledger"
+                                                         ],
+                                       "plannedStepIds":  [
+                                                              "v2_0_0_plan_semester_slice_clamp"
+                                                          ],
+                                       "reportOnlyStepIds":  [
+                                                                 "m0_report_source_version"
+                                                             ],
+                                       "warningCount":  5,
+                                       "errorCount":  0,
+                                       "touchedPaths":  [
+                                                            "version",
+                                                            "meta",
+                                                            "meta.lastActiveAtMs",
+                                                            "gameState.lifePath",
+                                                            "inventoryState.items.foundation_pill",
+                                                            "inventoryState.items.gate_foundation_pill",
+                                                            "inventoryState.items.core_catalyst",
+                                                            "inventoryState.items.gate_core_catalyst",
+                                                            "gameState.realm.index",
+                                                            "gameState.realm.name",
+                                                            "trialState.progressByTrialId.trial_novices_clearing",
+                                                            "cityState.unlockedCityIds",
+                                                            "cityState.currentCityId",
+                                                            "cityState.selectedModuleByCity",
+                                                            "onboardingState",
+                                                            "trainingState",
+                                                            "prestigeState.memoryLedger"
+                                                        ],
+                                       "finalVersion":  "2.2.0"
+                                   },
+                        "apply":  {
+                                      "activeStepIds":  [
+                                                            "v2_0_0_seed_version_and_meta",
+                                                            "v2_0_0_normalize_path_truth",
+                                                            "v2_0_0_plan_gate_item_alias_migration",
+                                                            "v2_0_0_plan_trial_resolution_normalization",
+                                                            "v2_0_0_normalize_city_progression_state",
+                                                            "v2_0_0_plan_partial_reset_residue_cleanup",
+                                                            "v2_0_0_plan_offline_unification",
+                                                            "v2_1_0_backfill_onboarding_state",
+                                                            "v2_1_0_backfill_training_state",
+                                                            "v2_2_0_backfill_prestige_memory_ledger"
+                                                        ],
+                                      "plannedStepIds":  [
+                                                             "v2_0_0_plan_semester_slice_clamp"
+                                                         ],
+                                      "reportOnlyStepIds":  [
+                                                                "m0_report_source_version"
+                                                            ],
+                                      "warningCount":  5,
+                                      "errorCount":  0,
+                                      "touchedPaths":  [
+                                                           "version",
+                                                           "meta",
+                                                           "meta.lastActiveAtMs",
+                                                           "gameState.lifePath",
+                                                           "inventoryState.items.foundation_pill",
+                                                           "inventoryState.items.gate_foundation_pill",
+                                                           "inventoryState.items.core_catalyst",
+                                                           "inventoryState.items.gate_core_catalyst",
+                                                           "gameState.realm.index",
+                                                           "gameState.realm.name",
+                                                           "trialState.progressByTrialId.trial_novices_clearing",
+                                                           "cityState.unlockedCityIds",
+                                                           "cityState.currentCityId",
+                                                           "cityState.selectedModuleByCity",
+                                                           "onboardingState",
+                                                           "trainingState",
+                                                           "prestigeState.memoryLedger"
+                                                       ],
+                                      "finalVersion":  "2.2.0"
+                                  },
+                        "semanticSnapshot":  {
+                                                 "fixtureId":  "legacy-gate-item-ids",
+                                                 "riskClassId":  "gate_item_alias",
+                                                 "sourceVersion":  "2.0.0",
+                                                 "sourceVersionKind":  "legacy-versioned",
+                                                 "finalVersion":  "2.2.0",
+                                                 "selectedPath":  "heaven",
+                                                 "realmIndex":  1,
+                                                 "realmName":  "Foundation Establishment",
+                                                 "highestRealmReached":  null,
+                                                 "currentCityId":  "city_stonecrag_town",
+                                                 "unlockedCityIds":  [
+                                                                         "city_pinewind_hamlet",
+                                                                         "city_stonecrag_town"
+                                                                     ],
+                                                 "firstTrialResolution":  null,
+                                                 "legacyGateAliasIdsRemaining":  [
+
+                                                                                 ],
+                                                 "hiddenPrestigePurchaseIdsRemaining":  [
+
+                                                                                        ],
+                                                 "hiddenCraftOutputIdsRemaining":  [
+
+                                                                                   ],
+                                                 "offlineTimestampSnapshot":  {
+                                                                                  "metaLastActiveAtMs":  1736035200000,
+                                                                                  "gameLastActiveTime":  1736035200000,
+                                                                                  "gameLastTickTime":  1736035200000
+                                                                              },
+                                                 "offlineTimestampsAligned":  true,
+                                                 "noFakeCitySix":  true
+                                             },
+                        "expectationResults":  [
+                                                   {
+                                                       "key":  "noLegacyGateAliasIds",
+                                                       "pass":  true,
+                                                       "expected":  "(none)",
+                                                       "actual":  "(none)",
+                                                       "message":  "legacy gate alias ids are fully removed."
+                                                   },
+                                                   {
+                                                       "key":  "requireCanonicalGateIds",
+                                                       "pass":  true,
+                                                       "expected":  "gate_foundation_pill,gate_core_catalyst",
+                                                       "actual":  "all present",
+                                                       "message":  "canonical gate ids exist post-migration where expected."
+                                                   },
+                                                   {
+                                                       "key":  "finalVersionIsCurrent",
+                                                       "pass":  true,
+                                                       "expected":  "2.2.0",
+                                                       "actual":  "2.2.0",
+                                                       "message":  "final save version reaches current target."
+                                                   },
+                                                   {
+                                                       "key":  "expectedPrimaryStepIds",
+                                                       "pass":  true,
+                                                       "expected":  "v2_0_0_plan_gate_item_alias_migration",
+                                                       "actual":  "all present",
+                                                       "message":  "primary migration steps executed for fixture."
+                                                   },
+                                                   {
+                                                       "key":  "errorCount",
+                                                       "pass":  true,
+                                                       "expected":  "0",
+                                                       "actual":  "0",
+                                                       "message":  "error count matches expected posture."
+                                                   }
+                                               ],
+                        "overallPass":  true,
+                        "issues":  [
+
+                                   ]
+                    },
+                    {
+                        "fixtureId":  "legacy-trial-mismatch",
+                        "title":  "Trial/gate contradiction normalizes honestly",
+                        "group":  "primary_risk",
+                        "riskClassId":  "trial_gate_contradiction",
+                        "sourceVersion":  "2.0.0",
+                        "sourceVersionKind":  "legacy-versioned",
+                        "dryRun":  {
+                                       "activeStepIds":  [
+                                                             "v2_0_0_seed_version_and_meta",
+                                                             "v2_0_0_normalize_path_truth",
+                                                             "v2_0_0_plan_gate_item_alias_migration",
+                                                             "v2_0_0_plan_trial_resolution_normalization",
+                                                             "v2_0_0_normalize_city_progression_state",
+                                                             "v2_0_0_plan_partial_reset_residue_cleanup",
+                                                             "v2_0_0_plan_offline_unification",
+                                                             "v2_1_0_backfill_onboarding_state",
+                                                             "v2_1_0_backfill_training_state",
+                                                             "v2_2_0_backfill_prestige_memory_ledger"
+                                                         ],
+                                       "plannedStepIds":  [
+                                                              "v2_0_0_plan_semester_slice_clamp"
+                                                          ],
+                                       "reportOnlyStepIds":  [
+                                                                 "m0_report_source_version"
+                                                             ],
+                                       "warningCount":  6,
+                                       "errorCount":  0,
+                                       "touchedPaths":  [
+                                                            "version",
+                                                            "meta",
+                                                            "meta.lastActiveAtMs",
+                                                            "gameState.lifePath",
+                                                            "gameState.realm.index",
+                                                            "gameState.realm.name",
+                                                            "trialState.progressByTrialId.trial_novices_clearing",
+                                                            "trialState.progressByTrialId.trial_novices_clearing.resolution",
+                                                            "trialState.progressByTrialId.trial_novices_clearing.bypassedAt",
+                                                            "cityState.unlockedCityIds",
+                                                            "cityState.currentCityId",
+                                                            "cityState.selectedModuleByCity",
+                                                            "onboardingState",
+                                                            "trainingState",
+                                                            "prestigeState.memoryLedger"
+                                                        ],
+                                       "finalVersion":  "2.2.0"
+                                   },
+                        "apply":  {
+                                      "activeStepIds":  [
+                                                            "v2_0_0_seed_version_and_meta",
+                                                            "v2_0_0_normalize_path_truth",
+                                                            "v2_0_0_plan_gate_item_alias_migration",
+                                                            "v2_0_0_plan_trial_resolution_normalization",
+                                                            "v2_0_0_normalize_city_progression_state",
+                                                            "v2_0_0_plan_partial_reset_residue_cleanup",
+                                                            "v2_0_0_plan_offline_unification",
+                                                            "v2_1_0_backfill_onboarding_state",
+                                                            "v2_1_0_backfill_training_state",
+                                                            "v2_2_0_backfill_prestige_memory_ledger"
+                                                        ],
+                                      "plannedStepIds":  [
+                                                             "v2_0_0_plan_semester_slice_clamp"
+                                                         ],
+                                      "reportOnlyStepIds":  [
+                                                                "m0_report_source_version"
+                                                            ],
+                                      "warningCount":  6,
+                                      "errorCount":  0,
+                                      "touchedPaths":  [
+                                                           "version",
+                                                           "meta",
+                                                           "meta.lastActiveAtMs",
+                                                           "gameState.lifePath",
+                                                           "gameState.realm.index",
+                                                           "gameState.realm.name",
+                                                           "trialState.progressByTrialId.trial_novices_clearing",
+                                                           "trialState.progressByTrialId.trial_novices_clearing.resolution",
+                                                           "trialState.progressByTrialId.trial_novices_clearing.bypassedAt",
+                                                           "cityState.unlockedCityIds",
+                                                           "cityState.currentCityId",
+                                                           "cityState.selectedModuleByCity",
+                                                           "onboardingState",
+                                                           "trainingState",
+                                                           "prestigeState.memoryLedger"
+                                                       ],
+                                      "finalVersion":  "2.2.0"
+                                  },
+                        "semanticSnapshot":  {
+                                                 "fixtureId":  "legacy-trial-mismatch",
+                                                 "riskClassId":  "trial_gate_contradiction",
+                                                 "sourceVersion":  "2.0.0",
+                                                 "sourceVersionKind":  "legacy-versioned",
+                                                 "finalVersion":  "2.2.0",
+                                                 "selectedPath":  "heaven",
+                                                 "realmIndex":  1,
+                                                 "realmName":  "Foundation Establishment",
+                                                 "highestRealmReached":  null,
+                                                 "currentCityId":  "city_stonecrag_town",
+                                                 "unlockedCityIds":  [
+                                                                         "city_pinewind_hamlet",
+                                                                         "city_stonecrag_town"
+                                                                     ],
+                                                 "firstTrialResolution":  "bypassed",
+                                                 "legacyGateAliasIdsRemaining":  [
+
+                                                                                 ],
+                                                 "hiddenPrestigePurchaseIdsRemaining":  [
+
+                                                                                        ],
+                                                 "hiddenCraftOutputIdsRemaining":  [
+
+                                                                                   ],
+                                                 "offlineTimestampSnapshot":  {
+                                                                                  "metaLastActiveAtMs":  1736035200000,
+                                                                                  "gameLastActiveTime":  1736035200000,
+                                                                                  "gameLastTickTime":  1736035200000
+                                                                              },
+                                                 "offlineTimestampsAligned":  true,
+                                                 "noFakeCitySix":  true
+                                             },
+                        "expectationResults":  [
+                                                   {
+                                                       "key":  "currentCityId",
+                                                       "pass":  true,
+                                                       "expected":  "city_stonecrag_town",
+                                                       "actual":  "city_stonecrag_town",
+                                                       "message":  "currentCityId normalized as expected."
+                                                   },
+                                                   {
+                                                       "key":  "unlockedCityIdsExact",
+                                                       "pass":  true,
+                                                       "expected":  "[\"city_pinewind_hamlet\",\"city_stonecrag_town\"]",
+                                                       "actual":  "[\"city_pinewind_hamlet\",\"city_stonecrag_town\"]",
+                                                       "message":  "unlocked city chain equals expected canonical chain."
+                                                   },
+                                                   {
+                                                       "key":  "firstTrialResolution",
+                                                       "pass":  true,
+                                                       "expected":  "bypassed",
+                                                       "actual":  "bypassed",
+                                                       "message":  "first trial resolution normalized correctly."
+                                                   },
+                                                   {
+                                                       "key":  "noFakeCitySix",
+                                                       "pass":  true,
+                                                       "expected":  "true",
+                                                       "actual":  "true",
+                                                       "message":  "city unlock state does not include fake city six."
+                                                   },
+                                                   {
+                                                       "key":  "finalVersionIsCurrent",
+                                                       "pass":  true,
+                                                       "expected":  "2.2.0",
+                                                       "actual":  "2.2.0",
+                                                       "message":  "final save version reaches current target."
+                                                   },
+                                                   {
+                                                       "key":  "expectedPrimaryStepIds",
+                                                       "pass":  true,
+                                                       "expected":  "v2_0_0_plan_trial_resolution_normalization,v2_0_0_normalize_city_progression_state",
+                                                       "actual":  "all present",
+                                                       "message":  "primary migration steps executed for fixture."
+                                                   },
+                                                   {
+                                                       "key":  "errorCount",
+                                                       "pass":  true,
+                                                       "expected":  "0",
+                                                       "actual":  "0",
+                                                       "message":  "error count matches expected posture."
+                                                   }
+                                               ],
+                        "overallPass":  true,
+                        "issues":  [
+
+                                   ]
+                    },
+                    {
+                        "fixtureId":  "legacy-city-current-invalid",
+                        "title":  "Invalid city progression state is normalized in-slice",
+                        "group":  "primary_risk",
+                        "riskClassId":  "city_progression_invalid",
+                        "sourceVersion":  "2.0.0",
+                        "sourceVersionKind":  "legacy-versioned",
+                        "dryRun":  {
+                                       "activeStepIds":  [
+                                                             "v2_0_0_seed_version_and_meta",
+                                                             "v2_0_0_normalize_path_truth",
+                                                             "v2_0_0_plan_gate_item_alias_migration",
+                                                             "v2_0_0_plan_trial_resolution_normalization",
+                                                             "v2_0_0_normalize_city_progression_state",
+                                                             "v2_0_0_plan_partial_reset_residue_cleanup",
+                                                             "v2_0_0_plan_offline_unification",
+                                                             "v2_1_0_backfill_onboarding_state",
+                                                             "v2_1_0_backfill_training_state",
+                                                             "v2_2_0_backfill_prestige_memory_ledger"
+                                                         ],
+                                       "plannedStepIds":  [
+                                                              "v2_0_0_plan_semester_slice_clamp"
+                                                          ],
+                                       "reportOnlyStepIds":  [
+                                                                 "m0_report_source_version"
+                                                             ],
+                                       "warningCount":  4,
+                                       "errorCount":  0,
+                                       "touchedPaths":  [
+                                                            "version",
+                                                            "meta",
+                                                            "meta.lastActiveAtMs",
+                                                            "gameState.realm.index",
+                                                            "gameState.realm.name",
+                                                            "trialState.progressByTrialId.trial_novices_clearing",
+                                                            "trialState.progressByTrialId.trial_novices_clearing.resolution",
+                                                            "trialState.progressByTrialId.trial_novices_clearing.bypassedAt",
+                                                            "cityState.unlockedCityIds",
+                                                            "cityState.currentCityId",
+                                                            "cityState.selectedModuleByCity",
+                                                            "onboardingState",
+                                                            "trainingState",
+                                                            "prestigeState.memoryLedger"
+                                                        ],
+                                       "finalVersion":  "2.2.0"
+                                   },
+                        "apply":  {
+                                      "activeStepIds":  [
+                                                            "v2_0_0_seed_version_and_meta",
+                                                            "v2_0_0_normalize_path_truth",
+                                                            "v2_0_0_plan_gate_item_alias_migration",
+                                                            "v2_0_0_plan_trial_resolution_normalization",
+                                                            "v2_0_0_normalize_city_progression_state",
+                                                            "v2_0_0_plan_partial_reset_residue_cleanup",
+                                                            "v2_0_0_plan_offline_unification",
+                                                            "v2_1_0_backfill_onboarding_state",
+                                                            "v2_1_0_backfill_training_state",
+                                                            "v2_2_0_backfill_prestige_memory_ledger"
+                                                        ],
+                                      "plannedStepIds":  [
+                                                             "v2_0_0_plan_semester_slice_clamp"
+                                                         ],
+                                      "reportOnlyStepIds":  [
+                                                                "m0_report_source_version"
+                                                            ],
+                                      "warningCount":  4,
+                                      "errorCount":  0,
+                                      "touchedPaths":  [
+                                                           "version",
+                                                           "meta",
+                                                           "meta.lastActiveAtMs",
+                                                           "gameState.realm.index",
+                                                           "gameState.realm.name",
+                                                           "trialState.progressByTrialId.trial_novices_clearing",
+                                                           "trialState.progressByTrialId.trial_novices_clearing.resolution",
+                                                           "trialState.progressByTrialId.trial_novices_clearing.bypassedAt",
+                                                           "cityState.unlockedCityIds",
+                                                           "cityState.currentCityId",
+                                                           "cityState.selectedModuleByCity",
+                                                           "onboardingState",
+                                                           "trainingState",
+                                                           "prestigeState.memoryLedger"
+                                                       ],
+                                      "finalVersion":  "2.2.0"
+                                  },
+                        "semanticSnapshot":  {
+                                                 "fixtureId":  "legacy-city-current-invalid",
+                                                 "riskClassId":  "city_progression_invalid",
+                                                 "sourceVersion":  "2.0.0",
+                                                 "sourceVersionKind":  "legacy-versioned",
+                                                 "finalVersion":  "2.2.0",
+                                                 "selectedPath":  "martial",
+                                                 "realmIndex":  3,
+                                                 "realmName":  "Nascent Soul",
+                                                 "highestRealmReached":  null,
+                                                 "currentCityId":  "city_lotusford",
+                                                 "unlockedCityIds":  [
+                                                                         "city_pinewind_hamlet",
+                                                                         "city_stonecrag_town",
+                                                                         "city_spirit_cavern_city",
+                                                                         "city_lotusford"
+                                                                     ],
+                                                 "firstTrialResolution":  "bypassed",
+                                                 "legacyGateAliasIdsRemaining":  [
+
+                                                                                 ],
+                                                 "hiddenPrestigePurchaseIdsRemaining":  [
+
+                                                                                        ],
+                                                 "hiddenCraftOutputIdsRemaining":  [
+
+                                                                                   ],
+                                                 "offlineTimestampSnapshot":  {
+                                                                                  "metaLastActiveAtMs":  1736035200000,
+                                                                                  "gameLastActiveTime":  1736035200000,
+                                                                                  "gameLastTickTime":  1736035200000
+                                                                              },
+                                                 "offlineTimestampsAligned":  true,
+                                                 "noFakeCitySix":  true
+                                             },
+                        "expectationResults":  [
+                                                   {
+                                                       "key":  "currentCityId",
+                                                       "pass":  true,
+                                                       "expected":  "city_lotusford",
+                                                       "actual":  "city_lotusford",
+                                                       "message":  "currentCityId normalized as expected."
+                                                   },
+                                                   {
+                                                       "key":  "unlockedCityIdsExact",
+                                                       "pass":  true,
+                                                       "expected":  "[\"city_pinewind_hamlet\",\"city_stonecrag_town\",\"city_spirit_cavern_city\",\"city_lotusford\"]",
+                                                       "actual":  "[\"city_pinewind_hamlet\",\"city_stonecrag_town\",\"city_spirit_cavern_city\",\"city_lotusford\"]",
+                                                       "message":  "unlocked city chain equals expected canonical chain."
+                                                   },
+                                                   {
+                                                       "key":  "unlockedCityIdsSubsetOfLiveSlice",
+                                                       "pass":  true,
+                                                       "expected":  "all unlocked cities are in live slice",
+                                                       "actual":  "city_pinewind_hamlet,city_stonecrag_town,city_spirit_cavern_city,city_lotusford",
+                                                       "message":  "unlocked city ids stay within live slice."
+                                                   },
+                                                   {
+                                                       "key":  "noFakeCitySix",
+                                                       "pass":  true,
+                                                       "expected":  "true",
+                                                       "actual":  "true",
+                                                       "message":  "city unlock state does not include fake city six."
+                                                   },
+                                                   {
+                                                       "key":  "finalVersionIsCurrent",
+                                                       "pass":  true,
+                                                       "expected":  "2.2.0",
+                                                       "actual":  "2.2.0",
+                                                       "message":  "final save version reaches current target."
+                                                   },
+                                                   {
+                                                       "key":  "expectedPrimaryStepIds",
+                                                       "pass":  true,
+                                                       "expected":  "v2_0_0_normalize_city_progression_state",
+                                                       "actual":  "all present",
+                                                       "message":  "primary migration steps executed for fixture."
+                                                   },
+                                                   {
+                                                       "key":  "errorCount",
+                                                       "pass":  true,
+                                                       "expected":  "0",
+                                                       "actual":  "0",
+                                                       "message":  "error count matches expected posture."
+                                                   }
+                                               ],
+                        "overallPass":  true,
+                        "issues":  [
+
+                                   ]
+                    },
+                    {
+                        "fixtureId":  "legacy-future-slice",
+                        "title":  "Over-cap realm progression clamps to Spirit Severing / Ironpeak",
+                        "group":  "primary_risk",
+                        "riskClassId":  "over_cap_realm_slice",
+                        "sourceVersion":  "2.0.0",
+                        "sourceVersionKind":  "legacy-versioned",
+                        "dryRun":  {
+                                       "activeStepIds":  [
+                                                             "v2_0_0_seed_version_and_meta",
+                                                             "v2_0_0_normalize_path_truth",
+                                                             "v2_0_0_plan_gate_item_alias_migration",
+                                                             "v2_0_0_clamp_semester_slice",
+                                                             "v2_0_0_plan_deferred_prestige_refund",
+                                                             "v2_0_0_plan_trial_resolution_normalization",
+                                                             "v2_0_0_normalize_city_progression_state",
+                                                             "v2_0_0_plan_partial_reset_residue_cleanup",
+                                                             "v2_0_0_plan_offline_unification",
+                                                             "v2_1_0_backfill_onboarding_state",
+                                                             "v2_1_0_backfill_training_state",
+                                                             "v2_2_0_backfill_prestige_memory_ledger"
+                                                         ],
+                                       "plannedStepIds":  [
+                                                              "v2_0_0_plan_semester_slice_clamp"
+                                                          ],
+                                       "reportOnlyStepIds":  [
+                                                                 "m0_report_source_version"
+                                                             ],
+                                       "warningCount":  8,
+                                       "errorCount":  0,
+                                       "touchedPaths":  [
+                                                            "version",
+                                                            "meta",
+                                                            "meta.lastActiveAtMs",
+                                                            "gameState.lifePath",
+                                                            "gameState.realm.index",
+                                                            "gameState.realm.name",
+                                                            "prestigeState.highestRealmReached",
+                                                            "trialState.progressByTrialId.trial_novices_clearing",
+                                                            "trialState.progressByTrialId.trial_novices_clearing.resolution",
+                                                            "trialState.progressByTrialId.trial_novices_clearing.bypassedAt",
+                                                            "cityState.unlockedCityIds",
+                                                            "cityState.currentCityId",
+                                                            "cityState.selectedModuleByCity",
+                                                            "onboardingState",
+                                                            "trainingState",
+                                                            "prestigeState.memoryLedger"
+                                                        ],
+                                       "finalVersion":  "2.2.0"
+                                   },
+                        "apply":  {
+                                      "activeStepIds":  [
+                                                            "v2_0_0_seed_version_and_meta",
+                                                            "v2_0_0_normalize_path_truth",
+                                                            "v2_0_0_plan_gate_item_alias_migration",
+                                                            "v2_0_0_clamp_semester_slice",
+                                                            "v2_0_0_plan_deferred_prestige_refund",
+                                                            "v2_0_0_plan_trial_resolution_normalization",
+                                                            "v2_0_0_normalize_city_progression_state",
+                                                            "v2_0_0_plan_partial_reset_residue_cleanup",
+                                                            "v2_0_0_plan_offline_unification",
+                                                            "v2_1_0_backfill_onboarding_state",
+                                                            "v2_1_0_backfill_training_state",
+                                                            "v2_2_0_backfill_prestige_memory_ledger"
+                                                        ],
+                                      "plannedStepIds":  [
+                                                             "v2_0_0_plan_semester_slice_clamp"
+                                                         ],
+                                      "reportOnlyStepIds":  [
+                                                                "m0_report_source_version"
+                                                            ],
+                                      "warningCount":  8,
+                                      "errorCount":  0,
+                                      "touchedPaths":  [
+                                                           "version",
+                                                           "meta",
+                                                           "meta.lastActiveAtMs",
+                                                           "gameState.lifePath",
+                                                           "gameState.realm.index",
+                                                           "gameState.realm.name",
+                                                           "prestigeState.highestRealmReached",
+                                                           "trialState.progressByTrialId.trial_novices_clearing",
+                                                           "trialState.progressByTrialId.trial_novices_clearing.resolution",
+                                                           "trialState.progressByTrialId.trial_novices_clearing.bypassedAt",
+                                                           "cityState.unlockedCityIds",
+                                                           "cityState.currentCityId",
+                                                           "cityState.selectedModuleByCity",
+                                                           "onboardingState",
+                                                           "trainingState",
+                                                           "prestigeState.memoryLedger"
+                                                       ],
+                                      "finalVersion":  "2.2.0"
+                                  },
+                        "semanticSnapshot":  {
+                                                 "fixtureId":  "legacy-future-slice",
+                                                 "riskClassId":  "over_cap_realm_slice",
+                                                 "sourceVersion":  "2.0.0",
+                                                 "sourceVersionKind":  "legacy-versioned",
+                                                 "finalVersion":  "2.2.0",
+                                                 "selectedPath":  "heaven",
+                                                 "realmIndex":  5,
+                                                 "realmName":  "Spirit Severing",
+                                                 "highestRealmReached":  5,
+                                                 "currentCityId":  "city_ironpeak_bastion",
+                                                 "unlockedCityIds":  [
+                                                                         "city_pinewind_hamlet",
+                                                                         "city_stonecrag_town",
+                                                                         "city_spirit_cavern_city",
+                                                                         "city_lotusford",
+                                                                         "city_ironpeak_bastion"
+                                                                     ],
+                                                 "firstTrialResolution":  "bypassed",
+                                                 "legacyGateAliasIdsRemaining":  [
+
+                                                                                 ],
+                                                 "hiddenPrestigePurchaseIdsRemaining":  [
+
+                                                                                        ],
+                                                 "hiddenCraftOutputIdsRemaining":  [
+
+                                                                                   ],
+                                                 "offlineTimestampSnapshot":  {
+                                                                                  "metaLastActiveAtMs":  1736035200000,
+                                                                                  "gameLastActiveTime":  1736035200000,
+                                                                                  "gameLastTickTime":  1736035200000
+                                                                              },
+                                                 "offlineTimestampsAligned":  true,
+                                                 "noFakeCitySix":  true
+                                             },
+                        "expectationResults":  [
+                                                   {
+                                                       "key":  "currentCityId",
+                                                       "pass":  true,
+                                                       "expected":  "city_ironpeak_bastion",
+                                                       "actual":  "city_ironpeak_bastion",
+                                                       "message":  "currentCityId normalized as expected."
+                                                   },
+                                                   {
+                                                       "key":  "unlockedCityIdsExact",
+                                                       "pass":  true,
+                                                       "expected":  "[\"city_pinewind_hamlet\",\"city_stonecrag_town\",\"city_spirit_cavern_city\",\"city_lotusford\",\"city_ironpeak_bastion\"]",
+                                                       "actual":  "[\"city_pinewind_hamlet\",\"city_stonecrag_town\",\"city_spirit_cavern_city\",\"city_lotusford\",\"city_ironpeak_bastion\"]",
+                                                       "message":  "unlocked city chain equals expected canonical chain."
+                                                   },
+                                                   {
+                                                       "key":  "maxRealmIndex",
+                                                       "pass":  true,
+                                                       "expected":  "\u003c= 5",
+                                                       "actual":  "5",
+                                                       "message":  "realm index is clamped to expected cap."
+                                                   },
+                                                   {
+                                                       "key":  "realmName",
+                                                       "pass":  true,
+                                                       "expected":  "Spirit Severing",
+                                                       "actual":  "Spirit Severing",
+                                                       "message":  "realm name matches expected canonical cap realm."
+                                                   },
+                                                   {
+                                                       "key":  "highestRealmReached",
+                                                       "pass":  true,
+                                                       "expected":  "5",
+                                                       "actual":  "5",
+                                                       "message":  "highestRealmReached is normalized as expected."
+                                                   },
+                                                   {
+                                                       "key":  "noFakeCitySix",
+                                                       "pass":  true,
+                                                       "expected":  "true",
+                                                       "actual":  "true",
+                                                       "message":  "city unlock state does not include fake city six."
+                                                   },
+                                                   {
+                                                       "key":  "finalVersionIsCurrent",
+                                                       "pass":  true,
+                                                       "expected":  "2.2.0",
+                                                       "actual":  "2.2.0",
+                                                       "message":  "final save version reaches current target."
+                                                   },
+                                                   {
+                                                       "key":  "expectedPrimaryStepIds",
+                                                       "pass":  true,
+                                                       "expected":  "v2_0_0_clamp_semester_slice,v2_0_0_normalize_city_progression_state",
+                                                       "actual":  "all present",
+                                                       "message":  "primary migration steps executed for fixture."
+                                                   },
+                                                   {
+                                                       "key":  "errorCount",
+                                                       "pass":  true,
+                                                       "expected":  "0",
+                                                       "actual":  "0",
+                                                       "message":  "error count matches expected posture."
+                                                   }
+                                               ],
+                        "overallPass":  true,
+                        "issues":  [
+
+                                   ]
+                    },
+                    {
+                        "fixtureId":  "legacy-hidden-prestige",
+                        "title":  "Hidden deferred prestige purchases refunded",
+                        "group":  "primary_risk",
+                        "riskClassId":  "hidden_prestige_refund",
+                        "sourceVersion":  "2.0.0",
+                        "sourceVersionKind":  "legacy-versioned",
+                        "dryRun":  {
+                                       "activeStepIds":  [
+                                                             "v2_0_0_seed_version_and_meta",
+                                                             "v2_0_0_normalize_path_truth",
+                                                             "v2_0_0_plan_gate_item_alias_migration",
+                                                             "v2_0_0_plan_deferred_prestige_refund",
+                                                             "v2_0_0_plan_trial_resolution_normalization",
+                                                             "v2_0_0_normalize_city_progression_state",
+                                                             "v2_0_0_plan_partial_reset_residue_cleanup",
+                                                             "v2_0_0_plan_offline_unification",
+                                                             "v2_1_0_backfill_onboarding_state",
+                                                             "v2_1_0_backfill_training_state",
+                                                             "v2_2_0_backfill_prestige_memory_ledger"
+                                                         ],
+                                       "plannedStepIds":  [
+                                                              "v2_0_0_plan_semester_slice_clamp"
+                                                          ],
+                                       "reportOnlyStepIds":  [
+                                                                 "m0_report_source_version"
+                                                             ],
+                                       "warningCount":  8,
+                                       "errorCount":  0,
+                                       "touchedPaths":  [
+                                                            "version",
+                                                            "meta",
+                                                            "meta.lastActiveAtMs",
+                                                            "gameState.lifePath",
+                                                            "gameState.realm.index",
+                                                            "gameState.realm.name",
+                                                            "prestigeState.highestRealmReached",
+                                                            "prestigeState.purchasesById.ap_unlock_pagoda",
+                                                            "prestigeState.purchasesById.ap_unlock_jade_core",
+                                                            "prestigeState.totalAP",
+                                                            "trialState.progressByTrialId.trial_novices_clearing",
+                                                            "trialState.progressByTrialId.trial_novices_clearing.resolution",
+                                                            "trialState.progressByTrialId.trial_novices_clearing.bypassedAt",
+                                                            "cityState.unlockedCityIds",
+                                                            "cityState.currentCityId",
+                                                            "cityState.selectedModuleByCity",
+                                                            "onboardingState",
+                                                            "trainingState",
+                                                            "prestigeState.memoryLedger"
+                                                        ],
+                                       "finalVersion":  "2.2.0"
+                                   },
+                        "apply":  {
+                                      "activeStepIds":  [
+                                                            "v2_0_0_seed_version_and_meta",
+                                                            "v2_0_0_normalize_path_truth",
+                                                            "v2_0_0_plan_gate_item_alias_migration",
+                                                            "v2_0_0_plan_deferred_prestige_refund",
+                                                            "v2_0_0_plan_trial_resolution_normalization",
+                                                            "v2_0_0_normalize_city_progression_state",
+                                                            "v2_0_0_plan_partial_reset_residue_cleanup",
+                                                            "v2_0_0_plan_offline_unification",
+                                                            "v2_1_0_backfill_onboarding_state",
+                                                            "v2_1_0_backfill_training_state",
+                                                            "v2_2_0_backfill_prestige_memory_ledger"
+                                                        ],
+                                      "plannedStepIds":  [
+                                                             "v2_0_0_plan_semester_slice_clamp"
+                                                         ],
+                                      "reportOnlyStepIds":  [
+                                                                "m0_report_source_version"
+                                                            ],
+                                      "warningCount":  8,
+                                      "errorCount":  0,
+                                      "touchedPaths":  [
+                                                           "version",
+                                                           "meta",
+                                                           "meta.lastActiveAtMs",
+                                                           "gameState.lifePath",
+                                                           "gameState.realm.index",
+                                                           "gameState.realm.name",
+                                                           "prestigeState.highestRealmReached",
+                                                           "prestigeState.purchasesById.ap_unlock_pagoda",
+                                                           "prestigeState.purchasesById.ap_unlock_jade_core",
+                                                           "prestigeState.totalAP",
+                                                           "trialState.progressByTrialId.trial_novices_clearing",
+                                                           "trialState.progressByTrialId.trial_novices_clearing.resolution",
+                                                           "trialState.progressByTrialId.trial_novices_clearing.bypassedAt",
+                                                           "cityState.unlockedCityIds",
+                                                           "cityState.currentCityId",
+                                                           "cityState.selectedModuleByCity",
+                                                           "onboardingState",
+                                                           "trainingState",
+                                                           "prestigeState.memoryLedger"
+                                                       ],
+                                      "finalVersion":  "2.2.0"
+                                  },
+                        "semanticSnapshot":  {
+                                                 "fixtureId":  "legacy-hidden-prestige",
+                                                 "riskClassId":  "hidden_prestige_refund",
+                                                 "sourceVersion":  "2.0.0",
+                                                 "sourceVersionKind":  "legacy-versioned",
+                                                 "finalVersion":  "2.2.0",
+                                                 "selectedPath":  "earth",
+                                                 "realmIndex":  2,
+                                                 "realmName":  "Core Formation",
+                                                 "highestRealmReached":  2,
+                                                 "currentCityId":  "city_spirit_cavern_city",
+                                                 "unlockedCityIds":  [
+                                                                         "city_pinewind_hamlet",
+                                                                         "city_stonecrag_town",
+                                                                         "city_spirit_cavern_city"
+                                                                     ],
+                                                 "firstTrialResolution":  "bypassed",
+                                                 "legacyGateAliasIdsRemaining":  [
+
+                                                                                 ],
+                                                 "hiddenPrestigePurchaseIdsRemaining":  [
+
+                                                                                        ],
+                                                 "hiddenCraftOutputIdsRemaining":  [
+
+                                                                                   ],
+                                                 "offlineTimestampSnapshot":  {
+                                                                                  "metaLastActiveAtMs":  1736035200000,
+                                                                                  "gameLastActiveTime":  1736035200000,
+                                                                                  "gameLastTickTime":  1736035200000
+                                                                              },
+                                                 "offlineTimestampsAligned":  true,
+                                                 "noFakeCitySix":  true
+                                             },
+                        "expectationResults":  [
+                                                   {
+                                                       "key":  "noHiddenPrestigePurchases",
+                                                       "pass":  true,
+                                                       "expected":  "(none)",
+                                                       "actual":  "(none)",
+                                                       "message":  "hidden prestige purchases are cleared."
+                                                   },
+                                                   {
+                                                       "key":  "finalVersionIsCurrent",
+                                                       "pass":  true,
+                                                       "expected":  "2.2.0",
+                                                       "actual":  "2.2.0",
+                                                       "message":  "final save version reaches current target."
+                                                   },
+                                                   {
+                                                       "key":  "expectedPrimaryStepIds",
+                                                       "pass":  true,
+                                                       "expected":  "v2_0_0_plan_deferred_prestige_refund",
+                                                       "actual":  "all present",
+                                                       "message":  "primary migration steps executed for fixture."
+                                                   },
+                                                   {
+                                                       "key":  "errorCount",
+                                                       "pass":  true,
+                                                       "expected":  "0",
+                                                       "actual":  "0",
+                                                       "message":  "error count matches expected posture."
+                                                   }
+                                               ],
+                        "overallPass":  true,
+                        "issues":  [
+
+                                   ]
+                    },
+                    {
+                        "fixtureId":  "legacy-hidden-unsupported-prestige",
+                        "title":  "Hidden unsupported prestige purchases refunded",
+                        "group":  "primary_risk",
+                        "riskClassId":  "hidden_prestige_refund",
+                        "sourceVersion":  "2.0.0",
+                        "sourceVersionKind":  "legacy-versioned",
+                        "dryRun":  {
+                                       "activeStepIds":  [
+                                                             "v2_0_0_seed_version_and_meta",
+                                                             "v2_0_0_normalize_path_truth",
+                                                             "v2_0_0_plan_gate_item_alias_migration",
+                                                             "v2_0_0_plan_deferred_prestige_refund",
+                                                             "v2_0_0_plan_trial_resolution_normalization",
+                                                             "v2_0_0_normalize_city_progression_state",
+                                                             "v2_0_0_plan_partial_reset_residue_cleanup",
+                                                             "v2_0_0_plan_offline_unification",
+                                                             "v2_1_0_backfill_onboarding_state",
+                                                             "v2_1_0_backfill_training_state",
+                                                             "v2_2_0_backfill_prestige_memory_ledger"
+                                                         ],
+                                       "plannedStepIds":  [
+                                                              "v2_0_0_plan_semester_slice_clamp"
+                                                          ],
+                                       "reportOnlyStepIds":  [
+                                                                 "m0_report_source_version"
+                                                             ],
+                                       "warningCount":  8,
+                                       "errorCount":  0,
+                                       "touchedPaths":  [
+                                                            "version",
+                                                            "meta",
+                                                            "meta.lastActiveAtMs",
+                                                            "gameState.lifePath",
+                                                            "gameState.realm.index",
+                                                            "gameState.realm.name",
+                                                            "prestigeState.highestRealmReached",
+                                                            "prestigeState.purchasesById.ap_fragment_gain_boost",
+                                                            "prestigeState.purchasesById.ap_autosell_filter",
+                                                            "prestigeState.totalAP",
+                                                            "trialState.progressByTrialId.trial_novices_clearing",
+                                                            "trialState.progressByTrialId.trial_novices_clearing.resolution",
+                                                            "trialState.progressByTrialId.trial_novices_clearing.bypassedAt",
+                                                            "cityState.unlockedCityIds",
+                                                            "cityState.currentCityId",
+                                                            "cityState.selectedModuleByCity",
+                                                            "onboardingState",
+                                                            "trainingState",
+                                                            "prestigeState.memoryLedger"
+                                                        ],
+                                       "finalVersion":  "2.2.0"
+                                   },
+                        "apply":  {
+                                      "activeStepIds":  [
+                                                            "v2_0_0_seed_version_and_meta",
+                                                            "v2_0_0_normalize_path_truth",
+                                                            "v2_0_0_plan_gate_item_alias_migration",
+                                                            "v2_0_0_plan_deferred_prestige_refund",
+                                                            "v2_0_0_plan_trial_resolution_normalization",
+                                                            "v2_0_0_normalize_city_progression_state",
+                                                            "v2_0_0_plan_partial_reset_residue_cleanup",
+                                                            "v2_0_0_plan_offline_unification",
+                                                            "v2_1_0_backfill_onboarding_state",
+                                                            "v2_1_0_backfill_training_state",
+                                                            "v2_2_0_backfill_prestige_memory_ledger"
+                                                        ],
+                                      "plannedStepIds":  [
+                                                             "v2_0_0_plan_semester_slice_clamp"
+                                                         ],
+                                      "reportOnlyStepIds":  [
+                                                                "m0_report_source_version"
+                                                            ],
+                                      "warningCount":  8,
+                                      "errorCount":  0,
+                                      "touchedPaths":  [
+                                                           "version",
+                                                           "meta",
+                                                           "meta.lastActiveAtMs",
+                                                           "gameState.lifePath",
+                                                           "gameState.realm.index",
+                                                           "gameState.realm.name",
+                                                           "prestigeState.highestRealmReached",
+                                                           "prestigeState.purchasesById.ap_fragment_gain_boost",
+                                                           "prestigeState.purchasesById.ap_autosell_filter",
+                                                           "prestigeState.totalAP",
+                                                           "trialState.progressByTrialId.trial_novices_clearing",
+                                                           "trialState.progressByTrialId.trial_novices_clearing.resolution",
+                                                           "trialState.progressByTrialId.trial_novices_clearing.bypassedAt",
+                                                           "cityState.unlockedCityIds",
+                                                           "cityState.currentCityId",
+                                                           "cityState.selectedModuleByCity",
+                                                           "onboardingState",
+                                                           "trainingState",
+                                                           "prestigeState.memoryLedger"
+                                                       ],
+                                      "finalVersion":  "2.2.0"
+                                  },
+                        "semanticSnapshot":  {
+                                                 "fixtureId":  "legacy-hidden-unsupported-prestige",
+                                                 "riskClassId":  "hidden_prestige_refund",
+                                                 "sourceVersion":  "2.0.0",
+                                                 "sourceVersionKind":  "legacy-versioned",
+                                                 "finalVersion":  "2.2.0",
+                                                 "selectedPath":  "earth",
+                                                 "realmIndex":  2,
+                                                 "realmName":  "Core Formation",
+                                                 "highestRealmReached":  2,
+                                                 "currentCityId":  "city_spirit_cavern_city",
+                                                 "unlockedCityIds":  [
+                                                                         "city_pinewind_hamlet",
+                                                                         "city_stonecrag_town",
+                                                                         "city_spirit_cavern_city"
+                                                                     ],
+                                                 "firstTrialResolution":  "bypassed",
+                                                 "legacyGateAliasIdsRemaining":  [
+
+                                                                                 ],
+                                                 "hiddenPrestigePurchaseIdsRemaining":  [
+
+                                                                                        ],
+                                                 "hiddenCraftOutputIdsRemaining":  [
+
+                                                                                   ],
+                                                 "offlineTimestampSnapshot":  {
+                                                                                  "metaLastActiveAtMs":  1736035200000,
+                                                                                  "gameLastActiveTime":  1736035200000,
+                                                                                  "gameLastTickTime":  1736035200000
+                                                                              },
+                                                 "offlineTimestampsAligned":  true,
+                                                 "noFakeCitySix":  true
+                                             },
+                        "expectationResults":  [
+                                                   {
+                                                       "key":  "noHiddenPrestigePurchases",
+                                                       "pass":  true,
+                                                       "expected":  "(none)",
+                                                       "actual":  "(none)",
+                                                       "message":  "hidden prestige purchases are cleared."
+                                                   },
+                                                   {
+                                                       "key":  "finalVersionIsCurrent",
+                                                       "pass":  true,
+                                                       "expected":  "2.2.0",
+                                                       "actual":  "2.2.0",
+                                                       "message":  "final save version reaches current target."
+                                                   },
+                                                   {
+                                                       "key":  "expectedPrimaryStepIds",
+                                                       "pass":  true,
+                                                       "expected":  "v2_0_0_plan_deferred_prestige_refund",
+                                                       "actual":  "all present",
+                                                       "message":  "primary migration steps executed for fixture."
+                                                   },
+                                                   {
+                                                       "key":  "errorCount",
+                                                       "pass":  true,
+                                                       "expected":  "0",
+                                                       "actual":  "0",
+                                                       "message":  "error count matches expected posture."
+                                                   }
+                                               ],
+                        "overallPass":  true,
+                        "issues":  [
+
+                                   ]
+                    },
+                    {
+                        "fixtureId":  "legacy-partial-reset-residue",
+                        "title":  "Partial reset residue cleaned to Pinewind baseline",
+                        "group":  "primary_risk",
+                        "riskClassId":  "partial_reset_residue",
+                        "sourceVersion":  "2.0.0",
+                        "sourceVersionKind":  "legacy-versioned",
+                        "dryRun":  {
+                                       "activeStepIds":  [
+                                                             "v2_0_0_seed_version_and_meta",
+                                                             "v2_0_0_normalize_path_truth",
+                                                             "v2_0_0_plan_gate_item_alias_migration",
+                                                             "v2_0_0_plan_deferred_prestige_refund",
+                                                             "v2_0_0_plan_trial_resolution_normalization",
+                                                             "v2_0_0_normalize_city_progression_state",
+                                                             "v2_0_0_plan_partial_reset_residue_cleanup",
+                                                             "v2_0_0_plan_offline_unification",
+                                                             "v2_1_0_backfill_onboarding_state",
+                                                             "v2_1_0_backfill_training_state",
+                                                             "v2_2_0_backfill_prestige_memory_ledger"
+                                                         ],
+                                       "plannedStepIds":  [
+                                                              "v2_0_0_plan_semester_slice_clamp"
+                                                          ],
+                                       "reportOnlyStepIds":  [
+                                                                 "m0_report_source_version"
+                                                             ],
+                                       "warningCount":  4,
+                                       "errorCount":  0,
+                                       "touchedPaths":  [
+                                                            "version",
+                                                            "meta",
+                                                            "meta.lastActiveAtMs",
+                                                            "gameState.lifePath",
+                                                            "gameState.realm.index",
+                                                            "gameState.realm.name",
+                                                            "prestigeState.highestRealmReached",
+                                                            "trialState.progressByTrialId.trial_novices_clearing",
+                                                            "cityState.unlockedCityIds",
+                                                            "cityState.currentCityId",
+                                                            "cityState.selectedModuleByCity",
+                                                            "trialState.progressByTrialId",
+                                                            "ruinsState.progressByRuinId",
+                                                            "equipmentState",
+                                                            "inventoryState",
+                                                            "activityState",
+                                                            "outskirtsState.progressByOutskirtsId",
+                                                            "bountyState.activeByCityId",
+                                                            "expeditionState.active",
+                                                            "professionState",
+                                                            "manualPavilionState.stockByPavilionId",
+                                                            "manualSatchelState",
+                                                            "techCollectionState",
+                                                            "heartLawState",
+                                                            "techniqueState.loadouts",
+                                                            "medicinePouchState.slots",
+                                                            "craftSessionState.activeSession",
+                                                            "shopState.purchasedToday",
+                                                            "onboardingState",
+                                                            "trainingState",
+                                                            "prestigeState.memoryLedger"
+                                                        ],
+                                       "finalVersion":  "2.2.0"
+                                   },
+                        "apply":  {
+                                      "activeStepIds":  [
+                                                            "v2_0_0_seed_version_and_meta",
+                                                            "v2_0_0_normalize_path_truth",
+                                                            "v2_0_0_plan_gate_item_alias_migration",
+                                                            "v2_0_0_plan_deferred_prestige_refund",
+                                                            "v2_0_0_plan_trial_resolution_normalization",
+                                                            "v2_0_0_normalize_city_progression_state",
+                                                            "v2_0_0_plan_partial_reset_residue_cleanup",
+                                                            "v2_0_0_plan_offline_unification",
+                                                            "v2_1_0_backfill_onboarding_state",
+                                                            "v2_1_0_backfill_training_state",
+                                                            "v2_2_0_backfill_prestige_memory_ledger"
+                                                        ],
+                                      "plannedStepIds":  [
+                                                             "v2_0_0_plan_semester_slice_clamp"
+                                                         ],
+                                      "reportOnlyStepIds":  [
+                                                                "m0_report_source_version"
+                                                            ],
+                                      "warningCount":  4,
+                                      "errorCount":  0,
+                                      "touchedPaths":  [
+                                                           "version",
+                                                           "meta",
+                                                           "meta.lastActiveAtMs",
+                                                           "gameState.lifePath",
+                                                           "gameState.realm.index",
+                                                           "gameState.realm.name",
+                                                           "prestigeState.highestRealmReached",
+                                                           "trialState.progressByTrialId.trial_novices_clearing",
+                                                           "cityState.unlockedCityIds",
+                                                           "cityState.currentCityId",
+                                                           "cityState.selectedModuleByCity",
+                                                           "trialState.progressByTrialId",
+                                                           "ruinsState.progressByRuinId",
+                                                           "equipmentState",
+                                                           "inventoryState",
+                                                           "activityState",
+                                                           "outskirtsState.progressByOutskirtsId",
+                                                           "bountyState.activeByCityId",
+                                                           "expeditionState.active",
+                                                           "professionState",
+                                                           "manualPavilionState.stockByPavilionId",
+                                                           "manualSatchelState",
+                                                           "techCollectionState",
+                                                           "heartLawState",
+                                                           "techniqueState.loadouts",
+                                                           "medicinePouchState.slots",
+                                                           "craftSessionState.activeSession",
+                                                           "shopState.purchasedToday",
+                                                           "onboardingState",
+                                                           "trainingState",
+                                                           "prestigeState.memoryLedger"
+                                                       ],
+                                      "finalVersion":  "2.2.0"
+                                  },
+                        "semanticSnapshot":  {
+                                                 "fixtureId":  "legacy-partial-reset-residue",
+                                                 "riskClassId":  "partial_reset_residue",
+                                                 "sourceVersion":  "2.0.0",
+                                                 "sourceVersionKind":  "legacy-versioned",
+                                                 "finalVersion":  "2.2.0",
+                                                 "selectedPath":  "heaven",
+                                                 "realmIndex":  0,
+                                                 "realmName":  "Qi Condensation",
+                                                 "highestRealmReached":  1,
+                                                 "currentCityId":  "city_pinewind_hamlet",
+                                                 "unlockedCityIds":  [
+                                                                         "city_pinewind_hamlet"
+                                                                     ],
+                                                 "firstTrialResolution":  null,
+                                                 "legacyGateAliasIdsRemaining":  [
+
+                                                                                 ],
+                                                 "hiddenPrestigePurchaseIdsRemaining":  [
+
+                                                                                        ],
+                                                 "hiddenCraftOutputIdsRemaining":  [
+
+                                                                                   ],
+                                                 "offlineTimestampSnapshot":  {
+                                                                                  "metaLastActiveAtMs":  1736035200000,
+                                                                                  "gameLastActiveTime":  1736035200000,
+                                                                                  "gameLastTickTime":  1736035200000
+                                                                              },
+                                                 "offlineTimestampsAligned":  true,
+                                                 "noFakeCitySix":  true
+                                             },
+                        "expectationResults":  [
+                                                   {
+                                                       "key":  "currentCityId",
+                                                       "pass":  true,
+                                                       "expected":  "city_pinewind_hamlet",
+                                                       "actual":  "city_pinewind_hamlet",
+                                                       "message":  "currentCityId normalized as expected."
+                                                   },
+                                                   {
+                                                       "key":  "unlockedCityIdsExact",
+                                                       "pass":  true,
+                                                       "expected":  "[\"city_pinewind_hamlet\"]",
+                                                       "actual":  "[\"city_pinewind_hamlet\"]",
+                                                       "message":  "unlocked city chain equals expected canonical chain."
+                                                   },
+                                                   {
+                                                       "key":  "noFakeCitySix",
+                                                       "pass":  true,
+                                                       "expected":  "true",
+                                                       "actual":  "true",
+                                                       "message":  "city unlock state does not include fake city six."
+                                                   },
+                                                   {
+                                                       "key":  "finalVersionIsCurrent",
+                                                       "pass":  true,
+                                                       "expected":  "2.2.0",
+                                                       "actual":  "2.2.0",
+                                                       "message":  "final save version reaches current target."
+                                                   },
+                                                   {
+                                                       "key":  "expectedPrimaryStepIds",
+                                                       "pass":  true,
+                                                       "expected":  "v2_0_0_plan_partial_reset_residue_cleanup",
+                                                       "actual":  "all present",
+                                                       "message":  "primary migration steps executed for fixture."
+                                                   },
+                                                   {
+                                                       "key":  "errorCount",
+                                                       "pass":  true,
+                                                       "expected":  "0",
+                                                       "actual":  "0",
+                                                       "message":  "error count matches expected posture."
+                                                   }
+                                               ],
+                        "overallPass":  true,
+                        "issues":  [
+
+                                   ]
+                    },
+                    {
+                        "fixtureId":  "legacy-hidden-craft-outputs",
+                        "title":  "Hidden/deferred craft outputs are refunded and cleared",
+                        "group":  "primary_risk",
+                        "riskClassId":  "hidden_craft_outputs",
+                        "sourceVersion":  "2.0.0",
+                        "sourceVersionKind":  "legacy-versioned",
+                        "dryRun":  {
+                                       "activeStepIds":  [
+                                                             "v2_0_0_seed_version_and_meta",
+                                                             "v2_0_0_normalize_path_truth",
+                                                             "v2_0_0_plan_gate_item_alias_migration",
+                                                             "v2_0_0_plan_trial_resolution_normalization",
+                                                             "v2_0_0_normalize_city_progression_state",
+                                                             "v2_0_0_refund_hidden_craft_outputs",
+                                                             "v2_0_0_plan_partial_reset_residue_cleanup",
+                                                             "v2_0_0_plan_offline_unification",
+                                                             "v2_1_0_backfill_onboarding_state",
+                                                             "v2_1_0_backfill_training_state",
+                                                             "v2_2_0_backfill_prestige_memory_ledger"
+                                                         ],
+                                       "plannedStepIds":  [
+                                                              "v2_0_0_plan_semester_slice_clamp"
+                                                          ],
+                                       "reportOnlyStepIds":  [
+                                                                 "m0_report_source_version"
+                                                             ],
+                                       "warningCount":  5,
+                                       "errorCount":  0,
+                                       "touchedPaths":  [
+                                                            "version",
+                                                            "gameState.realm.index",
+                                                            "gameState.realm.name",
+                                                            "trialState.progressByTrialId.trial_novices_clearing",
+                                                            "trialState.progressByTrialId.trial_novices_clearing.resolution",
+                                                            "trialState.progressByTrialId.trial_novices_clearing.bypassedAt",
+                                                            "cityState.unlockedCityIds",
+                                                            "cityState.currentCityId",
+                                                            "cityState.selectedModuleByCity",
+                                                            "inventoryState.items.reagent_spirit_solvent_t1",
+                                                            "inventoryState.items.cons_tribulation_buffer_t1",
+                                                            "inventoryState.items.tal_guardian_seal_t1",
+                                                            "inventoryState.items.item_jade_core_shell_t1",
+                                                            "professionState.alchemyQueue[0]",
+                                                            "professionState.talismanQueue[0]",
+                                                            "professionState.forgeQueue[0]",
+                                                            "craftSessionState.activeSession",
+                                                            "buffState.activeTalismans[0]",
+                                                            "medicinePouchState.slots.healing.equippedItemId",
+                                                            "meta.lastActiveAtMs",
+                                                            "onboardingState",
+                                                            "trainingState",
+                                                            "prestigeState.memoryLedger"
+                                                        ],
+                                       "finalVersion":  "2.2.0"
+                                   },
+                        "apply":  {
+                                      "activeStepIds":  [
+                                                            "v2_0_0_seed_version_and_meta",
+                                                            "v2_0_0_normalize_path_truth",
+                                                            "v2_0_0_plan_gate_item_alias_migration",
+                                                            "v2_0_0_plan_trial_resolution_normalization",
+                                                            "v2_0_0_normalize_city_progression_state",
+                                                            "v2_0_0_refund_hidden_craft_outputs",
+                                                            "v2_0_0_plan_partial_reset_residue_cleanup",
+                                                            "v2_0_0_plan_offline_unification",
+                                                            "v2_1_0_backfill_onboarding_state",
+                                                            "v2_1_0_backfill_training_state",
+                                                            "v2_2_0_backfill_prestige_memory_ledger"
+                                                        ],
+                                      "plannedStepIds":  [
+                                                             "v2_0_0_plan_semester_slice_clamp"
+                                                         ],
+                                      "reportOnlyStepIds":  [
+                                                                "m0_report_source_version"
+                                                            ],
+                                      "warningCount":  5,
+                                      "errorCount":  0,
+                                      "touchedPaths":  [
+                                                           "version",
+                                                           "gameState.realm.index",
+                                                           "gameState.realm.name",
+                                                           "trialState.progressByTrialId.trial_novices_clearing",
+                                                           "trialState.progressByTrialId.trial_novices_clearing.resolution",
+                                                           "trialState.progressByTrialId.trial_novices_clearing.bypassedAt",
+                                                           "cityState.unlockedCityIds",
+                                                           "cityState.currentCityId",
+                                                           "cityState.selectedModuleByCity",
+                                                           "inventoryState.items.reagent_spirit_solvent_t1",
+                                                           "inventoryState.items.cons_tribulation_buffer_t1",
+                                                           "inventoryState.items.tal_guardian_seal_t1",
+                                                           "inventoryState.items.item_jade_core_shell_t1",
+                                                           "professionState.alchemyQueue[0]",
+                                                           "professionState.talismanQueue[0]",
+                                                           "professionState.forgeQueue[0]",
+                                                           "craftSessionState.activeSession",
+                                                           "buffState.activeTalismans[0]",
+                                                           "medicinePouchState.slots.healing.equippedItemId",
+                                                           "meta.lastActiveAtMs",
+                                                           "onboardingState",
+                                                           "trainingState",
+                                                           "prestigeState.memoryLedger"
+                                                       ],
+                                      "finalVersion":  "2.2.0"
+                                  },
+                        "semanticSnapshot":  {
+                                                 "fixtureId":  "legacy-hidden-craft-outputs",
+                                                 "riskClassId":  "hidden_craft_outputs",
+                                                 "sourceVersion":  "2.0.0",
+                                                 "sourceVersionKind":  "legacy-versioned",
+                                                 "finalVersion":  "2.2.0",
+                                                 "selectedPath":  "martial",
+                                                 "realmIndex":  1,
+                                                 "realmName":  "Foundation Establishment",
+                                                 "highestRealmReached":  null,
+                                                 "currentCityId":  "city_pinewind_hamlet",
+                                                 "unlockedCityIds":  [
+                                                                         "city_pinewind_hamlet",
+                                                                         "city_stonecrag_town"
+                                                                     ],
+                                                 "firstTrialResolution":  "bypassed",
+                                                 "legacyGateAliasIdsRemaining":  [
+
+                                                                                 ],
+                                                 "hiddenPrestigePurchaseIdsRemaining":  [
+
+                                                                                        ],
+                                                 "hiddenCraftOutputIdsRemaining":  [
+
+                                                                                   ],
+                                                 "offlineTimestampSnapshot":  {
+                                                                                  "metaLastActiveAtMs":  1736035200000,
+                                                                                  "gameLastActiveTime":  1736035200000,
+                                                                                  "gameLastTickTime":  1736035200000
+                                                                              },
+                                                 "offlineTimestampsAligned":  true,
+                                                 "noFakeCitySix":  true
+                                             },
+                        "expectationResults":  [
+                                                   {
+                                                       "key":  "noHiddenCraftOutputs",
+                                                       "pass":  true,
+                                                       "expected":  "(none)",
+                                                       "actual":  "(none)",
+                                                       "message":  "hidden craft residues are cleared from all tracked surfaces."
+                                                   },
+                                                   {
+                                                       "key":  "finalVersionIsCurrent",
+                                                       "pass":  true,
+                                                       "expected":  "2.2.0",
+                                                       "actual":  "2.2.0",
+                                                       "message":  "final save version reaches current target."
+                                                   },
+                                                   {
+                                                       "key":  "expectedPrimaryStepIds",
+                                                       "pass":  true,
+                                                       "expected":  "v2_0_0_refund_hidden_craft_outputs",
+                                                       "actual":  "all present",
+                                                       "message":  "primary migration steps executed for fixture."
+                                                   },
+                                                   {
+                                                       "key":  "errorCount",
+                                                       "pass":  true,
+                                                       "expected":  "0",
+                                                       "actual":  "0",
+                                                       "message":  "error count matches expected posture."
+                                                   },
+                                                   {
+                                                       "key":  "applyIdempotent",
+                                                       "pass":  true,
+                                                       "expected":  "true",
+                                                       "actual":  "true",
+                                                       "message":  "second apply pass is idempotent."
+                                                   }
+                                               ],
+                        "overallPass":  true,
+                        "issues":  [
+
+                                   ]
+                    },
+                    {
+                        "fixtureId":  "legacy-offline-split",
+                        "title":  "Split offline timestamps align to canonical latest timestamp",
+                        "group":  "primary_risk",
+                        "riskClassId":  "offline_timestamp_split",
+                        "sourceVersion":  "2.0.0",
+                        "sourceVersionKind":  "legacy-versioned",
+                        "dryRun":  {
+                                       "activeStepIds":  [
+                                                             "v2_0_0_seed_version_and_meta",
+                                                             "v2_0_0_normalize_path_truth",
+                                                             "v2_0_0_plan_gate_item_alias_migration",
+                                                             "v2_0_0_plan_trial_resolution_normalization",
+                                                             "v2_0_0_normalize_city_progression_state",
+                                                             "v2_0_0_plan_partial_reset_residue_cleanup",
+                                                             "v2_0_0_plan_offline_unification",
+                                                             "v2_1_0_backfill_onboarding_state",
+                                                             "v2_1_0_backfill_training_state",
+                                                             "v2_2_0_backfill_prestige_memory_ledger"
+                                                         ],
+                                       "plannedStepIds":  [
+                                                              "v2_0_0_plan_semester_slice_clamp"
+                                                          ],
+                                       "reportOnlyStepIds":  [
+                                                                 "m0_report_source_version"
+                                                             ],
+                                       "warningCount":  6,
+                                       "errorCount":  0,
+                                       "touchedPaths":  [
+                                                            "version",
+                                                            "gameState.lifePath",
+                                                            "gameState.realm.index",
+                                                            "gameState.realm.name",
+                                                            "trialState.progressByTrialId.trial_novices_clearing",
+                                                            "cityState.unlockedCityIds",
+                                                            "cityState.currentCityId",
+                                                            "cityState.selectedModuleByCity",
+                                                            "equipmentState",
+                                                            "meta.lastActiveAtMs",
+                                                            "gameState.lastActiveTime",
+                                                            "gameState.lastTickTime",
+                                                            "onboardingState",
+                                                            "trainingState",
+                                                            "prestigeState.memoryLedger"
+                                                        ],
+                                       "finalVersion":  "2.2.0"
+                                   },
+                        "apply":  {
+                                      "activeStepIds":  [
+                                                            "v2_0_0_seed_version_and_meta",
+                                                            "v2_0_0_normalize_path_truth",
+                                                            "v2_0_0_plan_gate_item_alias_migration",
+                                                            "v2_0_0_plan_trial_resolution_normalization",
+                                                            "v2_0_0_normalize_city_progression_state",
+                                                            "v2_0_0_plan_partial_reset_residue_cleanup",
+                                                            "v2_0_0_plan_offline_unification",
+                                                            "v2_1_0_backfill_onboarding_state",
+                                                            "v2_1_0_backfill_training_state",
+                                                            "v2_2_0_backfill_prestige_memory_ledger"
+                                                        ],
+                                      "plannedStepIds":  [
+                                                             "v2_0_0_plan_semester_slice_clamp"
+                                                         ],
+                                      "reportOnlyStepIds":  [
+                                                                "m0_report_source_version"
+                                                            ],
+                                      "warningCount":  6,
+                                      "errorCount":  0,
+                                      "touchedPaths":  [
+                                                           "version",
+                                                           "gameState.lifePath",
+                                                           "gameState.realm.index",
+                                                           "gameState.realm.name",
+                                                           "trialState.progressByTrialId.trial_novices_clearing",
+                                                           "cityState.unlockedCityIds",
+                                                           "cityState.currentCityId",
+                                                           "cityState.selectedModuleByCity",
+                                                           "equipmentState",
+                                                           "meta.lastActiveAtMs",
+                                                           "gameState.lastActiveTime",
+                                                           "gameState.lastTickTime",
+                                                           "onboardingState",
+                                                           "trainingState",
+                                                           "prestigeState.memoryLedger"
+                                                       ],
+                                      "finalVersion":  "2.2.0"
+                                  },
+                        "semanticSnapshot":  {
+                                                 "fixtureId":  "legacy-offline-split",
+                                                 "riskClassId":  "offline_timestamp_split",
+                                                 "sourceVersion":  "2.0.0",
+                                                 "sourceVersionKind":  "legacy-versioned",
+                                                 "finalVersion":  "2.2.0",
+                                                 "selectedPath":  null,
+                                                 "realmIndex":  0,
+                                                 "realmName":  "Qi Condensation",
+                                                 "highestRealmReached":  null,
+                                                 "currentCityId":  "city_pinewind_hamlet",
+                                                 "unlockedCityIds":  [
+                                                                         "city_pinewind_hamlet"
+                                                                     ],
+                                                 "firstTrialResolution":  null,
+                                                 "legacyGateAliasIdsRemaining":  [
+
+                                                                                 ],
+                                                 "hiddenPrestigePurchaseIdsRemaining":  [
+
+                                                                                        ],
+                                                 "hiddenCraftOutputIdsRemaining":  [
+
+                                                                                   ],
+                                                 "offlineTimestampSnapshot":  {
+                                                                                  "metaLastActiveAtMs":  1736033000000,
+                                                                                  "gameLastActiveTime":  1736033000000,
+                                                                                  "gameLastTickTime":  1736033000000
+                                                                              },
+                                                 "offlineTimestampsAligned":  true,
+                                                 "noFakeCitySix":  true
+                                             },
+                        "expectationResults":  [
+                                                   {
+                                                       "key":  "offlineTimestampsAligned",
+                                                       "pass":  true,
+                                                       "expected":  "true",
+                                                       "actual":  "true",
+                                                       "message":  "offline timestamps are aligned to canonical timestamp."
+                                                   },
+                                                   {
+                                                       "key":  "finalVersionIsCurrent",
+                                                       "pass":  true,
+                                                       "expected":  "2.2.0",
+                                                       "actual":  "2.2.0",
+                                                       "message":  "final save version reaches current target."
+                                                   },
+                                                   {
+                                                       "key":  "expectedPrimaryStepIds",
+                                                       "pass":  true,
+                                                       "expected":  "v2_0_0_plan_offline_unification",
+                                                       "actual":  "all present",
+                                                       "message":  "primary migration steps executed for fixture."
+                                                   },
+                                                   {
+                                                       "key":  "errorCount",
+                                                       "pass":  true,
+                                                       "expected":  "0",
+                                                       "actual":  "0",
+                                                       "message":  "error count matches expected posture."
+                                                   }
+                                               ],
+                        "overallPass":  true,
+                        "issues":  [
+
+                                   ]
+                    },
+                    {
+                        "fixtureId":  "current-save",
+                        "title":  "Current save baseline does not regress",
+                        "group":  "compatibility",
+                        "riskClassId":  "current_save_regression",
+                        "sourceVersion":  "2.0.0",
+                        "sourceVersionKind":  "legacy-versioned",
+                        "dryRun":  {
+                                       "activeStepIds":  [
+                                                             "v2_0_0_seed_version_and_meta",
+                                                             "v2_0_0_normalize_path_truth",
+                                                             "v2_0_0_plan_gate_item_alias_migration",
+                                                             "v2_0_0_plan_trial_resolution_normalization",
+                                                             "v2_0_0_normalize_city_progression_state",
+                                                             "v2_0_0_plan_partial_reset_residue_cleanup",
+                                                             "v2_0_0_plan_offline_unification",
+                                                             "v2_1_0_backfill_onboarding_state",
+                                                             "v2_1_0_backfill_training_state",
+                                                             "v2_2_0_backfill_prestige_memory_ledger"
+                                                         ],
+                                       "plannedStepIds":  [
+                                                              "v2_0_0_plan_semester_slice_clamp"
+                                                          ],
+                                       "reportOnlyStepIds":  [
+                                                                 "m0_report_source_version"
+                                                             ],
+                                       "warningCount":  3,
+                                       "errorCount":  0,
+                                       "touchedPaths":  [
+                                                            "version",
+                                                            "gameState.realm.index",
+                                                            "gameState.realm.name",
+                                                            "trialState.progressByTrialId.trial_novices_clearing",
+                                                            "cityState.unlockedCityIds",
+                                                            "cityState.currentCityId",
+                                                            "cityState.selectedModuleByCity",
+                                                            "trialState.progressByTrialId",
+                                                            "equipmentState",
+                                                            "meta.lastActiveAtMs",
+                                                            "onboardingState",
+                                                            "trainingState",
+                                                            "prestigeState.memoryLedger"
+                                                        ],
+                                       "finalVersion":  "2.2.0"
+                                   },
+                        "apply":  {
+                                      "activeStepIds":  [
+                                                            "v2_0_0_seed_version_and_meta",
+                                                            "v2_0_0_normalize_path_truth",
+                                                            "v2_0_0_plan_gate_item_alias_migration",
+                                                            "v2_0_0_plan_trial_resolution_normalization",
+                                                            "v2_0_0_normalize_city_progression_state",
+                                                            "v2_0_0_plan_partial_reset_residue_cleanup",
+                                                            "v2_0_0_plan_offline_unification",
+                                                            "v2_1_0_backfill_onboarding_state",
+                                                            "v2_1_0_backfill_training_state",
+                                                            "v2_2_0_backfill_prestige_memory_ledger"
+                                                        ],
+                                      "plannedStepIds":  [
+                                                             "v2_0_0_plan_semester_slice_clamp"
+                                                         ],
+                                      "reportOnlyStepIds":  [
+                                                                "m0_report_source_version"
+                                                            ],
+                                      "warningCount":  3,
+                                      "errorCount":  0,
+                                      "touchedPaths":  [
+                                                           "version",
+                                                           "gameState.realm.index",
+                                                           "gameState.realm.name",
+                                                           "trialState.progressByTrialId.trial_novices_clearing",
+                                                           "cityState.unlockedCityIds",
+                                                           "cityState.currentCityId",
+                                                           "cityState.selectedModuleByCity",
+                                                           "trialState.progressByTrialId",
+                                                           "equipmentState",
+                                                           "meta.lastActiveAtMs",
+                                                           "onboardingState",
+                                                           "trainingState",
+                                                           "prestigeState.memoryLedger"
+                                                       ],
+                                      "finalVersion":  "2.2.0"
+                                  },
+                        "semanticSnapshot":  {
+                                                 "fixtureId":  "current-save",
+                                                 "riskClassId":  "current_save_regression",
+                                                 "sourceVersion":  "2.0.0",
+                                                 "sourceVersionKind":  "legacy-versioned",
+                                                 "finalVersion":  "2.2.0",
+                                                 "selectedPath":  null,
+                                                 "realmIndex":  0,
+                                                 "realmName":  "Qi Condensation",
+                                                 "highestRealmReached":  null,
+                                                 "currentCityId":  "city_pinewind_hamlet",
+                                                 "unlockedCityIds":  [
+                                                                         "city_pinewind_hamlet"
+                                                                     ],
+                                                 "firstTrialResolution":  null,
+                                                 "legacyGateAliasIdsRemaining":  [
+
+                                                                                 ],
+                                                 "hiddenPrestigePurchaseIdsRemaining":  [
+
+                                                                                        ],
+                                                 "hiddenCraftOutputIdsRemaining":  [
+
+                                                                                   ],
+                                                 "offlineTimestampSnapshot":  {
+                                                                                  "metaLastActiveAtMs":  1736035200000,
+                                                                                  "gameLastActiveTime":  1736035200000,
+                                                                                  "gameLastTickTime":  1736035200000
+                                                                              },
+                                                 "offlineTimestampsAligned":  true,
+                                                 "noFakeCitySix":  true
+                                             },
+                        "expectationResults":  [
+                                                   {
+                                                       "key":  "noFakeCitySix",
+                                                       "pass":  true,
+                                                       "expected":  "true",
+                                                       "actual":  "true",
+                                                       "message":  "city unlock state does not include fake city six."
+                                                   },
+                                                   {
+                                                       "key":  "finalVersionIsCurrent",
+                                                       "pass":  true,
+                                                       "expected":  "2.2.0",
+                                                       "actual":  "2.2.0",
+                                                       "message":  "final save version reaches current target."
+                                                   },
+                                                   {
+                                                       "key":  "sourceVersionKind",
+                                                       "pass":  false,
+                                                       "expected":  "current",
+                                                       "actual":  "legacy-versioned",
+                                                       "message":  "source version detection kind matches expectation."
+                                                   },
+                                                   {
+                                                       "key":  "expectedSourceVersionKind",
+                                                       "pass":  false,
+                                                       "expected":  "current",
+                                                       "actual":  "legacy-versioned",
+                                                       "message":  "catalog expectedSourceVersionKind matches dry-run report."
+                                                   },
+                                                   {
+                                                       "key":  "errorCount",
+                                                       "pass":  true,
+                                                       "expected":  "0",
+                                                       "actual":  "0",
+                                                       "message":  "error count matches expected posture."
+                                                   }
+                                               ],
+                        "overallPass":  false,
+                        "issues":  [
+                                       "sourceVersionKind: expected current, actual legacy-versioned",
+                                       "expectedSourceVersionKind: expected current, actual legacy-versioned"
+                                   ]
+                    },
+                    {
+                        "fixtureId":  "legacy-unversioned-save",
+                        "title":  "Legacy unversioned source is detected and migrated",
+                        "group":  "compatibility",
+                        "riskClassId":  "legacy_unversioned_source",
+                        "sourceVersion":  "0.0.0",
+                        "sourceVersionKind":  "legacy-unversioned",
+                        "dryRun":  {
+                                       "activeStepIds":  [
+                                                             "v2_0_0_seed_version_and_meta",
+                                                             "v2_0_0_normalize_path_truth",
+                                                             "v2_0_0_plan_gate_item_alias_migration",
+                                                             "v2_0_0_plan_trial_resolution_normalization",
+                                                             "v2_0_0_normalize_city_progression_state",
+                                                             "v2_0_0_plan_partial_reset_residue_cleanup",
+                                                             "v2_0_0_plan_offline_unification",
+                                                             "v2_1_0_backfill_onboarding_state",
+                                                             "v2_1_0_backfill_training_state",
+                                                             "v2_2_0_backfill_prestige_memory_ledger"
+                                                         ],
+                                       "plannedStepIds":  [
+                                                              "v2_0_0_plan_semester_slice_clamp"
+                                                          ],
+                                       "reportOnlyStepIds":  [
+                                                                 "m0_report_source_version"
+                                                             ],
+                                       "warningCount":  7,
+                                       "errorCount":  0,
+                                       "touchedPaths":  [
+                                                            "version",
+                                                            "inventoryState.items.foundation_pill",
+                                                            "inventoryState.items.gate_foundation_pill",
+                                                            "gameState.realm.index",
+                                                            "gameState.realm.name",
+                                                            "trialState.progressByTrialId.trial_novices_clearing",
+                                                            "cityState.unlockedCityIds",
+                                                            "cityState.currentCityId",
+                                                            "cityState.selectedModuleByCity",
+                                                            "equipmentState",
+                                                            "inventoryState",
+                                                            "meta.lastActiveAtMs",
+                                                            "onboardingState",
+                                                            "trainingState",
+                                                            "prestigeState.memoryLedger"
+                                                        ],
+                                       "finalVersion":  "2.2.0"
+                                   },
+                        "apply":  {
+                                      "activeStepIds":  [
+                                                            "v2_0_0_seed_version_and_meta",
+                                                            "v2_0_0_normalize_path_truth",
+                                                            "v2_0_0_plan_gate_item_alias_migration",
+                                                            "v2_0_0_plan_trial_resolution_normalization",
+                                                            "v2_0_0_normalize_city_progression_state",
+                                                            "v2_0_0_plan_partial_reset_residue_cleanup",
+                                                            "v2_0_0_plan_offline_unification",
+                                                            "v2_1_0_backfill_onboarding_state",
+                                                            "v2_1_0_backfill_training_state",
+                                                            "v2_2_0_backfill_prestige_memory_ledger"
+                                                        ],
+                                      "plannedStepIds":  [
+                                                             "v2_0_0_plan_semester_slice_clamp"
+                                                         ],
+                                      "reportOnlyStepIds":  [
+                                                                "m0_report_source_version"
+                                                            ],
+                                      "warningCount":  7,
+                                      "errorCount":  0,
+                                      "touchedPaths":  [
+                                                           "version",
+                                                           "inventoryState.items.foundation_pill",
+                                                           "inventoryState.items.gate_foundation_pill",
+                                                           "gameState.realm.index",
+                                                           "gameState.realm.name",
+                                                           "trialState.progressByTrialId.trial_novices_clearing",
+                                                           "cityState.unlockedCityIds",
+                                                           "cityState.currentCityId",
+                                                           "cityState.selectedModuleByCity",
+                                                           "equipmentState",
+                                                           "inventoryState",
+                                                           "meta.lastActiveAtMs",
+                                                           "onboardingState",
+                                                           "trainingState",
+                                                           "prestigeState.memoryLedger"
+                                                       ],
+                                      "finalVersion":  "2.2.0"
+                                  },
+                        "semanticSnapshot":  {
+                                                 "fixtureId":  "legacy-unversioned-save",
+                                                 "riskClassId":  "legacy_unversioned_source",
+                                                 "sourceVersion":  "0.0.0",
+                                                 "sourceVersionKind":  "legacy-unversioned",
+                                                 "finalVersion":  "2.2.0",
+                                                 "selectedPath":  "heaven",
+                                                 "realmIndex":  0,
+                                                 "realmName":  "Qi Condensation",
+                                                 "highestRealmReached":  null,
+                                                 "currentCityId":  "city_pinewind_hamlet",
+                                                 "unlockedCityIds":  [
+                                                                         "city_pinewind_hamlet"
+                                                                     ],
+                                                 "firstTrialResolution":  null,
+                                                 "legacyGateAliasIdsRemaining":  [
+
+                                                                                 ],
+                                                 "hiddenPrestigePurchaseIdsRemaining":  [
+
+                                                                                        ],
+                                                 "hiddenCraftOutputIdsRemaining":  [
+
+                                                                                   ],
+                                                 "offlineTimestampSnapshot":  {
+                                                                                  "metaLastActiveAtMs":  1736035000000,
+                                                                                  "gameLastActiveTime":  1736035000000,
+                                                                                  "gameLastTickTime":  1736035000000
+                                                                              },
+                                                 "offlineTimestampsAligned":  true,
+                                                 "noFakeCitySix":  true
+                                             },
+                        "expectationResults":  [
+                                                   {
+                                                       "key":  "finalVersionIsCurrent",
+                                                       "pass":  true,
+                                                       "expected":  "2.2.0",
+                                                       "actual":  "2.2.0",
+                                                       "message":  "final save version reaches current target."
+                                                   },
+                                                   {
+                                                       "key":  "sourceVersionKind",
+                                                       "pass":  true,
+                                                       "expected":  "legacy-unversioned",
+                                                       "actual":  "legacy-unversioned",
+                                                       "message":  "source version detection kind matches expectation."
+                                                   },
+                                                   {
+                                                       "key":  "expectedSourceVersionKind",
+                                                       "pass":  true,
+                                                       "expected":  "legacy-unversioned",
+                                                       "actual":  "legacy-unversioned",
+                                                       "message":  "catalog expectedSourceVersionKind matches dry-run report."
+                                                   },
+                                                   {
+                                                       "key":  "errorCount",
+                                                       "pass":  true,
+                                                       "expected":  "0",
+                                                       "actual":  "0",
+                                                       "message":  "error count matches expected posture."
+                                                   }
+                                               ],
+                        "overallPass":  true,
+                        "issues":  [
+
+                                   ]
+                    }
+                ]
+}

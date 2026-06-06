@@ -21,7 +21,7 @@ test('module card registry covers exactly live modules and excludes deferred mod
   const definitions = getWorldModuleCardDefinitions();
   const moduleKeys = definitions.map((entry) => entry.moduleKey);
 
-  assert.equal(moduleKeys.length, 8);
+  assert.equal(moduleKeys.length, 9);
   assert.deepEqual(moduleKeys.includes('outskirts'), true);
   assert.deepEqual(moduleKeys.includes('expeditions'), true);
   assert.equal(moduleKeys.includes('alchemy' as never), false);
@@ -31,6 +31,7 @@ test('module card registry covers exactly live modules and excludes deferred mod
     'ruins',
     'gateTrial',
     'manualPavilion',
+    'trainingHall',
     'apothecary',
     'forge',
     'bounties',
@@ -48,18 +49,22 @@ test('bounties and manual pavilion metadata lock key player-facing output hints'
   const bounties = definitions.find((entry) => entry.moduleKey === 'bounties');
   const manual = definitions.find((entry) => entry.moduleKey === 'manualPavilion');
   const gateTrial = definitions.find((entry) => entry.moduleKey === 'gateTrial');
+  const trainingHall = definitions.find((entry) => entry.moduleKey === 'trainingHall');
   const apothecary = definitions.find((entry) => entry.moduleKey === 'apothecary');
   const expeditions = definitions.find((entry) => entry.moduleKey === 'expeditions');
 
   assert.ok(bounties);
   assert.ok(manual);
   assert.ok(gateTrial);
+  assert.ok(trainingHall);
   assert.ok(apothecary);
   assert.ok(expeditions);
   assert.deepEqual(bounties?.defaultOutputs.map((entry) => entry.label), ['Merit', 'Spirit Stones']);
   assert.deepEqual(manual?.defaultOutputs.map((entry) => entry.label), ['Manuals', 'Technique Fragments']);
   assert.deepEqual(apothecary?.defaultOutputs.map((entry) => entry.label), ['Healing Stock', 'Preparation Remedies']);
-  assert.match(gateTrial?.roleTag ?? '', /Gate (Proof|Readiness)/);
+  assert.deepEqual(trainingHall?.defaultOutputs.map((entry) => entry.label), ['Stat Ratings', 'Regimen Mastery']);
+  assert.equal(gateTrial?.roleTag, 'Gate Item');
+  assert.equal(trainingHall?.roleTag, 'Path Foundation');
   assert.equal(bounties?.roleTag, 'Merit & Routing');
   assert.equal(expeditions?.roleTag, 'Passive Support');
 });

@@ -43,6 +43,13 @@ async function loadValidatedContent() {
     bounties: await readJson('bounties.json'),
     heart_laws: await readJson('heart_laws.json'),
     prestige_store: await readJson('prestige_store.json'),
+    pavilion_records: await readJson('pavilion_records.json'),
+    onboarding_milestones: await readJson('onboarding_milestones.json'),
+    cultivator_stats: await readJson('stats.json'),
+    training_regimens: await readJson('training_regimens.json'),
+    dao_heart_practices: await readJson('dao_heart_practices.json'),
+    spirit_roots: await readJson('spirit_roots.json'),
+    readiness_categories: await readJson('readiness_categories.json'),
   } as never);
 }
 
@@ -66,6 +73,7 @@ function resetStores() {
   useInventoryStore.getState().hardResetInventory();
   useCultivationStore.getState().resetForNewLife();
   useGameStore.getState().hardResetGameState();
+  useGameStore.getState().__setBreakthroughRiskRollForTest?.(null);
   useCityStore.getState().hardResetCity();
   setPrestigeStoreGetter(() => ({
     updateHighestRealm: () => {},
@@ -94,6 +102,7 @@ test.before(async () => {
 test.beforeEach(() => {
   resetStores();
   primeContentStore(content);
+  useGameStore.getState().selectPath('heaven');
   useCultivationStore.setState({ selectedHeartLawId: content.heart_laws[0]?.id ?? null, unlockedHeartLawIds: [content.heart_laws[0]?.id ?? ''] });
   useCityStore.getState().initializeFromContent(useContentStore.getState().citiesSorted);
 });
@@ -163,6 +172,7 @@ test('Meridian Warmth boosts qps and stability gain, Quiet Breath boosts compreh
 
 test('Purity Elixir only affects major breakthroughs, grants stability on success, and expires honestly', () => {
   const now = Date.now();
+  useGameStore.getState().__setBreakthroughRiskRollForTest?.(() => 1);
   useInventoryStore.getState().addItem('gate_foundation_pill', 1);
   useGameStore.setState({ realm: { index: 0, substage: REALMS[0].substages, name: REALMS[0].name }, qi: '999999999999' });
   const baseRequirement = Number(useGameStore.getState().getBreakthroughRequirement());

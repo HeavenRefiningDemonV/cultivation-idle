@@ -6,6 +6,8 @@ import {
   getNextLiveRealm,
   isAtSemesterCap,
 } from '../../../systems/progression/runtime/index.js';
+import { getCanonicalCultivationStageNumber } from '../../../systems/progression/cultivationStageIndex.js';
+import { resolveCultivationMindAlignment } from '../../../systems/cultivation/cultivationMindAlignmentResolver.js';
 import {
   getBreathModeSemantics,
   getFocusModeSemantics,
@@ -24,6 +26,7 @@ import { useCultivationStore } from '../../../stores/cultivationStore.js';
 import { useGameStore } from '../../../stores/gameStore.js';
 import { useInventoryStore } from '../../../stores/inventoryStore.js';
 import { usePrestigeStore } from '../../../stores/prestigeStore.js';
+import { useTrialStore } from '../../../stores/trialStore.js';
 import { useUIStore } from '../../../stores/uiStore.js';
 import type { SpiritRootElement, SpiritRootGrade } from '../../../types/index.js';
 import { D, formatNumber } from '../../../utils/numbers.js';
@@ -35,11 +38,18 @@ import {
   createCultivationExactShellFlags,
   createCultivationExactVisualFlags,
 } from './cultivationExactPresentation.js';
+import {
+  resolveBreakthroughStabilitySnapshot,
+  type GateResolutionForRisk,
+  type RootResonanceForRisk,
+} from '../../../systems/breakthrough/breakthroughStabilityResolver.js';
+import { resolveCalmFirstBreathRiskReduction } from '../../../systems/prestige/prestigeMemory.js';
 import type {
   BuildCultivationExactSurfaceOptions,
   CultivationBreakthroughReadinessSurfaceV1,
   CultivationButtonSurface,
   CultivationDrawerSurface,
+  CultivationDrawerRowSurface,
   CultivationExactActivityState,
   CultivationExactBuildSnapshot,
   CultivationExactDrawerId,
@@ -58,11 +68,20 @@ const SPIRIT_ROOT_GRADES: Record<SpiritRootGrade, string> = {
 };
 
 const SPIRIT_ROOT_ELEMENTS: Record<SpiritRootElement, string> = {
+  wood: 'Wood',
   fire: 'Fire',
-  water: 'Water',
   earth: 'Earth',
   metal: 'Metal',
-  wood: 'Wood',
+  water: 'Water',
+  wind: 'Wind',
+  lightning: 'Lightning',
+  ice: 'Ice',
+  light: 'Light',
+  shadow: 'Shadow',
+  soul: 'Soul',
+  void: 'Void',
+  time: 'Time',
+  astral: 'Astral',
 };
 
 function clampPercent(value: number): number {
@@ -353,6 +372,7 @@ function createBreakthroughReadiness(
   commandDeck: CultivationExactSurfaceV1['commandDeck'],
 ): CultivationBreakthroughReadinessSurfaceV1 {
   const gateItemName = snapshot.requiredGateItemName ?? 'Gate item';
+  const risk = snapshot.breakthroughRisk ?? null;
   const qiReady = hasEnoughQi(snapshot);
   const gateReady = hasGateToken(snapshot);
   const realmEdgeReady = isRealmEdge(snapshot) || snapshot.atContentCap || !isMajorRealmTransition(snapshot);
@@ -372,6 +392,68 @@ function createBreakthroughReadiness(
         : state === 'cultivating'
           ? 'Qi is still gathering toward the next threshold.'
           : 'Reach the realm edge and fill the Qi reservoir.';
+
+  const riskRows: CultivationDrawerRowSurface[] = risk
+    ? [
+        {
+          id: 'risk-band',
+          label: 'Breakthrough risk',
+          value: `${risk.riskPercent}% (${titleCase(risk.band)})`,
+          tone: risk.riskPercent >= 35 ? 'cinnabar' : risk.riskPercent >= 20 ? 'warning' : 'jade',
+        },
+        ...risk.rows
+          .filter((row) => row.id !== 'base_transition' && (snapshot.mindAlignment ? row.id !== 'heart_law_parity' : true))
+          .slice(0, 5)
+          .map((row) => ({
+            id: `risk-${row.id}`,
+            label: row.label,
+            value: `${row.value > 0 ? '+' : ''}${row.value}`,
+            tone: row.severity === 'good' ? 'jade' as const
+              : row.severity === 'danger' ? 'cinnabar' as const
+                : row.severity === 'warning' ? 'warning' as const
+                  : 'neutral' as const,
+          })),
+        {
+          id: 'failure-preview',
+          label: 'Failure preview',
+          value: risk.failureOutcomePreview,
+          tone: risk.riskPercent >= 35 ? 'warning' : 'muted',
+        },
+      ]
+    : [];
+  const mindAlignmentRow: CultivationDrawerRowSurface | null = snapshot.mindAlignment
+    ? {
+        id: 'mind-alignment',
+        label: 'Mind alignment',
+        value: snapshot.mindAlignment.summaryText,
+        tone: snapshot.mindAlignment.capState === 'overexpressed'
+          ? 'warning'
+          : snapshot.mindAlignment.breakthroughRiskDelta >= 18
+            ? 'cinnabar'
+            : snapshot.mindAlignment.breakthroughRiskDelta > 0
+              ? 'warning'
+              : 'jade',
+      }
+    : null;
+  const topFixActions: CultivationButtonSurface[] = risk?.topFixes.map((fix) => {
+    const target = fix.route?.target ?? 'cultivation';
+    const actionByTarget: Record<string, CultivationButtonSurface['actionKey']> = {
+      daoHeart: 'openDaoHeart',
+      trainingHall: 'openTrainingHall',
+      gateTrial: 'openGateTrial',
+      apothecary: 'openApothecary',
+      forge: 'openForge',
+      cultivation: 'none',
+      rest: 'rest',
+    };
+    return {
+      label: fix.route?.label ?? fix.label,
+      disabled: false,
+      tone: target === 'daoHeart' ? 'ready' : target === 'gateTrial' ? 'gate' : 'quiet',
+      actionKey: actionByTarget[target] ?? 'none',
+      reason: fix.explanation,
+    };
+  }) ?? [];
 
   return {
     title: 'Breakthrough Readiness',
@@ -397,10 +479,21 @@ function createBreakthroughReadiness(
         value: snapshot.requiredGateItemId ? `${gateItemName} ${snapshot.requiredGateItemCount}/1` : 'Not needed now',
         tone: gateReady ? 'jade' : 'warning',
       },
+      ...(mindAlignmentRow ? [mindAlignmentRow] : []),
+      ...riskRows,
     ],
     primaryAction: commandDeck.primary.actionKey === 'openGateTrial' || commandDeck.primary.actionKey === 'openPrestige'
       ? commandDeck.primary
       : null,
+    risk: risk
+      ? {
+          percent: risk.riskPercent,
+          band: risk.band,
+          failurePreview: risk.failureOutcomePreview,
+          confirmationRequired: risk.confirmationRequired,
+        }
+      : null,
+    topFixActions,
   };
 }
 
@@ -432,6 +525,9 @@ function createDrawers(
       { id: 'path', label: 'Path', value: snapshot.selectedPathLabel },
       { id: 'root', label: 'Spirit Root', value: `${snapshot.spiritRootLabel} - ${snapshot.spiritRootDetail}` },
       { id: 'heart-law', label: 'Heart Law', value: snapshot.heartLawDetail },
+      ...(snapshot.mindAlignment
+        ? [{ id: 'mind-alignment', label: 'Mind alignment', value: snapshot.mindAlignment.summaryText, tone: snapshot.mindAlignment.breakthroughRiskDelta > 0 ? 'warning' as const : 'jade' as const }]
+        : []),
       { id: 'resonance', label: snapshot.resonanceLine, value: snapshot.resonanceDetail },
       { id: 'breath-focus', label: 'Breath / Focus', value: `${snapshot.breathModeLabel} / ${snapshot.focusModeLabel}` },
     ],
@@ -445,6 +541,15 @@ function createDrawers(
       isComplete: snapshot.comprehensionRequirement <= 0 && snapshot.heartLawName !== 'No Heart Law selected',
       placeholderLabel: snapshot.heartLawName === 'No Heart Law selected' ? 'Heart Law Needed' : undefined,
       placeholderValue: snapshot.heartLawName === 'No Heart Law selected' ? 'Choose a Heart Law to begin verse progress.' : undefined,
+    },
+    action: {
+      label: 'Observe Spirit Root',
+      disabled: false,
+      tone: 'quiet',
+      actionKey: 'openSpiritRootObservation',
+      reason: 'Open the Status-owned Spirit Root Observation surface.',
+      route: { kind: 'status_observation', tab: 'profile' },
+      runCompassAction: null,
     },
   };
 
@@ -613,6 +718,7 @@ export function createCultivationExactMockupFixture(): CultivationExactSurfaceV1
     runCompassActions: [],
     runCompassFull: null,
     runCompassCompact: null,
+    breakthroughRisk: null,
   };
 
   return createSurface(snapshot, {
@@ -670,6 +776,19 @@ export function buildCultivationExactSnapshotFromStores(
     ? content.maps.heartLawsById[cultivation.selectedHeartLawId] ?? null
     : null;
   const resonance = getAffinityStatus(heartLawDef, prestige.spiritRoot);
+  const gateTrialForItem = requiredGateItemId
+    ? content.raw?.trials.find((trial) => trial.gateItemId === requiredGateItemId) ?? null
+    : null;
+  const gateResolution: GateResolutionForRisk = gateTrialForItem
+    ? useTrialStore.getState().getProgress(gateTrialForItem.id).resolution
+    : 'none';
+  const rootResonance: RootResonanceForRisk = resonance.status === 'match'
+    ? 'exact'
+    : resonance.status === 'mismatch'
+      ? 'mismatch'
+      : resonance.status === 'none'
+        ? 'neutral'
+        : 'soft';
   const resonanceLine = resonance.status === 'match'
     ? (resonance.percent >= 10 ? 'Strong Resonance' : 'Resonant')
     : resonance.status === 'mismatch'
@@ -697,6 +816,40 @@ export function buildCultivationExactSnapshotFromStores(
         return `${family.shortLabel}: ${entry.shortLabel}`;
       })
       .join(', ');
+  const cultivationEffectiveStage = getCanonicalCultivationStageNumber({
+    realmIndex: game.realm.index,
+    substage: game.realm.substage,
+  });
+  const selectedHeartLawLevel = cultivation.selectedHeartLawId
+    ? cultivation.heartLawLevelById[cultivation.selectedHeartLawId] ?? 1
+    : 1;
+  const mindAlignment = resolveCultivationMindAlignment({
+    heartLawLevel: selectedHeartLawLevel,
+    cultivationStageIndex: cultivationEffectiveStage,
+    clarity: cultivation.daoHeartClarity,
+    turbulence: cultivation.turbulence,
+  });
+  const breakthroughRisk = willAdvanceRealm
+    ? resolveBreakthroughStabilitySnapshot({
+        fromRealmIndex: liveRealmIndex,
+        toRealmIndex: liveRealmIndex + 1,
+        currentQi: game.qi,
+        requiredQi: game.getBreakthroughRequirement(),
+        heartLawStage: selectedHeartLawLevel,
+        cultivationEffectiveStage,
+        clarity: cultivation.daoHeartClarity,
+        turbulence: cultivation.turbulence,
+        gateResolution,
+        rootResonance,
+        calmFirstBreathRiskReduction: resolveCalmFirstBreathRiskReduction({
+          purchasesById: prestige.purchasesById,
+          heartLawStage: selectedHeartLawLevel,
+          cultivationEffectiveStage,
+        }),
+        recklessConfirmation: false,
+        mindAlignment,
+      })
+    : null;
 
   return {
     realm: game.realm,
@@ -745,6 +898,8 @@ export function buildCultivationExactSnapshotFromStores(
     runCompassActions: runCompassFull?.bestNextActions ?? [],
     runCompassFull,
     runCompassCompact,
+    breakthroughRisk,
+    mindAlignment,
   };
 }
 

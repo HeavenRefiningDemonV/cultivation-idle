@@ -1,0 +1,131 @@
+state: dao-heart-sanctuary-lag-turbulent-playwright
+note: Lagging Heart Law blocks Inner Demon Debate and high turbulence is visible.
+url: http://127.0.0.1:5173/
+
+Realm
+Qi Condensation
+Stage 9
+Qi
+1B
+Cultivation Rate
+1K / s
+Stability
+0%
+Foreground
+Idle
+Next Milestone
+Gate Seal
+Need
+Foundation Pill
+0/1
+Action
+Open Gate Trial
+Idle
+Dao
+Path
+Heaven
+Spirit Root
+Metal / Uncommon
+Heart Law
+Ember Thread Sutra
+Verse
+Chapter 1
+Breath / Focus
+Balanced
+Gate Seal
+Foundation Pill
+BREAKTHROUGH READINESS
+Foundation Pill is still needed.
+Qi
+Ready
+Realm edge
+Reached
+Gate item
+Foundation Pill 0/1
+Breakthrough risk
+45% (Dangerous)
+Qi margin
+0
+Heart Law parity
++30
+Dao Heart turbulence
++9
+Dao Heart clarity
+0
+Gate confidence
+0
+Failure preview
+15% Qi loss, +12 turbulence on failure.
+Prepare for Gate
+Train Dao Heart
+Harmonize breath
+Review doctrine fit
+Qi 1B / 152.58K
++1K/s
+Prepare for Gate
+
+Foundation Pill 0/1
+
+Start Cultivation
+Dao Heart
+Sanctuary
+Heart Law
+Study
+×
+DAO HEART SANCTUARY
+Ember Thread Sutra
+Level
+1
+Tier
+starter
+Chapter
+Chapter 1
+Silent Sitting
+Offline eligible
+Verse Recitation
+Offline eligible
+Scripture Copying
+Offline eligible
+Breath Harmonization
+Offline eligible
+Inner Demon Debate
+Heart Law lags too far behind the vessel.
+Doctrine Trial
+Requires 80 clarity and calm turbulence.
+Verse Mastery
+0%
+0 / 84 Heart Law XP
+No active practice
+Choose one practice to make it the foreground activity.
+Clarity
+20/100
+Raise clarity before forcing a gate.
+Turbulence
+70/100
+State: disturbed.
+Doctrine parity
+-8
+Heart Law is far behind vessel
+Verse mastery
+0%
+Supports chapter seals and doctrine trial readiness.
+Advance 1 minute
+Stop practice
+Cultivation
+Settings
+NEXT STEP
+CULTIVATION
+Gather your first Qi
+
+Qi fills while you cultivate. Your first breakthrough teaches the shape of the realm ladder.
+
+How calculated
+Open Cultivation
+Tutorial Ledger
+PINEWIND HAMLET
+First Gate Available
+Gate Readiness
+This is your first real milestone wall. Check readiness before brute-forcing the gate.
+Open Gate Trial
+Dismiss
+Life begins: Heaven • Ember Thread Sutra • Balanced

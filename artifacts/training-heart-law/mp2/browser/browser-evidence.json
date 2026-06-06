@@ -1,0 +1,226 @@
+{
+  "url": "http://127.0.0.1:5173/",
+  "capturedAt": "2026-06-01T20:17:10.906Z",
+  "scenarioCount": 9,
+  "captures": [
+    {
+      "id": "01-heaven-idle",
+      "path": "heaven",
+      "mode": "idle",
+      "screenshotPath": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\training-heart-law\\mp2\\browser\\screenshots\\01-heaven-idle.png",
+      "summaryPath": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\training-heart-law\\mp2\\browser\\dom-summaries\\01-heaven-idle.json",
+      "regimenCount": 6,
+      "reducedMotion": "false",
+      "alerts": [],
+      "actionButtons": [
+        {
+          "text": "Start Practice",
+          "disabled": false,
+          "title": "Start Practice"
+        },
+        {
+          "text": "Stop Practice",
+          "disabled": true,
+          "title": "No Training Hall practice is active."
+        }
+      ],
+      "horizontalOverflowPx": 0
+    },
+    {
+      "id": "02-earth-idle",
+      "path": "earth",
+      "mode": "idle",
+      "screenshotPath": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\training-heart-law\\mp2\\browser\\screenshots\\02-earth-idle.png",
+      "summaryPath": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\training-heart-law\\mp2\\browser\\dom-summaries\\02-earth-idle.json",
+      "regimenCount": 6,
+      "reducedMotion": "false",
+      "alerts": [],
+      "actionButtons": [
+        {
+          "text": "Start Practice",
+          "disabled": false,
+          "title": "Start Practice"
+        },
+        {
+          "text": "Stop Practice",
+          "disabled": true,
+          "title": "No Training Hall practice is active."
+        }
+      ],
+      "horizontalOverflowPx": 0
+    },
+    {
+      "id": "03-martial-idle",
+      "path": "martial",
+      "mode": "idle",
+      "screenshotPath": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\training-heart-law\\mp2\\browser\\screenshots\\03-martial-idle.png",
+      "summaryPath": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\training-heart-law\\mp2\\browser\\dom-summaries\\03-martial-idle.json",
+      "regimenCount": 6,
+      "reducedMotion": "false",
+      "alerts": [],
+      "actionButtons": [
+        {
+          "text": "Start Practice",
+          "disabled": false,
+          "title": "Start Practice"
+        },
+        {
+          "text": "Stop Practice",
+          "disabled": true,
+          "title": "No Training Hall practice is active."
+        }
+      ],
+      "horizontalOverflowPx": 0
+    },
+    {
+      "id": "04-active-practice",
+      "path": "heaven",
+      "mode": "active",
+      "screenshotPath": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\training-heart-law\\mp2\\browser\\screenshots\\04-active-practice.png",
+      "summaryPath": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\training-heart-law\\mp2\\browser\\dom-summaries\\04-active-practice.json",
+      "regimenCount": 6,
+      "reducedMotion": "false",
+      "alerts": [],
+      "actionButtons": [
+        {
+          "text": "Practicing",
+          "disabled": true,
+          "title": "This regimen is already active."
+        },
+        {
+          "text": "Stop Practice",
+          "disabled": false,
+          "title": "Stop Practice"
+        }
+      ],
+      "horizontalOverflowPx": 0
+    },
+    {
+      "id": "05-blocked-combat",
+      "path": "heaven",
+      "mode": "blocked",
+      "screenshotPath": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\training-heart-law\\mp2\\browser\\screenshots\\05-blocked-combat.png",
+      "summaryPath": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\training-heart-law\\mp2\\browser\\dom-summaries\\05-blocked-combat.json",
+      "regimenCount": 6,
+      "reducedMotion": "false",
+      "alerts": [],
+      "actionButtons": [
+        {
+          "text": "Start Practice",
+          "disabled": true,
+          "title": "Stop combat before starting Training Hall practice."
+        },
+        {
+          "text": "Stop Practice",
+          "disabled": true,
+          "title": "No Training Hall practice is active."
+        }
+      ],
+      "horizontalOverflowPx": 0
+    },
+    {
+      "id": "06-fatigue-high",
+      "path": "heaven",
+      "mode": "fatigue",
+      "screenshotPath": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\training-heart-law\\mp2\\browser\\screenshots\\06-fatigue-high.png",
+      "summaryPath": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\training-heart-law\\mp2\\browser\\dom-summaries\\06-fatigue-high.json",
+      "regimenCount": 6,
+      "reducedMotion": "false",
+      "alerts": [
+        "Fatigue highIntensity may downgrade while fatigue stays high."
+      ],
+      "actionButtons": [
+        {
+          "text": "Start Practice",
+          "disabled": false,
+          "title": "Start Practice"
+        },
+        {
+          "text": "Stop Practice",
+          "disabled": true,
+          "title": "No Training Hall practice is active."
+        }
+      ],
+      "horizontalOverflowPx": 0
+    },
+    {
+      "id": "07-cap-reached",
+      "path": "heaven",
+      "mode": "cap",
+      "screenshotPath": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\training-heart-law\\mp2\\browser\\screenshots\\07-cap-reached.png",
+      "summaryPath": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\training-heart-law\\mp2\\browser\\dom-summaries\\07-cap-reached.json",
+      "regimenCount": 6,
+      "reducedMotion": "false",
+      "alerts": [
+        "Cap reachedQi Control is at the current realm cap; overflow favors regimen mastery."
+      ],
+      "actionButtons": [
+        {
+          "text": "Start Practice",
+          "disabled": false,
+          "title": "Start Practice"
+        },
+        {
+          "text": "Stop Practice",
+          "disabled": true,
+          "title": "No Training Hall practice is active."
+        }
+      ],
+      "horizontalOverflowPx": 0
+    },
+    {
+      "id": "08-offline-return",
+      "path": "heaven",
+      "mode": "offline",
+      "screenshotPath": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\training-heart-law\\mp2\\browser\\screenshots\\08-offline-return.png",
+      "summaryPath": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\training-heart-law\\mp2\\browser\\dom-summaries\\08-offline-return.json",
+      "regimenCount": 6,
+      "reducedMotion": "false",
+      "alerts": [
+        "Return reportOffline practice applied 3 min of Path Training."
+      ],
+      "actionButtons": [
+        {
+          "text": "Start Practice",
+          "disabled": false,
+          "title": "Start Practice"
+        },
+        {
+          "text": "Stop Practice",
+          "disabled": true,
+          "title": "No Training Hall practice is active."
+        }
+      ],
+      "horizontalOverflowPx": 0
+    },
+    {
+      "id": "09-reduced-motion",
+      "path": "heaven",
+      "mode": "reduced",
+      "screenshotPath": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\training-heart-law\\mp2\\browser\\screenshots\\09-reduced-motion.png",
+      "summaryPath": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\training-heart-law\\mp2\\browser\\dom-summaries\\09-reduced-motion.json",
+      "regimenCount": 6,
+      "reducedMotion": "true",
+      "alerts": [
+        "Reduced motionAnimated room cues are replaced with stable practice marks."
+      ],
+      "actionButtons": [
+        {
+          "text": "Start Practice",
+          "disabled": false,
+          "title": "Start Practice"
+        },
+        {
+          "text": "Stop Practice",
+          "disabled": true,
+          "title": "No Training Hall practice is active."
+        }
+      ],
+      "horizontalOverflowPx": 0
+    }
+  ],
+  "console": {
+    "total": 646,
+    "blocking": []
+  }
+}

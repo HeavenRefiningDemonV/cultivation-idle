@@ -1,5 +1,5 @@
 {
-  "generatedAt": 1779972814584,
+  "generatedAt": 1780675823887,
   "rows": [
     {
       "upgradeId": "ap_auto_retry_bosses",
@@ -373,11 +373,99 @@
       "displayAllowed": false,
       "reason": "Content effect has no confirmed runtime consumer in this slice, so it is hidden.",
       "remediation": "hide"
+    },
+    {
+      "upgradeId": "calm_first_breath",
+      "upgradeName": "Calm First Breath",
+      "status": "visible_live",
+      "contentEffectKeys": [
+        "calmFirstBreathRiskReduction"
+      ],
+      "runtimeConsumers": [
+        "breakthrough_calm_memory"
+      ],
+      "purchaseAllowed": true,
+      "displayAllowed": true,
+      "reason": "Live runtime consumer(s): breakthrough_calm_memory.",
+      "remediation": "none"
+    },
+    {
+      "upgradeId": "doctrine_archive",
+      "upgradeName": "Doctrine Archive",
+      "status": "hidden_unsupported",
+      "contentEffectKeys": [
+        "doctrineArchiveEcho"
+      ],
+      "runtimeConsumers": [],
+      "purchaseAllowed": false,
+      "displayAllowed": false,
+      "reason": "Content effect has no confirmed runtime consumer in this slice, so it is hidden.",
+      "remediation": "hide"
+    },
+    {
+      "upgradeId": "form_memory",
+      "upgradeName": "Form Memory",
+      "status": "visible_live",
+      "contentEffectKeys": [
+        "formMemoryFloor"
+      ],
+      "runtimeConsumers": [
+        "training_memory_floor"
+      ],
+      "purchaseAllowed": true,
+      "displayAllowed": true,
+      "reason": "Live runtime consumer(s): training_memory_floor.",
+      "remediation": "none"
+    },
+    {
+      "upgradeId": "old_sparring_shadows",
+      "upgradeName": "Old Sparring Shadows",
+      "status": "visible_live",
+      "contentEffectKeys": [
+        "oldSparringMasteryCatchupPct"
+      ],
+      "runtimeConsumers": [
+        "training_mastery_shadow"
+      ],
+      "purchaseAllowed": true,
+      "displayAllowed": true,
+      "reason": "Live runtime consumer(s): training_mastery_shadow.",
+      "remediation": "none"
+    },
+    {
+      "upgradeId": "root_clarity",
+      "upgradeName": "Root Clarity",
+      "status": "visible_live",
+      "contentEffectKeys": [
+        "rootClarityGradeFloor"
+      ],
+      "runtimeConsumers": [
+        "root_clarity_floor"
+      ],
+      "purchaseAllowed": true,
+      "displayAllowed": true,
+      "reason": "Live runtime consumer(s): root_clarity_floor.",
+      "remediation": "none"
+    },
+    {
+      "upgradeId": "scripture_echo",
+      "upgradeName": "Scripture Echo",
+      "status": "visible_live",
+      "contentEffectKeys": [
+        "scriptureVerseRetentionPct"
+      ],
+      "runtimeConsumers": [
+        "heart_law_scripture_echo"
+      ],
+      "purchaseAllowed": true,
+      "displayAllowed": true,
+      "reason": "Live runtime consumer(s): heart_law_scripture_echo.",
+      "remediation": "none"
     }
   ],
-  "visibleLiveCount": 11,
+  "visibleLiveCount": 16,
   "deferredCount": 5,
-  "hiddenUnsupportedCount": 11,
+  "hiddenUnsupportedCount": 12,
   "unknownBlockedCount": 0,
   "blockers": [],
   "warnings": []

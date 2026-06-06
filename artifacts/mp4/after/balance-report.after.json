@@ -1,0 +1,1886 @@
+{
+  "schemaVersion": 1,
+  "createdAt": 1780014975265,
+  "suiteVersion": "6.9c",
+  "overallPass": true,
+  "hardFailureCount": 0,
+  "warningCount": 0,
+  "sections": [
+    {
+      "sectionId": "timing",
+      "label": "Timing",
+      "sourcePackets": [
+        "6.2",
+        "6.9a"
+      ],
+      "passed": true,
+      "metricCount": 8,
+      "failingMetricCount": 0,
+      "metrics": [
+        {
+          "metricId": "timing.cap_time",
+          "label": "Cap time band",
+          "actual": 39939,
+          "target": {
+            "minSeconds": 34200,
+            "maxSeconds": 48600
+          },
+          "comparator": "between",
+          "passed": true
+        },
+        {
+          "metricId": "timing.foundation_entry",
+          "label": "Foundation entry window",
+          "packetOwner": "phaseTimingTargets",
+          "actual": 3256,
+          "target": {
+            "minSeconds": 2700,
+            "maxSeconds": 4500
+          },
+          "comparator": "between",
+          "passed": true
+        },
+        {
+          "metricId": "timing.gate_1_available",
+          "label": "Gate 1 availability window",
+          "packetOwner": "phaseTimingTargets",
+          "actual": 3256,
+          "target": {
+            "minSeconds": 1800,
+            "maxSeconds": 3300
+          },
+          "comparator": "between",
+          "passed": true
+        },
+        {
+          "metricId": "timing.phase.ironpeak_phase_target_seconds",
+          "label": "Phase duration ironpeak_phase_target_seconds",
+          "packetOwner": "phaseTimingTargets",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true,
+          "notes": "actual=14792 target=15000"
+        },
+        {
+          "metricId": "timing.phase.lotusford_phase_target_seconds",
+          "label": "Phase duration lotusford_phase_target_seconds",
+          "packetOwner": "phaseTimingTargets",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true,
+          "notes": "actual=10056 target=10200"
+        },
+        {
+          "metricId": "timing.phase.pinewind_phase_target_seconds",
+          "label": "Phase duration pinewind_phase_target_seconds",
+          "packetOwner": "phaseTimingTargets",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true,
+          "notes": "actual=3256 target=3300"
+        },
+        {
+          "metricId": "timing.phase.spirit_cavern_phase_target_seconds",
+          "label": "Phase duration spirit_cavern_phase_target_seconds",
+          "packetOwner": "phaseTimingTargets",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true,
+          "notes": "actual=7101 target=7200"
+        },
+        {
+          "metricId": "timing.phase.stonecrag_phase_target_seconds",
+          "label": "Phase duration stonecrag_phase_target_seconds",
+          "packetOwner": "phaseTimingTargets",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true,
+          "notes": "actual=4734 target=4800"
+        }
+      ]
+    },
+    {
+      "sectionId": "activities",
+      "label": "Activities",
+      "sourcePackets": [
+        "6.3",
+        "6.9a"
+      ],
+      "passed": true,
+      "metricCount": 60,
+      "failingMetricCount": 0,
+      "metrics": [
+        {
+          "metricId": "activities.city_ironpeak_bastion.bounty_reserve_pacing",
+          "label": "city_ironpeak_bastion bounty reserve pacing",
+          "actual": 1.1142857142857143,
+          "target": 0.6,
+          "comparator": "gte",
+          "passed": true,
+          "context": {
+            "cityId": "city_ironpeak_bastion"
+          }
+        },
+        {
+          "metricId": "activities.city_ironpeak_bastion.forage.long_ratio",
+          "label": "city_ironpeak_bastion forage long equivalence",
+          "actual": 1.25,
+          "target": {
+            "min": 1.15,
+            "max": 1.35
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "cityId": "city_ironpeak_bastion"
+          }
+        },
+        {
+          "metricId": "activities.city_ironpeak_bastion.forage.medium_ratio",
+          "label": "city_ironpeak_bastion forage medium equivalence",
+          "actual": 0.75,
+          "target": {
+            "min": 0.65,
+            "max": 0.85
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "cityId": "city_ironpeak_bastion"
+          }
+        },
+        {
+          "metricId": "activities.city_ironpeak_bastion.forage.short_ratio",
+          "label": "city_ironpeak_bastion forage short equivalence",
+          "actual": 0.35,
+          "target": {
+            "min": 0.24999999999999997,
+            "max": 0.44999999999999996
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "cityId": "city_ironpeak_bastion"
+          }
+        },
+        {
+          "metricId": "activities.city_ironpeak_bastion.gold_common_dominance",
+          "label": "city_ironpeak_bastion gold/common dominance",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true,
+          "context": {
+            "cityId": "city_ironpeak_bastion"
+          }
+        },
+        {
+          "metricId": "activities.city_ironpeak_bastion.mine.long_ratio",
+          "label": "city_ironpeak_bastion mine long equivalence",
+          "actual": 1.25,
+          "target": {
+            "min": 1.15,
+            "max": 1.35
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "cityId": "city_ironpeak_bastion"
+          }
+        },
+        {
+          "metricId": "activities.city_ironpeak_bastion.mine.medium_ratio",
+          "label": "city_ironpeak_bastion mine medium equivalence",
+          "actual": 0.75,
+          "target": {
+            "min": 0.65,
+            "max": 0.85
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "cityId": "city_ironpeak_bastion"
+          }
+        },
+        {
+          "metricId": "activities.city_ironpeak_bastion.mine.short_ratio",
+          "label": "city_ironpeak_bastion mine short equivalence",
+          "actual": 0.35,
+          "target": {
+            "min": 0.24999999999999997,
+            "max": 0.44999999999999996
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "cityId": "city_ironpeak_bastion"
+          }
+        },
+        {
+          "metricId": "activities.city_ironpeak_bastion.scout.long_ratio",
+          "label": "city_ironpeak_bastion scout long equivalence",
+          "actual": 1.25,
+          "target": {
+            "min": 1.15,
+            "max": 1.35
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "cityId": "city_ironpeak_bastion"
+          }
+        },
+        {
+          "metricId": "activities.city_ironpeak_bastion.scout.medium_ratio",
+          "label": "city_ironpeak_bastion scout medium equivalence",
+          "actual": 0.75,
+          "target": {
+            "min": 0.65,
+            "max": 0.85
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "cityId": "city_ironpeak_bastion"
+          }
+        },
+        {
+          "metricId": "activities.city_ironpeak_bastion.scout.short_ratio",
+          "label": "city_ironpeak_bastion scout short equivalence",
+          "actual": 0.35,
+          "target": {
+            "min": 0.24999999999999997,
+            "max": 0.44999999999999996
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "cityId": "city_ironpeak_bastion"
+          }
+        },
+        {
+          "metricId": "activities.city_ironpeak_bastion.targeted_anchor_dominance",
+          "label": "city_ironpeak_bastion targeted/anchor dominance",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true,
+          "context": {
+            "cityId": "city_ironpeak_bastion"
+          }
+        },
+        {
+          "metricId": "activities.city_lotusford.bounty_reserve_pacing",
+          "label": "city_lotusford bounty reserve pacing",
+          "actual": 1.44,
+          "target": 0.6,
+          "comparator": "gte",
+          "passed": true,
+          "context": {
+            "cityId": "city_lotusford"
+          }
+        },
+        {
+          "metricId": "activities.city_lotusford.forage.long_ratio",
+          "label": "city_lotusford forage long equivalence",
+          "actual": 1.25,
+          "target": {
+            "min": 1.15,
+            "max": 1.35
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "cityId": "city_lotusford"
+          }
+        },
+        {
+          "metricId": "activities.city_lotusford.forage.medium_ratio",
+          "label": "city_lotusford forage medium equivalence",
+          "actual": 0.75,
+          "target": {
+            "min": 0.65,
+            "max": 0.85
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "cityId": "city_lotusford"
+          }
+        },
+        {
+          "metricId": "activities.city_lotusford.forage.short_ratio",
+          "label": "city_lotusford forage short equivalence",
+          "actual": 0.35,
+          "target": {
+            "min": 0.24999999999999997,
+            "max": 0.44999999999999996
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "cityId": "city_lotusford"
+          }
+        },
+        {
+          "metricId": "activities.city_lotusford.gold_common_dominance",
+          "label": "city_lotusford gold/common dominance",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true,
+          "context": {
+            "cityId": "city_lotusford"
+          }
+        },
+        {
+          "metricId": "activities.city_lotusford.mine.long_ratio",
+          "label": "city_lotusford mine long equivalence",
+          "actual": 1.25,
+          "target": {
+            "min": 1.15,
+            "max": 1.35
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "cityId": "city_lotusford"
+          }
+        },
+        {
+          "metricId": "activities.city_lotusford.mine.medium_ratio",
+          "label": "city_lotusford mine medium equivalence",
+          "actual": 0.75,
+          "target": {
+            "min": 0.65,
+            "max": 0.85
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "cityId": "city_lotusford"
+          }
+        },
+        {
+          "metricId": "activities.city_lotusford.mine.short_ratio",
+          "label": "city_lotusford mine short equivalence",
+          "actual": 0.35,
+          "target": {
+            "min": 0.24999999999999997,
+            "max": 0.44999999999999996
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "cityId": "city_lotusford"
+          }
+        },
+        {
+          "metricId": "activities.city_lotusford.scout.long_ratio",
+          "label": "city_lotusford scout long equivalence",
+          "actual": 1.25,
+          "target": {
+            "min": 1.15,
+            "max": 1.35
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "cityId": "city_lotusford"
+          }
+        },
+        {
+          "metricId": "activities.city_lotusford.scout.medium_ratio",
+          "label": "city_lotusford scout medium equivalence",
+          "actual": 0.75,
+          "target": {
+            "min": 0.65,
+            "max": 0.85
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "cityId": "city_lotusford"
+          }
+        },
+        {
+          "metricId": "activities.city_lotusford.scout.short_ratio",
+          "label": "city_lotusford scout short equivalence",
+          "actual": 0.35,
+          "target": {
+            "min": 0.24999999999999997,
+            "max": 0.44999999999999996
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "cityId": "city_lotusford"
+          }
+        },
+        {
+          "metricId": "activities.city_lotusford.targeted_anchor_dominance",
+          "label": "city_lotusford targeted/anchor dominance",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true,
+          "context": {
+            "cityId": "city_lotusford"
+          }
+        },
+        {
+          "metricId": "activities.city_pinewind_hamlet.bounty_reserve_pacing",
+          "label": "city_pinewind_hamlet bounty reserve pacing",
+          "actual": 0.6,
+          "target": 0.6,
+          "comparator": "gte",
+          "passed": true,
+          "context": {
+            "cityId": "city_pinewind_hamlet"
+          }
+        },
+        {
+          "metricId": "activities.city_pinewind_hamlet.forage.long_ratio",
+          "label": "city_pinewind_hamlet forage long equivalence",
+          "actual": 1.25,
+          "target": {
+            "min": 1.15,
+            "max": 1.35
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "cityId": "city_pinewind_hamlet"
+          }
+        },
+        {
+          "metricId": "activities.city_pinewind_hamlet.forage.medium_ratio",
+          "label": "city_pinewind_hamlet forage medium equivalence",
+          "actual": 0.75,
+          "target": {
+            "min": 0.65,
+            "max": 0.85
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "cityId": "city_pinewind_hamlet"
+          }
+        },
+        {
+          "metricId": "activities.city_pinewind_hamlet.forage.short_ratio",
+          "label": "city_pinewind_hamlet forage short equivalence",
+          "actual": 0.35,
+          "target": {
+            "min": 0.24999999999999997,
+            "max": 0.44999999999999996
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "cityId": "city_pinewind_hamlet"
+          }
+        },
+        {
+          "metricId": "activities.city_pinewind_hamlet.gold_common_dominance",
+          "label": "city_pinewind_hamlet gold/common dominance",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true,
+          "context": {
+            "cityId": "city_pinewind_hamlet"
+          }
+        },
+        {
+          "metricId": "activities.city_pinewind_hamlet.mine.long_ratio",
+          "label": "city_pinewind_hamlet mine long equivalence",
+          "actual": 1.25,
+          "target": {
+            "min": 1.15,
+            "max": 1.35
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "cityId": "city_pinewind_hamlet"
+          }
+        },
+        {
+          "metricId": "activities.city_pinewind_hamlet.mine.medium_ratio",
+          "label": "city_pinewind_hamlet mine medium equivalence",
+          "actual": 0.75,
+          "target": {
+            "min": 0.65,
+            "max": 0.85
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "cityId": "city_pinewind_hamlet"
+          }
+        },
+        {
+          "metricId": "activities.city_pinewind_hamlet.mine.short_ratio",
+          "label": "city_pinewind_hamlet mine short equivalence",
+          "actual": 0.35,
+          "target": {
+            "min": 0.24999999999999997,
+            "max": 0.44999999999999996
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "cityId": "city_pinewind_hamlet"
+          }
+        },
+        {
+          "metricId": "activities.city_pinewind_hamlet.scout.long_ratio",
+          "label": "city_pinewind_hamlet scout long equivalence",
+          "actual": 1.25,
+          "target": {
+            "min": 1.15,
+            "max": 1.35
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "cityId": "city_pinewind_hamlet"
+          }
+        },
+        {
+          "metricId": "activities.city_pinewind_hamlet.scout.medium_ratio",
+          "label": "city_pinewind_hamlet scout medium equivalence",
+          "actual": 0.75,
+          "target": {
+            "min": 0.65,
+            "max": 0.85
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "cityId": "city_pinewind_hamlet"
+          }
+        },
+        {
+          "metricId": "activities.city_pinewind_hamlet.scout.short_ratio",
+          "label": "city_pinewind_hamlet scout short equivalence",
+          "actual": 0.35,
+          "target": {
+            "min": 0.24999999999999997,
+            "max": 0.44999999999999996
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "cityId": "city_pinewind_hamlet"
+          }
+        },
+        {
+          "metricId": "activities.city_pinewind_hamlet.targeted_anchor_dominance",
+          "label": "city_pinewind_hamlet targeted/anchor dominance",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true,
+          "context": {
+            "cityId": "city_pinewind_hamlet"
+          }
+        },
+        {
+          "metricId": "activities.city_spirit_cavern_city.bounty_reserve_pacing",
+          "label": "city_spirit_cavern_city bounty reserve pacing",
+          "actual": 0.9,
+          "target": 0.6,
+          "comparator": "gte",
+          "passed": true,
+          "context": {
+            "cityId": "city_spirit_cavern_city"
+          }
+        },
+        {
+          "metricId": "activities.city_spirit_cavern_city.forage.long_ratio",
+          "label": "city_spirit_cavern_city forage long equivalence",
+          "actual": 1.25,
+          "target": {
+            "min": 1.15,
+            "max": 1.35
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "cityId": "city_spirit_cavern_city"
+          }
+        },
+        {
+          "metricId": "activities.city_spirit_cavern_city.forage.medium_ratio",
+          "label": "city_spirit_cavern_city forage medium equivalence",
+          "actual": 0.75,
+          "target": {
+            "min": 0.65,
+            "max": 0.85
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "cityId": "city_spirit_cavern_city"
+          }
+        },
+        {
+          "metricId": "activities.city_spirit_cavern_city.forage.short_ratio",
+          "label": "city_spirit_cavern_city forage short equivalence",
+          "actual": 0.35,
+          "target": {
+            "min": 0.24999999999999997,
+            "max": 0.44999999999999996
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "cityId": "city_spirit_cavern_city"
+          }
+        },
+        {
+          "metricId": "activities.city_spirit_cavern_city.gold_common_dominance",
+          "label": "city_spirit_cavern_city gold/common dominance",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true,
+          "context": {
+            "cityId": "city_spirit_cavern_city"
+          }
+        },
+        {
+          "metricId": "activities.city_spirit_cavern_city.mine.long_ratio",
+          "label": "city_spirit_cavern_city mine long equivalence",
+          "actual": 1.25,
+          "target": {
+            "min": 1.15,
+            "max": 1.35
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "cityId": "city_spirit_cavern_city"
+          }
+        },
+        {
+          "metricId": "activities.city_spirit_cavern_city.mine.medium_ratio",
+          "label": "city_spirit_cavern_city mine medium equivalence",
+          "actual": 0.75,
+          "target": {
+            "min": 0.65,
+            "max": 0.85
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "cityId": "city_spirit_cavern_city"
+          }
+        },
+        {
+          "metricId": "activities.city_spirit_cavern_city.mine.short_ratio",
+          "label": "city_spirit_cavern_city mine short equivalence",
+          "actual": 0.35,
+          "target": {
+            "min": 0.24999999999999997,
+            "max": 0.44999999999999996
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "cityId": "city_spirit_cavern_city"
+          }
+        },
+        {
+          "metricId": "activities.city_spirit_cavern_city.scout.long_ratio",
+          "label": "city_spirit_cavern_city scout long equivalence",
+          "actual": 1.25,
+          "target": {
+            "min": 1.15,
+            "max": 1.35
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "cityId": "city_spirit_cavern_city"
+          }
+        },
+        {
+          "metricId": "activities.city_spirit_cavern_city.scout.medium_ratio",
+          "label": "city_spirit_cavern_city scout medium equivalence",
+          "actual": 0.75,
+          "target": {
+            "min": 0.65,
+            "max": 0.85
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "cityId": "city_spirit_cavern_city"
+          }
+        },
+        {
+          "metricId": "activities.city_spirit_cavern_city.scout.short_ratio",
+          "label": "city_spirit_cavern_city scout short equivalence",
+          "actual": 0.35,
+          "target": {
+            "min": 0.24999999999999997,
+            "max": 0.44999999999999996
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "cityId": "city_spirit_cavern_city"
+          }
+        },
+        {
+          "metricId": "activities.city_spirit_cavern_city.targeted_anchor_dominance",
+          "label": "city_spirit_cavern_city targeted/anchor dominance",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true,
+          "context": {
+            "cityId": "city_spirit_cavern_city"
+          }
+        },
+        {
+          "metricId": "activities.city_stonecrag_town.bounty_reserve_pacing",
+          "label": "city_stonecrag_town bounty reserve pacing",
+          "actual": 0.9333333333333333,
+          "target": 0.6,
+          "comparator": "gte",
+          "passed": true,
+          "context": {
+            "cityId": "city_stonecrag_town"
+          }
+        },
+        {
+          "metricId": "activities.city_stonecrag_town.forage.long_ratio",
+          "label": "city_stonecrag_town forage long equivalence",
+          "actual": 1.25,
+          "target": {
+            "min": 1.15,
+            "max": 1.35
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "cityId": "city_stonecrag_town"
+          }
+        },
+        {
+          "metricId": "activities.city_stonecrag_town.forage.medium_ratio",
+          "label": "city_stonecrag_town forage medium equivalence",
+          "actual": 0.75,
+          "target": {
+            "min": 0.65,
+            "max": 0.85
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "cityId": "city_stonecrag_town"
+          }
+        },
+        {
+          "metricId": "activities.city_stonecrag_town.forage.short_ratio",
+          "label": "city_stonecrag_town forage short equivalence",
+          "actual": 0.35,
+          "target": {
+            "min": 0.24999999999999997,
+            "max": 0.44999999999999996
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "cityId": "city_stonecrag_town"
+          }
+        },
+        {
+          "metricId": "activities.city_stonecrag_town.gold_common_dominance",
+          "label": "city_stonecrag_town gold/common dominance",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true,
+          "context": {
+            "cityId": "city_stonecrag_town"
+          }
+        },
+        {
+          "metricId": "activities.city_stonecrag_town.mine.long_ratio",
+          "label": "city_stonecrag_town mine long equivalence",
+          "actual": 1.25,
+          "target": {
+            "min": 1.15,
+            "max": 1.35
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "cityId": "city_stonecrag_town"
+          }
+        },
+        {
+          "metricId": "activities.city_stonecrag_town.mine.medium_ratio",
+          "label": "city_stonecrag_town mine medium equivalence",
+          "actual": 0.75,
+          "target": {
+            "min": 0.65,
+            "max": 0.85
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "cityId": "city_stonecrag_town"
+          }
+        },
+        {
+          "metricId": "activities.city_stonecrag_town.mine.short_ratio",
+          "label": "city_stonecrag_town mine short equivalence",
+          "actual": 0.35,
+          "target": {
+            "min": 0.24999999999999997,
+            "max": 0.44999999999999996
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "cityId": "city_stonecrag_town"
+          }
+        },
+        {
+          "metricId": "activities.city_stonecrag_town.scout.long_ratio",
+          "label": "city_stonecrag_town scout long equivalence",
+          "actual": 1.25,
+          "target": {
+            "min": 1.15,
+            "max": 1.35
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "cityId": "city_stonecrag_town"
+          }
+        },
+        {
+          "metricId": "activities.city_stonecrag_town.scout.medium_ratio",
+          "label": "city_stonecrag_town scout medium equivalence",
+          "actual": 0.75,
+          "target": {
+            "min": 0.65,
+            "max": 0.85
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "cityId": "city_stonecrag_town"
+          }
+        },
+        {
+          "metricId": "activities.city_stonecrag_town.scout.short_ratio",
+          "label": "city_stonecrag_town scout short equivalence",
+          "actual": 0.35,
+          "target": {
+            "min": 0.24999999999999997,
+            "max": 0.44999999999999996
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "cityId": "city_stonecrag_town"
+          }
+        },
+        {
+          "metricId": "activities.city_stonecrag_town.targeted_anchor_dominance",
+          "label": "city_stonecrag_town targeted/anchor dominance",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true,
+          "context": {
+            "cityId": "city_stonecrag_town"
+          }
+        }
+      ]
+    },
+    {
+      "sectionId": "prep",
+      "label": "Prep / Anti-stall",
+      "sourcePackets": [
+        "6.4",
+        "6.9a"
+      ],
+      "passed": true,
+      "metricCount": 30,
+      "failingMetricCount": 0,
+      "metrics": [
+        {
+          "metricId": "prep.gate_1.build_correction_only.window",
+          "label": "Gate 1 build_correction_only recovery window",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true,
+          "context": {
+            "gateIndex": 1,
+            "scenarioId": "build_correction_only"
+          }
+        },
+        {
+          "metricId": "prep.gate_1.consumables_only.window",
+          "label": "Gate 1 consumables_only recovery window",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true,
+          "context": {
+            "gateIndex": 1,
+            "scenarioId": "consumables_only"
+          }
+        },
+        {
+          "metricId": "prep.gate_1.forge_floor_only.window",
+          "label": "Gate 1 forge_floor_only recovery window",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true,
+          "context": {
+            "gateIndex": 1,
+            "scenarioId": "forge_floor_only"
+          }
+        },
+        {
+          "metricId": "prep.gate_1.minimum_ratio",
+          "label": "Gate 1 minimum prep/bypass ratio",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true,
+          "context": {
+            "gateIndex": 1
+          }
+        },
+        {
+          "metricId": "prep.gate_1.recommended_ratio",
+          "label": "Gate 1 recommended prep/bypass ratio",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true,
+          "context": {
+            "gateIndex": 1
+          }
+        },
+        {
+          "metricId": "prep.gate_1.reserve_reachability",
+          "label": "Gate 1 reserve reachability",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true,
+          "context": {
+            "gateIndex": 1
+          }
+        },
+        {
+          "metricId": "prep.gate_2.build_correction_only.window",
+          "label": "Gate 2 build_correction_only recovery window",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true,
+          "context": {
+            "gateIndex": 2,
+            "scenarioId": "build_correction_only"
+          }
+        },
+        {
+          "metricId": "prep.gate_2.consumables_only.window",
+          "label": "Gate 2 consumables_only recovery window",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true,
+          "context": {
+            "gateIndex": 2,
+            "scenarioId": "consumables_only"
+          }
+        },
+        {
+          "metricId": "prep.gate_2.forge_floor_only.window",
+          "label": "Gate 2 forge_floor_only recovery window",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true,
+          "context": {
+            "gateIndex": 2,
+            "scenarioId": "forge_floor_only"
+          }
+        },
+        {
+          "metricId": "prep.gate_2.minimum_ratio",
+          "label": "Gate 2 minimum prep/bypass ratio",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true,
+          "context": {
+            "gateIndex": 2
+          }
+        },
+        {
+          "metricId": "prep.gate_2.recommended_ratio",
+          "label": "Gate 2 recommended prep/bypass ratio",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true,
+          "context": {
+            "gateIndex": 2
+          }
+        },
+        {
+          "metricId": "prep.gate_2.reserve_reachability",
+          "label": "Gate 2 reserve reachability",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true,
+          "context": {
+            "gateIndex": 2
+          }
+        },
+        {
+          "metricId": "prep.gate_3.build_correction_only.window",
+          "label": "Gate 3 build_correction_only recovery window",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true,
+          "context": {
+            "gateIndex": 3,
+            "scenarioId": "build_correction_only"
+          }
+        },
+        {
+          "metricId": "prep.gate_3.consumables_only.window",
+          "label": "Gate 3 consumables_only recovery window",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true,
+          "context": {
+            "gateIndex": 3,
+            "scenarioId": "consumables_only"
+          }
+        },
+        {
+          "metricId": "prep.gate_3.forge_floor_only.window",
+          "label": "Gate 3 forge_floor_only recovery window",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true,
+          "context": {
+            "gateIndex": 3,
+            "scenarioId": "forge_floor_only"
+          }
+        },
+        {
+          "metricId": "prep.gate_3.minimum_ratio",
+          "label": "Gate 3 minimum prep/bypass ratio",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true,
+          "context": {
+            "gateIndex": 3
+          }
+        },
+        {
+          "metricId": "prep.gate_3.recommended_ratio",
+          "label": "Gate 3 recommended prep/bypass ratio",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true,
+          "context": {
+            "gateIndex": 3
+          }
+        },
+        {
+          "metricId": "prep.gate_3.reserve_reachability",
+          "label": "Gate 3 reserve reachability",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true,
+          "context": {
+            "gateIndex": 3
+          }
+        },
+        {
+          "metricId": "prep.gate_4.build_correction_only.window",
+          "label": "Gate 4 build_correction_only recovery window",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true,
+          "context": {
+            "gateIndex": 4,
+            "scenarioId": "build_correction_only"
+          }
+        },
+        {
+          "metricId": "prep.gate_4.consumables_only.window",
+          "label": "Gate 4 consumables_only recovery window",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true,
+          "context": {
+            "gateIndex": 4,
+            "scenarioId": "consumables_only"
+          }
+        },
+        {
+          "metricId": "prep.gate_4.forge_floor_only.window",
+          "label": "Gate 4 forge_floor_only recovery window",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true,
+          "context": {
+            "gateIndex": 4,
+            "scenarioId": "forge_floor_only"
+          }
+        },
+        {
+          "metricId": "prep.gate_4.minimum_ratio",
+          "label": "Gate 4 minimum prep/bypass ratio",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true,
+          "context": {
+            "gateIndex": 4
+          }
+        },
+        {
+          "metricId": "prep.gate_4.recommended_ratio",
+          "label": "Gate 4 recommended prep/bypass ratio",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true,
+          "context": {
+            "gateIndex": 4
+          }
+        },
+        {
+          "metricId": "prep.gate_4.reserve_reachability",
+          "label": "Gate 4 reserve reachability",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true,
+          "context": {
+            "gateIndex": 4
+          }
+        },
+        {
+          "metricId": "prep.gate_5.build_correction_only.window",
+          "label": "Gate 5 build_correction_only recovery window",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true,
+          "context": {
+            "gateIndex": 5,
+            "scenarioId": "build_correction_only"
+          }
+        },
+        {
+          "metricId": "prep.gate_5.consumables_only.window",
+          "label": "Gate 5 consumables_only recovery window",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true,
+          "context": {
+            "gateIndex": 5,
+            "scenarioId": "consumables_only"
+          }
+        },
+        {
+          "metricId": "prep.gate_5.forge_floor_only.window",
+          "label": "Gate 5 forge_floor_only recovery window",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true,
+          "context": {
+            "gateIndex": 5,
+            "scenarioId": "forge_floor_only"
+          }
+        },
+        {
+          "metricId": "prep.gate_5.minimum_ratio",
+          "label": "Gate 5 minimum prep/bypass ratio",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true,
+          "context": {
+            "gateIndex": 5
+          }
+        },
+        {
+          "metricId": "prep.gate_5.recommended_ratio",
+          "label": "Gate 5 recommended prep/bypass ratio",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true,
+          "context": {
+            "gateIndex": 5
+          }
+        },
+        {
+          "metricId": "prep.gate_5.reserve_reachability",
+          "label": "Gate 5 reserve reachability",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true,
+          "context": {
+            "gateIndex": 5
+          }
+        }
+      ]
+    },
+    {
+      "sectionId": "combat",
+      "label": "Combat",
+      "sourcePackets": [
+        "6.5",
+        "6.9a"
+      ],
+      "passed": true,
+      "metricCount": 25,
+      "failingMetricCount": 0,
+      "metrics": [
+        {
+          "metricId": "combat.gate_1.belowMinimum.win_rate",
+          "label": "Gate 1 belowMinimum win-rate",
+          "actual": 0.06,
+          "target": {
+            "min": 0,
+            "max": 0.12
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "gateIndex": 1,
+            "readinessBand": "belowMinimum"
+          }
+        },
+        {
+          "metricId": "combat.gate_1.minimum_duration",
+          "label": "Gate 1 minimum median clear duration",
+          "actual": 39,
+          "target": 39,
+          "comparator": "eq",
+          "passed": true,
+          "context": {
+            "gateIndex": 1,
+            "readinessBand": "minimum"
+          }
+        },
+        {
+          "metricId": "combat.gate_1.minimum.win_rate",
+          "label": "Gate 1 minimum win-rate",
+          "actual": 0.35,
+          "target": {
+            "min": 0.25,
+            "max": 0.45
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "gateIndex": 1,
+            "readinessBand": "minimum"
+          }
+        },
+        {
+          "metricId": "combat.gate_1.recommended_duration",
+          "label": "Gate 1 recommended median clear duration",
+          "actual": 27,
+          "target": 27,
+          "comparator": "eq",
+          "passed": true,
+          "context": {
+            "gateIndex": 1,
+            "readinessBand": "recommended"
+          }
+        },
+        {
+          "metricId": "combat.gate_1.recommended.win_rate",
+          "label": "Gate 1 recommended win-rate",
+          "actual": 0.875,
+          "target": {
+            "min": 0.8,
+            "max": 0.95
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "gateIndex": 1,
+            "readinessBand": "recommended"
+          }
+        },
+        {
+          "metricId": "combat.gate_2.belowMinimum.win_rate",
+          "label": "Gate 2 belowMinimum win-rate",
+          "actual": 0.05,
+          "target": {
+            "min": 0,
+            "max": 0.1
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "gateIndex": 2,
+            "readinessBand": "belowMinimum"
+          }
+        },
+        {
+          "metricId": "combat.gate_2.minimum_duration",
+          "label": "Gate 2 minimum median clear duration",
+          "actual": 44,
+          "target": 44,
+          "comparator": "eq",
+          "passed": true,
+          "context": {
+            "gateIndex": 2,
+            "readinessBand": "minimum"
+          }
+        },
+        {
+          "metricId": "combat.gate_2.minimum.win_rate",
+          "label": "Gate 2 minimum win-rate",
+          "actual": 0.30000000000000004,
+          "target": {
+            "min": 0.2,
+            "max": 0.4
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "gateIndex": 2,
+            "readinessBand": "minimum"
+          }
+        },
+        {
+          "metricId": "combat.gate_2.recommended_duration",
+          "label": "Gate 2 recommended median clear duration",
+          "actual": 31,
+          "target": 31,
+          "comparator": "eq",
+          "passed": true,
+          "context": {
+            "gateIndex": 2,
+            "readinessBand": "recommended"
+          }
+        },
+        {
+          "metricId": "combat.gate_2.recommended.win_rate",
+          "label": "Gate 2 recommended win-rate",
+          "actual": 0.8500000000000001,
+          "target": {
+            "min": 0.78,
+            "max": 0.92
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "gateIndex": 2,
+            "readinessBand": "recommended"
+          }
+        },
+        {
+          "metricId": "combat.gate_3.belowMinimum.win_rate",
+          "label": "Gate 3 belowMinimum win-rate",
+          "actual": 0.04,
+          "target": {
+            "min": 0,
+            "max": 0.08
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "gateIndex": 3,
+            "readinessBand": "belowMinimum"
+          }
+        },
+        {
+          "metricId": "combat.gate_3.minimum_duration",
+          "label": "Gate 3 minimum median clear duration",
+          "actual": 49,
+          "target": 49,
+          "comparator": "eq",
+          "passed": true,
+          "context": {
+            "gateIndex": 3,
+            "readinessBand": "minimum"
+          }
+        },
+        {
+          "metricId": "combat.gate_3.minimum.win_rate",
+          "label": "Gate 3 minimum win-rate",
+          "actual": 0.265,
+          "target": {
+            "min": 0.18,
+            "max": 0.35
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "gateIndex": 3,
+            "readinessBand": "minimum"
+          }
+        },
+        {
+          "metricId": "combat.gate_3.recommended_duration",
+          "label": "Gate 3 recommended median clear duration",
+          "actual": 35,
+          "target": 35,
+          "comparator": "eq",
+          "passed": true,
+          "context": {
+            "gateIndex": 3,
+            "readinessBand": "recommended"
+          }
+        },
+        {
+          "metricId": "combat.gate_3.recommended.win_rate",
+          "label": "Gate 3 recommended win-rate",
+          "actual": 0.8300000000000001,
+          "target": {
+            "min": 0.76,
+            "max": 0.9
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "gateIndex": 3,
+            "readinessBand": "recommended"
+          }
+        },
+        {
+          "metricId": "combat.gate_4.belowMinimum.win_rate",
+          "label": "Gate 4 belowMinimum win-rate",
+          "actual": 0.035,
+          "target": {
+            "min": 0,
+            "max": 0.07
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "gateIndex": 4,
+            "readinessBand": "belowMinimum"
+          }
+        },
+        {
+          "metricId": "combat.gate_4.minimum_duration",
+          "label": "Gate 4 minimum median clear duration",
+          "actual": 56,
+          "target": 56,
+          "comparator": "eq",
+          "passed": true,
+          "context": {
+            "gateIndex": 4,
+            "readinessBand": "minimum"
+          }
+        },
+        {
+          "metricId": "combat.gate_4.minimum.win_rate",
+          "label": "Gate 4 minimum win-rate",
+          "actual": 0.235,
+          "target": {
+            "min": 0.15,
+            "max": 0.32
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "gateIndex": 4,
+            "readinessBand": "minimum"
+          }
+        },
+        {
+          "metricId": "combat.gate_4.recommended_duration",
+          "label": "Gate 4 recommended median clear duration",
+          "actual": 41,
+          "target": 41,
+          "comparator": "eq",
+          "passed": true,
+          "context": {
+            "gateIndex": 4,
+            "readinessBand": "recommended"
+          }
+        },
+        {
+          "metricId": "combat.gate_4.recommended.win_rate",
+          "label": "Gate 4 recommended win-rate",
+          "actual": 0.79,
+          "target": {
+            "min": 0.72,
+            "max": 0.86
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "gateIndex": 4,
+            "readinessBand": "recommended"
+          }
+        },
+        {
+          "metricId": "combat.gate_5.belowMinimum.win_rate",
+          "label": "Gate 5 belowMinimum win-rate",
+          "actual": 0.025,
+          "target": {
+            "min": 0,
+            "max": 0.05
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "gateIndex": 5,
+            "readinessBand": "belowMinimum"
+          }
+        },
+        {
+          "metricId": "combat.gate_5.minimum_duration",
+          "label": "Gate 5 minimum median clear duration",
+          "actual": 63,
+          "target": 63,
+          "comparator": "eq",
+          "passed": true,
+          "context": {
+            "gateIndex": 5,
+            "readinessBand": "minimum"
+          }
+        },
+        {
+          "metricId": "combat.gate_5.minimum.win_rate",
+          "label": "Gate 5 minimum win-rate",
+          "actual": 0.175,
+          "target": {
+            "min": 0.1,
+            "max": 0.25
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "gateIndex": 5,
+            "readinessBand": "minimum"
+          }
+        },
+        {
+          "metricId": "combat.gate_5.recommended_duration",
+          "label": "Gate 5 recommended median clear duration",
+          "actual": 49,
+          "target": 49,
+          "comparator": "eq",
+          "passed": true,
+          "context": {
+            "gateIndex": 5,
+            "readinessBand": "recommended"
+          }
+        },
+        {
+          "metricId": "combat.gate_5.recommended.win_rate",
+          "label": "Gate 5 recommended win-rate",
+          "actual": 0.75,
+          "target": {
+            "min": 0.68,
+            "max": 0.82
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "gateIndex": 5,
+            "readinessBand": "recommended"
+          }
+        }
+      ]
+    },
+    {
+      "sectionId": "offline",
+      "label": "Offline",
+      "sourcePackets": [
+        "6.6",
+        "6.9a"
+      ],
+      "passed": true,
+      "metricCount": 4,
+      "failingMetricCount": 0,
+      "metrics": [
+        {
+          "metricId": "offline.base_efficiency",
+          "label": "Offline base efficiency",
+          "actual": 0.5,
+          "target": 0.5,
+          "comparator": "eq",
+          "passed": true
+        },
+        {
+          "metricId": "offline.cap_behavior",
+          "label": "Offline cap seconds",
+          "actual": 43200,
+          "target": 43200,
+          "comparator": "eq",
+          "passed": true
+        },
+        {
+          "metricId": "offline.max_efficiency",
+          "label": "Offline max efficiency",
+          "actual": 0.9,
+          "target": 0.9,
+          "comparator": "eq",
+          "passed": true
+        },
+        {
+          "metricId": "offline.no_combat_progress",
+          "label": "Offline excludes combat progression",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "sectionId": "prestige",
+      "label": "Prestige",
+      "sourcePackets": [
+        "6.7",
+        "6.9a"
+      ],
+      "passed": true,
+      "metricCount": 8,
+      "failingMetricCount": 0,
+      "metrics": [
+        {
+          "metricId": "prestige.ap_hour.core_floor",
+          "label": "Core AP/hour floor",
+          "actual": 4.956195244055069,
+          "target": 4.4,
+          "comparator": "gte",
+          "passed": true
+        },
+        {
+          "metricId": "prestige.core_entry.ap_gain",
+          "label": "core_entry AP gain",
+          "actual": 11,
+          "target": {
+            "min": 10,
+            "max": 14
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "checkpointId": "core_entry"
+          }
+        },
+        {
+          "metricId": "prestige.nascent_entry.ap_gain",
+          "label": "nascent_entry AP gain",
+          "actual": 26,
+          "target": {
+            "min": 24,
+            "max": 32
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "checkpointId": "nascent_entry"
+          }
+        },
+        {
+          "metricId": "prestige.reclaim.deep_cap",
+          "label": "Deep cap reclaim scenario passes",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true,
+          "context": {
+            "scenarioId": "deep_cap_reset_starter_spend"
+          }
+        },
+        {
+          "metricId": "prestige.reclaim.first_purchase_feel",
+          "label": "First purchase feel delta",
+          "actual": 0.23058823529411765,
+          "target": 0.15,
+          "comparator": "gte",
+          "passed": true
+        },
+        {
+          "metricId": "prestige.reclaim.first_viable",
+          "label": "First viable reclaim scenario passes",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true,
+          "context": {
+            "scenarioId": "first_viable_core_reset_starter_spend"
+          }
+        },
+        {
+          "metricId": "prestige.soul_entry.ap_gain",
+          "label": "soul_entry AP gain",
+          "actual": 45,
+          "target": {
+            "min": 42,
+            "max": 56
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "checkpointId": "soul_entry"
+          }
+        },
+        {
+          "metricId": "prestige.spirit_severing_entry.ap_gain",
+          "label": "spirit_severing_entry AP gain",
+          "actual": 76,
+          "target": {
+            "min": 72,
+            "max": 90
+          },
+          "comparator": "between",
+          "passed": true,
+          "context": {
+            "checkpointId": "spirit_severing_entry"
+          }
+        }
+      ]
+    },
+    {
+      "sectionId": "telemetry",
+      "label": "Telemetry",
+      "sourcePackets": [
+        "6.8",
+        "6.9b",
+        "6.9c"
+      ],
+      "passed": true,
+      "metricCount": 11,
+      "failingMetricCount": 0,
+      "metrics": [
+        {
+          "metricId": "telemetry.family.economy",
+          "label": "Telemetry family economy coverage",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true
+        },
+        {
+          "metricId": "telemetry.family.offline",
+          "label": "Telemetry family offline coverage",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true
+        },
+        {
+          "metricId": "telemetry.family.prestige",
+          "label": "Telemetry family prestige coverage",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true
+        },
+        {
+          "metricId": "telemetry.family.progression",
+          "label": "Telemetry family progression coverage",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true
+        },
+        {
+          "metricId": "telemetry.family.support",
+          "label": "Telemetry family support coverage",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true
+        },
+        {
+          "metricId": "telemetry.family.trials",
+          "label": "Telemetry family trials coverage",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true
+        },
+        {
+          "metricId": "telemetry.kind.coverage",
+          "label": "Telemetry kind coverage includes schema kinds used by report",
+          "actual": 13,
+          "target": 13,
+          "comparator": "gte",
+          "passed": true
+        },
+        {
+          "metricId": "telemetry.kpi.attempts_per_gate",
+          "label": "Telemetry report reconstructs attempts per gate",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true
+        },
+        {
+          "metricId": "telemetry.kpi.time_to_gate_available",
+          "label": "Telemetry report reconstructs gate attempts",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true
+        },
+        {
+          "metricId": "telemetry.taxonomy.sinks",
+          "label": "Telemetry sink taxonomy coverage",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true
+        },
+        {
+          "metricId": "telemetry.taxonomy.sources",
+          "label": "Telemetry source taxonomy coverage",
+          "actual": true,
+          "target": true,
+          "comparator": "truthy",
+          "passed": true
+        }
+      ]
+    }
+  ]
+}

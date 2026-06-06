@@ -1,0 +1,207 @@
+{
+  "schemaVersion": "mp1-blocker-status-v1",
+  "packet": "MP1",
+  "generatedAt": "2026-05-28T21:51:27+03:00",
+  "branch": "Latest",
+  "commit": "969de0ab4602a37ba3edf6ed6233419328f21924",
+  "decision": "MP1_PARTIAL",
+  "releaseGate": "NO_GO",
+  "blockers": [
+    {
+      "id": "P0-002",
+      "status": "fixed",
+      "evidence": [
+        "artifacts/mp1/implementation/content-cap-decision.md",
+        "artifacts/mp1/reports/fresh-run/final.log",
+        "artifacts/mp1/implementation/fresh-save-route-harness.green.log"
+      ],
+      "remainingWork": "Fresh-run manual coverage warnings remain but the Spirit Severing content cap mismatch is resolved.",
+      "nextOwnerPacket": "MP3"
+    },
+    {
+      "id": "P0-003",
+      "status": "partial",
+      "evidence": [
+        "artifacts/mp1/reports/balance/final.log",
+        "artifacts/mp1/reports/route/final.log",
+        "artifacts/mp1/reports/reclaim/final.log"
+      ],
+      "remainingWork": "foundation_entry is restored, but balance timing bands now fail as measurable MP4 tuning blockers.",
+      "nextOwnerPacket": "MP4"
+    },
+    {
+      "id": "P0-004",
+      "status": "fixed",
+      "evidence": [
+        "src/systems/lifeStart/lifeIdentity.ts",
+        "tests/contracts/lifeIdentityPredicate.test.ts",
+        "tests/integration/lifeStartMechanicalPause.test.ts",
+        "artifacts/mp1/implementation/life-start-mechanical-pause.green.log"
+      ],
+      "remainingWork": "MP2 may improve public framing, but real cultivation mutation is blocked before identity completion.",
+      "nextOwnerPacket": "MP2"
+    },
+    {
+      "id": "P0-007",
+      "status": "deferred",
+      "evidence": [
+        "docs/release/current_readiness.md",
+        "artifacts/mp1/final/MP1_FINAL_REPORT.md"
+      ],
+      "remainingWork": "Story tutorial remains blocked until later route/UI/release blockers clear.",
+      "nextOwnerPacket": "story-tutorial-after-release-truth"
+    },
+    {
+      "id": "P1-001",
+      "status": "partial",
+      "evidence": [
+        "artifacts/mp1/implementation/mp1-targeted-tests.log",
+        "artifacts/mp1/browser/mp1-route-proof.playwright.green.log",
+        "artifacts/mp1/browser/screenshots/SS-010-first-gate-locked.png"
+      ],
+      "remainingWork": "Focused matrix proof passes; full browser matrix for available/active/defeat/fail-safe/clear/Foundation remains.",
+      "nextOwnerPacket": "MP2"
+    },
+    {
+      "id": "P1-002",
+      "status": "fixed",
+      "evidence": [
+        "artifacts/mp1/reports/route/final.log",
+        "artifacts/mp1/reports/fresh-run/final.log"
+      ],
+      "remainingWork": "Route-facing screenshot proof is deferred to MP2.",
+      "nextOwnerPacket": "MP2"
+    },
+    {
+      "id": "P1-003",
+      "status": "partial",
+      "evidence": [
+        "artifacts/mp1/implementation/mp1-targeted-tests.log",
+        "artifacts/mp1/reports/reclaim/final.log"
+      ],
+      "remainingWork": "Reset and reclaim proof exist; AP and second-life speed tuning remain deferred.",
+      "nextOwnerPacket": "MP4"
+    },
+    {
+      "id": "P1-005",
+      "status": "fixed",
+      "evidence": [
+        "artifacts/mp1/reports/offline-route.final.log",
+        "artifacts/mp1/implementation/mp1-targeted-tests.log"
+      ],
+      "remainingWork": "Progression contract still reports offline pipeline split as tracked debt, but MP1 offline route proof is clean.",
+      "nextOwnerPacket": "MP5"
+    },
+    {
+      "id": "P1-006",
+      "status": "partial",
+      "evidence": [
+        "artifacts/mp1/reports/migration-matrix.final.log",
+        "artifacts/mp1/implementation/mp1-targeted-tests.log"
+      ],
+      "remainingWork": "Focused save/load matrix passes; broad full contract suite still times out.",
+      "nextOwnerPacket": "MP1-MP2"
+    },
+    {
+      "id": "P1-007",
+      "status": "fixed",
+      "evidence": [
+        "artifacts/mp1/reports/vocab-audit.final.log",
+        "artifacts/mp1/reports/route/final.log"
+      ],
+      "remainingWork": "Public visual/copy sweep deferred to MP2.",
+      "nextOwnerPacket": "MP2"
+    },
+    {
+      "id": "P2-005",
+      "status": "partial",
+      "evidence": [
+        "artifacts/mp1/implementation/mp1-targeted-tests.log",
+        "artifacts/mp1/reports/fresh-run/final.log"
+      ],
+      "remainingWork": "Minimal manual-to-technique proof passes, but fresh-run manual coverage remains pending manual.",
+      "nextOwnerPacket": "MP3"
+    },
+    {
+      "id": "P2-006",
+      "status": "fixed",
+      "evidence": [
+        "artifacts/mp1/implementation/mp1-targeted-tests.log"
+      ],
+      "remainingWork": "Better browser/UI presentation of defeat top fixes remains later work.",
+      "nextOwnerPacket": "MP2-MP3"
+    }
+  ],
+  "commands": [
+    {
+      "command": "npm run typecheck",
+      "status": "pass",
+      "artifact": "artifacts/mp1/implementation/typecheck.final.log"
+    },
+    {
+      "command": "npm run check:icons",
+      "status": "pass",
+      "artifact": "artifacts/mp1/implementation/check-icons.final.log"
+    },
+    {
+      "command": "npm run validate:content",
+      "status": "pass",
+      "artifact": "artifacts/mp1/implementation/validate-content.final.log"
+    },
+    {
+      "command": "npm run build",
+      "status": "pass_with_warnings",
+      "artifact": "artifacts/mp1/implementation/build.final.log"
+    },
+    {
+      "command": "npm exec tsc -- --project tsconfig.tests.json",
+      "status": "pass",
+      "artifact": "artifacts/mp1/implementation/tsc-tests.final.log"
+    },
+    {
+      "command": "npm run build:progression-fixtures",
+      "status": "pass",
+      "artifact": "artifacts/mp1/implementation/build-progression-fixtures.final.log"
+    },
+    {
+      "command": "focused MP1 compiled tests",
+      "status": "pass",
+      "artifact": "artifacts/mp1/implementation/mp1-targeted-tests.log"
+    },
+    {
+      "command": "npx playwright test tests/e2e/mp1-route-proof.spec.ts",
+      "status": "pass",
+      "artifact": "artifacts/mp1/browser/mp1-route-proof.playwright.green.log"
+    },
+    {
+      "command": "npm run release:fresh-run-report:json",
+      "status": "pass_with_warnings",
+      "artifact": "artifacts/mp1/reports/fresh-run/final.log"
+    },
+    {
+      "command": "npm run balance:report:json",
+      "status": "fail_timing_bands",
+      "artifact": "artifacts/mp1/reports/balance/final.log"
+    },
+    {
+      "command": "npm run release:route-report:json",
+      "status": "pass_with_warning",
+      "artifact": "artifacts/mp1/reports/route/final.log"
+    },
+    {
+      "command": "npm run release:reclaim-route-report",
+      "status": "pass",
+      "artifact": "artifacts/mp1/reports/reclaim/final.log"
+    },
+    {
+      "command": "npm run test:contracts",
+      "status": "timeout",
+      "artifact": "artifacts/mp1/implementation/test-contracts.final.log"
+    },
+    {
+      "command": "npm run release:gate -- --json --skip=full_test_suite",
+      "status": "no_go",
+      "artifact": "artifacts/mp1/reports/release-gate/final.log"
+    }
+  ]
+}

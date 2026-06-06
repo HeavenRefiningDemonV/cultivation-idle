@@ -3,6 +3,8 @@ import type {
   ApothecaryShopsConfig,
   BountiesConfig,
   CitiesPayload,
+  CultivatorStatsConfig,
+  DaoHeartPracticesConfig,
   EconomyConfig,
   EnemiesConfig,
   ExpeditionsConfig,
@@ -15,10 +17,14 @@ import type {
   PavilionRecordsConfig,
   RunesConfig,
   RuinsConfig,
+  ReadinessCategoriesConfig,
+  SpiritRootProgressionsConfig,
   TalismanRecipesConfig,
   TechniquesConfig,
+  TrainingRegimensConfig,
   TrialsConfig,
 } from './types.js';
+import type { OnboardingMilestonesConfig } from '../systems/onboarding/onboardingTypes.js';
 import { contentUrl } from './contentPaths.js';
 import { RUNTIME_CONTENT_DIR, RUNTIME_CONTENT_FILE_BY_KEY, type RuntimeContentFileName } from './runtimeContentManifest.js';
 import { PERF_LABELS, timeAsync } from '../services/performance/index.js';
@@ -61,6 +67,12 @@ export interface LoadedContentRaw {
   heart_laws: HeartLawsConfig;
   prestige_store: PrestigeStoreConfig;
   pavilion_records: PavilionRecordsConfig;
+  onboarding_milestones: OnboardingMilestonesConfig;
+  cultivator_stats: CultivatorStatsConfig;
+  training_regimens: TrainingRegimensConfig;
+  dao_heart_practices: DaoHeartPracticesConfig;
+  spirit_roots: SpiritRootProgressionsConfig;
+  readiness_categories: ReadinessCategoriesConfig;
 }
 
 export async function fetchJson<T>(url: string): Promise<T> {

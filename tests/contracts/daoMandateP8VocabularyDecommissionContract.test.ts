@@ -50,20 +50,23 @@ function read(filePath: string): string {
   return readFileSync(filePath, 'utf8');
 }
 
-test('Status V3 audit surfaces current Packet C/D public Dao blockers with classification', () => {
+test('Status V3 audit keeps default public Dao/Omen blockers decommissioned', () => {
   const report = runVocabularyAudit();
   const blockers = report.daoMandateV2.matches
     .filter((finding) => finding.severity === 'blocker')
     .map((finding) => `${finding.file}:${finding.line} [${finding.normalizedTerm}] ${finding.excerpt}`);
 
-  assert.ok(blockers.length > 0, 'Packet C should still expose current non-Status public Dao/Omen offenders until Packet D.');
-  assert.equal(report.daoMandateV2.overallPass, false);
+  assert.deepEqual(blockers, []);
+  assert.equal(report.daoMandateV2.overallPass, true);
   assert.equal(
-    blockers.some((entry) => /StatusScreen|statusV2Surface/.test(entry)),
+    report.daoMandateV2.matches.some((finding) => /StatusScreen|statusV2Surface/.test(finding.file) && finding.severity === 'blocker'),
     false,
-    'Packet C should keep public Status and retired Status V2 internals out of blocker findings.',
+    'Default Status and retired Status V2 internals must stay out of blocker findings.',
   );
-  assert.ok(blockers.some((entry) => /SettingsScreen/.test(entry) && /Dao Mandate Interface/.test(entry)));
+  assert.equal(
+    report.daoMandateV2.matches.some((finding) => /SettingsScreen/.test(finding.file) && /Dao Mandate Interface/.test(finding.excerpt)),
+    false,
+  );
 });
 
 test('V2-11 default Status source does not expose old route-board labels or raw chamber stack', () => {

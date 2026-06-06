@@ -9,6 +9,7 @@ import type { ValidatedContent } from '../../src/content/index.js';
 import { validateLoadedContent } from '../../src/content/index.js';
 import { adaptProgressionAuthoredContent } from '../../src/systems/progression/contract/index.js';
 import { getTrialLifecycleSnapshot } from '../../src/systems/progression/runtime/index.js';
+import type { TrialProgress } from '../../src/stores/trialStore.js';
 import type { Realm } from '../../src/types/index.js';
 
 const CONTENT_DIR = path.resolve(process.cwd(), 'public', 'cultivation_idle_content_bible_v1_config');
@@ -32,6 +33,13 @@ const FILES = {
   bounties: 'bounties.json',
   heart_laws: 'heart_laws.json',
   prestige_store: 'prestige_store.json',
+  pavilion_records: 'pavilion_records.json',
+  onboarding_milestones: 'onboarding_milestones.json',
+  cultivator_stats: 'stats.json',
+  training_regimens: 'training_regimens.json',
+  dao_heart_practices: 'dao_heart_practices.json',
+  spirit_roots: 'spirit_roots.json',
+  readiness_categories: 'readiness_categories.json',
 } as const;
 
 const readJson = async <T>(fileName: string): Promise<T> =>
@@ -50,6 +58,20 @@ const readyRealm: Realm = {
   name: 'Qi Condensation',
 };
 
+const makeProgress = (overrides: Partial<TrialProgress> = {}): TrialProgress => ({
+  attempts: 0,
+  sessionAttempts: 0,
+  eligibleFailures: 0,
+  resolution: 'none',
+  cleared: false,
+  lastAttemptAt: null,
+  lastClearAt: null,
+  bypassedAt: null,
+  attemptStartAt: null,
+  lastAttemptSummary: null,
+  ...overrides,
+});
+
 test('trial lifecycle reports an available first gate and exposes fail-safe progress', async () => {
   const content = await loadContent();
   const trial = content.trials.find((entry: TrialDef) => entry.id === 'trial_novices_clearing');
@@ -59,18 +81,11 @@ test('trial lifecycle reports an available first gate and exposes fail-safe prog
   const snapshot = getTrialLifecycleSnapshot({
     content,
     trial,
-    progress: {
+    progress: makeProgress({
       attempts: 2,
       sessionAttempts: 2,
       eligibleFailures: 2,
-      resolution: 'none',
-      cleared: false,
-      lastAttemptAt: null,
-      lastClearAt: null,
-      bypassedAt: null,
-      attemptStartAt: null,
-      lastAttemptSummary: null,
-    },
+    }),
     realm: readyRealm,
     qi: '100',
     breakthroughRequirement: '100',
@@ -81,11 +96,90 @@ test('trial lifecycle reports an available first gate and exposes fail-safe prog
   assert.equal(snapshot.canStart, true);
   assert.equal(snapshot.countsTowardFailSafeOnStart, true);
   assert.equal(snapshot.gateItemId, 'gate_foundation_pill');
+  assert.equal(snapshot.requiredItemId, null);
   assert.equal(snapshot.failSafe.threshold, 3);
   assert.equal(snapshot.failSafe.eligibleFailures, 2);
   assert.equal(snapshot.failSafe.remainingEligibleFailures, 1);
   assert.equal(snapshot.failSafe.canPurchase, false);
   assert.equal(snapshot.failSafe.blockedReason, 'Safety Net unlocks after 3 eligible defeats.');
+});
+
+test('trial lifecycle covers locked, fail-safe available, and cleared states', async () => {
+  const content = await loadContent();
+  const trial = content.trials.find((entry: TrialDef) => entry.id === 'trial_novices_clearing');
+
+  assert.ok(trial);
+
+  const earlyRealm = { ...readyRealm, substage: 3 };
+  const lockedEarly = getTrialLifecycleSnapshot({
+    content,
+    trial,
+    progress: makeProgress(),
+    realm: earlyRealm,
+    qi: '100',
+    breakthroughRequirement: '100',
+    requiredItemSatisfied: true,
+  });
+  assert.equal(lockedEarly.state, 'locked');
+  assert.equal(lockedEarly.canStart, false);
+  assert.equal(lockedEarly.reasonCode, 'not_final_substage');
+  assert.equal(lockedEarly.failSafe.status, 'locked');
+  assert.equal(lockedEarly.failSafe.blockedReasonCode, 'not_final_substage');
+
+  const lockedQi = getTrialLifecycleSnapshot({
+    content,
+    trial,
+    progress: makeProgress(),
+    realm: readyRealm,
+    qi: '99',
+    breakthroughRequirement: '100',
+    requiredItemSatisfied: true,
+  });
+  assert.equal(lockedQi.state, 'locked');
+  assert.equal(lockedQi.canStart, false);
+  assert.equal(lockedQi.reasonCode, 'insufficient_qi');
+  assert.equal(lockedQi.failSafe.status, 'locked');
+
+  const failSafeAvailable = getTrialLifecycleSnapshot({
+    content,
+    trial,
+    progress: makeProgress({
+      attempts: 3,
+      sessionAttempts: 3,
+      eligibleFailures: 3,
+    }),
+    realm: readyRealm,
+    qi: '100',
+    breakthroughRequirement: '100',
+    requiredItemSatisfied: true,
+  });
+  assert.equal(failSafeAvailable.state, 'available');
+  assert.equal(failSafeAvailable.canStart, true);
+  assert.equal(failSafeAvailable.failSafe.status, 'available');
+  assert.equal(failSafeAvailable.failSafe.canPurchase, true);
+  assert.equal(failSafeAvailable.failSafe.remainingEligibleFailures, 0);
+
+  const cleared = getTrialLifecycleSnapshot({
+    content,
+    trial,
+    progress: makeProgress({
+      attempts: 1,
+      sessionAttempts: 1,
+      eligibleFailures: 0,
+      resolution: 'cleared',
+      cleared: true,
+      lastClearAt: 456,
+    }),
+    realm: readyRealm,
+    qi: '100',
+    breakthroughRequirement: '100',
+    requiredItemSatisfied: true,
+  });
+  assert.equal(cleared.state, 'cleared');
+  assert.equal(cleared.canStart, false);
+  assert.equal(cleared.reason, 'Trial already cleared.');
+  assert.equal(cleared.failSafe.status, 'resolved');
+  assert.equal(cleared.failSafe.canPurchase, false);
 });
 
 test('trial fail-safe authoring aliases normalize into canonical threshold and cost shape', async () => {
@@ -116,18 +210,14 @@ test('trial lifecycle distinguishes bypassed trials from cleared trials', async 
   const bypassed = getTrialLifecycleSnapshot({
     content,
     trial,
-    progress: {
+    progress: makeProgress({
       attempts: 3,
       sessionAttempts: 3,
       eligibleFailures: 3,
       resolution: 'bypassed',
       cleared: false,
-      lastAttemptAt: null,
-      lastClearAt: null,
       bypassedAt: 123,
-      attemptStartAt: null,
-      lastAttemptSummary: null,
-    },
+    }),
     realm: readyRealm,
     qi: '100',
     breakthroughRequirement: '100',

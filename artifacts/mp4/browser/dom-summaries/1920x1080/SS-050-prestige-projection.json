@@ -1,0 +1,117 @@
+{
+  "routeId": "SS-050",
+  "label": "Prestige projection",
+  "viewport": "1920x1080",
+  "url": "http://127.0.0.1:5173/",
+  "title": "cultivation-idle-temp",
+  "headings": [
+    "Prestige",
+    "Current Life Ledger",
+    "Life Identity",
+    "Progress Record",
+    "Reincarnation Decree",
+    "Next Life Preview",
+    "Recommended Decrees",
+    "Reclaim Forecast",
+    "Early reclaim estimate",
+    "Reset Contract",
+    "Resets this life",
+    "Carries forward",
+    "Rebuilt next life",
+    "Hybrid retained"
+  ],
+  "primaryButtons": [
+    {
+      "text": "AP Receipt",
+      "ariaLabel": null,
+      "disabled": false
+    },
+    {
+      "text": "Projected gain+0 AP",
+      "ariaLabel": null,
+      "disabled": false
+    },
+    {
+      "text": "View Life Summary",
+      "ariaLabel": null,
+      "disabled": false
+    },
+    {
+      "text": "Reincarnation Locked",
+      "ariaLabel": null,
+      "disabled": true
+    },
+    {
+      "text": "Open Decree Library",
+      "ariaLabel": null,
+      "disabled": false
+    },
+    {
+      "text": "Root MemoryEffect: Idle Qi +6%Why: Best first reclaim speed.Lv 0/10Runtime: LiveCost5 AP",
+      "ariaLabel": "Inspect Idle Qi Multiplier",
+      "disabled": false
+    },
+    {
+      "text": "Inspect",
+      "ariaLabel": null,
+      "disabled": false
+    },
+    {
+      "text": "Combat MemoryEffect: Combat power +5%Why: Softens gate retries.Lv 0/10Runtime: LiveCost5 AP",
+      "ariaLabel": "Inspect Combat Power Multiplier",
+      "disabled": false
+    },
+    {
+      "text": "Inspect",
+      "ariaLabel": null,
+      "disabled": false
+    },
+    {
+      "text": "Technique WarrantEffect: Extra technique slotWhy: Improves build flexibility.Lv 0/1Runtime: LiveCost35 AP",
+      "ariaLabel": "Inspect Extra Technique Slot I",
+      "disabled": false
+    },
+    {
+      "text": "Inspect",
+      "ariaLabel": null,
+      "disabled": false
+    },
+    {
+      "text": "Open Full Decree Library",
+      "ariaLabel": null,
+      "disabled": false
+    },
+    {
+      "text": "Status",
+      "ariaLabel": null,
+      "disabled": false
+    },
+    {
+      "text": "Cultivation",
+      "ariaLabel": null,
+      "disabled": false
+    },
+    {
+      "text": "World",
+      "ariaLabel": null,
+      "disabled": false
+    },
+    {
+      "text": "Inventory",
+      "ariaLabel": null,
+      "disabled": false
+    }
+  ],
+  "testIds": [
+    "prestige-ledger-exact-page"
+  ],
+  "scrollWidth": 1920,
+  "innerWidth": 1920,
+  "scrollHeight": 1080,
+  "innerHeight": 1080,
+  "noHorizontalOverflow": true,
+  "forbiddenVisible": [],
+  "placeholderVisible": false,
+  "consoleErrorCount": 0,
+  "textSample": "AP\nPrestige\nReincarnation Ledger\nQi Condensation\nFoundation\nCore Formation\nNascent Soul\nSoul Transformation\nVoid Ascension\nMajor realms and gates reached this life\nAP Reserve\n0\nLifetime AP\n0\nLives\n0\nCurrent Life Ledger\nLife Identity\nPath:\nHeaven\nSpirit Root:\nWater · Common · 91% purity\nHeart Law:\nEmber Thread Sutra\nHighest Realm:\nQi Condensation 1/9\nProgress Record\nGates resolved:\n0\nCities reached:\nPinewind Hamlet\nCurrent wall:\nCore Formation required\nAP Receipt\nToo early for Reincarnation\n+0 AP\nProjected gain\n+0 AP\nView Life Summary\nReincarnation Decree\nAP\nTOO EARLY\n+0 AP\n\nCore Formation is required before the ledger can be sealed.\n\nPush this life to Core Formation before beginning Reincarnation.\n\nAP\nReincarnation Locked\nOpen Decree Library\nNext Life Preview\nBuild a clean first-life route before treating reincarnation as the main objective.\nFaster early Qi recovery\nFirst city baseline rebuilt\nPermanent edicts re-applied\nRecommended Decrees\nRoot Memory\nEffect: Idle Qi +6%\nWhy: Best first reclaim speed.\nLv 0/10\nRuntime: Live\nCost\n5 AP\nInspect\nCombat Memory\nEffect: Combat power +5%\nWhy: Softens gate retries.\nLv 0/10\nRuntime: Live\nCost\n5 AP\nInspect\nTechnique Warrant\nEffect: Extra technique slot\nWhy: Improves build flexibility.\nLv 0/1\nRuntime: Live\nCost\n35 AP\nInspect\nOpen Full Decree Library\nReclaim Forecast\nAP\nEstablish the first route\n\nBuild a clean first-life route before treating reincarnation as the main objective.\n\nEarly reclaim estimate\nNo prior Foundation time recorded\nNo speed bonus measured yet\n\nForecast uses current AP bonuses and target envelopes only.\n\nConfidence: low\nOffline progress does not progress combat.\nReincarnation is locked until the prestige unlock realm is reached.\nPotential AP gain is zero; resetting now would not create meaningful permanent progress.\nReset Contract\nAP\nResets this life\nRealm body and Qi progress: The active realm run, Qi pool, and per-life run counters return to a new-life baseline.\nCultivation active state: Heart Law selection, study state, comprehension, and active cultivation timers are cleared for the new life.\nInventory and currencies: Items and per-life currencies are reset by the inventory owner before the new-life baseline is restored.\nEquipment and loadout state: Equipped gear and refinement state are hard-reset with the old body.\nGate trial progress: Trial attempts, clears, bypasses, and active trial sessions are life-scoped.\nCarries forward\nAscension Points (AP): Available AP, earned AP, and the new ritual gain remain in the prestige ledger.\nLifetime AP: Lifetime AP earned stays permanent for prestige history and future balancing.\nPurchased decrees: Runtime-live prestige purchases remain owned and are reapplied after the reset.\nRun history and life count: Prestige count and bounded run history remain in the ledger.\nCompleted-life summary: The prepared life summary is captured before reset and remains viewable afterward.\nRebuilt next life\nCity baseline (starter city): City progression is reset and initialized from live content, starting at the first city.\nSpirit root (new roll): The prior root is remembered in the life summary, but the next life rolls a fresh root.\nHeart Law decree unlocks: Purchased Heart Law tiers are recomputed from live prestige effects when the new life begins.\nTechnique slot decrees: Purchased technique-slot decrees are recomputed and applied to the technique store.\nHybrid retained\nNo mastery retention decree active: Technique and recipe mastery reset completely until a Root Memory retention decree is purchased.\nStatus\nCultivation\nWorld\nInventory\nTechniques\nRecords\nPrestige\nSettings"
+}

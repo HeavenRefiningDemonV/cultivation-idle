@@ -10,8 +10,8 @@ import { OUTSKIRTS_ASSETS } from '../../src/features/world/outskirts/outskirtsAs
 import { OutskirtsExactMockupScreen } from '../../src/features/world/outskirts/OutskirtsExactMockupScreen.js';
 
 void test('Packet A owner baseline keeps OutskirtsScreenOwner mounted for planning/active without legacy fallback', async () => {
-  const panelSource = await readFile(new URL('../../src/components/screens/world/buildings/OutskirtsBuildingPanel.tsx', import.meta.url), 'utf8');
-  const modalSource = await readFile(new URL('../../src/components/modals/WorldBuildingModal.tsx', import.meta.url), 'utf8');
+  const panelSource = await readFile('src/components/screens/world/buildings/OutskirtsBuildingPanel.tsx', 'utf8');
+  const modalSource = await readFile('src/components/modals/WorldBuildingModal.tsx', 'utf8');
 
   assert.match(panelSource, /OutskirtsScreenOwner/);
   assert.doesNotMatch(panelSource, /OutskirtsLegacyActiveSurface/);
@@ -32,19 +32,19 @@ void test('Packet A asset registry contract resolves key Outskirts visual assets
 
 void test('Packet A no broken raw-src contract for Outskirts exact-screen module set', async () => {
   const exactModulePaths = [
-    '../../src/features/world/outskirts/buildOutskirtsMockupSurface.ts',
-    '../../src/features/world/outskirts/outskirtsMockupPresentation.ts',
-    '../../src/features/world/outskirts/resolveOutskirtsScenicAsset.ts',
-    '../../src/features/world/outskirts/resolveOutskirtsEncounterStripArt.ts',
-    '../../src/features/world/outskirts/components/OutskirtsTacticalStrip.ts',
-    '../../src/features/world/outskirts/components/OutskirtsSetupCard.ts',
-    '../../src/features/world/outskirts/components/OutskirtsRewardsCard.ts',
-    '../../src/features/world/outskirts/components/OutskirtsEncounterProgressStrip.ts',
-    '../../src/features/world/outskirts/components/OutskirtsGrindSummaryCard.ts',
+    'src/features/world/outskirts/buildOutskirtsMockupSurface.ts',
+    'src/features/world/outskirts/outskirtsMockupPresentation.ts',
+    'src/features/world/outskirts/resolveOutskirtsScenicAsset.ts',
+    'src/features/world/outskirts/resolveOutskirtsEncounterStripArt.ts',
+    'src/features/world/outskirts/components/OutskirtsTacticalStrip.ts',
+    'src/features/world/outskirts/components/OutskirtsSetupCard.ts',
+    'src/features/world/outskirts/components/OutskirtsRewardsCard.ts',
+    'src/features/world/outskirts/components/OutskirtsEncounterProgressStrip.ts',
+    'src/features/world/outskirts/components/OutskirtsGrindSummaryCard.ts',
   ] as const;
 
   for (const path of exactModulePaths) {
-    const source = await readFile(new URL(path, import.meta.url), 'utf8');
+    const source = await readFile(path, 'utf8');
     assert.equal(source.includes("'/assets/"), false, `${path} contains legacy single-quoted /assets path`);
     assert.equal(source.includes('"/assets/'), false, `${path} contains legacy double-quoted /assets path`);
   }

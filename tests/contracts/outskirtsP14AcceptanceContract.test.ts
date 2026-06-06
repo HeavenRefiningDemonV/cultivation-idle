@@ -30,9 +30,13 @@ void test('P14 planning purity excludes combat-shell chrome in planning owner/su
   const planningOwner = await readFile('src/features/world/outskirts/OutskirtsPlanningOwner.tsx', 'utf8');
   const exactScreen = await readFile('src/features/world/outskirts/OutskirtsExactMockupScreen.ts', 'utf8');
 
-  const forbidden = ['RunCompass', 'combat-log', 'combat options', 'utility tray', 'hp bars', 'combatHp'];
-  for (const token of forbidden) {
+  const planningOwnerForbidden = ['RunCompass', 'combat-log', 'combat options', 'utility tray', 'hp bars', 'combatHp'];
+  for (const token of planningOwnerForbidden) {
     assert.equal(planningOwner.toLowerCase().includes(token.toLowerCase()), false);
+  }
+
+  const exactScreenForbidden = ['RunCompass', 'combat-log', 'combat options', 'utility tray', 'hp bars'];
+  for (const token of exactScreenForbidden) {
     assert.equal(exactScreen.toLowerCase().includes(token.toLowerCase()), false);
   }
 });

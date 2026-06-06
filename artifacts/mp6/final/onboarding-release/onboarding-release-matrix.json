@@ -1,0 +1,2825 @@
+{
+  "schemaVersion": "onboarding-release-matrix-v1",
+  "generatedAt": "2026-05-30T22:09:48.628Z",
+  "overallPass": true,
+  "blockerCount": 0,
+  "warningCount": 0,
+  "rows": [
+    {
+      "id": "M0_life_start",
+      "activeMilestoneId": "M0_life_start",
+      "description": "Fresh save before life identity is committed.",
+      "visibleTabs": [],
+      "hiddenTabs": [
+        "cultivation",
+        "status",
+        "adventure",
+        "inventory",
+        "records",
+        "techniques",
+        "prestige"
+      ],
+      "utilityTabs": [
+        "settings"
+      ],
+      "availableWorldModules": [],
+      "teaserWorldModules": [],
+      "hiddenWorldModules": [
+        "outskirts",
+        "manualPavilion",
+        "apothecary",
+        "expeditions",
+        "forge",
+        "ruins",
+        "bounties",
+        "gateTrial"
+      ],
+      "tabEscapeChecks": [
+        {
+          "kind": "tab",
+          "key": "cultivation",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Cultivation opens later in the first-life curriculum."
+        },
+        {
+          "kind": "tab",
+          "key": "status",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Status opens later in the first-life curriculum."
+        },
+        {
+          "kind": "tab",
+          "key": "adventure",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "World opens later in the first-life curriculum."
+        },
+        {
+          "kind": "tab",
+          "key": "inventory",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Inventory opens later in the first-life curriculum."
+        },
+        {
+          "kind": "tab",
+          "key": "records",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Manual Pavilion opens later in the first-life curriculum."
+        },
+        {
+          "kind": "tab",
+          "key": "techniques",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Techniques opens later in the first-life curriculum."
+        },
+        {
+          "kind": "tab",
+          "key": "prestige",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Prestige opens later in the first-life curriculum."
+        },
+        {
+          "kind": "tab",
+          "key": "settings",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "worldModuleEscapeChecks": [
+        {
+          "kind": "world_module",
+          "key": "outskirts",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Outskirts unlocks later in the first-life curriculum. Reach the first World milestone."
+        },
+        {
+          "kind": "world_module",
+          "key": "manualPavilion",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Manual Pavilion unlocks later in the first-life curriculum. Claim Outskirts gains, then reach the Manual Pavilion milestone."
+        },
+        {
+          "kind": "world_module",
+          "key": "apothecary",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Apothecary unlocks later in the first-life curriculum. Reach the preparation milestone where herbs and medicine connect."
+        },
+        {
+          "kind": "world_module",
+          "key": "expeditions",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Expeditions unlocks later in the first-life curriculum. Reach the preparation milestone where passive support routes open."
+        },
+        {
+          "kind": "world_module",
+          "key": "forge",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Forge unlocks later in the first-life curriculum. Reach the Forge milestone after preparation starts."
+        },
+        {
+          "kind": "world_module",
+          "key": "ruins",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Ruins unlocks later in the first-life curriculum. Reach the support rotation milestone."
+        },
+        {
+          "kind": "world_module",
+          "key": "bounties",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Bounty Board unlocks later in the first-life curriculum. Reach the support rotation milestone."
+        },
+        {
+          "kind": "world_module",
+          "key": "gateTrial",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Gate Trial unlocks later in the first-life curriculum. Reach the final Gate Trial milestone."
+        }
+      ],
+      "sourceSinkGuardChecks": [],
+      "pass": true,
+      "notes": [
+        "life start owns the foreground",
+        "alchemy is deferred by live city schema",
+        "talismanStudio is deferred by live city schema"
+      ]
+    },
+    {
+      "id": "M1_cultivation_only",
+      "activeMilestoneId": "M1_cultivation_only",
+      "description": "Cultivation-only first lesson.",
+      "visibleTabs": [
+        "cultivation"
+      ],
+      "hiddenTabs": [
+        "status",
+        "adventure",
+        "inventory",
+        "records",
+        "techniques",
+        "prestige"
+      ],
+      "utilityTabs": [
+        "settings"
+      ],
+      "availableWorldModules": [],
+      "teaserWorldModules": [],
+      "hiddenWorldModules": [
+        "outskirts",
+        "manualPavilion",
+        "apothecary",
+        "expeditions",
+        "forge",
+        "ruins",
+        "bounties",
+        "gateTrial"
+      ],
+      "tabEscapeChecks": [
+        {
+          "kind": "tab",
+          "key": "cultivation",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "status",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Status opens later in the first-life curriculum."
+        },
+        {
+          "kind": "tab",
+          "key": "adventure",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "World opens later in the first-life curriculum."
+        },
+        {
+          "kind": "tab",
+          "key": "inventory",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Inventory opens later in the first-life curriculum."
+        },
+        {
+          "kind": "tab",
+          "key": "records",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Manual Pavilion opens later in the first-life curriculum."
+        },
+        {
+          "kind": "tab",
+          "key": "techniques",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Techniques opens later in the first-life curriculum."
+        },
+        {
+          "kind": "tab",
+          "key": "prestige",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Prestige opens later in the first-life curriculum."
+        },
+        {
+          "kind": "tab",
+          "key": "settings",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "worldModuleEscapeChecks": [
+        {
+          "kind": "world_module",
+          "key": "outskirts",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Outskirts unlocks later in the first-life curriculum. Reach the first World milestone."
+        },
+        {
+          "kind": "world_module",
+          "key": "manualPavilion",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Manual Pavilion unlocks later in the first-life curriculum. Claim Outskirts gains, then reach the Manual Pavilion milestone."
+        },
+        {
+          "kind": "world_module",
+          "key": "apothecary",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Apothecary unlocks later in the first-life curriculum. Reach the preparation milestone where herbs and medicine connect."
+        },
+        {
+          "kind": "world_module",
+          "key": "expeditions",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Expeditions unlocks later in the first-life curriculum. Reach the preparation milestone where passive support routes open."
+        },
+        {
+          "kind": "world_module",
+          "key": "forge",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Forge unlocks later in the first-life curriculum. Reach the Forge milestone after preparation starts."
+        },
+        {
+          "kind": "world_module",
+          "key": "ruins",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Ruins unlocks later in the first-life curriculum. Reach the support rotation milestone."
+        },
+        {
+          "kind": "world_module",
+          "key": "bounties",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Bounty Board unlocks later in the first-life curriculum. Reach the support rotation milestone."
+        },
+        {
+          "kind": "world_module",
+          "key": "gateTrial",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Gate Trial unlocks later in the first-life curriculum. Reach the final Gate Trial milestone."
+        }
+      ],
+      "sourceSinkGuardChecks": [],
+      "pass": true,
+      "notes": [
+        "alchemy is deferred by live city schema",
+        "talismanStudio is deferred by live city schema"
+      ]
+    },
+    {
+      "id": "M2_status_unlock",
+      "activeMilestoneId": "M2_status_unlock",
+      "description": "Status unlock lesson.",
+      "visibleTabs": [
+        "cultivation",
+        "status"
+      ],
+      "hiddenTabs": [
+        "adventure",
+        "inventory",
+        "records",
+        "techniques",
+        "prestige"
+      ],
+      "utilityTabs": [
+        "settings"
+      ],
+      "availableWorldModules": [],
+      "teaserWorldModules": [],
+      "hiddenWorldModules": [
+        "outskirts",
+        "manualPavilion",
+        "apothecary",
+        "expeditions",
+        "forge",
+        "ruins",
+        "bounties",
+        "gateTrial"
+      ],
+      "tabEscapeChecks": [
+        {
+          "kind": "tab",
+          "key": "cultivation",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "status",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "adventure",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "World opens later in the first-life curriculum."
+        },
+        {
+          "kind": "tab",
+          "key": "inventory",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Inventory opens later in the first-life curriculum."
+        },
+        {
+          "kind": "tab",
+          "key": "records",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Manual Pavilion opens later in the first-life curriculum."
+        },
+        {
+          "kind": "tab",
+          "key": "techniques",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Techniques opens later in the first-life curriculum."
+        },
+        {
+          "kind": "tab",
+          "key": "prestige",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Prestige opens later in the first-life curriculum."
+        },
+        {
+          "kind": "tab",
+          "key": "settings",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "worldModuleEscapeChecks": [
+        {
+          "kind": "world_module",
+          "key": "outskirts",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Outskirts unlocks later in the first-life curriculum. Reach the first World milestone."
+        },
+        {
+          "kind": "world_module",
+          "key": "manualPavilion",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Manual Pavilion unlocks later in the first-life curriculum. Claim Outskirts gains, then reach the Manual Pavilion milestone."
+        },
+        {
+          "kind": "world_module",
+          "key": "apothecary",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Apothecary unlocks later in the first-life curriculum. Reach the preparation milestone where herbs and medicine connect."
+        },
+        {
+          "kind": "world_module",
+          "key": "expeditions",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Expeditions unlocks later in the first-life curriculum. Reach the preparation milestone where passive support routes open."
+        },
+        {
+          "kind": "world_module",
+          "key": "forge",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Forge unlocks later in the first-life curriculum. Reach the Forge milestone after preparation starts."
+        },
+        {
+          "kind": "world_module",
+          "key": "ruins",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Ruins unlocks later in the first-life curriculum. Reach the support rotation milestone."
+        },
+        {
+          "kind": "world_module",
+          "key": "bounties",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Bounty Board unlocks later in the first-life curriculum. Reach the support rotation milestone."
+        },
+        {
+          "kind": "world_module",
+          "key": "gateTrial",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Gate Trial unlocks later in the first-life curriculum. Reach the final Gate Trial milestone."
+        }
+      ],
+      "sourceSinkGuardChecks": [],
+      "pass": true,
+      "notes": [
+        "alchemy is deferred by live city schema",
+        "talismanStudio is deferred by live city schema"
+      ]
+    },
+    {
+      "id": "M3_world_outskirts",
+      "activeMilestoneId": "M3_world_outskirts",
+      "description": "World and Outskirts unlock lesson.",
+      "visibleTabs": [
+        "cultivation",
+        "status",
+        "adventure"
+      ],
+      "hiddenTabs": [
+        "inventory",
+        "records",
+        "techniques",
+        "prestige"
+      ],
+      "utilityTabs": [
+        "settings"
+      ],
+      "availableWorldModules": [
+        "outskirts"
+      ],
+      "teaserWorldModules": [
+        "manualPavilion"
+      ],
+      "hiddenWorldModules": [
+        "apothecary",
+        "expeditions",
+        "forge",
+        "ruins",
+        "bounties",
+        "gateTrial"
+      ],
+      "tabEscapeChecks": [
+        {
+          "kind": "tab",
+          "key": "cultivation",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "status",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "adventure",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "inventory",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Inventory opens later in the first-life curriculum."
+        },
+        {
+          "kind": "tab",
+          "key": "records",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Manual Pavilion opens later in the first-life curriculum."
+        },
+        {
+          "kind": "tab",
+          "key": "techniques",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Techniques opens later in the first-life curriculum."
+        },
+        {
+          "kind": "tab",
+          "key": "prestige",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Prestige opens later in the first-life curriculum."
+        },
+        {
+          "kind": "tab",
+          "key": "settings",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "worldModuleEscapeChecks": [
+        {
+          "kind": "world_module",
+          "key": "outskirts",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "manualPavilion",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Manual Pavilion is close, but it is not ready to open yet. Claim Outskirts gains, then reach the Manual Pavilion milestone."
+        },
+        {
+          "kind": "world_module",
+          "key": "apothecary",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Apothecary unlocks later in the first-life curriculum. Reach the preparation milestone where herbs and medicine connect."
+        },
+        {
+          "kind": "world_module",
+          "key": "expeditions",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Expeditions unlocks later in the first-life curriculum. Reach the preparation milestone where passive support routes open."
+        },
+        {
+          "kind": "world_module",
+          "key": "forge",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Forge unlocks later in the first-life curriculum. Reach the Forge milestone after preparation starts."
+        },
+        {
+          "kind": "world_module",
+          "key": "ruins",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Ruins unlocks later in the first-life curriculum. Reach the support rotation milestone."
+        },
+        {
+          "kind": "world_module",
+          "key": "bounties",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Bounty Board unlocks later in the first-life curriculum. Reach the support rotation milestone."
+        },
+        {
+          "kind": "world_module",
+          "key": "gateTrial",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Gate Trial unlocks later in the first-life curriculum. Reach the final Gate Trial milestone."
+        }
+      ],
+      "sourceSinkGuardChecks": [
+        {
+          "guardId": "outskirts_gold_needs_pavilion_context",
+          "severity": "info",
+          "targetKind": "world_module",
+          "targetKey": "outskirts",
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "pass": true,
+      "notes": [
+        "alchemy is deferred by live city schema",
+        "talismanStudio is deferred by live city schema"
+      ]
+    },
+    {
+      "id": "M4_pavilion_satchel",
+      "activeMilestoneId": "M4_pavilion_satchel",
+      "description": "Manual Pavilion and satchel lesson.",
+      "visibleTabs": [
+        "cultivation",
+        "status",
+        "adventure",
+        "inventory",
+        "records"
+      ],
+      "hiddenTabs": [
+        "techniques",
+        "prestige"
+      ],
+      "utilityTabs": [
+        "settings"
+      ],
+      "availableWorldModules": [
+        "outskirts",
+        "manualPavilion"
+      ],
+      "teaserWorldModules": [],
+      "hiddenWorldModules": [
+        "apothecary",
+        "expeditions",
+        "forge",
+        "ruins",
+        "bounties",
+        "gateTrial"
+      ],
+      "tabEscapeChecks": [
+        {
+          "kind": "tab",
+          "key": "cultivation",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "status",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "adventure",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "inventory",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "records",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "techniques",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Techniques opens later in the first-life curriculum."
+        },
+        {
+          "kind": "tab",
+          "key": "prestige",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Prestige opens later in the first-life curriculum."
+        },
+        {
+          "kind": "tab",
+          "key": "settings",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "worldModuleEscapeChecks": [
+        {
+          "kind": "world_module",
+          "key": "outskirts",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "manualPavilion",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "apothecary",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Apothecary unlocks later in the first-life curriculum. Reach the preparation milestone where herbs and medicine connect."
+        },
+        {
+          "kind": "world_module",
+          "key": "expeditions",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Expeditions unlocks later in the first-life curriculum. Reach the preparation milestone where passive support routes open."
+        },
+        {
+          "kind": "world_module",
+          "key": "forge",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Forge unlocks later in the first-life curriculum. Reach the Forge milestone after preparation starts."
+        },
+        {
+          "kind": "world_module",
+          "key": "ruins",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Ruins unlocks later in the first-life curriculum. Reach the support rotation milestone."
+        },
+        {
+          "kind": "world_module",
+          "key": "bounties",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Bounty Board unlocks later in the first-life curriculum. Reach the support rotation milestone."
+        },
+        {
+          "kind": "world_module",
+          "key": "gateTrial",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Gate Trial unlocks later in the first-life curriculum. Reach the final Gate Trial milestone."
+        }
+      ],
+      "sourceSinkGuardChecks": [
+        {
+          "guardId": "pavilion_insufficient_gold_routes_outskirts",
+          "severity": "blocked",
+          "targetKind": "world_module",
+          "targetKey": "outskirts",
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "pass": true,
+      "notes": [
+        "alchemy is deferred by live city schema",
+        "talismanStudio is deferred by live city schema"
+      ]
+    },
+    {
+      "id": "M5_techniques_loadout",
+      "activeMilestoneId": "M5_techniques_loadout",
+      "description": "Technique loadout lesson.",
+      "visibleTabs": [
+        "cultivation",
+        "status",
+        "adventure",
+        "inventory",
+        "records",
+        "techniques"
+      ],
+      "hiddenTabs": [
+        "prestige"
+      ],
+      "utilityTabs": [
+        "settings"
+      ],
+      "availableWorldModules": [
+        "outskirts",
+        "manualPavilion"
+      ],
+      "teaserWorldModules": [],
+      "hiddenWorldModules": [
+        "apothecary",
+        "expeditions",
+        "forge",
+        "ruins",
+        "bounties",
+        "gateTrial"
+      ],
+      "tabEscapeChecks": [
+        {
+          "kind": "tab",
+          "key": "cultivation",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "status",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "adventure",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "inventory",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "records",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "techniques",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "prestige",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Prestige opens later in the first-life curriculum."
+        },
+        {
+          "kind": "tab",
+          "key": "settings",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "worldModuleEscapeChecks": [
+        {
+          "kind": "world_module",
+          "key": "outskirts",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "manualPavilion",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "apothecary",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Apothecary unlocks later in the first-life curriculum. Reach the preparation milestone where herbs and medicine connect."
+        },
+        {
+          "kind": "world_module",
+          "key": "expeditions",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Expeditions unlocks later in the first-life curriculum. Reach the preparation milestone where passive support routes open."
+        },
+        {
+          "kind": "world_module",
+          "key": "forge",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Forge unlocks later in the first-life curriculum. Reach the Forge milestone after preparation starts."
+        },
+        {
+          "kind": "world_module",
+          "key": "ruins",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Ruins unlocks later in the first-life curriculum. Reach the support rotation milestone."
+        },
+        {
+          "kind": "world_module",
+          "key": "bounties",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Bounty Board unlocks later in the first-life curriculum. Reach the support rotation milestone."
+        },
+        {
+          "kind": "world_module",
+          "key": "gateTrial",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Gate Trial unlocks later in the first-life curriculum. Reach the final Gate Trial milestone."
+        }
+      ],
+      "sourceSinkGuardChecks": [
+        {
+          "guardId": "techniques_empty_routes_manual_study",
+          "severity": "blocked",
+          "targetKind": "tab",
+          "targetKey": "records",
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "pass": true,
+      "notes": [
+        "alchemy is deferred by live city schema",
+        "talismanStudio is deferred by live city schema"
+      ]
+    },
+    {
+      "id": "M6_apothecary_expedition",
+      "activeMilestoneId": "M6_apothecary_expedition",
+      "description": "Medicine and expedition support lesson.",
+      "visibleTabs": [
+        "cultivation",
+        "status",
+        "adventure",
+        "inventory",
+        "records",
+        "techniques"
+      ],
+      "hiddenTabs": [
+        "prestige"
+      ],
+      "utilityTabs": [
+        "settings"
+      ],
+      "availableWorldModules": [
+        "outskirts",
+        "manualPavilion",
+        "apothecary",
+        "expeditions"
+      ],
+      "teaserWorldModules": [
+        "forge"
+      ],
+      "hiddenWorldModules": [
+        "ruins",
+        "bounties",
+        "gateTrial"
+      ],
+      "tabEscapeChecks": [
+        {
+          "kind": "tab",
+          "key": "cultivation",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "status",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "adventure",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "inventory",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "records",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "techniques",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "prestige",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Prestige opens later in the first-life curriculum."
+        },
+        {
+          "kind": "tab",
+          "key": "settings",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "worldModuleEscapeChecks": [
+        {
+          "kind": "world_module",
+          "key": "outskirts",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "manualPavilion",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "apothecary",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "expeditions",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "forge",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Forge is close, but it is not ready to open yet. Reach the Forge milestone after preparation starts."
+        },
+        {
+          "kind": "world_module",
+          "key": "ruins",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Ruins unlocks later in the first-life curriculum. Reach the support rotation milestone."
+        },
+        {
+          "kind": "world_module",
+          "key": "bounties",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Bounty Board unlocks later in the first-life curriculum. Reach the support rotation milestone."
+        },
+        {
+          "kind": "world_module",
+          "key": "gateTrial",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Gate Trial unlocks later in the first-life curriculum. Reach the final Gate Trial milestone."
+        }
+      ],
+      "sourceSinkGuardChecks": [
+        {
+          "guardId": "apothecary_no_stock_routes_source",
+          "severity": "blocked",
+          "targetKind": "world_module",
+          "targetKey": "expeditions",
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "pass": true,
+      "notes": [
+        "alchemy is deferred by live city schema",
+        "talismanStudio is deferred by live city schema"
+      ]
+    },
+    {
+      "id": "M7_forge",
+      "activeMilestoneId": "M7_forge",
+      "description": "Forge floor lesson.",
+      "visibleTabs": [
+        "cultivation",
+        "status",
+        "adventure",
+        "inventory",
+        "records",
+        "techniques"
+      ],
+      "hiddenTabs": [
+        "prestige"
+      ],
+      "utilityTabs": [
+        "settings"
+      ],
+      "availableWorldModules": [
+        "outskirts",
+        "manualPavilion",
+        "apothecary",
+        "expeditions",
+        "forge"
+      ],
+      "teaserWorldModules": [],
+      "hiddenWorldModules": [
+        "ruins",
+        "bounties",
+        "gateTrial"
+      ],
+      "tabEscapeChecks": [
+        {
+          "kind": "tab",
+          "key": "cultivation",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "status",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "adventure",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "inventory",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "records",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "techniques",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "prestige",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Prestige opens later in the first-life curriculum."
+        },
+        {
+          "kind": "tab",
+          "key": "settings",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "worldModuleEscapeChecks": [
+        {
+          "kind": "world_module",
+          "key": "outskirts",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "manualPavilion",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "apothecary",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "expeditions",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "forge",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "ruins",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Ruins unlocks later in the first-life curriculum. Reach the support rotation milestone."
+        },
+        {
+          "kind": "world_module",
+          "key": "bounties",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Bounty Board unlocks later in the first-life curriculum. Reach the support rotation milestone."
+        },
+        {
+          "kind": "world_module",
+          "key": "gateTrial",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Gate Trial unlocks later in the first-life curriculum. Reach the final Gate Trial milestone."
+        }
+      ],
+      "sourceSinkGuardChecks": [
+        {
+          "guardId": "forge_missing_material_routes_source",
+          "severity": "blocked",
+          "targetKind": "world_module",
+          "targetKey": "outskirts",
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "pass": true,
+      "notes": [
+        "alchemy is deferred by live city schema",
+        "talismanStudio is deferred by live city schema"
+      ]
+    },
+    {
+      "id": "M8_ruins_bounties",
+      "activeMilestoneId": "M8_ruins_bounties",
+      "description": "Ruins and Bounty Board support lesson.",
+      "visibleTabs": [
+        "cultivation",
+        "status",
+        "adventure",
+        "inventory",
+        "records",
+        "techniques"
+      ],
+      "hiddenTabs": [
+        "prestige"
+      ],
+      "utilityTabs": [
+        "settings"
+      ],
+      "availableWorldModules": [
+        "outskirts",
+        "manualPavilion",
+        "apothecary",
+        "expeditions",
+        "forge",
+        "ruins",
+        "bounties"
+      ],
+      "teaserWorldModules": [
+        "gateTrial"
+      ],
+      "hiddenWorldModules": [],
+      "tabEscapeChecks": [
+        {
+          "kind": "tab",
+          "key": "cultivation",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "status",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "adventure",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "inventory",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "records",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "techniques",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "prestige",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Prestige opens later in the first-life curriculum."
+        },
+        {
+          "kind": "tab",
+          "key": "settings",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "worldModuleEscapeChecks": [
+        {
+          "kind": "world_module",
+          "key": "outskirts",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "manualPavilion",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "apothecary",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "expeditions",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "forge",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "ruins",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "bounties",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "gateTrial",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Gate Trial is close, but it is not ready to open yet. Reach the final Gate Trial milestone."
+        }
+      ],
+      "sourceSinkGuardChecks": [
+        {
+          "guardId": "ruins_bounties_support_route",
+          "severity": "info",
+          "targetKind": "world_module",
+          "targetKey": "ruins",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "guardId": "gate_trial_teaser_not_openable",
+          "severity": "locked",
+          "targetKind": "world_module",
+          "targetKey": "ruins",
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "pass": true,
+      "notes": [
+        "alchemy is deferred by live city schema",
+        "talismanStudio is deferred by live city schema"
+      ]
+    },
+    {
+      "id": "M9_gate_trial",
+      "activeMilestoneId": "M9_gate_trial",
+      "description": "Gate Trial attempt lesson with defeated-attempt correction.",
+      "visibleTabs": [
+        "cultivation",
+        "status",
+        "adventure",
+        "inventory",
+        "records",
+        "techniques"
+      ],
+      "hiddenTabs": [
+        "prestige"
+      ],
+      "utilityTabs": [
+        "settings"
+      ],
+      "availableWorldModules": [
+        "outskirts",
+        "manualPavilion",
+        "apothecary",
+        "expeditions",
+        "forge",
+        "ruins",
+        "bounties",
+        "gateTrial"
+      ],
+      "teaserWorldModules": [],
+      "hiddenWorldModules": [],
+      "tabEscapeChecks": [
+        {
+          "kind": "tab",
+          "key": "cultivation",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "status",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "adventure",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "inventory",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "records",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "techniques",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "prestige",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Prestige opens later in the first-life curriculum."
+        },
+        {
+          "kind": "tab",
+          "key": "settings",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "worldModuleEscapeChecks": [
+        {
+          "kind": "world_module",
+          "key": "outskirts",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "manualPavilion",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "apothecary",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "expeditions",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "forge",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "ruins",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "bounties",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "gateTrial",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "sourceSinkGuardChecks": [
+        {
+          "guardId": "gate_defeat_routes_top_fix",
+          "severity": "blocked",
+          "targetKind": "world_module",
+          "targetKey": "apothecary",
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "pass": true,
+      "notes": [
+        "alchemy is deferred by live city schema",
+        "talismanStudio is deferred by live city schema"
+      ]
+    },
+    {
+      "id": "M10_foundation_graduation",
+      "activeMilestoneId": "M10_foundation_graduation",
+      "description": "Foundation graduation pending breakthrough.",
+      "visibleTabs": [
+        "cultivation",
+        "status",
+        "adventure",
+        "inventory",
+        "records",
+        "techniques"
+      ],
+      "hiddenTabs": [
+        "prestige"
+      ],
+      "utilityTabs": [
+        "settings"
+      ],
+      "availableWorldModules": [
+        "outskirts",
+        "manualPavilion",
+        "apothecary",
+        "expeditions",
+        "forge",
+        "ruins",
+        "bounties",
+        "gateTrial"
+      ],
+      "teaserWorldModules": [],
+      "hiddenWorldModules": [],
+      "tabEscapeChecks": [
+        {
+          "kind": "tab",
+          "key": "cultivation",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "status",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "adventure",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "inventory",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "records",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "techniques",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "prestige",
+          "expectedAllowed": false,
+          "actualAllowed": false,
+          "pass": true,
+          "reason": "Prestige opens later in the first-life curriculum."
+        },
+        {
+          "kind": "tab",
+          "key": "settings",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "worldModuleEscapeChecks": [
+        {
+          "kind": "world_module",
+          "key": "outskirts",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "manualPavilion",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "apothecary",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "expeditions",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "forge",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "ruins",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "bounties",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "gateTrial",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "sourceSinkGuardChecks": [],
+      "pass": true,
+      "notes": [
+        "alchemy is deferred by live city schema",
+        "talismanStudio is deferred by live city schema"
+      ]
+    },
+    {
+      "id": "complete_first_life",
+      "activeMilestoneId": "complete",
+      "description": "Completed first-life onboarding after Foundation breakthrough.",
+      "visibleTabs": [
+        "cultivation",
+        "status",
+        "adventure",
+        "inventory",
+        "records",
+        "techniques",
+        "prestige"
+      ],
+      "hiddenTabs": [],
+      "utilityTabs": [
+        "settings"
+      ],
+      "availableWorldModules": [
+        "outskirts",
+        "manualPavilion",
+        "apothecary",
+        "expeditions",
+        "forge",
+        "ruins",
+        "bounties",
+        "gateTrial"
+      ],
+      "teaserWorldModules": [],
+      "hiddenWorldModules": [],
+      "tabEscapeChecks": [
+        {
+          "kind": "tab",
+          "key": "cultivation",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "status",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "adventure",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "inventory",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "records",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "techniques",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "prestige",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "settings",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "worldModuleEscapeChecks": [
+        {
+          "kind": "world_module",
+          "key": "outskirts",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "manualPavilion",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "apothecary",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "expeditions",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "forge",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "ruins",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "bounties",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "gateTrial",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "sourceSinkGuardChecks": [
+        {
+          "guardId": "foundation_no_first_life_replay",
+          "severity": "info",
+          "targetKind": "none",
+          "targetKey": null,
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "pass": true,
+      "notes": [
+        "first-life onboarding no longer restricts supported tabs",
+        "first-life onboarding no longer restricts live city modules",
+        "alchemy is deferred by live city schema",
+        "talismanStudio is deferred by live city schema"
+      ]
+    },
+    {
+      "id": "foundation_plus_existing_save",
+      "activeMilestoneId": "M2_status_unlock",
+      "description": "Existing Foundation+ save must not lose advanced tabs or modules.",
+      "visibleTabs": [
+        "cultivation",
+        "status",
+        "adventure",
+        "inventory",
+        "records",
+        "techniques",
+        "prestige"
+      ],
+      "hiddenTabs": [],
+      "utilityTabs": [
+        "settings"
+      ],
+      "availableWorldModules": [
+        "outskirts",
+        "manualPavilion",
+        "apothecary",
+        "expeditions",
+        "forge",
+        "ruins",
+        "bounties",
+        "gateTrial"
+      ],
+      "teaserWorldModules": [],
+      "hiddenWorldModules": [],
+      "tabEscapeChecks": [
+        {
+          "kind": "tab",
+          "key": "cultivation",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "status",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "adventure",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "inventory",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "records",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "techniques",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "prestige",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "settings",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "worldModuleEscapeChecks": [
+        {
+          "kind": "world_module",
+          "key": "outskirts",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "manualPavilion",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "apothecary",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "expeditions",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "forge",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "ruins",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "bounties",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "gateTrial",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "sourceSinkGuardChecks": [],
+      "pass": true,
+      "notes": [
+        "first-life onboarding no longer restricts supported tabs",
+        "first-life onboarding no longer restricts live city modules",
+        "alchemy is deferred by live city schema",
+        "talismanStudio is deferred by live city schema"
+      ]
+    },
+    {
+      "id": "second_life_reclaim",
+      "activeMilestoneId": "complete",
+      "description": "Second-life or reclaim save keeps contextual help and no first-life replay.",
+      "visibleTabs": [
+        "cultivation",
+        "status",
+        "adventure",
+        "inventory",
+        "records",
+        "techniques",
+        "prestige"
+      ],
+      "hiddenTabs": [],
+      "utilityTabs": [
+        "settings"
+      ],
+      "availableWorldModules": [
+        "outskirts",
+        "manualPavilion",
+        "apothecary",
+        "expeditions",
+        "forge",
+        "ruins",
+        "bounties",
+        "gateTrial"
+      ],
+      "teaserWorldModules": [],
+      "hiddenWorldModules": [],
+      "tabEscapeChecks": [
+        {
+          "kind": "tab",
+          "key": "cultivation",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "status",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "adventure",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "inventory",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "records",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "techniques",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "prestige",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "settings",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "worldModuleEscapeChecks": [
+        {
+          "kind": "world_module",
+          "key": "outskirts",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "manualPavilion",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "apothecary",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "expeditions",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "forge",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "ruins",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "bounties",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "gateTrial",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "sourceSinkGuardChecks": [
+        {
+          "guardId": "foundation_no_first_life_replay",
+          "severity": "info",
+          "targetKind": "none",
+          "targetKey": null,
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "pass": true,
+      "notes": [
+        "first-life onboarding no longer restricts supported tabs",
+        "first-life onboarding no longer restricts live city modules",
+        "alchemy is deferred by live city schema",
+        "talismanStudio is deferred by live city schema"
+      ]
+    },
+    {
+      "id": "dev_override_unlock_all",
+      "activeMilestoneId": "M1_cultivation_only",
+      "description": "Developer override opens all supported onboarding surfaces.",
+      "visibleTabs": [
+        "cultivation",
+        "status",
+        "adventure",
+        "inventory",
+        "records",
+        "techniques",
+        "prestige"
+      ],
+      "hiddenTabs": [],
+      "utilityTabs": [
+        "settings"
+      ],
+      "availableWorldModules": [
+        "outskirts",
+        "manualPavilion",
+        "apothecary",
+        "expeditions",
+        "forge",
+        "ruins",
+        "bounties",
+        "gateTrial"
+      ],
+      "teaserWorldModules": [],
+      "hiddenWorldModules": [],
+      "tabEscapeChecks": [
+        {
+          "kind": "tab",
+          "key": "cultivation",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "status",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "adventure",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "inventory",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "records",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "techniques",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "prestige",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "settings",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "worldModuleEscapeChecks": [
+        {
+          "kind": "world_module",
+          "key": "outskirts",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "manualPavilion",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "apothecary",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "expeditions",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "forge",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "ruins",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "bounties",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "gateTrial",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "sourceSinkGuardChecks": [],
+      "pass": true,
+      "notes": [
+        "first-life onboarding no longer restricts supported tabs",
+        "first-life onboarding no longer restricts live city modules",
+        "alchemy is deferred by live city schema",
+        "talismanStudio is deferred by live city schema"
+      ]
+    },
+    {
+      "id": "exact_fixture_capture_mode",
+      "activeMilestoneId": "M3_world_outskirts",
+      "description": "Exact fixture/capture mode bypasses normal route guards for visual proof.",
+      "visibleTabs": [
+        "cultivation",
+        "status",
+        "adventure",
+        "inventory",
+        "records",
+        "techniques",
+        "prestige"
+      ],
+      "hiddenTabs": [],
+      "utilityTabs": [
+        "settings"
+      ],
+      "availableWorldModules": [
+        "outskirts",
+        "manualPavilion",
+        "apothecary",
+        "expeditions",
+        "forge",
+        "ruins",
+        "bounties",
+        "gateTrial"
+      ],
+      "teaserWorldModules": [],
+      "hiddenWorldModules": [],
+      "tabEscapeChecks": [
+        {
+          "kind": "tab",
+          "key": "cultivation",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "status",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "adventure",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "inventory",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "records",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "techniques",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "prestige",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "tab",
+          "key": "settings",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "worldModuleEscapeChecks": [
+        {
+          "kind": "world_module",
+          "key": "outskirts",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "manualPavilion",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "apothecary",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "expeditions",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "forge",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "ruins",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "bounties",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        },
+        {
+          "kind": "world_module",
+          "key": "gateTrial",
+          "expectedAllowed": true,
+          "actualAllowed": true,
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "sourceSinkGuardChecks": [
+        {
+          "guardId": "outskirts_gold_needs_pavilion_context",
+          "severity": "info",
+          "targetKind": "world_module",
+          "targetKey": "outskirts",
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "pass": true,
+      "notes": [
+        "first-life onboarding no longer restricts supported tabs",
+        "first-life onboarding no longer restricts live city modules",
+        "alchemy is deferred by live city schema",
+        "talismanStudio is deferred by live city schema"
+      ]
+    }
+  ],
+  "sourceSinkRouteViolations": []
+}

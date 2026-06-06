@@ -29,7 +29,8 @@ import { useEquipmentStore } from './equipmentStore.js';
 import { getBreathModeMultipliers } from '../content/tuning/cultivationTuning.js';
 import { useHeartLawStore } from './heartLawStore.js';
 import { useCultivationStore } from './cultivationStore.js';
-import { getHeartLawBonuses } from '../systems/heartLaw/heartLawLogic.js';
+import { useActivityStore } from './activityStore.js';
+import { getAffinityStatus, getHeartLawBonuses } from '../systems/heartLaw/heartLawLogic.js';
 import { useContentStore } from './contentStore.js';
 import { useCityStore } from './cityStore.js';
 import { useInventoryStore } from './inventoryStore.js';
@@ -39,9 +40,24 @@ import { useTrialStore } from './trialStore.js';
 import { progressionTimingTracker } from '../services/diagnostics/progressionTimingTracker.js';
 import { adaptProgressionAuthoredContent } from '../systems/progression/contract/contentAdapter.js';
 import { getProgressionContract } from '../systems/progression/contract/progressionContract.js';
+import { isLifeIdentityComplete } from '../systems/lifeStart/lifeIdentity.js';
 import { GameEvents, type BreakthroughMethod } from '../services/events/GameEvents.js';
 import { PERF_LABELS, incrementCounter, startTimer, time } from '../services/performance/index.js';
 import { bumpVersion } from './versionCounters.js';
+import { registerCultivationStageNumberGetter } from './cultivationStageBridge.js';
+import {
+  resolveBreakthroughStabilitySnapshot,
+  type RootResonanceForRisk,
+} from '../systems/breakthrough/breakthroughStabilityResolver.js';
+import { resolveCalmFirstBreathRiskReduction } from '../systems/prestige/prestigeMemory.js';
+import { getCanonicalCultivationStageNumber } from '../systems/progression/cultivationStageIndex.js';
+import { resolveForegroundGrowthMode } from '../systems/cultivation/foregroundGrowthResolver.js';
+import { resolveCultivationMindAlignment } from '../systems/cultivation/cultivationMindAlignmentResolver.js';
+import {
+  getSpiritRootPairKey,
+  resolveRootHeartFit,
+  rootHeartFitTierToRiskResonance,
+} from '../systems/spiritRoots/index.js';
 
 interface InventoryStoreDeps {
   getItemCount: (itemId: string) => number;
@@ -55,6 +71,7 @@ interface PrestigeStoreDeps {
   getCombatMultiplier: () => Decimal.Value;
   getSpiritRootTotalMultiplier: () => number;
   spiritRoot: SpiritRoot | null;
+  purchasesById?: Record<string, number>;
 }
 
 interface CombatStoreDeps {
@@ -144,10 +161,64 @@ const ACTIVITY_TIME_HEARTBEAT_MS = 10_000;
 
 let pendingQiGain = D(0);
 let lastQiDisplayFlushAt = 0;
+let breakthroughRiskRollForTest: (() => number) | null = null;
 
 function resetPendingQiGain() {
   pendingQiGain = D(0);
   lastQiDisplayFlushAt = 0;
+}
+
+function hasCommittedLifeIdentity(state: Pick<GameState, 'selectedPath'>): boolean {
+  const heartLawState = useHeartLawStore.getState();
+  return isLifeIdentityComplete({
+    pathId: state.selectedPath,
+    selectedHeartLawId: heartLawState.selectedHeartLawId,
+    breathMode: heartLawState.breathMode ?? null,
+  });
+}
+
+function getCultivationEffectiveStageForBreakthrough(state: Pick<GameState, 'realm'>): number {
+  return getCanonicalCultivationStageNumber({
+    realmIndex: state.realm.index,
+    substage: state.realm.substage,
+  });
+}
+
+function getGateResolutionForRealm(gateItemId: string | null): 'none' | 'cleared' | 'bypassed' {
+  if (!gateItemId) return 'none';
+  const trial = useContentStore.getState().raw?.trials.find((entry) => entry.gateItemId === gateItemId) ?? null;
+  if (!trial) return 'none';
+  return useTrialStore.getState().getProgress(trial.id).resolution;
+}
+
+function resolveRootResonanceForRisk(
+  heartLawDef: Parameters<typeof getAffinityStatus>[0],
+  spiritRoot: SpiritRoot | null,
+): RootResonanceForRisk {
+  const cultivation = useCultivationStore.getState();
+  const heartLawId = cultivation.selectedHeartLawId;
+  const currentRootResonance = spiritRoot
+    ? cultivation.rootResonanceByPair[getSpiritRootPairKey(spiritRoot.element, heartLawId)] ?? 0
+    : 0;
+  const fit = resolveRootHeartFit({
+    root: spiritRoot,
+    heartLaw: heartLawDef,
+    currentRootResonance,
+    unlockedVariantIds: [],
+  });
+  if (fit.tier !== 'neutral') {
+    return rootHeartFitTierToRiskResonance(fit.tier);
+  }
+  const affinity = getAffinityStatus(heartLawDef, spiritRoot);
+  if (affinity.status === 'match') return affinity.percent >= 10 ? 'exact' : 'soft';
+  if (affinity.status === 'mismatch') return 'mismatch';
+  return 'neutral';
+}
+
+function nextBreakthroughRoll(): number {
+  const raw = breakthroughRiskRollForTest ? breakthroughRiskRollForTest() : Math.random();
+  if (!Number.isFinite(raw)) return 1;
+  return raw > 1 ? raw / 100 : raw;
 }
 
 const sameStats = (left: GameState['stats'], right: GameState['stats']): boolean =>
@@ -190,24 +261,39 @@ export const useGameStore = create<GameState>()(
     // Initial state
     ...createInitialGameState(),
 
+    __setBreakthroughRiskRollForTest: (roll) => {
+      breakthroughRiskRollForTest = roll;
+    },
+
     /**
      * Main game tick - called regularly to update Qi and state
      */
     tick: (deltaTime: number) => time(PERF_LABELS.gameStoreTick, () => {
+      const current = get();
+      if (!hasCommittedLifeIdentity(current)) {
+        resetPendingQiGain();
+        return;
+      }
+
       const tickTimestamp = Date.now();
       time(PERF_LABELS.gameStoreTickBuffCleanup, () => get().removeExpiredBuffs());
 
-      const current = get();
       const breath = getBreathModeMultipliers(useHeartLawStore.getState().breathMode);
       time(PERF_LABELS.gameStoreTickCultivationConsumableCleanup, () => {
         useCultivationStore.getState().clearExpiredCultivationConsumables(tickTimestamp);
       });
+      const foreground = resolveForegroundGrowthMode(useActivityStore.getState().active);
+      if (foreground.daoHeartAllowed) {
+        useCultivationStore.getState().tickDaoHeartPractice(deltaTime, { now: tickTimestamp });
+      }
 
-      const endQi = startTimer(PERF_LABELS.gameStoreTickQi);
-      try {
-        pendingQiGain = pendingQiGain.plus(multiply(current.qiPerSecond, (deltaTime / 1000) * breath.qiRateMult));
-      } finally {
-        endQi();
+      if (foreground.fullQiAllowed) {
+        const endQi = startTimer(PERF_LABELS.gameStoreTickQi);
+        try {
+          pendingQiGain = pendingQiGain.plus(multiply(current.qiPerSecond, (deltaTime / 1000) * breath.qiRateMult));
+        } finally {
+          endQi();
+        }
       }
       if (lastQiDisplayFlushAt === 0) {
         lastQiDisplayFlushAt = tickTimestamp;
@@ -260,6 +346,11 @@ export const useGameStore = create<GameState>()(
     }),
 
     flushCultivationAccumulation: (reason = 'manual') => time(PERF_LABELS.cultivationFlushAccumulatedQi, () => {
+      if (!hasCommittedLifeIdentity(get())) {
+        resetPendingQiGain();
+        return;
+      }
+
       const now = Date.now();
       if (!pendingQiGain.greaterThan(0)) return;
       incrementCounter(`${PERF_LABELS.cultivationFlushAccumulatedQi}:${reason}`);
@@ -449,6 +540,11 @@ export const useGameStore = create<GameState>()(
      * Attempt a breakthrough to the next substage or realm
      */
     breakthrough: () => {
+      if (!hasCommittedLifeIdentity(get())) {
+        resetPendingQiGain();
+        return false;
+      }
+
       get().flushCultivationAccumulation('breakthrough');
       const state = get();
       const breakthroughTimestamp = Date.now();
@@ -458,6 +554,12 @@ export const useGameStore = create<GameState>()(
       const canAdvanceToNextRealm = isFinalSubstage && hasNextLiveRealm(currentRealmIndex);
       const statSnapshotBefore = { ...state.stats };
       const fromRealmName = currentRealm.name;
+      let majorAttemptTelemetry: {
+        risk: number;
+        causeRows: Array<{ id: string; value: number }>;
+        parityDelta: number;
+        fatigue: number;
+      } | null = null;
 
       // Get Qi requirement (includes prestige multipliers and live cultivation buffs)
       const requiredQi = get().getBreakthroughRequirement();
@@ -472,8 +574,8 @@ export const useGameStore = create<GameState>()(
         ? getGateTransitionItemIdForRealmIndex(useContentStore.getState().raw, currentRealmIndex)
         : null;
 
+      let inventoryStore: InventoryStoreDeps | null = null;
       if (gateItemId) {
-        let inventoryStore: InventoryStoreDeps | null = null;
         try {
           inventoryStore = _getInventoryStore ? _getInventoryStore() : null;
         } catch (error) {
@@ -486,7 +588,91 @@ export const useGameStore = create<GameState>()(
           console.warn(`[GameStore] Missing required breakthrough item: ${gateItemId}`);
           return false;
         }
+      }
 
+      if (canAdvanceToNextRealm) {
+        const cultivation = useCultivationStore.getState();
+        const heartLawId = cultivation.selectedHeartLawId;
+        const cultivationEffectiveStage = getCultivationEffectiveStageForBreakthrough(state);
+        const heartLawStage = heartLawId ? cultivation.heartLawLevelById[heartLawId] ?? 1 : 1;
+        const heartLawDef = heartLawId ? useContentStore.getState().maps.heartLawsById[heartLawId] ?? null : null;
+        const mindAlignment = resolveCultivationMindAlignment({
+          heartLawLevel: heartLawStage,
+          cultivationStageIndex: cultivationEffectiveStage,
+          clarity: cultivation.daoHeartClarity,
+          turbulence: cultivation.turbulence,
+        });
+        const purchasesById = _getPrestigeStore?.().purchasesById ?? {};
+        const spiritRoot = getSpiritRootSnapshot();
+        const snapshot = resolveBreakthroughStabilitySnapshot({
+          fromRealmIndex: currentRealmIndex,
+          toRealmIndex: currentRealmIndex + 1,
+          currentQi: state.qi,
+          requiredQi,
+          heartLawStage,
+          cultivationEffectiveStage,
+          clarity: cultivation.daoHeartClarity,
+          turbulence: cultivation.turbulence,
+          gateResolution: getGateResolutionForRealm(gateItemId),
+          rootResonance: resolveRootResonanceForRisk(heartLawDef, spiritRoot),
+          calmFirstBreathRiskReduction: resolveCalmFirstBreathRiskReduction({
+            purchasesById,
+            heartLawStage,
+            cultivationEffectiveStage,
+          }),
+          recklessConfirmation: true,
+          mindAlignment,
+        });
+        cultivation.recordBreakthroughRiskSnapshot(snapshot);
+        majorAttemptTelemetry = {
+          risk: snapshot.riskPercent,
+          causeRows: snapshot.rows.map((entry) => ({ id: entry.id, value: entry.value })),
+          parityDelta: heartLawStage - cultivationEffectiveStage,
+          fatigue: snapshot.rows.find((entry) => entry.id === 'training_fatigue')?.value ?? 0,
+        };
+        const failed = nextBreakthroughRoll() < snapshot.riskPercent / 100;
+        if (failed) {
+          const qiLost = D(requiredQi).times(snapshot.failureQiLossPct).dividedBy(100);
+          set((draft) => {
+            const previousQiDisplayBucket = getQiDisplayBucket(draft.qi);
+            const nextQi = Decimal.max(D(0), D(draft.qi).minus(qiLost));
+            draft.qi = nextQi.toString();
+            if (getQiDisplayBucket(draft.qi) !== previousQiDisplayBucket) {
+              draft.qiDisplayVersion = bumpVersion(draft.qiDisplayVersion);
+            }
+            draft.lastTickTime = breakthroughTimestamp;
+            draft.lastActiveTime = breakthroughTimestamp;
+          });
+          cultivation.addTurbulence(snapshot.failureTurbulenceGain);
+          cultivation.recordBreakthroughFailureSummary({
+            reason: 'risk_failure',
+            timestamp: breakthroughTimestamp,
+            riskPercent: snapshot.riskPercent,
+            band: snapshot.band,
+            qiLost: qiLost.toString(),
+            turbulenceAdded: snapshot.failureTurbulenceGain,
+            injury: snapshot.majorInjuryPct > 0 ? 'major' : snapshot.minorInjuryPct > 0 ? 'minor' : 'none',
+            rows: snapshot.rows,
+            message: `Breakthrough failed: ${snapshot.failureOutcomePreview}`,
+          });
+          GameEvents.emit({
+            type: 'breakthrough/attempted',
+            payload: {
+              timestamp: breakthroughTimestamp,
+              fromRealm: fromRealmName,
+              risk: snapshot.riskPercent,
+              causeRows: majorAttemptTelemetry.causeRows,
+              parityDelta: majorAttemptTelemetry.parityDelta,
+              fatigue: majorAttemptTelemetry.fatigue,
+              result: 'failure',
+            },
+          });
+          return false;
+        }
+        cultivation.recordBreakthroughFailureSummary(null);
+      }
+
+      if (gateItemId && inventoryStore) {
         const removed = inventoryStore.removeItem(gateItemId, 1);
         if (!removed) {
           console.warn(`[GameStore] Failed to consume breakthrough item: ${gateItemId}`);
@@ -626,6 +812,20 @@ export const useGameStore = create<GameState>()(
           statSnapshotAfter,
         },
       });
+      if (majorAttemptTelemetry) {
+        GameEvents.emit({
+          type: 'breakthrough/attempted',
+          payload: {
+            timestamp: breakthroughTimestamp,
+            fromRealm: fromRealmName,
+            risk: majorAttemptTelemetry.risk,
+            causeRows: majorAttemptTelemetry.causeRows,
+            parityDelta: majorAttemptTelemetry.parityDelta,
+            fatigue: majorAttemptTelemetry.fatigue,
+            result: 'success',
+          },
+        });
+      }
 
       // Trigger perk selection for newly reached realms when a path is selected
       const selectedPath = get().selectedPath;
@@ -717,16 +917,35 @@ export const useGameStore = create<GameState>()(
 
       const cultivationStore = useCultivationStore.getState();
       cultivationStore.clearExpiredCultivationConsumables(Date.now());
-      const heartLawId = useHeartLawStore.getState().selectedHeartLawId;
+      const heartLawId = cultivationStore.selectedHeartLawId ?? useHeartLawStore.getState().selectedHeartLawId;
       if (heartLawId) {
         const heartLawDef = useContentStore.getState().maps.heartLawsById[heartLawId] ?? null;
+        const spiritRoot = getSpiritRootSnapshot();
         const bonuses = getHeartLawBonuses({
           heartLawDef,
           chapter: useHeartLawStore.getState().chapter,
-          spiritRoot: getSpiritRootSnapshot(),
+          spiritRoot,
         });
         qiPerSec = multiply(qiPerSec, D(bonuses.cultivateRateMult));
+        const currentRootResonance = spiritRoot
+          ? cultivationStore.rootResonanceByPair[getSpiritRootPairKey(spiritRoot.element, heartLawId)] ?? 0
+          : 0;
+        const fit = resolveRootHeartFit({
+          root: spiritRoot,
+          heartLaw: heartLawDef,
+          currentRootResonance,
+          unlockedVariantIds: [],
+        });
+        qiPerSec = multiply(qiPerSec, D(fit.effects.cultivationSpeedMult));
       }
+      const heartLawLevel = heartLawId ? cultivationStore.heartLawLevelById[heartLawId] ?? 1 : 1;
+      const mindAlignment = resolveCultivationMindAlignment({
+        heartLawLevel,
+        cultivationStageIndex: getCultivationEffectiveStageForBreakthrough(state),
+        clarity: cultivationStore.daoHeartClarity,
+        turbulence: cultivationStore.turbulence,
+      });
+      qiPerSec = multiply(qiPerSec, D(mindAlignment.qiRateMultiplier));
 
       qiPerSec = multiply(qiPerSec, D(cultivationStore.getCultivationConsumableModifiers(Date.now()).qiRateMult));
 
@@ -1097,7 +1316,13 @@ export const useGameStore = create<GameState>()(
      * Perform a prestige reset with AP upgrades support
      */
     performPrestigeReset: () => {
+      const current = get();
       performCentralPrestigeReset({
+        currentLife: {
+          selectedPath: current.selectedPath,
+          realmIndex: current.realm.index,
+          substageIndex: current.realm.substage,
+        },
         resetGameRun: () => get().resetRun(),
       });
 
@@ -1106,6 +1331,14 @@ export const useGameStore = create<GameState>()(
     },
   }))
 );
+
+registerCultivationStageNumberGetter(() => {
+  const realm = useGameStore.getState().realm;
+  return getCanonicalCultivationStageNumber({
+    realmIndex: realm.index,
+    substage: realm.substage,
+  });
+});
 
 /**
  * Initialize the game store

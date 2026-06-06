@@ -1,0 +1,2206 @@
+import { create } from 'zustand';
+import { immer } from 'zustand/middleware/immer';
+import { useGameStore } from './gameStore.js';
+import { useZoneStore } from './zoneStore.js';
+import { useInventoryStore } from './inventoryStore.js';
+import { useContentStore } from './contentStore.js';
+import { useActivityStore } from './activityStore.js';
+import { useOutskirtsStore } from './outskirtsStore.js';
+import { useCityStore } from './cityStore.js';
+import { useTrialStore } from './trialStore.js';
+import { useRuinsStore } from './ruinsStore.js';
+import { useTechniqueStore } from './techniqueStore.js';
+import { useBountyStore } from './bountyStore.js';
+import { useHeartLawStore } from './heartLawStore.js';
+import { rankMultiplier, useTechCollectionStore } from './techCollectionStore.js';
+import { D, subtract, greaterThan, lessThanOrEqualTo, add, clamp } from '../utils/numbers.js';
+import { BossMechanics } from '../systems/bossMechanics.js';
+import { generateLoot, formatLootMessage } from '../systems/loot.js';
+import { RewardService } from '../services/rewards/index.js';
+import { applyLootBonuses } from '../services/rewards/applyLootBonuses.js';
+import { getTalismanBonusesNow } from './buffStore.js';
+import { createEnemy } from '../systems/enemyFactory.js';
+import { applyRankMultiplier, classifyTechnique, normalizeTechniqueEffects, summarizeEffects } from '../systems/techniques/effects.js';
+import { getHeartLawBonuses } from '../systems/heartLaw/heartLawLogic.js';
+import { getSpiritRootSnapshot } from './gameStore.js';
+const isRecord = (value) => !!value && typeof value === 'object' && !Array.isArray(value);
+function stampCombatEvent(type, event) {
+    const at = event.at ?? Date.now();
+    return { ...event, type, at, id: event.id ?? makeCombatEventId(at) };
+}
+import { COMBAT_ACTIVITY_TYPES } from '../types/activity.js';
+import { buildTrialDefeatSummary } from '../systems/combat/trialModel.js';
+import { buildTrialAttemptId, getEligibleFailCount, getTrialGateIndex } from '../services/diagnostics/balanceTelemetryService.js';
+import { normalizeTrialBossMechanics } from '../systems/combat/trialBossMechanicCatalog.js';
+import { applyAiProfileBias, getTechniqueAiTags } from '../systems/combat/aiProfiles.js';
+import { useUIStore } from './uiStore.js';
+import { getConsumableSpec, isCombatUsableConsumable, } from '../systems/consumables/consumableCatalog.js';
+import { useMedicinePouchStore } from './medicinePouchStore.js';
+import { GameEvents } from '../services/events/GameEvents.js';
+import { getDefaultCastingPolicyForAiProfile } from '../systems/builds/castingPolicyFit.js';
+import { PERF_LABELS, incrementCounter, startTimer, time } from '../services/performance/index.js';
+import { buildOutskirtsRewardBundle, getOutskirtsDropsConfig } from '../systems/economy/index.js';
+import { getGateFailureMeritPolicyForTrial } from '../systems/economy/gateFailureMeritPolicy.js';
+import { buildSection5ReadinessSurface } from '../systems/readiness/section5Adapters.js';
+import { bumpVersion } from './versionCounters.js';
+function getHeartLawCombatMultiplier() {
+    const selectedId = useHeartLawStore.getState().selectedHeartLawId;
+    if (!selectedId)
+        return 1;
+    const heartLawDef = useContentStore.getState().maps.heartLawsById[selectedId] ?? null;
+    if (!heartLawDef)
+        return 1;
+    const bonuses = getHeartLawBonuses({
+        heartLawDef,
+        chapter: useHeartLawStore.getState().chapter,
+        spiritRoot: getSpiritRootSnapshot(),
+    });
+    return bonuses.combatDamageMult ?? 1;
+}
+/**
+ * Defense constant for damage calculation
+ * Damage = ATK * (1 - DEF/(DEF + K))
+ */
+export const DEFENSE_CONSTANT_K = 100;
+/**
+ * Combat timing constants (in milliseconds)
+ */
+export const PLAYER_ATTACK_COOLDOWN = 1000; // 1 second between attacks
+export const ENEMY_ATTACK_COOLDOWN = 1500; // 1.5 seconds between enemy attacks
+const MAX_COMBAT_LOG_ENTRIES = 6; // Keep only visible combat log entries
+const OUTSKIRTS_NEXT_FIGHT_DELAY_MS = 700;
+const MAX_TECHNIQUE_LOG_ENTRIES = 50;
+const MAX_COMBAT_EVENT_ENTRIES = 200;
+const DEFAULT_SHIELD_DURATION_SEC = 12;
+const DEFAULT_BUFF_DURATION_SEC = 10;
+const QI_REGEN_PER_SEC_PCT = 0.02;
+const INTENT_REGEN_PER_SEC = 10;
+const AI_DECISION_INTERVAL_MS = 250;
+const MIN_TECHNIQUE_CAST_INTERVAL_MS = 300;
+const PASSIVE_BUFF_DURATION_SEC = 999999;
+/**
+ * Boss mechanics instance (single instance per combat)
+ */
+let bossMechanics = null;
+let combatLoopErrorLogged = false;
+function randomIntInRange(range, fallback = [0, 0]) {
+    const [minRaw, maxRaw] = Array.isArray(range) && range.length === 2 ? range : fallback;
+    const min = Number.isFinite(minRaw) ? Number(minRaw) : fallback[0];
+    const max = Number.isFinite(maxRaw) ? Number(maxRaw) : fallback[1];
+    const low = Math.min(min, max);
+    const high = Math.max(min, max);
+    return Math.floor(Math.random() * (high - low + 1)) + low;
+}
+function randomFromList(list) {
+    if (!Array.isArray(list) || list.length === 0)
+        return null;
+    const index = Math.floor(Math.random() * list.length);
+    return list[index] ?? null;
+}
+const makeCombatEventId = (at) => `${at}-${Math.random().toString(16).slice(2, 10)}`;
+function pushWindowed(list, entry, max) {
+    list.push(entry);
+    const overflow = list.length - max;
+    if (overflow > 0)
+        list.splice(0, overflow);
+}
+function getNextCombatBuffExpiryAt(combatBuffs, now) {
+    let nextExpiryAt = null;
+    for (const buff of combatBuffs) {
+        if (!Number.isFinite(buff.endsAt) || buff.endsAt <= now)
+            continue;
+        if (nextExpiryAt === null || buff.endsAt < nextExpiryAt) {
+            nextExpiryAt = buff.endsAt;
+        }
+    }
+    return nextExpiryAt;
+}
+function getNextCooldownReadyAt(cooldowns, now) {
+    let nextReadyAt = null;
+    for (const readyAt of Object.values(cooldowns)) {
+        if (!Number.isFinite(readyAt) || readyAt <= now)
+            continue;
+        if (nextReadyAt === null || readyAt < nextReadyAt) {
+            nextReadyAt = readyAt;
+        }
+    }
+    return nextReadyAt;
+}
+function crossedAtOrBelowThreshold(previousPct, nextPct, thresholdPct) {
+    return previousPct > thresholdPct && nextPct <= thresholdPct;
+}
+function valueByIndex(source, index, fallback) {
+    if (Array.isArray(source)) {
+        return source[index] ?? source[source.length - 1] ?? fallback;
+    }
+    if (source && typeof source === 'object') {
+        const byIndex = source[index];
+        if (byIndex !== undefined)
+            return byIndex;
+        const values = Object.values(source);
+        if (values.length > 0)
+            return values[values.length - 1] ?? fallback;
+    }
+    return fallback;
+}
+function pickFromWeightedPool(pool, fallbackId) {
+    if (!Array.isArray(pool) || pool.length === 0)
+        return fallbackId ?? null;
+    const totalWeight = pool.reduce((sum, entry) => sum + (entry.weight ?? 0), 0);
+    if (totalWeight <= 0)
+        return fallbackId ?? pool[0]?.enemyId ?? null;
+    let roll = Math.random() * totalWeight;
+    for (const entry of pool) {
+        roll -= entry.weight ?? 0;
+        if (roll <= 0)
+            return entry.enemyId;
+    }
+    return pool[pool.length - 1]?.enemyId ?? fallbackId ?? null;
+}
+function collapseItems(items) {
+    const merged = new Map();
+    items.forEach((item) => {
+        if (!item?.itemId || typeof item.qty !== 'number' || item.qty <= 0)
+            return;
+        merged.set(item.itemId, (merged.get(item.itemId) ?? 0) + item.qty);
+    });
+    return Array.from(merged.entries()).map(([itemId, qty]) => ({ itemId, qty }));
+}
+function combatHpPct(current, max) {
+    const currentValue = D(current).toNumber();
+    const maxValue = D(max).toNumber();
+    if (!Number.isFinite(currentValue) || !Number.isFinite(maxValue) || maxValue <= 0)
+        return undefined;
+    return Math.max(0, Math.min(1, currentValue / maxValue));
+}
+function countHealingEvents(events) {
+    return events.filter((event) => event.type === 'HEAL').length;
+}
+function resolveCombatResourceModel(resourceModel) {
+    const normalized = (resourceModel ?? '').toLowerCase();
+    if (normalized.includes('heaven') || normalized.includes('qi')) {
+        return 'qiPct';
+    }
+    if (normalized.includes('martial') || normalized.includes('intent')) {
+        return 'intent';
+    }
+    return 'none';
+}
+function buildCombatResources() {
+    const gameState = useGameStore.getState();
+    const qiValue = Number.isFinite(D(gameState.qi).toNumber()) ? D(gameState.qi).toNumber() : 0;
+    const maxQi = Math.max(100, qiValue);
+    const maxIntent = 100;
+    return {
+        qi: Math.min(qiValue, maxQi),
+        maxQi,
+        intent: maxIntent,
+        maxIntent,
+    };
+}
+const DEBUFF_TAGS = ['burn', 'poison', 'bleed', 'dot', 'debuff', 'curse', 'slow'];
+function hasDebuffSignal(def, effects) {
+    if (!def)
+        return false;
+    const tags = (def.tags ?? []).map((tag) => tag.toLowerCase());
+    if (tags.some((tag) => DEBUFF_TAGS.includes(tag)))
+        return true;
+    return effects.some((effect) => effect.type === 'addStatus');
+}
+let aiTechniqueMetadataCache = null;
+function buildAiTechniqueMetadataCacheKey(input) {
+    return [
+        input.contentVersion,
+        input.loadoutVersion,
+        input.aiProfileVersion,
+        input.collectionVersion,
+        input.masteryVersion,
+        input.isBossFight ? 'boss' : 'mob',
+        input.candidateIds.join(','),
+    ].join('|');
+}
+function computeResourceAfterCastPct(def, costReductionPct, resources) {
+    const resourceModel = resolveCombatResourceModel(def.resourceModel);
+    const resourceCost = def.resourceCost ?? 0;
+    const effectiveCost = resourceCost * (1 - costReductionPct);
+    if (resourceModel === 'qiPct') {
+        const costPct = effectiveCost > 1 ? effectiveCost / 100 : effectiveCost;
+        const cost = resources.maxQi * costPct;
+        const remaining = Math.max(0, resources.qi - cost);
+        const pct = resources.maxQi > 0 ? remaining / resources.maxQi : 0;
+        return { resourceAfterPct: pct, resourceModel };
+    }
+    if (resourceModel === 'intent') {
+        const remaining = Math.max(0, resources.intent - effectiveCost);
+        const pct = resources.maxIntent > 0 ? remaining / resources.maxIntent : 0;
+        return { resourceAfterPct: pct, resourceModel };
+    }
+    return { resourceAfterPct: 1, resourceModel: 'none' };
+}
+function computeCandidateScore(input) {
+    const { policy, hpPct, isBossFight, shieldMissingOrExpiring, reservePct, resourceAfterPct, damageScore, defensiveScore, debuffScore, classification, hasShield, } = input;
+    if (policy === 'aggressive') {
+        let score = damageScore;
+        if (classification.isBurst)
+            score += 2;
+        if (classification.isUltimate)
+            score += isBossFight ? 2 : 1;
+        if (defensiveScore > 0) {
+            score += hpPct < 0.25 ? defensiveScore * 2 : -2;
+        }
+        return score;
+    }
+    if (policy === 'balanced') {
+        let score = damageScore;
+        score += debuffScore * 1.5;
+        if (classification.isAoE)
+            score += 0.5;
+        if (defensiveScore > 0 && hpPct < 0.6)
+            score += 1;
+        if (reservePct > 0 && resourceAfterPct < reservePct)
+            score -= 10;
+        return score;
+    }
+    // defensive
+    let score = damageScore * 0.6 + defensiveScore;
+    if (shieldMissingOrExpiring && hasShield) {
+        score += 2;
+    }
+    if (hpPct < 0.7 && defensiveScore > 0) {
+        score += 2;
+    }
+    if (classification.isBurst || classification.isUltimate) {
+        if (hpPct < 0.75)
+            score -= 6;
+        if (hpPct < 0.6)
+            score -= 6;
+    }
+    if (reservePct > 0 && resourceAfterPct < reservePct)
+        score -= 10;
+    return score;
+}
+function getBasePlayerCombatStats() {
+    const stats = useGameStore.getState().stats;
+    return {
+        atk: D(stats.atk).toNumber(),
+        def: D(stats.def).toNumber(),
+        maxHp: D(stats.maxHp).toNumber(),
+        crit: stats.crit,
+        critDmg: stats.critDmg,
+        dodge: stats.dodge,
+        speed: stats.speed,
+    };
+}
+function resolveStatKey(stat) {
+    const normalized = stat.trim().toLowerCase();
+    if (['atk', 'attack'].includes(normalized))
+        return 'atk';
+    if (['def', 'defense'].includes(normalized))
+        return 'def';
+    if (['hp', 'maxhp', 'max_hp', 'max hp'].includes(normalized))
+        return 'maxHp';
+    if (['crit', 'critical'].includes(normalized))
+        return 'crit';
+    if (['critdmg', 'crit_dmg', 'crit dmg'].includes(normalized))
+        return 'critDmg';
+    if (['dodge', 'evasion'].includes(normalized))
+        return 'dodge';
+    if (['speed', 'haste'].includes(normalized))
+        return 'speed';
+    return null;
+}
+function getEffectivePlayerCombatStats(combatBuffs, now) {
+    const base = getBasePlayerCombatStats();
+    const updated = { ...base };
+    combatBuffs
+        .filter((buff) => buff.endsAt > now)
+        .forEach((buff) => {
+        const key = resolveStatKey(buff.stat);
+        if (!key)
+            return;
+        const current = updated[key];
+        const nextValue = buff.mode === 'pct' ? current * (1 + buff.value) : current + buff.value;
+        updated[key] = nextValue;
+    });
+    updated.atk = Math.max(0, updated.atk);
+    updated.def = Math.max(0, updated.def);
+    updated.maxHp = Math.max(1, updated.maxHp);
+    updated.crit = Math.max(0, updated.crit);
+    updated.critDmg = Math.max(0, updated.critDmg);
+    updated.dodge = Math.max(0, updated.dodge);
+    updated.speed = Math.max(0, updated.speed);
+    return updated;
+}
+function resolveShieldDurationSec(effect) {
+    if (!effect || typeof effect !== 'object')
+        return null;
+    if (Array.isArray(effect))
+        return null;
+    const type = effect.type;
+    if (type !== 'shield')
+        return null;
+    const duration = effect.durationSec;
+    return typeof duration === 'number' && Number.isFinite(duration) ? duration : null;
+}
+const createInitialCombatState = () => ({
+    inCombat: false,
+    currentZone: null,
+    currentEnemy: null,
+    combatContext: { type: null },
+    playerHP: '0',
+    playerMaxHP: '0',
+    enemyHP: '0',
+    enemyMaxHP: '0',
+    combatLog: [],
+    autoAttack: false,
+    autoCombatAI: false,
+    lastAttackTime: 0,
+    lastEnemyAttackTime: 0,
+    techniqueCooldowns: {},
+    lastTechniqueCastAt: 0,
+    nextAiDecisionAt: 0,
+    combatShield: null,
+    combatBuffs: [],
+    combatResources: {
+        qi: 0,
+        maxQi: 100,
+        intent: 100,
+        maxIntent: 100,
+    },
+    techniqueLog: [],
+    events: [],
+    isBoss: false,
+    combatStartTime: 0,
+    enemyMechanics: [],
+    activeAura: null,
+    combatResolved: false,
+    combatSessionVersion: 0,
+    combatViewVersion: 0,
+    combatResultVersion: 0,
+});
+/**
+ * Combat store managing all combat state and actions
+ */
+export const useCombatStore = create()(immer((set, get) => {
+    const applyCombatShield = (damage, now) => {
+        let remainingDamage = damage;
+        let absorbed = D(0);
+        time(PERF_LABELS.combatStoreResources, () => set((state) => {
+            const shield = state.combatShield;
+            if (!shield)
+                return;
+            if (shield.expiresAt !== null && shield.expiresAt <= now) {
+                state.combatShield = null;
+                return;
+            }
+            const shieldAmount = D(shield.amount);
+            if (shieldAmount.lessThanOrEqualTo(0)) {
+                state.combatShield = null;
+                return;
+            }
+            const absorbAmount = remainingDamage.lessThan(shieldAmount) ? remainingDamage : shieldAmount;
+            absorbed = absorbAmount;
+            remainingDamage = remainingDamage.minus(absorbAmount);
+            const nextAmount = shieldAmount.minus(absorbAmount).toNumber();
+            if (nextAmount <= 0) {
+                state.combatShield = null;
+            }
+            else if (state.combatShield) {
+                state.combatShield.amount = nextAmount;
+            }
+        }));
+        return { remainingDamage, absorbed };
+    };
+    const addTechniqueLogEntry = (kind, message, techId, at = Date.now()) => {
+        incrementCounter(PERF_LABELS.combatStoreLogsAppended);
+        set((state) => {
+            pushWindowed(state.techniqueLog, { at, kind, message, techId }, MAX_TECHNIQUE_LOG_ENTRIES);
+        });
+    };
+    const emitEvent = (type, event) => {
+        get().pushEvent(stampCombatEvent(type, event));
+    };
+    const applyPassiveTechniques = (now) => {
+        const contentStore = useContentStore.getState();
+        const techCollection = useTechCollectionStore.getState();
+        const passiveIds = useTechniqueStore.getState().getCombatEquippedTechIds().passive;
+        if (passiveIds.length === 0)
+            return;
+        passiveIds.forEach((techId) => {
+            if (!techCollection.hasTech(techId))
+                return;
+            const techDef = contentStore.maps.techniquesById[techId];
+            if (!techDef)
+                return;
+            const rank = techCollection.unlockedTechs[techId]?.rank ?? 1;
+            const rankMult = rankMultiplier(rank);
+            const scaling = getTechniqueScaling(techId, techDef);
+            const effects = applyRankMultiplier(normalizeTechniqueEffects(techDef), rankMult).filter((effect) => effect.type === 'buff');
+            if (effects.length === 0)
+                return;
+            set((state) => {
+                effects.forEach((effect) => {
+                    const buffId = `${techId}:${effect.stat}`;
+                    state.combatBuffs = state.combatBuffs.filter((buff) => buff.id !== buffId);
+                    state.combatBuffs.push({
+                        id: buffId,
+                        stat: effect.stat,
+                        mode: effect.mode,
+                        value: effect.value * rankMult * scaling.traitMods.buffMult * scaling.runeMods.buffMult,
+                        endsAt: now + PASSIVE_BUFF_DURATION_SEC * 1000,
+                    });
+                });
+            });
+        });
+    };
+    const selectTechniqueToCast = (now) => {
+        const state = get();
+        if (!state.inCombat || !state.currentEnemy)
+            return null;
+        if (now - state.lastTechniqueCastAt < MIN_TECHNIQUE_CAST_INTERVAL_MS)
+            return null;
+        const techniqueStore = useTechniqueStore.getState();
+        const loadout = techniqueStore.getSelectedLoadout();
+        const uiSettings = useUIStore.getState().settings;
+        const aiProfile = uiSettings?.combatAIProfile ?? loadout?.aiProfile ?? 'balanced';
+        const castingPolicy = loadout?.castingPolicy ??
+            getDefaultCastingPolicyForAiProfile(aiProfile);
+        const techCollection = useTechCollectionStore.getState();
+        const contentStore = useContentStore.getState();
+        const equipped = techniqueStore.getCombatEquippedTechIds();
+        const candidateIds = [...equipped.active];
+        if (equipped.ultimate) {
+            candidateIds.push(equipped.ultimate);
+        }
+        const uniqueCandidates = Array.from(new Set(candidateIds));
+        if (uniqueCandidates.length === 0)
+            return null;
+        const hp = D(state.playerHP);
+        const maxHp = D(state.playerMaxHP);
+        const hpPct = maxHp.greaterThan(0) ? hp.dividedBy(maxHp).toNumber() : 0;
+        const isBossFight = state.isBoss || state.combatContext.type === 'trial';
+        const enemyHp = D(state.enemyHP);
+        const enemyMaxHp = D(state.enemyMaxHP);
+        const enemyHpPct = enemyMaxHp.greaterThan(0) ? enemyHp.dividedBy(enemyMaxHp).toNumber() : 0;
+        const shieldMissingOrExpiring = !state.combatShield ||
+            (state.combatShield.expiresAt !== null && state.combatShield.expiresAt <= now + 3000);
+        const cacheKey = buildAiTechniqueMetadataCacheKey({
+            contentVersion: contentStore.contentVersion,
+            loadoutVersion: techniqueStore.loadoutVersion,
+            aiProfileVersion: techniqueStore.aiProfileVersion,
+            collectionVersion: techCollection.collectionVersion,
+            masteryVersion: techCollection.masteryVersion,
+            isBossFight,
+            candidateIds: uniqueCandidates,
+        });
+        if (aiTechniqueMetadataCache?.key !== cacheKey) {
+            aiTechniqueMetadataCache = time(PERF_LABELS.combatAiSnapshotBuild, () => {
+                const entries = new Map();
+                for (const techId of uniqueCandidates) {
+                    if (!techCollection.hasTech(techId))
+                        continue;
+                    const def = contentStore.maps.techniquesById[techId];
+                    if (!def)
+                        continue;
+                    const scaling = getTechniqueScaling(techId, def);
+                    const effects = normalizeTechniqueEffects(def, { includeSecondary: scaling.secondaryUnlocked });
+                    const classification = classifyTechnique(def);
+                    const aiTags = getTechniqueAiTags(def, effects);
+                    const cooldownSec = Math.max(1, def.cooldownSec ?? 0);
+                    const damageMults = effects
+                        .filter((effect) => effect.type === 'damage')
+                        .map((effect) => effect.mult);
+                    const damageMult = damageMults.length ? Math.max(...damageMults) : 0;
+                    const damageScore = damageMult > 0 ? damageMult / cooldownSec : 0;
+                    const hasHeal = effects.some((effect) => effect.type === 'heal');
+                    const hasShield = effects.some((effect) => effect.type === 'shield');
+                    const hasDefBuff = effects.some((effect) => effect.type === 'buff' && /def|hp|resist/i.test(effect.stat));
+                    let defensiveScore = 0;
+                    if (hasHeal)
+                        defensiveScore += 5;
+                    if (hasShield)
+                        defensiveScore += 4;
+                    if (hasDefBuff)
+                        defensiveScore += 3;
+                    entries.set(techId, {
+                        techId,
+                        def,
+                        classification,
+                        effects,
+                        aiTags,
+                        damageScore,
+                        defensiveScore,
+                        debuffScore: hasDebuffSignal(def, effects) ? 2 : 0,
+                        hasShield,
+                    });
+                }
+                return { key: cacheKey, entries };
+            });
+        }
+        const candidates = uniqueCandidates.reduce((acc, techId) => {
+            if (!get().canCastTechnique(techId, now))
+                return acc;
+            const metadata = aiTechniqueMetadataCache?.entries.get(techId);
+            if (!metadata)
+                return acc;
+            const scaling = getTechniqueScaling(techId, metadata.def);
+            const { resourceAfterPct } = computeResourceAfterCastPct(metadata.def, scaling.costReductionPct, state.combatResources);
+            acc.push({
+                ...metadata,
+                resourceAfterPct,
+            });
+            return acc;
+        }, []);
+        if (candidates.length === 0)
+            return null;
+        const reservePct = castingPolicy === 'defensive' ? 0.2 : castingPolicy === 'balanced' ? 0.12 : 0;
+        const isPlayerDebuffed = false;
+        const scored = candidates.map((candidate) => {
+            const baseScore = computeCandidateScore({
+                policy: castingPolicy,
+                hpPct,
+                isBossFight,
+                shieldMissingOrExpiring,
+                reservePct,
+                resourceAfterPct: candidate.resourceAfterPct,
+                damageScore: candidate.damageScore,
+                defensiveScore: candidate.defensiveScore,
+                debuffScore: candidate.debuffScore,
+                classification: candidate.classification,
+                hasShield: candidate.hasShield,
+            });
+            const score = applyAiProfileBias(baseScore, candidate.aiTags, candidate.classification, {
+                profile: aiProfile,
+                hpPct,
+                enemyHpPct,
+                enemyIsBoss: isBossFight,
+                isPlayerDebuffed,
+            });
+            return { ...candidate, score };
+        });
+        if (castingPolicy === 'defensive' && hpPct < 0.55) {
+            const defensiveCandidates = scored
+                .filter((entry) => entry.defensiveScore > 0)
+                .sort((a, b) => b.defensiveScore - a.defensiveScore || b.score - a.score);
+            if (defensiveCandidates.length > 0) {
+                return defensiveCandidates[0]?.techId ?? null;
+            }
+        }
+        scored.sort((a, b) => b.score - a.score);
+        const best = scored[0];
+        if (!best)
+            return null;
+        if (best.score > 0)
+            return best.techId;
+        return castingPolicy === 'aggressive' ? best.techId : null;
+    };
+    const triggerAutoMedicineEvent = (now, event) => time(PERF_LABELS.combatMedicineEvent, () => {
+        const uiSettings = useUIStore.getState().settings;
+        if (!uiSettings.useConsumablesInCombat)
+            return;
+        const state = get();
+        if (!state.inCombat || !state.currentEnemy)
+            return;
+        const pouch = useMedicinePouchStore.getState();
+        const slots = pouch.slots;
+        const orderedSlots = ['healing', 'utility', 'specialty'];
+        const hasCandidateSlot = orderedSlots.some((slotKey) => {
+            const slot = slots[slotKey];
+            if (!slot || !slot.enabled || !slot.equippedItemId || slot.trigger === 'manual')
+                return false;
+            if (slot.bossOnly && !(state.isBoss || state.combatContext.type === 'trial'))
+                return false;
+            if (event.type === 'fightStart')
+                return slot.trigger === 'fightStart' || (slot.trigger === 'bossStart' && (state.isBoss || state.combatContext.type === 'trial'));
+            if (event.type === 'bossStart')
+                return slot.trigger === 'bossStart';
+            if (event.type === 'hpThresholdCrossed')
+                return slot.trigger === 'hpBelowPct';
+            if (event.type === 'resourceThreshold')
+                return event.resource === 'qi' ? slot.trigger === 'qiBelowPct' : slot.trigger === 'intentBelowPct';
+            return false;
+        });
+        if (!hasCandidateSlot) {
+            incrementCounter(PERF_LABELS.combatMedicineSkippedEmpty);
+            return;
+        }
+        for (const slotKey of orderedSlots) {
+            const slot = slots[slotKey];
+            if (!slot || !slot.enabled)
+                continue;
+            const itemId = slot.equippedItemId;
+            if (!itemId)
+                continue;
+            const spec = getConsumableSpec(itemId);
+            if (!spec || !isCombatUsableConsumable(itemId))
+                continue;
+            if (slot.bossOnly && !(state.isBoss || state.combatContext.type === 'trial')) {
+                continue;
+            }
+            const requiredCooldownSec = Math.max(slot.cooldownSec, spec.cooldownSec);
+            const lastUsed = slot.lastUsedAt;
+            const cooldownReady = lastUsed === null || now - lastUsed >= requiredCooldownSec * 1000;
+            if (!cooldownReady)
+                continue;
+            let shouldUse = false;
+            switch (slot.trigger) {
+                case 'manual':
+                    shouldUse = false;
+                    break;
+                case 'hpBelowPct': {
+                    shouldUse = event.type === 'hpThresholdCrossed'
+                        && crossedAtOrBelowThreshold(event.previousHpPct, event.nextHpPct, slot.thresholdPct);
+                    break;
+                }
+                case 'qiBelowPct': {
+                    shouldUse = event.type === 'resourceThreshold'
+                        && event.resource === 'qi'
+                        && event.nextPct <= slot.thresholdPct;
+                    break;
+                }
+                case 'intentBelowPct': {
+                    shouldUse = event.type === 'resourceThreshold'
+                        && event.resource === 'intent'
+                        && event.nextPct <= slot.thresholdPct;
+                    break;
+                }
+                case 'fightStart':
+                    shouldUse = event.type === 'fightStart' && (lastUsed === null || lastUsed < state.combatStartTime);
+                    break;
+                case 'bossStart':
+                    shouldUse =
+                        (event.type === 'fightStart' || event.type === 'bossStart') &&
+                            (state.isBoss || state.combatContext.type === 'trial') &&
+                            (lastUsed === null || lastUsed < state.combatStartTime);
+                    break;
+                default:
+                    break;
+            }
+            if (!shouldUse)
+                continue;
+            const result = get().consumeCombatConsumable(itemId, 'auto', now);
+            if (result.ok) {
+                GameEvents.emit({ type: 'pouch/auto_trigger', payload: { slotKey, itemId } });
+                const remaining = useInventoryStore.getState().getQty(itemId);
+                if (remaining <= 1) {
+                    GameEvents.emit({ type: 'pouch/low_charges_warning', payload: { slotKey, itemId, remaining } });
+                }
+                pouch.markUsed(slotKey, now);
+                break;
+            }
+        }
+    });
+    const triggerStartHpThresholdMedicine = (now) => {
+        const state = get();
+        const maxHp = D(state.playerMaxHP);
+        if (!state.inCombat || !maxHp.greaterThan(0))
+            return;
+        const currentHpPct = Math.max(0, Math.min(100, D(state.playerHP).div(maxHp).mul(100).toNumber()));
+        if (currentHpPct >= 100)
+            return;
+        triggerAutoMedicineEvent(now, {
+            type: 'hpThresholdCrossed',
+            previousHpPct: 100,
+            nextHpPct: currentHpPct,
+        });
+    };
+    const getTechniqueScaling = (techId, technique) => {
+        const techCollection = useTechCollectionStore.getState();
+        const progression = techCollection.getTechniqueProgressionSnapshot(techId);
+        const milestoneEffects = progression.masteryMilestoneEffects;
+        const isBoss = get().isBoss || get().combatContext.type === 'trial';
+        const traitMods = techCollection.getTraitModifiers(techId, isBoss);
+        const runeMods = techCollection.getRuneModifiers(techId, technique);
+        const masteryCdr = techCollection.getMasteryCooldownReductionPct(techId);
+        const masteryCostReduction = techCollection.getMasteryCostReductionPct(techId);
+        const masteryEffectMult = techCollection.getMasteryEffectMultiplier(techId);
+        const secondaryUnlocked = milestoneEffects.secondaryUnlocked;
+        const secondaryPotencyMult = secondaryUnlocked ? progression.secondaryPotencyMult : 1;
+        const cooldownReductionPct = Math.min(0.3, traitMods.cooldownReductionPct + runeMods.cooldownReductionPct + masteryCdr);
+        const costReductionPct = Math.min(0.4, traitMods.costReductionPct + runeMods.costReductionPct + masteryCostReduction);
+        return {
+            traitMods,
+            runeMods,
+            cooldownReductionPct,
+            costReductionPct,
+            masteryEffectMult,
+            secondaryUnlocked,
+            secondaryPotencyMult,
+            isBoss,
+        };
+    };
+    return {
+        // Initial state
+        ...createInitialCombatState(),
+        /**
+         * Enter combat with an enemy
+         */
+        enterCombat: (zone, enemy) => {
+            const playerStats = useGameStore.getState().stats;
+            const now = Date.now();
+            // Initialize boss mechanics if this is a boss
+            const isBoss = enemy.isBoss || false;
+            if (isBoss) {
+                bossMechanics = new BossMechanics();
+                console.log('[CombatStore] Boss mechanics initialized for', enemy.name);
+            }
+            else {
+                bossMechanics = null;
+            }
+            combatLoopErrorLogged = false;
+            set((state) => {
+                state.inCombat = true;
+                state.currentZone = zone;
+                state.currentEnemy = enemy;
+                state.combatContext = { type: null };
+                state.enemyMechanics = enemy.mechanics || [];
+                state.activeAura = null;
+                // Initialize HP
+                state.playerHP = playerStats.hp;
+                state.playerMaxHP = playerStats.maxHp;
+                state.enemyHP = enemy.hp;
+                state.enemyMaxHP = enemy.hp;
+                // Clear combat log
+                state.combatLog = [];
+                state.events = [];
+                // Reset timing
+                state.lastAttackTime = now;
+                state.lastEnemyAttackTime = now;
+                state.techniqueCooldowns = {};
+                state.lastTechniqueCastAt = 0;
+                state.nextAiDecisionAt = now + AI_DECISION_INTERVAL_MS;
+                state.combatShield = null;
+                state.combatBuffs = [];
+                state.combatResources = buildCombatResources();
+                state.techniqueLog = [];
+                // Boss tracking
+                state.isBoss = isBoss;
+                state.combatStartTime = now;
+                state.combatSessionVersion = bumpVersion(state.combatSessionVersion);
+                state.combatViewVersion = bumpVersion(state.combatViewVersion);
+            });
+            // Add entry to log
+            if (isBoss) {
+                get().addLogEntry('system', `BOSS FIGHT: ${enemy.name}!`, '#f59e0b');
+                emitEvent('BOSS_SPAWN', { enemyId: enemy.id, enemyName: enemy.name });
+            }
+            else {
+                get().addLogEntry('system', `Combat started with ${enemy.name}!`, '#fbbf24');
+            }
+            applyPassiveTechniques(now);
+            triggerAutoMedicineEvent(now, { type: 'fightStart' });
+            if (isBoss)
+                triggerAutoMedicineEvent(now, { type: 'bossStart' });
+            triggerStartHpThresholdMedicine(now);
+        },
+        /**
+         * Start combat from a content-driven enemy template.
+         *
+         * This is the foundation entrypoint for city modules (Outskirts / Trials / Ruins).
+         * Enemy stats are currently derived from player stats with simple multipliers and
+         * will be refined when module-specific scaling is implemented.
+         */
+        startCombat: (enemyTemplateId, context) => {
+            const playerStats = useGameStore.getState().stats;
+            const now = Date.now();
+            const contentStore = useContentStore.getState();
+            const template = contentStore.maps.enemiesById[enemyTemplateId];
+            if (!template) {
+                console.warn('[CombatStore] Unknown enemy template', enemyTemplateId);
+                return;
+            }
+            const tags = Array.isArray(template?.tags) ? template.tags : [];
+            const role = typeof template?.role === 'string' ? template.role : 'mob';
+            const contextCityId = context && 'cityId' in context ? context.cityId : undefined;
+            const contextCityIndex = context && 'cityIndex' in context ? context.cityIndex : undefined;
+            const cityIndex = typeof contextCityIndex === 'number'
+                ? contextCityIndex
+                : contextCityId
+                    ? contentStore.maps.citiesById[contextCityId]?.index ?? 0
+                    : 0;
+            const isBoss = (context && 'isBoss' in context ? context.isBoss : undefined) ??
+                (role === 'boss' || tags.includes('boss'));
+            const roomIndex = context?.type === 'ruins' ? context.roomIndex ?? 0 : 0;
+            const roomCount = context?.type === 'ruins' ? context.roomCount ?? 1 : 1;
+            const difficulty = context?.type === 'ruins' ? 'ruins' : context?.type === 'trial' ? 'trial' : 'outskirts';
+            if (context?.type === 'trial' && context.trialId) {
+                const trialStore = useTrialStore.getState();
+                const progress = trialStore.getProgress(context.trialId);
+                const attemptNumberThisLife = progress.attempts + progress.sessionAttempts + 1;
+                const attemptId = buildTrialAttemptId(context.trialId, now);
+                if (trialStore.activeTrialSessionId !== context.trialId) {
+                    trialStore.beginTrialSession(context.trialId, now);
+                }
+                else {
+                    trialStore.setAttemptStart(context.trialId, now);
+                }
+                GameEvents.emit({
+                    type: 'trials/attempt_started',
+                    payload: {
+                        timestamp: now,
+                        trialId: context.trialId,
+                        gateIndex: getTrialGateIndex(context.trialId),
+                        attemptId,
+                        attemptNumberThisLife,
+                        countsTowardFailSafe: context.countsTowardFailSafe,
+                        lifecycleState: 'available',
+                    },
+                });
+            }
+            const enemyScaled = createEnemy(enemyTemplateId, {
+                cityIndex,
+                isBoss,
+                playerPowerSnapshot: {
+                    atk: playerStats.atk,
+                    def: playerStats.def,
+                    maxHp: playerStats.maxHp,
+                },
+                difficulty,
+                roomIndex,
+                roomCount,
+                trialId: context?.type === 'trial' ? context.trialId : undefined,
+            });
+            const enemy = {
+                id: enemyScaled.id,
+                name: enemyScaled.name,
+                level: enemyScaled.level,
+                zone: context?.type ? context.type : 'unknown',
+                hp: enemyScaled.maxHp,
+                atk: enemyScaled.atk,
+                def: enemyScaled.def,
+                crit: enemyScaled.critChance ?? (isBoss ? 10 : 5),
+                critDmg: isBoss ? 170 : 150,
+                dodge: enemyScaled.dodgeChance ?? (isBoss ? 6 : 4),
+                speed: enemyScaled.speed ?? 1.0,
+                goldReward: enemyScaled.goldDrop ?? '0',
+                expReward: enemyScaled.exp ?? '0',
+                isBoss: enemyScaled.isBoss,
+                mechanics: context?.type === 'trial'
+                    ? normalizeTrialBossMechanics(enemyScaled.mechanics ?? template?.mechanics)
+                    : (enemyScaled.mechanics ?? (Array.isArray(template?.mechanics)
+                        ? template.mechanics
+                        : [])),
+            };
+            // Initialize boss mechanics if this is a boss
+            if (enemy.isBoss) {
+                bossMechanics = new BossMechanics();
+                console.log('[CombatStore] Boss mechanics initialized for', enemy.name);
+            }
+            else {
+                bossMechanics = null;
+            }
+            set((state) => {
+                state.inCombat = true;
+                state.currentZone = null;
+                state.currentEnemy = enemy;
+                state.combatContext = context ?? { type: null };
+                state.enemyMechanics = enemy.mechanics || [];
+                state.activeAura = null;
+                state.combatResolved = false;
+                // Initialize HP
+                state.playerHP = playerStats.hp;
+                state.playerMaxHP = playerStats.maxHp;
+                state.enemyHP = enemy.hp;
+                state.enemyMaxHP = enemy.hp;
+                // Clear combat log
+                state.combatLog = [];
+                state.events = [];
+                // Reset timing
+                state.lastAttackTime = now;
+                state.lastEnemyAttackTime = now;
+                state.techniqueCooldowns = {};
+                state.lastTechniqueCastAt = 0;
+                state.nextAiDecisionAt = now + AI_DECISION_INTERVAL_MS;
+                state.combatShield = null;
+                state.combatBuffs = [];
+                state.combatResources = buildCombatResources();
+                state.techniqueLog = [];
+                // Boss tracking
+                state.isBoss = isBoss;
+                state.combatStartTime = now;
+                state.combatSessionVersion = bumpVersion(state.combatSessionVersion);
+                state.combatViewVersion = bumpVersion(state.combatViewVersion);
+            });
+            if (enemy.isBoss) {
+                get().addLogEntry('system', `BOSS FIGHT: ${enemy.name}!`, '#f59e0b');
+                emitEvent('BOSS_SPAWN', { enemyId: enemy.id, enemyName: enemy.name });
+            }
+            else {
+                get().addLogEntry('system', `Combat started with ${enemy.name}!`, '#fbbf24');
+            }
+            applyPassiveTechniques(now);
+            triggerAutoMedicineEvent(now, { type: 'fightStart' });
+            if (isBoss)
+                triggerAutoMedicineEvent(now, { type: 'bossStart' });
+            triggerStartHpThresholdMedicine(now);
+        },
+        /**
+         * End combat via a simple victory/defeat flag.
+         *
+         * This is a convenience wrapper for module callers.
+         */
+        endCombat: (victory) => {
+            if (!get().inCombat)
+                return;
+            if (victory)
+                get().defeatEnemy();
+            else
+                get().playerDefeat();
+        },
+        /**
+         * Exit combat and clean up state
+         */
+        exitCombat: () => {
+            // Clean up boss mechanics
+            bossMechanics = null;
+            const contextSnapshot = get().combatContext;
+            if (contextSnapshot?.type === 'trial') {
+                useTrialStore.getState().resetSession(contextSnapshot.trialId);
+            }
+            set((state) => {
+                state.inCombat = false;
+                state.currentZone = null;
+                state.currentEnemy = null;
+                state.combatContext = { type: null };
+                state.playerHP = '0';
+                state.playerMaxHP = '0';
+                state.enemyHP = '0';
+                state.enemyMaxHP = '0';
+                state.lastAttackTime = 0;
+                state.lastEnemyAttackTime = 0;
+                state.techniqueCooldowns = {};
+                state.lastTechniqueCastAt = 0;
+                state.nextAiDecisionAt = 0;
+                state.combatShield = null;
+                state.combatBuffs = [];
+                state.combatResources = buildCombatResources();
+                state.techniqueLog = [];
+                state.events = [];
+                state.isBoss = false;
+                state.combatStartTime = 0;
+                state.enemyMechanics = [];
+                state.activeAura = null;
+                state.combatResolved = false;
+                state.combatSessionVersion = bumpVersion(state.combatSessionVersion);
+                state.combatViewVersion = bumpVersion(state.combatViewVersion);
+            });
+        },
+        consumeCombatConsumable: (itemId, source, now = Date.now()) => {
+            const state = get();
+            if (!state.inCombat || !state.currentEnemy)
+                return { ok: false, reason: 'not_in_combat' };
+            if (!isCombatUsableConsumable(itemId)) {
+                return { ok: false, reason: 'not_combat_consumable' };
+            }
+            const spec = getConsumableSpec(itemId);
+            if (!spec)
+                return { ok: false, reason: 'unknown_spec' };
+            const inventory = useInventoryStore.getState();
+            if (!inventory.spendItem(itemId, 1)) {
+                GameEvents.emit({ type: 'pouch/out_of_charges', payload: { itemId, source } });
+                return { ok: false, reason: 'no_charges' };
+            }
+            const effect = spec.effect;
+            const maxHp = D(state.playerMaxHP);
+            switch (effect.kind) {
+                case 'healPct': {
+                    const healAmount = maxHp.times(effect.pct);
+                    let appliedHeal = D(0);
+                    set((state) => {
+                        const current = D(state.playerHP);
+                        const healed = current.plus(healAmount);
+                        const capped = healed.greaterThan(maxHp) ? maxHp : healed;
+                        appliedHeal = capped.minus(current);
+                        state.playerHP = capped.toString();
+                    });
+                    if (appliedHeal.greaterThan(0)) {
+                        emitEvent('HEAL', { amount: appliedHeal.toFixed(0) });
+                        get().addLogEntry('heal', `Used ${spec.shortLabel}: +${appliedHeal.toFixed(0)} HP`, '#34d399');
+                    }
+                    break;
+                }
+                case 'shieldPct': {
+                    const shieldGain = maxHp.times(effect.pct).toNumber();
+                    const expiresAt = now + effect.durationSec * 1000;
+                    let totalShield = shieldGain;
+                    set((state) => {
+                        if (!state.combatShield) {
+                            state.combatShield = { amount: shieldGain, expiresAt };
+                        }
+                        else {
+                            state.combatShield.amount += shieldGain;
+                            if (state.combatShield.expiresAt === null || state.combatShield.expiresAt < expiresAt) {
+                                state.combatShield.expiresAt = expiresAt;
+                            }
+                        }
+                        totalShield = state.combatShield?.amount ?? shieldGain;
+                    });
+                    emitEvent('SHIELD_GAINED', {
+                        amount: shieldGain.toFixed(0),
+                        total: totalShield.toFixed(0),
+                        durationSec: effect.durationSec,
+                    });
+                    get().addLogEntry('system', `Used ${spec.shortLabel}: Shield ${Math.round(shieldGain)} for ${effect.durationSec}s`, '#38bdf8');
+                    break;
+                }
+                case 'combatBuff':
+                case 'cleanseOrFallbackBuff': {
+                    const buffStat = effect.kind === 'cleanseOrFallbackBuff' ? effect.fallbackStat : effect.stat;
+                    const buffMode = effect.kind === 'cleanseOrFallbackBuff' ? 'pct' : effect.mode;
+                    const buffValue = effect.kind === 'cleanseOrFallbackBuff' ? effect.fallbackValue : effect.value;
+                    const buffId = `consumable:${itemId}:${buffStat}`;
+                    const endsAt = now + effect.durationSec * 1000;
+                    let refreshed = false;
+                    set((state) => {
+                        refreshed = state.combatBuffs.some((buff) => buff.id === buffId);
+                        state.combatBuffs = state.combatBuffs.filter((buff) => buff.id !== buffId);
+                        state.combatBuffs.push({ id: buffId, stat: buffStat, mode: buffMode, value: buffValue, endsAt });
+                    });
+                    const valueLabel = `${(buffValue * 100).toFixed(0)}${buffMode === 'pct' ? '%' : ''}`;
+                    emitEvent('STATUS_APPLIED', { statusId: buffId, stacks: 1, durationSec: effect.durationSec, refreshed, target: 'player' });
+                    get().addLogEntry('system', effect.kind === 'cleanseOrFallbackBuff'
+                        ? `Used ${spec.shortLabel}: no venom to cleanse, ${buffStat} +${valueLabel} for ${effect.durationSec}s`
+                        : `Used ${spec.shortLabel}: ${buffStat} +${valueLabel} for ${effect.durationSec}s`, '#38bdf8');
+                    break;
+                }
+                case 'restoreQiPct': {
+                    const gain = state.combatResources.maxQi * effect.pct;
+                    let applied = 0;
+                    set((state) => {
+                        const before = state.combatResources.qi;
+                        const next = Math.min(state.combatResources.maxQi, before + gain);
+                        applied = next - before;
+                        state.combatResources.qi = next;
+                    });
+                    if (applied > 0) {
+                        get().addLogEntry('system', `Used ${spec.shortLabel}: +${applied.toFixed(0)} Qi`, '#22d3ee');
+                    }
+                    break;
+                }
+                case 'restoreIntentPct': {
+                    const gain = state.combatResources.maxIntent * effect.pct;
+                    let applied = 0;
+                    set((state) => {
+                        const before = state.combatResources.intent;
+                        const next = Math.min(state.combatResources.maxIntent, before + gain);
+                        applied = next - before;
+                        state.combatResources.intent = next;
+                    });
+                    if (applied > 0) {
+                        get().addLogEntry('system', `Used ${spec.shortLabel}: +${applied.toFixed(0)} intent`, '#22d3ee');
+                    }
+                    break;
+                }
+                default:
+                    return { ok: false, reason: 'unsupported_effect' };
+            }
+            return { ok: true };
+        },
+        resetCombat: () => {
+            bossMechanics = null;
+            aiTechniqueMetadataCache = null;
+            set((state) => {
+                Object.assign(state, createInitialCombatState());
+            });
+        },
+        hardResetCombat: () => {
+            bossMechanics = null;
+            aiTechniqueMetadataCache = null;
+            set((state) => {
+                Object.assign(state, createInitialCombatState());
+            });
+        },
+        /**
+         * Player attacks the current enemy
+         */
+        playerAttack: () => {
+            const state = get();
+            if (!state.inCombat || !state.currentEnemy)
+                return;
+            const now = Date.now();
+            if (now - state.lastAttackTime < PLAYER_ATTACK_COOLDOWN)
+                return;
+            if (lessThanOrEqualTo(state.enemyHP, 0) || lessThanOrEqualTo(state.playerHP, 0))
+                return;
+            const effectiveStats = getEffectivePlayerCombatStats(state.combatBuffs, now);
+            const enemy = state.currentEnemy;
+            // Check if enemy dodges
+            const dodgeRoll = Math.random() * 100;
+            if (dodgeRoll < enemy.dodge) {
+                get().addLogEntry('player', `You attacked ${enemy.name} but it missed!`, '#94a3b8');
+                set((state) => {
+                    state.lastAttackTime = now;
+                });
+                return;
+            }
+            // Calculate base damage: ATK * (1 - DEF/(DEF + K))
+            const atk = D(effectiveStats.atk);
+            const def = D(enemy.def);
+            const defReduction = def.dividedBy(def.plus(DEFENSE_CONSTANT_K));
+            const baseDamage = atk.times(D(1).minus(defReduction));
+            const bonusPct = Math.max(0, getTalismanBonusesNow().damageBonusPct);
+            const damageMultiplier = D(1).plus(D(bonusPct).dividedBy(100));
+            const heartLawMultiplier = D(getHeartLawCombatMultiplier());
+            // Check for critical hit
+            const critRoll = Math.random() * 100;
+            const isCrit = critRoll < effectiveStats.crit;
+            const critMultiplier = isCrit ? D(effectiveStats.critDmg).dividedBy(100) : D(1);
+            const finalDamage = baseDamage.times(damageMultiplier).times(heartLawMultiplier).times(critMultiplier);
+            const currentEnemyHp = D(state.enemyHP);
+            const appliedDamage = currentEnemyHp.lessThan(finalDamage) ? currentEnemyHp : finalDamage;
+            get().addLogEntry(isCrit ? 'damage' : 'player', isCrit
+                ? `Critical hit! You attacked ${enemy.name} for ${appliedDamage.toFixed(0)} damage!`
+                : `You attacked ${enemy.name} for ${appliedDamage.toFixed(0)} damage!`, isCrit ? '#f59e0b' : '#60a5fa');
+            // Apply damage to enemy
+            set((state) => {
+                const newHP = subtract(state.enemyHP, finalDamage.toString());
+                const clampedHP = clamp(newHP, 0, state.enemyMaxHP);
+                state.enemyHP = clampedHP.toString();
+                state.lastAttackTime = now;
+            });
+            emitEvent('HIT', {
+                source: 'player',
+                target: 'enemy',
+                amount: appliedDamage.toFixed(0),
+                isCrit,
+                kind: 'basic',
+            });
+            // Check if enemy is defeated
+            if (lessThanOrEqualTo(get().enemyHP, 0)) {
+                setTimeout(() => {
+                    get().defeatEnemy();
+                }, 500);
+            }
+        },
+        /**
+         * Enemy attacks the player
+         */
+        enemyAttack: () => {
+            const state = get();
+            if (!state.inCombat || !state.currentEnemy)
+                return;
+            const now = Date.now();
+            if (now - state.lastEnemyAttackTime < ENEMY_ATTACK_COOLDOWN)
+                return;
+            if (lessThanOrEqualTo(state.playerHP, 0) || lessThanOrEqualTo(state.enemyHP, 0))
+                return;
+            const gameStore = useGameStore.getState();
+            const effectiveStats = getEffectivePlayerCombatStats(state.combatBuffs, now);
+            const enemy = state.currentEnemy;
+            // Check if player dodges
+            const dodgeRoll = Math.random() * 100;
+            if (dodgeRoll < effectiveStats.dodge) {
+                get().addLogEntry('enemy', `${enemy.name} attacked but it missed!`, '#94a3b8');
+                set((state) => {
+                    state.lastEnemyAttackTime = now;
+                });
+                return;
+            }
+            // Calculate base damage: ATK * (1 - DEF/(DEF + K))
+            let enemyAttackPower = D(enemy.atk);
+            // Apply boss enrage multiplier
+            if (state.isBoss && bossMechanics) {
+                const enrageMultiplier = bossMechanics.getEnrageMultiplier();
+                if (enrageMultiplier > 1) {
+                    enemyAttackPower = enemyAttackPower.times(enrageMultiplier);
+                }
+            }
+            const def = D(effectiveStats.def);
+            const defReduction = def.dividedBy(def.plus(DEFENSE_CONSTANT_K));
+            const baseDamage = enemyAttackPower.times(D(1).minus(defReduction));
+            // Check for critical hit
+            const critRoll = Math.random() * 100;
+            const isCrit = critRoll < enemy.crit;
+            const critMultiplier = isCrit ? D(enemy.critDmg).dividedBy(100) : D(1);
+            const damageAfterCrit = baseDamage.times(critMultiplier);
+            const { remainingDamage: damageAfterCombatShield, absorbed: combatAbsorbed } = applyCombatShield(damageAfterCrit, now);
+            const { remainingDamage, absorbed } = gameStore.applyAbsorptionShield(damageAfterCombatShield.toString());
+            const damageAfterAbsorption = D(remainingDamage);
+            const absorbedAmount = D(absorbed).plus(combatAbsorbed);
+            const startingHp = D(state.playerHP);
+            const newHP = subtract(state.playerHP, damageAfterAbsorption.toString());
+            const clampedHP = clamp(newHP, 0, state.playerMaxHP);
+            const appliedDamage = startingHp.minus(D(clampedHP));
+            const previousHpPct = D(state.playerMaxHP).greaterThan(0)
+                ? startingHp.dividedBy(D(state.playerMaxHP)).times(100).toNumber()
+                : 0;
+            const nextHpPct = D(state.playerMaxHP).greaterThan(0)
+                ? D(clampedHP).dividedBy(D(state.playerMaxHP)).times(100).toNumber()
+                : 0;
+            const absorptionNote = absorbedAmount.greaterThan(0) ? ` (${absorbedAmount.toFixed(0)} absorbed)` : '';
+            if (damageAfterAbsorption.lessThanOrEqualTo(0)) {
+                get().addLogEntry('system', `${enemy.name} attacked, but your shield absorbed it!`, '#22c55e');
+            }
+            else {
+                get().addLogEntry(isCrit ? 'damage' : 'enemy', isCrit
+                    ? `${enemy.name} landed a critical hit for ${appliedDamage.toFixed(0)} damage!${absorptionNote}`
+                    : `${enemy.name} attacked you for ${appliedDamage.toFixed(0)} damage!${absorptionNote}`, isCrit ? '#ef4444' : '#f87171');
+            }
+            set((state) => {
+                state.playerHP = clampedHP.toString();
+                state.lastEnemyAttackTime = now;
+            });
+            if (damageAfterAbsorption.greaterThan(0) || absorbedAmount.greaterThan(0)) {
+                emitEvent('HIT', {
+                    source: 'enemy',
+                    target: 'player',
+                    amount: appliedDamage.toFixed(0),
+                    isCrit,
+                    absorbed: absorbedAmount.greaterThan(0) ? absorbedAmount.toFixed(0) : undefined,
+                    kind: 'basic',
+                });
+            }
+            triggerAutoMedicineEvent(now, { type: 'hpThresholdCrossed', previousHpPct, nextHpPct });
+            // Check if player is defeated
+            if (lessThanOrEqualTo(get().playerHP, 0)) {
+                setTimeout(() => {
+                    get().playerDefeat();
+                }, 500);
+            }
+        },
+        /**
+         * Handle enemy defeat - award rewards
+         */
+        defeatEnemy: () => time(PERF_LABELS.combatStoreResolution, () => {
+            const state = get();
+            if (!state.currentEnemy || state.combatResolved)
+                return;
+            set((draft) => {
+                draft.combatResolved = true;
+                draft.combatResultVersion = bumpVersion(draft.combatResultVersion);
+                draft.combatViewVersion = bumpVersion(draft.combatViewVersion);
+            });
+            const enemy = state.currentEnemy;
+            const currentZone = state.currentZone;
+            const isBoss = state.isBoss;
+            const combatContext = state.combatContext;
+            const activityToken = useActivityStore.getState().active?.startedAt;
+            const emitLootDrops = (items, reason) => {
+                if (!items)
+                    return;
+                const maps = useContentStore.getState().maps;
+                items.forEach((item) => {
+                    if (!item?.itemId || !item.qty)
+                        return;
+                    const rarity = 'common';
+                    emitEvent('LOOT_DROP', { itemId: item.itemId, qty: item.qty, rarity, reason });
+                });
+            };
+            // Add victory message
+            if (isBoss) {
+                get().addLogEntry('victory', `Victory! You defeated the boss ${enemy.name}.`, '#fbbf24');
+                emitEvent('BOSS_DEFEATED', { enemyId: enemy.id, enemyName: enemy.name });
+            }
+            else {
+                get().addLogEntry('victory', `You defeated ${enemy.name}!`, '#22c55e');
+            }
+            const gameStore = useGameStore.getState();
+            const inventoryStore = useInventoryStore.getState();
+            const combatSummaryPayload = {
+                playerHpPctRemaining: combatHpPct(state.playerHP, state.playerMaxHP),
+                enemyHpPctRemaining: combatHpPct(state.enemyHP, state.enemyMaxHP),
+                healingEvents: countHealingEvents(state.events),
+            };
+            if (combatContext.type === 'trial') {
+                const { cityId, trialId, countsTowardFailSafe, rewardBundle } = combatContext;
+                const durationSec = state.combatStartTime ? Math.max(0, (Date.now() - state.combatStartTime) / 1000) : 0;
+                const attemptId = buildTrialAttemptId(trialId, state.combatStartTime ?? Date.now());
+                useActivityStore.getState().stopActivity();
+                if (countsTowardFailSafe) {
+                    useTrialStore.getState().markCleared(trialId);
+                    useCityStore.getState().markGateTrialCleared(cityId);
+                    emitLootDrops(rewardBundle?.items, 'Gate Trial clear');
+                    RewardService.grantRewards(rewardBundle ?? {}, 'Gate Trial clear');
+                }
+                else {
+                    console.warn('[CombatStore] Ignoring resolved or non-qualifying trial victory for gate progression', combatContext);
+                }
+                GameEvents.emit({
+                    type: 'trials/attempt_resolved',
+                    payload: {
+                        timestamp: Date.now(),
+                        trialId,
+                        gateIndex: getTrialGateIndex(trialId),
+                        attemptId,
+                        outcome: countsTowardFailSafe ? 'cleared' : 'bypassed',
+                        durationSec,
+                        countsTowardFailSafe,
+                        eligibleFailCountAfterAttempt: getEligibleFailCount(trialId),
+                    },
+                });
+                GameEvents.emit({
+                    type: 'combat/resolved',
+                    payload: {
+                        enemyId: enemy.id,
+                        outcome: 'victory',
+                        source: 'trial',
+                        trialId,
+                        cityId,
+                        isBoss: true,
+                        durationSec,
+                        timestamp: Date.now(),
+                        ...combatSummaryPayload,
+                    },
+                });
+                setTimeout(() => {
+                    get().exitCombat();
+                }, 500);
+                return;
+            }
+            if (combatContext.type === 'ruins') {
+                const { runId, sourceId, cityId, roomIndex } = combatContext;
+                const ruinId = sourceId ?? combatContext.ruinsId;
+                if (runId && ruinId && cityId) {
+                    GameEvents.emit({
+                        type: 'combat/resolved',
+                        payload: {
+                            enemyId: enemy.id,
+                            outcome: 'victory',
+                            source: 'ruins',
+                            cityId,
+                            sourceId: ruinId,
+                            ruinId,
+                            runId,
+                            roomIndex,
+                            roomCount: combatContext.roomCount,
+                            isBoss: roomIndex + 1 >= combatContext.roomCount,
+                            durationSec: state.combatStartTime ? (Date.now() - state.combatStartTime) / 1000 : undefined,
+                            timestamp: Date.now(),
+                            ...combatSummaryPayload,
+                        },
+                    });
+                    useRuinsStore.getState().handleRoomVictory({ runId, ruinId, cityId, roomIndex });
+                }
+                else {
+                    console.warn('[CombatStore] Missing ruins context data', combatContext);
+                    useActivityStore.getState().stopActivity();
+                    useCombatStore.getState().exitCombat();
+                }
+                return;
+            }
+            if (combatContext.type === 'outskirts') {
+                const { cityId, sourceId } = combatContext;
+                const contentStore = useContentStore.getState();
+                const outskirtsDef = sourceId ? contentStore.maps.outskirtsById[sourceId] : undefined;
+                if (!outskirtsDef) {
+                    console.warn('[CombatStore] Missing outskirts def for', sourceId);
+                    setTimeout(() => get().exitCombat(), 500);
+                    return;
+                }
+                const cityIndex = combatContext.cityIndex ?? outskirtsDef.cityIndex ?? (cityId
+                    ? contentStore.maps.citiesById[cityId]?.index ?? 0
+                    : 0);
+                const isBossFight = Boolean(combatContext.isBoss ?? isBoss);
+                useOutskirtsStore.getState().recordKill(outskirtsDef.id, isBossFight);
+                if (cityId) {
+                    useBountyStore
+                        .getState()
+                        .recordEvent({ type: isBossFight ? 'OUTSKIRTS_BOSS_KILL' : 'OUTSKIRTS_KILL', cityId, amount: 1 });
+                }
+                if (isBossFight && cityId) {
+                    useCityStore.getState().markOutskirtsBossDefeated(cityId);
+                }
+                const economy = contentStore.raw?.economy;
+                const rewards = buildOutskirtsRewardBundle(outskirtsDef, getOutskirtsDropsConfig(economy), cityIndex, isBossFight, undefined, applyLootBonuses);
+                RewardService.grantRewards(rewards, `Outskirts Victory (${isBossFight ? 'Boss' : 'Mob'})`);
+                emitLootDrops(rewards.items, isBossFight ? 'Outskirts Boss' : 'Outskirts Victory');
+                GameEvents.emit({
+                    type: 'combat/resolved',
+                    payload: {
+                        enemyId: enemy.id,
+                        outcome: 'victory',
+                        source: 'outskirts',
+                        cityId,
+                        sourceId,
+                        isBoss: isBossFight,
+                        durationSec: state.combatStartTime ? (Date.now() - state.combatStartTime) / 1000 : undefined,
+                        timestamp: Date.now(),
+                        ...combatSummaryPayload,
+                    },
+                });
+                const { autoContinue, stopAtBoss } = useOutskirtsStore.getState();
+                setTimeout(() => {
+                    get().exitCombat();
+                    const activity = useActivityStore.getState().active;
+                    if (!activity ||
+                        activity.type !== 'outskirts' ||
+                        activity.cityId !== cityId ||
+                        activity.sourceId !== sourceId ||
+                        activity.startedAt !== activityToken) {
+                        return;
+                    }
+                    if (stopAtBoss && isBossFight) {
+                        useActivityStore.getState().stopActivity('outskirts-stop-at-boss');
+                        return;
+                    }
+                    if (!autoContinue) {
+                        useActivityStore.getState().stopActivity('outskirts-auto-continue-disabled');
+                        return;
+                    }
+                    const latestContent = useContentStore.getState();
+                    const latestDef = sourceId ? latestContent.maps.outskirtsById[sourceId] : undefined;
+                    if (!latestDef)
+                        return;
+                    const nextIsBoss = useOutskirtsStore.getState().shouldSpawnBoss(latestDef.id, latestDef);
+                    const nextEnemyId = nextIsBoss
+                        ? latestDef.bossId
+                        : pickFromWeightedPool(latestDef.mobPool, latestDef.mobPool?.[0]?.enemyId);
+                    if (!nextEnemyId)
+                        return;
+                    get().startCombat(nextEnemyId, {
+                        type: 'outskirts',
+                        cityId,
+                        sourceId,
+                        cityIndex: latestDef.cityIndex,
+                        isBoss: nextIsBoss,
+                    });
+                }, OUTSKIRTS_NEXT_FIGHT_DELAY_MS);
+                return;
+            }
+            GameEvents.emit({
+                type: 'combat/resolved',
+                payload: {
+                    enemyId: enemy.id,
+                    outcome: 'victory',
+                    source: combatContext.type ?? 'unknown',
+                    durationSec: state.combatStartTime ? (Date.now() - state.combatStartTime) / 1000 : undefined,
+                    timestamp: Date.now(),
+                    ...combatSummaryPayload,
+                },
+            });
+            // Regular combat rewards (zone/enemy)
+            // Generate loot
+            const zoneProgress = currentZone
+                ? useZoneStore.getState().getZoneProgress(currentZone)
+                : null;
+            const isFirstBossKill = isBoss && zoneProgress ? !zoneProgress.bossDefeated : false;
+            const lootResult = generateLoot(enemy, gameStore.playerLuck, gameStore.pityState, isBoss, isFirstBossKill);
+            // Add gold to inventory
+            inventoryStore.addGold(lootResult.gold);
+            // Add items to inventory
+            for (const lootItem of lootResult.items) {
+                const success = inventoryStore.addItem(lootItem.itemId, lootItem.quantity);
+                if (!success) {
+                    get().addLogEntry('system', 'Inventory full! Some items were lost.', '#ef4444');
+                    break;
+                }
+            }
+            emitLootDrops(lootResult.items?.map((item) => ({ itemId: item.itemId, qty: item.quantity })), isBoss ? 'Boss loot' : 'Victory loot');
+            // Format and display loot messages
+            const lootMessages = formatLootMessage(lootResult);
+            for (const message of lootMessages) {
+                if (message.includes('RARE') || message.includes('EPIC') || message.includes('LEGENDARY')) {
+                    get().addLogEntry('loot', message, '#a855f7');
+                }
+                else {
+                    get().addLogEntry('loot', message, '#fbbf24');
+                }
+            }
+            // Update pity counters
+            useGameStore.setState({
+                pityState: lootResult.updatedPityState,
+            });
+            // Record enemy defeat in zone progression
+            if (currentZone) {
+                if (isBoss) {
+                    useZoneStore
+                        .getState()
+                        .recordBossDefeat(currentZone, gameStore.realm.index);
+                }
+                else {
+                    useZoneStore.getState().recordEnemyDefeat(currentZone, enemy.id);
+                }
+            }
+            // Exit combat after a short delay
+            setTimeout(() => {
+                get().exitCombat();
+            }, 2000);
+        }),
+        /**
+         * Handle player defeat
+         */
+        playerDefeat: () => time(PERF_LABELS.combatStoreResolution, () => {
+            const state = get();
+            if (!state.currentEnemy || state.combatResolved)
+                return;
+            set((draft) => {
+                draft.combatResolved = true;
+                draft.combatResultVersion = bumpVersion(draft.combatResultVersion);
+                draft.combatViewVersion = bumpVersion(draft.combatViewVersion);
+            });
+            const now = Date.now();
+            const enemy = state.currentEnemy;
+            const context = state.combatContext;
+            const combatSummaryPayload = {
+                playerHpPctRemaining: combatHpPct(state.playerHP, state.playerMaxHP),
+                enemyHpPctRemaining: combatHpPct(state.enemyHP, state.enemyMaxHP),
+                healingEvents: countHealingEvents(state.events),
+            };
+            const uiStore = useUIStore.getState();
+            const uiSettings = uiStore.settings;
+            const addNotification = uiStore.addNotification;
+            const autoRetryOnDeath = uiSettings.autoRetryOnDeath;
+            // Add defeat message
+            get().addLogEntry('defeat', `You have been defeated by ${enemy.name}...`, '#ef4444');
+            emitEvent('PLAYER_DEFEATED', { enemyId: enemy.id, enemyName: enemy.name });
+            if (context?.type === 'outskirts') {
+                if (!autoRetryOnDeath) {
+                    useActivityStore.getState().stopActivity();
+                }
+            }
+            if (context?.type === 'trial') {
+                useActivityStore.getState().stopActivity();
+                const summary = buildTrialDefeatSummary({
+                    trialId: context.trialId,
+                    events: state.events,
+                    startedAt: state.combatStartTime,
+                    endedAt: now,
+                    enemyHp: state.enemyHP,
+                    enemyMaxHp: state.enemyMaxHP,
+                    playerMaxHp: state.playerMaxHP,
+                    absorptionShield: useGameStore.getState().absorptionShield,
+                    combatShieldAmount: state.combatShield?.amount ?? 0,
+                    enemyMechanics: state.enemyMechanics,
+                });
+                const trialStore = useTrialStore.getState();
+                trialStore.recordAttemptSummary(context.trialId, summary);
+                trialStore.recordFailure(context.trialId, context.countsTowardFailSafe);
+                const failureReadinessSurface = buildSection5ReadinessSurface(context.trialId);
+                const failureDiagnosis = failureReadinessSurface?.diagnosis ?? null;
+                const failureTopFix = failureDiagnosis?.topFixes[0] ?? null;
+                if (context.countsTowardFailSafe) {
+                    const content = useContentStore.getState().raw;
+                    const trial = useContentStore.getState().maps.trialsById[context.trialId] ?? null;
+                    const policy = getGateFailureMeritPolicyForTrial(content ?? null, trial);
+                    RewardService.grantRewards({ currencies: { merit: String(policy.eligibleDefeatMerit) } }, `Gate Trial eligible defeat:${context.trialId}`);
+                    addNotification('info', `Eligible defeat reward: +${policy.eligibleDefeatMerit} Merit`, { durationMs: 1800 });
+                }
+                GameEvents.emit({
+                    type: 'trials/attempt_resolved',
+                    payload: {
+                        timestamp: now,
+                        trialId: context.trialId,
+                        gateIndex: getTrialGateIndex(context.trialId),
+                        attemptId: buildTrialAttemptId(context.trialId, state.combatStartTime ?? now),
+                        outcome: 'defeated',
+                        durationSec: state.combatStartTime ? Math.max(0, (now - state.combatStartTime) / 1000) : 0,
+                        bossHpPctRemaining: Number(summary.bossHpPct) / 100,
+                        countsTowardFailSafe: context.countsTowardFailSafe,
+                        eligibleFailCountAfterAttempt: getEligibleFailCount(context.trialId),
+                        ...(failureDiagnosis?.primary ? { diagnosisCode: failureDiagnosis.primary } : {}),
+                        ...(failureTopFix?.destination ? { topFixDestination: failureTopFix.destination } : {}),
+                        ...(failureTopFix?.reason ? { topFixReason: failureTopFix.reason } : {}),
+                    },
+                });
+            }
+            if (context?.type === 'ruins') {
+                useActivityStore.getState().stopActivity();
+                const ruinId = context.sourceId ?? context.ruinsId;
+                if (ruinId) {
+                    useRuinsStore.getState().handleRunDefeat({
+                        runId: context.runId,
+                        ruinId,
+                        cityId: context.cityId,
+                        roomIndex: context.roomIndex,
+                    });
+                }
+            }
+            const shouldRetryOutskirts = autoRetryOnDeath && context?.type === 'outskirts';
+            GameEvents.emit({
+                type: 'combat/resolved',
+                payload: {
+                    enemyId: enemy.id,
+                    outcome: 'defeat',
+                    source: context?.type ?? 'unknown',
+                    trialId: context?.type === 'trial' ? context.trialId : undefined,
+                    durationSec: state.combatStartTime ? Math.max(0, (now - state.combatStartTime) / 1000) : undefined,
+                    timestamp: now,
+                    ...combatSummaryPayload,
+                },
+            });
+            // Add respawn message (no death penalty in idle games usually)
+            get().addLogEntry('system', 'You will respawn shortly...', '#94a3b8');
+            // Respawn player and exit combat
+            setTimeout(() => {
+                // Restore player HP
+                const playerStats = useGameStore.getState().stats;
+                set((state) => {
+                    state.playerHP = playerStats.maxHp;
+                });
+                get().exitCombat();
+                if (shouldRetryOutskirts) {
+                    const activity = useActivityStore.getState().active;
+                    if (activity && activity.type === 'outskirts' && context && context.type === 'outskirts') {
+                        const content = useContentStore.getState();
+                        const outskirtsDef = context.sourceId
+                            ? content.maps.outskirtsById[context.sourceId]
+                            : undefined;
+                        if (outskirtsDef) {
+                            const nextIsBoss = Boolean(context.isBoss ?? state.isBoss ?? state.currentEnemy?.isBoss);
+                            const nextEnemyId = nextIsBoss
+                                ? outskirtsDef.bossId
+                                : pickFromWeightedPool(outskirtsDef.mobPool, outskirtsDef.mobPool?.[0]?.enemyId);
+                            if (nextEnemyId) {
+                                setTimeout(() => {
+                                    get().startCombat(nextEnemyId, {
+                                        type: 'outskirts',
+                                        cityId: context.cityId,
+                                        sourceId: outskirtsDef.id,
+                                        cityIndex: outskirtsDef.cityIndex,
+                                        isBoss: nextIsBoss,
+                                    });
+                                }, OUTSKIRTS_NEXT_FIGHT_DELAY_MS);
+                            }
+                        }
+                    }
+                }
+            }, 2000);
+        }),
+        /**
+         * Game tick for combat timing
+         */
+        tick: (deltaTime) => {
+            const state = get();
+            const activeActivity = useActivityStore.getState().active;
+            const isForegroundCombat = activeActivity
+                ? COMBAT_ACTIVITY_TYPES.includes(activeActivity.type)
+                : false;
+            const contextType = state.combatContext?.type ?? null;
+            if (!isForegroundCombat || (contextType && activeActivity?.type && contextType !== activeActivity.type)) {
+                return;
+            }
+            if (!state.inCombat || !state.currentEnemy)
+                return;
+            const endTick = startTimer(PERF_LABELS.combatStoreTick);
+            try {
+                const now = Date.now();
+                if (lessThanOrEqualTo(state.playerHP, 0) || lessThanOrEqualTo(state.enemyHP, 0))
+                    return;
+                const gameStore = useGameStore.getState();
+                if (gameStore.activeBuffs.length > 0
+                    || (gameStore.absorptionExpiresAt !== null && gameStore.absorptionExpiresAt <= now)) {
+                    time(PERF_LABELS.combatStoreBuffs, () => gameStore.removeExpiredBuffs());
+                }
+                const currentEnemyHP = D(state.enemyHP);
+                const currentEnemyMaxHP = D(state.enemyMaxHP);
+                const latestForMaintenance = get();
+                const nextBuffExpiryAt = getNextCombatBuffExpiryAt(latestForMaintenance.combatBuffs, now);
+                const shouldSweepCombatBuffs = latestForMaintenance.combatBuffs.length > 0
+                    && (nextBuffExpiryAt === null || now >= nextBuffExpiryAt);
+                const shouldClearShield = Boolean(latestForMaintenance.combatShield
+                    && (latestForMaintenance.combatShield.amount <= 0
+                        || (latestForMaintenance.combatShield.expiresAt !== null
+                            && latestForMaintenance.combatShield.expiresAt <= now)));
+                const qiRegen = latestForMaintenance.combatResources.maxQi * QI_REGEN_PER_SEC_PCT * (deltaTime / 1000);
+                const intentRegen = INTENT_REGEN_PER_SEC * (deltaTime / 1000);
+                const nextQi = Math.min(latestForMaintenance.combatResources.maxQi, latestForMaintenance.combatResources.qi + qiRegen);
+                const nextIntent = Math.min(latestForMaintenance.combatResources.maxIntent, latestForMaintenance.combatResources.intent + intentRegen);
+                const resourcesChanged = nextQi !== latestForMaintenance.combatResources.qi
+                    || nextIntent !== latestForMaintenance.combatResources.intent;
+                if (shouldSweepCombatBuffs || shouldClearShield || resourcesChanged) {
+                    time(PERF_LABELS.combatStoreResources, () => {
+                        if (resourcesChanged)
+                            incrementCounter(PERF_LABELS.combatResourcePublish);
+                        if (shouldSweepCombatBuffs)
+                            incrementCounter(PERF_LABELS.combatBuffSweepRun);
+                        set((state) => {
+                            if (shouldSweepCombatBuffs) {
+                                state.combatBuffs = state.combatBuffs.filter((buff) => buff.endsAt > now);
+                            }
+                            if (shouldClearShield) {
+                                state.combatShield = null;
+                            }
+                            if (resourcesChanged) {
+                                state.combatResources.qi = nextQi;
+                                state.combatResources.intent = nextIntent;
+                            }
+                        });
+                    });
+                }
+                else {
+                    incrementCounter(PERF_LABELS.combatBuffSweepSkipped);
+                }
+                if (state.autoCombatAI && now >= state.nextAiDecisionAt) {
+                    time(PERF_LABELS.combatStoreTechniqueAI, () => {
+                        set((state) => {
+                            state.nextAiDecisionAt = now + AI_DECISION_INTERVAL_MS;
+                        });
+                        const selectedTechId = selectTechniqueToCast(now);
+                        if (selectedTechId) {
+                            get().castTechnique(selectedTechId, now, 'ai');
+                        }
+                    });
+                }
+                // Process boss mechanics
+                const bossMechanicsForTick = bossMechanics;
+                if (state.isBoss && bossMechanicsForTick) {
+                    const combatTime = (now - state.combatStartTime) / 1000; // Convert to seconds
+                    const mechanics = time(PERF_LABELS.combatStoreBossMechanics, () => bossMechanicsForTick.update(deltaTime, currentEnemyHP, currentEnemyMaxHP, combatTime));
+                    // Handle enrage trigger
+                    if (mechanics.enrageTriggered) {
+                        get().addLogEntry('system', `${state.currentEnemy.name} has ENRAGED! Attack power increased by 50%!`, '#ef4444');
+                    }
+                    // Handle heal trigger
+                    if (mechanics.healTriggered && mechanics.healAmount) {
+                        const healedHP = add(state.enemyHP, mechanics.healAmount.toString());
+                        const cappedHP = greaterThan(healedHP, state.enemyMaxHP) ? state.enemyMaxHP : healedHP.toString();
+                        set((state) => {
+                            state.enemyHP = cappedHP;
+                        });
+                        get().addLogEntry('system', `${state.currentEnemy.name} heals for ${mechanics.healAmount.toFixed(0)} HP.`, '#22c55e');
+                    }
+                    // Handle ultimate trigger
+                    if (mechanics.ultimateTriggered && mechanics.ultimateDamageMultiplier) {
+                        // Apply massive damage to player
+                        const effectiveStats = getEffectivePlayerCombatStats(state.combatBuffs, now);
+                        const enemy = state.currentEnemy;
+                        // Calculate base damage with ultimate multiplier
+                        let atk = D(enemy.atk).times(mechanics.ultimateDamageMultiplier);
+                        // Apply enrage if active
+                        const enrageMultiplier = bossMechanicsForTick.getEnrageMultiplier();
+                        if (enrageMultiplier > 1) {
+                            atk = atk.times(enrageMultiplier);
+                        }
+                        const def = D(effectiveStats.def);
+                        const defReduction = def.dividedBy(def.plus(DEFENSE_CONSTANT_K));
+                        const ultimateDamage = atk.times(D(1).minus(defReduction));
+                        const { remainingDamage: postCombatShield, absorbed: combatAbsorbed } = applyCombatShield(ultimateDamage, now);
+                        const { remainingDamage, absorbed } = gameStore.applyAbsorptionShield(postCombatShield.toString());
+                        const damageAfterShield = D(remainingDamage);
+                        const absorbedAmount = D(absorbed).plus(combatAbsorbed);
+                        const absorptionNote = absorbedAmount.greaterThan(0)
+                            ? ` (${absorbedAmount.toFixed(0)} absorbed)`
+                            : '';
+                        let appliedDamage = damageAfterShield;
+                        const previousHpPct = D(state.playerMaxHP).greaterThan(0)
+                            ? D(state.playerHP).dividedBy(D(state.playerMaxHP)).times(100).toNumber()
+                            : 0;
+                        let nextHpPct = previousHpPct;
+                        // Apply damage to player
+                        set((state) => {
+                            const startingHp = D(state.playerHP);
+                            const newHP = subtract(state.playerHP, damageAfterShield.toString());
+                            const clampedHP = clamp(newHP, 0, state.playerMaxHP);
+                            appliedDamage = startingHp.minus(D(clampedHP));
+                            state.playerHP = clampedHP.toString();
+                            nextHpPct = D(state.playerMaxHP).greaterThan(0)
+                                ? D(clampedHP).dividedBy(D(state.playerMaxHP)).times(100).toNumber()
+                                : 0;
+                        });
+                        get().addLogEntry('damage', `${enemy.name} unleashes ULTIMATE ATTACK! Takes ${appliedDamage.toFixed(0)} damage!${absorptionNote}`, '#a855f7');
+                        emitEvent('HIT', {
+                            source: 'enemy',
+                            target: 'player',
+                            amount: appliedDamage.toFixed(0),
+                            isCrit: false,
+                            absorbed: absorbedAmount.greaterThan(0) ? absorbedAmount.toFixed(0) : undefined,
+                            kind: 'boss_ultimate',
+                        });
+                        triggerAutoMedicineEvent(now, { type: 'hpThresholdCrossed', previousHpPct, nextHpPct });
+                        // Check if player is defeated
+                        if (lessThanOrEqualTo(get().playerHP, 0)) {
+                            setTimeout(() => {
+                                get().playerDefeat();
+                            }, 500);
+                        }
+                        if (lessThanOrEqualTo(get().playerHP, 0)) {
+                            return;
+                        }
+                        // Reset ultimate triggered flag so it can trigger again
+                        bossMechanicsForTick.resetUltimateTriggered();
+                    }
+                    // Handle ultimate warning
+                    if (mechanics.ultimateWarning && !mechanics.ultimateTriggered) {
+                        const progress = bossMechanicsForTick.getUltimateWarningProgress();
+                        if (progress === 0) {
+                            // Just started warning
+                            get().addLogEntry('system', `Warning: ${state.currentEnemy.name} is charging a powerful attack! (3s)`, '#f59e0b');
+                            emitEvent('ENEMY_SPECIAL_TELEGRAPH', {
+                                specialId: 'boss_ultimate',
+                                resolvesInMs: 3000,
+                            });
+                        }
+                    }
+                }
+                // Handle aura mechanics
+                const hpPercentRemaining = currentEnemyMaxHP.greaterThan(0)
+                    ? currentEnemyHP.dividedBy(currentEnemyMaxHP).times(100).toNumber()
+                    : 0;
+                const auraMechanic = state.enemyMechanics.find((mechanic) => mechanic.type === 'aura' || mechanic.type === 'auraDoT');
+                if (auraMechanic && !state.activeAura && hpPercentRemaining <= (auraMechanic.trigger.hpPercent ?? 100)) {
+                    set((state) => {
+                        state.activeAura = {
+                            damagePerSec: auraMechanic.effect.auraDamagePerSec ?? (auraMechanic.effect.dotMaxHpPctPerTick ? D(state.playerMaxHP).times(auraMechanic.effect.dotMaxHpPctPerTick).toNumber() : 0),
+                            description: auraMechanic.description,
+                        };
+                    });
+                    get().addLogEntry('system', `${state.currentEnemy.name}'s ${auraMechanic.description || 'aura'} activates!`, '#ef4444');
+                }
+                if (state.activeAura && state.activeAura.damagePerSec > 0) {
+                    const auraDamage = D(state.activeAura.damagePerSec).times(deltaTime / 1000);
+                    const { remainingDamage: postCombatShield, absorbed: combatAbsorbed } = applyCombatShield(auraDamage, now);
+                    const { remainingDamage, absorbed } = gameStore.applyAbsorptionShield(postCombatShield.toString());
+                    const damageAfterShield = D(remainingDamage);
+                    const absorbedAmount = D(absorbed).plus(combatAbsorbed);
+                    if (damageAfterShield.greaterThan(0) || absorbedAmount.greaterThan(0)) {
+                        let appliedDamage = damageAfterShield;
+                        const previousHpPct = D(state.playerMaxHP).greaterThan(0)
+                            ? D(state.playerHP).dividedBy(D(state.playerMaxHP)).times(100).toNumber()
+                            : 0;
+                        let nextHpPct = previousHpPct;
+                        set((state) => {
+                            const startingHp = D(state.playerHP);
+                            const newHP = subtract(state.playerHP, damageAfterShield.toString());
+                            const clampedHP = clamp(newHP, 0, state.playerMaxHP);
+                            appliedDamage = startingHp.minus(D(clampedHP));
+                            state.playerHP = clampedHP.toString();
+                            nextHpPct = D(state.playerMaxHP).greaterThan(0)
+                                ? D(clampedHP).dividedBy(D(state.playerMaxHP)).times(100).toNumber()
+                                : 0;
+                        });
+                        const absorptionNote = absorbedAmount.greaterThan(0)
+                            ? ` (${absorbedAmount.toFixed(0)} absorbed by shield)`
+                            : '';
+                        get().addLogEntry('damage', `${state.currentEnemy.name}'s aura deals ${appliedDamage.toFixed(0)} damage${absorptionNote}.`, '#ef4444');
+                        emitEvent('HIT', {
+                            source: 'enemy',
+                            target: 'player',
+                            amount: appliedDamage.toFixed(0),
+                            isCrit: false,
+                            absorbed: absorbedAmount.greaterThan(0) ? absorbedAmount.toFixed(0) : undefined,
+                            kind: 'aura',
+                        });
+                        triggerAutoMedicineEvent(now, { type: 'hpThresholdCrossed', previousHpPct, nextHpPct });
+                        if (lessThanOrEqualTo(get().playerHP, 0)) {
+                            setTimeout(() => {
+                                get().playerDefeat();
+                            }, 500);
+                            return;
+                        }
+                    }
+                }
+                // Auto-attack if enabled
+                if (state.autoAttack && now - state.lastAttackTime >= PLAYER_ATTACK_COOLDOWN) {
+                    try {
+                        get().playerAttack();
+                    }
+                    catch (error) {
+                        if (!combatLoopErrorLogged) {
+                            combatLoopErrorLogged = true;
+                            console.error('[CombatStore] Error during playerAttack:', error);
+                            try {
+                                get().addLogEntry('system', 'Combat halted due to an error. Please report.', '#f87171');
+                            }
+                            catch (logError) {
+                                console.error('[CombatStore] Failed to log combat error', logError);
+                            }
+                        }
+                        get().exitCombat();
+                        return;
+                    }
+                }
+                // Enemy auto-attacks (skip if ultimate just triggered)
+                if (now - state.lastEnemyAttackTime >= ENEMY_ATTACK_COOLDOWN) {
+                    // Check if enemy is still alive before attacking
+                    if (greaterThan(state.enemyHP, 0)) {
+                        try {
+                            get().enemyAttack();
+                        }
+                        catch (error) {
+                            if (!combatLoopErrorLogged) {
+                                combatLoopErrorLogged = true;
+                                console.error('[CombatStore] Error during enemyAttack:', error);
+                                try {
+                                    get().addLogEntry('system', 'Combat halted due to an error. Please report.', '#f87171');
+                                }
+                                catch (logError) {
+                                    console.error('[CombatStore] Failed to log combat error', logError);
+                                }
+                            }
+                            get().exitCombat();
+                            return;
+                        }
+                    }
+                }
+                // Update technique cooldowns only when at least one entry is ready to expire.
+                const cooldownSnapshot = get().techniqueCooldowns;
+                const cooldownEntries = Object.entries(cooldownSnapshot);
+                if (cooldownEntries.length > 0) {
+                    const nextReadyAt = getNextCooldownReadyAt(cooldownSnapshot, now);
+                    const hasExpiredCooldown = cooldownEntries.some(([, readyAt]) => readyAt <= now);
+                    if (hasExpiredCooldown || nextReadyAt === null) {
+                        set((state) => {
+                            const updatedCooldowns = {};
+                            Object.entries(state.techniqueCooldowns).forEach(([techniqueId, readyAt]) => {
+                                if (readyAt > now) {
+                                    updatedCooldowns[techniqueId] = readyAt;
+                                }
+                            });
+                            const changed = Object.keys(updatedCooldowns).length !== Object.keys(state.techniqueCooldowns).length;
+                            if (changed) {
+                                state.techniqueCooldowns = updatedCooldowns;
+                            }
+                        });
+                    }
+                }
+            }
+            finally {
+                endTick();
+            }
+        },
+        canCastTechnique: (techId, now = Date.now()) => {
+            const state = get();
+            if (!state.inCombat || !state.currentEnemy)
+                return false;
+            const contentStore = useContentStore.getState();
+            const techDef = contentStore.maps.techniquesById[techId];
+            if (!techDef)
+                return false;
+            const readyAt = state.techniqueCooldowns[techId] ?? 0;
+            if (now < readyAt)
+                return false;
+            const resourceModel = resolveCombatResourceModel(techDef.resourceModel);
+            const resourceCost = techDef.resourceCost ?? 0;
+            const { costReductionPct } = getTechniqueScaling(techId, techDef);
+            const effectiveCost = resourceCost * (1 - costReductionPct);
+            if (resourceModel === 'qiPct') {
+                const costPct = effectiveCost > 1 ? effectiveCost / 100 : effectiveCost;
+                const cost = state.combatResources.maxQi * costPct;
+                return state.combatResources.qi >= cost;
+            }
+            if (resourceModel === 'intent') {
+                return state.combatResources.intent >= effectiveCost;
+            }
+            return true;
+        },
+        castTechnique: (techId, now = Date.now(), source = 'ai') => {
+            const state = get();
+            if (!state.inCombat || !state.currentEnemy)
+                return false;
+            const contentStore = useContentStore.getState();
+            const techDef = contentStore.maps.techniquesById[techId];
+            if (!techDef) {
+                addTechniqueLogEntry('warn', `Unknown technique ${techId}.`, techId, now);
+                return false;
+            }
+            if (!get().canCastTechnique(techId, now)) {
+                addTechniqueLogEntry('warn', `${techDef.name} is not ready or lacks resources.`, techId, now);
+                return false;
+            }
+            const rank = useTechCollectionStore.getState().unlockedTechs[techId]?.rank ?? 1;
+            const rankMult = rankMultiplier(rank);
+            const scaling = getTechniqueScaling(techId, techDef);
+            const effects = applyRankMultiplier(normalizeTechniqueEffects(techDef, { includeSecondary: scaling.secondaryUnlocked }), rankMult);
+            addTechniqueLogEntry('cast', `${techDef.name} (${source})`, techId, now);
+            emitEvent('SKILL_CAST', { techniqueId: techId, source, at: now });
+            set((state) => {
+                const resourceModel = resolveCombatResourceModel(techDef.resourceModel);
+                const resourceCost = techDef.resourceCost ?? 0;
+                const effectiveCost = resourceCost * (1 - scaling.costReductionPct);
+                if (resourceModel === 'qiPct') {
+                    const costPct = effectiveCost > 1 ? effectiveCost / 100 : effectiveCost;
+                    const cost = state.combatResources.maxQi * costPct;
+                    state.combatResources.qi = Math.max(0, state.combatResources.qi - cost);
+                }
+                else if (resourceModel === 'intent') {
+                    state.combatResources.intent = Math.max(0, state.combatResources.intent - effectiveCost);
+                }
+                const baseCdSec = techDef.cooldownSec ?? 0;
+                if (baseCdSec > 0) {
+                    const cdSec = Math.max(0, baseCdSec * (1 - scaling.cooldownReductionPct));
+                    state.techniqueCooldowns[techId] = now + cdSec * 1000;
+                }
+                state.lastTechniqueCastAt = now;
+            });
+            const xpGain = techDef.type === 'passive' ? 0 : 1;
+            if (xpGain > 0) {
+                useTechCollectionStore.getState().addMasteryXp(techId, xpGain, now);
+            }
+            if (effects.length === 0) {
+                addTechniqueLogEntry('warn', `${techDef.name} has no effects to apply.`, techId, now);
+                return true;
+            }
+            const effectSummaries = summarizeEffects(effects);
+            effectSummaries.forEach((summary) => addTechniqueLogEntry('effect', summary, techId, now));
+            const effectiveStats = getEffectivePlayerCombatStats(get().combatBuffs, now);
+            const maxHp = D(effectiveStats.maxHp);
+            effects.forEach((effect) => {
+                switch (effect.type) {
+                    case 'damage': {
+                        const bonusPct = Math.max(0, getTalismanBonusesNow().damageBonusPct);
+                        const damageMultiplier = D(1).plus(D(bonusPct).dividedBy(100));
+                        const heartLawMultiplier = D(getHeartLawCombatMultiplier());
+                        const masteryMult = scaling.masteryEffectMult ?? 1;
+                        const secondaryPotency = effect.source === 'secondary' ? scaling.secondaryPotencyMult : 1;
+                        const critRoll = Math.random() * 100;
+                        const isCrit = critRoll < effectiveStats.crit;
+                        const critMultiplier = isCrit ? D(effectiveStats.critDmg).dividedBy(100) : D(1);
+                        const damage = D(effectiveStats.atk)
+                            .times(effect.mult * masteryMult * secondaryPotency * scaling.traitMods.damageMult * scaling.runeMods.damageMult)
+                            .times(damageMultiplier)
+                            .times(heartLawMultiplier)
+                            .times(critMultiplier);
+                        let appliedDamage = damage;
+                        set((state) => {
+                            const startingHp = D(state.enemyHP);
+                            const newHP = subtract(state.enemyHP, damage.toString());
+                            const clampedHP = clamp(newHP, 0, state.enemyMaxHP);
+                            appliedDamage = startingHp.minus(D(clampedHP));
+                            state.enemyHP = clampedHP.toString();
+                        });
+                        emitEvent('HIT', {
+                            source: 'player',
+                            target: 'enemy',
+                            amount: appliedDamage.toFixed(0),
+                            isCrit,
+                            techniqueId: techId,
+                            kind: 'technique',
+                        });
+                        break;
+                    }
+                    case 'heal': {
+                        const masteryMult = scaling.masteryEffectMult ?? 1;
+                        const secondaryPotency = effect.source === 'secondary' ? scaling.secondaryPotencyMult : 1;
+                        const healAmount = maxHp.times(effect.mult * masteryMult * secondaryPotency * scaling.traitMods.healMult * scaling.runeMods.healMult);
+                        let actualHeal = healAmount;
+                        set((state) => {
+                            const startingHp = D(state.playerHP);
+                            const newHP = startingHp.plus(healAmount);
+                            const cappedHP = newHP.greaterThan(maxHp) ? maxHp : newHP;
+                            actualHeal = cappedHP.minus(startingHp);
+                            state.playerHP = cappedHP.toString();
+                        });
+                        emitEvent('HEAL', { amount: actualHeal.toFixed(0), techniqueId: techId });
+                        break;
+                    }
+                    case 'shield': {
+                        const masteryMult = scaling.masteryEffectMult ?? 1;
+                        const secondaryPotency = effect.source === 'secondary' ? scaling.secondaryPotencyMult : 1;
+                        const shieldAmount = maxHp
+                            .times(effect.mult * masteryMult * secondaryPotency * scaling.traitMods.shieldMult * scaling.runeMods.shieldMult)
+                            .toNumber();
+                        const durationSec = resolveShieldDurationSec(techDef.effect) ?? DEFAULT_SHIELD_DURATION_SEC;
+                        const expiresAt = now + durationSec * 1000;
+                        let totalShield = shieldAmount;
+                        set((state) => {
+                            if (!state.combatShield) {
+                                state.combatShield = { amount: shieldAmount, expiresAt };
+                                return;
+                            }
+                            state.combatShield.amount += shieldAmount;
+                            totalShield = state.combatShield.amount;
+                            if (state.combatShield.expiresAt === null || state.combatShield.expiresAt < expiresAt) {
+                                state.combatShield.expiresAt = expiresAt;
+                            }
+                        });
+                        emitEvent('SHIELD_GAINED', {
+                            amount: shieldAmount.toFixed(0),
+                            total: totalShield.toFixed(0),
+                            durationSec: durationSec,
+                            techniqueId: techId,
+                        });
+                        break;
+                    }
+                    case 'buff': {
+                        const durationSec = effect.durationSec ?? DEFAULT_BUFF_DURATION_SEC;
+                        const buffId = `${techId}:${effect.stat}`;
+                        const masteryMult = scaling.masteryEffectMult ?? 1;
+                        const secondaryPotency = effect.source === 'secondary' ? scaling.secondaryPotencyMult : 1;
+                        const hadExisting = get().combatBuffs.some((buff) => buff.id === buffId);
+                        set((state) => {
+                            state.combatBuffs = state.combatBuffs.filter((buff) => buff.id !== buffId);
+                            state.combatBuffs.push({
+                                id: buffId,
+                                stat: effect.stat,
+                                mode: effect.mode,
+                                value: effect.value *
+                                    masteryMult *
+                                    secondaryPotency *
+                                    scaling.traitMods.buffMult *
+                                    scaling.runeMods.buffMult,
+                                endsAt: now + durationSec * 1000,
+                            });
+                        });
+                        emitEvent('STATUS_APPLIED', {
+                            statusId: `buff:${effect.stat}`,
+                            stacks: 1,
+                            durationSec,
+                            refreshed: hadExisting,
+                            techniqueId: techId,
+                            target: 'player',
+                        });
+                        break;
+                    }
+                    case 'addStatus':
+                        addTechniqueLogEntry('effect', `${techDef.name} applied a status (stub).`, techId, now);
+                        break;
+                    default:
+                        break;
+                }
+            });
+            if (lessThanOrEqualTo(get().enemyHP, 0)) {
+                setTimeout(() => {
+                    get().defeatEnemy();
+                }, 500);
+            }
+            return true;
+        },
+        /**
+         * Add an entry to the combat log
+         */
+        addLogEntry: (type, text, color) => {
+            incrementCounter(PERF_LABELS.combatStoreLogsAppended);
+            set((state) => {
+                const entry = {
+                    type,
+                    text,
+                    timestamp: Date.now(),
+                    color,
+                };
+                pushWindowed(state.combatLog, entry, MAX_COMBAT_LOG_ENTRIES);
+                state.combatViewVersion = bumpVersion(state.combatViewVersion);
+            });
+        },
+        pushEvent: (event) => {
+            const at = event.at ?? Date.now();
+            const entry = { ...event, at, id: event.id ?? makeCombatEventId(at) };
+            set((state) => {
+                pushWindowed(state.events, entry, MAX_COMBAT_EVENT_ENTRIES);
+                state.combatViewVersion = bumpVersion(state.combatViewVersion);
+            });
+        },
+        clearEvents: () => {
+            set((state) => {
+                state.events = [];
+            });
+        },
+        /**
+         * Toggle auto-attack
+         */
+        setAutoAttack: (enabled) => {
+            set((state) => {
+                state.autoAttack = enabled;
+            });
+            if (enabled) {
+                get().addLogEntry('system', 'Auto-attack enabled.', '#94a3b8');
+            }
+            else {
+                get().addLogEntry('system', 'Auto-attack disabled.', '#94a3b8');
+            }
+        },
+        /**
+         * Toggle auto-combat AI (for techniques)
+         */
+        setAutoCombatAI: (enabled) => {
+            set((state) => {
+                state.autoCombatAI = enabled;
+            });
+            if (enabled) {
+                get().addLogEntry('system', 'Combat AI enabled.', '#94a3b8');
+            }
+            else {
+                get().addLogEntry('system', 'Combat AI disabled.', '#94a3b8');
+            }
+        },
+    };
+}));

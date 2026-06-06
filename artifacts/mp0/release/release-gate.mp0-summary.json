@@ -1,0 +1,114 @@
+﻿{
+    "schemaVersion":  "mp0-release-gate-summary-v1",
+    "generatedAt":  "2026-05-28T16:07:02.3822942Z",
+    "branch":  "Latest",
+    "commit":  "969de0ab4602a37ba3edf6ed6233419328f21924",
+    "dirty":  true,
+    "packet":  "MP0",
+    "decision":  "NO_GO",
+    "overallPass":  false,
+    "releaseReady":  false,
+    "unresolvedBlockerCount":  5,
+    "pendingManualCount":  1,
+    "unresolvedWaiverCandidateCount":  6,
+    "acceptedWaiverCount":  0,
+    "checkStatuses":  [
+                          {
+                              "id":  "runtime_content_manifest",
+                              "status":  "pass",
+                              "blockers":  0,
+                              "warnings":  0,
+                              "pendingManual":  0,
+                              "commandOrBuilder":  "buildRuntimeContentManifestReport"
+                          },
+                          {
+                              "id":  "build_audit",
+                              "status":  "warning",
+                              "blockers":  0,
+                              "warnings":  3,
+                              "pendingManual":  0,
+                              "commandOrBuilder":  "npm run release:build-audit:json"
+                          },
+                          {
+                              "id":  "content_validation",
+                              "status":  "pass",
+                              "blockers":  0,
+                              "warnings":  0,
+                              "pendingManual":  0,
+                              "commandOrBuilder":  "npm run validate:content"
+                          },
+                          {
+                              "id":  "progression_contract",
+                              "status":  "warning",
+                              "blockers":  0,
+                              "warnings":  4,
+                              "pendingManual":  0,
+                              "commandOrBuilder":  "buildProgressionContract + collectProgressionDiagnostics"
+                          },
+                          {
+                              "id":  "fresh_run_acceptance",
+                              "status":  "pending_manual",
+                              "blockers":  2,
+                              "warnings":  3,
+                              "pendingManual":  1,
+                              "commandOrBuilder":  "npm run release:fresh-run-report:json"
+                          },
+                          {
+                              "id":  "migration_matrix",
+                              "status":  "pass",
+                              "blockers":  0,
+                              "warnings":  0,
+                              "pendingManual":  0,
+                              "commandOrBuilder":  "npm run release:migration-matrix:json"
+                          },
+                          {
+                              "id":  "balance_regression",
+                              "status":  "fail",
+                              "blockers":  1,
+                              "warnings":  0,
+                              "pendingManual":  0,
+                              "commandOrBuilder":  "npm run balance:report:json"
+                          },
+                          {
+                              "id":  "route_comparison",
+                              "status":  "fail",
+                              "blockers":  1,
+                              "warnings":  0,
+                              "pendingManual":  0,
+                              "commandOrBuilder":  "npm run release:route-report:json"
+                          },
+                          {
+                              "id":  "runtime_diagnostics",
+                              "status":  "pass",
+                              "blockers":  0,
+                              "warnings":  0,
+                              "pendingManual":  0,
+                              "commandOrBuilder":  "npm run release:runtime-diagnostics:json"
+                          },
+                          {
+                              "id":  "vocabulary_audit",
+                              "status":  "pass",
+                              "blockers":  0,
+                              "warnings":  0,
+                              "pendingManual":  0,
+                              "commandOrBuilder":  "npm run release:vocab-audit:json"
+                          },
+                          {
+                              "id":  "full_test_suite",
+                              "status":  "fail",
+                              "blockers":  1,
+                              "warnings":  0,
+                              "pendingManual":  0,
+                              "commandOrBuilder":  "npm run test"
+                          }
+                      ],
+    "artifacts":  {
+                      "releaseGateRun1":  "artifacts/mp0/release/release-gate.after-1.json",
+                      "releaseGateRun2":  "artifacts/mp0/release/release-gate.after-2.json",
+                      "releaseGateLog1":  "artifacts/mp0/logs/release-gate.after-1.log",
+                      "releaseGateLog2":  "artifacts/mp0/logs/release-gate.after-2.log",
+                      "commandLog":  "artifacts/mp0/command-log.md",
+                      "currentReadiness":  "docs/release/current_readiness.md",
+                      "mp0Report":  "docs/release/mp0_baseline_report.md"
+                  }
+}

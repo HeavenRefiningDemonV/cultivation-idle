@@ -1,0 +1,126 @@
+{
+  "schemaVersion": "mp3-blocker-status-v1",
+  "packet": "MP3",
+  "generatedAt": "2026-05-29T02:05:24.2132917+03:00",
+  "branch": "Latest",
+  "commit": "969de0ab4602a37ba3edf6ed6233419328f21924",
+  "decision": "partial",
+  "releaseGate": "timeout",
+  "blockers": [
+    {
+      "id": "P2-001",
+      "status": "partial",
+      "evidence": [
+        "src/systems/economy/milestoneReadinessSurface.ts",
+        "tests/contracts/milestoneReadinessSurfaceContract.test.ts",
+        "artifacts/mp3/reports/milestone-readiness/milestone-readiness.final.md",
+        "artifacts/mp3/browser/screenshots/world-shared-guidance-1366x768.png"
+      ],
+      "remainingWork": "Status/Cultivation/Gate Trial still mostly render existing Run Compass/readiness surfaces instead of directly rendering the new MP3 milestone surface.",
+      "nextOwnerPacket": "MP3-follow-up"
+    },
+    {
+      "id": "P2-002",
+      "status": "partial",
+      "evidence": [
+        "artifacts/mp3/reports/source-sink/source-sink.final.md",
+        "artifacts/mp3/reports/best-source/best-source.final.md"
+      ],
+      "remainingWork": "Gold source/sink meaning is model-visible; MP4 still owns rate/cost tuning.",
+      "nextOwnerPacket": "MP4"
+    },
+    {
+      "id": "P2-003",
+      "status": "partial",
+      "evidence": [
+        "tests/contracts/apothecaryPrepSurfaceContract.test.ts",
+        "tests/integration/apothecaryBundleSurfaceRuntime.test.ts",
+        "artifacts/mp3/reports/milestone-readiness/milestone-readiness.final.md"
+      ],
+      "remainingWork": "Healing floor routes to Apothecary and tests pass; exact winrate/dose count calibration remains MP4.",
+      "nextOwnerPacket": "MP4"
+    },
+    {
+      "id": "P2-004",
+      "status": "partial",
+      "evidence": [
+        "tests/contracts/forgeFloorSurfaceContract.test.ts",
+        "tests/contracts/milestoneReadinessSurfaceContract.test.ts"
+      ],
+      "remainingWork": "Forge floor route is model-visible after prep stock is filled; threshold pacing remains MP4.",
+      "nextOwnerPacket": "MP4"
+    },
+    {
+      "id": "P2-007",
+      "status": "partial",
+      "evidence": [
+        "artifacts/mp3/reports/reward-parity/reward-parity.final.md",
+        "artifacts/mp3/final/logs/targeted-tests.final.log"
+      ],
+      "remainingWork": "Outskirts/Ruins/Bounties/Expeditions/Manual/Apothecary/Forge proof passes in targeted suite; Gate Trial clear/bypass lifecycle screenshots remain inherited MP2 follow-up.",
+      "nextOwnerPacket": "MP2-follow-up"
+    },
+    {
+      "id": "MP5-RELEASE-GATE-HARDENING",
+      "status": "deferred",
+      "evidence": [
+        "artifacts/mp3/final/logs/release-gate-skip-full.final.log",
+        "artifacts/mp2/final/MP2_FINAL_REPORT.md"
+      ],
+      "remainingWork": "Release gate skip-full command still timed out in this environment.",
+      "nextOwnerPacket": "MP5"
+    }
+  ],
+  "commands": [
+    {
+      "command": "npm run typecheck",
+      "status": "pass",
+      "artifact": "artifacts/mp3/final/logs/typecheck.final.log"
+    },
+    {
+      "command": "npm run check:icons",
+      "status": "pass",
+      "artifact": "artifacts/mp3/final/logs/check-icons.final.log"
+    },
+    {
+      "command": "npm run validate:content",
+      "status": "pass",
+      "artifact": "artifacts/mp3/final/logs/validate-content.final.log"
+    },
+    {
+      "command": "npm exec tsc -- --project tsconfig.tests.json",
+      "status": "pass",
+      "artifact": "artifacts/mp3/final/logs/tsconfig-tests.final.log"
+    },
+    {
+      "command": "npm run build",
+      "status": "pass",
+      "artifact": "artifacts/mp3/final/logs/build.final.log"
+    },
+    {
+      "command": "node --loader=./scripts/relativeJsLoader.mjs --test <MP3 targeted tests>",
+      "status": "pass",
+      "artifact": "artifacts/mp3/final/logs/targeted-tests.final.log"
+    },
+    {
+      "command": "npm run test:contracts",
+      "status": "fail",
+      "artifact": "artifacts/mp3/final/logs/test-contracts.final.log"
+    },
+    {
+      "command": "npm run release:runtime-diagnostics:json",
+      "status": "pass",
+      "artifact": "artifacts/mp3/final/logs/release-runtime-diagnostics.final.log"
+    },
+    {
+      "command": "Playwright MP3 guidance smoke",
+      "status": "pass",
+      "artifact": "artifacts/mp3/final/logs/mp3-guidance-smoke.final.log"
+    },
+    {
+      "command": "npm run release:gate -- --json --skip=full_test_suite",
+      "status": "timeout",
+      "artifact": "artifacts/mp3/final/logs/release-gate-skip-full.final.log"
+    }
+  ]
+}

@@ -1,0 +1,424 @@
+{
+  "viewport": "1920x1080",
+  "name": "Inventory",
+  "url": "http://127.0.0.1:5173/",
+  "documentTitle": "cultivation-idle-temp",
+  "rootTestIds": [],
+  "headings": [],
+  "primaryCta": {
+    "text": "0",
+    "disabled": false,
+    "ariaLabel": "Open manual satchel",
+    "rect": {
+      "x": 1730,
+      "y": 33,
+      "width": 40,
+      "height": 40,
+      "right": 1770,
+      "bottom": 73
+    }
+  },
+  "buttons": [
+    {
+      "text": "0",
+      "disabled": false,
+      "ariaLabel": "Open manual satchel",
+      "rect": {
+        "x": 1730,
+        "y": 33,
+        "width": 40,
+        "height": 40,
+        "right": 1770,
+        "bottom": 73
+      }
+    },
+    {
+      "text": "Equipment",
+      "disabled": false,
+      "ariaLabel": "Open equipment drawer",
+      "rect": {
+        "x": 1780,
+        "y": 33,
+        "width": 105,
+        "height": 40,
+        "right": 1885,
+        "bottom": 73
+      }
+    },
+    {
+      "text": "All0",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 33,
+        "y": 382,
+        "width": 156,
+        "height": 50,
+        "right": 189,
+        "bottom": 432
+      }
+    },
+    {
+      "text": "Weapons0",
+      "disabled": true,
+      "ariaLabel": null,
+      "rect": {
+        "x": 33,
+        "y": 440,
+        "width": 156,
+        "height": 50,
+        "right": 189,
+        "bottom": 490
+      }
+    },
+    {
+      "text": "Accessories0",
+      "disabled": true,
+      "ariaLabel": null,
+      "rect": {
+        "x": 33,
+        "y": 498,
+        "width": 156,
+        "height": 50,
+        "right": 189,
+        "bottom": 548
+      }
+    },
+    {
+      "text": "Consumables0",
+      "disabled": true,
+      "ariaLabel": null,
+      "rect": {
+        "x": 33,
+        "y": 556,
+        "width": 156,
+        "height": 50,
+        "right": 189,
+        "bottom": 606
+      }
+    },
+    {
+      "text": "Materials0",
+      "disabled": true,
+      "ariaLabel": null,
+      "rect": {
+        "x": 33,
+        "y": 614,
+        "width": 156,
+        "height": 50,
+        "right": 189,
+        "bottom": 664
+      }
+    },
+    {
+      "text": "Treasures0",
+      "disabled": true,
+      "ariaLabel": null,
+      "rect": {
+        "x": 33,
+        "y": 672,
+        "width": 156,
+        "height": 50,
+        "right": 189,
+        "bottom": 722
+      }
+    },
+    {
+      "text": "Misc0",
+      "disabled": true,
+      "ariaLabel": null,
+      "rect": {
+        "x": 33,
+        "y": 730,
+        "width": 156,
+        "height": 50,
+        "right": 189,
+        "bottom": 780
+      }
+    },
+    {
+      "text": "",
+      "disabled": false,
+      "ariaLabel": "Close equipment drawer",
+      "rect": {
+        "x": 2390,
+        "y": 18,
+        "width": 32,
+        "height": 32,
+        "right": 2422,
+        "bottom": 50
+      }
+    },
+    {
+      "text": "WeaponEmpty",
+      "disabled": false,
+      "ariaLabel": "Weapon slot",
+      "rect": {
+        "x": 1958,
+        "y": 184,
+        "width": 108,
+        "height": 108,
+        "right": 2066,
+        "bottom": 292
+      }
+    },
+    {
+      "text": "AccessoryEmpty",
+      "disabled": false,
+      "ariaLabel": "Accessory slot",
+      "rect": {
+        "x": 2296,
+        "y": 184,
+        "width": 108,
+        "height": 108,
+        "right": 2404,
+        "bottom": 292
+      }
+    },
+    {
+      "text": "Status",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 380,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 521,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "Cultivation",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 525,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 667,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "World",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 671,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 812,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "Inventory",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 816,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 958,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "Techniques",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 962,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 1104,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "Records",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1108,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 1249,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "Prestige",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1253,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 1395,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "Settings",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1399,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 1540,
+        "bottom": 1072
+      }
+    }
+  ],
+  "scrollWidth": 1920,
+  "innerWidth": 1920,
+  "scrollHeight": 1080,
+  "innerHeight": 1080,
+  "suspectedClippedText": [
+    {
+      "text": "Consumables",
+      "rect": {
+        "x": 86,
+        "y": 573,
+        "width": 58,
+        "height": 16,
+        "right": 144,
+        "bottom": 589
+      },
+      "overflow": "hidden/hidden/hidden"
+    }
+  ],
+  "viewportIssues": [],
+  "consoleSinceStart": [
+    "1366x768 debug: [vite] connecting...",
+    "1366x768 debug: [vite] connected.",
+    "1366x768 info: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+    "1366x768 log: [App] Initializing game...",
+    "1366x768 log: [GameLoop] Initializing game...",
+    "1366x768 log: [GameLoop] Store dependencies wired",
+    "1366x768 log: [GameLoop] Prestige store initialized",
+    "1366x768 log: [SpiritRoot] Generated: Mortal earth (71% purity)",
+    "1366x768 log: [GameLoop] Generated initial spirit root",
+    "1366x768 log: [GameLoop] No save found, starting new game",
+    "1366x768 log: [GameLoop] Added starter items to inventory",
+    "1366x768 log: [GameLoop] Starting game loop...",
+    "1366x768 log: [GameLoop] Game loop started",
+    "1366x768 log: [GameLoop] Game initialized successfully",
+    "1366x768 log: [App] Game initialized successfully",
+    "1366x768 log: [App] Initializing game...",
+    "1366x768 log: [GameLoop] Initializing game...",
+    "1366x768 log: [GameLoop] Store dependencies wired",
+    "1366x768 log: [GameLoop] Prestige store initialized",
+    "1366x768 log: [GameLoop] No save found, starting new game",
+    "1366x768 warning: [GameLoop] Already running",
+    "1366x768 log: [GameLoop] Game initialized successfully",
+    "1366x768 log: [App] Game initialized successfully",
+    "1366x768 warning: [ContentValidation] Technique counts by path: Heaven=20, Earth=20, Martial=20",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=heaven: 6",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=earth: 6",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=martial: 6",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=heaven: 7",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=earth: 9",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=martial: 8",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=heaven: 9",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=earth: 9",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=martial: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=heaven: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=earth: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=martial: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=heaven: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=earth: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=martial: 10",
+    "1366x768 info: [Content] Loaded 5 cities, 60 techniques (H/E/M: 20/20/20)",
+    "1366x768 info: [Content] Prestige upgrades: 27",
+    "1366x768 log: [SaveLoad] Saving game...",
+    "1366x768 log: [SaveLoad] Game saved successfully at 28/05/2026, 22:56:33",
+    "1366x768 log: [SaveLoad] Saving game...",
+    "1366x768 log: [SaveLoad] Game saved successfully at 28/05/2026, 22:56:35",
+    "1366x768 log: [UI] Notification added: success - Life begins: Heaven • Ember Thread Sutra • Balanced",
+    "1366x768 log: [SaveLoad] Saving game...",
+    "1366x768 log: [SaveLoad] Game saved successfully at 28/05/2026, 22:56:35",
+    "1366x768 log: [UI] Active tab changed to: status",
+    "1366x768 log: [UI] Active tab changed to: adventure",
+    "1366x768 log: [UI] Active tab changed to: inventory",
+    "1366x768 warning: [Inventory] Missing item definition for rusty_sword",
+    "1366x768 warning: [Inventory] Missing item definition for worn_talisman",
+    "1366x768 warning: [Inventory] Missing item definition for health_pill",
+    "1366x768 warning: [Inventory] Missing item definition for spirit_stone",
+    "1366x768 log: [UI] Active tab changed to: techniques",
+    "1366x768 log: [UI] Active tab changed to: records",
+    "1366x768 log: [UI] Active tab changed to: prestige",
+    "1366x768 log: [UI] Active tab changed to: settings",
+    "1366x768 log: [UI] Active tab changed to: adventure",
+    "1366x768 warning: [audio] Unable to play sound ui_click_secondary NotSupportedError: Failed to load because no supported source was found.",
+    "1366x768 log: [SaveLoad] Saving game...",
+    "1366x768 log: [SaveLoad] Game saved successfully at 28/05/2026, 22:57:32",
+    "1366x768 log: [GameLoop] Game autosaved",
+    "1920x1080 debug: [vite] connecting...",
+    "1920x1080 debug: [vite] connected.",
+    "1920x1080 info: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+    "1920x1080 log: [App] Initializing game...",
+    "1920x1080 log: [GameLoop] Initializing game...",
+    "1920x1080 log: [GameLoop] Store dependencies wired",
+    "1920x1080 log: [GameLoop] Prestige store initialized",
+    "1920x1080 log: [SpiritRoot] Generated: Common metal (58% purity)",
+    "1920x1080 log: [GameLoop] Generated initial spirit root",
+    "1920x1080 log: [GameLoop] No save found, starting new game",
+    "1920x1080 log: [GameLoop] Added starter items to inventory",
+    "1920x1080 log: [GameLoop] Starting game loop...",
+    "1920x1080 log: [GameLoop] Game loop started",
+    "1920x1080 log: [GameLoop] Game initialized successfully",
+    "1920x1080 log: [App] Game initialized successfully",
+    "1920x1080 log: [App] Initializing game...",
+    "1920x1080 log: [GameLoop] Initializing game...",
+    "1920x1080 log: [GameLoop] Store dependencies wired",
+    "1920x1080 log: [GameLoop] Prestige store initialized",
+    "1920x1080 log: [GameLoop] No save found, starting new game",
+    "1920x1080 warning: [GameLoop] Already running",
+    "1920x1080 log: [GameLoop] Game initialized successfully",
+    "1920x1080 log: [App] Game initialized successfully",
+    "1920x1080 warning: [ContentValidation] Technique counts by path: Heaven=20, Earth=20, Martial=20",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=heaven: 6",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=earth: 6",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=martial: 6",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=heaven: 7",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=earth: 9",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=martial: 8",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=heaven: 9",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=earth: 9",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=martial: 10",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=heaven: 10",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=earth: 10",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=martial: 10",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=heaven: 10",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=earth: 10",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=martial: 10",
+    "1920x1080 info: [Content] Loaded 5 cities, 60 techniques (H/E/M: 20/20/20)",
+    "1920x1080 info: [Content] Prestige upgrades: 27",
+    "1920x1080 log: [SaveLoad] Saving game...",
+    "1920x1080 log: [SaveLoad] Game saved successfully at 28/05/2026, 22:57:37",
+    "1920x1080 log: [SaveLoad] Saving game...",
+    "1920x1080 log: [SaveLoad] Game saved successfully at 28/05/2026, 22:57:40",
+    "1920x1080 log: [UI] Notification added: success - Life begins: Heaven • Ember Thread Sutra • Balanced",
+    "1920x1080 log: [SaveLoad] Saving game...",
+    "1920x1080 log: [SaveLoad] Game saved successfully at 28/05/2026, 22:57:40",
+    "1920x1080 log: [UI] Active tab changed to: status",
+    "1920x1080 log: [UI] Active tab changed to: adventure",
+    "1920x1080 log: [UI] Active tab changed to: inventory",
+    "1920x1080 warning: [Inventory] Missing item definition for rusty_sword",
+    "1920x1080 warning: [Inventory] Missing item definition for worn_talisman",
+    "1920x1080 warning: [Inventory] Missing item definition for health_pill",
+    "1920x1080 warning: [Inventory] Missing item definition for spirit_stone"
+  ],
+  "textSample": "Spatial Ring Inventory\nTreasures secured within your pocket realm.\nGold\n1000\nSpirit Stones\n0\nMerit\n0\n4/36\n0\nEquipment\nGOLD\nReserve\nOutskirts\nUsed for manuals, gear, and most city spending.\nPRIMARY SOURCE\nActive field farming with common-material upside.\nBOUNTIES\nSupport-economy fallback with Merit and spirit stones attached.\nKnown refill source: Outskirts when a clean gold reserve matters.\nSPIRIT STONES\nReserve\nBounties\nUsed for reserve-heavy support spending and late prep pressure.\nPRIMARY SOURCE\nBounty board is the canonical spirit-stone reserve route.\nGATE TRIAL\nGate-trial/fail-safe support remains the only explicit non-bounty reserve fallback exposed by the branch.\nKnown refill source: Bounties when spirit-stone reserve matters.\nMERIT\nReserve\nBounties\nUsed for Safety Net support and other bounded reserve spending.\nPRIMARY SOURCE\nBounty board is the canonical Merit reserve route.\nGATE TRIAL\nEligible gate defeats provide bounded fallback Merit only when that support truth is active.\nKnown refill source: Bounties when Merit reserve matters.\nPOCKETS\n4 / 36\nAll\n0\nWeapons\n0\nAccessories\n0\nConsumables\n0\nMaterials\n0\nTreasures\n0\nMisc\n0\nAll\nShowing 0 items\nSort\nRarity (High → Low)\nName (A → Z)\nQuantity (High → Low)\nType → Rarity\nNew (Newest first)\nSelect an item to inspect\nTap a slot to see details. Manual Satchel tips live there too.\nEquipment\nSelect an item in your satchel, then click a slot to equip.\nWEAPON\nEmpty\nACCESSORY\nEmpty\nChoose a slot to inspect\nEquipment grants lasting bonuses to your cultivator.\nStatus\nCultivation\nWorld\nInventory\nTechniques\nRecords\nPrestige\nSettings"
+}

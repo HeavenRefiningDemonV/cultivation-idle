@@ -4,7 +4,7 @@
     "module": "ESNext",
     "moduleResolution": "Node",
     "rootDir": ".",
-    "outDir": "./tmp-progression-fixtures",
+    "outDir": "./.tmp/progression-fixtures",
     "noEmit": false,
     "allowImportingTsExtensions": false,
     "strict": true,

@@ -224,11 +224,47 @@ function emitFromRuntimeEvent(event: GameEvent) {
     case 'prestige/performed':
       emitBalanceEvent({ family: 'prestige', name: 'performed', kind: 'prestige/performed', payload: { apGained: event.payload.apGained, totalAPAfter: event.payload.totalAPAfter, realmReached: event.payload.realmReached, resolvedGateCount: event.payload.resolvedGateCount, timeSpentSec: event.payload.timeSpentSec, advisorLabel: event.payload.advisorLabel } });
       return;
+    case 'prestige/started':
+      emitBalanceEvent({ family: 'prestige', name: 'started', kind: 'prestige/started', payload: { realm: event.payload.realm, ap: event.payload.ap, trainedStats: event.payload.trainedStats, heartLawLevel: event.payload.heartLawLevel, retainedMemory: event.payload.retainedMemory } }, { emittedAt: event.payload.timestamp });
+      return;
+    case 'prestige/memory_applied':
+      emitBalanceEvent({ family: 'prestige', name: 'memory_applied', kind: 'prestige/memory_applied', payload: { effectId: event.payload.effectId, rank: event.payload.rank, value: event.payload.value, targetId: event.payload.targetId } }, { emittedAt: event.payload.timestamp });
+      return;
+    case 'prestige/reset_bucket_applied':
+      emitBalanceEvent({ family: 'prestige', name: 'reset_bucket_applied', kind: 'prestige/reset_bucket_applied', payload: { bucketId: event.payload.bucketId, kind: event.payload.kind, label: event.payload.label } }, { emittedAt: event.payload.timestamp });
+      return;
     case 'prestige/upgrade_purchased':
       emitBalanceEvent({ family: 'prestige', name: 'upgrade_purchased', kind: 'prestige/upgrade_purchased', payload: { upgradeId: event.payload.upgradeId, nextLevel: event.payload.nextLevel, apCost: event.payload.apCost, remainingAP: event.payload.remainingAP } });
       return;
     case 'offline/applied':
       emitBalanceEvent({ family: 'offline', name: 'applied', kind: 'offline/applied', payload: event.payload });
+      return;
+    case 'training/started':
+      emitBalanceEvent({ family: 'training', name: 'started', kind: 'training/started', payload: { path: event.payload.path, regimenId: event.payload.regimenId, intensity: event.payload.intensity, realmId: event.payload.realmId, ratingSnapshot: event.payload.ratingSnapshot, fatigue: event.payload.fatigue } }, { emittedAt: event.payload.timestamp });
+      return;
+    case 'training/grade_changed':
+      emitBalanceEvent({ family: 'training', name: 'grade_changed', kind: 'training/grade_changed', payload: { statId: event.payload.statId, oldGrade: event.payload.oldGrade, newGrade: event.payload.newGrade, minutesSinceLastGrade: event.payload.minutesSinceLastGrade, realmId: event.payload.realmId } }, { emittedAt: event.payload.timestamp });
+      return;
+    case 'training/cap_hit':
+      emitBalanceEvent({ family: 'training', name: 'cap_hit', kind: 'training/cap_hit', payload: { statId: event.payload.statId, realmId: event.payload.realmId, rating: event.payload.rating, masteryRank: event.payload.masteryRank } }, { emittedAt: event.payload.timestamp });
+      return;
+    case 'training/offline_applied':
+      emitBalanceEvent({ family: 'training', name: 'offline_applied', kind: 'training/offline_applied', payload: { appliedMs: event.payload.appliedMs, ratingGainedById: event.payload.ratingGainedById, statXpGainedById: event.payload.statXpGainedById, masteryXpGainedByRegimenId: event.payload.masteryXpGainedByRegimenId, fatigueGained: event.payload.fatigueGained, intensityDowngrades: event.payload.intensityDowngrades, blockedReason: event.payload.blockedReason } }, { emittedAt: event.payload.timestamp });
+      return;
+    case 'dao_heart/started':
+      emitBalanceEvent({ family: 'dao_heart', name: 'started', kind: 'dao_heart/started', payload: { lawId: event.payload.lawId, activityId: event.payload.activityId, parityDelta: event.payload.parityDelta, turbulence: event.payload.turbulence, clarity: event.payload.clarity } }, { emittedAt: event.payload.timestamp });
+      return;
+    case 'dao_heart/level_changed':
+      emitBalanceEvent({ family: 'dao_heart', name: 'level_changed', kind: 'dao_heart/level_changed', payload: { lawId: event.payload.lawId, oldLevel: event.payload.oldLevel, newLevel: event.payload.newLevel, parityDelta: event.payload.parityDelta } }, { emittedAt: event.payload.timestamp });
+      return;
+    case 'dao_heart/offline_applied':
+      emitBalanceEvent({ family: 'dao_heart', name: 'offline_applied', kind: 'dao_heart/offline_applied', payload: { lawId: event.payload.lawId, activityId: event.payload.activityId, appliedMs: event.payload.appliedMs, heartLawXpGain: event.payload.heartLawXpGain, verseMasteryGain: event.payload.verseMasteryGain, clarityGain: event.payload.clarityGain, turbulenceGain: event.payload.turbulenceGain, levelsGained: event.payload.levelsGained, blockedReason: event.payload.blockedReason } }, { emittedAt: event.payload.timestamp });
+      return;
+    case 'breakthrough/attempted':
+      emitBalanceEvent({ family: 'breakthrough', name: 'attempted', kind: 'breakthrough/attempted', payload: { fromRealm: event.payload.fromRealm, risk: event.payload.risk, causeRows: event.payload.causeRows, parityDelta: event.payload.parityDelta, fatigue: event.payload.fatigue, result: event.payload.result } }, { emittedAt: event.payload.timestamp });
+      return;
+    case 'gate/attempted':
+      emitBalanceEvent({ family: 'trials', name: 'gate_attempted', kind: 'trials/gate_attempted', payload: { trialId: event.payload.trialId, readinessScore: event.payload.readinessScore, categoryScores: event.payload.categoryScores, path: event.payload.path, lawId: event.payload.lawId, result: event.payload.result } }, { emittedAt: event.payload.timestamp });
       return;
     case 'progression/gate_resolved': {
       const trialId = event.payload.trialId;

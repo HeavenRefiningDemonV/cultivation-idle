@@ -1,0 +1,1773 @@
+{
+  "viewport": "1366x768",
+  "name": "Records",
+  "url": "http://127.0.0.1:5173/",
+  "documentTitle": "cultivation-idle-temp",
+  "rootTestIds": [
+    "pavilion-exact-page",
+    "pavilion-title-block",
+    "pavilion-run-ribbon",
+    "pavilion-search-cluster",
+    "pavilion-jade-shelf",
+    "pavilion-record-scroll",
+    "pavilion-record-viewport",
+    "pavilion-threads-rail",
+    "pavilion-elder-note",
+    "pavilion-footer"
+  ],
+  "headings": [
+    "Pavilion of Ten Thousand Records",
+    "Jade Shelf",
+    "Gate Trials Records",
+    "Record States",
+    "Foundation Gate",
+    "What It Means",
+    "Why It Matters Now",
+    "What To Do Next",
+    "Common Mistakes",
+    "Jade Slip",
+    "Related Records",
+    "Requirements",
+    "Best Source",
+    "What Uses This",
+    "Numbers To Watch",
+    "Elder Note",
+    "Threads of Karma",
+    "Known From",
+    "Related Records",
+    "Current Milestone",
+    "Route"
+  ],
+  "primaryCta": {
+    "text": "OpenRoute to Gate Trial>",
+    "disabled": false,
+    "ariaLabel": null,
+    "rect": {
+      "x": 328,
+      "y": 1435,
+      "width": 637,
+      "height": 44,
+      "right": 965,
+      "bottom": 1479
+    }
+  },
+  "buttons": [
+    {
+      "text": "Needed Now",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 969,
+        "y": 47,
+        "width": 122,
+        "height": 40,
+        "right": 1091,
+        "bottom": 87
+      }
+    },
+    {
+      "text": "Needed Soon",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1100,
+        "y": 47,
+        "width": 125,
+        "height": 40,
+        "right": 1226,
+        "bottom": 87
+      }
+    },
+    {
+      "text": "Recorded",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1235,
+        "y": 47,
+        "width": 100,
+        "height": 40,
+        "right": 1334,
+        "bottom": 87
+      }
+    },
+    {
+      "text": "Studied",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1343,
+        "y": 47,
+        "width": 92,
+        "height": 40,
+        "right": 1435,
+        "bottom": 87
+      }
+    },
+    {
+      "text": "Mastered",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1444,
+        "y": 47,
+        "width": 99,
+        "height": 40,
+        "right": 1543,
+        "bottom": 87
+      }
+    },
+    {
+      "text": "Sealed",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1552,
+        "y": 47,
+        "width": 92,
+        "height": 40,
+        "right": 1644,
+        "bottom": 87
+      }
+    },
+    {
+      "text": "Rumored",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1653,
+        "y": 47,
+        "width": 99,
+        "height": 40,
+        "right": 1751,
+        "bottom": 87
+      }
+    },
+    {
+      "text": "Path: Heaven",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1760,
+        "y": 47,
+        "width": 127,
+        "height": 40,
+        "right": 1888,
+        "bottom": 87
+      }
+    },
+    {
+      "text": "Path: Earth",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1897,
+        "y": 47,
+        "width": 113,
+        "height": 40,
+        "right": 2010,
+        "bottom": 87
+      }
+    },
+    {
+      "text": "Path: Martial",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 2019,
+        "y": 47,
+        "width": 126,
+        "height": 40,
+        "right": 2145,
+        "bottom": 87
+      }
+    },
+    {
+      "text": "City",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 2154,
+        "y": 47,
+        "width": 92,
+        "height": 40,
+        "right": 2246,
+        "bottom": 87
+      }
+    },
+    {
+      "text": "Source",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 2255,
+        "y": 47,
+        "width": 92,
+        "height": 40,
+        "right": 2347,
+        "bottom": 87
+      }
+    },
+    {
+      "text": "Used For",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 2356,
+        "y": 47,
+        "width": 97,
+        "height": 40,
+        "right": 2452,
+        "bottom": 87
+      }
+    },
+    {
+      "text": "Rarity",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 2461,
+        "y": 47,
+        "width": 92,
+        "height": 40,
+        "right": 2553,
+        "bottom": 87
+      }
+    },
+    {
+      "text": "Activity",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 2562,
+        "y": 47,
+        "width": 92,
+        "height": 40,
+        "right": 2654,
+        "bottom": 87
+      }
+    },
+    {
+      "text": "Missing",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 2663,
+        "y": 47,
+        "width": 92,
+        "height": 40,
+        "right": 2755,
+        "bottom": 87
+      }
+    },
+    {
+      "text": "Safe to Sell",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 2764,
+        "y": 47,
+        "width": 110,
+        "height": 40,
+        "right": 2874,
+        "bottom": 87
+      }
+    },
+    {
+      "text": "Do Not Sell",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 2883,
+        "y": 47,
+        "width": 113,
+        "height": 40,
+        "right": 2996,
+        "bottom": 87
+      }
+    },
+    {
+      "text": "First Steps",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 41,
+        "y": 155,
+        "width": 218,
+        "height": 40,
+        "right": 259,
+        "bottom": 195
+      }
+    },
+    {
+      "text": "Current Life",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 41,
+        "y": 199,
+        "width": 218,
+        "height": 40,
+        "right": 259,
+        "bottom": 239
+      }
+    },
+    {
+      "text": "Cultivation",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 41,
+        "y": 243,
+        "width": 218,
+        "height": 40,
+        "right": 259,
+        "bottom": 283
+      }
+    },
+    {
+      "text": "Gate Trials",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 41,
+        "y": 287,
+        "width": 218,
+        "height": 40,
+        "right": 259,
+        "bottom": 327
+      }
+    },
+    {
+      "text": "Cities",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 41,
+        "y": 331,
+        "width": 218,
+        "height": 40,
+        "right": 259,
+        "bottom": 371
+      }
+    },
+    {
+      "text": "Activities",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 41,
+        "y": 375,
+        "width": 218,
+        "height": 40,
+        "right": 259,
+        "bottom": 415
+      }
+    },
+    {
+      "text": "Combat",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 41,
+        "y": 419,
+        "width": 218,
+        "height": 40,
+        "right": 259,
+        "bottom": 459
+      }
+    },
+    {
+      "text": "Manuals",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 41,
+        "y": 463,
+        "width": 218,
+        "height": 40,
+        "right": 259,
+        "bottom": 503
+      }
+    },
+    {
+      "text": "Crafting",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 41,
+        "y": 507,
+        "width": 218,
+        "height": 40,
+        "right": 259,
+        "bottom": 547
+      }
+    },
+    {
+      "text": "Items",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 41,
+        "y": 551,
+        "width": 218,
+        "height": 40,
+        "right": 259,
+        "bottom": 591
+      }
+    },
+    {
+      "text": "Bestiary",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 41,
+        "y": 595,
+        "width": 218,
+        "height": 40,
+        "right": 259,
+        "bottom": 635
+      }
+    },
+    {
+      "text": "Bounties",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 41,
+        "y": 639,
+        "width": 218,
+        "height": 40,
+        "right": 259,
+        "bottom": 679
+      }
+    },
+    {
+      "text": "Reincarnation",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 41,
+        "y": 683,
+        "width": 218,
+        "height": 40,
+        "right": 259,
+        "bottom": 723
+      }
+    },
+    {
+      "text": "Systems",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 41,
+        "y": 727,
+        "width": 218,
+        "height": 40,
+        "right": 259,
+        "bottom": 767
+      }
+    },
+    {
+      "text": "Xianxia Glossary",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 41,
+        "y": 771,
+        "width": 218,
+        "height": 40,
+        "right": 259,
+        "bottom": 811
+      }
+    },
+    {
+      "text": "Foundation GateGate Trials / gateNeeded Now",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 50,
+        "y": 392,
+        "width": 154,
+        "height": 38,
+        "right": 203,
+        "bottom": 430
+      }
+    },
+    {
+      "text": "Slip",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 208,
+        "y": 392,
+        "width": 41,
+        "height": 38,
+        "right": 250,
+        "bottom": 430
+      }
+    },
+    {
+      "text": "Breakthrough HandoffGate Trials / gate",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 50,
+        "y": 435,
+        "width": 154,
+        "height": 38,
+        "right": 203,
+        "bottom": 473
+      }
+    },
+    {
+      "text": "Slip",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 208,
+        "y": 435,
+        "width": 41,
+        "height": 38,
+        "right": 250,
+        "bottom": 473
+      }
+    },
+    {
+      "text": "Eligible FailuresGate Trials / gate",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 50,
+        "y": 478,
+        "width": 154,
+        "height": 38,
+        "right": 203,
+        "bottom": 516
+      }
+    },
+    {
+      "text": "Slip",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 208,
+        "y": 478,
+        "width": 41,
+        "height": 38,
+        "right": 250,
+        "bottom": 516
+      }
+    },
+    {
+      "text": "Fail-SafeGate Trials / gate",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 50,
+        "y": 521,
+        "width": 154,
+        "height": 38,
+        "right": 203,
+        "bottom": 559
+      }
+    },
+    {
+      "text": "Slip",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 208,
+        "y": 521,
+        "width": 41,
+        "height": 38,
+        "right": 250,
+        "bottom": 559
+      }
+    },
+    {
+      "text": "Gate CatalystGate Trials / gate",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 50,
+        "y": 564,
+        "width": 154,
+        "height": 38,
+        "right": 203,
+        "bottom": 602
+      }
+    },
+    {
+      "text": "Slip",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 208,
+        "y": 564,
+        "width": 41,
+        "height": 38,
+        "right": 250,
+        "bottom": 602
+      }
+    },
+    {
+      "text": "Gate Core CatalystGate Trials / gate",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 50,
+        "y": 607,
+        "width": 154,
+        "height": 38,
+        "right": 203,
+        "bottom": 645
+      }
+    },
+    {
+      "text": "Slip",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 208,
+        "y": 607,
+        "width": 41,
+        "height": 38,
+        "right": 250,
+        "bottom": 645
+      }
+    },
+    {
+      "text": "Gate Core StabilizerGate Trials / gate",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 50,
+        "y": 650,
+        "width": 154,
+        "height": 38,
+        "right": 203,
+        "bottom": 688
+      }
+    },
+    {
+      "text": "Slip",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 208,
+        "y": 650,
+        "width": 41,
+        "height": 38,
+        "right": 250,
+        "bottom": 688
+      }
+    },
+    {
+      "text": "Gate Foundation PillGate Trials / gate",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 50,
+        "y": 693,
+        "width": 154,
+        "height": 38,
+        "right": 203,
+        "bottom": 731
+      }
+    },
+    {
+      "text": "Slip",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 208,
+        "y": 693,
+        "width": 41,
+        "height": 38,
+        "right": 250,
+        "bottom": 731
+      }
+    },
+    {
+      "text": "Gate GuardianGate Trials / gate",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 50,
+        "y": 736,
+        "width": 154,
+        "height": 38,
+        "right": 203,
+        "bottom": 774
+      }
+    },
+    {
+      "text": "Slip",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 208,
+        "y": 736,
+        "width": 41,
+        "height": 38,
+        "right": 250,
+        "bottom": 774
+      }
+    },
+    {
+      "text": "Gate Severing SealGate Trials / gate",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 50,
+        "y": 779,
+        "width": 154,
+        "height": 38,
+        "right": 203,
+        "bottom": 817
+      }
+    },
+    {
+      "text": "Slip",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 208,
+        "y": 779,
+        "width": 41,
+        "height": 38,
+        "right": 250,
+        "bottom": 817
+      }
+    },
+    {
+      "text": "Gate Soul CondensateGate Trials / gate",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 50,
+        "y": 822,
+        "width": 154,
+        "height": 38,
+        "right": 203,
+        "bottom": 860
+      }
+    },
+    {
+      "text": "Slip",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 208,
+        "y": 822,
+        "width": 41,
+        "height": 38,
+        "right": 250,
+        "bottom": 860
+      }
+    },
+    {
+      "text": "Gate TrialGate Trials / gate",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 50,
+        "y": 865,
+        "width": 154,
+        "height": 38,
+        "right": 203,
+        "bottom": 903
+      }
+    },
+    {
+      "text": "Slip",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 208,
+        "y": 865,
+        "width": 41,
+        "height": 38,
+        "right": 250,
+        "bottom": 903
+      }
+    },
+    {
+      "text": "Golden Core GateGate Trials / gate",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 50,
+        "y": 908,
+        "width": 154,
+        "height": 38,
+        "right": 203,
+        "bottom": 946
+      }
+    },
+    {
+      "text": "Slip",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 208,
+        "y": 908,
+        "width": 41,
+        "height": 38,
+        "right": 250,
+        "bottom": 946
+      }
+    },
+    {
+      "text": "Minimum ChecklistGate Trials / gate",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 50,
+        "y": 951,
+        "width": 154,
+        "height": 38,
+        "right": 203,
+        "bottom": 989
+      }
+    },
+    {
+      "text": "Slip",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 208,
+        "y": 951,
+        "width": 41,
+        "height": 38,
+        "right": 250,
+        "bottom": 989
+      }
+    },
+    {
+      "text": "Nascent Soul GateGate Trials / gate",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 50,
+        "y": 994,
+        "width": 154,
+        "height": 38,
+        "right": 203,
+        "bottom": 1032
+      }
+    },
+    {
+      "text": "Slip",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 208,
+        "y": 994,
+        "width": 41,
+        "height": 38,
+        "right": 250,
+        "bottom": 1032
+      }
+    },
+    {
+      "text": "Novice's ClearingGate Trials / trial / trialsArchive",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 50,
+        "y": 1037,
+        "width": 154,
+        "height": 38,
+        "right": 203,
+        "bottom": 1075
+      }
+    },
+    {
+      "text": "Slip",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 208,
+        "y": 1037,
+        "width": 41,
+        "height": 38,
+        "right": 250,
+        "bottom": 1075
+      }
+    },
+    {
+      "text": "Patriarch's SealGate Trials / trial / trialsArchive",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 50,
+        "y": 1080,
+        "width": 154,
+        "height": 38,
+        "right": 203,
+        "bottom": 1118
+      }
+    },
+    {
+      "text": "Slip",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 208,
+        "y": 1080,
+        "width": 41,
+        "height": 38,
+        "right": 250,
+        "bottom": 1118
+      }
+    },
+    {
+      "text": "Readiness ScoreGate Trials / gate",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 50,
+        "y": 1123,
+        "width": 154,
+        "height": 38,
+        "right": 203,
+        "bottom": 1161
+      }
+    },
+    {
+      "text": "Slip",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 208,
+        "y": 1123,
+        "width": 41,
+        "height": 38,
+        "right": 250,
+        "bottom": 1161
+      }
+    },
+    {
+      "text": "Recommended PrepGate Trials / gate",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 50,
+        "y": 1166,
+        "width": 154,
+        "height": 38,
+        "right": 203,
+        "bottom": 1204
+      }
+    },
+    {
+      "text": "Slip",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 208,
+        "y": 1166,
+        "width": 41,
+        "height": 38,
+        "right": 250,
+        "bottom": 1204
+      }
+    },
+    {
+      "text": "Safety NetGate Trials / gate",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 50,
+        "y": 1209,
+        "width": 154,
+        "height": 38,
+        "right": 203,
+        "bottom": 1247
+      }
+    },
+    {
+      "text": "Slip",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 208,
+        "y": 1209,
+        "width": 41,
+        "height": 38,
+        "right": 250,
+        "bottom": 1247
+      }
+    },
+    {
+      "text": "Severing CourtGate Trials / trial / trialsArchive",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 50,
+        "y": 1252,
+        "width": 154,
+        "height": 38,
+        "right": 203,
+        "bottom": 1290
+      }
+    },
+    {
+      "text": "Slip",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 208,
+        "y": 1252,
+        "width": 41,
+        "height": 38,
+        "right": 250,
+        "bottom": 1290
+      }
+    },
+    {
+      "text": "Soul Formation GateGate Trials / gate",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 50,
+        "y": 1295,
+        "width": 154,
+        "height": 38,
+        "right": 203,
+        "bottom": 1333
+      }
+    },
+    {
+      "text": "Slip",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 208,
+        "y": 1295,
+        "width": 41,
+        "height": 38,
+        "right": 250,
+        "bottom": 1333
+      }
+    },
+    {
+      "text": "Soul Lantern VaultGate Trials / trial / trialsArchive",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 50,
+        "y": 1338,
+        "width": 154,
+        "height": 38,
+        "right": 203,
+        "bottom": 1376
+      }
+    },
+    {
+      "text": "Slip",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 208,
+        "y": 1338,
+        "width": 41,
+        "height": 38,
+        "right": 250,
+        "bottom": 1376
+      }
+    },
+    {
+      "text": "Spirit Severing GateGate Trials / gate",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 50,
+        "y": 1381,
+        "width": 154,
+        "height": 38,
+        "right": 203,
+        "bottom": 1419
+      }
+    },
+    {
+      "text": "Slip",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 208,
+        "y": 1381,
+        "width": 41,
+        "height": 38,
+        "right": 250,
+        "bottom": 1419
+      }
+    },
+    {
+      "text": "Stone Core SanctumGate Trials / trial / trialsArchive",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 50,
+        "y": 1424,
+        "width": 154,
+        "height": 38,
+        "right": 203,
+        "bottom": 1462
+      }
+    },
+    {
+      "text": "Slip",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 208,
+        "y": 1424,
+        "width": 41,
+        "height": 38,
+        "right": 250,
+        "bottom": 1462
+      }
+    },
+    {
+      "text": "Top FixesGate Trials / gate",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 50,
+        "y": 1467,
+        "width": 154,
+        "height": 38,
+        "right": 203,
+        "bottom": 1505
+      }
+    },
+    {
+      "text": "Slip",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 208,
+        "y": 1467,
+        "width": 41,
+        "height": 38,
+        "right": 250,
+        "bottom": 1505
+      }
+    },
+    {
+      "text": "Trial ClearGate Trials / gate",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 50,
+        "y": 1510,
+        "width": 154,
+        "height": 38,
+        "right": 203,
+        "bottom": 1548
+      }
+    },
+    {
+      "text": "Slip",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 208,
+        "y": 1510,
+        "width": 41,
+        "height": 38,
+        "right": 250,
+        "bottom": 1548
+      }
+    },
+    {
+      "text": "Trial DefeatGate Trials / gate",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 50,
+        "y": 1553,
+        "width": 154,
+        "height": 38,
+        "right": 203,
+        "bottom": 1591
+      }
+    },
+    {
+      "text": "Slip",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 208,
+        "y": 1553,
+        "width": 41,
+        "height": 38,
+        "right": 250,
+        "bottom": 1591
+      }
+    },
+    {
+      "text": "Route to Gate Trial",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 328,
+        "y": 434,
+        "width": 177,
+        "height": 31,
+        "right": 505,
+        "bottom": 465
+      }
+    },
+    {
+      "text": "Route to Cultivation",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 512,
+        "y": 434,
+        "width": 185,
+        "height": 31,
+        "right": 696,
+        "bottom": 465
+      }
+    },
+    {
+      "text": "Route to Gate Trial",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 328,
+        "y": 743,
+        "width": 139,
+        "height": 30,
+        "right": 467,
+        "bottom": 773
+      }
+    },
+    {
+      "text": "Route to Cultivation",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 474,
+        "y": 743,
+        "width": 146,
+        "height": 30,
+        "right": 620,
+        "bottom": 773
+      }
+    },
+    {
+      "text": "OpenRoute to Gate Trial>",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 328,
+        "y": 1435,
+        "width": 637,
+        "height": 44,
+        "right": 965,
+        "bottom": 1479
+      }
+    },
+    {
+      "text": "OpenRoute to Cultivation>",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 328,
+        "y": 1487,
+        "width": 637,
+        "height": 44,
+        "right": 965,
+        "bottom": 1531
+      }
+    },
+    {
+      "text": "Route to Gate Trial",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 697,
+        "y": 655,
+        "width": 146,
+        "height": 32,
+        "right": 843,
+        "bottom": 687
+      }
+    },
+    {
+      "text": "Route to Cultivation",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 851,
+        "y": 655,
+        "width": 152,
+        "height": 32,
+        "right": 1003,
+        "bottom": 687
+      }
+    },
+    {
+      "text": "Authored record",
+      "disabled": true,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1085,
+        "y": 414,
+        "width": 149,
+        "height": 25,
+        "right": 1234,
+        "bottom": 439
+      }
+    },
+    {
+      "text": "Gate Trial",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1085,
+        "y": 481,
+        "width": 103,
+        "height": 25,
+        "right": 1188,
+        "bottom": 506
+      }
+    },
+    {
+      "text": "Gate Foundation Pill",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1085,
+        "y": 511,
+        "width": 179,
+        "height": 25,
+        "right": 1264,
+        "bottom": 536
+      }
+    }
+  ],
+  "scrollWidth": 1366,
+  "innerWidth": 1366,
+  "scrollHeight": 768,
+  "innerHeight": 768,
+  "suspectedClippedText": [
+    {
+      "text": "Qi Condensation · Heaven Path · Ember Thread Sutra · Pinewind Hamlet · Open Current Milestone",
+      "rect": {
+        "x": 260,
+        "y": 65,
+        "width": 464,
+        "height": 28,
+        "right": 724,
+        "bottom": 93
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Needed NowNeeded SoonRecordedStudiedMasteredSealedRumoredPath: HeavenPath: EarthPath: MartialCitySourceUsed ForRarityActivityMissingSafe to SellDo Not Sell",
+      "rect": {
+        "x": 969,
+        "y": 47,
+        "width": 345,
+        "height": 43,
+        "right": 1314,
+        "bottom": 90
+      },
+      "overflow": "auto hidden/auto/hidden"
+    },
+    {
+      "text": "Xianxia Glossary",
+      "rect": {
+        "x": 94,
+        "y": 783,
+        "width": 114,
+        "height": 17,
+        "right": 208,
+        "bottom": 800
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Foundation Gate",
+      "rect": {
+        "x": 82,
+        "y": 398,
+        "width": 41,
+        "height": 14,
+        "right": 122,
+        "bottom": 412
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Gate Trials / gate",
+      "rect": {
+        "x": 82,
+        "y": 413,
+        "width": 41,
+        "height": 11,
+        "right": 122,
+        "bottom": 424
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Breakthrough Handoff",
+      "rect": {
+        "x": 82,
+        "y": 441,
+        "width": 102,
+        "height": 14,
+        "right": 183,
+        "bottom": 455
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Gate Core Catalyst",
+      "rect": {
+        "x": 82,
+        "y": 613,
+        "width": 102,
+        "height": 14,
+        "right": 183,
+        "bottom": 627
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Gate Core Stabilizer",
+      "rect": {
+        "x": 82,
+        "y": 656,
+        "width": 102,
+        "height": 14,
+        "right": 183,
+        "bottom": 670
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Gate Foundation Pill",
+      "rect": {
+        "x": 82,
+        "y": 699,
+        "width": 102,
+        "height": 14,
+        "right": 183,
+        "bottom": 713
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Gate Severing Seal",
+      "rect": {
+        "x": 82,
+        "y": 785,
+        "width": 102,
+        "height": 14,
+        "right": 183,
+        "bottom": 799
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Gate Soul Condensate",
+      "rect": {
+        "x": 82,
+        "y": 828,
+        "width": 102,
+        "height": 14,
+        "right": 183,
+        "bottom": 842
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Golden Core Gate",
+      "rect": {
+        "x": 82,
+        "y": 914,
+        "width": 102,
+        "height": 14,
+        "right": 183,
+        "bottom": 928
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Minimum Checklist",
+      "rect": {
+        "x": 82,
+        "y": 957,
+        "width": 102,
+        "height": 14,
+        "right": 183,
+        "bottom": 971
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Nascent Soul Gate",
+      "rect": {
+        "x": 82,
+        "y": 1000,
+        "width": 102,
+        "height": 14,
+        "right": 183,
+        "bottom": 1014
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Novice's Clearing",
+      "rect": {
+        "x": 82,
+        "y": 1043,
+        "width": 58,
+        "height": 14,
+        "right": 139,
+        "bottom": 1057
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Gate Trials / trial / trials",
+      "rect": {
+        "x": 82,
+        "y": 1058,
+        "width": 58,
+        "height": 11,
+        "right": 139,
+        "bottom": 1069
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Patriarch's Seal",
+      "rect": {
+        "x": 82,
+        "y": 1086,
+        "width": 58,
+        "height": 14,
+        "right": 139,
+        "bottom": 1100
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Gate Trials / trial / trials",
+      "rect": {
+        "x": 82,
+        "y": 1101,
+        "width": 58,
+        "height": 11,
+        "right": 139,
+        "bottom": 1112
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Recommended Prep",
+      "rect": {
+        "x": 82,
+        "y": 1172,
+        "width": 102,
+        "height": 14,
+        "right": 183,
+        "bottom": 1186
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Severing Court",
+      "rect": {
+        "x": 82,
+        "y": 1258,
+        "width": 58,
+        "height": 14,
+        "right": 139,
+        "bottom": 1272
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Gate Trials / trial / trials",
+      "rect": {
+        "x": 82,
+        "y": 1273,
+        "width": 58,
+        "height": 11,
+        "right": 139,
+        "bottom": 1284
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Soul Formation Gate",
+      "rect": {
+        "x": 82,
+        "y": 1301,
+        "width": 102,
+        "height": 14,
+        "right": 183,
+        "bottom": 1315
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Soul Lantern Vault",
+      "rect": {
+        "x": 82,
+        "y": 1344,
+        "width": 58,
+        "height": 14,
+        "right": 139,
+        "bottom": 1358
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Gate Trials / trial / trials",
+      "rect": {
+        "x": 82,
+        "y": 1359,
+        "width": 58,
+        "height": 11,
+        "right": 139,
+        "bottom": 1370
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Spirit Severing Gate",
+      "rect": {
+        "x": 82,
+        "y": 1387,
+        "width": 102,
+        "height": 14,
+        "right": 183,
+        "bottom": 1401
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Stone Core Sanctum",
+      "rect": {
+        "x": 82,
+        "y": 1430,
+        "width": 58,
+        "height": 14,
+        "right": 139,
+        "bottom": 1444
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Gate Trials / trial / trials",
+      "rect": {
+        "x": 82,
+        "y": 1445,
+        "width": 58,
+        "height": 11,
+        "right": 139,
+        "bottom": 1456
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Gate TrialsFoundation GateRecordedMilestone GateReadiness CheckSafety NetQuick AnswerFoundation Gate is the threshold check where cultivation progress must beco",
+      "rect": {
+        "x": 270,
+        "y": 91,
+        "width": 776,
+        "height": 582,
+        "right": 1046,
+        "bottom": 674
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Quick AnswerFoundation Gate is the threshold check where cultivation progress must become prepared power. Clear it, use the safety net if eligible, then return ",
+      "rect": {
+        "x": 313,
+        "y": 264,
+        "width": 690,
+        "height": 360,
+        "right": 1003,
+        "bottom": 624
+      },
+      "overflow": "hidden auto/hidden/auto"
+    }
+  ],
+  "viewportIssues": [
+    "primary-cta-outside-viewport"
+  ],
+  "consoleSinceStart": [
+    "1366x768 debug: [vite] connecting...",
+    "1366x768 debug: [vite] connected.",
+    "1366x768 info: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+    "1366x768 log: [App] Initializing game...",
+    "1366x768 log: [GameLoop] Initializing game...",
+    "1366x768 log: [GameLoop] Store dependencies wired",
+    "1366x768 log: [GameLoop] Prestige store initialized",
+    "1366x768 log: [SpiritRoot] Generated: Mortal earth (71% purity)",
+    "1366x768 log: [GameLoop] Generated initial spirit root",
+    "1366x768 log: [GameLoop] No save found, starting new game",
+    "1366x768 log: [GameLoop] Added starter items to inventory",
+    "1366x768 log: [GameLoop] Starting game loop...",
+    "1366x768 log: [GameLoop] Game loop started",
+    "1366x768 log: [GameLoop] Game initialized successfully",
+    "1366x768 log: [App] Game initialized successfully",
+    "1366x768 log: [App] Initializing game...",
+    "1366x768 log: [GameLoop] Initializing game...",
+    "1366x768 log: [GameLoop] Store dependencies wired",
+    "1366x768 log: [GameLoop] Prestige store initialized",
+    "1366x768 log: [GameLoop] No save found, starting new game",
+    "1366x768 warning: [GameLoop] Already running",
+    "1366x768 log: [GameLoop] Game initialized successfully",
+    "1366x768 log: [App] Game initialized successfully",
+    "1366x768 warning: [ContentValidation] Technique counts by path: Heaven=20, Earth=20, Martial=20",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=heaven: 6",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=earth: 6",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=martial: 6",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=heaven: 7",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=earth: 9",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=martial: 8",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=heaven: 9",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=earth: 9",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=martial: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=heaven: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=earth: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=martial: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=heaven: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=earth: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=martial: 10",
+    "1366x768 info: [Content] Loaded 5 cities, 60 techniques (H/E/M: 20/20/20)",
+    "1366x768 info: [Content] Prestige upgrades: 27",
+    "1366x768 log: [SaveLoad] Saving game...",
+    "1366x768 log: [SaveLoad] Game saved successfully at 28/05/2026, 22:56:33",
+    "1366x768 log: [SaveLoad] Saving game...",
+    "1366x768 log: [SaveLoad] Game saved successfully at 28/05/2026, 22:56:35",
+    "1366x768 log: [UI] Notification added: success - Life begins: Heaven • Ember Thread Sutra • Balanced",
+    "1366x768 log: [SaveLoad] Saving game...",
+    "1366x768 log: [SaveLoad] Game saved successfully at 28/05/2026, 22:56:35",
+    "1366x768 log: [UI] Active tab changed to: status",
+    "1366x768 log: [UI] Active tab changed to: adventure",
+    "1366x768 log: [UI] Active tab changed to: inventory",
+    "1366x768 warning: [Inventory] Missing item definition for rusty_sword",
+    "1366x768 warning: [Inventory] Missing item definition for worn_talisman",
+    "1366x768 warning: [Inventory] Missing item definition for health_pill",
+    "1366x768 warning: [Inventory] Missing item definition for spirit_stone",
+    "1366x768 log: [UI] Active tab changed to: techniques",
+    "1366x768 log: [UI] Active tab changed to: records"
+  ],
+  "textSample": "RECORDS\nPavilion of Ten Thousand Records\n\nJade Slip Archive\n\nQi Condensation · Heaven Path · Ember Thread Sutra · Pinewind Hamlet · Open Current Milestone\nNeeded Now\nNeeded Soon\nRecorded\nStudied\nMastered\nSealed\nRumored\nPath: Heaven\nPath: Earth\nPath: Martial\nCity\nSource\nUsed For\nRarity\nActivity\nMissing\nSafe to Sell\nDo Not Sell\nJade Shelf\nFirst Steps\nCurrent Life\nCultivation\nGate Trials\nCities\nActivities\nCombat\nManuals\nCrafting\nItems\nBestiary\nBounties\nReincarnation\nSystems\nXianxia Glossary\nGate Trials Records\n28\nFoundation Gate\nGate Trials / gate\nNeeded Now\nSlip\nBreakthrough Handoff\nGate Trials / gate\nSlip\nEligible Failures\nGate Trials / gate\nSlip\nFail-Safe\nGate Trials / gate\nSlip\nGate Catalyst\nGate Trials / gate\nSlip\nGate Core Catalyst\nGate Trials / gate\nSlip\nGate Core Stabilizer\nGate Trials / gate\nSlip\nGate Foundation Pill\nGate Trials / gate\nSlip\nGate Guardian\nGate Trials / gate\nSlip\nGate Severing Seal\nGate Trials / gate\nSlip\nGate Soul Condensate\nGate Trials / gate\nSlip\nGate Trial\nGate Trials / gate\nSlip\nGolden Core Gate\nGate Trials / gate\nSlip\nMinimum Checklist\nGate Trials / gate\nSlip\nNascent Soul Gate\nGate Trials / gate\nSlip\nNovice's Clearing\nGate Trials / trial / trials\nArchive\nSlip\nPatriarch's Seal\nGate Trials / trial / trials\nArchive\nSlip\nReadiness Score\nGate Trials / gate\nSlip\nRecommended Prep\nGate Trials / gate\nSlip\nSafety Net\nGate Trials / gate\nSlip\nSevering Court\nGate Trials / trial / trials\nArchive\nSlip\nSoul Formation Gate\nGate Trials / gate\nSlip\nSoul Lantern Vault\nGate Trials / trial / trials\nArchive\nSlip\nSpirit Severing Gate\nGate Trials / gate\nSlip\nStone Core Sanctum\nGate Trials / trial / trials\nArchive\nSlip\nTop Fixes\nGate Trials / gate\nSlip\nTrial Clear\nGate Trials / gate\nSlip\nTrial Defeat\nGate Trials / gate\nSlip\nRecord States\nSealed\nRumored\nRecorded\nStudied\nMastered\nRecommended\nWarning\nPrior-Life\nGate Trials\nFoundation Gate\nRecorded\nMilestone Gate\nReadiness Check\nSafety Net\nQUICK ANSWER\n\nFoundation Gate is the threshold check where cultivation progress must become prepared power. Clear it, use the safety net if eligible, then return to Cultivation for the breakthrough handoff.\n\nRecommended now: near the threshold, but medicine is weak.\nDO NEXT\nRoute to Gate Trial\nRoute to Cultivation\nReach final Qi Condensation substage and Qi cap.\nWATCH\nMedicine weak\nLoadout complete\nReadiness score\nEligible failures toward Safety Net\nMedicine count\nWeapon refine/temper floor\nWARNINGS\nRecommended now: near the threshold, but medicine is weak.\nLoss with medicine unused means pouch setup is wrong.\nLoss after long survival means damage/loadout is weak.\nRoute to Gate Trial\nRoute to Cultivation\nWhat It Means\n\nThe Foundation Gate is the first major threshold check. It should confirm final Qi Condensation progress, test whether your build can survive a guardian fight, award the Gate Foundation Pill on clear or safety-net bypass, and send you back to Cultivation for Foundation Establishment.\n\nWhy It Matters Now\n\nRecommended now: near the threshold, but medicine is weak. This is the first place where players learn that Cultivation Idle is not only a Qi bar. The gate asks whether medicine, loadout, gear floor, and support routing are ready enough to turn cultivation progress into a new realm. Read this before attempting a Gate Trial, after losing one, or when a breakthrough asks for a gate catalyst.\n\nWhat To Do Next\nOpen\nReach final Qi Condensation substage and Qi cap.\nOpen\nOpen Gate Trial and read Minimum Checklist before pressing Attempt Gate.\nOpen\nIf medicine is weak, route to Apothecary or craft Healing Pellets.\nOpen\nIf damage is weak, route to Manual Pavilion/Techniques or Forge.\nOpen\nAfter clear or Safety Net bypass, route to Cultivation and perform the Foundation breakthrough.\nOpen\nRoute to Gate Trial\n>\nOpen\nRoute to Cultivation\n>\nCommon Mistakes\nWatch\nUsing obsolete gate item language.\nWatch\nHiding the fallback path.\nWatch\nTreating gate rewards as repeat farms.\nWatch\nLoss with medicine unused means pouch setup is wrong.\nWatch\nLoss after long survival means damage/loadout is weak.\nWatch\nLoss with medicine unused means pouch setup is wrong.\nWatch\nLoss after long survival means damage/loadout is weak.\nWatch\nLoss before the first cycle means HP/defense/medicine floor is weak.\nJade Slip\n\nDo not enter as soon as Qi is full. Enter when hard eligibility is complete and at least medicine + loadout + weapon floor are not warning states. The archive keeps this slip so a disciple can turn 'Foundation Gate' from a name into a route, a check, and a decision. Elder note: if 'Foundation Gate' does not point to a route, a readiness row, or a source/use decision, treat it as background knowledge rather than your next action. Prior-life note: when this topic caused delay in a previous life, pin the record and solve its source/use chain earlier in the next run.\n\nRelated Records\nOpen\nGate Trial\nOpen\nGate Foundation Pill\nOpen\nFoundation Establishment\nWatch\nCultivation\nMissing Relation\nRequirements\nOpen\nFinal substage reached.\nOpen\nQi cap reached.\nOpen\nGate reward not already consumed incorrectly.\nOpen\nMedicine pouch stocked.\nOpen\nActive technique equipped.\nOpen\nWeapon floor close to recommendation.\nOpen\nAlways visible or becomes Recorded when first encountered.\nBest Source\n\nOpen from World > Gate Trial, breakthrough checklist, current milestone, or item record. Start with the route buttons and the Source / Use Ledger. If this record is relevant to the current milestone, follow the first enabled route, then return here to confirm the blocker changed.\n\nReady\nGate Trial awards Gate Foundation Pill on first eligible clear.\nReady\nSafety Net can grant the same gate reward after eligible failures if currency is available.\nReady\nApothecary and Forge solve the most common pre-gate weaknesses.\nReady\nKnown From\nAuthored record\nOpen\nRun Ruins for support materials if medicine/forge inputs are missing.\nOpen\nUse Outskirts for gold/common materials if shop purchases are the bottleneck.\nOpen\nUse Safety Net only after eligible failures prove the fight is still blocking progress.\nWhat Uses This\n\nGate readiness, reward visibility, defeat diagnosis, and realm transition routing. Use this record to decide whether to cultivate, prepare, fight, study, craft, route to a city building, or postpone the topic as sealed/future content.\n\nNumbers To Watch\nOpen\nReadiness score\nOpen\nEligible failures toward Safety Net\nOpen\nMedicine count\nOpen\nWeapon refine/temper floor\nOpen\nGuardian level\nOpen\nGate Foundation Pill ownership\nROUTES\nRout"
+}

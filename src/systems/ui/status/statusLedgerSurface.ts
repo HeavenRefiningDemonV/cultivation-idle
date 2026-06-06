@@ -36,6 +36,16 @@ import type {
   StatusSpiritRootElement,
   StatusSpiritRootSurface,
 } from './statusLedgerTypes.js';
+import type { CultivationMindAlignmentSnapshot } from '../../cultivation/cultivationMindAlignmentResolver.js';
+import {
+  buildSpiritRootObservationSurface,
+  type SpiritRootObservationSurfaceV1,
+} from '../../../features/spiritRootObservation/index.js';
+import {
+  buildStatusCurrentStateSurface,
+  type StatusCurrentStateBuildContext,
+} from './statusCurrentStateSurface.js';
+import type { TrainingReadOnlySnapshot } from '../../training/index.js';
 
 export interface StatusLedgerBuildContext {
   generatedAt: number;
@@ -62,7 +72,12 @@ export interface StatusLedgerBuildContext {
     stabilityCap: number;
     chapter: number;
     breathMode: string;
+    daoHeartClarity: number;
+    turbulence: number;
   };
+  mindAlignment?: CultivationMindAlignmentSnapshot | null;
+  spiritRootObservation?: SpiritRootObservationSurfaceV1 | null;
+  trainingSnapshot?: TrainingReadOnlySnapshot | null;
 }
 
 function formatSafeNumber(value: string | number): string {
@@ -89,6 +104,23 @@ function sourceLabelFromRaw(source: string): string {
   return 'Status';
 }
 
+function resolveSpiritRootObservation(context: StatusLedgerBuildContext): SpiritRootObservationSurfaceV1 {
+  return context.spiritRootObservation ?? buildSpiritRootObservationSurface({
+    root: null,
+    rootDef: null,
+    heartLaw: null,
+    selectedHeartLawId: null,
+    heartLawLevel: 1,
+    currentRootResonance: 0,
+    shape: 'single',
+    unlockedVariantIds: [],
+    trainingRatingsById: {},
+    daoHeartClarity: 50,
+    verseMastery: 0,
+    activeTab: 'profile',
+  });
+}
+
 function rowFromDashboard(row: StatusFactRow, id: string, sourceLabel?: string): StatusLedgerFactRow {
   return sanitizeLedgerFactRow({
     id,
@@ -104,6 +136,30 @@ function rowFromDashboard(row: StatusFactRow, id: string, sourceLabel?: string):
 
 function factRow(args: StatusLedgerFactRow): StatusLedgerFactRow {
   return sanitizeLedgerFactRow(args);
+}
+
+function mindAlignmentTone(mindAlignment: CultivationMindAlignmentSnapshot): StatusLedgerTone {
+  if (mindAlignment.capState === 'overexpressed') return 'warning';
+  if (mindAlignment.breakthroughRiskDelta >= 18) return 'danger';
+  if (mindAlignment.breakthroughRiskDelta > 0) return 'warning';
+  return 'jade';
+}
+
+function createMindAlignmentRow(
+  mindAlignment: CultivationMindAlignmentSnapshot,
+  id: string,
+  sourceLabel: string,
+): StatusLedgerFactRow {
+  return factRow({
+    id,
+    label: 'Mind alignment',
+    value: mindAlignment.summaryText,
+    detail: `Heart Law ${mindAlignment.parityDelta >= 0 ? `+${mindAlignment.parityDelta}` : mindAlignment.parityDelta}; Qi multiplier ${mindAlignment.qiRateMultiplier.toFixed(2)}x.`,
+    tone: mindAlignmentTone(mindAlignment),
+    icon: mindAlignment.breakthroughRiskDelta > 0 ? 'inkWarning' : 'bookMartial',
+    sourceLabel,
+    action: null,
+  });
 }
 
 function emptyFactRow(id: string, label: string, detail: string, sourceLabel: string): StatusLedgerFactRow {
@@ -126,15 +182,22 @@ function normalizedElementLabel(element: StatusSpiritRootElement): string {
 
 function normalizeSpiritRootElement(input: string | null | undefined): StatusSpiritRootElement {
   const normalized = (input ?? '').trim().toLowerCase();
-  if (
-    normalized === 'fire' ||
-    normalized === 'water' ||
-    normalized === 'earth' ||
-    normalized === 'metal' ||
-    normalized === 'wood'
-  ) {
-    return normalized;
-  }
+  if ([
+    'wood',
+    'fire',
+    'earth',
+    'metal',
+    'water',
+    'wind',
+    'lightning',
+    'ice',
+    'light',
+    'shadow',
+    'soul',
+    'void',
+    'time',
+    'astral',
+  ].includes(normalized)) return normalized as StatusSpiritRootElement;
   return 'dormant';
 }
 
@@ -150,6 +213,24 @@ function iconForSpiritRootElement(element: StatusSpiritRootElement): StatusSpiri
       return 'metalChunk';
     case 'wood':
       return 'spiritGrass';
+    case 'wind':
+      return 'inkSwirl';
+    case 'lightning':
+      return 'inkBurst';
+    case 'ice':
+      return 'inkSwirl';
+    case 'light':
+      return 'recordSlip';
+    case 'shadow':
+      return 'placeholderRingSmall';
+    case 'soul':
+      return 'bookMartial';
+    case 'void':
+      return 'placeholderRingSmall';
+    case 'time':
+      return 'recordSlip';
+    case 'astral':
+      return 'inkBurst';
     case 'dormant':
       return 'placeholderRingSmall';
   }
@@ -181,7 +262,32 @@ function doctrineTile(args: {
   };
 }
 
-function buildSpiritRootSurface(dashboard: Omit<StatusDashboardSurfaceV1, 'statusLedger'>): StatusSpiritRootSurface {
+function toneForObservation(observation: SpiritRootObservationSurfaceV1): StatusLedgerTone {
+  if (observation.fit.tier === 'opposed') return 'danger';
+  if (observation.fit.tier === 'strained') return 'warning';
+  if (observation.fit.tier === 'resonant') return 'success';
+  if (observation.fit.tier === 'compatible') return 'jade';
+  return 'muted';
+}
+
+function spiritRootObservationAction(observation: SpiritRootObservationSurfaceV1): StatusLedgerActionSurface {
+  return sanitizeLedgerAction({
+    id: 'status-spirit-root-observation',
+    label: 'Observe',
+    detail: 'Open the Status-owned Spirit Root Observation surface.',
+    destinationLabel: 'Spirit Root Observation',
+    target: observation.route.openTarget,
+    disabled: false,
+    disabledReason: null,
+    tone: toneForObservation(observation),
+    source: 'status',
+  });
+}
+
+function buildSpiritRootSurface(
+  dashboard: Omit<StatusDashboardSurfaceV1, 'statusLedger'>,
+  observation: SpiritRootObservationSurfaceV1,
+): StatusSpiritRootSurface {
   const element = normalizeSpiritRootElement(dashboard.identity.spiritRootElement);
   const elementLabel = normalizedElementLabel(element);
   const spiritRootParts = dashboard.hero.spiritRootLabel.split(/[-/]/);
@@ -202,7 +308,8 @@ function buildSpiritRootSurface(dashboard: Omit<StatusDashboardSurfaceV1, 'statu
       : null,
     resonanceLabel: resonance ? sanitizeStatusLedgerCopy(resonance) : null,
     icon: iconForSpiritRootElement(element),
-    tone: element === 'dormant' ? 'muted' : 'jade',
+    tone: element === 'dormant' ? 'muted' : toneForObservation(observation),
+    observationAction: spiritRootObservationAction(observation),
   };
 }
 
@@ -413,6 +520,9 @@ function buildMetrics(
     sourceLabel: 'Current Work',
     action: null,
   }));
+  if (context.mindAlignment) {
+    rows.push(createMindAlignmentRow(context.mindAlignment, 'metric-mind-alignment', 'Heart Law'));
+  }
 
   return capRows(dedupeFactRows(rows), STATUS_LEDGER_ROW_BUDGETS.metricsMax);
 }
@@ -536,6 +646,9 @@ function buildCultivationBase(
       sourceLabel: 'Cultivation',
       action: null,
     }),
+    ...(context.mindAlignment
+      ? [createMindAlignmentRow(context.mindAlignment, 'cultivation-mind-alignment', 'Heart Law')]
+      : []),
     factRow({
       id: 'cultivation-breakthrough',
       label: 'Breakthrough State',
@@ -714,7 +827,7 @@ function buildIdentityDoctrine(
   dashboard: Omit<StatusDashboardSurfaceV1, 'statusLedger'>,
   context: StatusLedgerBuildContext,
 ): StatusLedgerSurfaceV1['identityDoctrine'] {
-  const spiritRoot = buildSpiritRootSurface(dashboard);
+  const spiritRoot = buildSpiritRootSurface(dashboard, resolveSpiritRootObservation(context));
   const doctrineTiles = buildDoctrineTiles(dashboard, context);
   const rows = [
     ...dashboard.identity.rows.map((row) => rowFromDashboard(row, `identity-${row.id}`, 'Identity & Doctrine')),
@@ -909,14 +1022,17 @@ function buildBuildPreparation(
     dashboard.preparation.buildRows.map((row) => rowFromDashboard(row, `build-${row.id}`, 'Build')),
     STATUS_LEDGER_ROW_BUDGETS.buildRowsMax,
   );
-  const reserveRows = capRows(
+  const reserveRowsRaw = capRows(
     dashboard.preparation.rows.map((row) => rowFromDashboard(row, `reserve-${row.id}`, 'Preparation')),
     STATUS_LEDGER_ROW_BUDGETS.reserveRowsMax,
   );
-  const warningSource = reserveRows.find((row) => (
+  const warningSource = reserveRowsRaw.find((row) => (
     row.id === 'reserve-top-warning' &&
     !/no major preparation warning|unavailable/i.test(`${row.value ?? ''} ${row.detail}`)
   )) ?? buildRows.find((row) => row.id === 'build-top-gap' && !/no top build gap|unavailable/i.test(`${row.value ?? ''} ${row.detail}`)) ?? null;
+  const reserveRows = warningSource?.id === 'reserve-top-warning'
+    ? reserveRowsRaw.filter((row) => row.id !== 'reserve-top-warning')
+    : reserveRowsRaw;
   const warningAction = toLedgerAction(dashboard.hero.primaryAction, { primary: true })
     ?? toLedgerAction(dashboard.bestNextActions[0] ?? null);
   const topWarning = warningSource
@@ -1071,8 +1187,14 @@ export function buildStatusLedgerSurfaceFromDashboard(
   const missionRequirements = buildMissionRequirements(dashboard);
   const focusLabel = dashboard.identity.rows.find((row) => row.id === 'focus')?.value ?? context.game.focusMode;
   const breathLabel = dashboard.identity.rows.find((row) => row.id === 'breath')?.value ?? context.cultivation.breathMode;
-  const spiritRoot = buildSpiritRootSurface(dashboard);
+  const spiritRootObservation = resolveSpiritRootObservation(context);
+  const spiritRoot = buildSpiritRootSurface(dashboard, spiritRootObservation);
   const doctrineTiles = buildDoctrineTiles(dashboard, context);
+  const currentState = buildStatusCurrentStateSurface(dashboard, {
+    ...context,
+    spiritRootObservation,
+    trainingSnapshot: context.trainingSnapshot ?? null,
+  } satisfies StatusCurrentStateBuildContext);
 
   return {
     meta: {
@@ -1104,6 +1226,8 @@ export function buildStatusLedgerSurfaceFromDashboard(
       breathTile: doctrineTiles.breathTile,
       cityTile: doctrineTiles.cityTile,
     },
+    currentState,
+    spiritRootObservation,
     metrics: buildMetrics(dashboard, context),
     milestone: buildMilestone(dashboard, context),
     cultivationBase: buildCultivationBase(dashboard, context),

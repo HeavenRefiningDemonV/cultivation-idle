@@ -21,7 +21,7 @@ const renderMarkdown = (report: ReturnType<typeof buildPrestigeEffectAuditReport
     `| ${row.upgradeId} | ${row.status} | ${row.purchaseAllowed ? 'yes' : 'no'} | ${row.runtimeConsumers.join(', ') || 'none'} | ${row.remediation} |`
   ));
   return [
-    '# P4 Prestige Runtime Effect Audit',
+    '# Prestige Runtime Effect Audit',
     '',
     `Generated: ${new Date(report.generatedAt).toISOString()}`,
     `Status: ${status}`,

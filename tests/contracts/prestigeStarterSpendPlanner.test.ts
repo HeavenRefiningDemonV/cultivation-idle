@@ -33,6 +33,12 @@ async function loadValidatedContent() {
     heart_laws: await readJson('heart_laws.json'),
     prestige_store: await readJson('prestige_store.json'),
     pavilion_records: await readJson('pavilion_records.json'),
+    onboarding_milestones: await readJson('onboarding_milestones.json'),
+    cultivator_stats: await readJson('stats.json'),
+    training_regimens: await readJson('training_regimens.json'),
+    dao_heart_practices: await readJson('dao_heart_practices.json'),
+    spirit_roots: await readJson('spirit_roots.json'),
+    readiness_categories: await readJson('readiness_categories.json'),
   } as never);
 }
 

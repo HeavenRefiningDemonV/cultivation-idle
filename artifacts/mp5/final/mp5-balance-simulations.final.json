@@ -1,0 +1,539 @@
+﻿{
+    "schemaVersion":  "mp5-balance-simulation-v1",
+    "generatedAt":  1780460795509,
+    "routeScenarioCount":  36,
+    "exploitCaseCount":  10,
+    "overallPass":  true,
+    "scenarios":  [
+                      {
+                          "id":  "first_gate.heaven.matching_root.matching_law",
+                          "routeType":  "first_gate",
+                          "path":  "heaven",
+                          "rootFit":  "matching_root",
+                          "lawFit":  "matching_law",
+                          "score":  124,
+                          "target":  {
+                                         "min":  86,
+                                         "max":  126
+                                     },
+                          "passed":  true
+                      },
+                      {
+                          "id":  "first_gate.heaven.matching_root.neutral_law",
+                          "routeType":  "first_gate",
+                          "path":  "heaven",
+                          "rootFit":  "matching_root",
+                          "lawFit":  "neutral_law",
+                          "score":  114,
+                          "target":  {
+                                         "min":  86,
+                                         "max":  126
+                                     },
+                          "passed":  true
+                      },
+                      {
+                          "id":  "first_gate.heaven.matching_root.mismatch_law",
+                          "routeType":  "first_gate",
+                          "path":  "heaven",
+                          "rootFit":  "matching_root",
+                          "lawFit":  "mismatch_law",
+                          "score":  102,
+                          "target":  {
+                                         "min":  86,
+                                         "max":  126
+                                     },
+                          "passed":  true
+                      },
+                      {
+                          "id":  "first_gate.heaven.neutral_root.matching_law",
+                          "routeType":  "first_gate",
+                          "path":  "heaven",
+                          "rootFit":  "neutral_root",
+                          "lawFit":  "matching_law",
+                          "score":  116,
+                          "target":  {
+                                         "min":  86,
+                                         "max":  126
+                                     },
+                          "passed":  true
+                      },
+                      {
+                          "id":  "first_gate.heaven.neutral_root.neutral_law",
+                          "routeType":  "first_gate",
+                          "path":  "heaven",
+                          "rootFit":  "neutral_root",
+                          "lawFit":  "neutral_law",
+                          "score":  106,
+                          "target":  {
+                                         "min":  86,
+                                         "max":  126
+                                     },
+                          "passed":  true
+                      },
+                      {
+                          "id":  "first_gate.heaven.neutral_root.mismatch_law",
+                          "routeType":  "first_gate",
+                          "path":  "heaven",
+                          "rootFit":  "neutral_root",
+                          "lawFit":  "mismatch_law",
+                          "score":  94,
+                          "target":  {
+                                         "min":  86,
+                                         "max":  126
+                                     },
+                          "passed":  true
+                      },
+                      {
+                          "id":  "first_gate.earth.matching_root.matching_law",
+                          "routeType":  "first_gate",
+                          "path":  "earth",
+                          "rootFit":  "matching_root",
+                          "lawFit":  "matching_law",
+                          "score":  121,
+                          "target":  {
+                                         "min":  86,
+                                         "max":  126
+                                     },
+                          "passed":  true
+                      },
+                      {
+                          "id":  "first_gate.earth.matching_root.neutral_law",
+                          "routeType":  "first_gate",
+                          "path":  "earth",
+                          "rootFit":  "matching_root",
+                          "lawFit":  "neutral_law",
+                          "score":  111,
+                          "target":  {
+                                         "min":  86,
+                                         "max":  126
+                                     },
+                          "passed":  true
+                      },
+                      {
+                          "id":  "first_gate.earth.matching_root.mismatch_law",
+                          "routeType":  "first_gate",
+                          "path":  "earth",
+                          "rootFit":  "matching_root",
+                          "lawFit":  "mismatch_law",
+                          "score":  99,
+                          "target":  {
+                                         "min":  86,
+                                         "max":  126
+                                     },
+                          "passed":  true
+                      },
+                      {
+                          "id":  "first_gate.earth.neutral_root.matching_law",
+                          "routeType":  "first_gate",
+                          "path":  "earth",
+                          "rootFit":  "neutral_root",
+                          "lawFit":  "matching_law",
+                          "score":  113,
+                          "target":  {
+                                         "min":  86,
+                                         "max":  126
+                                     },
+                          "passed":  true
+                      },
+                      {
+                          "id":  "first_gate.earth.neutral_root.neutral_law",
+                          "routeType":  "first_gate",
+                          "path":  "earth",
+                          "rootFit":  "neutral_root",
+                          "lawFit":  "neutral_law",
+                          "score":  103,
+                          "target":  {
+                                         "min":  86,
+                                         "max":  126
+                                     },
+                          "passed":  true
+                      },
+                      {
+                          "id":  "first_gate.earth.neutral_root.mismatch_law",
+                          "routeType":  "first_gate",
+                          "path":  "earth",
+                          "rootFit":  "neutral_root",
+                          "lawFit":  "mismatch_law",
+                          "score":  91,
+                          "target":  {
+                                         "min":  86,
+                                         "max":  126
+                                     },
+                          "passed":  true
+                      },
+                      {
+                          "id":  "first_gate.martial.matching_root.matching_law",
+                          "routeType":  "first_gate",
+                          "path":  "martial",
+                          "rootFit":  "matching_root",
+                          "lawFit":  "matching_law",
+                          "score":  123,
+                          "target":  {
+                                         "min":  86,
+                                         "max":  126
+                                     },
+                          "passed":  true
+                      },
+                      {
+                          "id":  "first_gate.martial.matching_root.neutral_law",
+                          "routeType":  "first_gate",
+                          "path":  "martial",
+                          "rootFit":  "matching_root",
+                          "lawFit":  "neutral_law",
+                          "score":  113,
+                          "target":  {
+                                         "min":  86,
+                                         "max":  126
+                                     },
+                          "passed":  true
+                      },
+                      {
+                          "id":  "first_gate.martial.matching_root.mismatch_law",
+                          "routeType":  "first_gate",
+                          "path":  "martial",
+                          "rootFit":  "matching_root",
+                          "lawFit":  "mismatch_law",
+                          "score":  101,
+                          "target":  {
+                                         "min":  86,
+                                         "max":  126
+                                     },
+                          "passed":  true
+                      },
+                      {
+                          "id":  "first_gate.martial.neutral_root.matching_law",
+                          "routeType":  "first_gate",
+                          "path":  "martial",
+                          "rootFit":  "neutral_root",
+                          "lawFit":  "matching_law",
+                          "score":  115,
+                          "target":  {
+                                         "min":  86,
+                                         "max":  126
+                                     },
+                          "passed":  true
+                      },
+                      {
+                          "id":  "first_gate.martial.neutral_root.neutral_law",
+                          "routeType":  "first_gate",
+                          "path":  "martial",
+                          "rootFit":  "neutral_root",
+                          "lawFit":  "neutral_law",
+                          "score":  105,
+                          "target":  {
+                                         "min":  86,
+                                         "max":  126
+                                     },
+                          "passed":  true
+                      },
+                      {
+                          "id":  "first_gate.martial.neutral_root.mismatch_law",
+                          "routeType":  "first_gate",
+                          "path":  "martial",
+                          "rootFit":  "neutral_root",
+                          "lawFit":  "mismatch_law",
+                          "score":  93,
+                          "target":  {
+                                         "min":  86,
+                                         "max":  126
+                                     },
+                          "passed":  true
+                      },
+                      {
+                          "id":  "foundation_reclaim.heaven.matching_root.matching_law",
+                          "routeType":  "foundation_reclaim",
+                          "path":  "heaven",
+                          "rootFit":  "matching_root",
+                          "lawFit":  "matching_law",
+                          "score":  158,
+                          "target":  {
+                                         "min":  116,
+                                         "max":  158
+                                     },
+                          "passed":  true
+                      },
+                      {
+                          "id":  "foundation_reclaim.heaven.matching_root.neutral_law",
+                          "routeType":  "foundation_reclaim",
+                          "path":  "heaven",
+                          "rootFit":  "matching_root",
+                          "lawFit":  "neutral_law",
+                          "score":  148,
+                          "target":  {
+                                         "min":  116,
+                                         "max":  158
+                                     },
+                          "passed":  true
+                      },
+                      {
+                          "id":  "foundation_reclaim.heaven.matching_root.mismatch_law",
+                          "routeType":  "foundation_reclaim",
+                          "path":  "heaven",
+                          "rootFit":  "matching_root",
+                          "lawFit":  "mismatch_law",
+                          "score":  136,
+                          "target":  {
+                                         "min":  116,
+                                         "max":  158
+                                     },
+                          "passed":  true
+                      },
+                      {
+                          "id":  "foundation_reclaim.heaven.neutral_root.matching_law",
+                          "routeType":  "foundation_reclaim",
+                          "path":  "heaven",
+                          "rootFit":  "neutral_root",
+                          "lawFit":  "matching_law",
+                          "score":  150,
+                          "target":  {
+                                         "min":  116,
+                                         "max":  158
+                                     },
+                          "passed":  true
+                      },
+                      {
+                          "id":  "foundation_reclaim.heaven.neutral_root.neutral_law",
+                          "routeType":  "foundation_reclaim",
+                          "path":  "heaven",
+                          "rootFit":  "neutral_root",
+                          "lawFit":  "neutral_law",
+                          "score":  140,
+                          "target":  {
+                                         "min":  116,
+                                         "max":  158
+                                     },
+                          "passed":  true
+                      },
+                      {
+                          "id":  "foundation_reclaim.heaven.neutral_root.mismatch_law",
+                          "routeType":  "foundation_reclaim",
+                          "path":  "heaven",
+                          "rootFit":  "neutral_root",
+                          "lawFit":  "mismatch_law",
+                          "score":  128,
+                          "target":  {
+                                         "min":  116,
+                                         "max":  158
+                                     },
+                          "passed":  true
+                      },
+                      {
+                          "id":  "foundation_reclaim.earth.matching_root.matching_law",
+                          "routeType":  "foundation_reclaim",
+                          "path":  "earth",
+                          "rootFit":  "matching_root",
+                          "lawFit":  "matching_law",
+                          "score":  155,
+                          "target":  {
+                                         "min":  116,
+                                         "max":  158
+                                     },
+                          "passed":  true
+                      },
+                      {
+                          "id":  "foundation_reclaim.earth.matching_root.neutral_law",
+                          "routeType":  "foundation_reclaim",
+                          "path":  "earth",
+                          "rootFit":  "matching_root",
+                          "lawFit":  "neutral_law",
+                          "score":  145,
+                          "target":  {
+                                         "min":  116,
+                                         "max":  158
+                                     },
+                          "passed":  true
+                      },
+                      {
+                          "id":  "foundation_reclaim.earth.matching_root.mismatch_law",
+                          "routeType":  "foundation_reclaim",
+                          "path":  "earth",
+                          "rootFit":  "matching_root",
+                          "lawFit":  "mismatch_law",
+                          "score":  133,
+                          "target":  {
+                                         "min":  116,
+                                         "max":  158
+                                     },
+                          "passed":  true
+                      },
+                      {
+                          "id":  "foundation_reclaim.earth.neutral_root.matching_law",
+                          "routeType":  "foundation_reclaim",
+                          "path":  "earth",
+                          "rootFit":  "neutral_root",
+                          "lawFit":  "matching_law",
+                          "score":  147,
+                          "target":  {
+                                         "min":  116,
+                                         "max":  158
+                                     },
+                          "passed":  true
+                      },
+                      {
+                          "id":  "foundation_reclaim.earth.neutral_root.neutral_law",
+                          "routeType":  "foundation_reclaim",
+                          "path":  "earth",
+                          "rootFit":  "neutral_root",
+                          "lawFit":  "neutral_law",
+                          "score":  137,
+                          "target":  {
+                                         "min":  116,
+                                         "max":  158
+                                     },
+                          "passed":  true
+                      },
+                      {
+                          "id":  "foundation_reclaim.earth.neutral_root.mismatch_law",
+                          "routeType":  "foundation_reclaim",
+                          "path":  "earth",
+                          "rootFit":  "neutral_root",
+                          "lawFit":  "mismatch_law",
+                          "score":  125,
+                          "target":  {
+                                         "min":  116,
+                                         "max":  158
+                                     },
+                          "passed":  true
+                      },
+                      {
+                          "id":  "foundation_reclaim.martial.matching_root.matching_law",
+                          "routeType":  "foundation_reclaim",
+                          "path":  "martial",
+                          "rootFit":  "matching_root",
+                          "lawFit":  "matching_law",
+                          "score":  157,
+                          "target":  {
+                                         "min":  116,
+                                         "max":  158
+                                     },
+                          "passed":  true
+                      },
+                      {
+                          "id":  "foundation_reclaim.martial.matching_root.neutral_law",
+                          "routeType":  "foundation_reclaim",
+                          "path":  "martial",
+                          "rootFit":  "matching_root",
+                          "lawFit":  "neutral_law",
+                          "score":  147,
+                          "target":  {
+                                         "min":  116,
+                                         "max":  158
+                                     },
+                          "passed":  true
+                      },
+                      {
+                          "id":  "foundation_reclaim.martial.matching_root.mismatch_law",
+                          "routeType":  "foundation_reclaim",
+                          "path":  "martial",
+                          "rootFit":  "matching_root",
+                          "lawFit":  "mismatch_law",
+                          "score":  135,
+                          "target":  {
+                                         "min":  116,
+                                         "max":  158
+                                     },
+                          "passed":  true
+                      },
+                      {
+                          "id":  "foundation_reclaim.martial.neutral_root.matching_law",
+                          "routeType":  "foundation_reclaim",
+                          "path":  "martial",
+                          "rootFit":  "neutral_root",
+                          "lawFit":  "matching_law",
+                          "score":  149,
+                          "target":  {
+                                         "min":  116,
+                                         "max":  158
+                                     },
+                          "passed":  true
+                      },
+                      {
+                          "id":  "foundation_reclaim.martial.neutral_root.neutral_law",
+                          "routeType":  "foundation_reclaim",
+                          "path":  "martial",
+                          "rootFit":  "neutral_root",
+                          "lawFit":  "neutral_law",
+                          "score":  139,
+                          "target":  {
+                                         "min":  116,
+                                         "max":  158
+                                     },
+                          "passed":  true
+                      },
+                      {
+                          "id":  "foundation_reclaim.martial.neutral_root.mismatch_law",
+                          "routeType":  "foundation_reclaim",
+                          "path":  "martial",
+                          "rootFit":  "neutral_root",
+                          "lawFit":  "mismatch_law",
+                          "score":  127,
+                          "target":  {
+                                         "min":  116,
+                                         "max":  158
+                                     },
+                          "passed":  true
+                      }
+                  ],
+    "exploitCases":  [
+                         {
+                             "id":  "train_cap_only",
+                             "label":  "Train-cap-only cannot satisfy the MP5 route matrix by itself",
+                             "prevented":  true,
+                             "evidence":  "Neutral training-only score remains inside the first-gate envelope."
+                         },
+                         {
+                             "id":  "heart_law_overlevel",
+                             "label":  "Scripture Echo catch-up does not boost Heart Law above parity",
+                             "prevented":  true,
+                             "evidence":  "Multiplier returns 1 when Heart Law stage is already at or above cultivation stage."
+                         },
+                         {
+                             "id":  "high_fatigue_offline",
+                             "label":  "High-fatigue offline Training remains dampened",
+                             "prevented":  true,
+                             "evidence":  "fatigue95=0.51 fatigue40=1.00"
+                         },
+                         {
+                             "id":  "mismatch_builds",
+                             "label":  "Mismatch law/root builds stay bounded",
+                             "prevented":  true,
+                             "evidence":  "Mismatch scenario remains within the lower route envelope instead of exploding upward."
+                         },
+                         {
+                             "id":  "repeated_prestige_floor",
+                             "label":  "Repeated prestige floor does not stack",
+                             "prevented":  true,
+                             "evidence":  "first=12 repeated=12"
+                         },
+                         {
+                             "id":  "breakthrough_failure",
+                             "label":  "Calm First Breath remains a bounded risk reducer",
+                             "prevented":  true,
+                             "evidence":  "Rank 3 reducer is -3 risk and never rewrites failure outcomes."
+                         },
+                         {
+                             "id":  "no_training",
+                             "label":  "No Training does not receive hidden path-stat carryover",
+                             "prevented":  true,
+                             "evidence":  "No Form Memory purchase leaves raw rating unchanged."
+                         },
+                         {
+                             "id":  "no_dao_heart",
+                             "label":  "No Dao Heart does not receive hidden scripture catch-up",
+                             "prevented":  true,
+                             "evidence":  "No Scripture Echo purchase leaves XP multiplier at 1."
+                         },
+                         {
+                             "id":  "second_life_sweep",
+                             "label":  "Second-life sweep keeps Root Clarity at the authored floor",
+                             "prevented":  true,
+                             "evidence":  "Root Clarity floors grade to 3 without guaranteeing grade 4+."
+                         },
+                         {
+                             "id":  "reset_while_active",
+                             "label":  "Reset-while-active contract records activity and raw Training reset buckets",
+                             "prevented":  true,
+                             "evidence":  "training_raw_ratings,training_fatigue_session,dao_heart_turbulence,root_awakening_state,form_memory,scripture_echo,root_clarity_floor,calm_first_breath,old_sparring_shadows"
+                         }
+                     ]
+}

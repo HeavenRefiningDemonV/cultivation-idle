@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useCallback, useRef, useState } from 'react';
-import type { CityDef, ValidatedContent } from '../../content/index.js';
+import type { CityDef, LiveWorldModuleKey, ValidatedContent } from '../../content/index.js';
 import { useContentStore } from '../../stores/contentStore.js';
 import { useCityStore } from '../../stores/cityStore.js';
 import { useCombatStore } from '../../stores/combatStore.js';
@@ -8,6 +8,7 @@ import { useActivityStore } from '../../stores/activityStore.js';
 import { useExpeditionStore } from '../../stores/expeditionStore.js';
 import { useUIStore } from '../../stores/uiStore.js';
 import { useGameStore } from '../../stores/gameStore.js';
+import { useOnboardingStore } from '../../stores/onboardingStore.js';
 import './WorldScreen.scss';
 import { resolveBountyDestination } from '../../utils/bountyRouting.js';
 import { buildLiveCraftBountyRouteSupportState } from '../../systems/bounties/liveCraftBountyRouteSupport.js';
@@ -27,7 +28,11 @@ import {
 import { SEMESTER_SLICE_CONTRACT } from '../../systems/progression/contract/semesterSlice.js';
 import { getLiveRealmNameById } from '../../systems/progression/runtime/liveRealmProjection.js';
 import { getWorldModuleLabel, sanitizeLiveCityName } from '../../ui/text/playerFacingLabels.js';
-import { buildLiveEconomicRecommendationEngine } from '../../systems/economy/economicRecommendationEngine.js';
+import {
+  buildLiveEconomicRecommendationEngine,
+  buildMilestoneReadinessScreenGuidance,
+  buildMilestoneReadinessSurface,
+} from '../../systems/economy/index.js';
 import { buildWorldModuleRoutingSurface } from '../../systems/ui/world/worldModuleRoutingSurface.js';
 import type { WorldRoutingChipKind } from '../../systems/world/moduleCardRegistry.js';
 import { WorldOverlayRibbon } from '../../ui/world/WorldOverlayRibbon.js';
@@ -37,8 +42,9 @@ import { InspectorDrawer } from '../../ui/shell/InspectorDrawer.js';
 import { buildWorldCombatHandoffSurface } from '../../systems/world/worldCombatHandoff.js';
 import { resolveWorldInspectorBoundaryLine } from '../../systems/ui/world/worldInspectorSurface.js';
 import { buildCityPhaseSurfaceFromSnapshot } from '../../systems/world/cityPhaseSurface.js';
+import { buildOnboardingWorldModulePolicy } from '../../systems/onboarding/onboardingWorldModulePolicy.js';
+import { isOnboardingExactFixtureOrCaptureModeEnabled } from '../../systems/onboarding/onboardingRouteGuards.js';
 
-const WORLD_SCREEN_HIDDEN_MODULES = new Set<string>(DEFERRED_WORLD_MODULES);
 const EMPTY_VISIBLE_CITY_MODULES: readonly string[] = Object.freeze([]);
 const LOCK_REQUIREMENT_UNAVAILABLE = 'Requirement unavailable';
 const HOTSPOT_CUE_PRIORITY: Record<WorldHotspotChipKind, number> = {
@@ -141,10 +147,40 @@ function LoadedWorldScreen({ citiesSorted, rawContent }: LoadedWorldScreenProps)
     [citiesSorted, cityRequirementById, currentCityId, unlockedCityIds],
   );
 
+  const currentRealmIndex = useGameStore((state) => state.realm.index);
+  const onboardingActiveMilestoneId = useOnboardingStore((state) => state.activeMilestoneId);
+  const onboardingUnlockedWorldModules = useOnboardingStore((state) => state.unlockedWorldModules);
+  const onboardingTeaserWorldModules = useOnboardingStore((state) => state.teaserWorldModules);
+  const onboardingFirstLifeOnlyComplete = useOnboardingStore((state) => state.firstLifeOnlyComplete);
+  const onboardingDevOverride = useOnboardingStore((state) => state.devOverride);
+
+  const worldModulePolicy = useMemo(() => {
+    if (!selectedCity) return null;
+    return buildOnboardingWorldModulePolicy({
+      activeMilestoneId: onboardingActiveMilestoneId,
+      unlockedWorldModules: onboardingUnlockedWorldModules,
+      teaserWorldModules: onboardingTeaserWorldModules,
+      selectedCityModuleKeys: selectedCity.modules,
+      deferredWorldModuleKeys: DEFERRED_WORLD_MODULES,
+      firstLifeOnlyComplete: onboardingFirstLifeOnlyComplete,
+      devOverride: onboardingDevOverride,
+      isExistingAdvancedSave: currentRealmIndex > 0,
+      exactFixtureOrCaptureMode: isOnboardingExactFixtureOrCaptureModeEnabled(),
+    });
+  }, [
+    currentRealmIndex,
+    onboardingActiveMilestoneId,
+    onboardingDevOverride,
+    onboardingFirstLifeOnlyComplete,
+    onboardingTeaserWorldModules,
+    onboardingUnlockedWorldModules,
+    selectedCity,
+  ]);
+
   const visibleCityModules = useMemo(() => {
-    if (!selectedCity) return EMPTY_VISIBLE_CITY_MODULES;
-    return selectedCity.modules.filter((moduleKey) => !WORLD_SCREEN_HIDDEN_MODULES.has(moduleKey));
-  }, [selectedCity]);
+    if (!selectedCity || !worldModulePolicy) return EMPTY_VISIBLE_CITY_MODULES;
+    return [...worldModulePolicy.availableModules, ...worldModulePolicy.teaserModules];
+  }, [selectedCity, worldModulePolicy]);
 
   const trackedBounty = useMemo(() => {
     if (!currentCityId) return null;
@@ -160,7 +196,6 @@ function LoadedWorldScreen({ citiesSorted, rawContent }: LoadedWorldScreenProps)
   const showWorldBuildingModal = useUIStore((state) => state.showWorldBuildingModal);
   const combatPresentation = useUIStore((state) => state.combatPresentation);
   const pendingCityArrivalId = useUIStore((state) => state.pendingCityArrivalId);
-  const currentRealmIndex = useGameStore((state) => state.realm.index);
   const [hoveredModuleKey, setHoveredModuleKey] = useState<string | null>(null);
   const [lastHoveredModuleKey, setLastHoveredModuleKey] = useState<string | null>(null);
   const inspectorHoverSeedCityRef = useRef<string | null>(null);
@@ -170,9 +205,10 @@ function LoadedWorldScreen({ citiesSorted, rawContent }: LoadedWorldScreenProps)
   const storedLockedModuleKey = selectedCity ? selectedModuleByCity[selectedCity.id] ?? null : null;
 
   const lockedModuleFallback = useMemo(() => {
-    if (visibleCityModules.includes('outskirts')) return 'outskirts';
+    if (worldModulePolicy?.availableModules.includes('outskirts')) return 'outskirts';
+    if (worldModulePolicy?.availableModules[0]) return worldModulePolicy.availableModules[0];
     return visibleCityModules[0] ?? null;
-  }, [visibleCityModules]);
+  }, [visibleCityModules, worldModulePolicy]);
 
   const lockedModuleKey = useMemo(() => {
     if (storedLockedModuleKey && visibleCityModules.includes(storedLockedModuleKey)) {
@@ -228,8 +264,21 @@ function LoadedWorldScreen({ citiesSorted, rawContent }: LoadedWorldScreenProps)
       return null;
     }
   }, [currentCityId, selectedCity?.id, rawContent]);
+  const milestoneGuidance = useMemo(() => {
+    if (!economicSnapshot) return null;
+    const milestoneSurface = buildMilestoneReadinessSurface({ engine: economicSnapshot });
+    return buildMilestoneReadinessScreenGuidance(milestoneSurface);
+  }, [economicSnapshot]);
   const economicTopRoute = economicSnapshot?.topRouteCandidates[0] ?? null;
-  const economicPrimary = economicTopRoute
+  const milestoneWorldRoute = milestoneGuidance?.world.primaryRoute ?? null;
+  const milestoneWorldModuleKey = milestoneGuidance?.world.recommendedModuleKey ?? null;
+  const economicPrimary = milestoneWorldModuleKey
+    ? {
+        moduleKey: milestoneWorldModuleKey,
+        cityId: milestoneWorldRoute?.cityId ?? currentCityId,
+        reason: milestoneGuidance?.world.summary ?? milestoneWorldRoute?.reason ?? null,
+      }
+    : economicTopRoute
     ? {
         moduleKey: economicTopRoute.destinationModuleKey,
         cityId: economicTopRoute.destinationCityId,
@@ -447,6 +496,7 @@ function LoadedWorldScreen({ citiesSorted, rawContent }: LoadedWorldScreenProps)
 
     pushCandidate(trackedAlert?.ctaModuleKey ?? null, trackedAlert?.chipKind ? ROUTING_CHIP_TO_HOTSPOT_CUE[trackedAlert.chipKind] ?? null : null);
     pushCandidate(expeditionIdleAlert?.ctaModuleKey ?? null, 'IDLE');
+    worldModulePolicy?.teaserModules.forEach((moduleKey) => pushCandidate(moduleKey, 'SOON'));
 
     const resolved: Partial<Record<string, WorldHotspotChipKind>> = {};
     for (const [moduleKey, candidates] of candidatesByModule.entries()) {
@@ -456,7 +506,7 @@ function LoadedWorldScreen({ citiesSorted, rawContent }: LoadedWorldScreenProps)
       }
     }
     return resolved;
-  }, [expeditionIdleAlert, moduleMetadataByKey, trackedAlert, visibleCityModules, worldCommandSurface.strongRecommendationModuleKey]);
+  }, [expeditionIdleAlert, moduleMetadataByKey, trackedAlert, visibleCityModules, worldCommandSurface.strongRecommendationModuleKey, worldModulePolicy]);
 
   const strongestRecommendationModuleKey = worldCommandSurface.strongRecommendationModuleKey;
   const seededInspectorModuleKey = useMemo(() => {
@@ -523,7 +573,12 @@ function LoadedWorldScreen({ citiesSorted, rawContent }: LoadedWorldScreenProps)
   const pressureLine = cityPhaseSurface
     ? `Pressure: ${cityPhaseSurface.newPressure.explanation}`
     : null;
-  const inspectorStateLine = inspectorCueKind ? ({
+  const onboardingInspectorLock = inspectorModuleKey
+    ? worldModulePolicy?.lockedModules[inspectorModuleKey as LiveWorldModuleKey] ?? null
+    : null;
+  const inspectorStateLine = onboardingInspectorLock?.state === 'teaser'
+    ? onboardingInspectorLock.requirement ?? onboardingInspectorLock.reason
+    : inspectorCueKind ? ({
     GATE: 'Gate is your next step.',
     NOW: `Recommended here now: ${inspectorLabel}.`,
     FIX: 'Build fix points here.',

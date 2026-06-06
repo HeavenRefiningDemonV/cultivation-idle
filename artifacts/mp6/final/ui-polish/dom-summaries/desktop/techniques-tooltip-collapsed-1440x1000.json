@@ -1,0 +1,37 @@
+{
+  "url": "http://127.0.0.1:5174/?techniquesExactMode=fixture",
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "reducedMotion": false,
+  "noHorizontalOverflow": true,
+  "scrollWidth": 1440,
+  "innerWidth": 1440,
+  "rootSelector": "[data-testid=\"techniques-exact-page\"]",
+  "rootAttributes": {
+    "data-testid": "techniques-exact-page",
+    "data-mode": "fixture",
+    "data-source": "fixture",
+    "data-selected-loadout-id": "loadout_1",
+    "data-selected-technique-id": "tech_iron_palm",
+    "data-selected-slot-key": "active-0"
+  },
+  "testIds": [
+    "techniques-exact-page"
+  ],
+  "mp6Rows": {
+    "cultivationRiskRows": 0,
+    "cultivationReadinessSections": 0,
+    "gateRows": 0,
+    "trainingMotes": 0,
+    "daoMotes": 0,
+    "techniqueScalingRows": 0
+  },
+  "activeElement": {
+    "tagName": "BODY",
+    "text": "Techniques Inner Palace Combat Form 診 Loadout gap signal fill one passive slot before the next Gate. Target Foundation Gate Archetype Balanced Striker Path Alignment 72% Mastery Floor 25 Rank Floor I Loadout 1 Balanced Loadouts ◆ Loadout 1 Balanced Striker 4 equipped ◇ Loadout 2 Defensive 0 equipped ◇ Loadout 3 Farmer 0 equipped AI Profile 衡 Balanced 盾 Survivor 破 Burst 穗 Farmer Farmer is poor for Gate Trials Casting Policy 旋 Reactive 序 Ordered 掌 Hold Ultimate Responds to combat state with a balanced priority mix. 战 Combat Form Active 1 Iron Palm Mortal / 25 / 50 Equip Clear Active 2 Cloudstep Earth / 10 / 50 Equip Clear Passive 1 Quiet Guard Mortal / 10 / 50 Equip Clear Passive 2 Locked fixed slot Equip Clear Support Mending Breath Mortal / 10 / 50 Equip Clear Ultimate Locked fixed slot Equip Clear Current Combat Form 2 / 3 Active 1 / 2 Passive 0 / 1 Ultimate AI: Balanced Policy: Reactive Select a technique slip or altar slot to adjust the combat form. Owned Techniques All Path Fit Damage Guard Heal Control Setup Advanced Filters Iron Palm Damage Mortal Common Rank I 25 / 50 Martial Damage 装 推 Quiet Guard Guard Mortal Uncommon Rank I 10 / 50 Earth Guard 推 Cloudstep Step Earth Rare Rank I 15 / 50 Heaven Mobility 装 Mending Breath Heal Mortal Common Rank I 5 / 50 Earth Heal 装 Selected Technique Iron Palm Recommended Core Damage Art Mortal Grade Common Martial Lineage Role Core Damage Art Grade Mortal Grade paper-bound foundation Rarity Common plain copy Rank I Mastery 25 / 50 Path Fit Strong Martial doctrine resonates Traits direct strike, stable opener Rune Sockets 0 / 1 Observed Gap raise mastery to 50 Open Details Inspect manual source Gate Readiness Impact Damage Adequate Survival Thin Control Missing AI Good Medicine External Apply Loadout Go to Manual Pavilion Status Cultivation World Inventory Techniques Records Prestige Settings",
+    "ariaLabel": null
+  },
+  "visibleText": "Techniques\n\nInner Palace Combat Form\n\n診\nLoadout gap signal\n\nfill one passive slot before the next Gate.\n\nTarget\nFoundation Gate\nArchetype\nBalanced Striker\nPath Alignment\n72%\nMastery Floor\n25\nRank Floor\nI\nLoadout 1\nBalanced\nLoadouts\n◆\nLoadout 1\nBalanced Striker\n4 equipped\n◇\nLoadout 2\nDefensive\n0 equipped\n◇\nLoadout 3\nFarmer\n0 equipped\nAI Profile\n衡\nBalanced\n盾\nSurvivor\n破\nBurst\n穗\nFarmer\n\nFarmer is poor for Gate Trials\n\nCasting Policy\n旋\nReactive\n序\nOrdered\n掌\nHold Ultimate\n\nResponds to combat state with a balanced priority mix.\n\n战\nCombat Form\nActive 1\nIron Palm\nMortal / 25 / 50\nEquip\nClear\nActive 2\nCloudstep\nEarth / 10 / 50\nEquip\nClear\nPassive 1\nQuiet Guard\nMortal / 10 / 50\nEquip\nClear\nPassive 2\nLocked\nfixed slot\nEquip\nClear\nSupport\nMending Breath\nMortal / 10 / 50\nEquip\nClear\nUltimate\nLocked\nfixed slot\nEquip\nClear\nCurrent Combat Form\n2 / 3 Active\n1 / 2 Passive\n0 / 1 Ultimate\nAI: Balanced\nPolicy: Reactive\n\nSelect a technique slip or altar slot to adjust the combat form.\n\nOwned Techniques\nAll\nPath Fit\nDamage\nGuard\nHeal\nControl\nSetup\nAdvanced Filters\nIron Palm\nDamage\nMortal\nCommon\nRank I\n25 / 50\nMartial\nDamage\n装\n推\nQuiet Guard\nGuard\nMortal\nUncommon\nRank I\n10 / 50\nEarth\nGuard\n推\nCloudstep\nStep\nEarth\nRare\nRank I\n15 / 50\nHeaven\nMobility\n装\nMending Breath\nHeal\nMortal\nCommon\nRank I\n5 / 50\nEarth\nHeal\n装\nSelected Technique\nIron Palm\nRecommended\nCore Damage Art\nMortal Grade\nCommon\nMartial Lineage\nRole\nCore Damage Art\nGrade\nMortal Grade\npaper-bound foundation\nRarity\nCommon\nplain copy\nRank\nI\nMastery\n25 / 50\nPath Fit\nStrong\nMartial doctrine resonates\nTraits\ndirect strike, stable opener\nRune Sockets\n0 / 1\nObserved Gap\nraise mastery to 50\nOpen Details\nInspect manual source\nGate Readiness Impact\nDamage\nAdequate\nSurvival\nThin\nControl\nMissing\nAI\nGood\nMedicine\nExternal\nApply Loadout\nGo to Manual Pavilion\nStatus\nCultivation\nWorld\nInventory\nTechniques\nRecords\nPrestige\nSettings"
+}

@@ -1,0 +1,32 @@
+﻿{
+    "policy":  {
+                   "techniqueModal":  {
+                                          "fallback":  "reduced-motion CSS disables modal animation affordances",
+                                          "noShiftTrainingRows":  "min-height 72px"
+                                      },
+                   "gateTrial":  {
+                                     "failureShakeMax":  "3px",
+                                     "failureShakeDuration":  "120ms",
+                                     "fallback":  "reduced-motion CSS disables transitions/animations/filters"
+                                 },
+                   "trainingHall":  {
+                                        "fallback":  "data-motion-mode static plus reduced-motion CSS disables mote animation",
+                                        "maxParticles":  36,
+                                        "opacityOverTextMax":  0.18
+                                    },
+                   "daoHeartSanctuary":  {
+                                             "fallback":  "data-motion-mode static plus reduced-motion CSS disables mote/ring animation",
+                                             "maxParticles":  48,
+                                             "opacityOverTextMax":  0.18
+                                         }
+               },
+    "screenshotEvidence":  [
+                               "artifacts/mp6/final/ui-polish/screenshots/reduced-motion/status-ledger-reduced-motion-1440x1000.png",
+                               "artifacts/mp6/final/ui-polish/screenshots/reduced-motion/gate-trial-reduced-motion-1440x1000.png"
+                           ],
+    "generatedAt":  "2026-06-03T15:19:23.2335521+03:00",
+    "contractEvidence":  [
+                             "tests/contracts/mp6UiPolishSurfaceContract.test.ts",
+                             "tests/contracts/gateTrialReducedMotionContract.test.ts"
+                         ]
+}

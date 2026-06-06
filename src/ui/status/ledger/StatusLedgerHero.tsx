@@ -29,7 +29,7 @@ export function StatusLedgerHero({ hero, onAction }: StatusLedgerHeroProps) {
       <div className="statusLedgerHero__doctrine" data-testid="status-ledger-hero-doctrine" aria-label="Identity & Doctrine">
         <StatusDoctrineTileGrid tiles={[hero.pathTile, hero.heartLawTile]} compact>
           <div className="statusDoctrineTile statusDoctrineTile--spirit-root">
-            <StatusSpiritRootBadge spiritRoot={hero.spiritRoot} compact />
+            <StatusSpiritRootBadge spiritRoot={hero.spiritRoot} compact onAction={onAction} />
           </div>
           <StatusDoctrineTile tile={hero.focusTile} compact />
           <StatusDoctrineTile tile={hero.breathTile} compact />

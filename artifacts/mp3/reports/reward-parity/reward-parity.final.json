@@ -1,0 +1,797 @@
+{
+  "generatedAt": "2026-05-28T23:04:51.612Z",
+  "rewardParityAudit": {
+    "cities": [
+      {
+        "cityId": "city_pinewind_hamlet",
+        "cityIndex": 0,
+        "readModel": {
+          "cityId": "city_pinewind_hamlet",
+          "cityIndex": 0,
+          "outskirts": {
+            "cityId": "city_pinewind_hamlet",
+            "cityIndex": 0,
+            "activityId": "outskirts_training_forest",
+            "role": "outskirts",
+            "roleTag": "Gold & Common Mats",
+            "bestUsedWhen": "Best used when you need gold, common materials, or low-risk combat reps.",
+            "keyExpectedOutputs": [
+              "gold",
+              "mat_common_herb_bundle",
+              "mat_beast_blood",
+              "mat_beast_bone",
+              "mat_spirit_leaf",
+              "mat_spirit_dew"
+            ],
+            "boundaryLine": "Not the best source for targeted city materials."
+          },
+          "ruins": {
+            "cityId": "city_pinewind_hamlet",
+            "cityIndex": 0,
+            "activityId": "ruin_hollow_log_den",
+            "role": "ruins",
+            "roleTag": "Targeted Mats",
+            "bestUsedWhen": "Best used when you need targeted local materials and deterministic support rewards.",
+            "roomCount": 5,
+            "leadLocalMaterials": [
+              "mat_spirit_leaf",
+              "mat_beast_bone",
+              "mat_beast_blood"
+            ],
+            "deterministicFinalAnchor": "mat_core_fragment",
+            "rarePitySummary": "Rare pity active for ruin boss chests (increment 0.02, cap 12).",
+            "goldIsSecondary": true,
+            "keyExpectedOutputs": [
+              "mat_spirit_leaf",
+              "mat_beast_bone",
+              "mat_beast_blood",
+              "mat_core_fragment",
+              "mat_spirit_dew"
+            ],
+            "boundaryLine": "Gold is secondary here; the run is for targeted local materials and support stability."
+          }
+        },
+        "deterministicAnchorItemId": "mat_core_fragment",
+        "outskirtsHeadlineRole": "Gold & Common Mats",
+        "ruinsHeadlineRole": "Targeted Mats",
+        "outskirtsGoldPosture": "primary",
+        "ruinsGoldPosture": "secondary",
+        "outskirtsCommonPosture": "primary",
+        "ruinsTargetedPosture": "primary",
+        "localOverlapRisks": [],
+        "driftDetected": false,
+        "driftReasons": [],
+        "metrics": {
+          "outskirts": {
+            "goldPerLoop": 505,
+            "goldPerItemUnit": 20.2,
+            "itemUnitsPerLoop": 25,
+            "commonUnitsPerLoop": 23.9,
+            "targetedUnitsPerLoop": 0.55,
+            "anchorUnitsPerLoop": 0,
+            "supportUnitsPerLoop": 0.55,
+            "otherUnitsPerLoop": 0,
+            "commonShare": 0.956,
+            "targetedShare": 0.022000000000000002,
+            "anchorShare": 0,
+            "supportShare": 0.022000000000000002,
+            "targetedAndAnchorShare": 0.022000000000000002
+          },
+          "ruins": {
+            "goldPerLoop": 237.5,
+            "goldPerItemUnit": 8.512544802867383,
+            "itemUnitsPerLoop": 27.9,
+            "commonUnitsPerLoop": 7.8,
+            "targetedUnitsPerLoop": 10.2,
+            "anchorUnitsPerLoop": 2.2,
+            "supportUnitsPerLoop": 0.2,
+            "otherUnitsPerLoop": 7.5,
+            "commonShare": 0.2795698924731183,
+            "targetedShare": 0.3655913978494624,
+            "anchorShare": 0.07885304659498209,
+            "supportShare": 0.007168458781362008,
+            "targetedAndAnchorShare": 0.4444444444444444
+          }
+        },
+        "rules": [
+          {
+            "ruleId": "outskirts_primary_gold_loop",
+            "passed": true,
+            "detail": "gold/item outskirts=20.20 ruins=8.51"
+          },
+          {
+            "ruleId": "outskirts_common_material_strength",
+            "passed": true,
+            "detail": "outskirts commonShare=0.956 targeted+anchor=0.550"
+          },
+          {
+            "ruleId": "outskirts_targeted_leakage_secondary",
+            "passed": true,
+            "detail": "outskirts targeted+anchor share=0.022"
+          },
+          {
+            "ruleId": "ruins_deterministic_anchor_present",
+            "passed": true,
+            "detail": "expected anchor=mat_core_fragment"
+          },
+          {
+            "ruleId": "ruins_targeted_material_strength",
+            "passed": true,
+            "detail": "ruins targeted+anchor share=0.444 outskirts targeted+anchor=0.550 ruins targeted+anchor=12.400"
+          },
+          {
+            "ruleId": "ruins_gold_secondary",
+            "passed": true,
+            "detail": "ruins gold=237.50 targeted+anchor share=0.444 commonShare=0.280"
+          },
+          {
+            "ruleId": "pair_distinct_lessons",
+            "passed": true,
+            "detail": "commonShare outskirts=0.956 ruins=0.280 targeted+anchor outskirts=0.022 ruins=0.444"
+          },
+          {
+            "ruleId": "outskirts_gold_per_minute_dominance",
+            "passed": true,
+            "detail": "gold/min outskirts=168.93 ruins=59.42"
+          },
+          {
+            "ruleId": "ruins_targeted_per_minute_dominance",
+            "passed": true,
+            "detail": "targeted/min outskirts=0.173 ruins=3.106"
+          }
+        ]
+      },
+      {
+        "cityId": "city_stonecrag_town",
+        "cityIndex": 1,
+        "readModel": {
+          "cityId": "city_stonecrag_town",
+          "cityIndex": 1,
+          "outskirts": {
+            "cityId": "city_stonecrag_town",
+            "cityIndex": 1,
+            "activityId": "outskirts_rockfall_quarry",
+            "role": "outskirts",
+            "roleTag": "Gold & Common Mats",
+            "bestUsedWhen": "Best used when you need gold, common materials, or low-risk combat reps.",
+            "keyExpectedOutputs": [
+              "gold",
+              "mat_stone_chunk",
+              "mat_iron_sand",
+              "mat_fire_ash",
+              "mat_quarry_ore",
+              "mat_earth_essence"
+            ],
+            "boundaryLine": "Not the best source for targeted city materials."
+          },
+          "ruins": {
+            "cityId": "city_stonecrag_town",
+            "cityIndex": 1,
+            "activityId": "ruin_broken_kiln",
+            "role": "ruins",
+            "roleTag": "Targeted Mats",
+            "bestUsedWhen": "Best used when you need targeted local materials and deterministic support rewards.",
+            "roomCount": 5,
+            "leadLocalMaterials": [
+              "mat_quarry_ore",
+              "mat_iron_sand",
+              "mat_earth_essence"
+            ],
+            "deterministicFinalAnchor": "frag_manual_mortal",
+            "rarePitySummary": "Rare pity active for ruin boss chests (increment 0.02, cap 12).",
+            "goldIsSecondary": true,
+            "keyExpectedOutputs": [
+              "mat_quarry_ore",
+              "mat_iron_sand",
+              "mat_earth_essence",
+              "frag_manual_mortal",
+              "frag_manual_mortal"
+            ],
+            "boundaryLine": "Gold is secondary here; the run is for targeted local materials and support stability."
+          }
+        },
+        "deterministicAnchorItemId": "frag_manual_mortal",
+        "outskirtsHeadlineRole": "Gold & Common Mats",
+        "ruinsHeadlineRole": "Targeted Mats",
+        "outskirtsGoldPosture": "primary",
+        "ruinsGoldPosture": "secondary",
+        "outskirtsCommonPosture": "primary",
+        "ruinsTargetedPosture": "primary",
+        "localOverlapRisks": [],
+        "driftDetected": false,
+        "driftReasons": [],
+        "metrics": {
+          "outskirts": {
+            "goldPerLoop": 2440,
+            "goldPerItemUnit": 77.63283487114222,
+            "itemUnitsPerLoop": 31.43,
+            "commonUnitsPerLoop": 30.08,
+            "targetedUnitsPerLoop": 1.35,
+            "anchorUnitsPerLoop": 0,
+            "supportUnitsPerLoop": 0,
+            "otherUnitsPerLoop": 0,
+            "commonShare": 0.9570474069360483,
+            "targetedShare": 0.04295259306395164,
+            "anchorShare": 0,
+            "supportShare": 0,
+            "targetedAndAnchorShare": 0.04295259306395164
+          },
+          "ruins": {
+            "goldPerLoop": 375,
+            "goldPerItemUnit": 9.74025974025974,
+            "itemUnitsPerLoop": 38.5,
+            "commonUnitsPerLoop": 11.6,
+            "targetedUnitsPerLoop": 10.299999999999999,
+            "anchorUnitsPerLoop": 1.6,
+            "supportUnitsPerLoop": 0,
+            "otherUnitsPerLoop": 15,
+            "commonShare": 0.3012987012987013,
+            "targetedShare": 0.2675324675324675,
+            "anchorShare": 0.04155844155844156,
+            "supportShare": 0,
+            "targetedAndAnchorShare": 0.309090909090909
+          }
+        },
+        "rules": [
+          {
+            "ruleId": "outskirts_primary_gold_loop",
+            "passed": true,
+            "detail": "gold/item outskirts=77.63 ruins=9.74"
+          },
+          {
+            "ruleId": "outskirts_common_material_strength",
+            "passed": true,
+            "detail": "outskirts commonShare=0.957 targeted+anchor=1.350"
+          },
+          {
+            "ruleId": "outskirts_targeted_leakage_secondary",
+            "passed": true,
+            "detail": "outskirts targeted+anchor share=0.043"
+          },
+          {
+            "ruleId": "ruins_deterministic_anchor_present",
+            "passed": true,
+            "detail": "expected anchor=frag_manual_mortal"
+          },
+          {
+            "ruleId": "ruins_targeted_material_strength",
+            "passed": true,
+            "detail": "ruins targeted+anchor share=0.309 outskirts targeted+anchor=1.350 ruins targeted+anchor=11.900"
+          },
+          {
+            "ruleId": "ruins_gold_secondary",
+            "passed": true,
+            "detail": "ruins gold=375.00 targeted+anchor share=0.309 commonShare=0.301"
+          },
+          {
+            "ruleId": "pair_distinct_lessons",
+            "passed": true,
+            "detail": "commonShare outskirts=0.957 ruins=0.301 targeted+anchor outskirts=0.043 ruins=0.309"
+          },
+          {
+            "ruleId": "outskirts_gold_per_minute_dominance",
+            "passed": true,
+            "detail": "gold/min outskirts=678.85 ruins=83.12"
+          },
+          {
+            "ruleId": "ruins_targeted_per_minute_dominance",
+            "passed": true,
+            "detail": "targeted/min outskirts=0.385 ruins=2.652"
+          }
+        ]
+      },
+      {
+        "cityId": "city_spirit_cavern_city",
+        "cityIndex": 2,
+        "readModel": {
+          "cityId": "city_spirit_cavern_city",
+          "cityIndex": 2,
+          "outskirts": {
+            "cityId": "city_spirit_cavern_city",
+            "cityIndex": 2,
+            "activityId": "outskirts_spirit_cavern",
+            "role": "outskirts",
+            "roleTag": "Gold & Common Mats",
+            "bestUsedWhen": "Best used when you need gold, common materials, or low-risk combat reps.",
+            "keyExpectedOutputs": [
+              "gold",
+              "mat_spirit_stone_chunk",
+              "mat_stone_chunk",
+              "mat_low_grade_ore",
+              "mat_crystal_shard",
+              "mat_aura_residue"
+            ],
+            "boundaryLine": "Not the best source for targeted city materials."
+          },
+          "ruins": {
+            "cityId": "city_spirit_cavern_city",
+            "cityIndex": 2,
+            "activityId": "ruin_echo_crystal_tunnels",
+            "role": "ruins",
+            "roleTag": "Targeted Mats",
+            "bestUsedWhen": "Best used when you need targeted local materials and deterministic support rewards.",
+            "roomCount": 6,
+            "leadLocalMaterials": [
+              "mat_crystal_shard",
+              "mat_aura_residue",
+              "mat_core_fragment"
+            ],
+            "deterministicFinalAnchor": "mat_core_fragment",
+            "rarePitySummary": "Rare pity active for ruin boss chests (increment 0.02, cap 12).",
+            "goldIsSecondary": true,
+            "keyExpectedOutputs": [
+              "mat_crystal_shard",
+              "mat_aura_residue",
+              "mat_core_fragment",
+              "mat_core_fragment",
+              "mat_rune_dust",
+              "mat_artifact_shard"
+            ],
+            "boundaryLine": "Gold is secondary here; the run is for targeted local materials and support stability."
+          }
+        },
+        "deterministicAnchorItemId": "mat_core_fragment",
+        "outskirtsHeadlineRole": "Gold & Common Mats",
+        "ruinsHeadlineRole": "Targeted Mats",
+        "outskirtsGoldPosture": "primary",
+        "ruinsGoldPosture": "secondary",
+        "outskirtsCommonPosture": "primary",
+        "ruinsTargetedPosture": "primary",
+        "localOverlapRisks": [],
+        "driftDetected": false,
+        "driftReasons": [],
+        "metrics": {
+          "outskirts": {
+            "goldPerLoop": 8360,
+            "goldPerItemUnit": 229.54420647995605,
+            "itemUnitsPerLoop": 36.42,
+            "commonUnitsPerLoop": 27.936,
+            "targetedUnitsPerLoop": 1.5,
+            "anchorUnitsPerLoop": 0,
+            "supportUnitsPerLoop": 6.984,
+            "otherUnitsPerLoop": 0,
+            "commonShare": 0.7670510708401976,
+            "targetedShare": 0.04118616144975288,
+            "anchorShare": 0,
+            "supportShare": 0.1917627677100494,
+            "targetedAndAnchorShare": 0.04118616144975288
+          },
+          "ruins": {
+            "goldPerLoop": 530,
+            "goldPerItemUnit": 9.584086799276673,
+            "itemUnitsPerLoop": 55.3,
+            "commonUnitsPerLoop": 1.2000000000000002,
+            "targetedUnitsPerLoop": 14,
+            "anchorUnitsPerLoop": 6.1,
+            "supportUnitsPerLoop": 33.2,
+            "otherUnitsPerLoop": 0.8,
+            "commonShare": 0.021699819168173602,
+            "targetedShare": 0.25316455696202533,
+            "anchorShare": 0.11030741410488246,
+            "supportShare": 0.600361663652803,
+            "targetedAndAnchorShare": 0.3634719710669078
+          }
+        },
+        "rules": [
+          {
+            "ruleId": "outskirts_primary_gold_loop",
+            "passed": true,
+            "detail": "gold/item outskirts=229.54 ruins=9.58"
+          },
+          {
+            "ruleId": "outskirts_common_material_strength",
+            "passed": true,
+            "detail": "outskirts commonShare=0.767 targeted+anchor=1.500"
+          },
+          {
+            "ruleId": "outskirts_targeted_leakage_secondary",
+            "passed": true,
+            "detail": "outskirts targeted+anchor share=0.041"
+          },
+          {
+            "ruleId": "ruins_deterministic_anchor_present",
+            "passed": true,
+            "detail": "expected anchor=mat_core_fragment"
+          },
+          {
+            "ruleId": "ruins_targeted_material_strength",
+            "passed": true,
+            "detail": "ruins targeted+anchor share=0.363 outskirts targeted+anchor=1.500 ruins targeted+anchor=20.100"
+          },
+          {
+            "ruleId": "ruins_gold_secondary",
+            "passed": true,
+            "detail": "ruins gold=530.00 targeted+anchor share=0.363 commonShare=0.022"
+          },
+          {
+            "ruleId": "pair_distinct_lessons",
+            "passed": true,
+            "detail": "commonShare outskirts=0.767 ruins=0.022 targeted+anchor outskirts=0.041 ruins=0.363"
+          },
+          {
+            "ruleId": "outskirts_gold_per_minute_dominance",
+            "passed": true,
+            "detail": "gold/min outskirts=1940.96 ruins=98.02"
+          },
+          {
+            "ruleId": "ruins_targeted_per_minute_dominance",
+            "passed": true,
+            "detail": "targeted/min outskirts=0.339 ruins=3.721"
+          }
+        ]
+      },
+      {
+        "cityId": "city_lotusford",
+        "cityIndex": 3,
+        "readModel": {
+          "cityId": "city_lotusford",
+          "cityIndex": 3,
+          "outskirts": {
+            "cityId": "city_lotusford",
+            "cityIndex": 3,
+            "activityId": "outskirts_mist_marsh",
+            "role": "outskirts",
+            "roleTag": "Gold & Common Mats",
+            "bestUsedWhen": "Best used when you need gold, common materials, or low-risk combat reps.",
+            "keyExpectedOutputs": [
+              "gold",
+              "mat_venom_sac",
+              "mat_common_herb_bundle",
+              "mat_spirit_dew",
+              "mat_lotus_pollen",
+              "mat_mist_pearl"
+            ],
+            "boundaryLine": "Not the best source for targeted city materials."
+          },
+          "ruins": {
+            "cityId": "city_lotusford",
+            "cityIndex": 3,
+            "activityId": "ruin_sunken_pavilion",
+            "role": "ruins",
+            "roleTag": "Targeted Mats",
+            "bestUsedWhen": "Best used when you need targeted local materials and deterministic support rewards.",
+            "roomCount": 6,
+            "leadLocalMaterials": [
+              "mat_lotus_pollen",
+              "mat_mist_pearl",
+              "mat_soul_ember"
+            ],
+            "deterministicFinalAnchor": "frag_manual_mortal",
+            "rarePitySummary": "Rare pity active for ruin boss chests (increment 0.02, cap 12).",
+            "goldIsSecondary": true,
+            "keyExpectedOutputs": [
+              "mat_lotus_pollen",
+              "mat_mist_pearl",
+              "mat_soul_ember",
+              "frag_manual_mortal",
+              "mat_rune_dust",
+              "mat_seed_ancient"
+            ],
+            "boundaryLine": "Gold is secondary here; the run is for targeted local materials and support stability."
+          }
+        },
+        "deterministicAnchorItemId": "frag_manual_mortal",
+        "outskirtsHeadlineRole": "Gold & Common Mats",
+        "ruinsHeadlineRole": "Targeted Mats",
+        "outskirtsGoldPosture": "primary",
+        "ruinsGoldPosture": "secondary",
+        "outskirtsCommonPosture": "primary",
+        "ruinsTargetedPosture": "primary",
+        "localOverlapRisks": [],
+        "driftDetected": false,
+        "driftReasons": [],
+        "metrics": {
+          "outskirts": {
+            "goldPerLoop": 24400,
+            "goldPerItemUnit": 589.2296546727844,
+            "itemUnitsPerLoop": 41.41,
+            "commonUnitsPerLoop": 31.808000000000007,
+            "targetedUnitsPerLoop": 1.6500000000000001,
+            "anchorUnitsPerLoop": 0,
+            "supportUnitsPerLoop": 7.952000000000002,
+            "otherUnitsPerLoop": 0,
+            "commonShare": 0.7681236416324562,
+            "targetedShare": 0.0398454479594301,
+            "anchorShare": 0,
+            "supportShare": 0.19203091040811404,
+            "targetedAndAnchorShare": 0.0398454479594301
+          },
+          "ruins": {
+            "goldPerLoop": 640,
+            "goldPerItemUnit": 8.279430789133247,
+            "itemUnitsPerLoop": 77.3,
+            "commonUnitsPerLoop": 2.4000000000000004,
+            "targetedUnitsPerLoop": 16.3,
+            "anchorUnitsPerLoop": 1.8,
+            "supportUnitsPerLoop": 49.3,
+            "otherUnitsPerLoop": 7.5,
+            "commonShare": 0.03104786545924968,
+            "targetedShare": 0.2108667529107374,
+            "anchorShare": 0.02328589909443726,
+            "supportShare": 0.6377749029754204,
+            "targetedAndAnchorShare": 0.23415265200517468
+          }
+        },
+        "rules": [
+          {
+            "ruleId": "outskirts_primary_gold_loop",
+            "passed": true,
+            "detail": "gold/item outskirts=589.23 ruins=8.28"
+          },
+          {
+            "ruleId": "outskirts_common_material_strength",
+            "passed": true,
+            "detail": "outskirts commonShare=0.768 targeted+anchor=1.650"
+          },
+          {
+            "ruleId": "outskirts_targeted_leakage_secondary",
+            "passed": true,
+            "detail": "outskirts targeted+anchor share=0.040"
+          },
+          {
+            "ruleId": "ruins_deterministic_anchor_present",
+            "passed": true,
+            "detail": "expected anchor=frag_manual_mortal"
+          },
+          {
+            "ruleId": "ruins_targeted_material_strength",
+            "passed": true,
+            "detail": "ruins targeted+anchor share=0.234 outskirts targeted+anchor=1.650 ruins targeted+anchor=18.100"
+          },
+          {
+            "ruleId": "ruins_gold_secondary",
+            "passed": true,
+            "detail": "ruins gold=640.00 targeted+anchor share=0.234 commonShare=0.031"
+          },
+          {
+            "ruleId": "pair_distinct_lessons",
+            "passed": true,
+            "detail": "commonShare outskirts=0.768 ruins=0.031 targeted+anchor outskirts=0.040 ruins=0.234"
+          },
+          {
+            "ruleId": "outskirts_gold_per_minute_dominance",
+            "passed": true,
+            "detail": "gold/min outskirts=4752.09 ruins=106.80"
+          },
+          {
+            "ruleId": "ruins_targeted_per_minute_dominance",
+            "passed": true,
+            "detail": "targeted/min outskirts=0.327 ruins=3.023"
+          }
+        ]
+      },
+      {
+        "cityId": "city_ironpeak_bastion",
+        "cityIndex": 4,
+        "readModel": {
+          "cityId": "city_ironpeak_bastion",
+          "cityIndex": 4,
+          "outskirts": {
+            "cityId": "city_ironpeak_bastion",
+            "cityIndex": 4,
+            "activityId": "outskirts_razor_ridge",
+            "role": "outskirts",
+            "roleTag": "Gold & Common Mats",
+            "bestUsedWhen": "Best used when you need gold, common materials, or low-risk combat reps.",
+            "keyExpectedOutputs": [
+              "gold",
+              "mat_iron_sand",
+              "mat_fire_ash",
+              "mat_stone_chunk",
+              "mat_spirit_steel_ore",
+              "mat_furnace_cinder"
+            ],
+            "boundaryLine": "Not the best source for targeted city materials."
+          },
+          "ruins": {
+            "cityId": "city_ironpeak_bastion",
+            "cityIndex": 4,
+            "activityId": "ruin_old_furnace_complex",
+            "role": "ruins",
+            "roleTag": "Targeted Mats",
+            "bestUsedWhen": "Best used when you need targeted local materials and deterministic support rewards.",
+            "roomCount": 7,
+            "leadLocalMaterials": [
+              "mat_spirit_steel_ore",
+              "mat_blade_core",
+              "mat_furnace_cinder"
+            ],
+            "deterministicFinalAnchor": "mat_artifact_shard",
+            "rarePitySummary": "Rare pity active for ruin boss chests (increment 0.02, cap 12).",
+            "goldIsSecondary": true,
+            "keyExpectedOutputs": [
+              "mat_spirit_steel_ore",
+              "mat_blade_core",
+              "mat_furnace_cinder",
+              "mat_artifact_shard",
+              "mat_rune_dust",
+              "mat_thunder_sand"
+            ],
+            "boundaryLine": "Gold is secondary here; the run is for targeted local materials and support stability."
+          }
+        },
+        "deterministicAnchorItemId": "mat_artifact_shard",
+        "outskirtsHeadlineRole": "Gold & Common Mats",
+        "ruinsHeadlineRole": "Targeted Mats",
+        "outskirtsGoldPosture": "primary",
+        "ruinsGoldPosture": "secondary",
+        "outskirtsCommonPosture": "primary",
+        "ruinsTargetedPosture": "primary",
+        "localOverlapRisks": [],
+        "driftDetected": false,
+        "driftReasons": [],
+        "metrics": {
+          "outskirts": {
+            "goldPerLoop": 70000,
+            "goldPerItemUnit": 1508.6206896551723,
+            "itemUnitsPerLoop": 46.400000000000006,
+            "commonUnitsPerLoop": 35.68,
+            "targetedUnitsPerLoop": 1.7999999999999998,
+            "anchorUnitsPerLoop": 0,
+            "supportUnitsPerLoop": 8.92,
+            "otherUnitsPerLoop": 0,
+            "commonShare": 0.7689655172413792,
+            "targetedShare": 0.038793103448275856,
+            "anchorShare": 0,
+            "supportShare": 0.1922413793103448,
+            "targetedAndAnchorShare": 0.038793103448275856
+          },
+          "ruins": {
+            "goldPerLoop": 820,
+            "goldPerItemUnit": 7.0446735395189,
+            "itemUnitsPerLoop": 116.4,
+            "commonUnitsPerLoop": 0,
+            "targetedUnitsPerLoop": 22.599999999999998,
+            "anchorUnitsPerLoop": 15.8,
+            "supportUnitsPerLoop": 78,
+            "otherUnitsPerLoop": 0,
+            "commonShare": 0,
+            "targetedShare": 0.19415807560137455,
+            "anchorShare": 0.13573883161512026,
+            "supportShare": 0.6701030927835051,
+            "targetedAndAnchorShare": 0.32989690721649484
+          }
+        },
+        "rules": [
+          {
+            "ruleId": "outskirts_primary_gold_loop",
+            "passed": true,
+            "detail": "gold/item outskirts=1508.62 ruins=7.04"
+          },
+          {
+            "ruleId": "outskirts_common_material_strength",
+            "passed": true,
+            "detail": "outskirts commonShare=0.769 targeted+anchor=1.800"
+          },
+          {
+            "ruleId": "outskirts_targeted_leakage_secondary",
+            "passed": true,
+            "detail": "outskirts targeted+anchor share=0.039"
+          },
+          {
+            "ruleId": "ruins_deterministic_anchor_present",
+            "passed": true,
+            "detail": "expected anchor=mat_artifact_shard"
+          },
+          {
+            "ruleId": "ruins_targeted_material_strength",
+            "passed": true,
+            "detail": "ruins targeted+anchor share=0.330 outskirts targeted+anchor=1.800 ruins targeted+anchor=38.400"
+          },
+          {
+            "ruleId": "ruins_gold_secondary",
+            "passed": true,
+            "detail": "ruins gold=820.00 targeted+anchor share=0.330 commonShare=0.000"
+          },
+          {
+            "ruleId": "pair_distinct_lessons",
+            "passed": true,
+            "detail": "commonShare outskirts=0.769 ruins=0.000 targeted+anchor outskirts=0.039 ruins=0.330"
+          },
+          {
+            "ruleId": "outskirts_gold_per_minute_dominance",
+            "passed": true,
+            "detail": "gold/min outskirts=11804.93 ruins=116.76"
+          },
+          {
+            "ruleId": "ruins_targeted_per_minute_dominance",
+            "passed": true,
+            "detail": "targeted/min outskirts=0.297 ruins=5.486"
+          }
+        ]
+      }
+    ]
+  },
+  "rows": [
+    {
+      "activity": "Outskirts",
+      "authoredPromise": "Gold/common-material primary active loop",
+      "runtimeGrant": "buildOutskirtsRewardBundle samples and audit metrics",
+      "rewardService": "production grant owner unchanged",
+      "uiSummary": "activity reward read model",
+      "readinessUpdates": "source model routes gold/common material shortages",
+      "status": "pass",
+      "notes": "targeted tests: outskirtsRuinsRewardRouting, rewardParityRuntimeEnvelope"
+    },
+    {
+      "activity": "Ruins",
+      "authoredPromise": "Targeted/anchor material support",
+      "runtimeGrant": "rollRuinDropTable + final chest bonus bundle",
+      "rewardService": "production grant owner unchanged",
+      "uiSummary": "ruins exact reward summary inherited from MP2",
+      "readinessUpdates": "bestSource routes targeted material to Ruins",
+      "status": "pass",
+      "notes": "targeted tests: outskirtsRuinsRewardRouting, rewardParityRuntimeEnvelope"
+    },
+    {
+      "activity": "Bounties",
+      "authoredPromise": "Merit/support currency route",
+      "runtimeGrant": "bounty support economy contracts",
+      "rewardService": "production grant owner unchanged",
+      "uiSummary": "Bounty Board support surface",
+      "readinessUpdates": "Safety Net reserve shortfall routes to Bounties",
+      "status": "pass",
+      "notes": "targeted tests: bountySupportEconomyContract"
+    },
+    {
+      "activity": "Expeditions",
+      "authoredPromise": "Background shortage relief",
+      "runtimeGrant": "expedition shortage surface/action controller contracts",
+      "rewardService": "production grant owner unchanged",
+      "uiSummary": "Expedition Support surface",
+      "readinessUpdates": "fallback source for material shortages",
+      "status": "pass",
+      "notes": "targeted tests: expeditionShortageSurfaceContract"
+    },
+    {
+      "activity": "Manual Pavilion",
+      "authoredPromise": "Manual acquisition/build correction",
+      "runtimeGrant": "manual offer/study bridge contracts",
+      "rewardService": "not a currency grant path in MP3 surface",
+      "uiSummary": "Manual offer fit surface",
+      "readinessUpdates": "build-correction shortfall routes to Manual Pavilion",
+      "status": "pass",
+      "notes": "targeted tests: manualOfferFitSurfaceContract, manualPavilionBridge"
+    },
+    {
+      "activity": "Manual Study",
+      "authoredPromise": "Manual becomes technique progress/unlock",
+      "runtimeGrant": "manual satchel study completion",
+      "rewardService": "store-owned manual study path unchanged",
+      "uiSummary": "Techniques low-content route inherited",
+      "readinessUpdates": "build/loadout route proof",
+      "status": "pass",
+      "notes": "targeted tests: manualStudyContract, manualPavilionBridge"
+    },
+    {
+      "activity": "Apothecary",
+      "authoredPromise": "Pouch/pill prep and healing readiness",
+      "runtimeGrant": "apothecary bundle/runtime surface contracts",
+      "rewardService": "production buy/brew owner unchanged",
+      "uiSummary": "recommended package and pouch fit",
+      "readinessUpdates": "healing_floor blocker routes to Apothecary",
+      "status": "pass",
+      "notes": "targeted tests: apothecaryPrepSurfaceContract, apothecaryBundleSurfaceRuntime"
+    },
+    {
+      "activity": "Forge",
+      "authoredPromise": "Forge Floor and permanent power baseline",
+      "runtimeGrant": "forge floor surface contracts",
+      "rewardService": "production forge action owner unchanged",
+      "uiSummary": "current vs target floor",
+      "readinessUpdates": "gear_floor blocker routes to Forge after prep stock",
+      "status": "pass",
+      "notes": "targeted tests: forgeFloorSurfaceContract, milestoneReadinessSurfaceContract"
+    },
+    {
+      "activity": "Gate Trial",
+      "authoredPromise": "Catalyst clear/fail-safe path",
+      "runtimeGrant": "readiness/failure/fail-safe surfaces only in MP3",
+      "rewardService": "no new grant path; advanced lifecycle proof remains MP2 follow-up",
+      "uiSummary": "planning/top-fix/fail-safe inherited",
+      "readinessUpdates": "failure diagnosis routes top fixes",
+      "status": "partial",
+      "notes": "Gate Trial active/defeat/clear/bypass screenshots still MP2 follow-up"
+    }
+  ]
+}

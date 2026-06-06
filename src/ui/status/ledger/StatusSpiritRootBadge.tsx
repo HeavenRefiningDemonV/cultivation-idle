@@ -1,25 +1,54 @@
-import { CircleDot, Droplet, Flame, Hexagon, Leaf, Mountain, type LucideIcon } from 'lucide-react';
+import {
+  CircleDot,
+  Clock3,
+  Droplet,
+  Flame,
+  Hexagon,
+  Leaf,
+  Moon,
+  Mountain,
+  Snowflake,
+  Sparkles,
+  Sun,
+  Tornado,
+  Wind,
+  Zap,
+  type LucideIcon,
+} from 'lucide-react';
 
 import type {
+  StatusLedgerActionSurface,
   StatusSpiritRootElement,
   StatusSpiritRootSurface,
 } from '../../../systems/ui/status/statusLedgerTypes.js';
+import { StatusActionButton } from './StatusLedgerRows.js';
 
 const ELEMENT_ICONS: Record<StatusSpiritRootElement, LucideIcon> = {
+  wood: Leaf,
   fire: Flame,
-  water: Droplet,
   earth: Mountain,
   metal: Hexagon,
-  wood: Leaf,
+  water: Droplet,
+  wind: Wind,
+  lightning: Zap,
+  ice: Snowflake,
+  light: Sun,
+  shadow: Moon,
+  soul: Sparkles,
+  void: CircleDot,
+  time: Clock3,
+  astral: Tornado,
   dormant: CircleDot,
 };
 
 export function StatusSpiritRootBadge({
   spiritRoot,
   compact = false,
+  onAction,
 }: {
   spiritRoot: StatusSpiritRootSurface;
   compact?: boolean;
+  onAction?: (action: StatusLedgerActionSurface) => void;
 }) {
   const ElementIcon = ELEMENT_ICONS[spiritRoot.element];
   const gradeLine = [
@@ -46,6 +75,9 @@ export function StatusSpiritRootBadge({
         <small>{gradeLine}</small>
         {detailLine ? <em>{detailLine}</em> : null}
       </span>
+      {spiritRoot.observationAction && onAction ? (
+        <StatusActionButton action={spiritRoot.observationAction} onAction={onAction} compact />
+      ) : null}
     </div>
   );
 }

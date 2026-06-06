@@ -1,0 +1,409 @@
+{
+  "viewport": "1920x1080",
+  "screen": "Life Start Breath Before Selection",
+  "url": "http://127.0.0.1:5173/",
+  "documentTitle": "cultivation-idle-temp",
+  "rootTestIds": [
+    "cultivation-exact-page",
+    "cultivation-dantian-anchor",
+    "cultivation-breakthrough-readiness",
+    "cultivation-qi-lane"
+  ],
+  "headings": [
+    "Begin Your New Life",
+    "Choose Breath Focus",
+    "Balanced"
+  ],
+  "primaryCta": {
+    "text": "Next MilestonePush Qi",
+    "disabled": false,
+    "ariaLabel": null,
+    "rect": {
+      "x": 79,
+      "y": 211,
+      "width": 301,
+      "height": 117,
+      "right": 380,
+      "bottom": 327
+    }
+  },
+  "buttons": [
+    {
+      "text": "Next MilestonePush Qi",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 79,
+        "y": 211,
+        "width": 301,
+        "height": 117,
+        "right": 380,
+        "bottom": 327
+      }
+    },
+    {
+      "text": "NeedQi Cap100",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 79,
+        "y": 346,
+        "width": 301,
+        "height": 117,
+        "right": 380,
+        "bottom": 462
+      }
+    },
+    {
+      "text": "ActionStart Cultivation",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 79,
+        "y": 481,
+        "width": 301,
+        "height": 117,
+        "right": 380,
+        "bottom": 597
+      }
+    },
+    {
+      "text": "Dao",
+      "disabled": false,
+      "ariaLabel": "Open Dao Heart",
+      "rect": {
+        "x": 1793,
+        "y": 134,
+        "width": 111,
+        "height": 132,
+        "right": 1904,
+        "bottom": 266
+      }
+    },
+    {
+      "text": "PathHeaven",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1563,
+        "y": 211,
+        "width": 284,
+        "height": 89,
+        "right": 1847,
+        "bottom": 299
+      }
+    },
+    {
+      "text": "Spirit RootMetal / Rare",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1563,
+        "y": 310,
+        "width": 284,
+        "height": 89,
+        "right": 1847,
+        "bottom": 398
+      }
+    },
+    {
+      "text": "Heart LawNo Heart Law selected",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1563,
+        "y": 409,
+        "width": 284,
+        "height": 89,
+        "right": 1847,
+        "bottom": 498
+      }
+    },
+    {
+      "text": "VerseChapter 1",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1563,
+        "y": 509,
+        "width": 284,
+        "height": 89,
+        "right": 1847,
+        "bottom": 597
+      }
+    },
+    {
+      "text": "Breath / FocusBalanced",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1563,
+        "y": 608,
+        "width": 284,
+        "height": 89,
+        "right": 1847,
+        "bottom": 697
+      }
+    },
+    {
+      "text": "Start Cultivation",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 701,
+        "y": 889,
+        "width": 518,
+        "height": 72,
+        "right": 1219,
+        "bottom": 961
+      }
+    },
+    {
+      "text": "Break Through",
+      "disabled": true,
+      "ariaLabel": null,
+      "rect": {
+        "x": 780,
+        "y": 961,
+        "width": 360,
+        "height": 37,
+        "right": 1140,
+        "bottom": 998
+      }
+    },
+    {
+      "text": "Status",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 380,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 521,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "Cultivation",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 525,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 667,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "World",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 671,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 812,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "Inventory",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 816,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 958,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "Techniques",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 962,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 1104,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "Records",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1108,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 1249,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "Prestige",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1253,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 1395,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "Settings",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1399,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 1540,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "ChosenBalancedNeutral cycle. Steady Qi flow, steady comprehension, and steady stability.Best for: cultivate, recoverSelected for this life",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 460,
+        "y": 589,
+        "width": 174,
+        "height": 249,
+        "right": 634,
+        "bottom": 838
+      }
+    },
+    {
+      "text": "DisciplineSafeControlled cycle. Slower Qi flow in exchange for better comprehension and better stability.Best for: prepare breakthrough, recoverSelect focus",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 644,
+        "y": 589,
+        "width": 174,
+        "height": 249,
+        "right": 818,
+        "bottom": 838
+      }
+    },
+    {
+      "text": "DisciplineFastAggressive cycle. Faster Qi flow in exchange for worse comprehension and worse stability.Best for: push fast, cultivateSelect focus",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 828,
+        "y": 589,
+        "width": 174,
+        "height": 249,
+        "right": 1002,
+        "bottom": 838
+      }
+    },
+    {
+      "text": "Back",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1040,
+        "y": 791,
+        "width": 205,
+        "height": 45,
+        "right": 1245,
+        "bottom": 836
+      }
+    },
+    {
+      "text": "Finish",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1253,
+        "y": 791,
+        "width": 205,
+        "height": 45,
+        "right": 1458,
+        "bottom": 836
+      }
+    }
+  ],
+  "scrollWidth": 1920,
+  "innerWidth": 1920,
+  "scrollHeight": 1080,
+  "innerHeight": 1080,
+  "suspectedClippedText": [
+    {
+      "text": "RealmQi CondensationStage 1Qi0Cultivation Rate113.47 / sStability0%ForegroundIdleNext MilestonePush QiNeedQi Cap100ActionStart CultivationIdleDaoPathHeavenSpiri",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 1920,
+        "height": 1080,
+        "right": 1920,
+        "bottom": 1080
+      },
+      "overflow": "hidden/hidden/hidden"
+    }
+  ],
+  "viewportIssues": [],
+  "consoleSinceStart": [
+    "debug: [vite] connecting...",
+    "debug: [vite] connected.",
+    "info: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+    "log: [App] Initializing game...",
+    "log: [GameLoop] Initializing game...",
+    "log: [GameLoop] Store dependencies wired",
+    "log: [GameLoop] Prestige store initialized",
+    "log: [SpiritRoot] Generated: Rare metal (66% purity)",
+    "log: [GameLoop] Generated initial spirit root",
+    "log: [GameLoop] No save found, starting new game",
+    "log: [GameLoop] Added starter items to inventory",
+    "log: [GameLoop] Starting game loop...",
+    "log: [GameLoop] Game loop started",
+    "log: [GameLoop] Game initialized successfully",
+    "log: [App] Game initialized successfully",
+    "log: [App] Initializing game...",
+    "log: [GameLoop] Initializing game...",
+    "log: [GameLoop] Store dependencies wired",
+    "log: [GameLoop] Prestige store initialized",
+    "log: [GameLoop] No save found, starting new game",
+    "warning: [GameLoop] Already running",
+    "log: [GameLoop] Game initialized successfully",
+    "log: [App] Game initialized successfully",
+    "warning: [ContentValidation] Technique counts by path: Heaven=20, Earth=20, Martial=20",
+    "warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=heaven: 6",
+    "warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=earth: 6",
+    "warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=martial: 6",
+    "warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=heaven: 7",
+    "warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=earth: 9",
+    "warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=martial: 8",
+    "warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=heaven: 9",
+    "warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=earth: 9",
+    "warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=martial: 10",
+    "warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=heaven: 10",
+    "warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=earth: 10",
+    "warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=martial: 10",
+    "warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=heaven: 10",
+    "warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=earth: 10",
+    "warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=martial: 10",
+    "info: [Content] Loaded 5 cities, 60 techniques (H/E/M: 20/20/20)",
+    "info: [Content] Prestige upgrades: 27",
+    "log: [SaveLoad] Saving game...",
+    "log: [SaveLoad] Game saved successfully at 5/29/2026, 7:36:52 PM"
+  ],
+  "textSample": "Realm\nQi Condensation\nStage 1\nQi\n0\nCultivation Rate\n113.47 / s\nStability\n0%\nForeground\nIdle\nNext Milestone\nPush Qi\nNeed\nQi Cap\n100\nAction\nStart Cultivation\nIdle\nDao\nPath\nHeaven\nSpirit Root\nMetal / Rare\nHeart Law\nNo Heart Law selected\nVerse\nChapter 1\nBreath / Focus\nBalanced\nBreakthrough\nSettled\nBREAKTHROUGH READINESS\nReach the realm edge and fill the Qi reservoir.\nQi\n100 short\nRealm edge\nReached\nGate item\nNot needed now\nQi 0 / 100\n+113.47/s\nStart Cultivation\n\nQi Cap 100\n\nBreak Through\nStatus\nCultivation\nWorld\nInventory\nTechniques\nRecords\nPrestige\nSettings\nBegin Your New Life\n\nChoose your path, scripture, and initial breath focus before cultivation begins.\n\n1 · Life Path\n2 · Heart Law\n3 · Breath Focus\nLocked Path: Heaven\n\nFast cultivation and technique-led pressure. Heaven converts qi tempo into precise offensive windows, but its survival floor is thinner and greed is punished.\n\nprecision_pressure\nBreath: Balanced\nChoose Breath Focus\n\nSelect how this life will pace cultivation breath cycles.\n\nCHOSEN\nBalanced\nNeutral cycle. Steady Qi flow, steady comprehension, and steady stability.\nBest For: Cultivate, Recover\nSelected for this life\nDISCIPLINE\nSafe\nControlled cycle. Slower Qi flow in exchange for better comprehension and better stability.\nBest For: Prepare Breakthrough, Recover\nSelect focus\nDISCIPLINE\nFast\nAggressive cycle. Faster Qi flow in exchange for worse comprehension and worse stability.\nBest For: Push Fast, Cultivate\nSelect focus\n\nBREATH DISCIPLINE\n\nBalanced\n\nNeutral cycle. Steady Qi flow, steady comprehension, and steady stability.\n\nPath: Heaven • Scripture: Ember Thread Sutra\n\nBEST FOR\n\nCultivate\nRecover\n\nCAUTION\n\nGood default, but it will not specialize verse progress or short burst farming.\n\nBack\nFinish"
+}

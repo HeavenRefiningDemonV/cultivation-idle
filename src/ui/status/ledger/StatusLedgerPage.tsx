@@ -4,6 +4,7 @@ import type {
 } from '../../../systems/ui/status/statusLedgerTypes.js';
 import { StatusDetailsDrawer } from './StatusDetailsDrawer.js';
 import { StatusBuildPreparationPanel } from './StatusBuildPreparationPanel.js';
+import { StatusCurrentStatePanel } from './StatusCurrentStatePanel.js';
 import { StatusCurrentWorkPanel } from './StatusCurrentWorkPanel.js';
 import { StatusIdentityDoctrinePanel } from './StatusIdentityDoctrinePanel.js';
 import { StatusLedgerCard } from './StatusLedgerCard.js';
@@ -128,7 +129,7 @@ function IdentityDoctrineCard({ surface, onAction }: StatusLedgerPageProps) {
       subtitle={`${surface.identityDoctrine.spiritRoot.elementLabel} - ${surface.identityDoctrine.spiritRoot.gradeLabel}`}
       testId="status-ledger-card-identity-doctrine"
     >
-      <StatusIdentityDoctrinePanel identity={surface.identityDoctrine} />
+      <StatusIdentityDoctrinePanel identity={surface.identityDoctrine} onAction={onAction} />
     </StatusLedgerCard>
   );
 }
@@ -170,6 +171,7 @@ export function StatusLedgerPage({ surface, onAction }: StatusLedgerPageProps) {
       data-ledger-mode={surface.meta.mode}
     >
       <div className="statusLedgerCanvas">
+        <StatusCurrentStatePanel surface={surface.currentState} onAction={onAction} />
         <StatusLedgerHero hero={surface.hero} onAction={onAction} />
         <StatusMetricStrip metrics={surface.metrics} />
 

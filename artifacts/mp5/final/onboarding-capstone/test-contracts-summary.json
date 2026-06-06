@@ -1,0 +1,11 @@
+{
+    "name":  "test-contracts",
+    "command":  "npm run test:contracts",
+    "status":  "TIMEOUT",
+    "exitCode":  null,
+    "timedOut":  true,
+    "timeoutMs":  420000,
+    "durationSeconds":  422.005,
+    "stdoutLog":  "artifacts\\mp5\\final\\onboarding-capstone\\logs\\test-contracts.final.stdout.log",
+    "stderrLog":  "artifacts\\mp5\\final\\onboarding-capstone\\logs\\test-contracts.final.stderr.log"
+}

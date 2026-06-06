@@ -21,8 +21,8 @@ void test('outskirts acceptance path keeps canonical role/use/boundary truth vis
 });
 
 void test('outskirts screen owner is routed through dedicated exact owner component', async () => {
-  const panelSource = await readFile(new URL('../../src/components/screens/world/buildings/OutskirtsBuildingPanel.tsx', import.meta.url), 'utf8');
-  const ownerSource = await readFile(new URL('../../src/features/world/outskirts/OutskirtsScreenOwner.tsx', import.meta.url), 'utf8');
+  const panelSource = await readFile('src/components/screens/world/buildings/OutskirtsBuildingPanel.tsx', 'utf8');
+  const ownerSource = await readFile('src/features/world/outskirts/OutskirtsScreenOwner.tsx', 'utf8');
   assert.match(panelSource, /OutskirtsScreenOwner/);
   assert.doesNotMatch(panelSource, /OutskirtsLegacyActiveSurface/);
   assert.match(ownerSource, /buildOutskirtsMockupSurfaceFromStores/);

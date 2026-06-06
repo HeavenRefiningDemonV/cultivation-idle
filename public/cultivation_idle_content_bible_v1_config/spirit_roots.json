@@ -1,0 +1,439 @@
+{
+  "version": "training-dao-heart-mp4-v1",
+  "roots": [
+    {
+      "elementId": "wood",
+      "displayName": "Wood Root",
+      "procName": "Regrowth",
+      "description": "Regrowth gives a bounded recovery pulse during medicine, shields, or support techniques.",
+      "purityGrades": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "awakeningStates": [
+        "dormant",
+        "stirring",
+        "open",
+        "radiant",
+        "transformed"
+      ],
+      "effectId": "wood_regrowth_v1",
+      "procChanceCapPct": 18,
+      "internalCooldownSec": 10,
+      "hardLocksMismatchRoutes": false,
+      "variants": [],
+      "statusLine": "Regrowth can trigger in combat; cooldown 10s.",
+      "tooltipLine": "Wood Root scales with purity, awakening, and root resonance."
+    },
+    {
+      "elementId": "fire",
+      "displayName": "Fire Root",
+      "procName": "Scorch",
+      "description": "Scorch adds a bounded burst pulse when offensive techniques or attacks land.",
+      "purityGrades": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "awakeningStates": [
+        "dormant",
+        "stirring",
+        "open",
+        "radiant",
+        "transformed"
+      ],
+      "effectId": "fire_scorch_v1",
+      "procChanceCapPct": 18,
+      "internalCooldownSec": 10,
+      "hardLocksMismatchRoutes": false,
+      "variants": [
+        {
+          "id": "fire_banked_ember",
+          "displayName": "Banked Ember",
+          "requiredHeartLawId": "heart_quiet_breath_method",
+          "requiredRootResonance": 58,
+          "requiredVerseMastery": 60,
+          "requiredDaoHeartClarity": 45,
+          "effectId": "fire_banked_ember_v1",
+          "description": "Quiet practice banks fire into a safer opener burst."
+        }
+      ],
+      "statusLine": "Scorch can trigger in combat; cooldown 10s.",
+      "tooltipLine": "Fire Root scales with purity, awakening, and root resonance."
+    },
+    {
+      "elementId": "earth",
+      "displayName": "Earth Root",
+      "procName": "Bulwark",
+      "description": "Bulwark reduces a slice of incoming pressure and can thicken shields.",
+      "purityGrades": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "awakeningStates": [
+        "dormant",
+        "stirring",
+        "open",
+        "radiant",
+        "transformed"
+      ],
+      "effectId": "earth_bulwark_v1",
+      "procChanceCapPct": 18,
+      "internalCooldownSec": 10,
+      "hardLocksMismatchRoutes": false,
+      "variants": [
+        {
+          "id": "earth_dust_step",
+          "displayName": "Dust Step",
+          "requiredHeartLawId": "heart_stormstep_diagram",
+          "requiredRootResonance": 62,
+          "requiredStatRatings": [
+            {
+              "statId": "flow_step",
+              "minRating": 20
+            }
+          ],
+          "effectId": "earth_dust_step_v1",
+          "description": "Earth footing learns to answer storm movement with a counter-brace."
+        }
+      ],
+      "statusLine": "Bulwark can trigger in combat; cooldown 10s.",
+      "tooltipLine": "Earth Root scales with purity, awakening, and root resonance."
+    },
+    {
+      "elementId": "metal",
+      "displayName": "Metal Root",
+      "procName": "Keen Edge",
+      "description": "Keen Edge adds a short precision and armor-piercing pulse on attacks.",
+      "purityGrades": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "awakeningStates": [
+        "dormant",
+        "stirring",
+        "open",
+        "radiant",
+        "transformed"
+      ],
+      "effectId": "metal_keen_edge_v1",
+      "procChanceCapPct": 18,
+      "internalCooldownSec": 10,
+      "hardLocksMismatchRoutes": false,
+      "variants": [
+        {
+          "id": "metal_living_blade",
+          "displayName": "Living Blade",
+          "requiredHeartLawId": "heart_verdant_pulse_canon",
+          "requiredRootResonance": 60,
+          "requiredStatRatings": [
+            {
+              "statId": "weapon_intent",
+              "minRating": 20
+            }
+          ],
+          "effectId": "metal_living_blade_v1",
+          "description": "Metal edge carries a living mark that can support minor recovery."
+        }
+      ],
+      "statusLine": "Keen Edge can trigger in combat; cooldown 10s.",
+      "tooltipLine": "Metal Root scales with purity, awakening, and root resonance."
+    },
+    {
+      "elementId": "water",
+      "displayName": "Water Root",
+      "procName": "Flowing Guard",
+      "description": "Flowing Guard smooths incoming damage and can refund a small cooldown slice.",
+      "purityGrades": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "awakeningStates": [
+        "dormant",
+        "stirring",
+        "open",
+        "radiant",
+        "transformed"
+      ],
+      "effectId": "water_flowing_guard_v1",
+      "procChanceCapPct": 18,
+      "internalCooldownSec": 10,
+      "hardLocksMismatchRoutes": false,
+      "variants": [
+        {
+          "id": "water_steam_mandate",
+          "displayName": "Steam Mandate",
+          "requiredHeartLawId": "heart_heaven_flame_manual",
+          "requiredRootResonance": 65,
+          "requiredStatRatings": [
+            {
+              "statId": "meridian_throughput",
+              "minRating": 50
+            }
+          ],
+          "effectId": "water_steam_mandate_v1",
+          "description": "Water tempers Heaven Flame into stability and cleanse support."
+        }
+      ],
+      "statusLine": "Flowing Guard can trigger in combat; cooldown 10s.",
+      "tooltipLine": "Water Root scales with purity, awakening, and root resonance."
+    },
+    {
+      "elementId": "wind",
+      "displayName": "Wind Root",
+      "procName": "Drift Step",
+      "description": "Drift Step adds a brief dodge and initiative pulse during exchanges.",
+      "purityGrades": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "awakeningStates": [
+        "dormant",
+        "stirring",
+        "open",
+        "radiant",
+        "transformed"
+      ],
+      "effectId": "wind_drift_step_v1",
+      "procChanceCapPct": 18,
+      "internalCooldownSec": 10,
+      "hardLocksMismatchRoutes": false,
+      "variants": [],
+      "statusLine": "Drift Step can trigger in combat; cooldown 10s.",
+      "tooltipLine": "Wind Root scales with purity, awakening, and root resonance."
+    },
+    {
+      "elementId": "lightning",
+      "displayName": "Lightning Root",
+      "procName": "Shock Pulse",
+      "description": "Shock Pulse adds a bounded burst spike to offensive hits.",
+      "purityGrades": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "awakeningStates": [
+        "dormant",
+        "stirring",
+        "open",
+        "radiant",
+        "transformed"
+      ],
+      "effectId": "lightning_shock_pulse_v1",
+      "procChanceCapPct": 18,
+      "internalCooldownSec": 10,
+      "hardLocksMismatchRoutes": false,
+      "variants": [],
+      "statusLine": "Shock Pulse can trigger in combat; cooldown 10s.",
+      "tooltipLine": "Lightning Root scales with purity, awakening, and root resonance."
+    },
+    {
+      "elementId": "ice",
+      "displayName": "Ice Root",
+      "procName": "Still Frost",
+      "description": "Still Frost slows incoming pressure through a defensive pulse.",
+      "purityGrades": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "awakeningStates": [
+        "dormant",
+        "stirring",
+        "open",
+        "radiant",
+        "transformed"
+      ],
+      "effectId": "ice_still_frost_v1",
+      "procChanceCapPct": 18,
+      "internalCooldownSec": 10,
+      "hardLocksMismatchRoutes": false,
+      "variants": [],
+      "statusLine": "Still Frost can trigger in combat; cooldown 10s.",
+      "tooltipLine": "Ice Root scales with purity, awakening, and root resonance."
+    },
+    {
+      "elementId": "light",
+      "displayName": "Light Root",
+      "procName": "Clear Radiance",
+      "description": "Clear Radiance improves cleanse and minor recovery windows.",
+      "purityGrades": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "awakeningStates": [
+        "dormant",
+        "stirring",
+        "open",
+        "radiant",
+        "transformed"
+      ],
+      "effectId": "light_clear_radiance_v1",
+      "procChanceCapPct": 18,
+      "internalCooldownSec": 10,
+      "hardLocksMismatchRoutes": false,
+      "variants": [],
+      "statusLine": "Clear Radiance can trigger in combat; cooldown 10s.",
+      "tooltipLine": "Light Root scales with purity, awakening, and root resonance."
+    },
+    {
+      "elementId": "shadow",
+      "displayName": "Shadow Root",
+      "procName": "Hidden Thread",
+      "description": "Hidden Thread improves evasion and counter-entry windows.",
+      "purityGrades": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "awakeningStates": [
+        "dormant",
+        "stirring",
+        "open",
+        "radiant",
+        "transformed"
+      ],
+      "effectId": "shadow_hidden_thread_v1",
+      "procChanceCapPct": 18,
+      "internalCooldownSec": 10,
+      "hardLocksMismatchRoutes": false,
+      "variants": [],
+      "statusLine": "Hidden Thread can trigger in combat; cooldown 10s.",
+      "tooltipLine": "Shadow Root scales with purity, awakening, and root resonance."
+    },
+    {
+      "elementId": "soul",
+      "displayName": "Soul Root",
+      "procName": "Lantern Echo",
+      "description": "Lantern Echo adds a spirit shield and sustain pulse.",
+      "purityGrades": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "awakeningStates": [
+        "dormant",
+        "stirring",
+        "open",
+        "radiant",
+        "transformed"
+      ],
+      "effectId": "soul_lantern_echo_v1",
+      "procChanceCapPct": 18,
+      "internalCooldownSec": 10,
+      "hardLocksMismatchRoutes": false,
+      "variants": [],
+      "statusLine": "Lantern Echo can trigger in combat; cooldown 10s.",
+      "tooltipLine": "Soul Root scales with purity, awakening, and root resonance."
+    },
+    {
+      "elementId": "void",
+      "displayName": "Void Root",
+      "procName": "Hollow Step",
+      "description": "Hollow Step slips through part of defense or incoming pressure.",
+      "purityGrades": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "awakeningStates": [
+        "dormant",
+        "stirring",
+        "open",
+        "radiant",
+        "transformed"
+      ],
+      "effectId": "void_hollow_step_v1",
+      "procChanceCapPct": 18,
+      "internalCooldownSec": 10,
+      "hardLocksMismatchRoutes": false,
+      "variants": [],
+      "statusLine": "Hollow Step can trigger in combat; cooldown 10s.",
+      "tooltipLine": "Void Root scales with purity, awakening, and root resonance."
+    },
+    {
+      "elementId": "time",
+      "displayName": "Time Root",
+      "procName": "Moment Fold",
+      "description": "Moment Fold can smooth technique cadence through a small refund pulse.",
+      "purityGrades": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "awakeningStates": [
+        "dormant",
+        "stirring",
+        "open",
+        "radiant",
+        "transformed"
+      ],
+      "effectId": "time_moment_fold_v1",
+      "procChanceCapPct": 18,
+      "internalCooldownSec": 10,
+      "hardLocksMismatchRoutes": false,
+      "variants": [],
+      "statusLine": "Moment Fold can trigger in combat; cooldown 10s.",
+      "tooltipLine": "Time Root scales with purity, awakening, and root resonance."
+    },
+    {
+      "elementId": "astral",
+      "displayName": "Astral Root",
+      "procName": "Star Trace",
+      "description": "Star Trace improves precision during celestial attack windows.",
+      "purityGrades": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "awakeningStates": [
+        "dormant",
+        "stirring",
+        "open",
+        "radiant",
+        "transformed"
+      ],
+      "effectId": "astral_star_trace_v1",
+      "procChanceCapPct": 18,
+      "internalCooldownSec": 10,
+      "hardLocksMismatchRoutes": false,
+      "variants": [],
+      "statusLine": "Star Trace can trigger in combat; cooldown 10s.",
+      "tooltipLine": "Astral Root scales with purity, awakening, and root resonance."
+    }
+  ]
+}

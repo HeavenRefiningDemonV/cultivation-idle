@@ -3,8 +3,8 @@ import test from 'node:test';
 import { readFile } from 'node:fs/promises';
 
 void test('combat theater reuses ruins progress in rail mode without world CTA zone', async () => {
-  const progressPanelSource = await readFile(new URL('../../src/components/combat/theater/ProgressPanel.tsx', import.meta.url), 'utf8');
-  const ruinsProgressSource = await readFile(new URL('../../src/features/ruins/ui/RuinsProgress.tsx', import.meta.url), 'utf8');
+  const progressPanelSource = await readFile('src/components/combat/theater/ProgressPanel.tsx', 'utf8');
+  const ruinsProgressSource = await readFile('src/features/ruins/ui/RuinsProgress.tsx', 'utf8');
 
   assert.match(progressPanelSource, /RuinsProgress/);
   assert.match(progressPanelSource, /section="rail"/);

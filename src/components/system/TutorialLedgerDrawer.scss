@@ -1,0 +1,137 @@
+.tutorialLedgerDrawer {
+  position: fixed;
+  inset: 0;
+  z-index: 130;
+  pointer-events: auto;
+}
+
+.tutorialLedgerDrawer__scrim {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgba(30, 20, 12, 0.42);
+  cursor: pointer;
+}
+
+.tutorialLedgerDrawer__panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  box-sizing: border-box;
+  width: min(460px, 100vw);
+  height: 100vh;
+  padding: 18px;
+  overflow-y: auto;
+  border-left: 1px solid rgba(91, 55, 26, 0.34);
+  background:
+    linear-gradient(180deg, rgba(255, 249, 236, 0.98), rgba(241, 224, 194, 0.98)),
+    url('../../assets/texture_overlay.png');
+  background-size: auto, 420px 420px;
+  color: #2f2114;
+  box-shadow: -18px 0 34px rgba(36, 23, 12, 0.28);
+}
+
+.tutorialLedgerDrawer__header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(107, 70, 34, 0.2);
+}
+
+.tutorialLedgerDrawer__eyebrow {
+  margin: 0 0 4px;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(108, 65, 31, 0.82);
+}
+
+.tutorialLedgerDrawer__header h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.tutorialLedgerDrawer__close {
+  min-height: 34px;
+  border: 1px solid rgba(107, 70, 34, 0.28);
+  border-radius: 6px;
+  background: rgba(255, 249, 236, 0.78);
+  color: #4d321a;
+  padding: 7px 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tutorialLedgerDrawer__empty {
+  margin: 18px 0 0;
+  padding: 14px;
+  border: 1px solid rgba(112, 73, 36, 0.2);
+  border-radius: 6px;
+  background: rgba(255, 252, 242, 0.54);
+  color: rgba(55, 39, 26, 0.82);
+}
+
+.tutorialLedgerDrawer__entries {
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 12px;
+}
+
+.tutorialLedgerDrawer__entry {
+  display: grid;
+  gap: 6px;
+  padding: 12px;
+  border: 1px solid rgba(112, 73, 36, 0.22);
+  border-radius: 6px;
+  background: rgba(255, 252, 242, 0.58);
+}
+
+.tutorialLedgerDrawer__entryMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(96, 60, 31, 0.76);
+}
+
+.tutorialLedgerDrawer__entry h3 {
+  margin: 0;
+  font-size: 17px;
+}
+
+.tutorialLedgerDrawer__entry p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.42;
+  color: rgba(55, 38, 25, 0.92);
+}
+
+.tutorialLedgerDrawer__detail {
+  padding-top: 6px;
+  border-top: 1px solid rgba(107, 70, 34, 0.14);
+}
+
+.tutorialLedgerDrawer__close:focus-visible,
+.tutorialLedgerDrawer__scrim:focus-visible {
+  outline: 2px solid rgba(92, 58, 27, 0.85);
+  outline-offset: 2px;
+}
+
+@media (max-width: 760px) {
+  .tutorialLedgerDrawer__panel {
+    width: 100vw;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tutorialLedgerDrawer__panel,
+  .tutorialLedgerDrawer__scrim {
+    transition: none;
+  }
+}

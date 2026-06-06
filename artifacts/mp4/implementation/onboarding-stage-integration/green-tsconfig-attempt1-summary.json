@@ -1,0 +1,8 @@
+{
+    "name":  "mp4-tests-green-tsconfig-attempt1",
+    "command":  "npm exec tsc -- --project tsconfig.tests.json",
+    "status":  "PASS",
+    "exitCode":  0,
+    "durationMs":  12666,
+    "log":  "artifacts\\mp4\\implementation\\onboarding-stage-integration\\logs\\mp4-tests.green-tsconfig-attempt1.log"
+}

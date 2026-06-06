@@ -1,0 +1,128 @@
+state: dao-heart-sanctuary-doctrine-ready-playwright
+note: Clarity and calm turbulence make Doctrine Trial available.
+url: http://127.0.0.1:5173/
+
+Realm
+Qi Condensation
+Stage 9
+Qi
+1B
+Cultivation Rate
+1K / s
+Stability
+0%
+Foreground
+Idle
+Next Milestone
+Gate Seal
+Need
+Foundation Pill
+0/1
+Action
+Open Gate Trial
+Idle
+Dao
+Path
+Heaven
+Spirit Root
+Metal / Uncommon
+Heart Law
+Ember Thread Sutra
+Verse
+Chapter 1
+Breath / Focus
+Balanced
+Gate Seal
+Foundation Pill
+BREAKTHROUGH READINESS
+Foundation Pill is still needed.
+Qi
+Ready
+Realm edge
+Reached
+Gate item
+Foundation Pill 0/1
+Breakthrough risk
+1% (Serene)
+Qi margin
+0
+Heart Law parity
+-12
+Dao Heart turbulence
+0
+Dao Heart clarity
+-13
+Gate confidence
+0
+Failure preview
+15% Qi loss, +12 turbulence on failure.
+Prepare for Gate
+Review doctrine fit
+Qi 1B / 152.58K
++1K/s
+Prepare for Gate
+
+Foundation Pill 0/1
+
+Start Cultivation
+Dao Heart
+Sanctuary
+Heart Law
+Study
+×
+DAO HEART SANCTUARY
+Ember Thread Sutra
+Level
+10
+Tier
+starter
+Chapter
+Chapter 2
+Silent Sitting
+Offline eligible
+Verse Recitation
+Offline eligible
+Scripture Copying
+Offline eligible
+Breath Harmonization
+Offline eligible
+Inner Demon Debate
+Active only
+Doctrine Trial
+Active only
+Verse Mastery
+0%
+0 / 357 Heart Law XP
+No active practice
+Choose one practice to make it the foreground activity.
+Clarity
+85/100
+Steadies major breakthroughs.
+Turbulence
+20/100
+State: stirred.
+Doctrine parity
++1
+Heart Law leads vessel
+Verse mastery
+0%
+Supports chapter seals and doctrine trial readiness.
+Advance 1 minute
+Stop practice
+Cultivation
+Settings
+NEXT STEP
+CULTIVATION
+Gather your first Qi
+
+Qi fills while you cultivate. Your first breakthrough teaches the shape of the realm ladder.
+
+How calculated
+Open Cultivation
+Tutorial Ledger
+PINEWIND HAMLET
+First Gate Available
+Gate Readiness
+This is your first real milestone wall. Check readiness before brute-forcing the gate.
+Open Gate Trial
+Dismiss

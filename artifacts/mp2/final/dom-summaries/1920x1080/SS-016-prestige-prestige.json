@@ -1,0 +1,370 @@
+{
+  "viewport": "1920x1080",
+  "screen": "Prestige",
+  "url": "http://127.0.0.1:5173/",
+  "documentTitle": "cultivation-idle-temp",
+  "rootTestIds": [
+    "prestige-ledger-exact-page"
+  ],
+  "headings": [
+    "Prestige",
+    "Current Life Ledger",
+    "Life Identity",
+    "Progress Record",
+    "Reincarnation Decree",
+    "Next Life Preview",
+    "Recommended Decrees",
+    "Reclaim Forecast",
+    "Early reclaim estimate",
+    "Reset Contract",
+    "Resets this life",
+    "Carries forward",
+    "Rebuilt next life",
+    "Hybrid retained"
+  ],
+  "primaryCta": {
+    "text": "Open Decree Library",
+    "disabled": false,
+    "ariaLabel": null,
+    "rect": {
+      "x": 797,
+      "y": 658,
+      "width": 280,
+      "height": 43,
+      "right": 1077,
+      "bottom": 701
+    }
+  },
+  "buttons": [
+    {
+      "text": "AP Receipt",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 46,
+        "y": 459,
+        "width": 342,
+        "height": 37,
+        "right": 388,
+        "bottom": 496
+      }
+    },
+    {
+      "text": "Projected gain+0 AP",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 46,
+        "y": 562,
+        "width": 342,
+        "height": 46,
+        "right": 388,
+        "bottom": 608
+      }
+    },
+    {
+      "text": "View Life Summary",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 46,
+        "y": 608,
+        "width": 342,
+        "height": 43,
+        "right": 388,
+        "bottom": 651
+      }
+    },
+    {
+      "text": "Reincarnation Locked",
+      "disabled": true,
+      "ariaLabel": null,
+      "rect": {
+        "x": 667,
+        "y": 586,
+        "width": 540,
+        "height": 58,
+        "right": 1207,
+        "bottom": 644
+      }
+    },
+    {
+      "text": "Open Decree Library",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 797,
+        "y": 658,
+        "width": 280,
+        "height": 43,
+        "right": 1077,
+        "bottom": 701
+      }
+    },
+    {
+      "text": "Root MemoryEffect: Idle Qi +6%Why: Best first reclaim speed.Lv 0/10Runtime: LiveCost5 AP",
+      "disabled": false,
+      "ariaLabel": "Inspect Idle Qi Multiplier",
+      "rect": {
+        "x": 1485,
+        "y": 402,
+        "width": 390,
+        "height": 121,
+        "right": 1875,
+        "bottom": 523
+      }
+    },
+    {
+      "text": "Inspect",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1485,
+        "y": 402,
+        "width": 390,
+        "height": 121,
+        "right": 1875,
+        "bottom": 523
+      }
+    },
+    {
+      "text": "Combat MemoryEffect: Combat power +5%Why: Softens gate retries.Lv 0/10Runtime: LiveCost5 AP",
+      "disabled": false,
+      "ariaLabel": "Inspect Combat Power Multiplier",
+      "rect": {
+        "x": 1485,
+        "y": 535,
+        "width": 390,
+        "height": 121,
+        "right": 1875,
+        "bottom": 656
+      }
+    },
+    {
+      "text": "Inspect",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1485,
+        "y": 535,
+        "width": 390,
+        "height": 121,
+        "right": 1875,
+        "bottom": 656
+      }
+    },
+    {
+      "text": "Technique WarrantEffect: Extra technique slotWhy: Improves build flexibility.Lv 0/1Runtime: LiveCost35 AP",
+      "disabled": false,
+      "ariaLabel": "Inspect Extra Technique Slot I",
+      "rect": {
+        "x": 1485,
+        "y": 669,
+        "width": 390,
+        "height": 121,
+        "right": 1875,
+        "bottom": 790
+      }
+    },
+    {
+      "text": "Inspect",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1485,
+        "y": 669,
+        "width": 390,
+        "height": 121,
+        "right": 1875,
+        "bottom": 790
+      }
+    },
+    {
+      "text": "Open Full Decree Library",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1525,
+        "y": 608,
+        "width": 310,
+        "height": 43,
+        "right": 1835,
+        "bottom": 651
+      }
+    },
+    {
+      "text": "Status",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 380,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 521,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "Cultivation",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 525,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 667,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "World",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 671,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 812,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "Inventory",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 816,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 958,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "Techniques",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 962,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 1104,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "Records",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1108,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 1249,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "Prestige",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1253,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 1395,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "Settings",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1399,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 1540,
+        "bottom": 1072
+      }
+    }
+  ],
+  "scrollWidth": 1920,
+  "innerWidth": 1920,
+  "scrollHeight": 1080,
+  "innerHeight": 1080,
+  "suspectedClippedText": [],
+  "viewportIssues": [],
+  "consoleSinceStart": [
+    "debug: [vite] connecting...",
+    "debug: [vite] connected.",
+    "info: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+    "log: [App] Initializing game...",
+    "log: [GameLoop] Initializing game...",
+    "log: [GameLoop] Store dependencies wired",
+    "log: [GameLoop] Prestige store initialized",
+    "log: [SpiritRoot] Generated: Common fire (52% purity)",
+    "log: [GameLoop] Generated initial spirit root",
+    "log: [GameLoop] No save found, starting new game",
+    "log: [GameLoop] Added starter items to inventory",
+    "log: [GameLoop] Starting game loop...",
+    "log: [GameLoop] Game loop started",
+    "log: [GameLoop] Game initialized successfully",
+    "log: [App] Game initialized successfully",
+    "log: [App] Initializing game...",
+    "log: [GameLoop] Initializing game...",
+    "log: [GameLoop] Store dependencies wired",
+    "log: [GameLoop] Prestige store initialized",
+    "log: [GameLoop] No save found, starting new game",
+    "warning: [GameLoop] Already running",
+    "log: [GameLoop] Game initialized successfully",
+    "log: [App] Game initialized successfully",
+    "warning: [ContentValidation] Technique counts by path: Heaven=20, Earth=20, Martial=20",
+    "warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=heaven: 6",
+    "warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=earth: 6",
+    "warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=martial: 6",
+    "warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=heaven: 7",
+    "warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=earth: 9",
+    "warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=martial: 8",
+    "warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=heaven: 9",
+    "warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=earth: 9",
+    "warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=martial: 10",
+    "warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=heaven: 10",
+    "warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=earth: 10",
+    "warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=martial: 10",
+    "warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=heaven: 10",
+    "warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=earth: 10",
+    "warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=martial: 10",
+    "info: [Content] Loaded 5 cities, 60 techniques (H/E/M: 20/20/20)",
+    "info: [Content] Prestige upgrades: 27",
+    "log: [SaveLoad] Saving game...",
+    "log: [SaveLoad] Game saved successfully at 5/28/2026, 11:53:41 PM",
+    "log: [SaveLoad] Saving game...",
+    "log: [SaveLoad] Game saved successfully at 5/28/2026, 11:53:45 PM",
+    "log: [UI] Notification added: success - Life begins: Heaven • Ember Thread Sutra • Balanced",
+    "log: [SaveLoad] Saving game...",
+    "log: [SaveLoad] Game saved successfully at 5/28/2026, 11:53:45 PM",
+    "log: [UI] Active tab changed to: status",
+    "log: [UI] Active tab changed to: adventure",
+    "log: [UI] Active tab changed to: inventory",
+    "warning: [Inventory] Missing item definition for rusty_sword",
+    "warning: [Inventory] Missing item definition for worn_talisman",
+    "warning: [Inventory] Missing item definition for health_pill",
+    "warning: [Inventory] Missing item definition for spirit_stone",
+    "log: [UI] Active tab changed to: techniques",
+    "log: [SaveLoad] Saving game...",
+    "log: [SaveLoad] Game saved successfully at 5/28/2026, 11:54:38 PM",
+    "log: [GameLoop] Game autosaved",
+    "log: [UI] Active tab changed to: records",
+    "log: [UI] Active tab changed to: prestige"
+  ],
+  "textSample": "AP\nPrestige\nReincarnation Ledger\nQi Condensation\nFoundation\nCore Formation\nNascent Soul\nSoul Transformation\nVoid Ascension\nMajor realms and gates reached this life\nAP Reserve\n0\nLifetime AP\n0\nLives\n0\nCurrent Life Ledger\nLife Identity\nPath:\nHeaven\nSpirit Root:\nFire · Common · 52% purity\nHeart Law:\nEmber Thread Sutra\nHighest Realm:\nQi Condensation 1/9\nProgress Record\nGates resolved:\n0\nCities reached:\nPinewind Hamlet\nCurrent wall:\nCore Formation required\nAP Receipt\nToo early for Reincarnation\n+0 AP\nProjected gain\n+0 AP\nView Life Summary\nReincarnation Decree\nAP\nTOO EARLY\n+0 AP\n\nCore Formation is required before the ledger can be sealed.\n\nPush this life to Core Formation before beginning Reincarnation.\n\nAP\nReincarnation Locked\nOpen Decree Library\nNext Life Preview\nBuild a clean first-life route before treating reincarnation as the main objective.\nFaster early Qi recovery\nFirst city baseline rebuilt\nPermanent edicts re-applied\nRecommended Decrees\nRoot Memory\nEffect: Idle Qi +6%\nWhy: Best first reclaim speed.\nLv 0/10\nRuntime: Live\nCost\n5 AP\nInspect\nCombat Memory\nEffect: Combat power +5%\nWhy: Softens gate retries.\nLv 0/10\nRuntime: Live\nCost\n5 AP\nInspect\nTechnique Warrant\nEffect: Extra technique slot\nWhy: Improves build flexibility.\nLv 0/1\nRuntime: Live\nCost\n35 AP\nInspect\nOpen Full Decree Library\nReclaim Forecast\nAP\nEstablish the first route\n\nBuild a clean first-life route before treating reincarnation as the main objective.\n\nEarly reclaim estimate\nNo prior Foundation time recorded\nNo speed bonus measured yet\n\nForecast uses current AP bonuses and target envelopes only.\n\nConfidence: low\nOffline progress does not progress combat.\nReincarnation is locked until the prestige unlock realm is reached.\nPotential AP gain is zero; resetting now would not create meaningful permanent progress.\nReset Contract\nAP\nResets this life\nRealm body and Qi progress: The active realm run, Qi pool, and per-life run counters return to a new-life baseline.\nCultivation active state: Heart Law selection, study state, comprehension, and active cultivation timers are cleared for the new life.\nInventory and currencies: Items and per-life currencies are reset by the inventory owner before the new-life baseline is restored.\nEquipment and loadout state: Equipped gear and refinement state are hard-reset with the old body.\nGate trial progress: Trial attempts, clears, bypasses, and active trial sessions are life-scoped.\nCarries forward\nAscension Points (AP): Available AP, earned AP, and the new ritual gain remain in the prestige ledger.\nLifetime AP: Lifetime AP earned stays permanent for prestige history and future balancing.\nPurchased decrees: Runtime-live prestige purchases remain owned and are reapplied after the reset.\nRun history and life count: Prestige count and bounded run history remain in the ledger.\nCompleted-life summary: The prepared life summary is captured before reset and remains viewable afterward.\nRebuilt next life\nCity baseline (starter city): City progression is reset and initialized from live content, starting at the first city.\nSpirit root (new roll): The prior root is remembered in the life summary, but the next life rolls a fresh root.\nHeart Law decree unlocks: Purchased Heart Law tiers are recomputed from live prestige effects when the new life begins.\nTechnique slot decrees: Purchased technique-slot decrees are recomputed and applied to the technique store.\nHybrid retained\nNo mastery retention decree active: Technique and recipe mastery reset completely until a Root Memory retention decree is purchased.\nStatus\nCultivation\nWorld\nInventory\nTechniques\nRecords\nPrestige\nSettings"
+}

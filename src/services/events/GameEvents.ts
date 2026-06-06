@@ -840,6 +840,154 @@ export type PrestigePerformedEvent = {
   };
 };
 
+export type TrainingStartedEvent = {
+  type: 'training/started';
+  payload: {
+    timestamp: number;
+    path: string;
+    regimenId: string;
+    intensity: string;
+    realmId: string;
+    ratingSnapshot: Record<string, number>;
+    fatigue: number;
+  };
+};
+
+export type TrainingGradeChangedEvent = {
+  type: 'training/grade_changed';
+  payload: {
+    timestamp: number;
+    statId: string;
+    oldGrade: number;
+    newGrade: number;
+    minutesSinceLastGrade: number;
+    realmId: string;
+  };
+};
+
+export type TrainingCapHitEvent = {
+  type: 'training/cap_hit';
+  payload: {
+    timestamp: number;
+    statId: string;
+    realmId: string;
+    rating: number;
+    masteryRank: number;
+  };
+};
+
+export type TrainingOfflineAppliedEvent = {
+  type: 'training/offline_applied';
+  payload: {
+    timestamp: number;
+    appliedMs: number;
+    ratingGainedById: Record<string, number>;
+    statXpGainedById: Record<string, number>;
+    masteryXpGainedByRegimenId: Record<string, number>;
+    fatigueGained: number;
+    intensityDowngrades: number;
+    blockedReason?: string;
+  };
+};
+
+export type DaoHeartStartedEvent = {
+  type: 'dao_heart/started';
+  payload: {
+    timestamp: number;
+    lawId: string;
+    activityId: string;
+    parityDelta: number;
+    turbulence: number;
+    clarity: number;
+  };
+};
+
+export type HeartLawLevelChangedEvent = {
+  type: 'dao_heart/level_changed';
+  payload: {
+    timestamp: number;
+    lawId: string;
+    oldLevel: number;
+    newLevel: number;
+    parityDelta: number;
+  };
+};
+
+export type DaoHeartOfflineAppliedEvent = {
+  type: 'dao_heart/offline_applied';
+  payload: {
+    timestamp: number;
+    lawId: string;
+    activityId: string;
+    appliedMs: number;
+    heartLawXpGain: number;
+    verseMasteryGain: number;
+    clarityGain: number;
+    turbulenceGain: number;
+    levelsGained: number;
+    blockedReason?: string;
+  };
+};
+
+export type BreakthroughAttemptedEvent = {
+  type: 'breakthrough/attempted';
+  payload: {
+    timestamp: number;
+    fromRealm: string;
+    risk: number;
+    causeRows: Array<{ id: string; value: number }>;
+    parityDelta: number;
+    fatigue: number;
+    result: 'success' | 'failure' | 'blocked';
+  };
+};
+
+export type GateAttemptedEvent = {
+  type: 'gate/attempted';
+  payload: {
+    timestamp: number;
+    trialId: string;
+    readinessScore: number;
+    categoryScores: Record<string, number>;
+    path: string | null;
+    lawId: string | null;
+    result: 'cleared' | 'defeated' | 'blocked' | 'bypassed';
+  };
+};
+
+export type PrestigeStartedEvent = {
+  type: 'prestige/started';
+  payload: {
+    timestamp: number;
+    realm: number;
+    ap: number;
+    trainedStats: Record<string, number>;
+    heartLawLevel: number;
+    retainedMemory: number;
+  };
+};
+
+export type PrestigeMemoryAppliedEvent = {
+  type: 'prestige/memory_applied';
+  payload: {
+    timestamp: number;
+    effectId: string;
+    rank: number;
+    value: number;
+    targetId?: string;
+  };
+};
+
+export type PrestigeResetBucketAppliedEvent = {
+  type: 'prestige/reset_bucket_applied';
+  payload: {
+    timestamp: number;
+    bucketId: string;
+    kind: 'reset' | 'carry' | 'rebuilt' | 'hybrid';
+    label: string;
+  };
+};
+
 export type PrestigeUpgradePurchasedEvent = {
   type: 'prestige/upgrade_purchased';
   payload: {
@@ -983,6 +1131,15 @@ export type GameEvent =
   | ProgressionBreakthroughCompletedEvent
   | ProgressionCityEnteredEvent
   | ProgressionContentCapReachedEvent
+  | TrainingStartedEvent
+  | TrainingGradeChangedEvent
+  | TrainingCapHitEvent
+  | TrainingOfflineAppliedEvent
+  | DaoHeartStartedEvent
+  | HeartLawLevelChangedEvent
+  | DaoHeartOfflineAppliedEvent
+  | BreakthroughAttemptedEvent
+  | GateAttemptedEvent
   | TrialsAttemptStartedEvent
   | TrialsAttemptResolvedEvent
   | DaoImpressionAwardedEvent
@@ -991,6 +1148,9 @@ export type GameEvent =
   | ExpeditionsStartedEvent
   | ExpeditionsClaimedEvent
   | PrestigePerformedEvent
+  | PrestigeStartedEvent
+  | PrestigeMemoryAppliedEvent
+  | PrestigeResetBucketAppliedEvent
   | PrestigeUpgradePurchasedEvent
   | OfflineAppliedEvent;
 

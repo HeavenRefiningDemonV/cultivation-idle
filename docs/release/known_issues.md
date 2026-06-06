@@ -1,6 +1,6 @@
 # Known Issues Ledger
 
-- Generated: 2026-05-28T12:57:25.532Z
+- Generated: 2026-06-05T16:10:24.632Z
 - Release gate headline: PASS
 
 ## Open blockers

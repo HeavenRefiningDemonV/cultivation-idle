@@ -1,5 +1,9 @@
+import { useMemo } from 'react';
 import type { GameTab } from '../stores/uiStore.js';
 import { useUIStore } from '../stores/uiStore.js';
+import { useOnboardingStore } from '../stores/onboardingStore.js';
+import { buildOnboardingTabPolicy } from '../systems/onboarding/onboardingTabPolicy.js';
+import { isOnboardingExactFixtureOrCaptureModeEnabled } from '../systems/onboarding/onboardingRouteGuards.js';
 import type { IconId } from '../ui/icons/index.js';
 import { BottomNavDock, type BottomNavDockItem } from '../ui/shell/BottomNavDock.js';
 import './BottomTabBar.scss';
@@ -69,8 +73,33 @@ const BOTTOM_TAB_BAR_COMPAT_POLICY = Object.freeze({
 export function BottomTabBar() {
   const activeTab = useUIStore((state) => state.activeTab);
   const setActiveTab = useUIStore((state) => state.setActiveTab);
+  const activeMilestoneId = useOnboardingStore((state) => state.activeMilestoneId);
+  const unlockedTabs = useOnboardingStore((state) => state.unlockedTabs);
+  const firstLifeOnlyComplete = useOnboardingStore((state) => state.firstLifeOnlyComplete);
+  const devOverride = useOnboardingStore((state) => state.devOverride);
+  const firstOutskirtsRewardClaimedAt = useOnboardingStore((state) => state.eventFacts.firstOutskirtsRewardClaimedAt);
 
-  const items: BottomNavDockItem[] = TABS.map((tab) => buildDockItem(tab, activeTab, setActiveTab));
+  const tabPolicy = useMemo(
+    () => buildOnboardingTabPolicy({
+      activeMilestoneId,
+      unlockedTabs,
+      firstLifeOnlyComplete,
+      devOverride,
+      settingsAsUtility: true,
+      supportedTabs: BOTTOM_TAB_BAR_ORDER,
+      exactFixtureOrCaptureMode: isOnboardingExactFixtureOrCaptureModeEnabled(),
+      hasInventoryEvidence: typeof firstOutskirtsRewardClaimedAt === 'number',
+    }),
+    [activeMilestoneId, devOverride, firstLifeOnlyComplete, firstOutskirtsRewardClaimedAt, unlockedTabs],
+  );
+  const allowedTabIds = useMemo(
+    () => new Set<GameTab>([...tabPolicy.visibleTabs, ...tabPolicy.utilityTabs]),
+    [tabPolicy.utilityTabs, tabPolicy.visibleTabs],
+  );
+
+  const items: BottomNavDockItem[] = TABS
+    .filter((tab) => allowedTabIds.has(tab.id))
+    .map((tab) => buildDockItem(tab, activeTab, setActiveTab));
 
   return (
     <BottomNavDock

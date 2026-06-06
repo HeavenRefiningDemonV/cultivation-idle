@@ -3,7 +3,283 @@ import type { ForgeHandsOnBonus, ForgeStepDef, PromptDef } from '../systems/craf
 import type { PavilionRecordsManifest } from '../features/pavilion/pavilionContentTypes.js';
 
 export type PathId = 'heaven' | 'earth' | 'martial';
+export type CultivatorPathId = PathId | 'universal';
 export type MajorRealmId = string;
+
+export type CultivatorStatCategory = 'foundation' | 'path' | 'doctrine' | 'handling';
+export type CultivatorStatTier = 'core' | 'support' | 'advanced';
+export type CultivatorStatGrade =
+  | 'absent'
+  | 'unformed'
+  | 'formed'
+  | 'refined'
+  | 'tempered'
+  | 'perfected'
+  | 'transcendent';
+export type CultivatorStatSurface =
+  | 'status'
+  | 'trainingHall'
+  | 'daoHeart'
+  | 'gateReadiness'
+  | 'techniqueTooltip'
+  | 'breakthrough'
+  | 'cultivation'
+  | 'apothecary'
+  | 'techniques'
+  | 'equipment'
+  | 'offline'
+  | 'combatLog'
+  | 'fatigue'
+  | 'combat'
+  | 'pouch'
+  | 'ai';
+
+export interface CultivatorStatDef {
+  id: string;
+  displayName: string;
+  category: CultivatorStatCategory;
+  path?: CultivatorPathId;
+  tier?: CultivatorStatTier;
+  description?: string;
+  fantasyMeaning?: string;
+  maxEffectId?: string;
+  maxEffectSummary?: string;
+  realmCapFormulaId?: 'training_stat_cap_v1' | string;
+  surfaces: CultivatorStatSurface[];
+  mustNotAffect?: string[];
+  deferredEffect?: boolean;
+  notes?: string;
+}
+
+export interface CultivatorStatsConfig {
+  version?: string | number;
+  realmCapFormulaId?: 'training_stat_cap_v1' | string;
+  stats: CultivatorStatDef[];
+}
+
+export type TrainingIntensityId = 'quiet' | 'steady' | 'harsh' | 'limit';
+
+export interface TrainingIntensityDef {
+  id: TrainingIntensityId;
+  displayName: string;
+  xpMultiplier: number;
+  fatigueGainPerMin: number;
+  mp0Behavior: string;
+}
+
+export interface TrainingRegimenDef {
+  id: string;
+  path: PathId;
+  displayName: string;
+  roomLabel?: string;
+  primaryStatId: string;
+  secondaryStatId: string;
+  foundationStatId: string;
+  regimenRate: number;
+  masteryMilestones: number[];
+  vfxProfileId?: string;
+  unlockRealmIndex: number;
+  lockedGameplayTrait?: string;
+  cost?: never;
+  costs?: never;
+  requiredItems?: never;
+  requiredCurrencies?: never;
+}
+
+export interface TrainingRegimensConfig {
+  version?: string | number;
+  masteryMilestones: number[];
+  intensities: TrainingIntensityDef[];
+  regimens: TrainingRegimenDef[];
+}
+
+export interface TrainingStateDraft {
+  ratingsByStatId: Record<string, number>;
+  regimenMasteryById: Record<string, number>;
+  activeRegimenId: string | null;
+  fatigue: number;
+}
+
+export type DaoHeartActivityId =
+  | 'silent_sitting'
+  | 'verse_recitation'
+  | 'scripture_copying'
+  | 'breath_harmonization'
+  | 'inner_demon_debate'
+  | 'doctrine_trial';
+
+export interface DaoHeartPracticeDef {
+  id: DaoHeartActivityId;
+  displayName: string;
+  description: string;
+  heartLawXpMultiplier: number | 'milestone';
+  clarityMultiplier: number | 'milestone';
+  verseMultiplier: number | 'milestone';
+  rootResonanceMultiplier: number | 'milestone';
+  turbulencePerMinute: number | 'variable';
+  offlineAllowed: boolean;
+  unlockRule?: string;
+  futureUse?: string;
+  cost?: never;
+  costs?: never;
+  requiredItems?: never;
+  requiredCurrencies?: never;
+}
+
+export interface DaoHeartPracticesConfig {
+  version?: string | number;
+  practices: DaoHeartPracticeDef[];
+}
+
+export interface HeartLawProgressionDef {
+  id: string;
+  tier: 'starter' | 'tier1' | 'tier2' | 'tier3';
+  archetype: 'steady' | 'burst' | 'artisan' | 'mystic' | 'risk';
+  xpTierMultiplier: number;
+  rootAffinityIds: string[];
+  chapters: Array<{
+    id: string;
+    displayName: string;
+    levelStart: number;
+    levelEnd: number;
+    sealId: string;
+  }>;
+  branchSlots: Array<{
+    level: number;
+    choices: Array<{
+      id: string;
+      displayName: string;
+      effectId: string;
+    }>;
+  }>;
+}
+
+export interface HeartLawProgressStateDraft {
+  levelByHeartLawId: Record<string, number>;
+  verseMasteryByHeartLawId: Record<string, number>;
+  chapterSealIds: string[];
+}
+
+export type SpiritRootAwakeningState = 'dormant' | 'stirring' | 'open' | 'radiant' | 'transformed';
+
+export type SpiritRootShape = 'single' | 'dual' | 'triple' | 'mixed' | 'mutated';
+
+export interface SpiritRootProgressionDef {
+  elementId: string;
+  displayName: string;
+  procName: string;
+  description: string;
+  purityGrades: number[];
+  awakeningStates: SpiritRootAwakeningState[];
+  effectId: string;
+  procChanceCapPct: number;
+  internalCooldownSec: number;
+  hardLocksMismatchRoutes?: boolean;
+  statusLine?: string;
+  tooltipLine?: string;
+  variants?: Array<{
+    id: string;
+    displayName: string;
+    requiredHeartLawId?: string;
+    requiredRootResonance?: number;
+    requiredStatId?: string;
+    requiredVerseMastery?: number;
+    requiredDaoHeartClarity?: number;
+    requiredStatRatings?: Array<{ statId: string; minRating: number }>;
+    effectId: string;
+    description?: string;
+  }>;
+}
+
+export interface SpiritRootProgressionsConfig {
+  version?: string | number;
+  roots: SpiritRootProgressionDef[];
+}
+
+export interface SpiritRootProgressStateDraft {
+  resonanceByElementId: Record<string, number>;
+  awakeningByElementId: Partial<Record<string, SpiritRootAwakeningState>>;
+  variantByElementId: Partial<Record<string, string>>;
+}
+
+export type TechniqueScalingTag = string;
+
+export type ReadinessCategoryId =
+  | 'realm_qi'
+  | 'heart_law_stability'
+  | 'techniques_loadout'
+  | 'equipment_forge'
+  | 'medicine_prep'
+  | 'path_training'
+  | 'safety_net_support';
+
+export interface ReadinessCategoryDef {
+  id: ReadinessCategoryId;
+  displayName: string;
+  maxScore: number;
+  description: string;
+  sourceSystems: string[];
+}
+
+export interface ReadinessCategoriesConfig {
+  version?: string | number;
+  categories: ReadinessCategoryDef[];
+}
+
+export type TrainingHeartTelemetryEventName =
+  | 'training_started'
+  | 'training_grade_changed'
+  | 'training_cap_hit'
+  | 'dao_heart_started'
+  | 'heart_law_level_changed'
+  | 'breakthrough_attempted'
+  | 'gate_attempted'
+  | 'prestige_started'
+  | 'offline_training_applied'
+  | 'offline_dao_heart_applied'
+  | 'prestige_memory_applied'
+  | 'reset_bucket_applied';
+
+export interface BreakthroughRiskCauseRow {
+  id: string;
+  label: string;
+  value: number;
+  severity: 'good' | 'neutral' | 'warning' | 'danger';
+  explanation: string;
+  route?: {
+    label: string;
+    target:
+      | 'daoHeart'
+      | 'trainingHall'
+      | 'cultivation'
+      | 'gateTrial'
+      | 'apothecary'
+      | 'forge'
+      | 'rest';
+  };
+  sourceSystem:
+    | 'realm'
+    | 'qi'
+    | 'heartLaw'
+    | 'daoHeart'
+    | 'root'
+    | 'training'
+    | 'injury'
+    | 'trial'
+    | 'prep';
+}
+
+export interface BreakthroughRiskSnapshot {
+  fromRealmId: string;
+  toRealmId: string;
+  riskPercent: number;
+  band: 'serene' | 'stable' | 'tense' | 'unstable' | 'dangerous' | 'reckless';
+  minRisk: number;
+  maxRisk: number;
+  rows: BreakthroughRiskCauseRow[];
+  topFixes: BreakthroughRiskCauseRow[];
+  failureOutcomePreview: string;
+}
 
 export type OutskirtsDropsConfig = {
   mobGoldByCityIndex?: Record<number, [number, number]>;
@@ -95,6 +371,7 @@ export type LiveWorldModuleKey =
   | 'outskirts'
   | 'ruins'
   | 'gateTrial'
+  | 'trainingHall'
   | 'manualPavilion'
   | 'apothecary'
   | 'forge'
@@ -156,6 +433,15 @@ export interface TechniqueDef {
   type: 'active' | 'passive' | 'ultimate' | string;
   role?: string;
   tags?: string[];
+  scalingVersion?: 'mp4_v1' | string;
+  scalingRole?: 'offense' | 'defense' | 'utility' | 'control' | 'support' | 'ultimate' | string;
+  primaryScalingStatId?: string;
+  secondaryScalingStatId?: string;
+  primaryScalingCoef?: number;
+  secondaryScalingCoef?: number;
+  rootAffinityIds?: string[];
+  heartLawTagIds?: string[];
+  scalingCapId?: string;
   cooldownSec?: number;
   resourceModel?: string;
   resourceCost?: number;

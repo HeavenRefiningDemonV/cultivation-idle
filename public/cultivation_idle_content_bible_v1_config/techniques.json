@@ -28,7 +28,21 @@
           "durationSec": 6,
           "dotAtkMultPerSec": 0.12
         }
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "offense",
+      "primaryScalingStatId": "dao_resonance",
+      "secondaryScalingStatId": "divine_sense",
+      "primaryScalingCoef": 0.22,
+      "secondaryScalingCoef": 0.11,
+      "rootAffinityIds": [
+        "fire"
+      ],
+      "heartLawTagIds": [
+        "fire",
+        "spell"
+      ],
+      "scalingCapId": "offense"
     },
     {
       "id": "tech_heaven_celestial_ward",
@@ -55,7 +69,19 @@
           "pct": 0.1,
           "durationSec": 16
         }
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "defense",
+      "primaryScalingStatId": "qi_control",
+      "secondaryScalingStatId": "law_weaving",
+      "primaryScalingCoef": 0.18,
+      "secondaryScalingCoef": 0.09,
+      "rootAffinityIds": [],
+      "heartLawTagIds": [
+        "ward",
+        "spell"
+      ],
+      "scalingCapId": "defense"
     },
     {
       "id": "tech_heaven_astral_needle",
@@ -83,7 +109,21 @@
           "pct": -0.1,
           "durationSec": 12
         }
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "utility",
+      "primaryScalingStatId": "qi_purity",
+      "secondaryScalingStatId": "qi_control",
+      "primaryScalingCoef": 0.14,
+      "secondaryScalingCoef": 0.08,
+      "rootAffinityIds": [
+        "astral"
+      ],
+      "heartLawTagIds": [
+        "astral",
+        "curse"
+      ],
+      "scalingCapId": "utility"
     },
     {
       "id": "tech_heaven_heavens_pulse",
@@ -111,7 +151,19 @@
           "pct": 0.08,
           "durationSec": 12
         }
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "utility",
+      "primaryScalingStatId": "qi_purity",
+      "secondaryScalingStatId": "qi_control",
+      "primaryScalingCoef": 0.14,
+      "secondaryScalingCoef": 0.08,
+      "rootAffinityIds": [],
+      "heartLawTagIds": [
+        "buff",
+        "spell"
+      ],
+      "scalingCapId": "utility"
     },
     {
       "id": "tech_heaven_tranquil_mind",
@@ -147,7 +199,19 @@
             "pct": 0.1
           }
         ]
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "utility",
+      "primaryScalingStatId": "qi_purity",
+      "secondaryScalingStatId": "qi_control",
+      "primaryScalingCoef": 0.14,
+      "secondaryScalingCoef": 0.08,
+      "rootAffinityIds": [],
+      "heartLawTagIds": [
+        "passive",
+        "qi"
+      ],
+      "scalingCapId": "utility"
     },
     {
       "id": "tech_heaven_azure_tide_lance",
@@ -174,7 +238,21 @@
           "durationSec": 8,
           "enemyHastePct": -0.1
         }
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "offense",
+      "primaryScalingStatId": "dao_resonance",
+      "secondaryScalingStatId": "divine_sense",
+      "primaryScalingCoef": 0.22,
+      "secondaryScalingCoef": 0.11,
+      "rootAffinityIds": [
+        "water"
+      ],
+      "heartLawTagIds": [
+        "water",
+        "spell"
+      ],
+      "scalingCapId": "offense"
     },
     {
       "id": "tech_heaven_golden_seal",
@@ -206,7 +284,19 @@
       "secondaryAtMastery75": {
         "type": "upgradeCleanse",
         "count": 2
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "defense",
+      "primaryScalingStatId": "qi_control",
+      "secondaryScalingStatId": "law_weaving",
+      "primaryScalingCoef": 0.18,
+      "secondaryScalingCoef": 0.09,
+      "rootAffinityIds": [],
+      "heartLawTagIds": [
+        "seal",
+        "ward"
+      ],
+      "scalingCapId": "defense"
     },
     {
       "id": "tech_heaven_thunder_scripture",
@@ -234,7 +324,21 @@
             "addPctPoints": 25
           }
         ]
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "offense",
+      "primaryScalingStatId": "dao_resonance",
+      "secondaryScalingStatId": "divine_sense",
+      "primaryScalingCoef": 0.22,
+      "secondaryScalingCoef": 0.11,
+      "rootAffinityIds": [
+        "lightning"
+      ],
+      "heartLawTagIds": [
+        "lightning",
+        "burst"
+      ],
+      "scalingCapId": "offense"
     },
     {
       "id": "tech_heaven_void_ripple",
@@ -262,7 +366,21 @@
             "add": 25
           }
         ]
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "offense",
+      "primaryScalingStatId": "dao_resonance",
+      "secondaryScalingStatId": "divine_sense",
+      "primaryScalingCoef": 0.22,
+      "secondaryScalingCoef": 0.11,
+      "rootAffinityIds": [
+        "void"
+      ],
+      "heartLawTagIds": [
+        "void",
+        "curse"
+      ],
+      "scalingCapId": "offense"
     },
     {
       "id": "tech_heaven_soul_lantern_ray",
@@ -289,7 +407,21 @@
         "stat": "enemyDamageTaken",
         "newPct": 0.14,
         "durationSec": 10
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "utility",
+      "primaryScalingStatId": "qi_purity",
+      "secondaryScalingStatId": "qi_control",
+      "primaryScalingCoef": 0.14,
+      "secondaryScalingCoef": 0.08,
+      "rootAffinityIds": [
+        "soul"
+      ],
+      "heartLawTagIds": [
+        "soul",
+        "spell"
+      ],
+      "scalingCapId": "utility"
     },
     {
       "id": "tech_heaven_flame_affinity",
@@ -321,7 +453,21 @@
             "add": 1
           }
         ]
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "utility",
+      "primaryScalingStatId": "qi_purity",
+      "secondaryScalingStatId": "qi_control",
+      "primaryScalingCoef": 0.14,
+      "secondaryScalingCoef": 0.08,
+      "rootAffinityIds": [
+        "fire"
+      ],
+      "heartLawTagIds": [
+        "fire",
+        "passive"
+      ],
+      "scalingCapId": "utility"
     },
     {
       "id": "tech_heaven_river_meditation",
@@ -353,7 +499,21 @@
             "pct": 0.1
           }
         ]
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "utility",
+      "primaryScalingStatId": "qi_purity",
+      "secondaryScalingStatId": "qi_control",
+      "primaryScalingCoef": 0.14,
+      "secondaryScalingCoef": 0.08,
+      "rootAffinityIds": [
+        "water"
+      ],
+      "heartLawTagIds": [
+        "water",
+        "passive"
+      ],
+      "scalingCapId": "utility"
     },
     {
       "id": "tech_heaven_astral_focus",
@@ -386,7 +546,21 @@
             "cap": 0.05
           }
         ]
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "utility",
+      "primaryScalingStatId": "qi_purity",
+      "secondaryScalingStatId": "qi_control",
+      "primaryScalingCoef": 0.14,
+      "secondaryScalingCoef": 0.08,
+      "rootAffinityIds": [
+        "astral"
+      ],
+      "heartLawTagIds": [
+        "astral",
+        "passive"
+      ],
+      "scalingCapId": "utility"
     },
     {
       "id": "tech_heaven_qi_threading",
@@ -422,7 +596,19 @@
             "addPctPoints": 5
           }
         ]
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "utility",
+      "primaryScalingStatId": "qi_purity",
+      "secondaryScalingStatId": "qi_control",
+      "primaryScalingCoef": 0.14,
+      "secondaryScalingCoef": 0.08,
+      "rootAffinityIds": [],
+      "heartLawTagIds": [
+        "qi",
+        "passive"
+      ],
+      "scalingCapId": "utility"
     },
     {
       "id": "tech_heaven_celestial_composure",
@@ -454,7 +640,19 @@
             "pct": 0.06
           }
         ]
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "utility",
+      "primaryScalingStatId": "qi_purity",
+      "secondaryScalingStatId": "qi_control",
+      "primaryScalingCoef": 0.14,
+      "secondaryScalingCoef": 0.08,
+      "rootAffinityIds": [],
+      "heartLawTagIds": [
+        "ward",
+        "passive"
+      ],
+      "scalingCapId": "utility"
     },
     {
       "id": "tech_heaven_heavenly_cataclysm",
@@ -472,7 +670,7 @@
       "resourceCost": 25,
       "effect": {
         "type": "damage",
-        "mult": 15.0,
+        "mult": 15,
         "element": "fire",
         "note": "Counts as Fire/Lightning"
       },
@@ -484,7 +682,23 @@
           "durationSec": 8,
           "dotAtkMultPerSec": 0.25
         }
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "ultimate",
+      "primaryScalingStatId": "dao_resonance",
+      "secondaryScalingStatId": "divine_sense",
+      "primaryScalingCoef": 0.22,
+      "secondaryScalingCoef": 0.11,
+      "rootAffinityIds": [
+        "fire",
+        "lightning"
+      ],
+      "heartLawTagIds": [
+        "fire",
+        "lightning",
+        "ultimate"
+      ],
+      "scalingCapId": "ultimate"
     },
     {
       "id": "tech_heaven_time_sundering_prayer",
@@ -512,7 +726,21 @@
           "pct": -0.2,
           "durationSec": 12
         }
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "ultimate",
+      "primaryScalingStatId": "qi_purity",
+      "secondaryScalingStatId": "qi_control",
+      "primaryScalingCoef": 0.14,
+      "secondaryScalingCoef": 0.08,
+      "rootAffinityIds": [
+        "time"
+      ],
+      "heartLawTagIds": [
+        "time",
+        "ultimate"
+      ],
+      "scalingCapId": "ultimate"
     },
     {
       "id": "tech_heaven_cloudbind",
@@ -540,7 +768,21 @@
           "addPctPoints": -10,
           "durationSec": 10
         }
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "utility",
+      "primaryScalingStatId": "qi_purity",
+      "secondaryScalingStatId": "qi_control",
+      "primaryScalingCoef": 0.14,
+      "secondaryScalingCoef": 0.08,
+      "rootAffinityIds": [
+        "wind"
+      ],
+      "heartLawTagIds": [
+        "wind",
+        "debuff"
+      ],
+      "scalingCapId": "utility"
     },
     {
       "id": "tech_heaven_spirit_siphon",
@@ -560,7 +802,7 @@
         "effects": [
           {
             "type": "damage",
-            "mult": 2.0,
+            "mult": 2,
             "element": "qi"
           },
           {
@@ -572,7 +814,19 @@
       "secondaryAtMastery75": {
         "type": "upgradeRestoreMaxQiPct",
         "pct": 5
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "utility",
+      "primaryScalingStatId": "qi_purity",
+      "secondaryScalingStatId": "qi_control",
+      "primaryScalingCoef": 0.14,
+      "secondaryScalingCoef": 0.08,
+      "rootAffinityIds": [],
+      "heartLawTagIds": [
+        "qi",
+        "drain"
+      ],
+      "scalingCapId": "utility"
     },
     {
       "id": "tech_heaven_mirror_step",
@@ -608,7 +862,21 @@
         "stat": "dodge",
         "newPct": 0.18,
         "durationSec": 12
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "defense",
+      "primaryScalingStatId": "qi_control",
+      "secondaryScalingStatId": "law_weaving",
+      "primaryScalingCoef": 0.18,
+      "secondaryScalingCoef": 0.09,
+      "rootAffinityIds": [
+        "water"
+      ],
+      "heartLawTagIds": [
+        "water",
+        "ward"
+      ],
+      "scalingCapId": "defense"
     },
     {
       "id": "tech_earth_stonebreaker_fist",
@@ -637,7 +905,21 @@
           "pct": -0.12,
           "durationSec": 8
         }
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "offense",
+      "primaryScalingStatId": "body_tempering",
+      "secondaryScalingStatId": "rooted_guard",
+      "primaryScalingCoef": 0.22,
+      "secondaryScalingCoef": 0.11,
+      "rootAffinityIds": [
+        "earth"
+      ],
+      "heartLawTagIds": [
+        "earth",
+        "fist"
+      ],
+      "scalingCapId": "offense"
     },
     {
       "id": "tech_earth_iron_body",
@@ -665,7 +947,19 @@
           "pct": 0.08,
           "durationSec": 14
         }
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "defense",
+      "primaryScalingStatId": "meridian_fortitude",
+      "secondaryScalingStatId": "armor_harmony",
+      "primaryScalingCoef": 0.18,
+      "secondaryScalingCoef": 0.09,
+      "rootAffinityIds": [],
+      "heartLawTagIds": [
+        "body",
+        "fortify"
+      ],
+      "scalingCapId": "defense"
     },
     {
       "id": "tech_earth_rooted_breath",
@@ -701,7 +995,19 @@
             "pct": 0.08
           }
         ]
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "utility",
+      "primaryScalingStatId": "recovery_depth",
+      "secondaryScalingStatId": "meridian_fortitude",
+      "primaryScalingCoef": 0.14,
+      "secondaryScalingCoef": 0.08,
+      "rootAffinityIds": [],
+      "heartLawTagIds": [
+        "regen",
+        "passive"
+      ],
+      "scalingCapId": "utility"
     },
     {
       "id": "tech_earth_mountain_stance",
@@ -740,7 +1046,19 @@
           "pct": 0.1,
           "durationSec": 12
         }
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "utility",
+      "primaryScalingStatId": "recovery_depth",
+      "secondaryScalingStatId": "meridian_fortitude",
+      "primaryScalingCoef": 0.14,
+      "secondaryScalingCoef": 0.08,
+      "rootAffinityIds": [],
+      "heartLawTagIds": [
+        "stance",
+        "fortify"
+      ],
+      "scalingCapId": "utility"
     },
     {
       "id": "tech_earth_shatter_palm",
@@ -768,7 +1086,19 @@
           "pct": -0.08,
           "durationSec": 12
         }
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "utility",
+      "primaryScalingStatId": "recovery_depth",
+      "secondaryScalingStatId": "meridian_fortitude",
+      "primaryScalingCoef": 0.14,
+      "secondaryScalingCoef": 0.08,
+      "rootAffinityIds": [],
+      "heartLawTagIds": [
+        "debuff",
+        "palm"
+      ],
+      "scalingCapId": "utility"
     },
     {
       "id": "tech_earth_boulder_toss",
@@ -795,7 +1125,21 @@
           "type": "damageMultiplier",
           "value": 1.2
         }
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "offense",
+      "primaryScalingStatId": "body_tempering",
+      "secondaryScalingStatId": "rooted_guard",
+      "primaryScalingCoef": 0.22,
+      "secondaryScalingCoef": 0.11,
+      "rootAffinityIds": [
+        "earth"
+      ],
+      "heartLawTagIds": [
+        "earth",
+        "burst"
+      ],
+      "scalingCapId": "offense"
     },
     {
       "id": "tech_earth_crystal_carapace",
@@ -822,7 +1166,21 @@
           "pct": 0.2,
           "durationSec": 14
         }
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "defense",
+      "primaryScalingStatId": "meridian_fortitude",
+      "secondaryScalingStatId": "armor_harmony",
+      "primaryScalingCoef": 0.18,
+      "secondaryScalingCoef": 0.09,
+      "rootAffinityIds": [
+        "earth"
+      ],
+      "heartLawTagIds": [
+        "ward",
+        "earth"
+      ],
+      "scalingCapId": "defense"
     },
     {
       "id": "tech_earth_quake_step",
@@ -849,7 +1207,21 @@
           "pct": -0.1,
           "durationSec": 8
         }
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "offense",
+      "primaryScalingStatId": "body_tempering",
+      "secondaryScalingStatId": "rooted_guard",
+      "primaryScalingCoef": 0.22,
+      "secondaryScalingCoef": 0.11,
+      "rootAffinityIds": [
+        "earth"
+      ],
+      "heartLawTagIds": [
+        "earth",
+        "impact"
+      ],
+      "scalingCapId": "offense"
     },
     {
       "id": "tech_earth_earthen_shackles",
@@ -877,7 +1249,21 @@
           "pct": -0.1,
           "durationSec": 10
         }
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "utility",
+      "primaryScalingStatId": "recovery_depth",
+      "secondaryScalingStatId": "meridian_fortitude",
+      "primaryScalingCoef": 0.14,
+      "secondaryScalingCoef": 0.08,
+      "rootAffinityIds": [
+        "earth"
+      ],
+      "heartLawTagIds": [
+        "debuff",
+        "earth"
+      ],
+      "scalingCapId": "utility"
     },
     {
       "id": "tech_earth_dragon_vein_surge",
@@ -910,7 +1296,19 @@
       "secondaryAtMastery75": {
         "type": "upgradeHeal",
         "newMaxHpPct": 0.14
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "defense",
+      "primaryScalingStatId": "meridian_fortitude",
+      "secondaryScalingStatId": "armor_harmony",
+      "primaryScalingCoef": 0.18,
+      "secondaryScalingCoef": 0.09,
+      "rootAffinityIds": [],
+      "heartLawTagIds": [
+        "body",
+        "heal"
+      ],
+      "scalingCapId": "defense"
     },
     {
       "id": "tech_earth_stone_skin",
@@ -946,7 +1344,19 @@
             "pct": 0.08
           }
         ]
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "defense",
+      "primaryScalingStatId": "meridian_fortitude",
+      "secondaryScalingStatId": "armor_harmony",
+      "primaryScalingCoef": 0.18,
+      "secondaryScalingCoef": 0.09,
+      "rootAffinityIds": [],
+      "heartLawTagIds": [
+        "defense",
+        "passive"
+      ],
+      "scalingCapId": "defense"
     },
     {
       "id": "tech_earth_unyielding",
@@ -980,7 +1390,19 @@
             "pct": 0.08
           }
         ]
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "defense",
+      "primaryScalingStatId": "meridian_fortitude",
+      "secondaryScalingStatId": "armor_harmony",
+      "primaryScalingCoef": 0.18,
+      "secondaryScalingCoef": 0.09,
+      "rootAffinityIds": [],
+      "heartLawTagIds": [
+        "body",
+        "passive"
+      ],
+      "scalingCapId": "defense"
     },
     {
       "id": "tech_earth_forge_bone",
@@ -1016,7 +1438,19 @@
             "pct": 0.1
           }
         ]
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "utility",
+      "primaryScalingStatId": "recovery_depth",
+      "secondaryScalingStatId": "meridian_fortitude",
+      "primaryScalingCoef": 0.14,
+      "secondaryScalingCoef": 0.08,
+      "rootAffinityIds": [],
+      "heartLawTagIds": [
+        "artisan",
+        "passive"
+      ],
+      "scalingCapId": "utility"
     },
     {
       "id": "tech_earth_enduring_pulse",
@@ -1048,7 +1482,19 @@
             "pct": 0.1
           }
         ]
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "utility",
+      "primaryScalingStatId": "recovery_depth",
+      "secondaryScalingStatId": "meridian_fortitude",
+      "primaryScalingCoef": 0.14,
+      "secondaryScalingCoef": 0.08,
+      "rootAffinityIds": [],
+      "heartLawTagIds": [
+        "sustain",
+        "passive"
+      ],
+      "scalingCapId": "utility"
     },
     {
       "id": "tech_earth_granite_focus",
@@ -1080,7 +1526,19 @@
             "addPctPoints": -5
           }
         ]
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "defense",
+      "primaryScalingStatId": "meridian_fortitude",
+      "secondaryScalingStatId": "armor_harmony",
+      "primaryScalingCoef": 0.18,
+      "secondaryScalingCoef": 0.09,
+      "rootAffinityIds": [],
+      "heartLawTagIds": [
+        "critResist",
+        "passive"
+      ],
+      "scalingCapId": "defense"
     },
     {
       "id": "tech_earth_heaven_stamping_mountain",
@@ -1119,7 +1577,21 @@
           "durationSec": 16,
           "note": "True damage"
         }
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "ultimate",
+      "primaryScalingStatId": "meridian_fortitude",
+      "secondaryScalingStatId": "armor_harmony",
+      "primaryScalingCoef": 0.18,
+      "secondaryScalingCoef": 0.09,
+      "rootAffinityIds": [
+        "earth"
+      ],
+      "heartLawTagIds": [
+        "earth",
+        "ultimate"
+      ],
+      "scalingCapId": "ultimate"
     },
     {
       "id": "tech_earth_world_pillar_slam",
@@ -1136,7 +1608,7 @@
       "resourceCost": 0,
       "effect": {
         "type": "damage",
-        "mult": 14.0,
+        "mult": 14,
         "element": "earth"
       },
       "secondaryAtMastery75": {
@@ -1147,7 +1619,21 @@
           "durationSec": 12
         },
         "guaranteed": true
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "ultimate",
+      "primaryScalingStatId": "body_tempering",
+      "secondaryScalingStatId": "rooted_guard",
+      "primaryScalingCoef": 0.22,
+      "secondaryScalingCoef": 0.11,
+      "rootAffinityIds": [
+        "earth"
+      ],
+      "heartLawTagIds": [
+        "earth",
+        "ultimate"
+      ],
+      "scalingCapId": "ultimate"
     },
     {
       "id": "tech_earth_mire_breath",
@@ -1178,7 +1664,23 @@
         "statusId": "poison",
         "newDotAtkMultPerSec": 0.14,
         "durationSec": 10
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "utility",
+      "primaryScalingStatId": "recovery_depth",
+      "secondaryScalingStatId": "meridian_fortitude",
+      "primaryScalingCoef": 0.14,
+      "secondaryScalingCoef": 0.08,
+      "rootAffinityIds": [
+        "wood",
+        "earth"
+      ],
+      "heartLawTagIds": [
+        "wood",
+        "earth",
+        "poison"
+      ],
+      "scalingCapId": "utility"
     },
     {
       "id": "tech_earth_iron_marrow_temper",
@@ -1217,7 +1719,19 @@
           "pct": 0.08,
           "durationSec": 14
         }
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "defense",
+      "primaryScalingStatId": "meridian_fortitude",
+      "secondaryScalingStatId": "armor_harmony",
+      "primaryScalingCoef": 0.18,
+      "secondaryScalingCoef": 0.09,
+      "rootAffinityIds": [],
+      "heartLawTagIds": [
+        "body",
+        "buff"
+      ],
+      "scalingCapId": "defense"
     },
     {
       "id": "tech_earth_true_root_anchor",
@@ -1246,7 +1760,21 @@
       "secondaryAtMastery75": {
         "type": "upgradeStackingPassive",
         "maxStacks": 7
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "defense",
+      "primaryScalingStatId": "meridian_fortitude",
+      "secondaryScalingStatId": "armor_harmony",
+      "primaryScalingCoef": 0.18,
+      "secondaryScalingCoef": 0.09,
+      "rootAffinityIds": [
+        "earth"
+      ],
+      "heartLawTagIds": [
+        "earth",
+        "passive"
+      ],
+      "scalingCapId": "defense"
     },
     {
       "id": "tech_martial_gale_cut",
@@ -1274,7 +1802,21 @@
             "addPctPoints": 10
           }
         ]
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "offense",
+      "primaryScalingStatId": "weapon_intent",
+      "secondaryScalingStatId": "precision",
+      "primaryScalingCoef": 0.22,
+      "secondaryScalingCoef": 0.11,
+      "rootAffinityIds": [
+        "wind"
+      ],
+      "heartLawTagIds": [
+        "wind",
+        "sword"
+      ],
+      "scalingCapId": "offense"
     },
     {
       "id": "tech_martial_guarding_stance",
@@ -1313,7 +1855,19 @@
           "maxHpPct": 0.1,
           "durationSec": 10
         }
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "defense",
+      "primaryScalingStatId": "flow_step",
+      "secondaryScalingStatId": "counter_sense",
+      "primaryScalingCoef": 0.18,
+      "secondaryScalingCoef": 0.1,
+      "rootAffinityIds": [],
+      "heartLawTagIds": [
+        "stance",
+        "defense"
+      ],
+      "scalingCapId": "defense"
     },
     {
       "id": "tech_martial_tempered_spirit",
@@ -1349,7 +1903,19 @@
             "pct": -0.08
           }
         ]
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "utility",
+      "primaryScalingStatId": "counter_sense",
+      "secondaryScalingStatId": "battle_rhythm",
+      "primaryScalingCoef": 0.14,
+      "secondaryScalingCoef": 0.08,
+      "rootAffinityIds": [],
+      "heartLawTagIds": [
+        "intent",
+        "passive"
+      ],
+      "scalingCapId": "utility"
     },
     {
       "id": "tech_martial_killing_rhythm",
@@ -1388,7 +1954,19 @@
           "pct": 0.1,
           "durationSec": 12
         }
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "utility",
+      "primaryScalingStatId": "counter_sense",
+      "secondaryScalingStatId": "battle_rhythm",
+      "primaryScalingCoef": 0.14,
+      "secondaryScalingCoef": 0.08,
+      "rootAffinityIds": [],
+      "heartLawTagIds": [
+        "tempo",
+        "buff"
+      ],
+      "scalingCapId": "utility"
     },
     {
       "id": "tech_martial_armor_splitter",
@@ -1417,7 +1995,19 @@
           "durationSec": 12,
           "note": "Martial-only vulnerability"
         }
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "utility",
+      "primaryScalingStatId": "counter_sense",
+      "secondaryScalingStatId": "battle_rhythm",
+      "primaryScalingCoef": 0.14,
+      "secondaryScalingCoef": 0.08,
+      "rootAffinityIds": [],
+      "heartLawTagIds": [
+        "debuff",
+        "spear"
+      ],
+      "scalingCapId": "utility"
     },
     {
       "id": "tech_martial_quickdraw_slash",
@@ -1444,7 +2034,19 @@
           "type": "damageMultiplier",
           "value": 1.25
         }
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "offense",
+      "primaryScalingStatId": "weapon_intent",
+      "secondaryScalingStatId": "precision",
+      "primaryScalingCoef": 0.22,
+      "secondaryScalingCoef": 0.11,
+      "rootAffinityIds": [],
+      "heartLawTagIds": [
+        "sword",
+        "burst"
+      ],
+      "scalingCapId": "offense"
     },
     {
       "id": "tech_martial_bloodletting_thrust",
@@ -1480,7 +2082,19 @@
         "type": "upgradeStatus",
         "statusId": "bleed",
         "newMaxStacks": 2
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "offense",
+      "primaryScalingStatId": "weapon_intent",
+      "secondaryScalingStatId": "precision",
+      "primaryScalingCoef": 0.22,
+      "secondaryScalingCoef": 0.11,
+      "rootAffinityIds": [],
+      "heartLawTagIds": [
+        "spear",
+        "bleed"
+      ],
+      "scalingCapId": "offense"
     },
     {
       "id": "tech_martial_steel_tempest",
@@ -1511,7 +2125,19 @@
             "addPctPoints": 25
           }
         ]
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "offense",
+      "primaryScalingStatId": "weapon_intent",
+      "secondaryScalingStatId": "precision",
+      "primaryScalingCoef": 0.22,
+      "secondaryScalingCoef": 0.11,
+      "rootAffinityIds": [],
+      "heartLawTagIds": [
+        "multihit",
+        "sword"
+      ],
+      "scalingCapId": "offense"
     },
     {
       "id": "tech_martial_windstep_footwork",
@@ -1549,7 +2175,21 @@
           "type": "cleanse",
           "count": 1
         }
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "utility",
+      "primaryScalingStatId": "counter_sense",
+      "secondaryScalingStatId": "battle_rhythm",
+      "primaryScalingCoef": 0.14,
+      "secondaryScalingCoef": 0.08,
+      "rootAffinityIds": [
+        "wind"
+      ],
+      "heartLawTagIds": [
+        "wind",
+        "buff"
+      ],
+      "scalingCapId": "utility"
     },
     {
       "id": "tech_martial_dragonfang_combo",
@@ -1565,7 +2205,7 @@
       "resourceCost": 25,
       "effect": {
         "type": "damageWithStacks",
-        "baseMult": 2.0,
+        "baseMult": 2,
         "stackWindowSec": 12,
         "stackAddPct": 0.1,
         "maxStacks": 5
@@ -1573,7 +2213,18 @@
       "secondaryAtMastery75": {
         "type": "upgradeStacks",
         "newStackWindowSec": 16
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "offense",
+      "primaryScalingStatId": "weapon_intent",
+      "secondaryScalingStatId": "precision",
+      "primaryScalingCoef": 0.22,
+      "secondaryScalingCoef": 0.11,
+      "rootAffinityIds": [],
+      "heartLawTagIds": [
+        "combo"
+      ],
+      "scalingCapId": "offense"
     },
     {
       "id": "tech_martial_edge_instinct",
@@ -1605,7 +2256,19 @@
             "pct": 0.15
           }
         ]
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "utility",
+      "primaryScalingStatId": "counter_sense",
+      "secondaryScalingStatId": "battle_rhythm",
+      "primaryScalingCoef": 0.14,
+      "secondaryScalingCoef": 0.08,
+      "rootAffinityIds": [],
+      "heartLawTagIds": [
+        "crit",
+        "passive"
+      ],
+      "scalingCapId": "utility"
     },
     {
       "id": "tech_martial_battle_hunger",
@@ -1628,7 +2291,19 @@
       "secondaryAtMastery75": {
         "type": "upgradeLifesteal",
         "newMaxHpPct": 0.012
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "defense",
+      "primaryScalingStatId": "flow_step",
+      "secondaryScalingStatId": "counter_sense",
+      "primaryScalingCoef": 0.18,
+      "secondaryScalingCoef": 0.1,
+      "rootAffinityIds": [],
+      "heartLawTagIds": [
+        "sustain",
+        "passive"
+      ],
+      "scalingCapId": "defense"
     },
     {
       "id": "tech_martial_stance_mastery",
@@ -1660,7 +2335,19 @@
             "pct": -0.1
           }
         ]
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "utility",
+      "primaryScalingStatId": "counter_sense",
+      "secondaryScalingStatId": "battle_rhythm",
+      "primaryScalingCoef": 0.14,
+      "secondaryScalingCoef": 0.08,
+      "rootAffinityIds": [],
+      "heartLawTagIds": [
+        "stance",
+        "passive"
+      ],
+      "scalingCapId": "utility"
     },
     {
       "id": "tech_martial_weapon_forged_will",
@@ -1696,7 +2383,19 @@
             "pct": 0.05
           }
         ]
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "utility",
+      "primaryScalingStatId": "counter_sense",
+      "secondaryScalingStatId": "battle_rhythm",
+      "primaryScalingCoef": 0.14,
+      "secondaryScalingCoef": 0.08,
+      "rootAffinityIds": [],
+      "heartLawTagIds": [
+        "artisan",
+        "passive"
+      ],
+      "scalingCapId": "utility"
     },
     {
       "id": "tech_martial_iron_nerves",
@@ -1729,7 +2428,19 @@
             "pct": 0.1
           }
         ]
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "defense",
+      "primaryScalingStatId": "flow_step",
+      "secondaryScalingStatId": "counter_sense",
+      "primaryScalingCoef": 0.18,
+      "secondaryScalingCoef": 0.1,
+      "rootAffinityIds": [],
+      "heartLawTagIds": [
+        "defense",
+        "passive"
+      ],
+      "scalingCapId": "defense"
     },
     {
       "id": "tech_martial_ninefold_sword_rain",
@@ -1746,7 +2457,7 @@
       "resourceCost": 80,
       "effect": {
         "type": "damage",
-        "mult": 16.0,
+        "mult": 16,
         "element": "metal"
       },
       "secondaryAtMastery75": {
@@ -1756,7 +2467,19 @@
           "pct": -0.2,
           "durationSec": 10
         }
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "ultimate",
+      "primaryScalingStatId": "weapon_intent",
+      "secondaryScalingStatId": "precision",
+      "primaryScalingCoef": 0.22,
+      "secondaryScalingCoef": 0.11,
+      "rootAffinityIds": [],
+      "heartLawTagIds": [
+        "sword",
+        "ultimate"
+      ],
+      "scalingCapId": "ultimate"
     },
     {
       "id": "tech_martial_heaven_splitting_slash",
@@ -1774,7 +2497,7 @@
       "resourceCost": 90,
       "effect": {
         "type": "damage",
-        "mult": 18.0,
+        "mult": 18,
         "element": "metal",
         "guaranteedCrit": true
       },
@@ -1782,7 +2505,20 @@
         "type": "conditionalRefund",
         "condition": "killedTarget",
         "refundIntent": 30
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "ultimate",
+      "primaryScalingStatId": "weapon_intent",
+      "secondaryScalingStatId": "precision",
+      "primaryScalingCoef": 0.22,
+      "secondaryScalingCoef": 0.11,
+      "rootAffinityIds": [],
+      "heartLawTagIds": [
+        "sword",
+        "ultimate",
+        "burst"
+      ],
+      "scalingCapId": "ultimate"
     },
     {
       "id": "tech_martial_soul_severing_cut",
@@ -1816,7 +2552,21 @@
           "pct": -0.12,
           "durationSec": 10
         }
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "offense",
+      "primaryScalingStatId": "weapon_intent",
+      "secondaryScalingStatId": "precision",
+      "primaryScalingCoef": 0.22,
+      "secondaryScalingCoef": 0.11,
+      "rootAffinityIds": [
+        "soul"
+      ],
+      "heartLawTagIds": [
+        "soul",
+        "sword"
+      ],
+      "scalingCapId": "offense"
     },
     {
       "id": "tech_martial_mist_veil_parry",
@@ -1849,7 +2599,19 @@
       "secondaryAtMastery75": {
         "type": "counterstrikeOnSuccess",
         "damageMult": 2.5
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "defense",
+      "primaryScalingStatId": "flow_step",
+      "secondaryScalingStatId": "counter_sense",
+      "primaryScalingCoef": 0.18,
+      "secondaryScalingCoef": 0.1,
+      "rootAffinityIds": [],
+      "heartLawTagIds": [
+        "counter",
+        "ward"
+      ],
+      "scalingCapId": "defense"
     },
     {
       "id": "tech_martial_executioner_mark",
@@ -1882,7 +2644,19 @@
             "cap": 0.1
           }
         ]
-      }
+      },
+      "scalingVersion": "mp4_v1",
+      "scalingRole": "utility",
+      "primaryScalingStatId": "counter_sense",
+      "secondaryScalingStatId": "battle_rhythm",
+      "primaryScalingCoef": 0.14,
+      "secondaryScalingCoef": 0.08,
+      "rootAffinityIds": [],
+      "heartLawTagIds": [
+        "boss",
+        "passive"
+      ],
+      "scalingCapId": "utility"
     }
   ]
 }

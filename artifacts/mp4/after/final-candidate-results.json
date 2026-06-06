@@ -1,0 +1,12 @@
+﻿[
+    {
+        "command":  "npm run test:balance-regression",
+        "exitCode":  0,
+        "log":  "artifacts/mp4/after/logs/test-balance-regression.final-candidate.log"
+    },
+    {
+        "command":  "npm run release:fresh-run-report:json",
+        "exitCode":  0,
+        "log":  "artifacts/mp4/after/logs/release-fresh-run-report-json.final-candidate.log"
+    }
+]

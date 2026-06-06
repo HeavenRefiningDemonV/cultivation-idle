@@ -5,27 +5,51 @@ import test from 'node:test';
 
 const readRepoFile = (relativePath: string) => fs.readFile(path.resolve(process.cwd(), relativePath), 'utf8');
 
-test('Status V2 layout keeps six compact diagnostic cards without chamber anchors', async () => {
-  const statusScreen = await readRepoFile('src/components/screens/StatusScreen.tsx');
+test('Status layout renders the public Status Ledger without chamber or V2 diagnostic anchors', async () => {
+  const [statusScreen, statusLedgerPage, statusLedgerHero, statusMetricStrip] = await Promise.all([
+    readRepoFile('src/components/screens/StatusScreen.tsx'),
+    readRepoFile('src/ui/status/ledger/StatusLedgerPage.tsx'),
+    readRepoFile('src/ui/status/ledger/StatusLedgerHero.tsx'),
+    readRepoFile('src/ui/status/ledger/StatusMetricStrip.tsx'),
+  ]);
+  const statusLedgerSources = `${statusLedgerPage}\n${statusLedgerHero}\n${statusMetricStrip}`;
 
-  const expectedCardTestIds = [
-    'status-v2-card-current-omen',
-    'status-v2-card-gate-proof',
-    'status-v2-card-life-identity',
-    'status-v2-card-preparation-health',
-    'status-v2-card-current-work',
-    'status-v2-card-recent-omens',
+  assert.equal(statusScreen.includes('StatusLedgerPage'), true);
+  assert.equal(statusScreen.includes('surface.statusLedger'), true);
+  assert.equal(statusScreen.includes('statusV2'), false);
+
+  const expectedLedgerTestIds = [
+    'status-ledger-root',
+    'status-ledger-hero',
+    'status-ledger-metrics',
+    'status-ledger-grid',
+    'status-ledger-card-milestone',
+    'status-ledger-card-cultivation-base',
+    'status-ledger-card-mission-requirements',
+    'status-ledger-card-best-improvements',
+    'status-ledger-card-safety-net',
+    'status-ledger-card-identity-doctrine',
+    'status-ledger-card-current-work',
+    'status-ledger-card-build-preparation',
   ];
-  expectedCardTestIds.forEach((testId) => {
-    assert.equal(statusScreen.includes(testId), true, `missing V2 diagnostic card ${testId}`);
+  expectedLedgerTestIds.forEach((testId) => {
+    assert.equal(statusLedgerSources.includes(testId), true, `missing Status Ledger anchor ${testId}`);
   });
 
-  assert.equal(statusScreen.includes('className="statusV2Root"'), true);
-  assert.equal(statusScreen.includes('className="statusV2Grid"'), true);
-  assert.equal(statusScreen.includes('<StatusSummaryHeader'), false);
-  assert.equal(statusScreen.includes('<RunCompass'), false);
-  assert.equal(statusScreen.includes('className="statusChamberLayout"'), false);
-  assert.equal(statusScreen.includes('className="statusChamberCorePlate"'), false);
+  for (const forbidden of [
+    'status-v2-card-current-omen',
+    'status-v2-card-gate-proof',
+    'status-v2-card-preparation-health',
+    'status-v2-card-recent-omens',
+    'className="statusV2Root"',
+    'className="statusV2Grid"',
+    '<StatusSummaryHeader',
+    '<RunCompass',
+    'className="statusChamberLayout"',
+    'className="statusChamberCorePlate"',
+  ]) {
+    assert.equal(`${statusScreen}\n${statusLedgerSources}`.includes(forbidden), false, `public Status layout must not include ${forbidden}`);
+  }
 });
 
 test('status baseline styles avoid no-shift violations in hover/focus interaction states', async () => {

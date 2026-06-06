@@ -6,6 +6,7 @@ import {
   parseBalanceTelemetryInput,
   summarizeBalanceTelemetryReport,
 } from '../src/services/diagnostics/balanceTelemetryExport.ts';
+import { runBalanceTelemetryProbe } from '../tests/helpers/telemetry/runBalanceTelemetryProbe.ts';
 
 function getArg(flag: string): string | null {
   const index = process.argv.indexOf(flag);
@@ -19,14 +20,11 @@ if (process.argv.includes('--help') || process.argv.includes('-h')) {
 }
 
 const inputPath = getArg('--input');
-if (!inputPath) {
-  console.error('Missing --input <path>');
-  process.exit(1);
-}
 
 try {
-  const raw = readFileSync(resolve(inputPath), 'utf8');
-  const parsed = JSON.parse(raw);
+  const parsed = inputPath
+    ? JSON.parse(readFileSync(resolve(inputPath), 'utf8'))
+    : { balanceEvents: runBalanceTelemetryProbe().balanceEvents };
   const events = parseBalanceTelemetryInput(parsed);
   const report = buildBalanceTelemetryReport(events);
   if (process.argv.includes('--json')) {

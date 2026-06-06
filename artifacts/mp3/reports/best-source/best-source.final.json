@@ -1,0 +1,149 @@
+{
+  "generatedAt": "2026-05-28T23:04:51.612Z",
+  "rows": [
+    {
+      "id": "gold",
+      "label": "Gold",
+      "primary": {
+        "moduleKey": "outskirts",
+        "reason": "Gold + common mats",
+        "routeRefId": "outskirts:any"
+      },
+      "secondary": {
+        "moduleKey": "bounties",
+        "reason": "Support currency fallback",
+        "routeRefId": "bounties:any"
+      },
+      "sourceCount": 2,
+      "status": "pass"
+    },
+    {
+      "id": "merit",
+      "label": "Merit",
+      "primary": {
+        "moduleKey": "bounties",
+        "reason": "Canonical Merit route",
+        "routeRefId": "bounties:any"
+      },
+      "secondary": {
+        "moduleKey": "gateTrial",
+        "reason": "Eligible defeat fallback",
+        "routeRefId": "gate_1"
+      },
+      "sourceCount": 2,
+      "status": "pass"
+    },
+    {
+      "id": "spiritStones",
+      "label": "Spirit Stones",
+      "primary": {
+        "moduleKey": "bounties",
+        "reason": "Canonical spirit-stone route",
+        "routeRefId": "bounties:any"
+      },
+      "secondary": {
+        "moduleKey": "gateTrial",
+        "reason": "Bounded reserve fallback",
+        "routeRefId": "gate_trial_support"
+      },
+      "sourceCount": 2,
+      "status": "pass"
+    },
+    {
+      "id": "cons_healing_pellet_t1",
+      "label": "Healing Pellet",
+      "primary": {
+        "moduleKey": "apothecary",
+        "reason": "Immediate shop stock",
+        "routeRefId": "shop_apothecary_pinewind"
+      },
+      "secondary": {
+        "moduleKey": "apothecary",
+        "reason": "Brew fallback",
+        "routeRefId": "alc_healing_pellet_t1"
+      },
+      "sourceCount": 2,
+      "status": "pass"
+    },
+    {
+      "id": "cons_ironblood_pellet_t1",
+      "label": "Ironblood Pellet",
+      "primary": {
+        "moduleKey": "apothecary",
+        "reason": "Immediate shop stock",
+        "routeRefId": "shop_apothecary_pinewind"
+      },
+      "secondary": {
+        "moduleKey": "apothecary",
+        "reason": "Brew fallback",
+        "routeRefId": "alc_ironblood_pellet_t1"
+      },
+      "sourceCount": 2,
+      "status": "pass"
+    },
+    {
+      "id": "cons_qi_elixir_t1",
+      "label": "Qi Elixir",
+      "primary": {
+        "moduleKey": "apothecary",
+        "reason": "Immediate shop stock",
+        "routeRefId": "shop_apothecary_pinewind"
+      },
+      "secondary": {
+        "moduleKey": "apothecary",
+        "reason": "Brew fallback",
+        "routeRefId": "alc_qi_elixir_t1"
+      },
+      "sourceCount": 2,
+      "status": "pass"
+    },
+    {
+      "id": "mat_spirit_leaf",
+      "label": "Spirit Leaf",
+      "primary": {
+        "moduleKey": "ruins",
+        "reason": "City-local targeted source",
+        "routeRefId": "ruin_hollow_log_den"
+      },
+      "secondary": {
+        "moduleKey": "expeditions",
+        "reason": "Passive shortage smoothing",
+        "routeRefId": "herbs"
+      },
+      "sourceCount": 3,
+      "status": "pass"
+    },
+    {
+      "id": "mat_quarry_ore",
+      "label": "Quarry Ore",
+      "primary": {
+        "moduleKey": "ruins",
+        "reason": "City-local targeted source",
+        "routeRefId": "ruin_broken_kiln"
+      },
+      "secondary": {
+        "moduleKey": "expeditions",
+        "reason": "Passive shortage smoothing",
+        "routeRefId": "ore"
+      },
+      "sourceCount": 3,
+      "status": "pass"
+    },
+    {
+      "id": "mat_technique_fragment",
+      "label": "Technique Fragment",
+      "primary": {
+        "moduleKey": "expeditions",
+        "reason": "Scout support route",
+        "routeRefId": "scout"
+      },
+      "secondary": {
+        "moduleKey": "manualPavilion",
+        "reason": "Correction destination",
+        "routeRefId": "manual_pavilion_support"
+      },
+      "sourceCount": 2,
+      "status": "pass"
+    }
+  ]
+}

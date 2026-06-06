@@ -1,0 +1,50 @@
+[
+    {
+        "name":  "tsconfig-tests",
+        "command":  "npm exec tsc -- --project tsconfig.tests.json",
+        "result":  "PASS",
+        "exitCode":  0,
+        "durationMs":  10487,
+        "log":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp3\\final\\onboarding-ui\\logs\\tsconfig-tests.final.log"
+    },
+    {
+        "name":  "typecheck",
+        "command":  "npm run typecheck",
+        "result":  "PASS",
+        "exitCode":  0,
+        "durationMs":  324,
+        "log":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp3\\final\\onboarding-ui\\logs\\typecheck.final.log"
+    },
+    {
+        "name":  "check-icons",
+        "command":  "npm run check:icons",
+        "result":  "PASS",
+        "exitCode":  0,
+        "durationMs":  319,
+        "log":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp3\\final\\onboarding-ui\\logs\\check-icons.final.log"
+    },
+    {
+        "name":  "validate-content",
+        "command":  "npm run validate:content",
+        "result":  "PASS",
+        "exitCode":  0,
+        "durationMs":  1047,
+        "log":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp3\\final\\onboarding-ui\\logs\\validate-content.final.log"
+    },
+    {
+        "name":  "build",
+        "command":  "npm run build",
+        "result":  "PASS",
+        "exitCode":  0,
+        "durationMs":  8233,
+        "log":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp3\\final\\onboarding-ui\\logs\\build.final.log"
+    },
+    {
+        "name":  "test-contracts",
+        "command":  "npm run test:contracts",
+        "result":  "FAIL",
+        "exitCode":  1,
+        "durationMs":  164816,
+        "log":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp3\\final\\onboarding-ui\\logs\\test-contracts.final.log"
+    }
+]

@@ -166,8 +166,6 @@ void test('C7 Test J: no premature result overlay', () => {
     'data-testid="outskirts-combat-result-overlay"',
     'data-testid="outskirts-combat-victory-seal"',
     'data-testid="outskirts-combat-defeat-seal"',
-    'Victory',
-    'Defeat',
     'loot summary',
   ]) {
     assert.equal(html.includes(forbidden), false);

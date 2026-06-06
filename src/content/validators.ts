@@ -6,7 +6,11 @@ import type {
   BountiesConfig,
   CitiesPayload,
   CityDef,
+  CultivatorStatsConfig,
+  CultivatorStatDef,
+  CultivatorStatSurface,
   CurrencyKey,
+  DaoHeartPracticesConfig,
   EconomyConfig,
   EnemiesConfig,
   ExpeditionsContent,
@@ -26,13 +30,29 @@ import type {
   PavilionRecordsConfig,
   PrestigeUpgradeDef,
   PrestigeUpgradeTier,
+  ReadinessCategoriesConfig,
   RunesConfig,
   RuinsConfig,
+  SpiritRootProgressionsConfig,
   TalismanRecipesConfig,
   TechniqueDef,
   TechniquesConfig,
+  TrainingRegimensConfig,
   TrialsConfig,
 } from './types.js';
+import type {
+  OnboardingCompletionDescriptor,
+  OnboardingMilestoneContent,
+  OnboardingMilestonesConfig,
+  OnboardingRouteTarget,
+} from '../systems/onboarding/onboardingTypes.js';
+import {
+  ONBOARDING_LIVE_WORLD_MODULE_KEYS,
+  ONBOARDING_MILESTONE_IDS,
+  ONBOARDING_PHASES,
+  ONBOARDING_SCHEMA_VERSION,
+  ONBOARDING_TAB_KEYS,
+} from '../systems/onboarding/onboardingTypes.js';
 import type { LoadedContentRaw } from './loaders.js';
 import { validatePavilionRecordsManifest } from '../features/pavilion/pavilionContentTypes.js';
 import { normalizeTrialFailSafeDefinition } from './trialFailSafe.js';
@@ -48,6 +68,10 @@ import {
   formatLiveCityPackageCoverageIssue,
   inspectSemesterCityPackageCoverage,
 } from '../systems/world/cityPackageRegistry.js';
+import {
+  TRAINING_STAT_UNLOCK_ORDER_BY_PATH,
+  getTrainingStatUnlockRealmIndex,
+} from '../systems/training/trainingUnlockPolicy.js';
 import {
   buildActivityRewardAuditReport,
   buildRewardParityAuditReport,
@@ -73,6 +97,7 @@ import {
   buildAllPrepPackageFitReports,
   buildAllSupportReservePacingReports,
   buildAllPrepVsBypassEconomyReports,
+  ECONOMY_FACING_MODULE_KEYS,
 } from '../systems/economy/index.js';
 import { SEMESTER_SLICE_CONTRACT } from '../systems/progression/contract/semesterSlice.js';
 import { getPrepEconomyTargets } from '../systems/balance/prepEconomyTargets.js';
@@ -123,6 +148,12 @@ export interface ValidatedContent {
   heart_law_affinity_rules: HeartLawAffinityRules | null;
   prestige_store: PrestigeStoreConfig;
   pavilion_records: PavilionRecordsConfig;
+  onboarding_milestones: OnboardingMilestonesConfig;
+  cultivator_stats: CultivatorStatsConfig;
+  training_regimens: TrainingRegimensConfig;
+  dao_heart_practices: DaoHeartPracticesConfig;
+  spirit_roots: SpiritRootProgressionsConfig;
+  readiness_categories: ReadinessCategoriesConfig;
 }
 
 type ErrorCollector = {
@@ -188,6 +219,92 @@ const VALID_CURRENCY_KEYS = new Set([
   'cur_ap',
 ]);
 
+const VALID_ONBOARDING_TABS = new Set<string>(ONBOARDING_TAB_KEYS);
+const VALID_ONBOARDING_MODULES = new Set<string>(ONBOARDING_LIVE_WORLD_MODULE_KEYS);
+const VALID_ONBOARDING_PHASES = new Set<string>(ONBOARDING_PHASES);
+const ONBOARDING_SOURCE_SINK_REQUIRED_IDS = new Set([
+  'M3_world_outskirts',
+  'M4_pavilion_satchel',
+  'M5_techniques_loadout',
+  'M6_apothecary_expedition',
+  'M7_forge',
+  'M8_ruins_bounties',
+  'M9_gate_trial',
+]);
+
+const CULTIVATOR_STAT_CATEGORIES = new Set(['foundation', 'path', 'doctrine', 'handling']);
+const CULTIVATOR_PATH_IDS = new Set(['heaven', 'earth', 'martial', 'universal']);
+const CULTIVATOR_STAT_TIERS = new Set(['core', 'support', 'advanced']);
+const CULTIVATOR_STAT_SURFACES = new Set<CultivatorStatSurface>([
+  'status',
+  'trainingHall',
+  'daoHeart',
+  'gateReadiness',
+  'techniqueTooltip',
+  'breakthrough',
+  'cultivation',
+  'apothecary',
+  'techniques',
+  'equipment',
+  'offline',
+  'combatLog',
+  'fatigue',
+  'combat',
+  'pouch',
+  'ai',
+]);
+const TRAINING_PATH_IDS = new Set(['heaven', 'earth', 'martial']);
+const TRAINING_INTENSITY_IDS = new Set(['quiet', 'steady', 'harsh', 'limit']);
+const DAO_HEART_PRACTICE_IDS = new Set([
+  'silent_sitting',
+  'verse_recitation',
+  'scripture_copying',
+  'breath_harmonization',
+  'inner_demon_debate',
+  'doctrine_trial',
+]);
+const READINESS_CATEGORY_IDS = new Set([
+  'realm_qi',
+  'heart_law_stability',
+  'techniques_loadout',
+  'equipment_forge',
+  'medicine_prep',
+  'path_training',
+  'safety_net_support',
+]);
+const SPIRIT_ROOT_ELEMENT_IDS = new Set([
+  'wood',
+  'fire',
+  'earth',
+  'metal',
+  'water',
+  'wind',
+  'lightning',
+  'ice',
+  'light',
+  'shadow',
+  'soul',
+  'void',
+  'time',
+  'astral',
+]);
+const SPIRIT_ROOT_AWAKENING_STATES = new Set(['dormant', 'stirring', 'open', 'radiant', 'transformed']);
+const TRAINING_MASTERY_MILESTONES = [100, 260, 520, 900, 1450, 2200, 3200, 4500, 6200, 8400] as const;
+const FORBIDDEN_BASE_PRACTICE_COST_KEYS = [
+  'cost',
+  'costs',
+  'requiredItems',
+  'requiredCurrencies',
+  'materials',
+  'goldCost',
+  'spiritStoneCost',
+  'itemCost',
+  'herbCost',
+  'oreCost',
+  'pillCost',
+  'gateItemCost',
+] as const;
+
 function isCurrencyKey(k: string): boolean {
   return VALID_CURRENCY_KEYS.has(k);
 }
@@ -209,6 +326,582 @@ function assertCostOrItemRefsExist(
       addErr(`${label} references missing item '${k}'`);
     }
   }
+}
+
+function validateOnboardingRoute(route: unknown, label: string, addErr: ErrorCollector['addErr']): void {
+  if (!isObject(route)) {
+    addErr(`${label} route must be an object`);
+    return;
+  }
+  const kind = route.kind;
+  if (kind === 'none' || kind === 'life_start') return;
+  if (kind === 'tab') {
+    if (typeof route.tab !== 'string' || !VALID_ONBOARDING_TABS.has(route.tab)) {
+      addErr(`${label} route references invalid tab '${String(route.tab)}'`);
+    }
+    return;
+  }
+  if (kind === 'world_module') {
+    if (typeof route.moduleKey !== 'string' || !VALID_ONBOARDING_MODULES.has(route.moduleKey)) {
+      addErr(`${label} route references invalid world module '${String(route.moduleKey)}'`);
+    }
+    if ('cityId' in route && route.cityId !== null && route.cityId !== undefined && typeof route.cityId !== 'string') {
+      addErr(`${label} route cityId must be a string or null`);
+    }
+    return;
+  }
+  if (kind === 'modal') {
+    if (!['manualSatchel', 'medicinePouch', 'tutorialLedger'].includes(String(route.modalKey))) {
+      addErr(`${label} route references invalid modal '${String(route.modalKey)}'`);
+    }
+    return;
+  }
+  addErr(`${label} route has invalid kind '${String(kind)}'`);
+}
+
+function validateOnboardingCompletion(completion: unknown, label: string, addErr: ErrorCollector['addErr']): void {
+  if (!isObject(completion)) {
+    addErr(`${label} completion must be an object`);
+    return;
+  }
+  const kind = completion.kind;
+  if (kind === 'store_fact') {
+    if (typeof completion.fact !== 'string' || completion.fact.length === 0) {
+      addErr(`${label} store_fact completion missing fact`);
+    }
+    return;
+  }
+  if (kind === 'event') {
+    if (typeof completion.eventType !== 'string' || completion.eventType.length === 0) {
+      addErr(`${label} event completion missing eventType`);
+    }
+    if ('match' in completion && completion.match !== undefined && !isObject(completion.match)) {
+      addErr(`${label} event completion match must be an object when present`);
+    }
+    return;
+  }
+  if (kind === 'compound') {
+    const all = completion.all;
+    const any = completion.any;
+    if (all !== undefined && !Array.isArray(all)) addErr(`${label} compound all must be an array`);
+    if (any !== undefined && !Array.isArray(any)) addErr(`${label} compound any must be an array`);
+    if (!Array.isArray(all) && !Array.isArray(any)) addErr(`${label} compound completion must define all or any`);
+    if (Array.isArray(all)) {
+      all.forEach((entry, idx) => validateOnboardingCompletion(entry, `${label}.all[${idx}]`, addErr));
+    }
+    if (Array.isArray(any)) {
+      any.forEach((entry, idx) => validateOnboardingCompletion(entry, `${label}.any[${idx}]`, addErr));
+    }
+    return;
+  }
+  addErr(`${label} completion has invalid kind '${String(kind)}'`);
+}
+
+function validateOnboardingUnlocks(unlocks: unknown, label: string, addErr: ErrorCollector['addErr']): void {
+  if (!isObject(unlocks)) {
+    addErr(`${label} unlocks must be an object`);
+    return;
+  }
+  const tabs = unlocks.tabs;
+  const worldModules = unlocks.worldModules;
+  const teaserWorldModules = unlocks.teaserWorldModules;
+  if (!Array.isArray(tabs)) addErr(`${label} unlocks.tabs must be an array`);
+  if (!Array.isArray(worldModules)) addErr(`${label} unlocks.worldModules must be an array`);
+  if (!Array.isArray(teaserWorldModules)) addErr(`${label} unlocks.teaserWorldModules must be an array`);
+  if (Array.isArray(tabs)) {
+    tabs.forEach((tab, idx) => {
+      if (typeof tab !== 'string' || !VALID_ONBOARDING_TABS.has(tab)) {
+        addErr(`${label} unlocks.tabs[${idx}] invalid tab '${String(tab)}'`);
+      }
+    });
+  }
+  const validateModules = (values: unknown[], field: string) => {
+    values.forEach((moduleKey, idx) => {
+      if (typeof moduleKey !== 'string' || !VALID_ONBOARDING_MODULES.has(moduleKey)) {
+        addErr(`${label} unlocks.${field}[${idx}] invalid world module '${String(moduleKey)}'`);
+      }
+    });
+  };
+  if (Array.isArray(worldModules)) validateModules(worldModules, 'worldModules');
+  if (Array.isArray(teaserWorldModules)) validateModules(teaserWorldModules, 'teaserWorldModules');
+  if ('flags' in unlocks && unlocks.flags !== undefined) {
+    if (!Array.isArray(unlocks.flags) || !unlocks.flags.every((entry) => typeof entry === 'string')) {
+      addErr(`${label} unlocks.flags must be a string array when present`);
+    }
+  }
+}
+
+function validateOnboardingMilestones(config: LoadedContentRaw['onboarding_milestones'], addErr: ErrorCollector['addErr']): OnboardingMilestonesConfig {
+  assertObject(config, 'onboarding_milestones.json');
+  if (config.version !== ONBOARDING_SCHEMA_VERSION) {
+    addErr(`onboarding_milestones.json version must be '${ONBOARDING_SCHEMA_VERSION}'`);
+  }
+  assertArray(config.milestones, 'onboarding_milestones.json milestones');
+
+  const milestones = config.milestones as unknown[];
+  if (milestones.length !== ONBOARDING_MILESTONE_IDS.length) {
+    addErr(`onboarding_milestones.json must define exactly ${ONBOARDING_MILESTONE_IDS.length} milestones`);
+  }
+
+  const seenIds = new Set<string>();
+  const seenOrders = new Set<number>();
+  milestones.forEach((rawMilestone, idx) => {
+    if (!isObject(rawMilestone)) {
+      addErr(`onboarding_milestones.json milestones[${idx}] must be an object`);
+      return;
+    }
+    const expectedId = ONBOARDING_MILESTONE_IDS[idx];
+    if (rawMilestone.id !== expectedId) {
+      addErr(`onboarding_milestones.json milestones[${idx}] expected id '${expectedId}', found '${String(rawMilestone.id)}'`);
+    }
+    if (typeof rawMilestone.id === 'string') {
+      if (seenIds.has(rawMilestone.id)) addErr(`onboarding_milestones.json duplicate id '${rawMilestone.id}'`);
+      seenIds.add(rawMilestone.id);
+    }
+    if (rawMilestone.order !== idx) {
+      addErr(`onboarding_milestones.json milestone '${String(rawMilestone.id)}' must have order ${idx}`);
+    }
+    if (typeof rawMilestone.order === 'number') {
+      if (seenOrders.has(rawMilestone.order)) addErr(`onboarding_milestones.json duplicate order ${rawMilestone.order}`);
+      seenOrders.add(rawMilestone.order);
+    }
+    if (typeof rawMilestone.label !== 'string' || rawMilestone.label.length === 0) addErr(`${String(rawMilestone.id)} missing label`);
+    if (typeof rawMilestone.phase !== 'string' || !VALID_ONBOARDING_PHASES.has(rawMilestone.phase)) {
+      addErr(`${String(rawMilestone.id)} invalid phase '${String(rawMilestone.phase)}'`);
+    }
+    if (rawMilestone.firstLifeOnly !== true) addErr(`${String(rawMilestone.id)} must be firstLifeOnly`);
+    if (!isObject(rawMilestone.trigger)) addErr(`${String(rawMilestone.id)} trigger must be an object`);
+    validateOnboardingUnlocks(rawMilestone.unlocks, String(rawMilestone.id), addErr);
+
+    if (!isObject(rawMilestone.objective)) {
+      addErr(`${String(rawMilestone.id)} objective must be an object`);
+    } else {
+      if (typeof rawMilestone.objective.title !== 'string' || rawMilestone.objective.title.length === 0) addErr(`${String(rawMilestone.id)} objective title missing`);
+      if (typeof rawMilestone.objective.why !== 'string' || rawMilestone.objective.why.length === 0) addErr(`${String(rawMilestone.id)} objective why missing`);
+      validateOnboardingRoute(rawMilestone.objective.route, `${String(rawMilestone.id)} objective`, addErr);
+      validateOnboardingCompletion(rawMilestone.objective.completion, `${String(rawMilestone.id)} objective`, addErr);
+    }
+
+    const tutorialCard = rawMilestone.tutorialCard;
+    if (!isObject(tutorialCard)) {
+      addErr(`${String(rawMilestone.id)} tutorialCard must be an object`);
+    } else {
+      ['id', 'title', 'body', 'cta'].forEach((key) => {
+        if (typeof tutorialCard[key] !== 'string' || String(tutorialCard[key]).length === 0) {
+          addErr(`${String(rawMilestone.id)} tutorialCard.${key} missing`);
+        }
+      });
+    }
+
+    if (ONBOARDING_SOURCE_SINK_REQUIRED_IDS.has(String(rawMilestone.id))) {
+      if (typeof rawMilestone.sourceSinkNote !== 'string' || rawMilestone.sourceSinkNote.length === 0) {
+        addErr(`${String(rawMilestone.id)} must include sourceSinkNote`);
+      }
+    } else if (rawMilestone.sourceSinkNote !== null && typeof rawMilestone.sourceSinkNote !== 'string') {
+      addErr(`${String(rawMilestone.id)} sourceSinkNote must be string or null`);
+    }
+    if (typeof rawMilestone.replayId !== 'string' || rawMilestone.replayId.length === 0) {
+      addErr(`${String(rawMilestone.id)} replayId missing`);
+    }
+  });
+
+  const byId = Object.fromEntries(
+    milestones.filter(isObject).map((milestone) => [String(milestone.id), milestone]),
+  );
+  const m2 = byId.M2_status_unlock;
+  const m3 = byId.M3_world_outskirts;
+  const m6 = byId.M6_apothecary_expedition;
+  const m8 = byId.M8_ruins_bounties;
+  const m9 = byId.M9_gate_trial;
+  const m10 = byId.M10_foundation_graduation;
+  if (isObject(m2?.unlocks)) {
+    const unlocks = m2.unlocks as { tabs?: unknown[]; worldModules?: unknown[] };
+    if (!unlocks.tabs?.includes('status')) addErr('M2_status_unlock must unlock status');
+    if (unlocks.tabs?.includes('adventure')) addErr('M2_status_unlock must not unlock adventure');
+    if ((unlocks.worldModules ?? []).length > 0) addErr('M2_status_unlock must not unlock world modules');
+  }
+  if (isObject(m3?.unlocks) && !(m3.unlocks as { teaserWorldModules?: unknown[] }).teaserWorldModules?.includes('manualPavilion')) {
+    addErr('M3_world_outskirts must teaser manualPavilion');
+  }
+  if (isObject(m6?.unlocks)) {
+    const modules = (m6.unlocks as { worldModules?: unknown[] }).worldModules ?? [];
+    if (!modules.includes('apothecary') || !modules.includes('expeditions')) addErr('M6_apothecary_expedition must unlock apothecary and expeditions together');
+  }
+  if (isObject(m8?.unlocks)) {
+    const modules = (m8.unlocks as { worldModules?: unknown[]; teaserWorldModules?: unknown[] }).worldModules ?? [];
+    if (!modules.includes('ruins') || !modules.includes('bounties')) addErr('M8_ruins_bounties must unlock ruins and bounties together');
+    if (!((m8.unlocks as { teaserWorldModules?: unknown[] }).teaserWorldModules ?? []).includes('gateTrial')) addErr('M8_ruins_bounties must teaser gateTrial');
+  }
+  if (isObject(m9?.unlocks) && !((m9.unlocks as { worldModules?: unknown[] }).worldModules ?? []).includes('gateTrial')) {
+    addErr('M9_gate_trial must unlock gateTrial');
+  }
+  if (isObject(m10?.unlocks) && !((m10.unlocks as { flags?: unknown[] }).flags ?? []).includes('first_life_onboarding_complete')) {
+    addErr('M10_foundation_graduation must mark first_life_onboarding_complete');
+  }
+
+  return {
+    version: ONBOARDING_SCHEMA_VERSION,
+    designNotes: Array.isArray(config.designNotes) ? config.designNotes.filter((entry): entry is string => typeof entry === 'string') : [],
+    milestones: milestones as OnboardingMilestoneContent[],
+  };
+}
+
+function assertNoBasePracticeCosts(entity: Record<string, unknown>, label: string, addErr: ErrorCollector['addErr']): void {
+  FORBIDDEN_BASE_PRACTICE_COST_KEYS.forEach((key) => {
+    if (Object.prototype.hasOwnProperty.call(entity, key)) {
+      addErr(`${label} declares forbidden base cost field: ${key}`);
+    }
+  });
+}
+
+function hasExactNumberList(values: unknown, expected: readonly number[]): boolean {
+  return Array.isArray(values)
+    && values.length === expected.length
+    && values.every((value, idx) => value === expected[idx]);
+}
+
+function validateCultivatorStats(
+  config: LoadedContentRaw['cultivator_stats'] | undefined,
+  addErr: ErrorCollector['addErr'],
+): CultivatorStatsConfig {
+  if (config === undefined) {
+    return { version: 'legacy-test-raw-without-mp0-content', stats: [] };
+  }
+
+  assertObject(config, 'stats.json root');
+  assertArray(config.stats, 'stats.json.stats');
+
+  const stats = config.stats as CultivatorStatDef[];
+  assertArrayItemsHaveId(stats as any[], 'stats.json.stats');
+  assertUniqueIds(stats, 'stats.json.stats');
+  if (stats.length !== 28) {
+    addErr(`stats.json must define exactly 28 canonical cultivator stats, found ${stats.length}`);
+  }
+
+  stats.forEach((stat, idx) => {
+    if (!CULTIVATOR_STAT_CATEGORIES.has(String(stat.category))) {
+      addErr(`stats.json.stats[${idx}] has invalid category '${String(stat.category)}'`);
+    }
+    if (stat.path !== undefined && !CULTIVATOR_PATH_IDS.has(String(stat.path))) {
+      addErr(`stats.json.stats[${idx}] has invalid path '${String(stat.path)}'`);
+    }
+    if (stat.category === 'foundation' && stat.path !== 'universal') {
+      addErr(`stats.json.stats[${idx}] foundation stat '${stat.id}' must use path universal`);
+    }
+    if (stat.category === 'path' && (stat.path === undefined || stat.path === 'universal')) {
+      addErr(`stats.json.stats[${idx}] path stat '${stat.id}' must use heaven, earth, or martial`);
+    }
+    if (stat.tier !== undefined && !CULTIVATOR_STAT_TIERS.has(String(stat.tier))) {
+      addErr(`stats.json.stats[${idx}] has invalid tier '${String(stat.tier)}'`);
+    }
+    if (!Array.isArray(stat.surfaces) || stat.surfaces.length === 0) {
+      addErr(`stats.json.stats[${idx}] must define at least one surface`);
+    } else {
+      stat.surfaces.forEach((surface, surfaceIdx) => {
+        if (!CULTIVATOR_STAT_SURFACES.has(surface)) {
+          addErr(`stats.json.stats[${idx}].surfaces[${surfaceIdx}] invalid surface '${String(surface)}'`);
+        }
+      });
+    }
+    if (stat.realmCapFormulaId !== undefined && stat.realmCapFormulaId !== 'training_stat_cap_v1') {
+      addErr(`stats.json.stats[${idx}] uses unknown realmCapFormulaId '${String(stat.realmCapFormulaId)}'`);
+    }
+    if (stat.deferredEffect !== true) {
+      addErr(`stats.json.stats[${idx}] must mark effect as deferred for Mega Prompt 0`);
+    }
+  });
+
+  const armorHarmony = stats.filter((stat) => stat.id === 'armor_harmony');
+  if (armorHarmony.length !== 1) {
+    addErr(`stats.json must contain exactly one armor_harmony definition, found ${armorHarmony.length}`);
+  } else if (armorHarmony[0].category !== 'path' || armorHarmony[0].path !== 'earth') {
+    addErr('stats.json armor_harmony must remain the single Earth path definition with handling surfaces');
+  }
+
+  return config;
+}
+
+function validateTrainingRegimens(
+  config: LoadedContentRaw['training_regimens'] | undefined,
+  statsById: Map<string, CultivatorStatDef>,
+  addErr: ErrorCollector['addErr'],
+): TrainingRegimensConfig {
+  if (config === undefined) {
+    return { version: 'legacy-test-raw-without-mp0-content', masteryMilestones: [], intensities: [], regimens: [] };
+  }
+
+  assertObject(config, 'training_regimens.json root');
+  assertArray(config.intensities, 'training_regimens.json.intensities');
+  assertArray(config.regimens, 'training_regimens.json.regimens');
+
+  if (!hasExactNumberList(config.masteryMilestones, TRAINING_MASTERY_MILESTONES)) {
+    addErr('training_regimens.json masteryMilestones drifted from canonical MP0 values');
+  }
+
+  const intensityIds = new Set<string>();
+  config.intensities.forEach((intensity, idx) => {
+    if (!TRAINING_INTENSITY_IDS.has(String(intensity.id))) {
+      addErr(`training_regimens.json.intensities[${idx}] invalid id '${String(intensity.id)}'`);
+    }
+    if (intensityIds.has(intensity.id)) addErr(`training_regimens.json duplicate intensity id '${intensity.id}'`);
+    intensityIds.add(intensity.id);
+    if (typeof intensity.xpMultiplier !== 'number' || intensity.xpMultiplier <= 0) {
+      addErr(`training_regimens.json.intensities[${idx}] xpMultiplier must be positive`);
+    }
+    if (typeof intensity.fatigueGainPerMin !== 'number' || intensity.fatigueGainPerMin < 0) {
+      addErr(`training_regimens.json.intensities[${idx}] fatigueGainPerMin must be non-negative`);
+    }
+  });
+
+  const regimens = config.regimens;
+  assertArrayItemsHaveId(regimens as any[], 'training_regimens.json.regimens');
+  assertUniqueIds(regimens, 'training_regimens.json.regimens');
+
+  const byPath = new Map<string, number>();
+  const unlockIndexesByPath = new Map<string, number[]>();
+  const primaryStatsByPath = new Map<string, Map<string, string>>();
+  regimens.forEach((regimen, idx) => {
+    const label = `Training regimen ${regimen.id}`;
+    assertNoBasePracticeCosts(regimen as unknown as Record<string, unknown>, label, addErr);
+    if (!TRAINING_PATH_IDS.has(String(regimen.path))) {
+      addErr(`training_regimens.json.regimens[${idx}] invalid path '${String(regimen.path)}'`);
+    }
+    if (typeof regimen.regimenRate !== 'number' || regimen.regimenRate < 0.8 || regimen.regimenRate > 1.1) {
+      addErr(`Training regimen ${regimen.id} has out-of-band rate ${String(regimen.regimenRate)}`);
+    }
+    if (!hasExactNumberList(regimen.masteryMilestones, TRAINING_MASTERY_MILESTONES)) {
+      addErr(`Training regimen ${regimen.id} mastery milestones drifted from canonical MP0 values`);
+    }
+
+    (['primaryStatId', 'secondaryStatId', 'foundationStatId'] as const).forEach((field) => {
+      const statId = regimen[field];
+      const stat = statsById.get(statId);
+      if (!stat) {
+        addErr(`Training regimen ${regimen.id} references missing stat ${statId}`);
+        return;
+      }
+      if (field !== 'foundationStatId' && stat.path && stat.path !== 'universal' && stat.path !== regimen.path) {
+        addErr(`Training regimen ${regimen.id} references ${stat.path} stat ${statId} from ${regimen.path}`);
+      }
+    });
+
+    if (TRAINING_PATH_IDS.has(String(regimen.path))) {
+      const pathId = regimen.path as keyof typeof TRAINING_STAT_UNLOCK_ORDER_BY_PATH;
+      const policyIndex = getTrainingStatUnlockRealmIndex(pathId, regimen.primaryStatId);
+      const unlockRealmIndex = regimen.unlockRealmIndex;
+      if (typeof unlockRealmIndex !== 'number' || !Number.isInteger(unlockRealmIndex) || unlockRealmIndex < 0 || unlockRealmIndex > 5) {
+        addErr(`Training regimen ${regimen.id} unlockRealmIndex must be an integer from 0 to 5`);
+      }
+      if (policyIndex === null) {
+        addErr(`Training regimen ${regimen.id} primary stat ${regimen.primaryStatId} is not in the ${pathId} Training unlock policy`);
+      } else if (unlockRealmIndex !== policyIndex) {
+        addErr(
+          `Training regimen ${regimen.id} unlockRealmIndex ${String(unlockRealmIndex)} must match ${regimen.primaryStatId} policy realm ${policyIndex}`,
+        );
+      }
+      unlockIndexesByPath.set(pathId, [...(unlockIndexesByPath.get(pathId) ?? []), Number(unlockRealmIndex)]);
+      const seenPrimary = primaryStatsByPath.get(pathId) ?? new Map<string, string>();
+      if (seenPrimary.has(regimen.primaryStatId)) {
+        addErr(
+          `training_regimens.json ${pathId} primary stat ${regimen.primaryStatId} is used by both ${seenPrimary.get(regimen.primaryStatId)} and ${regimen.id}`,
+        );
+      }
+      seenPrimary.set(regimen.primaryStatId, regimen.id);
+      primaryStatsByPath.set(pathId, seenPrimary);
+    }
+
+    byPath.set(regimen.path, (byPath.get(regimen.path) ?? 0) + 1);
+  });
+
+  ['heaven', 'earth', 'martial'].forEach((pathId) => {
+    const count = byPath.get(pathId) ?? 0;
+    if (count !== 6) addErr(`Expected 6 training regimens for ${pathId}, found ${count}`);
+    const unlockIndexes = unlockIndexesByPath.get(pathId) ?? [];
+    if (unlockIndexes.length > 0 && unlockIndexes.every((index) => index === 0)) {
+      addErr(`training_regimens.json ${pathId} unlockRealmIndex values are all 0; MP2 requires staged unlocks`);
+    }
+    const primaryStats = primaryStatsByPath.get(pathId) ?? new Map<string, string>();
+    TRAINING_STAT_UNLOCK_ORDER_BY_PATH[pathId as keyof typeof TRAINING_STAT_UNLOCK_ORDER_BY_PATH].forEach((statId) => {
+      if (!primaryStats.has(statId)) {
+        addErr(`training_regimens.json ${pathId} is missing a primary regimen for staged stat ${statId}`);
+      }
+    });
+  });
+
+  return config;
+}
+
+function validateDaoHeartPractices(
+  config: LoadedContentRaw['dao_heart_practices'] | undefined,
+  addErr: ErrorCollector['addErr'],
+): DaoHeartPracticesConfig {
+  if (config === undefined) {
+    return { version: 'legacy-test-raw-without-mp0-content', practices: [] };
+  }
+
+  assertObject(config, 'dao_heart_practices.json root');
+  assertArray(config.practices, 'dao_heart_practices.json.practices');
+  const practices = config.practices;
+  assertArrayItemsHaveId(practices as any[], 'dao_heart_practices.json.practices');
+  assertUniqueIds(practices, 'dao_heart_practices.json.practices');
+  if (practices.length !== DAO_HEART_PRACTICE_IDS.size) {
+    addErr(`dao_heart_practices.json must define exactly ${DAO_HEART_PRACTICE_IDS.size} practices, found ${practices.length}`);
+  }
+
+  practices.forEach((practice, idx) => {
+    assertNoBasePracticeCosts(practice as unknown as Record<string, unknown>, `Dao Heart practice ${practice.id}`, addErr);
+    if (!DAO_HEART_PRACTICE_IDS.has(String(practice.id))) {
+      addErr(`dao_heart_practices.json.practices[${idx}] invalid id '${String(practice.id)}'`);
+    }
+    if (typeof practice.offlineAllowed !== 'boolean') {
+      addErr(`dao_heart_practices.json.practices[${idx}] offlineAllowed must be boolean`);
+    }
+    (['heartLawXpMultiplier', 'clarityMultiplier', 'verseMultiplier', 'rootResonanceMultiplier'] as const).forEach((field) => {
+      const value = practice[field];
+      if (value !== 'milestone' && typeof value !== 'number') {
+        addErr(`dao_heart_practices.json.practices[${idx}].${field} must be number or milestone`);
+      }
+    });
+    if (practice.turbulencePerMinute !== 'variable' && typeof practice.turbulencePerMinute !== 'number') {
+      addErr(`dao_heart_practices.json.practices[${idx}].turbulencePerMinute must be number or variable`);
+    }
+  });
+
+  DAO_HEART_PRACTICE_IDS.forEach((id) => {
+    if (!practices.some((practice) => practice.id === id)) {
+      addErr(`dao_heart_practices.json missing practice ${id}`);
+    }
+  });
+
+  return config;
+}
+
+function validateSpiritRoots(
+  config: LoadedContentRaw['spirit_roots'] | undefined,
+  statsById: Map<string, CultivatorStatDef>,
+  heartLawIds: Set<string>,
+  addErr: ErrorCollector['addErr'],
+): SpiritRootProgressionsConfig {
+  if (config === undefined) {
+    return { version: 'legacy-test-raw-without-mp0-content', roots: [] };
+  }
+
+  assertObject(config, 'spirit_roots.json root');
+  assertArray(config.roots, 'spirit_roots.json.roots');
+  const seen = new Set<string>();
+  config.roots.forEach((root, idx) => {
+    if (typeof root.elementId !== 'string') {
+      addErr(`spirit_roots.json.roots[${idx}] missing elementId`);
+      return;
+    }
+    if (seen.has(root.elementId)) addErr(`spirit_roots.json duplicate elementId '${root.elementId}'`);
+    seen.add(root.elementId);
+    if (!SPIRIT_ROOT_ELEMENT_IDS.has(root.elementId)) {
+      addErr(`spirit_roots.json.roots[${idx}] invalid elementId '${root.elementId}'`);
+    }
+    if (root.hardLocksMismatchRoutes === true) {
+      addErr(`spirit_roots.json root '${root.elementId}' must not hard-lock mismatch routes`);
+    }
+    if (!Array.isArray(root.purityGrades) || root.purityGrades.length === 0 || root.purityGrades.some((grade) => typeof grade !== 'number')) {
+      addErr(`spirit_roots.json root '${root.elementId}' must define numeric purityGrades`);
+    }
+    if (!Array.isArray(root.awakeningStates) || root.awakeningStates.length === 0) {
+      addErr(`spirit_roots.json root '${root.elementId}' must define awakeningStates`);
+    } else {
+      root.awakeningStates.forEach((state) => {
+        if (!SPIRIT_ROOT_AWAKENING_STATES.has(String(state))) {
+          addErr(`spirit_roots.json root '${root.elementId}' invalid awakening state '${String(state)}'`);
+        }
+      });
+    }
+    if (typeof root.procChanceCapPct !== 'number' || root.procChanceCapPct < 0 || root.procChanceCapPct > 100) {
+      addErr(`spirit_roots.json root '${root.elementId}' procChanceCapPct must be between 0 and 100`);
+    }
+    if (root.procChanceCapPct !== 18) {
+      addErr(`spirit_roots.json root '${root.elementId}' procChanceCapPct must remain MP4 cap 18`);
+    }
+    if (root.internalCooldownSec !== 10) {
+      addErr(`spirit_roots.json root '${root.elementId}' internalCooldownSec must remain MP4 default 10`);
+    }
+    if (typeof (root as { statusLine?: unknown }).statusLine !== 'string' || !(root as { statusLine?: string }).statusLine?.trim()) {
+      addErr(`spirit_roots.json root '${root.elementId}' must define statusLine`);
+    }
+    if (typeof (root as { tooltipLine?: unknown }).tooltipLine !== 'string' || !(root as { tooltipLine?: string }).tooltipLine?.trim()) {
+      addErr(`spirit_roots.json root '${root.elementId}' must define tooltipLine`);
+    }
+    (root.variants ?? []).forEach((variant) => {
+      if (variant.requiredStatId && !statsById.has(variant.requiredStatId)) {
+        addErr(`spirit_roots.json root '${root.elementId}' variant '${variant.id}' references missing stat ${variant.requiredStatId}`);
+      }
+      (variant.requiredStatRatings ?? []).forEach((requirement) => {
+        if (!statsById.has(requirement.statId)) {
+          addErr(`spirit_roots.json root '${root.elementId}' variant '${variant.id}' references missing stat ${requirement.statId}`);
+        }
+        if (typeof requirement.minRating !== 'number' || requirement.minRating < 0) {
+          addErr(`spirit_roots.json root '${root.elementId}' variant '${variant.id}' has invalid minRating`);
+        }
+      });
+      if (variant.requiredHeartLawId && !heartLawIds.has(variant.requiredHeartLawId)) {
+        addErr(`spirit_roots.json root '${root.elementId}' variant '${variant.id}' references missing Heart Law ${variant.requiredHeartLawId}`);
+      }
+      if (variant.requiredRootResonance !== undefined && (variant.requiredRootResonance < 0 || variant.requiredRootResonance > 100)) {
+        addErr(`spirit_roots.json root '${root.elementId}' variant '${variant.id}' requiredRootResonance must be 0-100`);
+      }
+      if (variant.requiredVerseMastery !== undefined && (variant.requiredVerseMastery < 0 || variant.requiredVerseMastery > 100)) {
+        addErr(`spirit_roots.json root '${root.elementId}' variant '${variant.id}' requiredVerseMastery must be 0-100`);
+      }
+      if (variant.requiredDaoHeartClarity !== undefined && (variant.requiredDaoHeartClarity < 0 || variant.requiredDaoHeartClarity > 100)) {
+        addErr(`spirit_roots.json root '${root.elementId}' variant '${variant.id}' requiredDaoHeartClarity must be 0-100`);
+      }
+    });
+  });
+
+  SPIRIT_ROOT_ELEMENT_IDS.forEach((elementId) => {
+    if (!seen.has(elementId)) addErr(`spirit_roots.json missing root ${elementId}`);
+  });
+
+  return config;
+}
+
+function validateReadinessCategories(
+  config: LoadedContentRaw['readiness_categories'] | undefined,
+  addErr: ErrorCollector['addErr'],
+): ReadinessCategoriesConfig {
+  if (config === undefined) {
+    return { version: 'legacy-test-raw-without-mp0-content', categories: [] };
+  }
+
+  assertObject(config, 'readiness_categories.json root');
+  assertArray(config.categories, 'readiness_categories.json.categories');
+  const categories = config.categories;
+  assertArrayItemsHaveId(categories as any[], 'readiness_categories.json.categories');
+  assertUniqueIds(categories, 'readiness_categories.json.categories');
+  if (categories.length !== READINESS_CATEGORY_IDS.size) {
+    addErr(`readiness_categories.json must define exactly ${READINESS_CATEGORY_IDS.size} categories, found ${categories.length}`);
+  }
+  const totalMaxScore = categories.reduce((sum, category) => sum + (typeof category.maxScore === 'number' ? category.maxScore : 0), 0);
+  if (totalMaxScore !== 100) {
+    addErr(`readiness_categories.json maxScore total must remain 100, found ${totalMaxScore}`);
+  }
+  categories.forEach((category, idx) => {
+    if (!READINESS_CATEGORY_IDS.has(String(category.id))) {
+      addErr(`readiness_categories.json.categories[${idx}] invalid id '${String(category.id)}'`);
+    }
+    if (typeof category.maxScore !== 'number' || category.maxScore <= 0) {
+      addErr(`readiness_categories.json category '${category.id}' maxScore must be positive`);
+    }
+    if (!Array.isArray(category.sourceSystems) || category.sourceSystems.length === 0) {
+      addErr(`readiness_categories.json category '${category.id}' sourceSystems must be non-empty`);
+    }
+  });
+
+  READINESS_CATEGORY_IDS.forEach((id) => {
+    if (!categories.some((category) => category.id === id)) {
+      addErr(`readiness_categories.json missing category ${id}`);
+    }
+  });
+
+  return config;
 }
 
 export function extractCities(root: CitiesPayload): CityDef[] {
@@ -277,20 +970,62 @@ function validateCities(config: CitiesPayload): CityDef[] {
   return cities;
 }
 
-function validateTechniques(config: TechniquesConfig): TechniqueDef[] {
+function validateTechniques(
+  config: TechniquesConfig,
+  statsById: Map<string, CultivatorStatDef>,
+  addErr: ErrorCollector['addErr'],
+): TechniqueDef[] {
   assertObject(config, 'techniques.json root');
   assertHasKey(config, 'techniques', 'techniques.json');
   assertArray((config as any).techniques, 'techniques.json.techniques');
   const techniques = (config as any).techniques as TechniqueDef[];
 
+  let mp4ScalingCount = 0;
   techniques.forEach((tech, idx) => {
     assertObject(tech, `techniques[${idx}]`);
     assert(typeof tech.id === 'string', `techniques[${idx}].id must be a string`);
     assert(typeof tech.path === 'string', `techniques[${idx}].path must be a string`);
     assert(typeof tech.type === 'string', `techniques[${idx}].type must be a string`);
+
+    if (tech.scalingVersion === 'mp4_v1') {
+      mp4ScalingCount += 1;
+      if (!tech.primaryScalingStatId || !statsById.has(tech.primaryScalingStatId)) {
+        addErr(`techniques.json technique '${tech.id}' references missing primaryScalingStatId '${String(tech.primaryScalingStatId)}'`);
+      }
+      if (!tech.secondaryScalingStatId || !statsById.has(tech.secondaryScalingStatId)) {
+        addErr(`techniques.json technique '${tech.id}' references missing secondaryScalingStatId '${String(tech.secondaryScalingStatId)}'`);
+      }
+      if (typeof tech.primaryScalingCoef !== 'number' || tech.primaryScalingCoef < 0) {
+        addErr(`techniques.json technique '${tech.id}' must define non-negative primaryScalingCoef`);
+      }
+      if (typeof tech.secondaryScalingCoef !== 'number' || tech.secondaryScalingCoef < 0) {
+        addErr(`techniques.json technique '${tech.id}' must define non-negative secondaryScalingCoef`);
+      }
+      if (!['offense', 'defense', 'utility', 'control', 'support', 'ultimate'].includes(String(tech.scalingRole))) {
+        addErr(`techniques.json technique '${tech.id}' has invalid scalingRole '${String(tech.scalingRole)}'`);
+      }
+      if (!['offense', 'defense', 'utility', 'control', 'support', 'ultimate'].includes(String(tech.scalingCapId))) {
+        addErr(`techniques.json technique '${tech.id}' has invalid scalingCapId '${String(tech.scalingCapId)}'`);
+      }
+      if (!Array.isArray(tech.rootAffinityIds)) {
+        addErr(`techniques.json technique '${tech.id}' must define rootAffinityIds`);
+      } else {
+        tech.rootAffinityIds.forEach((elementId) => {
+          if (!SPIRIT_ROOT_ELEMENT_IDS.has(elementId)) {
+            addErr(`techniques.json technique '${tech.id}' rootAffinityIds references invalid root '${elementId}'`);
+          }
+        });
+      }
+      if (!Array.isArray(tech.heartLawTagIds)) {
+        addErr(`techniques.json technique '${tech.id}' must define heartLawTagIds`);
+      }
+    }
   });
 
   assertUniqueIds(techniques, 'techniques.json.techniques');
+  if (techniques.length === 60 && mp4ScalingCount !== 60) {
+    addErr(`techniques.json must define MP4 scaling metadata for all 60 techniques, found ${mp4ScalingCount}`);
+  }
   return techniques;
 }
 
@@ -1228,8 +1963,8 @@ function validateEconomicRecommendationRuntimeTruth(options: {
   }
 
   const moduleRoles = getEconomicModuleRoleEntries();
-  if (moduleRoles.length !== 8) {
-    addErr(`module-role registry must cover eight live economy-facing modules; found ${moduleRoles.length}`);
+  if (moduleRoles.length !== ECONOMY_FACING_MODULE_KEYS.length) {
+    addErr(`module-role registry must cover ${ECONOMY_FACING_MODULE_KEYS.length} live economy-facing modules; found ${moduleRoles.length}`);
   }
 
   const deferredLeaks = getDeferredModuleLeakKeysForModuleRoleRegistry();
@@ -1237,7 +1972,7 @@ function validateEconomicRecommendationRuntimeTruth(options: {
     addErr(`module-role registry must not include deferred modules: ${deferredLeaks.join(', ')}`);
   }
 
-  const missingModuleRoles = ['outskirts', 'ruins', 'apothecary', 'forge', 'bounties', 'expeditions', 'manualPavilion', 'gateTrial']
+  const missingModuleRoles = ECONOMY_FACING_MODULE_KEYS
     .filter((moduleKey) => !moduleRoles.some((entry) => entry.moduleKey === moduleKey));
   if (missingModuleRoles.length > 0) {
     addErr(`module-role registry missing economy-facing modules: ${missingModuleRoles.join(', ')}`);
@@ -1402,7 +2137,10 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
 
   // Basic shape validation
   const cities = validateCities(raw.cities);
-  const techniques = validateTechniques(raw.techniques);
+  const cultivatorStats = validateCultivatorStats(raw.cultivator_stats, addErr);
+  const cultivatorStatsById = buildIdMap(cultivatorStats.stats);
+  const cultivatorStatsMap = new Map(cultivatorStats.stats.map((stat) => [stat.id, stat]));
+  const techniques = validateTechniques(raw.techniques, cultivatorStatsMap, addErr);
   const items = validateItems(raw.items);
   const pavilions = validatePavilions(raw.pavilions);
   const outskirts = validateOutskirts(raw.outskirts);
@@ -1419,6 +2157,16 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
   const expeditions = validateExpeditions(raw.expeditions);
   const bountyConfig = validateBounties(raw.bounties);
   const pavilionRecords = validatePavilionRecordsManifest(raw.pavilion_records);
+  const onboardingMilestones = validateOnboardingMilestones(raw.onboarding_milestones, addErr);
+  const trainingRegimens = validateTrainingRegimens(raw.training_regimens, cultivatorStatsMap, addErr);
+  const daoHeartPractices = validateDaoHeartPractices(raw.dao_heart_practices, addErr);
+  const spiritRoots = validateSpiritRoots(
+    raw.spirit_roots,
+    new Map(cultivatorStats.stats.map((stat) => [stat.id, stat])),
+    new Set(heartLaws.map((law) => law.id)),
+    addErr,
+  );
+  const readinessCategories = validateReadinessCategories(raw.readiness_categories, addErr);
   const normalizedTrials = trials.map((trial) => normalizeTrialFailSafeDefinition(trial, raw.economy));
 
   // Build maps for cross references
@@ -1435,6 +2183,7 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
   const lawMap = buildIdMap(heartLaws);
   const prestigeMap = buildIdMap(prestige.upgrades);
   const bountyTemplateMap = buildIdMap(bountyConfig.templates);
+  Object.keys(cultivatorStatsById);
 
   buildLiveCityPackageRegistry({
     cities,
@@ -1492,6 +2241,12 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
       heart_law_affinity_rules: heartLawAffinityRules,
       prestige_store: prestige,
       pavilion_records: pavilionRecords,
+      onboarding_milestones: onboardingMilestones,
+      cultivator_stats: cultivatorStats,
+      training_regimens: trainingRegimens,
+      dao_heart_practices: daoHeartPractices,
+      spirit_roots: spiritRoots,
+      readiness_categories: readinessCategories,
     },
     addErr,
   });
@@ -1519,6 +2274,12 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
       heart_law_affinity_rules: heartLawAffinityRules,
       prestige_store: prestige,
       pavilion_records: pavilionRecords,
+      onboarding_milestones: onboardingMilestones,
+      cultivator_stats: cultivatorStats,
+      training_regimens: trainingRegimens,
+      dao_heart_practices: daoHeartPractices,
+      spirit_roots: spiritRoots,
+      readiness_categories: readinessCategories,
     },
     addErr,
   });
@@ -1545,6 +2306,12 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
       heart_law_affinity_rules: heartLawAffinityRules,
       prestige_store: prestige,
       pavilion_records: pavilionRecords,
+      onboarding_milestones: onboardingMilestones,
+      cultivator_stats: cultivatorStats,
+      training_regimens: trainingRegimens,
+      dao_heart_practices: daoHeartPractices,
+      spirit_roots: spiritRoots,
+      readiness_categories: readinessCategories,
     },
     addErr,
   });
@@ -1571,6 +2338,12 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
       heart_law_affinity_rules: heartLawAffinityRules,
       prestige_store: prestige,
       pavilion_records: pavilionRecords,
+      onboarding_milestones: onboardingMilestones,
+      cultivator_stats: cultivatorStats,
+      training_regimens: trainingRegimens,
+      dao_heart_practices: daoHeartPractices,
+      spirit_roots: spiritRoots,
+      readiness_categories: readinessCategories,
     },
     addErr,
   });
@@ -1903,6 +2676,12 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
     heart_law_affinity_rules: heartLawAffinityRules,
     prestige_store: prestige,
     pavilion_records: pavilionRecords,
+    onboarding_milestones: onboardingMilestones,
+    cultivator_stats: cultivatorStats,
+    training_regimens: trainingRegimens,
+    dao_heart_practices: daoHeartPractices,
+    spirit_roots: spiritRoots,
+    readiness_categories: readinessCategories,
   });
   const targetedMaterialAudit = buildTargetedMaterialSinkAudit({
     raw,
@@ -1926,6 +2705,12 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
     heart_law_affinity_rules: heartLawAffinityRules,
     prestige_store: prestige,
     pavilion_records: pavilionRecords,
+    onboarding_milestones: onboardingMilestones,
+    cultivator_stats: cultivatorStats,
+    training_regimens: trainingRegimens,
+    dao_heart_practices: daoHeartPractices,
+    spirit_roots: spiritRoots,
+    readiness_categories: readinessCategories,
   });
 
   const expectedBlockerIds = listKnownLiveEconomyBlockers().map((entry) => entry.id).sort();
@@ -2092,5 +2877,11 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
     heart_law_affinity_rules: heartLawAffinityRules,
     prestige_store: prestige,
     pavilion_records: pavilionRecords,
+    onboarding_milestones: onboardingMilestones,
+    cultivator_stats: cultivatorStats,
+    training_regimens: trainingRegimens,
+    dao_heart_practices: daoHeartPractices,
+    spirit_roots: spiritRoots,
+    readiness_categories: readinessCategories,
   };
 }

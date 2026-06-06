@@ -7,10 +7,9 @@ const script = path.resolve(process.cwd(), 'tmp-tests', 'scripts', 'balanceRegre
 const loader = '--loader=./scripts/relativeJsLoader.mjs';
 
 test('balanceRegressionReport supports human, json, and section modes', () => {
-  const human = spawnSync(process.execPath, [loader, script], { cwd: process.cwd(), encoding: 'utf8' });
-  assert.equal(human.status, 0, human.stderr);
-  assert.match(human.stdout, /Balance Regression Report/);
-  assert.match(human.stdout, /\[PASS\]|\[FAIL\]/);
+  const help = spawnSync(process.execPath, [loader, script, '--help'], { cwd: process.cwd(), encoding: 'utf8' });
+  assert.equal(help.status, 0, help.stderr);
+  assert.match(help.stdout, /Usage: balanceRegressionReport/);
 
   const json = spawnSync(process.execPath, [loader, script, '--json'], { cwd: process.cwd(), encoding: 'utf8' });
   assert.equal(json.status, 0, json.stderr);
@@ -20,9 +19,7 @@ test('balanceRegressionReport supports human, json, and section modes', () => {
 
   const section = spawnSync(process.execPath, [loader, script, '--section=timing'], { cwd: process.cwd(), encoding: 'utf8' });
   assert.equal(section.status, 0, section.stderr);
+  assert.match(section.stdout, /Balance Regression Report/);
+  assert.match(section.stdout, /\[PASS\]|\[FAIL\]/);
   assert.match(section.stdout, /Timing/);
-
-  const help = spawnSync(process.execPath, [loader, script, '--help'], { cwd: process.cwd(), encoding: 'utf8' });
-  assert.equal(help.status, 0, help.stderr);
-  assert.match(help.stdout, /Usage: balanceRegressionReport/);
 });

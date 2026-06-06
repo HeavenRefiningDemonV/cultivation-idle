@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useActivityStore } from '../../../stores/activityStore.js';
+import { useCityStore } from '../../../stores/cityStore.js';
+import { useCultivationStore } from '../../../stores/cultivationStore.js';
 import { useGameStore } from '../../../stores/gameStore.js';
 import { useUIStore } from '../../../stores/uiStore.js';
 import { GameEvents, type ProgressionBreakthroughCompletedEvent } from '../../../services/events/GameEvents.js';
@@ -93,8 +95,9 @@ export function useCultivationExactActionController(surface: CultivationExactSur
       if (breakthroughOk) {
         setRitualSurface(buildLiveBreakthroughRitualResultSurface(completedEvent));
       } else {
+        const failure = useCultivationStore.getState().lastBreakthroughFailureSummary;
         setRitualSurface(null);
-        addNotification('warning', 'Breakthrough threshold is not ready.');
+        addNotification('warning', failure?.message ?? 'Breakthrough threshold is not ready.');
       }
       const settleTimeout = window.setTimeout(() => {
         setIsBreakingThrough(false);
@@ -116,6 +119,15 @@ export function useCultivationExactActionController(surface: CultivationExactSur
     useUIStore.getState().setActiveTab('prestige');
   }, [surface]);
 
+  const openWorldModule = useCallback((buildingKey: WorldBuildingKey) => {
+    const ui = useUIStore.getState();
+    const cityId = useCityStore.getState().currentCityId;
+    ui.setActiveTab('adventure');
+    if (cityId) {
+      ui.openWorldBuildingModal({ cityId, buildingKey, intent: null });
+    }
+  }, []);
+
   const onCommandAction = useCallback((button: CultivationButtonSurface) => {
     if (button.disabled) {
       if (button.reason) addNotification('info', button.reason);
@@ -129,11 +141,29 @@ export function useCultivationExactActionController(surface: CultivationExactSur
       case 'stopCultivation':
         stopCultivation();
         return;
+      case 'openDaoHeart':
+        setShowDaoHeart(true);
+        return;
+      case 'openTrainingHall':
+        openWorldModule('trainingHall');
+        return;
       case 'breakThrough':
         breakThrough();
         return;
       case 'openGateTrial':
         openGateTrial(button);
+        return;
+      case 'openApothecary':
+        openWorldModule('apothecary');
+        return;
+      case 'openForge':
+        openWorldModule('forge');
+        return;
+      case 'openSpiritRootObservation':
+        useUIStore.getState().openSpiritRootObservation('profile');
+        return;
+      case 'rest':
+        addNotification('info', button.reason ?? 'Let current pressure settle before attempting the gate.');
         return;
       case 'openPrestige':
         openPrestige(button);
@@ -142,7 +172,7 @@ export function useCultivationExactActionController(surface: CultivationExactSur
       default:
         if (button.reason) addNotification('info', button.reason);
     }
-  }, [addNotification, breakThrough, openGateTrial, openPrestige, startCultivation, stopCultivation]);
+  }, [addNotification, breakThrough, openGateTrial, openPrestige, openWorldModule, startCultivation, stopCultivation]);
 
   const onOpenDrawer = useCallback((drawerId: CultivationExactDrawerId) => {
     setSelectedDrawer(drawerId);

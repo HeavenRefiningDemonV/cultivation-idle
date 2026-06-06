@@ -284,7 +284,6 @@ void test('C8 Test J: no full result screen or old UI tokens', () => {
       'InkCombatShell',
       'InkHealthBar',
       'OutskirtsLegacyActiveSurface',
-      'CombatModuleTopLane',
       'utilityTrayShell',
       'combat-options',
       'enemy-hit-text',

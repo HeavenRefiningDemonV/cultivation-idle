@@ -1,0 +1,52 @@
+﻿[
+    {
+        "command":  "npm run balance:report:json",
+        "exitCode":  0,
+        "log":  "artifacts/mp4/after/logs/balance-report-json.log"
+    },
+    {
+        "command":  "npm run release:route-report:json",
+        "exitCode":  0,
+        "log":  "artifacts/mp4/after/logs/release-route-report-json.log"
+    },
+    {
+        "command":  "npm run release:fresh-run-report:json",
+        "exitCode":  0,
+        "log":  "artifacts/mp4/after/logs/release-fresh-run-report-json.log"
+    },
+    {
+        "command":  "npm run release:reclaim-route-report",
+        "exitCode":  0,
+        "log":  "artifacts/mp4/after/logs/release-reclaim-route-report.log"
+    },
+    {
+        "command":  "npm run release:reclaim-route-report -- --json",
+        "exitCode":  0,
+        "log":  "artifacts/mp4/after/logs/release-reclaim-route-report-json.log"
+    },
+    {
+        "command":  "npm run release:runtime-diagnostics:json",
+        "exitCode":  0,
+        "log":  "artifacts/mp4/after/logs/release-runtime-diagnostics-json.log"
+    },
+    {
+        "command":  "npm run typecheck",
+        "exitCode":  0,
+        "log":  "artifacts/mp4/after/logs/typecheck.log"
+    },
+    {
+        "command":  "npm run check:icons",
+        "exitCode":  0,
+        "log":  "artifacts/mp4/after/logs/check-icons.log"
+    },
+    {
+        "command":  "npm run validate:content",
+        "exitCode":  0,
+        "log":  "artifacts/mp4/after/logs/validate-content.log"
+    },
+    {
+        "command":  "npm run build",
+        "exitCode":  0,
+        "log":  "artifacts/mp4/after/logs/build.log"
+    }
+]

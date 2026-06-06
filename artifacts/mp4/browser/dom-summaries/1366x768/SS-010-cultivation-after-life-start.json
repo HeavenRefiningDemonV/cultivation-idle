@@ -1,0 +1,105 @@
+{
+  "routeId": "SS-010",
+  "label": "Cultivation after life start",
+  "viewport": "1366x768",
+  "url": "http://127.0.0.1:5173/",
+  "title": "cultivation-idle-temp",
+  "headings": [],
+  "primaryButtons": [
+    {
+      "text": "Next MilestonePush Qi",
+      "ariaLabel": null,
+      "disabled": false
+    },
+    {
+      "text": "NeedQi Cap100",
+      "ariaLabel": null,
+      "disabled": false
+    },
+    {
+      "text": "ActionStart Cultivation",
+      "ariaLabel": null,
+      "disabled": false
+    },
+    {
+      "text": "Dao",
+      "ariaLabel": "Open Dao Heart",
+      "disabled": false
+    },
+    {
+      "text": "PathHeaven",
+      "ariaLabel": null,
+      "disabled": false
+    },
+    {
+      "text": "Spirit RootWater / Mortal",
+      "ariaLabel": null,
+      "disabled": false
+    },
+    {
+      "text": "Heart LawEmber Thread Sutra",
+      "ariaLabel": null,
+      "disabled": false
+    },
+    {
+      "text": "VerseChapter 1",
+      "ariaLabel": null,
+      "disabled": false
+    },
+    {
+      "text": "Breath / FocusBalanced",
+      "ariaLabel": null,
+      "disabled": false
+    },
+    {
+      "text": "Start Cultivation",
+      "ariaLabel": null,
+      "disabled": false
+    },
+    {
+      "text": "Break Through",
+      "ariaLabel": null,
+      "disabled": true
+    },
+    {
+      "text": "Status",
+      "ariaLabel": null,
+      "disabled": false
+    },
+    {
+      "text": "Cultivation",
+      "ariaLabel": null,
+      "disabled": false
+    },
+    {
+      "text": "World",
+      "ariaLabel": null,
+      "disabled": false
+    },
+    {
+      "text": "Inventory",
+      "ariaLabel": null,
+      "disabled": false
+    },
+    {
+      "text": "Techniques",
+      "ariaLabel": null,
+      "disabled": false
+    }
+  ],
+  "testIds": [
+    "cultivation-exact-page",
+    "cultivation-dantian-anchor",
+    "cultivation-breakthrough-readiness",
+    "cultivation-qi-lane"
+  ],
+  "scrollWidth": 1366,
+  "innerWidth": 1366,
+  "scrollHeight": 768,
+  "innerHeight": 768,
+  "noHorizontalOverflow": true,
+  "forbiddenVisible": [],
+  "placeholderVisible": false,
+  "consoleErrorCount": 0,
+  "textSample": "Realm\nQi Condensation\nStage 1\nQi\n79.89\nCultivation Rate\n53.26 / s\nStability\n0%\nForeground\nIdle\nNext Milestone\nPush Qi\nNeed\nQi Cap\n100\nAction\nStart Cultivation\nIdle\nDao\nPath\nHeaven\nSpirit Root\nWater / Mortal\nHeart Law\nEmber Thread Sutra\nVerse\nChapter 1\nBreath / Focus\nBalanced\nBreakthrough\nSettled\nBREAKTHROUGH READINESS\nReach the realm edge and fill the Qi reservoir.\nQi\n20.1 short\nRealm edge\nReached\nGate item\nNot needed now\nQi 79.89 / 100\n+53.26/s\nStart Cultivation\nBreak Through\nStatus\nCultivation\nWorld\nInventory\nTechniques\nRecords\nPrestige\nSettings\nLife begins: Heaven • Ember Thread Sutra • Balanced"
+}

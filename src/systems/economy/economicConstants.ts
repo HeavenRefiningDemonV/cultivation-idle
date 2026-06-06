@@ -141,6 +141,7 @@ export const SPIRIT_ROOT_REROLL_SPEND_CEILING_BY_GATE_INDEX: Record<EconomicGate
 export const ECONOMY_FACING_MODULE_KEYS = [
   'outskirts',
   'ruins',
+  'trainingHall',
   'apothecary',
   'forge',
   'bounties',

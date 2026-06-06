@@ -111,13 +111,13 @@ test('current non-live affinity tokens are preserved honestly', async () => {
   const catalog = buildHeartLawCatalogFromDefinitions(config.heartLaws, config.affinityRules);
 
   assert.deepEqual(catalog.heart_heaven_flame_manual.spiritRootAffinities, ['fire', 'lightning']);
-  assert.deepEqual(catalog.heart_heaven_flame_manual.liveSpiritRootAffinities, ['fire']);
+  assert.deepEqual(catalog.heart_heaven_flame_manual.liveSpiritRootAffinities, ['fire', 'lightning']);
 
   assert.deepEqual(catalog.heart_soul_lantern_sutra.spiritRootAffinities, ['soul', 'water']);
-  assert.deepEqual(catalog.heart_soul_lantern_sutra.liveSpiritRootAffinities, ['water']);
+  assert.deepEqual(catalog.heart_soul_lantern_sutra.liveSpiritRootAffinities, ['soul', 'water']);
 
   assert.deepEqual(catalog.heart_star_core_refinement_law.spiritRootAffinities, ['astral', 'void']);
-  assert.deepEqual(catalog.heart_star_core_refinement_law.liveSpiritRootAffinities, []);
+  assert.deepEqual(catalog.heart_star_core_refinement_law.liveSpiritRootAffinities, ['astral', 'void']);
 
   assert.deepEqual(catalog.heart_quiet_breath_method.spiritRootAffinities, ['any']);
   assert.deepEqual(catalog.heart_quiet_breath_method.liveSpiritRootAffinities, []);

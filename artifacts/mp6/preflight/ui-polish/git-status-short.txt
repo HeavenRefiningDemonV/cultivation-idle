@@ -1,0 +1,233 @@
+﻿# git status --short
+ M .gitignore
+ M AGENTS.md
+ M docs/codex-packet-rules.md
+ M docs/release/build_warning_inventory.md
+ M docs/release/current_implementation_baseline.json
+ M docs/release/current_implementation_baseline.md
+ M docs/release/go_no_go_checklist.md
+ M docs/release/known_issues.md
+ M docs/release/p4_prestige_runtime_effect_audit.json
+ M docs/release/p4_prestige_runtime_effect_audit.md
+ M docs/release/playwright-report/index.html
+ M docs/release/runtime_content_manifest.md
+ M docs/release/signoff_sheet.md
+ M package-lock.json
+ M package.json
+ M public/cultivation_idle_content_bible_v1_config/cities.json
+ M public/cultivation_idle_content_bible_v1_config/prestige_store.json
+ M public/cultivation_idle_content_bible_v1_config/techniques.json
+ M scripts/exportBalanceTelemetry.ts
+ M scripts/generateProgressionContractDoc.ts
+ M scripts/progressionContractReport.ts
+ M scripts/release/buildPrestigeRuntimeEffectAudit.ts
+ M scripts/summarizeBalanceTelemetry.ts
+ M src/components/BottomTabBar.tsx
+ M src/components/GameLayout.tsx
+ M src/components/combat/presentation/CombatPresentation.scss
+ M src/components/modals/DaoHeartModal.scss
+ M src/components/modals/DaoHeartModal.tsx
+ M src/components/modals/TechniqueDetailModal.scss
+ M src/components/modals/TechniqueDetailModal.tsx
+ M src/components/modals/WorldBuildingModal.tsx
+ M src/components/screens/CityMapHub.tsx
+ M src/components/screens/InventoryScreen.scss
+ M src/components/screens/InventoryScreen.tsx
+ M src/components/screens/WorldScreen.tsx
+ M src/constants/index.ts
+ M src/content/index.ts
+ M src/content/loaders.ts
+ M src/content/runtimeContentManifest.ts
+ M src/content/types.ts
+ M src/content/validators.ts
+ M src/features/cultivation/exact/CultivationExactScreen.tsx
+ M src/features/cultivation/exact/buildCultivationExactSurface.ts
+ M src/features/cultivation/exact/cultivationExactTypes.ts
+ M src/features/cultivation/exact/useCultivationExactActionController.ts
+ M src/features/prestige/prestigeLedgerExact/PrestigeLedgerExactScreen.scss
+ M src/features/prestige/prestigeLedgerExact/PrestigeLedgerExactScreen.tsx
+ M src/features/techniquesExact/TechniquesExactScreen.scss
+ M src/features/techniquesExact/TechniquesExactScreen.tsx
+ M src/features/techniquesExact/buildTechniquesExactSurface.ts
+ M src/features/world/gateTrialExact/GateTrialExactScreen.scss
+ M src/features/world/gateTrialExact/buildGateTrialExactSurface.ts
+ M src/features/world/gateTrialExact/gateTrialExactTypes.ts
+ M src/features/world/gateTrialExact/useGateTrialExactActionController.ts
+ M src/features/world/ruinsExact/RuinsExactMockupScreen.scss
+ M src/save/defaultSaveState.ts
+ M src/save/migrations/saveVersion.ts
+ M src/save/migrations/steps/index.ts
+ M src/services/diagnostics/balanceTelemetrySchema.ts
+ M src/services/diagnostics/balanceTelemetryService.ts
+ M src/services/diagnostics/release/releaseGateAdapters.ts
+ M src/services/diagnostics/release/releaseGateManifest.ts
+ M src/services/diagnostics/release/releaseGateTypes.ts
+ M src/services/events/GameEvents.ts
+ M src/services/prestige/PrestigeResetContract.ts
+ M src/services/prestige/PrestigeResetService.ts
+ M src/services/time/OfflineCatchup.ts
+ M src/stores/combatStore.ts
+ M src/stores/cultivationStore.ts
+ M src/stores/gameStore.ts
+ M src/stores/prestigeStore.ts
+ M src/stores/telemetryStore.ts
+ M src/stores/uiStore.ts
+ M src/systems/balance/offlineTargets.ts
+ M src/systems/balance/semesterBalanceTargets.ts
+ M src/systems/doctrine/heartLawEffectReaders.ts
+ M src/systems/economy/economicConstants.ts
+ M src/systems/economy/index.ts
+ M src/systems/economy/moduleRoleRegistry.ts
+ M src/systems/offline/offlineCatchupSurface.ts
+ M src/systems/progression/contract/prestigeContract.ts
+ M src/systems/readiness/index.ts
+ M src/systems/ui/daoMandate/daoMandateSourceMap.ts
+ M src/systems/ui/onboardingPromptRegistry.ts
+ M src/systems/ui/status/statusDashboardSurface.ts
+ M src/systems/ui/status/statusLedgerSurface.ts
+ M src/systems/ui/status/statusLedgerTypes.ts
+ M src/systems/ui/status/statusRouteActions.ts
+ M src/systems/ui/world/worldBuildingModalEntrySurface.ts
+ M src/systems/ui/world/worldCommandSurface.ts
+ M src/systems/world/liveWorldSchema.ts
+ M src/systems/world/moduleCardRegistry.ts
+ M src/systems/world/moduleRoleBannerSurface.ts
+ M src/systems/world/openWorldModule.ts
+ M src/types/activity.ts
+ M src/types/index.ts
+ M src/ui/status/ledger/StatusSpiritRootBadge.tsx
+ M src/ui/text/playerFacingLabels.ts
+ M src/utils/saveload.ts
+ M test-results/.last-run.json
+ D test-results/menu-interactions-menu-int-1eb1b-ies-and-Expeditions-modules-chromium/error-context.md
+ D test-results/menu-interactions-menu-int-1eb1b-ies-and-Expeditions-modules-chromium/test-failed-1.png
+ D test-results/menu-interactions-menu-int-eda59--render-a-reachable-surface-chromium/error-context.md
+ D test-results/menu-interactions-menu-int-eda59--render-a-reachable-surface-chromium/test-failed-1.png
+ D test-results/menu-interactions-menu-int-eda59--render-a-reachable-surface-chromium/trace.zip
+ M tests/contracts/apothecaryLiveRoster.test.ts
+ M tests/contracts/balanceTelemetrySchema.test.ts
+ M tests/contracts/cultivationConsumables.test.ts
+ M tests/contracts/daoHeartLawSurfaceContract.test.ts
+ M tests/contracts/daoHeartStudySurfaceContract.test.ts
+ M tests/contracts/heartLawAffinityPolicy.test.ts
+ M tests/contracts/heartLawCatalogContract.test.ts
+ M tests/contracts/moduleCardRegistry.test.ts
+ M tests/contracts/moduleRoleRegistry.test.ts
+ M tests/contracts/outskirtsSummarySurface.test.ts
+ M tests/contracts/pathAlignmentMetadata.test.ts
+ M tests/contracts/prestigeRuntimeEffectAudit.test.ts
+ M tests/contracts/prestigeStarterSpendPlanner.test.ts
+ M tests/contracts/progressionContract.test.ts
+ M tests/contracts/progressionFixtureScripts.test.ts
+ M tests/contracts/progressionSemanticValidator.test.ts
+ M tests/contracts/releaseGateReport.test.ts
+ M tests/contracts/ruinsSummarySurface.test.ts
+ M tests/contracts/runtimeContentManifest.test.ts
+ M tests/contracts/spiritRootResonanceBounds.test.ts
+ M tests/contracts/statusLedgerSurfaceContract.test.ts
+ M tests/contracts/trialLifecycle.test.ts
+ M tests/contracts/worldCitySchema.test.ts
+ M tests/helpers/balance/createTimingProbeScenario.ts
+ M tests/helpers/balance/runPhaseTimingProbe.ts
+ M tests/helpers/economy/setupEconomicRuntimeScenario.ts
+ M tests/helpers/progression/loadContract.ts
+ M tests/helpers/release/runFreshSaveRoute.ts
+ M tests/integration/bountyRuntimeTestUtils.ts
+ M tests/integration/expeditionRuntimeTestUtils.ts
+ M tests/integration/heartLawRuntimeBridge.test.ts
+ M tests/integration/spiritRootResonanceBridge.test.ts
+ M tests/integration/techniqueTaxonomyContentBridge.test.ts
+ M tsconfig.progression-fixtures.json
+ M tsconfig.tests.json
+?? .github/
+?? artifacts/mp0/
+?? artifacts/mp1/
+?? artifacts/mp2/
+?? artifacts/mp3/
+?? artifacts/mp4/
+?? artifacts/mp5/
+?? artifacts/mp6/
+?? artifacts/training-heart-law/
+?? docs/release/current_readiness.md
+?? docs/release/mp0_baseline_report.md
+?? docs/release/mp1_route_truth_report.md
+?? docs/release/mp2_ui_runtime_smoke_report.md
+?? docs/release/mp3_incentive_economy_reward_guidance_report.md
+?? docs/release/mp4_spirit_root_technique_adapter_report.md
+?? docs/release/mp5_release_hardening_final_report.md
+?? docs/release/onboarding_readiness.md
+?? docs/release/training-heart-law-implementation-preflight.md
+?? docs/release/training-heart-law-mp2-final.md
+?? docs/release/training_heart_law_release_handoff.md
+?? docs/superpowers/plans/2026-05-29-mp5-release-hardening.md
+?? public/cultivation_idle_content_bible_v1_config/dao_heart_practices.json
+?? public/cultivation_idle_content_bible_v1_config/onboarding_milestones.json
+?? public/cultivation_idle_content_bible_v1_config/readiness_categories.json
+?? public/cultivation_idle_content_bible_v1_config/spirit_roots.json
+?? public/cultivation_idle_content_bible_v1_config/stats.json
+?? public/cultivation_idle_content_bible_v1_config/training_regimens.json
+?? scripts/onboarding/
+?? scripts/release/buildMp5BalanceSimulationReport.ts
+?? scripts/runNodeTestFilesSequential.ts
+?? src/components/system/MilestoneScroll.scss
+?? src/components/system/MilestoneScroll.tsx
+?? src/components/system/TutorialLedgerDrawer.scss
+?? src/components/system/TutorialLedgerDrawer.tsx
+?? src/components/system/UnlockCeremonyHost.scss
+?? src/components/system/UnlockCeremonyHost.tsx
+?? src/features/daoHeartSanctuary/
+?? src/features/trainingHall/
+?? src/save/migrations/steps/v2_1_0/
+?? src/save/migrations/steps/v2_2_0/
+?? src/stores/onboardingStore.ts
+?? src/stores/trainingStore.ts
+?? src/systems/balance/mp5BalanceSimulation.ts
+?? src/systems/breakthrough/
+?? src/systems/consumables/medicineHandlingResolver.ts
+?? src/systems/cultivatorStats/
+?? src/systems/daoHeart/
+?? src/systems/economy/milestoneReadinessSurface.ts
+?? src/systems/equipment/
+?? src/systems/lifeStart/
+?? src/systems/onboarding/
+?? src/systems/prestige/prestigeMemory.ts
+?? src/systems/readiness/gateReadinessResolver.ts
+?? src/systems/spiritRoots/
+?? src/systems/techniques/index.ts
+?? src/systems/techniques/techniqueScalingResolver.ts
+?? src/systems/techniques/techniqueScalingTooltipAdapter.ts
+?? src/systems/training/
+?? tests/contracts/daoHeartMp3RuntimeContract.test.ts
+?? tests/contracts/lifeIdentityPredicate.test.ts
+?? tests/contracts/milestoneReadinessSurfaceContract.test.ts
+?? tests/contracts/mp4EquipmentMedicineHandling.test.ts
+?? tests/contracts/mp4SpiritRootTechniqueAdapters.test.ts
+?? tests/contracts/mp5BalanceSimulation.test.ts
+?? tests/contracts/mp5OfflineTrustSurface.test.ts
+?? tests/contracts/mp5PrestigeMemoryContract.test.ts
+?? tests/contracts/mp5PrestigeResetContract.test.ts
+?? tests/contracts/mp5PrestigeRuntimeContract.test.ts
+?? tests/contracts/onboardingMilestoneContract.test.ts
+?? tests/contracts/onboardingMilestoneSurface.test.ts
+?? tests/contracts/onboardingNoSourceTruthDuplication.test.ts
+?? tests/contracts/onboardingPolicy.test.ts
+?? tests/contracts/onboardingReleaseMatrix.test.ts
+?? tests/contracts/trainingDaoHeartMp0Contract.test.ts
+?? tests/contracts/trainingHallSurfaceContract.test.ts
+?? tests/contracts/trainingReadOnlyIntegration.test.ts
+?? tests/contracts/trainingRuntimeMp1Contract.test.ts
+?? tests/e2e/mp1-route-proof.spec.ts
+?? tests/e2e/mp2-ui-runtime-smoke.spec.ts
+?? tests/e2e/mp3-onboarding-ui-smoke.spec.ts
+?? tests/integration/freshSaveRouteHarness.test.ts
+?? tests/integration/lifeStartMechanicalPause.test.ts
+?? tests/integration/mp5TelemetryHookCoverage.test.ts
+?? tests/integration/onboardingExistingSave.test.ts
+?? tests/integration/onboardingFreshSaveFlow.test.ts
+?? tests/integration/onboardingGateGraduation.test.ts
+?? tests/integration/onboardingMigration.test.ts
+?? tests/integration/onboardingModuleGating.test.ts
+?? tests/integration/onboardingSourceSinkGuards.test.ts
+?? tests/integration/onboardingUiState.test.ts
+?? tests/integration/trainingHallRouteAndAction.test.ts
+?? tests/integration/trainingStoreMp1Integration.test.ts

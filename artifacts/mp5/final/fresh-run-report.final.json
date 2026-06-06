@@ -1,0 +1,112 @@
+﻿{
+    "suiteVersion":  "7.1d",
+    "generatedAt":  1780460191893,
+    "automatedPass":  true,
+    "manualCoverageComplete":  false,
+    "releaseReady":  false,
+    "hardFailureCount":  0,
+    "warningCount":  3,
+    "routeSummaries":  {
+                           "normal":  {
+                                          "routeId":  "normal",
+                                          "automationMode":  "automated_smoke_blocking",
+                                          "automatedStatus":  "pass",
+                                          "manualStatus":  "missing",
+                                          "elapsedMsToCap":  57585,
+                                          "finalRealmId":  "spirit_severing",
+                                          "finalCityId":  "city_ironpeak_bastion",
+                                          "unlockedCityIds":  [
+                                                                  "city_pinewind_hamlet",
+                                                                  "city_stonecrag_town",
+                                                                  "city_spirit_cavern_city",
+                                                                  "city_lotusford",
+                                                                  "city_ironpeak_bastion"
+                                                              ],
+                                          "assistedStepCount":  0,
+                                          "blockerCount":  0,
+                                          "warningCount":  0
+                                      },
+                           "cautious":  {
+                                            "routeId":  "cautious",
+                                            "automationMode":  "manual_coverage",
+                                            "automatedStatus":  "not_run",
+                                            "manualStatus":  "missing",
+                                            "elapsedMsToCap":  null,
+                                            "finalRealmId":  null,
+                                            "finalCityId":  null,
+                                            "unlockedCityIds":  [
+
+                                                                ],
+                                            "assistedStepCount":  0,
+                                            "blockerCount":  0,
+                                            "warningCount":  0
+                                        },
+                           "aggressive":  {
+                                              "routeId":  "aggressive",
+                                              "automationMode":  "manual_coverage",
+                                              "automatedStatus":  "not_run",
+                                              "manualStatus":  "missing",
+                                              "elapsedMsToCap":  null,
+                                              "finalRealmId":  null,
+                                              "finalCityId":  null,
+                                              "unlockedCityIds":  [
+
+                                                                  ],
+                                              "assistedStepCount":  0,
+                                              "blockerCount":  0,
+                                              "warningCount":  0
+                                          }
+                       },
+    "issues":  [
+                   {
+                       "severity":  "minor",
+                       "source":  "ingestion",
+                       "routeId":  "normal",
+                       "summary":  "Manual coverage missing for route normal."
+                   },
+                   {
+                       "severity":  "minor",
+                       "source":  "ingestion",
+                       "routeId":  "cautious",
+                       "summary":  "Manual coverage missing for route cautious."
+                   },
+                   {
+                       "severity":  "minor",
+                       "source":  "ingestion",
+                       "routeId":  "aggressive",
+                       "summary":  "Manual coverage missing for route aggressive."
+                   }
+               ],
+    "blockers":  [
+
+                 ],
+    "warnings":  [
+                     {
+                         "severity":  "minor",
+                         "source":  "ingestion",
+                         "routeId":  "normal",
+                         "summary":  "Manual coverage missing for route normal."
+                     },
+                     {
+                         "severity":  "minor",
+                         "source":  "ingestion",
+                         "routeId":  "cautious",
+                         "summary":  "Manual coverage missing for route cautious."
+                     },
+                     {
+                         "severity":  "minor",
+                         "source":  "ingestion",
+                         "routeId":  "aggressive",
+                         "summary":  "Manual coverage missing for route aggressive."
+                     }
+                 ],
+    "finalTruthSummary":  {
+                              "spiritSeveringReached":  true,
+                              "currentCapReached":  true,
+                              "fiveCityChainHonest":  true,
+                              "noFakeCity6":  true,
+                              "prestigeAdvisorAtCapAvailable":  true,
+                              "currentChapterExhaustedTruthAvailable":  true,
+                              "lifeSummaryAvailable":  true
+                          }
+}

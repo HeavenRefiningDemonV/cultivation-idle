@@ -1,0 +1,26 @@
+﻿[
+    {
+        "command":  "npm run typecheck",
+        "exitCode":  0,
+        "durationSeconds":  0.666,
+        "log":  "artifacts\\mp5\\preflight\\mp5-implementation\\typecheck.log"
+    },
+    {
+        "command":  "npm run check:icons",
+        "exitCode":  0,
+        "durationSeconds":  0.625,
+        "log":  "artifacts\\mp5\\preflight\\mp5-implementation\\check-icons.log"
+    },
+    {
+        "command":  "npm run validate:content",
+        "exitCode":  0,
+        "durationSeconds":  1.484,
+        "log":  "artifacts\\mp5\\preflight\\mp5-implementation\\validate-content.log"
+    },
+    {
+        "command":  "npm exec tsc -- --project tsconfig.tests.json",
+        "exitCode":  0,
+        "durationSeconds":  11.365,
+        "log":  "artifacts\\mp5\\preflight\\mp5-implementation\\tests-tsc.log"
+    }
+]

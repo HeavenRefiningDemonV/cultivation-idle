@@ -1,0 +1,9 @@
+﻿{
+    "slug":  "release-mp5-balance-simulations-json",
+    "command":  "npm run release:mp5-balance-simulations:json",
+    "exitCode":  0,
+    "timedOut":  false,
+    "durationMs":  13918,
+    "stdout":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp5\\final\\commands\\release-mp5-balance-simulations-json.stdout.log",
+    "stderr":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp5\\final\\commands\\release-mp5-balance-simulations-json.stderr.log"
+}

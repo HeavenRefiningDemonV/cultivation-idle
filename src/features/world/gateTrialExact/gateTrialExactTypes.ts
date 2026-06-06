@@ -21,6 +21,7 @@ export type GateTrialTacticalCellId =
 
 export type GateTrialReadinessNodeId =
   | 'qiCap'
+  | 'pathTraining'
   | 'loadout'
   | 'weapon'
   | 'medicine'
@@ -43,6 +44,7 @@ export type GateTrialRouteTarget =
   | 'ruins'
   | 'bounties'
   | 'expeditions'
+  | 'trainingHall'
   | 'loadout'
   | 'cultivation'
   | 'gateTrial';
@@ -58,6 +60,7 @@ export type GateTrialButtonIntent =
   | 'route-to-ruins'
   | 'route-to-bounties'
   | 'route-to-expeditions'
+  | 'route-to-training-hall'
   | 'disabled';
 
 export interface GateTrialExactSurfaceMeta {

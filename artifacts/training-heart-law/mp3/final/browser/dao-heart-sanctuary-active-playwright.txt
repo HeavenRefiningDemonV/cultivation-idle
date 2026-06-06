@@ -1,0 +1,107 @@
+state: dao-heart-sanctuary-active-playwright
+note: Silent Sitting selected through the UI and foreground practice controls enabled.
+url: http://127.0.0.1:5173/
+
+Realm
+Qi Condensation
+Stage 1
+Qi
+215.32
+Cultivation Rate
+86.13 / s
+Stability
+0%
+Foreground
+Dao Heart Practice
+Next Milestone
+Breakthrough
+Need
+Qi Cap
+100
+Action
+Break Through
+Breakthrough Ready
+Dao
+Path
+Heaven
+Spirit Root
+Metal / Uncommon
+Heart Law
+Ember Thread Sutra
+Verse
+Chapter 1
+Breath / Focus
+Balanced
+Breakthrough
+Ready
+BREAKTHROUGH READINESS
+Qi and gate requirements are ready.
+Qi
+Ready
+Realm edge
+Reached
+Gate item
+Not needed now
+Qi 215.32 / 100
++86.13/s
+Break Through
+
+Gate and Qi are aligned.
+
+Start Cultivation
+Dao Heart
+Sanctuary
+Heart Law
+Study
+×
+DAO HEART SANCTUARY
+Ember Thread Sutra
+Level
+1
+Tier
+starter
+Chapter
+Chapter 1
+Silent Sitting
+Offline eligible
+Verse Recitation
+Offline eligible
+Scripture Copying
+Offline eligible
+Breath Harmonization
+Offline eligible
+Inner Demon Debate
+Active only
+Doctrine Trial
+Requires 80 clarity and calm turbulence.
+Verse Mastery
+0%
+0 / 84 Heart Law XP
+Silent Sitting
+Practice advances while it remains the foreground activity.
+Clarity
+0/100
+Raise clarity before forcing a gate.
+Turbulence
+0/100
+State: clear.
+Doctrine parity
++0
+Heart Law matches vessel
+Verse mastery
+0%
+Supports chapter seals and doctrine trial readiness.
+Advance 1 minute
+Stop practice
+Cultivation
+Settings
+NEXT STEP
+CULTIVATION
+Gather your first Qi
+
+Qi fills while you cultivate. Your first breakthrough teaches the shape of the realm ladder.
+
+How calculated
+Open Cultivation
+Tutorial Ledger
+Life begins: Heaven • Ember Thread Sutra • Balanced

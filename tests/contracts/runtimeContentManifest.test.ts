@@ -35,6 +35,12 @@ test('runtime content manifest declares the exact loader file set once', () => {
     'heart_laws.json',
     'prestige_store.json',
     'pavilion_records.json',
+    'onboarding_milestones.json',
+    'stats.json',
+    'training_regimens.json',
+    'dao_heart_practices.json',
+    'spirit_roots.json',
+    'readiness_categories.json',
   ]);
 });
 

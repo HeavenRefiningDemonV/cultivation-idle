@@ -1,0 +1,8 @@
+Flow,Viewport,Artifact path,DOM summary,Console clean,No horizontal overflow,Status,Notes
+"Status shared guidance","1366x768","artifacts/mp3/browser/screenshots/status-shared-guidance-1366x768.png","artifacts/mp3/browser/dom-summaries/status-shared-guidance-1366x768.json","true","true","pass",""
+"Cultivation shared guidance","1366x768","artifacts/mp3/browser/screenshots/cultivation-shared-guidance-1366x768.png","artifacts/mp3/browser/dom-summaries/cultivation-shared-guidance-1366x768.json","true","true","pass",""
+"World shared guidance","1366x768","artifacts/mp3/browser/screenshots/world-shared-guidance-1366x768.png","artifacts/mp3/browser/dom-summaries/world-shared-guidance-1366x768.json","true","true","pass",""
+"World recommended module route","1366x768","artifacts/mp3/browser/screenshots/world-recommended-module-route-1366x768.png","artifacts/mp3/browser/dom-summaries/world-recommended-module-route-1366x768.json","true","true","pass",""
+"Status shared guidance","1920x1080","artifacts/mp3/browser/screenshots/status-shared-guidance-1920x1080.png","artifacts/mp3/browser/dom-summaries/status-shared-guidance-1920x1080.json","true","true","pass",""
+"Cultivation shared guidance","1920x1080","artifacts/mp3/browser/screenshots/cultivation-shared-guidance-1920x1080.png","artifacts/mp3/browser/dom-summaries/cultivation-shared-guidance-1920x1080.json","true","true","pass",""
+"World shared guidance","1920x1080","artifacts/mp3/browser/screenshots/world-shared-guidance-1920x1080.png","artifacts/mp3/browser/dom-summaries/world-shared-guidance-1920x1080.json","true","true","pass",""

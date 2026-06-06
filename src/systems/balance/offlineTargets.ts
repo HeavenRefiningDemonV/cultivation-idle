@@ -1,6 +1,6 @@
 import type { OfflineCatchupSummary } from '../../services/time/OfflineCatchup.js';
 
-export const OFFLINE_MODAL_SUMMARY_PART_ORDER = ['qi_gained', 'queued_actions', 'expeditions'] as const;
+export const OFFLINE_MODAL_SUMMARY_PART_ORDER = ['qi_gained', 'path_training', 'dao_heart', 'queued_actions', 'expeditions'] as const;
 export type OfflineModalSummaryPartKind = (typeof OFFLINE_MODAL_SUMMARY_PART_ORDER)[number];
 
 export const OFFLINE_MODAL_FRAMING_FIELDS = {

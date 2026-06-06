@@ -10,6 +10,7 @@ export const LIVE_CITY_MODULE_ORDER = [
   'outskirts',
   'ruins',
   'gateTrial',
+  'trainingHall',
   'manualPavilion',
   'apothecary',
   'forge',

@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "mp5-github-actions-artifacts-v1",
+  "generatedAt": "2026-05-29T17:28:20.891Z",
+  "workflow": ".github/workflows/mp5-release-evidence.yml",
+  "configured": true,
+  "retentionDays": 30,
+  "remoteRunVerified": false,
+  "releaseGateEnforcedAfterUpload": true,
+  "notes": "Workflow uploads evidence before final release-gate assertion so artifacts are preserved and NO_GO still fails CI."
+}

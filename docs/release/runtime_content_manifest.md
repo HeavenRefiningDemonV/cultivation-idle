@@ -1,6 +1,6 @@
 # Runtime Content Manifest
 
-Generated: 2026-05-28T12:54:43.047Z
+Generated: 2026-06-05T13:43:59.199Z
 
 ## Result
 PASS
@@ -28,6 +28,12 @@ PASS
 - heart_laws.json
 - prestige_store.json
 - pavilion_records.json
+- onboarding_milestones.json
+- stats.json
+- training_regimens.json
+- dao_heart_practices.json
+- spirit_roots.json
+- readiness_categories.json
 
 ## Source content
 - Path: `public/cultivation_idle_content_bible_v1_config`
@@ -55,6 +61,12 @@ PASS
 | heart_laws.json | present |
 | prestige_store.json | present |
 | pavilion_records.json | present |
+| onboarding_milestones.json | present |
+| stats.json | present |
+| training_regimens.json | present |
+| dao_heart_practices.json | present |
+| spirit_roots.json | present |
+| readiness_categories.json | present |
 
 ## Blockers
 - None

@@ -19,6 +19,7 @@ export const SHELL_TAB_LABELS = {
 export const WORLD_MODULE_LABELS = {
   outskirts: 'Outskirts',
   gateTrial: 'Gate Trial',
+  trainingHall: 'Training Hall',
   ruins: 'Ruins',
   apothecary: 'Apothecary',
   manualPavilion: 'Manual Pavilion',

@@ -1,0 +1,425 @@
+{
+  "viewport": "1366x768",
+  "screen": "Inventory",
+  "url": "http://127.0.0.1:5173/",
+  "documentTitle": "cultivation-idle-temp",
+  "rootTestIds": [],
+  "headings": [
+    "Your satchel is still empty."
+  ],
+  "primaryCta": {
+    "text": "Open Apothecary",
+    "disabled": false,
+    "ariaLabel": null,
+    "rect": {
+      "x": 466,
+      "y": 557,
+      "width": 114,
+      "height": 34,
+      "right": 580,
+      "bottom": 591
+    }
+  },
+  "buttons": [
+    {
+      "text": "0",
+      "disabled": false,
+      "ariaLabel": "Open manual satchel",
+      "rect": {
+        "x": 1176,
+        "y": 33,
+        "width": 40,
+        "height": 40,
+        "right": 1216,
+        "bottom": 73
+      }
+    },
+    {
+      "text": "Equipment",
+      "disabled": false,
+      "ariaLabel": "Open equipment drawer",
+      "rect": {
+        "x": 1226,
+        "y": 33,
+        "width": 105,
+        "height": 40,
+        "right": 1331,
+        "bottom": 73
+      }
+    },
+    {
+      "text": "All0",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 33,
+        "y": 402,
+        "width": 156,
+        "height": 50,
+        "right": 189,
+        "bottom": 452
+      }
+    },
+    {
+      "text": "Weapons0",
+      "disabled": true,
+      "ariaLabel": null,
+      "rect": {
+        "x": 33,
+        "y": 460,
+        "width": 156,
+        "height": 50,
+        "right": 189,
+        "bottom": 510
+      }
+    },
+    {
+      "text": "Accessories0",
+      "disabled": true,
+      "ariaLabel": null,
+      "rect": {
+        "x": 33,
+        "y": 518,
+        "width": 156,
+        "height": 50,
+        "right": 189,
+        "bottom": 568
+      }
+    },
+    {
+      "text": "Consumables0",
+      "disabled": true,
+      "ariaLabel": null,
+      "rect": {
+        "x": 33,
+        "y": 576,
+        "width": 156,
+        "height": 50,
+        "right": 189,
+        "bottom": 626
+      }
+    },
+    {
+      "text": "Materials0",
+      "disabled": true,
+      "ariaLabel": null,
+      "rect": {
+        "x": 33,
+        "y": 634,
+        "width": 156,
+        "height": 50,
+        "right": 189,
+        "bottom": 684
+      }
+    },
+    {
+      "text": "Treasures0",
+      "disabled": true,
+      "ariaLabel": null,
+      "rect": {
+        "x": 33,
+        "y": 692,
+        "width": 156,
+        "height": 50,
+        "right": 189,
+        "bottom": 742
+      }
+    },
+    {
+      "text": "Misc0",
+      "disabled": true,
+      "ariaLabel": null,
+      "rect": {
+        "x": 33,
+        "y": 750,
+        "width": 156,
+        "height": 50,
+        "right": 189,
+        "bottom": 800
+      }
+    },
+    {
+      "text": "Go to Outskirts",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 354,
+        "y": 557,
+        "width": 104,
+        "height": 34,
+        "right": 458,
+        "bottom": 591
+      }
+    },
+    {
+      "text": "Open Apothecary",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 466,
+        "y": 557,
+        "width": 114,
+        "height": 34,
+        "right": 580,
+        "bottom": 591
+      }
+    },
+    {
+      "text": "Check Forge",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 588,
+        "y": 557,
+        "width": 88,
+        "height": 34,
+        "right": 675,
+        "bottom": 591
+      }
+    },
+    {
+      "text": "",
+      "disabled": false,
+      "ariaLabel": "Close equipment drawer",
+      "rect": {
+        "x": 1836,
+        "y": 18,
+        "width": 32,
+        "height": 32,
+        "right": 1868,
+        "bottom": 50
+      }
+    },
+    {
+      "text": "WeaponEmpty",
+      "disabled": false,
+      "ariaLabel": "Weapon slot",
+      "rect": {
+        "x": 1404,
+        "y": 184,
+        "width": 108,
+        "height": 108,
+        "right": 1512,
+        "bottom": 292
+      }
+    },
+    {
+      "text": "AccessoryEmpty",
+      "disabled": false,
+      "ariaLabel": "Accessory slot",
+      "rect": {
+        "x": 1742,
+        "y": 184,
+        "width": 108,
+        "height": 108,
+        "right": 1850,
+        "bottom": 292
+      }
+    },
+    {
+      "text": "Status",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 103,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 244,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "Cultivation",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 248,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 390,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "World",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 394,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 535,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "Inventory",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 539,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 681,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "Techniques",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 685,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 827,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "Records",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 831,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 972,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "Prestige",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 976,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 1118,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "Settings",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1122,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 1263,
+        "bottom": 760
+      }
+    }
+  ],
+  "scrollWidth": 1366,
+  "innerWidth": 1366,
+  "scrollHeight": 768,
+  "innerHeight": 768,
+  "suspectedClippedText": [
+    {
+      "text": "Consumables",
+      "rect": {
+        "x": 86,
+        "y": 593,
+        "width": 58,
+        "height": 16,
+        "right": 144,
+        "bottom": 609
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "AllShowing 0 itemsSortRarity (High → Low)Name (A → Z)Quantity (High → Low)Type → RarityNew (Newest first)Your satchel is still empty.Items appear here after hun",
+      "rect": {
+        "x": 218,
+        "y": 352,
+        "width": 820,
+        "height": 318,
+        "right": 1038,
+        "bottom": 670
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Your satchel is still empty.Items appear here after hunts, ruins, purchases, and crafting. Gate preparation will use pills, materials, catalysts, and equipment ",
+      "rect": {
+        "x": 246,
+        "y": 445,
+        "width": 764,
+        "height": 502,
+        "right": 1010,
+        "bottom": 947
+      },
+      "overflow": "hidden/hidden/hidden"
+    }
+  ],
+  "viewportIssues": [],
+  "consoleSinceStart": [
+    "debug: [vite] connecting...",
+    "debug: [vite] connected.",
+    "info: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+    "log: [App] Initializing game...",
+    "log: [GameLoop] Initializing game...",
+    "log: [GameLoop] Store dependencies wired",
+    "log: [GameLoop] Prestige store initialized",
+    "log: [SpiritRoot] Generated: Mortal fire (56% purity)",
+    "log: [GameLoop] Generated initial spirit root",
+    "log: [GameLoop] No save found, starting new game",
+    "log: [GameLoop] Added starter items to inventory",
+    "log: [GameLoop] Starting game loop...",
+    "log: [GameLoop] Game loop started",
+    "log: [GameLoop] Game initialized successfully",
+    "log: [App] Game initialized successfully",
+    "log: [App] Initializing game...",
+    "log: [GameLoop] Initializing game...",
+    "log: [GameLoop] Store dependencies wired",
+    "log: [GameLoop] Prestige store initialized",
+    "log: [GameLoop] No save found, starting new game",
+    "warning: [GameLoop] Already running",
+    "log: [GameLoop] Game initialized successfully",
+    "log: [App] Game initialized successfully",
+    "warning: [ContentValidation] Technique counts by path: Heaven=20, Earth=20, Martial=20",
+    "warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=heaven: 6",
+    "warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=earth: 6",
+    "warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=martial: 6",
+    "warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=heaven: 7",
+    "warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=earth: 9",
+    "warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=martial: 8",
+    "warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=heaven: 9",
+    "warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=earth: 9",
+    "warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=martial: 10",
+    "warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=heaven: 10",
+    "warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=earth: 10",
+    "warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=martial: 10",
+    "warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=heaven: 10",
+    "warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=earth: 10",
+    "warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=martial: 10",
+    "info: [Content] Loaded 5 cities, 60 techniques (H/E/M: 20/20/20)",
+    "info: [Content] Prestige upgrades: 27",
+    "log: [SaveLoad] Saving game...",
+    "log: [SaveLoad] Game saved successfully at 5/28/2026, 11:52:01 PM",
+    "log: [SaveLoad] Saving game...",
+    "log: [SaveLoad] Game saved successfully at 5/28/2026, 11:52:04 PM",
+    "log: [UI] Notification added: success - Life begins: Heaven • Ember Thread Sutra • Balanced",
+    "log: [SaveLoad] Saving game...",
+    "log: [SaveLoad] Game saved successfully at 5/28/2026, 11:52:04 PM",
+    "log: [UI] Active tab changed to: status",
+    "log: [UI] Active tab changed to: adventure",
+    "log: [UI] Active tab changed to: inventory",
+    "warning: [Inventory] Missing item definition for rusty_sword",
+    "warning: [Inventory] Missing item definition for worn_talisman",
+    "warning: [Inventory] Missing item definition for health_pill",
+    "warning: [Inventory] Missing item definition for spirit_stone"
+  ],
+  "textSample": "Spatial Ring Inventory\nTreasures secured within your pocket realm.\nGold\n1000\nSpirit Stones\n0\nMerit\n0\n4/36\n0\nEquipment\nGOLD\nReserve\nOutskirts\nUsed for manuals, gear, and most city spending.\nPRIMARY SOURCE\nActive field farming with common-material upside.\nBOUNTIES\nSupport-economy fallback with Merit and spirit stones attached.\nKnown refill source: Outskirts when a clean gold reserve matters.\nSPIRIT STONES\nReserve\nBounties\nUsed for reserve-heavy support spending and late prep pressure.\nPRIMARY SOURCE\nBounty board is the canonical spirit-stone reserve route.\nGATE TRIAL\nGate-trial/fail-safe support remains the only explicit non-bounty reserve fallback exposed by the branch.\nKnown refill source: Bounties when spirit-stone reserve matters.\nMERIT\nReserve\nBounties\nUsed for Safety Net support and other bounded reserve spending.\nPRIMARY SOURCE\nBounty board is the canonical Merit reserve route.\nGATE TRIAL\nEligible gate defeats provide bounded fallback Merit only when that support truth is active.\nKnown refill source: Bounties when Merit reserve matters.\nPOCKETS\n4 / 36\nAll\n0\nWeapons\n0\nAccessories\n0\nConsumables\n0\nMaterials\n0\nTreasures\n0\nMisc\n0\nAll\nShowing 0 items\nSort\nRarity (High → Low)\nName (A → Z)\nQuantity (High → Low)\nType → Rarity\nNew (Newest first)\nYour satchel is still empty.\n\nItems appear here after hunts, ruins, purchases, and crafting. Gate preparation will use pills, materials, catalysts, and equipment from these sources.\n\nGo to Outskirts\nOpen Apothecary\nCheck Forge\nSelect an item to inspect\nTap a slot to see details. Manual Satchel tips live there too.\nEquipment\nSelect an item in your satchel, then click a slot to equip.\nWEAPON\nEmpty\nACCESSORY\nEmpty\nChoose a slot to inspect\nEquipment grants lasting bonuses to your cultivator.\nStatus\nCultivation\nWorld\nInventory\nTechniques\nRecords\nPrestige\nSettings"
+}

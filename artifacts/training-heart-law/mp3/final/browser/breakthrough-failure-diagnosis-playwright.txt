@@ -1,0 +1,80 @@
+state: breakthrough-failure-diagnosis-playwright
+note: Failed major breakthrough records and surfaces risk failure diagnosis.
+url: http://127.0.0.1:5173/
+
+Realm
+Qi Condensation
+Stage 9
+Qi
+999.98M
+Cultivation Rate
+1K / s
+Stability
+0%
+Foreground
+Idle
+Next Milestone
+Breakthrough
+Need
+Qi Cap
+152.58K
+Action
+Break Through
+Breakthrough Ready
+Dao
+Path
+Heaven
+Spirit Root
+Metal / Uncommon
+Heart Law
+Ember Thread Sutra
+Verse
+Chapter 1
+Breath / Focus
+Balanced
+Breakthrough
+Ready
+BREAKTHROUGH READINESS
+Qi and gate requirements are ready.
+Qi
+Ready
+Realm edge
+Reached
+Gate item
+Foundation Pill 3/1
+Breakthrough risk
+45% (Dangerous)
+Qi margin
+0
+Heart Law parity
++30
+Dao Heart turbulence
++15
+Dao Heart clarity
+0
+Gate confidence
+0
+Failure preview
+15% Qi loss, +12 turbulence on failure.
+Train Dao Heart
+Harmonize breath
+Review doctrine fit
+Qi 999.98M / 152.58K
++1K/s
+Break Through
+
+Gate and Qi are aligned.
+
+Start Cultivation
+Cultivation
+Settings
+NEXT STEP
+CULTIVATION
+Gather your first Qi
+
+Qi fills while you cultivate. Your first breakthrough teaches the shape of the realm ladder.
+
+How calculated
+Open Cultivation
+Tutorial Ledger
+Breakthrough failed: 15% Qi loss, +12 turbulence on failure.

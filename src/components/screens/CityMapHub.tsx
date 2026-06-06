@@ -12,10 +12,22 @@ import cityOutskirtsBg from '../../assets/background/citystates/city_outskirts.p
 import cityRuinsBg from '../../assets/background/citystates/city_ruins.png';
 import cityTalismanBg from '../../assets/background/citystates/city_talisman.png';
 import type { FxEffectiveQuality } from '../../ui/fx/types.js';
+import { ScenicLabel } from '../../ui/shell/index.js';
 
 export type WorldHotspotChipKind = 'NOW' | 'SOON' | 'CLAIM' | 'IDLE' | 'FIX' | 'GATE' | 'LOW';
 
 const HIDDEN_HUB_MODULES = new Set<string>(DEFERRED_WORLD_MODULES);
+const CITY_MAP_HUB_SCENIC_LABEL_VARIANT = 'building' as const;
+const CITY_MAP_HUB_SCENIC_LABEL_RESERVE_STATE_SLOT = true;
+const WORLD_MAP_CHIP_ABBREVIATIONS: Record<WorldHotspotChipKind, string> = {
+  NOW: 'NOW',
+  SOON: 'SOON',
+  CLAIM: 'CLM',
+  IDLE: 'IDLE',
+  FIX: 'FIX',
+  GATE: 'GATE',
+  LOW: 'LOW',
+};
 
 const MODULE_POSITIONS: Record<string, { leftPct: number; topPct: number }> = {
   manualPavilion: { leftPct: 85.6, topPct: 14.5 },
@@ -27,6 +39,7 @@ const MODULE_POSITIONS: Record<string, { leftPct: number; topPct: number }> = {
   expeditions: { leftPct: 28, topPct: 82.5 },
   outskirts: { leftPct: 58, topPct: 45.5 },
   gateTrial: { leftPct: 90, topPct: 74 },
+  trainingHall: { leftPct: 47.5, topPct: 24 },
   ruins: { leftPct: 72, topPct: 57 },
 };
 
@@ -40,6 +53,7 @@ const MODULE_BACKGROUNDS: Record<string, string> = {
   expeditions: cityBountiesBg,
   outskirts: cityOutskirtsBg,
   gateTrial: cityGateBg,
+  trainingHall: cityManualBg,
   ruins: cityRuinsBg,
 };
 
@@ -121,6 +135,8 @@ export function CityMapHub({
           const isGlinting = glintModuleKey === moduleKey;
           const metadata = moduleMetadataByKey?.[moduleKey] ?? null;
           const outputsPreview = metadata?.outputs.slice(0, 2).join(' / ') ?? null;
+          const labelState = isActive ? 'active' : isRecommended ? 'recommended' : 'default';
+          const stateSlot = cueKind ? WORLD_MAP_CHIP_ABBREVIATIONS[cueKind] : undefined;
           const ariaDescription = metadata
             ? `${metadata.roleTag}. ${metadata.bestUsedWhen}`
             : `Open ${getModuleLabel(moduleKey)}`;
@@ -145,13 +161,25 @@ export function CityMapHub({
               title={metadata ? `${metadata.roleTag} - ${metadata.bestUsedWhen}` : `Open ${getModuleLabel(moduleKey)}`}
               aria-label={`Open ${getModuleLabel(moduleKey)}: ${metadata?.roleTag ?? 'World module'}`}
             >
-              <span className="cityMapHubHotspotLabel">{getModuleLabel(moduleKey)}</span>
-              {metadata ? (
-                <span className="cityMapHubHotspotMeta" aria-hidden="true">
-                  <span className="cityMapHubHotspotRole">{metadata.roleTag}</span>
-                  {outputsPreview ? <span className="cityMapHubHotspotOutputs">{outputsPreview}</span> : null}
-                </span>
-              ) : null}
+              <ScenicLabel
+                variant={CITY_MAP_HUB_SCENIC_LABEL_VARIANT}
+                state={labelState}
+                reserveStateSlot={CITY_MAP_HUB_SCENIC_LABEL_RESERVE_STATE_SLOT}
+                stateSlot={stateSlot}
+                emphasis="medium"
+                className="cityMapHubHotspotTrigger uiNoShift"
+                label={(
+                  <>
+                    <span className="cityMapHubHotspotLabel">{getModuleLabel(moduleKey)}</span>
+                    {metadata ? (
+                      <span className="cityMapHubHotspotMeta" aria-hidden="true">
+                        <span className="cityMapHubHotspotRole">{metadata.roleTag}</span>
+                        {outputsPreview ? <span className="cityMapHubHotspotOutputs">{outputsPreview}</span> : null}
+                      </span>
+                    ) : null}
+                  </>
+                )}
+              />
               <span className="cityMapHubSrOnly">{ariaDescription}</span>
             </button>
           );

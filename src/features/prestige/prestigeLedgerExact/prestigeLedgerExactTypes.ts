@@ -4,6 +4,9 @@ import type { CultivationPath, Realm, SpiritRoot } from '../../../types/index.js
 import type { PrestigeAdvisorStateLabel, PrestigeResetPreviewBuckets } from '../prestigeAdvisorSurface.js';
 import type { PrestigeForecastSurfaceV2 } from '../prestigeForecastSurface.js';
 import type { PostResetReclaimObjectiveSurface } from '../postResetReclaimObjectiveSurface.js';
+import type { ReclaimMemorySurfaceV1 } from '../../prestigeReclaim/buildReclaimMemorySurface.js';
+import type { PrestigeMemoryLedger } from '../../../systems/prestige/prestigeMemory.js';
+import type { PrestigeReclaimCurrentRoute } from '../../../systems/prestige/prestigeMemoryResolver.js';
 
 export type PrestigeLedgerButtonVariant = 'primary' | 'secondary' | 'danger' | 'disabled';
 
@@ -95,6 +98,7 @@ export type PrestigeLedgerExactSurfaceV1 = {
     objective: PrestigeForecastSurfaceV2['postResetObjective'];
     warnings: string[];
   };
+  reclaimMemory: ReclaimMemorySurfaceV1;
   postResetReclaimObjective?: PostResetReclaimObjectiveSurface | null;
   debug?: { notes: string[] };
 };
@@ -119,6 +123,7 @@ export type PrestigeLedgerExactLiveInput = {
     spiritRoot: SpiritRoot | null;
     breakdown: ApBreakdown;
     purchasesById: Record<string, number>;
+    memoryLedger?: PrestigeMemoryLedger;
   };
   game: {
     selectedPath: CultivationPath | null;
@@ -130,6 +135,7 @@ export type PrestigeLedgerExactLiveInput = {
   cityNamesReached: string[];
   resolvedGateCount: number;
   visibleUpgrades: PrestigeUpgradeDef[];
+  reclaimRoute?: PrestigeReclaimCurrentRoute;
   postResetReclaimObjective?: PostResetReclaimObjectiveSurface | null;
 };
 

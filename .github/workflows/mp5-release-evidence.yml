@@ -1,0 +1,72 @@
+name: MP5 Release Evidence
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main, Latest]
+
+permissions:
+  contents: read
+
+jobs:
+  mp5-evidence:
+    name: MP5 evidence
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Prepare MP5 CI artifact directories
+        run: mkdir -p artifacts/mp5/ci/logs artifacts/mp5/security artifacts/mp5/build artifacts/mp5/release-gate
+
+      - name: Typecheck
+        continue-on-error: true
+        run: npm run typecheck > artifacts/mp5/ci/logs/typecheck.log 2>&1
+
+      - name: Icon check
+        continue-on-error: true
+        run: npm run check:icons > artifacts/mp5/ci/logs/check-icons.log 2>&1
+
+      - name: Content validation
+        continue-on-error: true
+        run: npm run validate:content > artifacts/mp5/ci/logs/validate-content.log 2>&1
+
+      - name: Production build
+        continue-on-error: true
+        run: npm run build > artifacts/mp5/build/build.ci.log 2>&1
+
+      - name: npm audit
+        continue-on-error: true
+        run: npm audit --audit-level=moderate --json > artifacts/mp5/security/npm-audit.ci.json 2> artifacts/mp5/security/npm-audit.ci.stderr.log
+
+      - name: Release gate
+        continue-on-error: true
+        env:
+          RELEASE_GATE_COMMAND_TIMEOUT_MS: '180000'
+        run: npm run release:gate:json > artifacts/mp5/release-gate/release-gate.ci.json 2> artifacts/mp5/release-gate/release-gate.ci.stderr.log
+
+      - name: Upload MP5 release artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: cultivation-idle-mp5-release-artifacts
+          path: |
+            artifacts/mp5/**/*.md
+            artifacts/mp5/**/*.json
+            artifacts/mp5/**/*.log
+            artifacts/mp5/browser/screenshots/**/*.png
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Enforce release gate result
+        run: |
+          node -e "const fs = require('fs'); const p = 'artifacts/mp5/release-gate/release-gate.ci.json'; if (!fs.existsSync(p)) process.exit(1); const report = JSON.parse(fs.readFileSync(p, 'utf8')); process.exit(report.releaseReady ? 0 : 1);"

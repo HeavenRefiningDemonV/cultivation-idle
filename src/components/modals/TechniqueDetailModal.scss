@@ -719,6 +719,25 @@
   color: #a0b7d8;
 }
 
+.techniqueDetailModalTrainingRows {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.techniqueDetailModalTrainingRow {
+  display: grid;
+  gap: 3px;
+  min-height: 72px;
+  padding: 10px 12px;
+  border: 1px solid rgba(214, 178, 97, 0.24);
+  background: rgba(214, 178, 97, 0.08);
+}
+
+.techniqueDetailModalTrainingRow small {
+  color: #a0b7d8;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .techniqueDetailModalScrollShadow,
   .techniqueDetailModalPrimaryButton {

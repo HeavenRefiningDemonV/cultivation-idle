@@ -1,0 +1,18 @@
+[
+    {
+        "name":  "tsconfig-tests",
+        "command":  "npm exec tsc -- --project tsconfig.tests.json",
+        "status":  "PASS",
+        "exitCode":  0,
+        "durationSeconds":  12.317,
+        "log":  "artifacts\\mp5\\implementation\\onboarding-capstone\\logs\\tsconfig-tests.green.log"
+    },
+    {
+        "name":  "mp5-new-tests",
+        "command":  "node --loader=./scripts/relativeJsLoader.mjs --test tmp-tests/tests/integration/onboardingGateGraduation.test.js tmp-tests/tests/integration/onboardingExistingSave.test.js",
+        "status":  "PASS",
+        "exitCode":  0,
+        "durationSeconds":  0.751,
+        "log":  "artifacts\\mp5\\implementation\\onboarding-capstone\\logs\\mp5-new-tests.green.log"
+    }
+]

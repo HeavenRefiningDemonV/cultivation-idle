@@ -1,11 +1,16 @@
-import type { OfflineCatchupSummary } from '../../services/time/OfflineCatchup.js';
+import type { OfflineCatchupForegroundFocus, OfflineCatchupSummary } from '../../services/time/OfflineCatchup.js';
 import { formatOfflineDuration, MAX_OFFLINE_SECONDS } from '../../services/time/offlineShared.js';
+
+export type OfflineCatchupSurfaceForegroundFocus = OfflineCatchupForegroundFocus & {
+  pausedLabel: string;
+};
 
 export type OfflineCatchupSurfaceV1 = {
   version: 1;
   generatedAt: number;
   secondsConsidered: number;
   durationLabel: string;
+  foregroundFocus?: OfflineCatchupSurfaceForegroundFocus;
   cap: {
     maxSeconds: number;
     wasCapped: boolean;
@@ -23,7 +28,7 @@ export type OfflineCatchupSurfaceV1 = {
 };
 
 export type OfflineCatchupGroup = {
-  id: 'cultivation' | 'queued_actions' | 'expeditions' | 'blocked' | 'none';
+  id: 'foreground_focus' | 'cultivation' | 'path_training' | 'dao_heart' | 'queued_actions' | 'expeditions' | 'blocked' | 'none';
   title: string;
   lines: {
     id: string;
@@ -51,6 +56,30 @@ const percentLabel = (value: number): string => `${Math.round(value * 100)}%`;
 const partValue = (summary: OfflineCatchupSummary | null, kind: OfflineCatchupSummary['parts'][number]['kind']): string | null =>
   summary?.parts.find((part) => part.kind === kind)?.value ?? null;
 
+const partByKind = (
+  summary: OfflineCatchupSummary | null,
+  kind: OfflineCatchupSummary['parts'][number]['kind'],
+): OfflineCatchupSummary['parts'][number] | null =>
+  summary?.parts.find((part) => part.kind === kind) ?? null;
+
+const withDetailRows = (
+  part: OfflineCatchupSummary['parts'][number] | null,
+  mainLine: OfflineCatchupGroup['lines'][number],
+): OfflineCatchupGroup['lines'] => {
+  const detailRows = part?.detailRows ?? [];
+  if (detailRows.length === 0) return [mainLine];
+  return [
+    mainLine,
+    ...detailRows.map((row) => ({
+      id: row.id,
+      label: row.label,
+      value: row.value,
+      detail: row.detail,
+      route: mainLine.route,
+    })),
+  ];
+};
+
 export function buildOfflineCatchupSurface(args: {
   summary: OfflineCatchupSummary | null;
   generatedAt: number;
@@ -62,6 +91,11 @@ export function buildOfflineCatchupSurface(args: {
   const wasCapped = Boolean(summary?.wasCapped || rawSeconds > secondsConsidered);
   const efficiencyValue = summary?.efficiency ?? 0;
   const qi = partValue(summary, 'qi_gained');
+  const trainingPart = partByKind(summary, 'path_training');
+  const daoHeartPart = partByKind(summary, 'dao_heart');
+  const training = trainingPart?.value ?? null;
+  const daoHeart = daoHeartPart?.value ?? null;
+  const foregroundFocus = summary?.foregroundFocus ?? null;
   const queues = partValue(summary, 'queued_actions');
   const expeditions = partValue(summary, 'expeditions');
   const summaryGroups: OfflineCatchupGroup[] = [];
@@ -79,12 +113,54 @@ export function buildOfflineCatchupSurface(args: {
       }],
     });
   } else {
+    if (foregroundFocus) {
+      summaryGroups.push({
+        id: 'foreground_focus',
+        title: 'Foreground Focus',
+        lines: [
+          {
+            id: 'active_focus',
+            label: 'Foreground Focus',
+            value: foregroundFocus.label,
+            detail: foregroundFocus.detail,
+          },
+          {
+            id: 'paused_systems',
+            label: 'Paused systems',
+            detail: foregroundFocus.pausedLabel,
+          },
+        ],
+      });
+    }
+
     summaryGroups.push({
       id: 'cultivation',
       title: 'Cultivation',
       lines: qi
         ? [{ id: 'qi_gained', label: 'Qi gained', value: qi, route: { kind: 'tab', tabId: 'cultivation' } }]
-        : [{ id: 'qi_none', label: 'No Qi gained', detail: efficiencyValue <= 0 ? 'Offline efficiency is 0%.' : 'No positive Qi rate was available.' }],
+        : [{
+          id: 'qi_none',
+          label: 'No Qi gained',
+          detail: foregroundFocus?.mode === 'path_training' || foregroundFocus?.mode === 'dao_heart' || foregroundFocus?.mode === 'combat' || foregroundFocus?.mode === 'queued_only'
+            ? foregroundFocus.pausedLabel
+            : efficiencyValue <= 0 ? 'Offline efficiency is 0%.' : 'No positive Qi rate was available.',
+        }],
+    });
+
+    summaryGroups.push({
+      id: 'path_training',
+      title: 'Training',
+      lines: training
+        ? withDetailRows(trainingPart, { id: 'path_training_gain', label: 'Training practice', value: training, route: { kind: 'world_module', moduleKey: 'trainingHall' } })
+        : [{ id: 'path_training_none', label: 'No Training Hall practice', detail: 'Training only advances offline when Path Training is the active foreground activity.' }],
+    });
+
+    summaryGroups.push({
+      id: 'dao_heart',
+      title: 'Dao Heart',
+      lines: daoHeart
+        ? withDetailRows(daoHeartPart, { id: 'dao_heart_gain', label: 'Dao Heart practice', value: daoHeart, route: { kind: 'tab', tabId: 'cultivation', anchor: 'dao-heart' } })
+        : [{ id: 'dao_heart_none', label: 'No Dao Heart progress', detail: 'Only Silent Sitting, Verse Recitation, Scripture Copying, and Breath Harmonization advance offline while active.' }],
     });
 
     summaryGroups.push({
@@ -124,6 +200,7 @@ export function buildOfflineCatchupSurface(args: {
     generatedAt: args.generatedAt,
     secondsConsidered,
     durationLabel: summary?.offlineDuration ?? formatOfflineDuration(0),
+    foregroundFocus: foregroundFocus ? { ...foregroundFocus } : undefined,
     cap: {
       maxSeconds: MAX_OFFLINE_SECONDS,
       wasCapped,

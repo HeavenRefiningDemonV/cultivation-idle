@@ -1,0 +1,1413 @@
+{
+  "viewport": "1366x768",
+  "screen": "Settings",
+  "url": "http://127.0.0.1:5173/",
+  "documentTitle": "cultivation-idle-temp",
+  "rootTestIds": [],
+  "headings": [
+    "Gameplay & UI",
+    "Story Log",
+    "System Status",
+    "Rewards Debug",
+    "Diagnostics (Dev)",
+    "Audio Debug (Dev)",
+    "Save Management",
+    "Content Debug"
+  ],
+  "primaryCta": {
+    "text": "Replay",
+    "disabled": false,
+    "ariaLabel": null,
+    "rect": {
+      "x": 1007,
+      "y": 177,
+      "width": 86,
+      "height": 22,
+      "right": 1093,
+      "bottom": 199
+    }
+  },
+  "buttons": [
+    {
+      "text": "Replay",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1007,
+        "y": 177,
+        "width": 86,
+        "height": 22,
+        "right": 1093,
+        "bottom": 199
+      }
+    },
+    {
+      "text": "Test Grant Rewards (Mega Bundle)",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 716,
+        "y": 645,
+        "width": 390,
+        "height": 22,
+        "right": 1106,
+        "bottom": 667
+      }
+    },
+    {
+      "text": "Unlock Random Technique (Studied)",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 716,
+        "y": 675,
+        "width": 390,
+        "height": 22,
+        "right": 1106,
+        "bottom": 697
+      }
+    },
+    {
+      "text": "Clear Reward Log",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 716,
+        "y": 705,
+        "width": 390,
+        "height": 22,
+        "right": 1106,
+        "bottom": 727
+      }
+    },
+    {
+      "text": "Download Diagnostics (.json)",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 260,
+        "y": 1579,
+        "width": 390,
+        "height": 22,
+        "right": 650,
+        "bottom": 1601
+      }
+    },
+    {
+      "text": "Copy Quick Summary",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 260,
+        "y": 1609,
+        "width": 390,
+        "height": 22,
+        "right": 650,
+        "bottom": 1631
+      }
+    },
+    {
+      "text": "Run Validation",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 260,
+        "y": 1631,
+        "width": 390,
+        "height": 22,
+        "right": 650,
+        "bottom": 1653
+      }
+    },
+    {
+      "text": "Apply Safe Repairs",
+      "disabled": true,
+      "ariaLabel": null,
+      "rect": {
+        "x": 260,
+        "y": 1661,
+        "width": 390,
+        "height": 22,
+        "right": 650,
+        "bottom": 1683
+      }
+    },
+    {
+      "text": "Clear Balance Events",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 347,
+        "y": 1829,
+        "width": 303,
+        "height": 22,
+        "right": 650,
+        "bottom": 1851
+      }
+    },
+    {
+      "text": "Copy Balance Summary",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 347,
+        "y": 1859,
+        "width": 303,
+        "height": 22,
+        "right": 650,
+        "bottom": 1881
+      }
+    },
+    {
+      "text": "Download Balance Telemetry (.json)",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 260,
+        "y": 1895,
+        "width": 390,
+        "height": 22,
+        "right": 650,
+        "bottom": 1917
+      }
+    },
+    {
+      "text": "Download Balance CSV",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 260,
+        "y": 1925,
+        "width": 390,
+        "height": 22,
+        "right": 650,
+        "bottom": 1947
+      }
+    },
+    {
+      "text": "Copy Balance Events (JSON)",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 260,
+        "y": 1955,
+        "width": 390,
+        "height": 22,
+        "right": 650,
+        "bottom": 1977
+      }
+    },
+    {
+      "text": "Clear Events",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 445,
+        "y": 2127,
+        "width": 205,
+        "height": 22,
+        "right": 650,
+        "bottom": 2149
+      }
+    },
+    {
+      "text": "Copy Events (JSON)",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 445,
+        "y": 2157,
+        "width": 205,
+        "height": 22,
+        "right": 650,
+        "bottom": 2179
+      }
+    },
+    {
+      "text": "Clear Errors",
+      "disabled": true,
+      "ariaLabel": null,
+      "rect": {
+        "x": 449,
+        "y": 2531,
+        "width": 201,
+        "height": 22,
+        "right": 650,
+        "bottom": 2553
+      }
+    },
+    {
+      "text": "Copy Errors (JSON)",
+      "disabled": true,
+      "ariaLabel": null,
+      "rect": {
+        "x": 449,
+        "y": 2561,
+        "width": 201,
+        "height": 22,
+        "right": 650,
+        "bottom": 2583
+      }
+    },
+    {
+      "text": "Generate Test Error",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 260,
+        "y": 2634,
+        "width": 390,
+        "height": 22,
+        "right": 650,
+        "bottom": 2656
+      }
+    },
+    {
+      "text": "Stop ambience",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 948,
+        "y": 1604,
+        "width": 100,
+        "height": 28,
+        "right": 1048,
+        "bottom": 1632
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 1650,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 1678
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 1698,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 1726
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 1746,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 1774
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 1794,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 1822
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 1842,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 1870
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 1890,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 1918
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 1938,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 1966
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 1986,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 2014
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 2034,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 2062
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 2082,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 2110
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 2130,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 2158
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 2178,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 2206
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 2226,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 2254
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 724,
+        "y": 2301,
+        "width": 73,
+        "height": 28,
+        "right": 797,
+        "bottom": 2329
+      }
+    },
+    {
+      "text": "Start ambience",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 805,
+        "y": 2301,
+        "width": 101,
+        "height": 28,
+        "right": 906,
+        "bottom": 2329
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 2349,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 2377
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 2397,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 2425
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 2445,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 2473
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 2493,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 2521
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 2541,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 2569
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 2589,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 2617
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 2637,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 2665
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 2685,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 2713
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 2733,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 2761
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 2781,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 2809
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 2829,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 2857
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 2877,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 2905
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 2925,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 2953
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 2973,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 3001
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 3021,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 3049
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 3069,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 3097
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 3117,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 3145
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 3165,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 3193
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 3213,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 3241
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 3261,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 3289
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 3309,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 3337
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 3357,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 3385
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 3405,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 3433
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 3453,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 3481
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 3501,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 3529
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 3549,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 3577
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 3597,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 3625
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 3645,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 3673
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 3693,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 3721
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 3741,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 3769
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 3789,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 3817
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 3837,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 3865
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 3885,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 3913
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 3933,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 3961
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 3981,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 4009
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 4029,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 4057
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 4077,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 4105
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 4125,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 4153
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 4173,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 4201
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 4221,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 4249
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 4269,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 4297
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 4317,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 4345
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 4365,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 4393
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 4413,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 4441
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 4461,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 4489
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 4509,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 4537
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 4557,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 4585
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 4605,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 4633
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 4653,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 4681
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 4701,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 4729
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 4749,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 4777
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 4797,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 4825
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 4845,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 4873
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 4893,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 4921
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 4941,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 4969
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 4989,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 5017
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 5037,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 5065
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 5085,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 5113
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 5133,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 5161
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 5181,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 5209
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 5229,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 5257
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 5277,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 5305
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 5325,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 5353
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 5373,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 5401
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 5421,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 5449
+      }
+    },
+    {
+      "text": "Play once",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1025,
+        "y": 5469,
+        "width": 73,
+        "height": 28,
+        "right": 1098,
+        "bottom": 5497
+      }
+    }
+  ],
+  "scrollWidth": 1366,
+  "innerWidth": 1366,
+  "scrollHeight": 768,
+  "innerHeight": 768,
+  "suspectedClippedText": [
+    {
+      "text": "Gameplay & UIToggle interface elements and confirmations.Show offline progress modalDisplay rewards earned while away when you return.Show combat logHide or rev",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 1366,
+        "height": 768,
+        "right": 1366,
+        "bottom": 768
+      },
+      "overflow": "hidden/hidden/hidden"
+    }
+  ],
+  "viewportIssues": [],
+  "consoleSinceStart": [
+    "debug: [vite] connecting...",
+    "debug: [vite] connected.",
+    "info: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+    "log: [App] Initializing game...",
+    "log: [GameLoop] Initializing game...",
+    "log: [GameLoop] Store dependencies wired",
+    "log: [GameLoop] Prestige store initialized",
+    "log: [SpiritRoot] Generated: Mortal water (66% purity)",
+    "log: [GameLoop] Generated initial spirit root",
+    "log: [GameLoop] No save found, starting new game",
+    "log: [GameLoop] Added starter items to inventory",
+    "log: [GameLoop] Starting game loop...",
+    "log: [GameLoop] Game loop started",
+    "log: [GameLoop] Game initialized successfully",
+    "log: [App] Game initialized successfully",
+    "log: [App] Initializing game...",
+    "log: [GameLoop] Initializing game...",
+    "log: [GameLoop] Store dependencies wired",
+    "log: [GameLoop] Prestige store initialized",
+    "log: [GameLoop] No save found, starting new game",
+    "warning: [GameLoop] Already running",
+    "log: [GameLoop] Game initialized successfully",
+    "log: [App] Game initialized successfully",
+    "warning: [ContentValidation] Technique counts by path: Heaven=20, Earth=20, Martial=20",
+    "warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=heaven: 6",
+    "warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=earth: 6",
+    "warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=martial: 6",
+    "warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=heaven: 7",
+    "warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=earth: 9",
+    "warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=martial: 8",
+    "warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=heaven: 9",
+    "warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=earth: 9",
+    "warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=martial: 10",
+    "warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=heaven: 10",
+    "warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=earth: 10",
+    "warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=martial: 10",
+    "warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=heaven: 10",
+    "warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=earth: 10",
+    "warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=martial: 10",
+    "info: [Content] Loaded 5 cities, 60 techniques (H/E/M: 20/20/20)",
+    "info: [Content] Prestige upgrades: 27",
+    "log: [SaveLoad] Saving game...",
+    "log: [SaveLoad] Game saved successfully at 5/29/2026, 7:35:15 PM",
+    "log: [SaveLoad] Saving game...",
+    "log: [SaveLoad] Game saved successfully at 5/29/2026, 7:35:18 PM",
+    "log: [UI] Notification added: success - Life begins: Heaven • Ember Thread Sutra • Balanced",
+    "log: [SaveLoad] Saving game...",
+    "log: [SaveLoad] Game saved successfully at 5/29/2026, 7:35:18 PM",
+    "log: [UI] Active tab changed to: status",
+    "log: [UI] Active tab changed to: adventure",
+    "log: [UI] Active tab changed to: inventory",
+    "warning: [Inventory] Missing item definition for rusty_sword",
+    "warning: [Inventory] Missing item definition for worn_talisman",
+    "warning: [Inventory] Missing item definition for health_pill",
+    "warning: [Inventory] Missing item definition for spirit_stone",
+    "log: [UI] Active tab changed to: techniques",
+    "log: [UI] Active tab changed to: records",
+    "log: [UI] Active tab changed to: prestige",
+    "log: [UI] Active tab changed to: settings"
+  ],
+  "textSample": "Gameplay & UI\n\nToggle interface elements and confirmations.\n\nShow offline progress modal\n\nDisplay rewards earned while away when you return.\n\nShow combat log\n\nHide or reveal the detailed combat event log.\n\nShow combat minibar\n\nAlways display the compact combat overlay during fights and combat activities.\n\nCombat minibar expanded by default\n\nKeep the minibar unfolded when it appears; collapse later if screen space is tight.\n\nRequire prestige confirmation\n\nAsk for confirmation before reincarnating.\n\nShow system status overlay (dev)\n\nDisplay runtime diagnostics: activity, combat gating, saves, and queues.\n\nStory motion: full\nStory motion: reduced\nStory motion: off\nStory motion\n\nControl parallax, shake, and moving particles in milestone story scenes.\n\nStory Log\n\nReplay milestone memories you have already seen.\n\nS00 - The Night the Gate Refused Your Name\n\nFirst seen 5/29/2026\n\nReplay\nSystem Status\nActivity\nNone\nCombat\nIdle\nSaves\n7:35:18 PM\nTelemetry\nEvents: 9 • Errors: 0\nBalance Telemetry\nEvents: 2 • Capture: On • Latest: economy/items_gained\nLast Event\nui/tab_changed • ui/tab_changed\nCraft Queues\nBrew: 0 • Talisman: 0 • Forge: 0\nActive Jobs\nNone\nExpeditions\nSlots: 1 • Active: 0\nActive Expeditions\nNone\nContent\nLoaded: Yes • Loading: No\nCities\n5\nItems\n82\nTechniques\n60\nPavilions\n5\nOutskirts\n5\nEnemies\n35\nTrials\n5\nRuins\n5\nHeart Laws\n18\nPrestige Upgrades\n27\nEconomy Tuning\nBudgets — micro: 5-10 • minor: 10-30 • medium: 30-90 • major: 2-6h • aspirational: 12-48h\nPity Defaults\nExpeditions rare: base — | +2% | cap 10 • Ruins boss chest: base 5% | +2% | cap 12\nRewards Debug\n\nValidate the central reward pipeline (currencies + items).\n\nTest Grant Rewards (Mega Bundle)\nUnlock Random Technique (Studied)\nClear Reward Log\nRecent Grants\nGame start: starter pack\n7:35:13 PM\n+1000 Gold • +1 rusty_sword • +1 worn_talisman • +5 health_pill • +10 spirit_stone\nDiagnostics (Dev)\n\nTelemetry + error capture + diagnostics tools.\n\nDownload Diagnostics (.json)\nCopy Quick Summary\nRun Validation\nApply Safe Repairs\nValidation\nNot run yet\n0 issues\nNo validation issues detected yet.\nBalance Telemetry\nShowing 2 of 2 events\nCapture enabled\nClear Balance Events\nCopy Balance Summary\nDownload Balance Telemetry (.json)\nDownload Balance CSV\nCopy Balance Events (JSON)\neconomy/items_gained\n7:35:13 PM\neconomy/items_gained\neconomy/currency_earned\n7:35:13 PM\neconomy/currency_earned\nTelemetry\nShowing 9 of 9 events\nClear Events\nCopy Events (JSON)\nui/tab_changed\n7:36:11 PM\nui/tab_changed\nui/tab_changed\n7:36:09 PM\nui/tab_changed\nui/tab_changed\n7:36:07 PM\nui/tab_changed\nui/tab_changed\n7:36:06 PM\nui/tab_changed\nui/tab_changed\n7:36:04 PM\nui/tab_changed\nui/tab_changed\n7:36:02 PM\nui/tab_changed\nui/tab_changed\n7:35:23 PM\nui/tab_changed\nheartlaw/selected\n7:35:18 PM\nHeart Law selected: heart_ember_thread_sutra\nrewards/granted\n7:35:13 PM\nGame start: starter pack: +1000 Gold • +1 rusty_sword • +1 worn_talisman • +5 health_pill • +10 spirit_stone\nErrors\nShowing 0 of 0 errors\nClear Errors\nCopy Errors (JSON)\nNo captured errors.\nGenerate Test Error\nAudio Debug (Dev)\n\nTrigger sound playback for any registered SoundId.\n\nFilter\nStop ambience\nui_click_primary\nPlay once\nui_click_secondary\nPlay once\nui_dropdown_open\nPlay once\nui_dropdown_select\nPlay once\nui_locked\nPlay once\nui_modal_close\nPlay once\nui_modal_open\nPlay once\nui_tab_switch\nPlay once\nui_toast_critical\nPlay once\nui_toast_info\nPlay once\nui_toast_success\nPlay once\nui_toast_warning\nPlay once\nui_building_enter\nPlay once\namb_building_manual_pavilion_loop\nPlay once\nStart ambience\nui_pavilion_refresh_confirm\nPlay once\nui_pavilion_stock_roll\nPlay once\nui_pavilion_stock_reveal\nPlay once\nui_pavilion_refresh_denied\nPlay once\nui_pavilion_buy_click\nPlay once\nui_pavilion_buy_success\nPlay once\nui_item_pickup\nPlay once\nui_pavilion_buy_fail\nPlay once\nui_pavilion_pity_increment\nPlay once\nui_pavilion_pity_major\nPlay once\nui_pavilion_guarantee_trigger\nPlay once\nui_satchel_open\nPlay once\nui_satchel_close\nPlay once\nsfx_study_start\nPlay once\nui_study_timer_start\nPlay once\nui_study_timer_complete\nPlay once\nstg_technique_learned\nPlay once\nui_learned_popup_open\nPlay once\nui_focus_prompt_appear\nPlay once\nui_focus_success\nPlay once\nui_focus_fail\nPlay once\nui_equip_now_click\nPlay once\nui_techlib_open\nPlay once\nui_techlib_close\nPlay once\nui_loadout_switch\nPlay once\nui_slot_select\nPlay once\nui_slot_locked\nPlay once\nui_slot_unlock\nPlay once\nui_tech_equip\nPlay once\nui_tech_swap\nPlay once\nui_tech_unequip\nPlay once\nui_rank_upgrade_open\nPlay once\nui_rank_upgrade_confirm\nPlay once\nui_rank_upgrade_success\nPlay once\nui_rank_upgrade_fail\nPlay once\nui_trait_reroll_open\nPlay once\nui_trait_reroll_spin\nPlay once\nui_trait_reroll_confirm\nPlay once\nui_trait_reroll_result\nPlay once\nui_rune_socket_open\nPlay once\nui_rune_insert\nPlay once\nui_rune_remove\nPlay once\nui_rune_upgrade\nPlay once\nui_rune_craft_success\nPlay once\nui_rune_craft_fail\nPlay once\nui_currency_gain_small\nPlay once\nui_currency_gain_large\nPlay once\nui_currency_spend\nPlay once\nsfx_fragment_bundle\nPlay once\nui_apothecary_open\nPlay once\nui_apothecary_close\nPlay once\nui_apothecary_item_select\nPlay once\nui_apothecary_buy_success\nPlay once\nui_apothecary_buy_fail\nPlay once\nui_apothecary_daily_limit_hit\nPlay once\nui_apothecary_bundle_buy\nPlay once\nui_pouch_open\nPlay once\nui_pouch_close\nPlay once\nui_pouch_slot_select\nPlay once\nui_pouch_equip_item\nPlay once\nui_pouch_unequip_item\nPlay once\nsfx_pouch_auto_use_trigger\nPlay once\nsfx_pouch_out_of_charges\nPlay once\nsfx_pouch_low_charges_warning\nPlay once\nui_crafting_open\nPlay once\nui_crafting_close\nPlay once\nui_recipe_select\nPlay once\nui_recipe_locked\nPlay once\nui_recipe_unlock\nPlay once\nui_mode_idle_select\nPlay once\nui_mode_assisted_select\nPlay once\nui_mode_handson_select\nPlay once\nui_queue_add\nPlay once\nui_queue_remove\nPlay once\nui_queue_reorder\nPlay once\nui_queue_start\nPlay once\nui_queue_pause\nPlay once\nui_queue_resume\nPlay once\nui_queue_complete\nPlay once\nui_assist_prompt_appear\nPlay once\nui_assist_prompt_success\nPlay once\nui_assist_prompt_fail\nPlay once\nui_assist_prompt_timeout\nPlay once\namb_city_hub_day_loop\nPlay once\nStart ambience\namb_building_apothecary_loop\nPlay once\nStart ambience\namb_building_alchemy_hall_loop\nPlay once\nStart ambience\namb_building_forge_loop\nPlay once\nStart ambience\namb_building_talisman_studio_loop\nPlay once\nStart ambience\namb_building_bounty_board_loop\nPlay once\nStart ambience\namb_building_expedition_board_loop\nPlay once\nStart ambience\namb_building_meditation_hall_loop\nPlay once\nStart ambience\namb_outskirts_loop"
+}

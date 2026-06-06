@@ -1,12 +1,12 @@
-# P4 Prestige Runtime Effect Audit
+# Prestige Runtime Effect Audit
 
-Generated: 2026-05-28T12:53:34.584Z
+Generated: 2026-06-05T16:10:23.887Z
 Status: GO
 
 ## Summary
-- Visible live: 11
+- Visible live: 16
 - Deferred: 5
-- Hidden unsupported: 11
+- Hidden unsupported: 12
 - Unknown blocked: 0
 
 ## Rows
@@ -39,6 +39,12 @@ Status: GO
 | ap_unlock_pagoda | deferred | no | none | label_deferred |
 | ap_unlock_spirit_garden | deferred | no | none | label_deferred |
 | ap_unlock_talisman_queue | hidden_unsupported | no | none | hide |
+| calm_first_breath | visible_live | yes | breakthrough_calm_memory | none |
+| doctrine_archive | hidden_unsupported | no | none | hide |
+| form_memory | visible_live | yes | training_memory_floor | none |
+| old_sparring_shadows | visible_live | yes | training_mastery_shadow | none |
+| root_clarity | visible_live | yes | root_clarity_floor | none |
+| scripture_echo | visible_live | yes | heart_law_scripture_echo | none |
 
 ## Blockers
 - None

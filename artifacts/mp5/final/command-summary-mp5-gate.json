@@ -1,0 +1,9 @@
+﻿{
+    "slug":  "release-gate-mp5-slice-json",
+    "command":  "npm run release:gate:json -- --only=mp5_reset_memory,mp5_offline_trust,mp5_telemetry_schema,mp5_balance_simulations,mp5_prestige_runtime_audit",
+    "exitCode":  0,
+    "timedOut":  false,
+    "durationMs":  60584,
+    "stdout":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp5\\final\\commands\\release-gate-mp5-slice-json.stdout.log",
+    "stderr":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp5\\final\\commands\\release-gate-mp5-slice-json.stderr.log"
+}

@@ -102,7 +102,11 @@ test('any affinity remains neutral', () => {
 });
 
 test('non-live-only affinities remain neutral instead of mismatch', () => {
-  const law = catalog.heart_star_core_refinement_law;
+  const law: HeartLawProfile = {
+    ...createSyntheticProfile(),
+    spiritRootAffinities: ['legacy_star'],
+    liveSpiritRootAffinities: [],
+  };
   const root: SpiritRoot = { grade: 3, element: 'earth', purity: 100 };
 
   assert.deepEqual(evaluateSpiritRootResonance(root, law), {

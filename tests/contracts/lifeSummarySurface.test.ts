@@ -19,6 +19,7 @@ const REQUIRED_TITLES = [
   'Doctrine & Build',
   'World Progress',
   'Gate Trials',
+  'Mandate Memory',
   'Ruins & Supply',
   'Economy Support',
   'Offline & Background',

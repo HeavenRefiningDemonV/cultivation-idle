@@ -53,7 +53,7 @@ const GROUP_LABELS: Record<WorldCommandGroupId, WorldCommandGroupSurface['label'
 
 const GROUP_MEMBERS: Record<WorldCommandGroupId, readonly LiveWorldModuleKey[]> = {
   combat: ['outskirts', 'ruins', 'gateTrial'],
-  preparation: ['apothecary', 'forge', 'manualPavilion'],
+  preparation: ['manualPavilion', 'trainingHall', 'apothecary', 'forge'],
   support: ['bounties', 'expeditions'],
 };
 

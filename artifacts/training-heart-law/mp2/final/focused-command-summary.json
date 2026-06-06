@@ -1,0 +1,50 @@
+﻿[
+    {
+        "name":  "tsconfig-tests",
+        "command":  "npm exec tsc -- --project tsconfig.tests.json",
+        "exitCode":  0,
+        "durationMs":  11149,
+        "stdout":  "artifacts\\training-heart-law\\mp2\\final\\tsconfig-tests.stdout.log",
+        "stderr":  "artifacts\\training-heart-law\\mp2\\final\\tsconfig-tests.stderr.log"
+    },
+    {
+        "name":  "focused-training-hall-tests",
+        "command":  "node --loader=./scripts/relativeJsLoader.mjs --test tmp-tests/tests/contracts/trainingHallSurfaceContract.test.js tmp-tests/tests/integration/trainingHallRouteAndAction.test.js tmp-tests/tests/contracts/trainingReadOnlyIntegration.test.js tmp-tests/tests/contracts/trainingRuntimeMp1Contract.test.js tmp-tests/tests/integration/trainingStoreMp1Integration.test.js tmp-tests/tests/contracts/worldCitySchema.test.js tmp-tests/tests/contracts/moduleCardRegistry.test.js tmp-tests/tests/contracts/moduleRoleRegistry.test.js tmp-tests/tests/contracts/onboardingMilestoneContract.test.js",
+        "exitCode":  0,
+        "durationMs":  2026,
+        "stdout":  "artifacts\\training-heart-law\\mp2\\final\\focused-training-hall-tests.stdout.log",
+        "stderr":  "artifacts\\training-heart-law\\mp2\\final\\focused-training-hall-tests.stderr.log"
+    },
+    {
+        "name":  "typecheck",
+        "command":  "npm run typecheck",
+        "exitCode":  0,
+        "durationMs":  1023,
+        "stdout":  "artifacts\\training-heart-law\\mp2\\final\\typecheck.stdout.log",
+        "stderr":  "artifacts\\training-heart-law\\mp2\\final\\typecheck.stderr.log"
+    },
+    {
+        "name":  "check-icons",
+        "command":  "npm run check:icons",
+        "exitCode":  0,
+        "durationMs":  1023,
+        "stdout":  "artifacts\\training-heart-law\\mp2\\final\\check-icons.stdout.log",
+        "stderr":  "artifacts\\training-heart-law\\mp2\\final\\check-icons.stderr.log"
+    },
+    {
+        "name":  "validate-content",
+        "command":  "npm run validate:content",
+        "exitCode":  0,
+        "durationMs":  2026,
+        "stdout":  "artifacts\\training-heart-law\\mp2\\final\\validate-content.stdout.log",
+        "stderr":  "artifacts\\training-heart-law\\mp2\\final\\validate-content.stderr.log"
+    },
+    {
+        "name":  "build",
+        "command":  "npm run build",
+        "exitCode":  0,
+        "durationMs":  9116,
+        "stdout":  "artifacts\\training-heart-law\\mp2\\final\\build.stdout.log",
+        "stderr":  "artifacts\\training-heart-law\\mp2\\final\\build.stderr.log"
+    }
+]

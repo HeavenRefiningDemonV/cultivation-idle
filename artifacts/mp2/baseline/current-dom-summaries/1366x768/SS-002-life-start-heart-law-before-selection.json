@@ -1,0 +1,616 @@
+{
+  "viewport": "1366x768",
+  "name": "Life Start Heart Law Before Selection",
+  "url": "http://127.0.0.1:5173/",
+  "documentTitle": "cultivation-idle-temp",
+  "rootTestIds": [
+    "cultivation-exact-page",
+    "cultivation-dantian-anchor",
+    "cultivation-breakthrough-readiness",
+    "cultivation-qi-lane"
+  ],
+  "headings": [
+    "Begin Your New Life",
+    "Choose the sentence your soul will repeat when the Gate presses down.",
+    "Quiet Breath Method"
+  ],
+  "primaryCta": {
+    "text": "Next MilestonePush Qi",
+    "disabled": false,
+    "ariaLabel": null,
+    "rect": {
+      "x": 36,
+      "y": 136,
+      "width": 222,
+      "height": 104,
+      "right": 258,
+      "bottom": 240
+    }
+  },
+  "buttons": [
+    {
+      "text": "Next MilestonePush Qi",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 36,
+        "y": 136,
+        "width": 222,
+        "height": 104,
+        "right": 258,
+        "bottom": 240
+      }
+    },
+    {
+      "text": "NeedQi Cap100",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 36,
+        "y": 254,
+        "width": 222,
+        "height": 104,
+        "right": 258,
+        "bottom": 358
+      }
+    },
+    {
+      "text": "ActionStart Cultivation",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 36,
+        "y": 372,
+        "width": 222,
+        "height": 104,
+        "right": 258,
+        "bottom": 476
+      }
+    },
+    {
+      "text": "Dao",
+      "disabled": false,
+      "ariaLabel": "Open Dao Heart",
+      "rect": {
+        "x": 1304,
+        "y": 74,
+        "width": 82,
+        "height": 122,
+        "right": 1386,
+        "bottom": 196
+      }
+    },
+    {
+      "text": "PathHeaven",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1114,
+        "y": 136,
+        "width": 221,
+        "height": 78,
+        "right": 1335,
+        "bottom": 214
+      }
+    },
+    {
+      "text": "Spirit RootEarth / Mortal",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1114,
+        "y": 222,
+        "width": 221,
+        "height": 78,
+        "right": 1335,
+        "bottom": 300
+      }
+    },
+    {
+      "text": "Heart LawNo Heart Law selected",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1114,
+        "y": 308,
+        "width": 221,
+        "height": 78,
+        "right": 1335,
+        "bottom": 386
+      }
+    },
+    {
+      "text": "VerseChapter 1",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1114,
+        "y": 394,
+        "width": 221,
+        "height": 78,
+        "right": 1335,
+        "bottom": 472
+      }
+    },
+    {
+      "text": "Breath / FocusBalanced",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1114,
+        "y": 480,
+        "width": 221,
+        "height": 78,
+        "right": 1335,
+        "bottom": 558
+      }
+    },
+    {
+      "text": "Start Cultivation",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 499,
+        "y": 595,
+        "width": 369,
+        "height": 54,
+        "right": 867,
+        "bottom": 649
+      }
+    },
+    {
+      "text": "Break Through",
+      "disabled": true,
+      "ariaLabel": null,
+      "rect": {
+        "x": 550,
+        "y": 657,
+        "width": 266,
+        "height": 32,
+        "right": 816,
+        "bottom": 689
+      }
+    },
+    {
+      "text": "Status",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 103,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 244,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "Cultivation",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 248,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 390,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "World",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 394,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 535,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "Inventory",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 539,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 681,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "Techniques",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 685,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 827,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "Records",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 831,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 972,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "Prestige",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 976,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 1118,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "Settings",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1122,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 1263,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "Chosen for This LifeEmber Thread SutraBurstWeak (minor penalty)Role: Decisive windows and pressure spikes.FireFlameStarterChosen for This LifeChosen for this life.",
+      "disabled": false,
+      "ariaLabel": "Ember Thread Sutra, Burst, Resonance Weak (minor penalty), Chosen for This Life",
+      "rect": {
+        "x": 183,
+        "y": 378,
+        "width": 296,
+        "height": 238,
+        "right": 479,
+        "bottom": 616
+      }
+    },
+    {
+      "text": "AvailableIron Intent ScriptureBurstStrong (+12%)Role: Decisive windows and pressure spikes.MetalWeaponStarterAvailableStarter scripture available immediately.",
+      "disabled": false,
+      "ariaLabel": "Iron Intent Scripture, Burst, Resonance Strong (+12%), Available",
+      "rect": {
+        "x": 489,
+        "y": 378,
+        "width": 296,
+        "height": 238,
+        "right": 786,
+        "bottom": 616
+      }
+    },
+    {
+      "text": "AvailableQuiet Breath MethodCirculationNeutralRole: Smooth cadence and flow control.NeutralBreathStarterAvailableStarter scripture available immediately.",
+      "disabled": false,
+      "ariaLabel": "Quiet Breath Method, Circulation, Resonance Neutral, Available",
+      "rect": {
+        "x": 183,
+        "y": 626,
+        "width": 296,
+        "height": 238,
+        "right": 479,
+        "bottom": 864
+      }
+    },
+    {
+      "text": "AvailableRiver Mirror ArtEnduranceWeak (minor penalty)Role: Long-fight composure and sustain.WaterMirrorStarterAvailableStarter scripture available immediately.",
+      "disabled": false,
+      "ariaLabel": "River Mirror Art, Endurance, Resonance Weak (minor penalty), Available",
+      "rect": {
+        "x": 489,
+        "y": 626,
+        "width": 296,
+        "height": 238,
+        "right": 786,
+        "bottom": 864
+      }
+    },
+    {
+      "text": "AvailableStone Root TemperingStabilityStrong (+12%)Role: Defensive discipline and risk control.EarthBodyStarterAvailableStarter scripture available immediately.",
+      "disabled": false,
+      "ariaLabel": "Stone Root Tempering, Stability, Resonance Strong (+12%), Available",
+      "rect": {
+        "x": 183,
+        "y": 874,
+        "width": 296,
+        "height": 238,
+        "right": 479,
+        "bottom": 1112
+      }
+    },
+    {
+      "text": "AvailableVerdant Pulse CanonEnduranceWeak (minor penalty)Role: Long-fight composure and sustain.WoodLifeStarterAvailableStarter scripture available immediately.",
+      "disabled": false,
+      "ariaLabel": "Verdant Pulse Canon, Endurance, Resonance Weak (minor penalty), Available",
+      "rect": {
+        "x": 489,
+        "y": 874,
+        "width": 296,
+        "height": 238,
+        "right": 786,
+        "bottom": 1112
+      }
+    },
+    {
+      "text": "Locked ScriptureBlack Tortoise Body CodexStabilityStrong (+12%)Role: Defensive discipline and risk control.EarthWaterBodyTier 1Locked ScriptureLocked until Unlock Heart Laws (Tier 1) (25 AP).",
+      "disabled": false,
+      "ariaLabel": "Black Tortoise Body Codex, Stability, Resonance Strong (+12%), Locked Scripture",
+      "rect": {
+        "x": 183,
+        "y": 1122,
+        "width": 296,
+        "height": 238,
+        "right": 479,
+        "bottom": 1360
+      }
+    },
+    {
+      "text": "Locked ScriptureHeaven Flame ManualBurstWeak (minor penalty)Role: Decisive windows and pressure spikes.FireHeavenTier 1Locked ScriptureLocked until Unlock Heart Laws (Tier 1) (25 AP).",
+      "disabled": false,
+      "ariaLabel": "Heaven Flame Manual, Burst, Resonance Weak (minor penalty), Locked Scripture",
+      "rect": {
+        "x": 489,
+        "y": 1122,
+        "width": 296,
+        "height": 238,
+        "right": 786,
+        "bottom": 1360
+      }
+    },
+    {
+      "text": "Locked ScriptureStormstep DiagramBurstNeutralRole: Decisive windows and pressure spikes.WindLightningMovementTier 1Locked ScriptureLocked until Unlock Heart Laws (Tier 1) (25 AP).",
+      "disabled": false,
+      "ariaLabel": "Stormstep Diagram, Burst, Resonance Neutral, Locked Scripture",
+      "rect": {
+        "x": 183,
+        "y": 1370,
+        "width": 296,
+        "height": 238,
+        "right": 479,
+        "bottom": 1608
+      }
+    },
+    {
+      "text": "Locked ScriptureSword-River Heart LawInsightWeak (minor penalty)Role: Precision setup and timing clarity.MetalWaterSwordTier 1Locked ScriptureLocked until Unlock Heart Laws (Tier 1) (25 AP).",
+      "disabled": false,
+      "ariaLabel": "Sword-River Heart Law, Insight, Resonance Weak (minor penalty), Locked Scripture",
+      "rect": {
+        "x": 489,
+        "y": 1370,
+        "width": 296,
+        "height": 238,
+        "right": 786,
+        "bottom": 1608
+      }
+    },
+    {
+      "text": "Locked ScriptureBloodseal ScriptureBurstWeak (minor penalty)Role: Decisive windows and pressure spikes.BloodDemonTier 2Locked ScriptureLocked until Unlock Heart Laws (Tier 2) (80 AP).",
+      "disabled": false,
+      "ariaLabel": "Bloodseal Scripture, Burst, Resonance Weak (minor penalty), Locked Scripture",
+      "rect": {
+        "x": 183,
+        "y": 1618,
+        "width": 296,
+        "height": 238,
+        "right": 479,
+        "bottom": 1856
+      }
+    },
+    {
+      "text": "Locked ScriptureMoment-Thread ChronicleInsightWeak (minor penalty)Role: Precision setup and timing clarity.TimeMysticTier 2Locked ScriptureLocked until Unlock Heart Laws (Tier 2) (80 AP).",
+      "disabled": false,
+      "ariaLabel": "Moment-Thread Chronicle, Insight, Resonance Weak (minor penalty), Locked Scripture",
+      "rect": {
+        "x": 489,
+        "y": 1618,
+        "width": 296,
+        "height": 238,
+        "right": 786,
+        "bottom": 1856
+      }
+    },
+    {
+      "text": "Locked ScriptureSoul Lantern SutraInsightWeak (minor penalty)Role: Precision setup and timing clarity.SoulMysticTier 2Locked ScriptureLocked until Unlock Heart Laws (Tier 2) (80 AP).",
+      "disabled": false,
+      "ariaLabel": "Soul Lantern Sutra, Insight, Resonance Weak (minor penalty), Locked Scripture",
+      "rect": {
+        "x": 183,
+        "y": 1866,
+        "width": 296,
+        "height": 238,
+        "right": 479,
+        "bottom": 2104
+      }
+    },
+    {
+      "text": "Locked ScriptureVoid Palm RecordBurstWeak (minor penalty)Role: Decisive windows and pressure spikes.VoidSpaceTier 2Locked ScriptureLocked until Unlock Heart Laws (Tier 2) (80 AP).",
+      "disabled": false,
+      "ariaLabel": "Void Palm Record, Burst, Resonance Weak (minor penalty), Locked Scripture",
+      "rect": {
+        "x": 489,
+        "y": 1866,
+        "width": 296,
+        "height": 238,
+        "right": 786,
+        "bottom": 2104
+      }
+    },
+    {
+      "text": "Locked ScriptureEarth Dragon Spine ManualBreakthroughStrong (+12%)Role: Milestone pushes and peak transitions.EarthMetalArtisanTier 3Locked ScriptureLocked until Unlock Heart Laws (Tier 3) (220 AP).",
+      "disabled": false,
+      "ariaLabel": "Earth Dragon Spine Manual, Breakthrough, Resonance Strong (+12%), Locked Scripture",
+      "rect": {
+        "x": 183,
+        "y": 2114,
+        "width": 296,
+        "height": 238,
+        "right": 479,
+        "bottom": 2352
+      }
+    },
+    {
+      "text": "Locked ScriptureNine Heavens ScriptureBreakthroughWeak (minor penalty)Role: Milestone pushes and peak transitions.HeavenLightTier 3Locked ScriptureLocked until Unlock Heart Laws (Tier 3) (220 AP).",
+      "disabled": false,
+      "ariaLabel": "Nine Heavens Scripture, Breakthrough, Resonance Weak (minor penalty), Locked Scripture",
+      "rect": {
+        "x": 489,
+        "y": 2114,
+        "width": 296,
+        "height": 238,
+        "right": 786,
+        "bottom": 2352
+      }
+    },
+    {
+      "text": "Locked ScriptureStar-Core Refinement LawCirculationNeutralRole: Smooth cadence and flow control.AstralStarTier 3Locked ScriptureLocked until Unlock Heart Laws (Tier 3) (220 AP).",
+      "disabled": false,
+      "ariaLabel": "Star-Core Refinement Law, Circulation, Resonance Neutral, Locked Scripture",
+      "rect": {
+        "x": 183,
+        "y": 2362,
+        "width": 296,
+        "height": 238,
+        "right": 479,
+        "bottom": 2600
+      }
+    },
+    {
+      "text": "Locked ScriptureUnbroken Will MethodStabilityStrong (+12%)Role: Defensive discipline and risk control.MartialWillTier 3Locked ScriptureLocked until Unlock Heart Laws (Tier 3) (220 AP).",
+      "disabled": false,
+      "ariaLabel": "Unbroken Will Method, Stability, Resonance Strong (+12%), Locked Scripture",
+      "rect": {
+        "x": 489,
+        "y": 2362,
+        "width": 296,
+        "height": 238,
+        "right": 786,
+        "bottom": 2600
+      }
+    },
+    {
+      "text": "Choose Quiet Breath Method",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 824,
+        "y": 868,
+        "width": 357,
+        "height": 47,
+        "right": 1181,
+        "bottom": 915
+      }
+    },
+    {
+      "text": "Next",
+      "disabled": true,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1157,
+        "y": 2638,
+        "width": 37,
+        "height": 20,
+        "right": 1194,
+        "bottom": 2658
+      }
+    }
+  ],
+  "scrollWidth": 1366,
+  "innerWidth": 1366,
+  "scrollHeight": 768,
+  "innerHeight": 768,
+  "suspectedClippedText": [
+    {
+      "text": "RealmQi CondensationStage 1Qi0Cultivation Rate67.93 / sStability0%ForegroundIdleNext MilestonePush QiNeedQi Cap100ActionStart CultivationIdleDaoPathHeavenSpirit",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 1366,
+        "height": 768,
+        "right": 1366,
+        "bottom": 768
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "RealmQi CondensationStage 1Qi0Cultivation Rate67.93 / sStability0%ForegroundIdleNext MilestonePush QiNeedQi Cap100ActionStart CultivationIdleDaoPathHeavenSpirit",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 1366,
+        "height": 768,
+        "right": 1366,
+        "bottom": 768
+      },
+      "overflow": "hidden/hidden/hidden"
+    }
+  ],
+  "viewportIssues": [],
+  "consoleSinceStart": [
+    "1366x768 debug: [vite] connecting...",
+    "1366x768 debug: [vite] connected.",
+    "1366x768 info: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+    "1366x768 log: [App] Initializing game...",
+    "1366x768 log: [GameLoop] Initializing game...",
+    "1366x768 log: [GameLoop] Store dependencies wired",
+    "1366x768 log: [GameLoop] Prestige store initialized",
+    "1366x768 log: [SpiritRoot] Generated: Mortal earth (71% purity)",
+    "1366x768 log: [GameLoop] Generated initial spirit root",
+    "1366x768 log: [GameLoop] No save found, starting new game",
+    "1366x768 log: [GameLoop] Added starter items to inventory",
+    "1366x768 log: [GameLoop] Starting game loop...",
+    "1366x768 log: [GameLoop] Game loop started",
+    "1366x768 log: [GameLoop] Game initialized successfully",
+    "1366x768 log: [App] Game initialized successfully",
+    "1366x768 log: [App] Initializing game...",
+    "1366x768 log: [GameLoop] Initializing game...",
+    "1366x768 log: [GameLoop] Store dependencies wired",
+    "1366x768 log: [GameLoop] Prestige store initialized",
+    "1366x768 log: [GameLoop] No save found, starting new game",
+    "1366x768 warning: [GameLoop] Already running",
+    "1366x768 log: [GameLoop] Game initialized successfully",
+    "1366x768 log: [App] Game initialized successfully",
+    "1366x768 warning: [ContentValidation] Technique counts by path: Heaven=20, Earth=20, Martial=20",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=heaven: 6",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=earth: 6",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=martial: 6",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=heaven: 7",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=earth: 9",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=martial: 8",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=heaven: 9",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=earth: 9",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=martial: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=heaven: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=earth: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=martial: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=heaven: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=earth: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=martial: 10",
+    "1366x768 info: [Content] Loaded 5 cities, 60 techniques (H/E/M: 20/20/20)",
+    "1366x768 info: [Content] Prestige upgrades: 27",
+    "1366x768 log: [SaveLoad] Saving game...",
+    "1366x768 log: [SaveLoad] Game saved successfully at 28/05/2026, 22:56:33"
+  ],
+  "textSample": "Realm\nQi Condensation\nStage 1\nQi\n0\nCultivation Rate\n67.93 / s\nStability\n0%\nForeground\nIdle\nNext Milestone\nPush Qi\nNeed\nQi Cap\n100\nAction\nStart Cultivation\nIdle\nDao\nPath\nHeaven\nSpirit Root\nEarth / Mortal\nHeart Law\nNo Heart Law selected\nVerse\nChapter 1\nBreath / Focus\nBalanced\nBreakthrough\nSettled\nBREAKTHROUGH READINESS\nReach the realm edge and fill the Qi reservoir.\nQi\n100 short\nRealm edge\nReached\nGate item\nNot needed now\nQi 0 / 100\n+67.93/s\nStart Cultivation\nBreak Through\nStatus\nCultivation\nWorld\nInventory\nTechniques\nRecords\nPrestige\nSettings\nBegin Your New Life\n\nChoose your path, scripture, and initial breath focus before cultivation begins.\n\n1 · Life Path\n2 · Heart Law\n3 · Breath Focus\nLocked Path: Heaven\n\nFast cultivation and technique-led pressure. Heaven converts qi tempo into precise offensive windows, but its survival floor is thinner and greed is punished.\n\nprecision_pressure\nBreath: Balanced\nChoose the sentence your soul will repeat when the Gate presses down.\n\nA path points forward. A Heart Law keeps the breath from scattering.\n\nCHOSEN FOR THIS LIFE\nEmber Thread Sutra\nBurst\nWeak (minor penalty)\nRole: Decisive windows and pressure spikes.\nFire\nFlame\nStarter\nChosen for This Life\nChosen for this life.\nAVAILABLE\nIron Intent Scripture\nBurst\nStrong (+12%)\nRole: Decisive windows and pressure spikes.\nMetal\nWeapon\nStarter\nAvailable\nStarter scripture available immediately.\nAVAILABLE\nQuiet Breath Method\nCirculation\nNeutral\nRole: Smooth cadence and flow control.\nNeutral\nBreath\nStarter\nAvailable\nStarter scripture available immediately.\nAVAILABLE\nRiver Mirror Art\nEndurance\nWeak (minor penalty)\nRole: Long-fight composure and sustain.\nWater\nMirror\nStarter\nAvailable\nStarter scripture available immediately.\nAVAILABLE\nStone Root Tempering\nStability\nStrong (+12%)\nRole: Defensive discipline and risk control.\nEarth\nBody\nStarter\nAvailable\nStarter scripture available immediately.\nAVAILABLE\nVerdant Pulse Canon\nEndurance\nWeak (minor penalty)\nRole: Long-fight composure and sustain.\nWood\nLife\nStarter\nAvailable\nStarter scripture available immediately.\nLOCKED SCRIPTURE\nBlack Tortoise Body Codex\nStability\nStrong (+12%)\nRole: Defensive discipline and risk control.\nEarth\nWater\nBody\nTier 1\nLocked Scripture\nLocked until Unlock Heart Laws (Tier 1) (25 AP).\nLOCKED SCRIPTURE\nHeaven Flame Manual\nBurst\nWeak (minor penalty)\nRole: Decisive windows and pressure spikes.\nFire\nHeaven\nTier 1\nLocked Scripture\nLocked until Unlock Heart Laws (Tier 1) (25 AP).\nLOCKED SCRIPTURE\nStormstep Diagram\nBurst\nNeutral\nRole: Decisive windows and pressure spikes.\nWind\nLightning\nMovement\nTier 1\nLocked Scripture\nLocked until Unlock Heart Laws (Tier 1) (25 AP).\nLOCKED SCRIPTURE\nSword-River Heart Law\nInsight\nWeak (minor penalty)\nRole: Precision setup and timing clarity.\nMetal\nWater\nSword\nTier 1\nLocked Scripture\nLocked until Unlock Heart Laws (Tier 1) (25 AP).\nLOCKED SCRIPTURE\nBloodseal Scripture\nBurst\nWeak (minor penalty)\nRole: Decisive windows and pressure spikes.\nBlood\nDemon\nTier 2\nLocked Scripture\nLocked until Unlock Heart Laws (Tier 2) (80 AP).\nLOCKED SCRIPTURE\nMoment-Thread Chronicle\nInsight\nWeak (minor penalty)\nRole: Precision setup and timing clarity.\nTime\nMystic\nTier 2\nLocked Scripture\nLocked until Unlock Heart Laws (Tier 2) (80 AP).\nLOCKED SCRIPTURE\nSoul Lantern Sutra\nInsight\nWeak (minor penalty)\nRole: Precision setup and timing clarity.\nSoul\nMystic\nTier 2\nLocked Scripture\nLocked until Unlock Heart Laws (Tier 2) (80 AP).\nLOCKED SCRIPTURE\nVoid Palm Record\nBurst\nWeak (minor penalty)\nRole: Decisive windows and pressure spikes.\nVoid\nSpace\nTier 2\nLocked Scripture\nLocked until Unlock Heart Laws (Tier 2) (80 AP).\nLOCKED SCRIPTURE\nEarth Dragon Spine Manual\nBreakthrough\nStrong (+12%)\nRole: Milestone pushes and peak transitions.\nEarth\nMetal\nArtisan\nTier 3\nLocked Scripture\nLocked until Unlock Heart Laws (Tier 3) (220 AP).\nLOCKED SCRIPTURE\nNine Heavens Scripture\nBreakthrough\nWeak (minor penalty)\nRole: Milestone pushes and peak transitions.\nHeaven\nLight\nTier 3\nLocked Scripture\nLocked until Unlock Heart Laws (Tier 3) (220 AP).\nLOCKED SCRIPTURE\nStar-Core Refinement Law\nCirculation\nNeutral\nRole: Smooth cadence and flow control.\nAstral\nStar\nTier 3\nLocked Scripture\nLocked until Unlock Heart Laws (Tier 3) (220 AP).\nLOCKED SCRIPTURE\nUnbroken Will Method\nStability\nStrong (+12%)\nRole: Defensive discipline and risk control.\nMartial\nWill\nTier 3\nLocked Scripture\nLocked until Unlock Heart Laws (Tier 3) (220 AP).\n\nSCRIPTURE DETAIL\n\nQuiet Breath Method\n\nCirculation • Starter • Steady\n\nBreath-circulation scripture.\n\nRole: Smooth cadence and flow control.\n\nResonance: Neutral — No resonance bonus needed.\nINNER SCRIPTURE ALTAR\nQuiet Breath Method\nBreath-circulation scripture.\nNeutral\nBreath\n\nA doctrine of turning tides and unbroken inner rhythm.\n\nBest when you want smooth cultivation flow and consistent momentum.\n\nSIGNATURE\n\nCultivateQiMult +10%\n\nCultivateQiMult +10%\nOfflineEfficiencyAdd +5%\nStabilityCostMult -3%\n\nStarter scripture available immediately.\n\nChoose Quiet Breath Method\n\nThis is doctrine preview only; verse progress begins after life-start is confirmed.\n\nNext"
+}

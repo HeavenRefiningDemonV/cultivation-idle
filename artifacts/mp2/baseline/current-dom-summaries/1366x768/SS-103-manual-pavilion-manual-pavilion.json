@@ -1,0 +1,786 @@
+{
+  "viewport": "1366x768",
+  "name": "Manual Pavilion",
+  "url": "http://127.0.0.1:5173/",
+  "documentTitle": "cultivation-idle-temp",
+  "rootTestIds": [
+    "manual-pavilion-exact-screen-owner",
+    "manual-pavilion-exact-page",
+    "manual-pavilion-title",
+    "manual-pavilion-return-world",
+    "manual-pavilion-build-gap",
+    "manual-pavilion-left-ledger",
+    "manual-pavilion-fact-live-stock-total",
+    "manual-pavilion-fact-live-stock-visible",
+    "manual-pavilion-fact-live-refresh-bias",
+    "manual-pavilion-fact-live-owned",
+    "manual-pavilion-fact-live-fragments",
+    "manual-pavilion-fact-live-current-need",
+    "manual-pavilion-shelf",
+    "manual-pavilion-shelf-label",
+    "manual-spine-2",
+    "manual-spine-state-2",
+    "manual-spine-reason-2",
+    "manual-spine-3",
+    "manual-spine-state-3",
+    "manual-spine-reason-3",
+    "manual-spine-7",
+    "manual-spine-state-7",
+    "manual-spine-reason-7",
+    "manual-spine-8",
+    "manual-spine-state-8",
+    "manual-spine-reason-8",
+    "manual-spine-9",
+    "manual-spine-state-9",
+    "manual-spine-reason-9",
+    "manual-spine-10",
+    "manual-spine-state-10",
+    "manual-spine-reason-10",
+    "manual-pavilion-inspector",
+    "manual-pavilion-inspector-primary-action",
+    "manual-pavilion-inspector-secondary-action",
+    "manual-pavilion-inspector-tertiary-action",
+    "manual-pavilion-bottom-strip",
+    "manual-pavilion-refresh-button",
+    "manual-pavilion-refresh-state",
+    "manual-pavilion-pity-epic",
+    "manual-pavilion-pity-legendary",
+    "manual-pavilion-satchel-button",
+    "manual-pavilion-fact-currency-gold",
+    "manual-pavilion-fact-currency-merit"
+  ],
+  "headings": [
+    "Manual Pavilion",
+    "Manual Pavilion",
+    "Current Build Gap:",
+    "Support Ledger",
+    "Astral Needle",
+    "Why this matters now"
+  ],
+  "primaryCta": {
+    "text": "Open Manual Pavilion",
+    "disabled": false,
+    "ariaLabel": null,
+    "rect": {
+      "x": 1050,
+      "y": 261,
+      "width": 271,
+      "height": 41,
+      "right": 1321,
+      "bottom": 302
+    }
+  },
+  "buttons": [
+    {
+      "text": "OutskirtsGold & Common MatsGold / Common MatsGold & Common Mats. Best used when you need gold, common materials, or low-risk combat reps.",
+      "disabled": false,
+      "ariaLabel": "Open Outskirts: Gold & Common Mats",
+      "rect": {
+        "x": 700,
+        "y": 295,
+        "width": 180,
+        "height": 34,
+        "right": 880,
+        "bottom": 329
+      }
+    },
+    {
+      "text": "RuinsTargeted MatsLocal Mats / Anchor DropTargeted Mats. Best used when you need targeted local materials and deterministic support rewards.",
+      "disabled": false,
+      "ariaLabel": "Open Ruins: Targeted Mats",
+      "rect": {
+        "x": 886,
+        "y": 370,
+        "width": 180,
+        "height": 34,
+        "right": 1066,
+        "bottom": 404
+      }
+    },
+    {
+      "text": "Gate TrialGate ItemFoundation Pill / BreakthroughGate Item. Use this hall when the current gate item is ready for judgment.",
+      "disabled": false,
+      "ariaLabel": "Open Gate Trial: Gate Item",
+      "rect": {
+        "x": 1150,
+        "y": 480,
+        "width": 133,
+        "height": 34,
+        "right": 1283,
+        "bottom": 514
+      }
+    },
+    {
+      "text": "Manual PavilionBuild CorrectionManuals / Technique FragmentsBuild Correction. Best used when you need build correction, manuals, or technique growth.",
+      "disabled": false,
+      "ariaLabel": "Open Manual Pavilion: Build Correction",
+      "rect": {
+        "x": 1068,
+        "y": 93,
+        "width": 180,
+        "height": 34,
+        "right": 1248,
+        "bottom": 127
+      }
+    },
+    {
+      "text": "ApothecaryImmediate ReadinessHealing Stock / Preparation RemediesImmediate Readiness. Best used when you need immediate readiness through healing stock, remedies, or pouch prep.",
+      "disabled": false,
+      "ariaLabel": "Open Apothecary: Immediate Readiness",
+      "rect": {
+        "x": 340,
+        "y": 269,
+        "width": 180,
+        "height": 34,
+        "right": 520,
+        "bottom": 303
+      }
+    },
+    {
+      "text": "ForgePermanent FloorRefines / Temper / RunesPermanent Floor. Best used when you need permanent floor through refine, temper, or rune work.",
+      "disabled": false,
+      "ariaLabel": "Open Forge: Permanent Floor",
+      "rect": {
+        "x": 728,
+        "y": 532,
+        "width": 180,
+        "height": 34,
+        "right": 908,
+        "bottom": 566
+      }
+    },
+    {
+      "text": "BountiesMerit & RoutingMerit / Spirit StonesMerit & Routing. Best used when you need Merit, routing help, or directed support rewards.",
+      "disabled": false,
+      "ariaLabel": "Open Bounties: Merit & Routing",
+      "rect": {
+        "x": 301,
+        "y": 500,
+        "width": 178,
+        "height": 34,
+        "right": 478,
+        "bottom": 534
+      }
+    },
+    {
+      "text": "ExpeditionsPassive SupportHerbs / OrePassive Support. Best used when you need passive shortage smoothing for herbs, ore, or fragments.",
+      "disabled": false,
+      "ariaLabel": "Open Expeditions: Passive Support",
+      "rect": {
+        "x": 300,
+        "y": 535,
+        "width": 180,
+        "height": 34,
+        "right": 480,
+        "bottom": 569
+      }
+    },
+    {
+      "text": "Open Manual Pavilion",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1050,
+        "y": 261,
+        "width": 271,
+        "height": 41,
+        "right": 1321,
+        "bottom": 302
+      }
+    },
+    {
+      "text": "Status",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 103,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 244,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "Cultivation",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 248,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 390,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "World",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 394,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 535,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "Inventory",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 539,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 681,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "Techniques",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 685,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 827,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "Records",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 831,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 972,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "Prestige",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 976,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 1118,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "Settings",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1122,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 1263,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "Return to World",
+      "disabled": false,
+      "ariaLabel": "Return to World",
+      "rect": {
+        "x": 1178,
+        "y": -40,
+        "width": 264,
+        "height": 56,
+        "right": 1441,
+        "bottom": 16
+      }
+    },
+    {
+      "text": "Astral NeedleMortalCommonNewSlot Fix",
+      "disabled": false,
+      "ariaLabel": "Astral Needle. Control Seal. Mortal Grade. Common. Slot Fix. New. 250 Gold · 0 Spirit Stones.",
+      "rect": {
+        "x": 194,
+        "y": 228,
+        "width": 98,
+        "height": 393,
+        "right": 292,
+        "bottom": 621
+      }
+    },
+    {
+      "text": "Heaven's PulseMortalCommonNewSlot Fix",
+      "disabled": false,
+      "ariaLabel": "Heaven's Pulse. Setup Verse. Mortal Grade. Common. Slot Fix. New. 250 Gold · 0 Spirit Stones.",
+      "rect": {
+        "x": 314,
+        "y": 228,
+        "width": 98,
+        "height": 393,
+        "right": 412,
+        "bottom": 621
+      }
+    },
+    {
+      "text": "Shatter PalmMortalRareNeed CurrencySlot Fix",
+      "disabled": false,
+      "ariaLabel": "Shatter Palm. Control Seal. Mortal Grade. Rare. Slot Fix. Need Currency. 2,500 Gold · 1 Spirit Stones.",
+      "rect": {
+        "x": 434,
+        "y": 228,
+        "width": 98,
+        "height": 393,
+        "right": 532,
+        "bottom": 621
+      }
+    },
+    {
+      "text": "Iron BodyMortalRareNeed CurrencySlot Fix",
+      "disabled": false,
+      "ariaLabel": "Iron Body. Guard Art. Mortal Grade. Rare. Slot Fix. Need Currency. 2,500 Gold · 1 Spirit Stones.",
+      "rect": {
+        "x": 554,
+        "y": 228,
+        "width": 98,
+        "height": 393,
+        "right": 653,
+        "bottom": 621
+      }
+    },
+    {
+      "text": "Stonebreaker FistMortalEpicNeed CurrencySlot Fix",
+      "disabled": false,
+      "ariaLabel": "Stonebreaker Fist. Core Damage Art. Mortal Grade. Epic. Slot Fix. Need Currency. 8,000 Gold · 3 Spirit Stones.",
+      "rect": {
+        "x": 674,
+        "y": 228,
+        "width": 98,
+        "height": 393,
+        "right": 773,
+        "bottom": 621
+      }
+    },
+    {
+      "text": "Tempered SpiritMortalEpicNeed CurrencySlot Fix",
+      "disabled": false,
+      "ariaLabel": "Tempered Spirit. Setup Verse. Mortal Grade. Epic. Slot Fix. Need Currency. 8,000 Gold · 3 Spirit Stones.",
+      "rect": {
+        "x": 795,
+        "y": 228,
+        "width": 98,
+        "height": 393,
+        "right": 893,
+        "bottom": 621
+      }
+    },
+    {
+      "text": "Buy & Study",
+      "disabled": false,
+      "ariaLabel": "Buy & Study",
+      "rect": {
+        "x": 1100,
+        "y": 544,
+        "width": 262,
+        "height": 37,
+        "right": 1362,
+        "bottom": 581
+      }
+    },
+    {
+      "text": "Buy to Satchel",
+      "disabled": false,
+      "ariaLabel": "Buy to Satchel",
+      "rect": {
+        "x": 1100,
+        "y": 588,
+        "width": 262,
+        "height": 37,
+        "right": 1362,
+        "bottom": 626
+      }
+    },
+    {
+      "text": "Preview Technique",
+      "disabled": false,
+      "ariaLabel": "Preview Technique",
+      "rect": {
+        "x": 1100,
+        "y": 633,
+        "width": 262,
+        "height": 37,
+        "right": 1362,
+        "bottom": 670
+      }
+    },
+    {
+      "text": "Refresh Locked",
+      "disabled": true,
+      "ariaLabel": "Refresh Locked",
+      "rect": {
+        "x": -74,
+        "y": 719,
+        "width": 203,
+        "height": 47,
+        "right": 128,
+        "bottom": 766
+      }
+    },
+    {
+      "text": "Open",
+      "disabled": false,
+      "ariaLabel": "Manual Satchel 0 manuals",
+      "rect": {
+        "x": 684,
+        "y": 748,
+        "width": 58,
+        "height": 30,
+        "right": 742,
+        "bottom": 778
+      }
+    }
+  ],
+  "scrollWidth": 1366,
+  "innerWidth": 1366,
+  "scrollHeight": 768,
+  "innerHeight": 768,
+  "suspectedClippedText": [
+    {
+      "text": "Gold & Common Mats",
+      "rect": {
+        "x": 787,
+        "y": 301,
+        "width": 80,
+        "height": 11,
+        "right": 867,
+        "bottom": 311
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Gold / Common Mats",
+      "rect": {
+        "x": 787,
+        "y": 312,
+        "width": 80,
+        "height": 11,
+        "right": 867,
+        "bottom": 323
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Gold & Common Mats. Best used when you need gold, common materials, or low-risk combat reps.",
+      "rect": {
+        "x": 711,
+        "y": 311,
+        "width": 1,
+        "height": 1,
+        "right": 712,
+        "bottom": 312
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Local Mats / Anchor Drop",
+      "rect": {
+        "x": 955,
+        "y": 387,
+        "width": 98,
+        "height": 11,
+        "right": 1053,
+        "bottom": 398
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Targeted Mats. Best used when you need targeted local materials and deterministic support rewards.",
+      "rect": {
+        "x": 897,
+        "y": 386,
+        "width": 1,
+        "height": 1,
+        "right": 898,
+        "bottom": 387
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Gate Item",
+      "rect": {
+        "x": 1241,
+        "y": 486,
+        "width": 29,
+        "height": 11,
+        "right": 1270,
+        "bottom": 497
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Foundation Pill / Breakthrough",
+      "rect": {
+        "x": 1241,
+        "y": 498,
+        "width": 29,
+        "height": 11,
+        "right": 1270,
+        "bottom": 508
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Gate Item. Use this hall when the current gate item is ready for judgment.",
+      "rect": {
+        "x": 1161,
+        "y": 497,
+        "width": 1,
+        "height": 1,
+        "right": 1162,
+        "bottom": 498
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Build Correction",
+      "rect": {
+        "x": 1194,
+        "y": 99,
+        "width": 41,
+        "height": 11,
+        "right": 1235,
+        "bottom": 110
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Manuals / Technique Fragments",
+      "rect": {
+        "x": 1194,
+        "y": 111,
+        "width": 41,
+        "height": 11,
+        "right": 1235,
+        "bottom": 121
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Build Correction. Best used when you need build correction, manuals, or technique growth.",
+      "rect": {
+        "x": 1079,
+        "y": 110,
+        "width": 1,
+        "height": 1,
+        "right": 1080,
+        "bottom": 111
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Immediate Readiness",
+      "rect": {
+        "x": 439,
+        "y": 275,
+        "width": 68,
+        "height": 11,
+        "right": 507,
+        "bottom": 285
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Healing Stock / Preparation Remedies",
+      "rect": {
+        "x": 439,
+        "y": 286,
+        "width": 68,
+        "height": 11,
+        "right": 507,
+        "bottom": 297
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Immediate Readiness. Best used when you need immediate readiness through healing stock, remedies, or pouch prep.",
+      "rect": {
+        "x": 351,
+        "y": 285,
+        "width": 1,
+        "height": 1,
+        "right": 352,
+        "bottom": 286
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Permanent Floor. Best used when you need permanent floor through refine, temper, or rune work.",
+      "rect": {
+        "x": 739,
+        "y": 549,
+        "width": 1,
+        "height": 1,
+        "right": 740,
+        "bottom": 550
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Merit & Routing. Best used when you need Merit, routing help, or directed support rewards.",
+      "rect": {
+        "x": 312,
+        "y": 516,
+        "width": 1,
+        "height": 1,
+        "right": 313,
+        "bottom": 517
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Passive Support",
+      "rect": {
+        "x": 401,
+        "y": 541,
+        "width": 65,
+        "height": 11,
+        "right": 467,
+        "bottom": 552
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Passive Support. Best used when you need passive shortage smoothing for herbs, ore, or fragments.",
+      "rect": {
+        "x": 311,
+        "y": 552,
+        "width": 1,
+        "height": 1,
+        "right": 312,
+        "bottom": 553
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Select city",
+      "rect": {
+        "x": 512,
+        "y": 39,
+        "width": 1,
+        "height": 1,
+        "right": 513,
+        "bottom": 40
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Support Ledger",
+      "rect": {
+        "x": -53,
+        "y": 216,
+        "width": 1,
+        "height": 1,
+        "right": -53,
+        "bottom": 217
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "paper-bound foundation",
+      "rect": {
+        "x": 1331,
+        "y": 173,
+        "width": 19,
+        "height": 11,
+        "right": 1350,
+        "bottom": 184
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "plain copy",
+      "rect": {
+        "x": 1300,
+        "y": 207,
+        "width": 50,
+        "height": 11,
+        "right": 1350,
+        "bottom": 217
+      },
+      "overflow": "hidden/hidden/hidden"
+    }
+  ],
+  "viewportIssues": [],
+  "consoleSinceStart": [
+    "1366x768 debug: [vite] connecting...",
+    "1366x768 debug: [vite] connected.",
+    "1366x768 info: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+    "1366x768 log: [App] Initializing game...",
+    "1366x768 log: [GameLoop] Initializing game...",
+    "1366x768 log: [GameLoop] Store dependencies wired",
+    "1366x768 log: [GameLoop] Prestige store initialized",
+    "1366x768 log: [SpiritRoot] Generated: Mortal earth (71% purity)",
+    "1366x768 log: [GameLoop] Generated initial spirit root",
+    "1366x768 log: [GameLoop] No save found, starting new game",
+    "1366x768 log: [GameLoop] Added starter items to inventory",
+    "1366x768 log: [GameLoop] Starting game loop...",
+    "1366x768 log: [GameLoop] Game loop started",
+    "1366x768 log: [GameLoop] Game initialized successfully",
+    "1366x768 log: [App] Game initialized successfully",
+    "1366x768 log: [App] Initializing game...",
+    "1366x768 log: [GameLoop] Initializing game...",
+    "1366x768 log: [GameLoop] Store dependencies wired",
+    "1366x768 log: [GameLoop] Prestige store initialized",
+    "1366x768 log: [GameLoop] No save found, starting new game",
+    "1366x768 warning: [GameLoop] Already running",
+    "1366x768 log: [GameLoop] Game initialized successfully",
+    "1366x768 log: [App] Game initialized successfully",
+    "1366x768 warning: [ContentValidation] Technique counts by path: Heaven=20, Earth=20, Martial=20",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=heaven: 6",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=earth: 6",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=martial: 6",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=heaven: 7",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=earth: 9",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=martial: 8",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=heaven: 9",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=earth: 9",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=martial: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=heaven: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=earth: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=martial: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=heaven: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=earth: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=martial: 10",
+    "1366x768 info: [Content] Loaded 5 cities, 60 techniques (H/E/M: 20/20/20)",
+    "1366x768 info: [Content] Prestige upgrades: 27",
+    "1366x768 log: [SaveLoad] Saving game...",
+    "1366x768 log: [SaveLoad] Game saved successfully at 28/05/2026, 22:56:33",
+    "1366x768 log: [SaveLoad] Saving game...",
+    "1366x768 log: [SaveLoad] Game saved successfully at 28/05/2026, 22:56:35",
+    "1366x768 log: [UI] Notification added: success - Life begins: Heaven • Ember Thread Sutra • Balanced",
+    "1366x768 log: [SaveLoad] Saving game...",
+    "1366x768 log: [SaveLoad] Game saved successfully at 28/05/2026, 22:56:35",
+    "1366x768 log: [UI] Active tab changed to: status",
+    "1366x768 log: [UI] Active tab changed to: adventure",
+    "1366x768 log: [UI] Active tab changed to: inventory",
+    "1366x768 warning: [Inventory] Missing item definition for rusty_sword",
+    "1366x768 warning: [Inventory] Missing item definition for worn_talisman",
+    "1366x768 warning: [Inventory] Missing item definition for health_pill",
+    "1366x768 warning: [Inventory] Missing item definition for spirit_stone",
+    "1366x768 log: [UI] Active tab changed to: techniques",
+    "1366x768 log: [UI] Active tab changed to: records",
+    "1366x768 log: [UI] Active tab changed to: prestige",
+    "1366x768 log: [UI] Active tab changed to: settings",
+    "1366x768 log: [UI] Active tab changed to: adventure"
+  ],
+  "textSample": "Outskirts\nGOLD & COMMON MATS\nGold / Common Mats\nGold & Common Mats. Best used when you need gold, common materials, or low-risk combat reps.\nRuins\nTARGETED MATS\nLocal Mats / Anchor Drop\nTargeted Mats. Best used when you need targeted local materials and deterministic support rewards.\nGate Trial\nGATE ITEM\nFoundation Pill / Breakthrough\nGate Item. Use this hall when the current gate item is ready for judgment.\nManual Pavilion\nBUILD CORRECTION\nManuals / Technique Fragments\nBuild Correction. Best used when you need build correction, manuals, or technique growth.\nApothecary\nIMMEDIATE READINESS\nHealing Stock / Preparation Remedies\nImmediate Readiness. Best used when you need immediate readiness through healing stock, remedies, or pouch prep.\nForge\nPERMANENT FLOOR\nRefines / Temper / Runes\nPermanent Floor. Best used when you need permanent floor through refine, temper, or rune work.\nBounties\nMERIT & ROUTING\nMerit / Spirit Stones\nMerit & Routing. Best used when you need Merit, routing help, or directed support rewards.\nExpeditions\nPASSIVE SUPPORT\nHerbs / Ore\nPassive Support. Best used when you need passive shortage smoothing for herbs, ore, or fragments.\nWORLD\nCity Phase: Pinewind Hamlet - foundations\nSelect city\nPinewind Hamlet\nStonecrag Town — Locked — Reach Foundation Establishment\nSpirit Cavern City — Locked — Reach Core Formation\nLotusford — Locked — Reach Nascent Soul\nIronpeak Bastion — Locked — Reach Soul Formation\nPressure: Qi, first medicines, and a stable starter build.\nExpedition Slot Idle\n\nPINEWIND HAMLET\n\nManual Pavilion\n\nBuild Correction\n\nBest used when you need build correction, manuals, or technique growth.\n\nManuals\nTechnique Fragments\nOpen Manual Pavilion\nStatus\nCultivation\nWorld\nInventory\nTechniques\nRecords\nPrestige\nSettings\nManual Pavilion\n\nSpiritual texts · build correction · doctrine study\n\nPinewind Hamlet / Manual Pavilion\nStock Refresh: 06:00:01\nReturn to World\nCurrent Build Gap:\n\none unlocked technique slot is empty; seek a role-filling manual.\n\nPath-Aligned Needed\nSupport Manual Useful\nNext Gate Relevance\nSupport Ledger\nStock\n10 manuals\nRecommended\n6 shown\nRefresh Bias\nBalanced\nOwned\n0 / 60\nFragments\n0\nCurrent Need\nSupport / Passive\nRECOMMENDED SHELF\nSHOWING 6 OF 10\nAstral Needle\nMortal\nCommon\nNew\nSlot Fix\nHeaven's Pulse\nMortal\nCommon\nNew\nSlot Fix\nShatter Palm\nMortal\nRare\nNeed Currency\nSlot Fix\nIron Body\nMortal\nRare\nNeed Currency\nSlot Fix\nStonebreaker Fist\nMortal\nEpic\nNeed Currency\nSlot Fix\nTempered Spirit\nMortal\nEpic\nNeed Currency\nSlot Fix\nNew\nAstral Needle\nGrade\nMortal Grade\npaper-bound foundation\nRarity\nCommon\nplain copy\nFamily\nHeaven Lineage\nRole\nControl Seal\nPath Fit\nPath Fit: Strong\ncurrent doctrine resonates\nState\nNew\nunowned affordable\nWhy this matters now\nSlot fix: fills an empty unlocked slot.\nHeaven Lineage path fit: strong match.\nSupport role: Control Seal doctrine fills utility coverage.\nGate prep: improves next Gate readiness.\nStudy route: can start now if no manual is already active.\nCost\n250 Gold · 0 Spirit Stones\nBuy & Study\nBuy to Satchel\nPreview Technique\nRefresh Locked\n\nFree refresh ready in 06:00:01\n\nFeatured quality progress\nEpic pity: 0 / 10 · Legendary pity: 1 / 30\nEpic pity: 0 / 10\nLegendary pity: 1 / 30\nManual Satchel 0 manuals\nOpen\nGold\n1,000\nMerit\n0"
+}

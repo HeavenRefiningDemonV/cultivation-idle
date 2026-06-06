@@ -1,0 +1,814 @@
+{
+  "viewport": "1920x1080",
+  "name": "Techniques",
+  "url": "http://127.0.0.1:5173/",
+  "documentTitle": "cultivation-idle-temp",
+  "rootTestIds": [
+    "techniques-exact-page"
+  ],
+  "headings": [
+    "Techniques",
+    "Loadout gap signal",
+    "Loadouts",
+    "AI Profile",
+    "Casting Policy",
+    "Current Combat Form",
+    "Owned Techniques",
+    "Selected Technique",
+    "Gate Readiness Impact"
+  ],
+  "primaryCta": {
+    "text": "Open Details",
+    "disabled": true,
+    "ariaLabel": null,
+    "rect": {
+      "x": 1502,
+      "y": 590,
+      "width": 377,
+      "height": 36,
+      "right": 1879,
+      "bottom": 626
+    }
+  },
+  "buttons": [
+    {
+      "text": "◆Loadout 1Balanced Striker0 equipped",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 41,
+        "y": 242,
+        "width": 320,
+        "height": 96,
+        "right": 360,
+        "bottom": 339
+      }
+    },
+    {
+      "text": "◇Loadout 2Survivor0 equipped",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 41,
+        "y": 347,
+        "width": 320,
+        "height": 96,
+        "right": 360,
+        "bottom": 443
+      }
+    },
+    {
+      "text": "◇Loadout 3Burst0 equipped",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 41,
+        "y": 451,
+        "width": 320,
+        "height": 96,
+        "right": 360,
+        "bottom": 547
+      }
+    },
+    {
+      "text": "衡Balanced",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 41,
+        "y": 613,
+        "width": 74,
+        "height": 76,
+        "right": 115,
+        "bottom": 689
+      }
+    },
+    {
+      "text": "盾Survivor",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 123,
+        "y": 613,
+        "width": 74,
+        "height": 76,
+        "right": 197,
+        "bottom": 689
+      }
+    },
+    {
+      "text": "破Burst",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 205,
+        "y": 613,
+        "width": 74,
+        "height": 76,
+        "right": 279,
+        "bottom": 689
+      }
+    },
+    {
+      "text": "穗Farmer",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 287,
+        "y": 613,
+        "width": 74,
+        "height": 76,
+        "right": 360,
+        "bottom": 689
+      }
+    },
+    {
+      "text": "旋Reactive",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 41,
+        "y": 809,
+        "width": 100,
+        "height": 92,
+        "right": 141,
+        "bottom": 901
+      }
+    },
+    {
+      "text": "序Ordered",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 151,
+        "y": 809,
+        "width": 100,
+        "height": 92,
+        "right": 251,
+        "bottom": 901
+      }
+    },
+    {
+      "text": "掌Hold Ultimate",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 261,
+        "y": 809,
+        "width": 100,
+        "height": 92,
+        "right": 360,
+        "bottom": 901
+      }
+    },
+    {
+      "text": "Active 1Emptyfixed slot",
+      "disabled": false,
+      "ariaLabel": "Active 1: Empty",
+      "rect": {
+        "x": 683,
+        "y": 182,
+        "width": 178,
+        "height": 86,
+        "right": 861,
+        "bottom": 268
+      }
+    },
+    {
+      "text": "Equip",
+      "disabled": true,
+      "ariaLabel": null,
+      "rect": {
+        "x": 683,
+        "y": 272,
+        "width": 87,
+        "height": 28,
+        "right": 770,
+        "bottom": 300
+      }
+    },
+    {
+      "text": "Clear",
+      "disabled": true,
+      "ariaLabel": null,
+      "rect": {
+        "x": 774,
+        "y": 272,
+        "width": 87,
+        "height": 28,
+        "right": 861,
+        "bottom": 300
+      }
+    },
+    {
+      "text": "Active 2Emptyfixed slot",
+      "disabled": false,
+      "ariaLabel": "Active 2: Empty",
+      "rect": {
+        "x": 1044,
+        "y": 191,
+        "width": 178,
+        "height": 86,
+        "right": 1222,
+        "bottom": 277
+      }
+    },
+    {
+      "text": "Equip",
+      "disabled": true,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1044,
+        "y": 281,
+        "width": 87,
+        "height": 28,
+        "right": 1131,
+        "bottom": 309
+      }
+    },
+    {
+      "text": "Clear",
+      "disabled": true,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1135,
+        "y": 281,
+        "width": 87,
+        "height": 28,
+        "right": 1222,
+        "bottom": 309
+      }
+    },
+    {
+      "text": "Passive 1Emptyfixed slot",
+      "disabled": false,
+      "ariaLabel": "Passive 1: Empty",
+      "rect": {
+        "x": 554,
+        "y": 319,
+        "width": 178,
+        "height": 86,
+        "right": 732,
+        "bottom": 405
+      }
+    },
+    {
+      "text": "Equip",
+      "disabled": true,
+      "ariaLabel": null,
+      "rect": {
+        "x": 554,
+        "y": 409,
+        "width": 87,
+        "height": 28,
+        "right": 641,
+        "bottom": 437
+      }
+    },
+    {
+      "text": "Clear",
+      "disabled": true,
+      "ariaLabel": null,
+      "rect": {
+        "x": 645,
+        "y": 409,
+        "width": 87,
+        "height": 28,
+        "right": 732,
+        "bottom": 437
+      }
+    },
+    {
+      "text": "Passive 2Lockedfixed slot",
+      "disabled": false,
+      "ariaLabel": "Passive 2: Locked",
+      "rect": {
+        "x": 1173,
+        "y": 319,
+        "width": 178,
+        "height": 86,
+        "right": 1351,
+        "bottom": 405
+      }
+    },
+    {
+      "text": "Equip",
+      "disabled": true,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1173,
+        "y": 409,
+        "width": 87,
+        "height": 28,
+        "right": 1260,
+        "bottom": 437
+      }
+    },
+    {
+      "text": "Clear",
+      "disabled": true,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1264,
+        "y": 409,
+        "width": 87,
+        "height": 28,
+        "right": 1351,
+        "bottom": 437
+      }
+    },
+    {
+      "text": "SupportLockedfixed slot",
+      "disabled": false,
+      "ariaLabel": "Support: Locked",
+      "rect": {
+        "x": 694,
+        "y": 413,
+        "width": 178,
+        "height": 86,
+        "right": 872,
+        "bottom": 499
+      }
+    },
+    {
+      "text": "Equip",
+      "disabled": true,
+      "ariaLabel": null,
+      "rect": {
+        "x": 694,
+        "y": 503,
+        "width": 87,
+        "height": 28,
+        "right": 781,
+        "bottom": 531
+      }
+    },
+    {
+      "text": "Clear",
+      "disabled": true,
+      "ariaLabel": null,
+      "rect": {
+        "x": 785,
+        "y": 503,
+        "width": 87,
+        "height": 28,
+        "right": 872,
+        "bottom": 531
+      }
+    },
+    {
+      "text": "UltimateLockedfixed slot",
+      "disabled": false,
+      "ariaLabel": "Ultimate: Locked",
+      "rect": {
+        "x": 1066,
+        "y": 409,
+        "width": 178,
+        "height": 86,
+        "right": 1244,
+        "bottom": 495
+      }
+    },
+    {
+      "text": "Equip",
+      "disabled": true,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1066,
+        "y": 499,
+        "width": 87,
+        "height": 28,
+        "right": 1153,
+        "bottom": 527
+      }
+    },
+    {
+      "text": "Clear",
+      "disabled": true,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1157,
+        "y": 499,
+        "width": 87,
+        "height": 28,
+        "right": 1244,
+        "bottom": 527
+      }
+    },
+    {
+      "text": "All",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 634,
+        "y": 726,
+        "width": 42,
+        "height": 30,
+        "right": 676,
+        "bottom": 756
+      }
+    },
+    {
+      "text": "Path Fit",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 684,
+        "y": 726,
+        "width": 78,
+        "height": 30,
+        "right": 762,
+        "bottom": 756
+      }
+    },
+    {
+      "text": "Damage",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 770,
+        "y": 726,
+        "width": 80,
+        "height": 30,
+        "right": 850,
+        "bottom": 756
+      }
+    },
+    {
+      "text": "Guard",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 858,
+        "y": 726,
+        "width": 67,
+        "height": 30,
+        "right": 925,
+        "bottom": 756
+      }
+    },
+    {
+      "text": "Heal",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 933,
+        "y": 726,
+        "width": 55,
+        "height": 30,
+        "right": 988,
+        "bottom": 756
+      }
+    },
+    {
+      "text": "Control",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 996,
+        "y": 726,
+        "width": 76,
+        "height": 30,
+        "right": 1072,
+        "bottom": 756
+      }
+    },
+    {
+      "text": "Setup",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1080,
+        "y": 726,
+        "width": 63,
+        "height": 30,
+        "right": 1142,
+        "bottom": 756
+      }
+    },
+    {
+      "text": "Advanced Filters",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1309,
+        "y": 725,
+        "width": 150,
+        "height": 32,
+        "right": 1459,
+        "bottom": 757
+      }
+    },
+    {
+      "text": "Open Details",
+      "disabled": true,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1502,
+        "y": 590,
+        "width": 377,
+        "height": 36,
+        "right": 1879,
+        "bottom": 626
+      }
+    },
+    {
+      "text": "Inspect manual source",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1502,
+        "y": 633,
+        "width": 377,
+        "height": 36,
+        "right": 1879,
+        "bottom": 669
+      }
+    },
+    {
+      "text": "Apply Loadout",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1502,
+        "y": 906,
+        "width": 377,
+        "height": 34,
+        "right": 1879,
+        "bottom": 940
+      }
+    },
+    {
+      "text": "Go to Manual Pavilion",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1502,
+        "y": 946,
+        "width": 377,
+        "height": 34,
+        "right": 1879,
+        "bottom": 980
+      }
+    },
+    {
+      "text": "",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 0,
+        "y": 994,
+        "width": 16,
+        "height": 6,
+        "right": 16,
+        "bottom": 1000
+      }
+    },
+    {
+      "text": "Status",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 380,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 521,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "Cultivation",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 525,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 667,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "World",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 671,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 812,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "Inventory",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 816,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 958,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "Techniques",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 962,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 1104,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "Records",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1108,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 1249,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "Prestige",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1253,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 1395,
+        "bottom": 1072
+      }
+    },
+    {
+      "text": "Settings",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1399,
+        "y": 1011,
+        "width": 142,
+        "height": 61,
+        "right": 1540,
+        "bottom": 1072
+      }
+    }
+  ],
+  "scrollWidth": 1920,
+  "innerWidth": 1920,
+  "scrollHeight": 1080,
+  "innerHeight": 1080,
+  "suspectedClippedText": [
+    {
+      "text": "Choose a learned technique slip.",
+      "rect": {
+        "x": 1662,
+        "y": 406,
+        "width": 217,
+        "height": 19,
+        "right": 1879,
+        "bottom": 425
+      },
+      "overflow": "hidden/hidden/hidden"
+    }
+  ],
+  "viewportIssues": [],
+  "consoleSinceStart": [
+    "1366x768 debug: [vite] connecting...",
+    "1366x768 debug: [vite] connected.",
+    "1366x768 info: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+    "1366x768 log: [App] Initializing game...",
+    "1366x768 log: [GameLoop] Initializing game...",
+    "1366x768 log: [GameLoop] Store dependencies wired",
+    "1366x768 log: [GameLoop] Prestige store initialized",
+    "1366x768 log: [SpiritRoot] Generated: Mortal earth (71% purity)",
+    "1366x768 log: [GameLoop] Generated initial spirit root",
+    "1366x768 log: [GameLoop] No save found, starting new game",
+    "1366x768 log: [GameLoop] Added starter items to inventory",
+    "1366x768 log: [GameLoop] Starting game loop...",
+    "1366x768 log: [GameLoop] Game loop started",
+    "1366x768 log: [GameLoop] Game initialized successfully",
+    "1366x768 log: [App] Game initialized successfully",
+    "1366x768 log: [App] Initializing game...",
+    "1366x768 log: [GameLoop] Initializing game...",
+    "1366x768 log: [GameLoop] Store dependencies wired",
+    "1366x768 log: [GameLoop] Prestige store initialized",
+    "1366x768 log: [GameLoop] No save found, starting new game",
+    "1366x768 warning: [GameLoop] Already running",
+    "1366x768 log: [GameLoop] Game initialized successfully",
+    "1366x768 log: [App] Game initialized successfully",
+    "1366x768 warning: [ContentValidation] Technique counts by path: Heaven=20, Earth=20, Martial=20",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=heaven: 6",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=earth: 6",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=martial: 6",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=heaven: 7",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=earth: 9",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=martial: 8",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=heaven: 9",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=earth: 9",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=martial: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=heaven: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=earth: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=martial: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=heaven: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=earth: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=martial: 10",
+    "1366x768 info: [Content] Loaded 5 cities, 60 techniques (H/E/M: 20/20/20)",
+    "1366x768 info: [Content] Prestige upgrades: 27",
+    "1366x768 log: [SaveLoad] Saving game...",
+    "1366x768 log: [SaveLoad] Game saved successfully at 28/05/2026, 22:56:33",
+    "1366x768 log: [SaveLoad] Saving game...",
+    "1366x768 log: [SaveLoad] Game saved successfully at 28/05/2026, 22:56:35",
+    "1366x768 log: [UI] Notification added: success - Life begins: Heaven • Ember Thread Sutra • Balanced",
+    "1366x768 log: [SaveLoad] Saving game...",
+    "1366x768 log: [SaveLoad] Game saved successfully at 28/05/2026, 22:56:35",
+    "1366x768 log: [UI] Active tab changed to: status",
+    "1366x768 log: [UI] Active tab changed to: adventure",
+    "1366x768 log: [UI] Active tab changed to: inventory",
+    "1366x768 warning: [Inventory] Missing item definition for rusty_sword",
+    "1366x768 warning: [Inventory] Missing item definition for worn_talisman",
+    "1366x768 warning: [Inventory] Missing item definition for health_pill",
+    "1366x768 warning: [Inventory] Missing item definition for spirit_stone",
+    "1366x768 log: [UI] Active tab changed to: techniques",
+    "1366x768 log: [UI] Active tab changed to: records",
+    "1366x768 log: [UI] Active tab changed to: prestige",
+    "1366x768 log: [UI] Active tab changed to: settings",
+    "1366x768 log: [UI] Active tab changed to: adventure",
+    "1366x768 warning: [audio] Unable to play sound ui_click_secondary NotSupportedError: Failed to load because no supported source was found.",
+    "1366x768 log: [SaveLoad] Saving game...",
+    "1366x768 log: [SaveLoad] Game saved successfully at 28/05/2026, 22:57:32",
+    "1366x768 log: [GameLoop] Game autosaved",
+    "1920x1080 debug: [vite] connecting...",
+    "1920x1080 debug: [vite] connected.",
+    "1920x1080 info: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+    "1920x1080 log: [App] Initializing game...",
+    "1920x1080 log: [GameLoop] Initializing game...",
+    "1920x1080 log: [GameLoop] Store dependencies wired",
+    "1920x1080 log: [GameLoop] Prestige store initialized",
+    "1920x1080 log: [SpiritRoot] Generated: Common metal (58% purity)",
+    "1920x1080 log: [GameLoop] Generated initial spirit root",
+    "1920x1080 log: [GameLoop] No save found, starting new game",
+    "1920x1080 log: [GameLoop] Added starter items to inventory",
+    "1920x1080 log: [GameLoop] Starting game loop...",
+    "1920x1080 log: [GameLoop] Game loop started",
+    "1920x1080 log: [GameLoop] Game initialized successfully",
+    "1920x1080 log: [App] Game initialized successfully",
+    "1920x1080 log: [App] Initializing game...",
+    "1920x1080 log: [GameLoop] Initializing game...",
+    "1920x1080 log: [GameLoop] Store dependencies wired",
+    "1920x1080 log: [GameLoop] Prestige store initialized",
+    "1920x1080 log: [GameLoop] No save found, starting new game",
+    "1920x1080 warning: [GameLoop] Already running",
+    "1920x1080 log: [GameLoop] Game initialized successfully",
+    "1920x1080 log: [App] Game initialized successfully",
+    "1920x1080 warning: [ContentValidation] Technique counts by path: Heaven=20, Earth=20, Martial=20",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=heaven: 6",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=earth: 6",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=martial: 6",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=heaven: 7",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=earth: 9",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=martial: 8",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=heaven: 9",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=earth: 9",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=martial: 10",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=heaven: 10",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=earth: 10",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=martial: 10",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=heaven: 10",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=earth: 10",
+    "1920x1080 warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=martial: 10",
+    "1920x1080 info: [Content] Loaded 5 cities, 60 techniques (H/E/M: 20/20/20)",
+    "1920x1080 info: [Content] Prestige upgrades: 27",
+    "1920x1080 log: [SaveLoad] Saving game...",
+    "1920x1080 log: [SaveLoad] Game saved successfully at 28/05/2026, 22:57:37",
+    "1920x1080 log: [SaveLoad] Saving game...",
+    "1920x1080 log: [SaveLoad] Game saved successfully at 28/05/2026, 22:57:40",
+    "1920x1080 log: [UI] Notification added: success - Life begins: Heaven • Ember Thread Sutra • Balanced",
+    "1920x1080 log: [SaveLoad] Saving game...",
+    "1920x1080 log: [SaveLoad] Game saved successfully at 28/05/2026, 22:57:40",
+    "1920x1080 log: [UI] Active tab changed to: status",
+    "1920x1080 log: [UI] Active tab changed to: adventure",
+    "1920x1080 log: [UI] Active tab changed to: inventory",
+    "1920x1080 warning: [Inventory] Missing item definition for rusty_sword",
+    "1920x1080 warning: [Inventory] Missing item definition for worn_talisman",
+    "1920x1080 warning: [Inventory] Missing item definition for health_pill",
+    "1920x1080 warning: [Inventory] Missing item definition for spirit_stone",
+    "1920x1080 log: [UI] Active tab changed to: techniques"
+  ],
+  "textSample": "Techniques\n\nInner Palace Combat Form\n\n診\nLoadout gap signal\n\nfill one unlocked slot before the next Gate.\n\nTarget\nFoundation Gate\nArchetype\nUnshaped Build\nPath Alignment\n0%\nMastery Floor\n25\nRank Floor\nII\nLoadout 1\nBalanced\nLoadouts\n◆\nLoadout 1\nBalanced Striker\n0 equipped\n◇\nLoadout 2\nSurvivor\n0 equipped\n◇\nLoadout 3\nBurst\n0 equipped\nAI Profile\n衡\nBalanced\n盾\nSurvivor\n破\nBurst\n穗\nFarmer\n\nAI profile is aligned with the current doctrine.\n\nCasting Policy\n旋\nReactive\n序\nOrdered\n掌\nHold Ultimate\n\nResponds to combat state with a balanced priority mix.\n\n战\nCombat Form\nActive 1\nEmpty\nfixed slot\nEquip\nClear\nActive 2\nEmpty\nfixed slot\nEquip\nClear\nPassive 1\nEmpty\nfixed slot\nEquip\nClear\nPassive 2\nLocked\nfixed slot\nEquip\nClear\nSupport\nLocked\nfixed slot\nEquip\nClear\nUltimate\nLocked\nfixed slot\nEquip\nClear\nCurrent Combat Form\n0 / 4 Active\n0 / 3 Passive\n0 / 1 Ultimate\nAI: Balanced\nPolicy: Reactive\n\nSelect a technique slip or altar slot to adjust the combat form.\n\nOwned Techniques\nAll\nPath Fit\nDamage\nGuard\nHeal\nControl\nSetup\nAdvanced Filters\nNo learned techniques match this doctrine filter.\nSelected Technique\nNo Technique Selected\nNo Selection\nSelection\nChoose a learned technique slip.\nObserved Gap\nempty technique slot\nOpen Details\nInspect manual source\nGate Readiness Impact\nDamage\nMissing\nSurvival\nThin\nControl\nMissing\nAI\nThin\nMedicine\nMissing\nApply Loadout\nGo to Manual Pavilion\nStatus\nCultivation\nWorld\nInventory\nTechniques\nRecords\nPrestige\nSettings"
+}

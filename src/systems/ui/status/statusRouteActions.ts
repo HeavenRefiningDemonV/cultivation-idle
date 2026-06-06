@@ -13,6 +13,7 @@ function toWorldBuildingKey(moduleKey: LiveWorldModuleKey): WorldBuildingKey {
     case 'outskirts':
     case 'ruins':
     case 'gateTrial':
+    case 'trainingHall':
     case 'manualPavilion':
     case 'apothecary':
     case 'forge':
@@ -39,6 +40,16 @@ export function performStatusRouteTarget(target: StatusRouteTarget): StatusLedge
     return { performed: true, reason: null };
   }
 
+  if (target.kind === 'status_observation') {
+    ui.openSpiritRootObservation(target.tab);
+    return { performed: true, reason: null };
+  }
+
+  if (target.kind === 'dao_heart_sanctuary') {
+    ui.openDaoHeartModal(target.tab);
+    return { performed: true, reason: null };
+  }
+
   return { performed: false, reason: target.reason };
 }
 
@@ -52,4 +63,3 @@ export function performStatusLedgerAction(action: StatusLedgerActionSurface): St
 
   return performStatusRouteTarget(action.target);
 }
-

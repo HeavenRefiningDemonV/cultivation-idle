@@ -1,0 +1,510 @@
+﻿{
+    "generatedAt":  1780460221691,
+    "rows":  [
+                 {
+                     "upgradeId":  "ap_auto_retry_bosses",
+                     "upgradeName":  "Auto-Retry Bosses",
+                     "status":  "hidden_unsupported",
+                     "contentEffectKeys":  [
+                                               "autoRetryBosses"
+                                           ],
+                     "runtimeConsumers":  [
+
+                                          ],
+                     "purchaseAllowed":  false,
+                     "displayAllowed":  false,
+                     "reason":  "Content effect has no confirmed runtime consumer in this slice, so it is hidden.",
+                     "remediation":  "hide"
+                 },
+                 {
+                     "upgradeId":  "ap_autobuy_consumables",
+                     "upgradeName":  "Auto-Buy Consumables",
+                     "status":  "hidden_unsupported",
+                     "contentEffectKeys":  [
+                                               "autobuyEnabled"
+                                           ],
+                     "runtimeConsumers":  [
+
+                                          ],
+                     "purchaseAllowed":  false,
+                     "displayAllowed":  false,
+                     "reason":  "Content effect has no confirmed runtime consumer in this slice, so it is hidden.",
+                     "remediation":  "hide"
+                 },
+                 {
+                     "upgradeId":  "ap_autosell_filter",
+                     "upgradeName":  "Auto-Sell Junk Filter",
+                     "status":  "hidden_unsupported",
+                     "contentEffectKeys":  [
+                                               "autosellEnabled"
+                                           ],
+                     "runtimeConsumers":  [
+
+                                          ],
+                     "purchaseAllowed":  false,
+                     "displayAllowed":  false,
+                     "reason":  "Content effect has no confirmed runtime consumer in this slice, so it is hidden.",
+                     "remediation":  "hide"
+                 },
+                 {
+                     "upgradeId":  "ap_combat_mult",
+                     "upgradeName":  "Combat Power Multiplier",
+                     "status":  "visible_live",
+                     "contentEffectKeys":  [
+                                               "combatMult"
+                                           ],
+                     "runtimeConsumers":  [
+                                              "combat_multiplier"
+                                          ],
+                     "purchaseAllowed":  true,
+                     "displayAllowed":  true,
+                     "reason":  "Live runtime consumer(s): combat_multiplier.",
+                     "remediation":  "none"
+                 },
+                 {
+                     "upgradeId":  "ap_craft_speed_boost",
+                     "upgradeName":  "Craft Speed Boost",
+                     "status":  "hidden_unsupported",
+                     "contentEffectKeys":  [
+                                               "craftSpeedMult"
+                                           ],
+                     "runtimeConsumers":  [
+
+                                          ],
+                     "purchaseAllowed":  false,
+                     "displayAllowed":  false,
+                     "reason":  "Content effect has no confirmed runtime consumer in this slice, so it is hidden.",
+                     "remediation":  "hide"
+                 },
+                 {
+                     "upgradeId":  "ap_extra_heartlaw_choice",
+                     "upgradeName":  "Extra Heart Law Choice",
+                     "status":  "hidden_unsupported",
+                     "contentEffectKeys":  [
+                                               "startChoiceCountAdd"
+                                           ],
+                     "runtimeConsumers":  [
+
+                                          ],
+                     "purchaseAllowed":  false,
+                     "displayAllowed":  false,
+                     "reason":  "Content effect has no confirmed runtime consumer in this slice, so it is hidden.",
+                     "remediation":  "hide"
+                 },
+                 {
+                     "upgradeId":  "ap_extra_technique_slot_1",
+                     "upgradeName":  "Extra Technique Slot I",
+                     "status":  "visible_live",
+                     "contentEffectKeys":  [
+                                               "extraTechniqueSlots"
+                                           ],
+                     "runtimeConsumers":  [
+                                              "extra_technique_slot"
+                                          ],
+                     "purchaseAllowed":  true,
+                     "displayAllowed":  true,
+                     "reason":  "Live runtime consumer(s): extra_technique_slot.",
+                     "remediation":  "none"
+                 },
+                 {
+                     "upgradeId":  "ap_extra_technique_slot_2",
+                     "upgradeName":  "Extra Technique Slot II",
+                     "status":  "visible_live",
+                     "contentEffectKeys":  [
+                                               "extraTechniqueSlots"
+                                           ],
+                     "runtimeConsumers":  [
+                                              "extra_technique_slot"
+                                          ],
+                     "purchaseAllowed":  true,
+                     "displayAllowed":  true,
+                     "reason":  "Live runtime consumer(s): extra_technique_slot.",
+                     "remediation":  "none"
+                 },
+                 {
+                     "upgradeId":  "ap_fragment_gain_boost",
+                     "upgradeName":  "Technique Fragment Gain",
+                     "status":  "hidden_unsupported",
+                     "contentEffectKeys":  [
+                                               "fragmentGainMult"
+                                           ],
+                     "runtimeConsumers":  [
+
+                                          ],
+                     "purchaseAllowed":  false,
+                     "displayAllowed":  false,
+                     "reason":  "Content effect has no confirmed runtime consumer in this slice, so it is hidden.",
+                     "remediation":  "hide"
+                 },
+                 {
+                     "upgradeId":  "ap_idle_qi_mult",
+                     "upgradeName":  "Idle Qi Multiplier",
+                     "status":  "visible_live",
+                     "contentEffectKeys":  [
+                                               "idleQiMult"
+                                           ],
+                     "runtimeConsumers":  [
+                                              "qi_multiplier"
+                                          ],
+                     "purchaseAllowed":  true,
+                     "displayAllowed":  true,
+                     "reason":  "Live runtime consumer(s): qi_multiplier.",
+                     "remediation":  "none"
+                 },
+                 {
+                     "upgradeId":  "ap_loot_filter",
+                     "upgradeName":  "Loot Filter Rules",
+                     "status":  "hidden_unsupported",
+                     "contentEffectKeys":  [
+                                               "lootFilterEnabled"
+                                           ],
+                     "runtimeConsumers":  [
+
+                                          ],
+                     "purchaseAllowed":  false,
+                     "displayAllowed":  false,
+                     "reason":  "Content effect has no confirmed runtime consumer in this slice, so it is hidden.",
+                     "remediation":  "hide"
+                 },
+                 {
+                     "upgradeId":  "ap_mastery_retention_10",
+                     "upgradeName":  "Mastery Retention 10%",
+                     "status":  "visible_live",
+                     "contentEffectKeys":  [
+                                               "masteryRetentionPct"
+                                           ],
+                     "runtimeConsumers":  [
+                                              "mastery_retention"
+                                          ],
+                     "purchaseAllowed":  true,
+                     "displayAllowed":  true,
+                     "reason":  "Live runtime consumer(s): mastery_retention.",
+                     "remediation":  "none"
+                 },
+                 {
+                     "upgradeId":  "ap_mastery_retention_25",
+                     "upgradeName":  "Mastery Retention 25%",
+                     "status":  "visible_live",
+                     "contentEffectKeys":  [
+                                               "masteryRetentionPct"
+                                           ],
+                     "runtimeConsumers":  [
+                                              "mastery_retention"
+                                          ],
+                     "purchaseAllowed":  true,
+                     "displayAllowed":  true,
+                     "reason":  "Live runtime consumer(s): mastery_retention.",
+                     "remediation":  "none"
+                 },
+                 {
+                     "upgradeId":  "ap_mastery_retention_50",
+                     "upgradeName":  "Mastery Retention 50%",
+                     "status":  "visible_live",
+                     "contentEffectKeys":  [
+                                               "masteryRetentionPct"
+                                           ],
+                     "runtimeConsumers":  [
+                                              "mastery_retention"
+                                          ],
+                     "purchaseAllowed":  true,
+                     "displayAllowed":  true,
+                     "reason":  "Live runtime consumer(s): mastery_retention.",
+                     "remediation":  "none"
+                 },
+                 {
+                     "upgradeId":  "ap_offline_efficiency",
+                     "upgradeName":  "Offline Efficiency",
+                     "status":  "visible_live",
+                     "contentEffectKeys":  [
+                                               "offlineEfficiencyAdd"
+                                           ],
+                     "runtimeConsumers":  [
+                                              "offline_efficiency"
+                                          ],
+                     "purchaseAllowed":  true,
+                     "displayAllowed":  true,
+                     "reason":  "Live runtime consumer(s): offline_efficiency.",
+                     "remediation":  "none"
+                 },
+                 {
+                     "upgradeId":  "ap_pagoda_sweep",
+                     "upgradeName":  "Pagoda Sweep",
+                     "status":  "deferred",
+                     "contentEffectKeys":  [
+                                               "pagodaSweepUnlocked"
+                                           ],
+                     "runtimeConsumers":  [
+
+                                          ],
+                     "purchaseAllowed":  false,
+                     "displayAllowed":  true,
+                     "reason":  "Deferred future-slice decree; blocked from live purchasing.",
+                     "remediation":  "label_deferred"
+                 },
+                 {
+                     "upgradeId":  "ap_pavilion_refresh_discount",
+                     "upgradeName":  "Pavilion Refresh Discount",
+                     "status":  "hidden_unsupported",
+                     "contentEffectKeys":  [
+                                               "pavilionRefreshCostMult"
+                                           ],
+                     "runtimeConsumers":  [
+
+                                          ],
+                     "purchaseAllowed":  false,
+                     "displayAllowed":  false,
+                     "reason":  "Content effect has no confirmed runtime consumer in this slice, so it is hidden.",
+                     "remediation":  "hide"
+                 },
+                 {
+                     "upgradeId":  "ap_unlock_alchemy_queue",
+                     "upgradeName":  "Alchemy Queue Expansion",
+                     "status":  "hidden_unsupported",
+                     "contentEffectKeys":  [
+                                               "alchemyQueueSlotsAdd"
+                                           ],
+                     "runtimeConsumers":  [
+
+                                          ],
+                     "purchaseAllowed":  false,
+                     "displayAllowed":  false,
+                     "reason":  "Content effect has no confirmed runtime consumer in this slice, so it is hidden.",
+                     "remediation":  "hide"
+                 },
+                 {
+                     "upgradeId":  "ap_unlock_forge_queue",
+                     "upgradeName":  "Forge Queue Expansion",
+                     "status":  "hidden_unsupported",
+                     "contentEffectKeys":  [
+                                               "forgeQueueSlotsAdd"
+                                           ],
+                     "runtimeConsumers":  [
+
+                                          ],
+                     "purchaseAllowed":  false,
+                     "displayAllowed":  false,
+                     "reason":  "Content effect has no confirmed runtime consumer in this slice, so it is hidden.",
+                     "remediation":  "hide"
+                 },
+                 {
+                     "upgradeId":  "ap_unlock_heartlaw_t1",
+                     "upgradeName":  "Unlock Heart Laws (Tier 1)",
+                     "status":  "visible_live",
+                     "contentEffectKeys":  [
+                                               "unlocks"
+                                           ],
+                     "runtimeConsumers":  [
+                                              "heart_law_unlock"
+                                          ],
+                     "purchaseAllowed":  true,
+                     "displayAllowed":  true,
+                     "reason":  "Live runtime consumer(s): heart_law_unlock.",
+                     "remediation":  "none"
+                 },
+                 {
+                     "upgradeId":  "ap_unlock_heartlaw_t2",
+                     "upgradeName":  "Unlock Heart Laws (Tier 2)",
+                     "status":  "visible_live",
+                     "contentEffectKeys":  [
+                                               "unlocks"
+                                           ],
+                     "runtimeConsumers":  [
+                                              "heart_law_unlock"
+                                          ],
+                     "purchaseAllowed":  true,
+                     "displayAllowed":  true,
+                     "reason":  "Live runtime consumer(s): heart_law_unlock.",
+                     "remediation":  "none"
+                 },
+                 {
+                     "upgradeId":  "ap_unlock_heartlaw_t3",
+                     "upgradeName":  "Unlock Heart Laws (Tier 3)",
+                     "status":  "visible_live",
+                     "contentEffectKeys":  [
+                                               "unlocks"
+                                           ],
+                     "runtimeConsumers":  [
+                                              "heart_law_unlock"
+                                          ],
+                     "purchaseAllowed":  true,
+                     "displayAllowed":  true,
+                     "reason":  "Live runtime consumer(s): heart_law_unlock.",
+                     "remediation":  "none"
+                 },
+                 {
+                     "upgradeId":  "ap_unlock_jade_core",
+                     "upgradeName":  "Unlock Jade Core Refinement",
+                     "status":  "deferred",
+                     "contentEffectKeys":  [
+                                               "jadeCoreUnlocked"
+                                           ],
+                     "runtimeConsumers":  [
+
+                                          ],
+                     "purchaseAllowed":  false,
+                     "displayAllowed":  true,
+                     "reason":  "Deferred future-slice decree; blocked from live purchasing.",
+                     "remediation":  "label_deferred"
+                 },
+                 {
+                     "upgradeId":  "ap_unlock_meridian_hall",
+                     "upgradeName":  "Unlock Meridian Hall",
+                     "status":  "deferred",
+                     "contentEffectKeys":  [
+                                               "meridianHallUnlocked"
+                                           ],
+                     "runtimeConsumers":  [
+
+                                          ],
+                     "purchaseAllowed":  false,
+                     "displayAllowed":  true,
+                     "reason":  "Deferred future-slice decree; blocked from live purchasing.",
+                     "remediation":  "label_deferred"
+                 },
+                 {
+                     "upgradeId":  "ap_unlock_pagoda",
+                     "upgradeName":  "Unlock Ninefold Pagoda",
+                     "status":  "deferred",
+                     "contentEffectKeys":  [
+                                               "pagodaUnlocked"
+                                           ],
+                     "runtimeConsumers":  [
+
+                                          ],
+                     "purchaseAllowed":  false,
+                     "displayAllowed":  true,
+                     "reason":  "Deferred future-slice decree; blocked from live purchasing.",
+                     "remediation":  "label_deferred"
+                 },
+                 {
+                     "upgradeId":  "ap_unlock_spirit_garden",
+                     "upgradeName":  "Unlock Spirit Garden",
+                     "status":  "deferred",
+                     "contentEffectKeys":  [
+                                               "spiritGardenUnlocked"
+                                           ],
+                     "runtimeConsumers":  [
+
+                                          ],
+                     "purchaseAllowed":  false,
+                     "displayAllowed":  true,
+                     "reason":  "Deferred future-slice decree; blocked from live purchasing.",
+                     "remediation":  "label_deferred"
+                 },
+                 {
+                     "upgradeId":  "ap_unlock_talisman_queue",
+                     "upgradeName":  "Talisman Queue Expansion",
+                     "status":  "hidden_unsupported",
+                     "contentEffectKeys":  [
+                                               "talismanQueueSlotsAdd"
+                                           ],
+                     "runtimeConsumers":  [
+
+                                          ],
+                     "purchaseAllowed":  false,
+                     "displayAllowed":  false,
+                     "reason":  "Content effect has no confirmed runtime consumer in this slice, so it is hidden.",
+                     "remediation":  "hide"
+                 },
+                 {
+                     "upgradeId":  "calm_first_breath",
+                     "upgradeName":  "Calm First Breath",
+                     "status":  "visible_live",
+                     "contentEffectKeys":  [
+                                               "calmFirstBreathRiskReduction"
+                                           ],
+                     "runtimeConsumers":  [
+                                              "breakthrough_calm_memory"
+                                          ],
+                     "purchaseAllowed":  true,
+                     "displayAllowed":  true,
+                     "reason":  "Live runtime consumer(s): breakthrough_calm_memory.",
+                     "remediation":  "none"
+                 },
+                 {
+                     "upgradeId":  "doctrine_archive",
+                     "upgradeName":  "Doctrine Archive",
+                     "status":  "hidden_unsupported",
+                     "contentEffectKeys":  [
+                                               "doctrineArchiveEcho"
+                                           ],
+                     "runtimeConsumers":  [
+
+                                          ],
+                     "purchaseAllowed":  false,
+                     "displayAllowed":  false,
+                     "reason":  "Content effect has no confirmed runtime consumer in this slice, so it is hidden.",
+                     "remediation":  "hide"
+                 },
+                 {
+                     "upgradeId":  "form_memory",
+                     "upgradeName":  "Form Memory",
+                     "status":  "visible_live",
+                     "contentEffectKeys":  [
+                                               "formMemoryFloor"
+                                           ],
+                     "runtimeConsumers":  [
+                                              "training_memory_floor"
+                                          ],
+                     "purchaseAllowed":  true,
+                     "displayAllowed":  true,
+                     "reason":  "Live runtime consumer(s): training_memory_floor.",
+                     "remediation":  "none"
+                 },
+                 {
+                     "upgradeId":  "old_sparring_shadows",
+                     "upgradeName":  "Old Sparring Shadows",
+                     "status":  "visible_live",
+                     "contentEffectKeys":  [
+                                               "oldSparringMasteryCatchupPct"
+                                           ],
+                     "runtimeConsumers":  [
+                                              "training_mastery_shadow"
+                                          ],
+                     "purchaseAllowed":  true,
+                     "displayAllowed":  true,
+                     "reason":  "Live runtime consumer(s): training_mastery_shadow.",
+                     "remediation":  "none"
+                 },
+                 {
+                     "upgradeId":  "root_clarity",
+                     "upgradeName":  "Root Clarity",
+                     "status":  "visible_live",
+                     "contentEffectKeys":  [
+                                               "rootClarityGradeFloor"
+                                           ],
+                     "runtimeConsumers":  [
+                                              "root_clarity_floor"
+                                          ],
+                     "purchaseAllowed":  true,
+                     "displayAllowed":  true,
+                     "reason":  "Live runtime consumer(s): root_clarity_floor.",
+                     "remediation":  "none"
+                 },
+                 {
+                     "upgradeId":  "scripture_echo",
+                     "upgradeName":  "Scripture Echo",
+                     "status":  "visible_live",
+                     "contentEffectKeys":  [
+                                               "scriptureVerseRetentionPct"
+                                           ],
+                     "runtimeConsumers":  [
+                                              "heart_law_scripture_echo"
+                                          ],
+                     "purchaseAllowed":  true,
+                     "displayAllowed":  true,
+                     "reason":  "Live runtime consumer(s): heart_law_scripture_echo.",
+                     "remediation":  "none"
+                 }
+             ],
+    "visibleLiveCount":  16,
+    "deferredCount":  5,
+    "hiddenUnsupportedCount":  12,
+    "unknownBlockedCount":  0,
+    "blockers":  [
+
+                 ],
+    "warnings":  [
+
+                 ]
+}

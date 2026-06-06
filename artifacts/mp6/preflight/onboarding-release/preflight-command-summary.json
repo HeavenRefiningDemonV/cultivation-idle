@@ -1,0 +1,56 @@
+﻿{
+    "schemaVersion":  "mp6-preflight-command-summary-v1",
+    "generatedAt":  "2026-05-31T00:59:56.2187398+03:00",
+    "commands":  [
+                     {
+                         "name":  "tsconfig-tests",
+                         "command":  "npm exec tsc -- --project tsconfig.tests.json",
+                         "exitCode":  0,
+                         "status":  "PASS",
+                         "start":  "2026-05-31T00:59:24.5800151+03:00",
+                         "end":  "2026-05-31T00:59:34.7443934+03:00",
+                         "durationSeconds":  10.164,
+                         "artifact":  "artifacts\\mp6\\preflight\\onboarding-release\\logs\\01-tsconfig-tests.log"
+                     },
+                     {
+                         "name":  "typecheck",
+                         "command":  "npm run typecheck",
+                         "exitCode":  0,
+                         "status":  "PASS",
+                         "start":  "2026-05-31T00:59:34.7651781+03:00",
+                         "end":  "2026-05-31T00:59:35.0885350+03:00",
+                         "durationSeconds":  0.323,
+                         "artifact":  "artifacts\\mp6\\preflight\\onboarding-release\\logs\\02-typecheck.log"
+                     },
+                     {
+                         "name":  "check-icons",
+                         "command":  "npm run check:icons",
+                         "exitCode":  0,
+                         "status":  "PASS",
+                         "start":  "2026-05-31T00:59:35.0895487+03:00",
+                         "end":  "2026-05-31T00:59:35.4319827+03:00",
+                         "durationSeconds":  0.342,
+                         "artifact":  "artifacts\\mp6\\preflight\\onboarding-release\\logs\\03-check-icons.log"
+                     },
+                     {
+                         "name":  "validate-content",
+                         "command":  "npm run validate:content",
+                         "exitCode":  0,
+                         "status":  "PASS",
+                         "start":  "2026-05-31T00:59:35.4340124+03:00",
+                         "end":  "2026-05-31T00:59:36.4738177+03:00",
+                         "durationSeconds":  1.04,
+                         "artifact":  "artifacts\\mp6\\preflight\\onboarding-release\\logs\\04-validate-content.log"
+                     },
+                     {
+                         "name":  "targeted-onboarding-suite",
+                         "command":  "node --loader=./scripts/relativeJsLoader.mjs --test tmp-tests/tests/contracts/onboardingMilestoneContract.test.js tmp-tests/tests/contracts/onboardingPolicy.test.js tmp-tests/tests/contracts/onboardingMilestoneSurface.test.js tmp-tests/tests/integration/onboardingMigration.test.js tmp-tests/tests/integration/onboardingModuleGating.test.js tmp-tests/tests/integration/onboardingUiState.test.js tmp-tests/tests/integration/onboardingFreshSaveFlow.test.js tmp-tests/tests/integration/onboardingSourceSinkGuards.test.js tmp-tests/tests/integration/onboardingGateGraduation.test.js tmp-tests/tests/integration/onboardingExistingSave.test.js",
+                         "exitCode":  0,
+                         "status":  "PASS",
+                         "start":  "2026-05-31T00:59:55.4295892+03:00",
+                         "end":  "2026-05-31T00:59:56.1716168+03:00",
+                         "durationSeconds":  0.742,
+                         "artifact":  "artifacts\\mp6\\preflight\\onboarding-release\\logs\\05-targeted-onboarding-suite.log"
+                     }
+                 ]
+}

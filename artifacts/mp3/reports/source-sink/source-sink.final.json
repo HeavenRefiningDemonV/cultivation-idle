@@ -1,0 +1,121 @@
+{
+  "generatedAt": "2026-05-28T23:04:51.612Z",
+  "rows": [
+    {
+      "family": "Gold",
+      "id": "gold",
+      "label": "Gold",
+      "sources": [
+        "Outskirts: Gold + common mats",
+        "Bounties: Support currency fallback"
+      ],
+      "sinks": [],
+      "bestSource": "Outskirts",
+      "whyNow": "No current sink is active; keep as future/archive material.",
+      "status": "pass"
+    },
+    {
+      "family": "Merit",
+      "id": "merit",
+      "label": "Merit",
+      "sources": [
+        "Bounties: Canonical Merit route",
+        "Gate Trial: Eligible defeat fallback"
+      ],
+      "sinks": [
+        "Safety Net reserve: Merit supports fail-safe and bounded gate fallback reserves."
+      ],
+      "bestSource": "Bounties",
+      "whyNow": "Useful support for a visible module sink.",
+      "status": "pass"
+    },
+    {
+      "family": "Spirit Stones",
+      "id": "spiritStones",
+      "label": "Spirit Stones",
+      "sources": [
+        "Bounties: Canonical spirit-stone route",
+        "Gate Trial: Bounded reserve fallback"
+      ],
+      "sinks": [],
+      "bestSource": "Bounties",
+      "whyNow": "No current sink is active; keep as future/archive material.",
+      "status": "pass"
+    },
+    {
+      "family": "Herbs/medicine",
+      "id": "cons_healing_pellet_t1",
+      "label": "Healing Pellet",
+      "sources": [
+        "Apothecary: Immediate shop stock",
+        "Apothecary: Brew fallback"
+      ],
+      "sinks": [
+        "Gate prep minimum: Used by the Apothecary prep package and gate readiness rows."
+      ],
+      "bestSource": "Apothecary",
+      "whyNow": "Solves current blocker: this is part of the active shortage route.",
+      "status": "pass"
+    },
+    {
+      "family": "Herbs",
+      "id": "mat_spirit_leaf",
+      "label": "Spirit Leaf",
+      "sources": [
+        "Ruins: City-local targeted source",
+        "Expeditions: Passive shortage smoothing",
+        "Outskirts: Rare-spike tertiary fallback"
+      ],
+      "sinks": [
+        "Forge floor: Used by Forge recipes and permanent floor work."
+      ],
+      "bestSource": "Ruins",
+      "whyNow": "Useful support for a visible module sink.",
+      "status": "pass"
+    },
+    {
+      "family": "Ore/materials",
+      "id": "mat_quarry_ore",
+      "label": "Quarry Ore",
+      "sources": [
+        "Ruins: City-local targeted source",
+        "Expeditions: Passive shortage smoothing",
+        "Outskirts: Rare-spike tertiary fallback"
+      ],
+      "sinks": [
+        "Forge floor: Used by Forge recipes and permanent floor work."
+      ],
+      "bestSource": "Ruins",
+      "whyNow": "Useful support for a visible module sink.",
+      "status": "pass"
+    },
+    {
+      "family": "Manual fragments/scraps",
+      "id": "mat_technique_fragment",
+      "label": "Technique Fragment",
+      "sources": [
+        "Expeditions: Scout support route",
+        "Manual Pavilion: Correction destination"
+      ],
+      "sinks": [
+        "Manual support: Feeds doctrine acquisition and duplicate conversion.",
+        "Technique rank: Supports equipped technique rank and mastery work."
+      ],
+      "bestSource": "Expeditions",
+      "whyNow": "Useful support for a visible module sink.",
+      "status": "pass"
+    },
+    {
+      "family": "Gate catalysts",
+      "id": "gate_foundation_pill",
+      "label": "Foundation Pill",
+      "sources": [],
+      "sinks": [
+        "Breakthrough proof: Gate proof should route to Cultivation breakthrough after the trial is cleared or bypassed."
+      ],
+      "bestSource": null,
+      "whyNow": "Useful support for a visible module sink.",
+      "status": "pass"
+    }
+  ]
+}

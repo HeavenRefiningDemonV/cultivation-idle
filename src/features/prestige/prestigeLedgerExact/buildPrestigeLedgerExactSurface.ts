@@ -19,6 +19,12 @@ import type {
   PrestigeRecommendedDecreeCard,
 } from './prestigeLedgerExactTypes.js';
 import type { PrestigeForecastSurfaceV2 } from '../prestigeForecastSurface.js';
+import { buildReclaimMemorySurface } from '../../prestigeReclaim/buildReclaimMemorySurface.js';
+import {
+  resolvePrestigeReclaimState,
+  type PrestigeReclaimCurrentRoute,
+} from '../../../systems/prestige/prestigeMemoryResolver.js';
+import { createDefaultPrestigeMemoryLedger } from '../../../systems/prestige/prestigeMemory.js';
 
 const QUALITY_NAMES: Record<number, string> = {
   1: 'Mortal',
@@ -127,6 +133,33 @@ const formatCitiesReached = (names: string[]): string => {
   if (clean.length === 0) return 'No city record';
   if (clean.length <= 2) return clean.join(', ');
   return `${clean[0]}, ${clean[1]} +${clean.length - 2} more`;
+};
+
+const reclaimRankFor = (purchasesById: Record<string, number>): number =>
+  Math.max(
+    purchasesById.form_memory ?? 0,
+    purchasesById.scripture_echo ?? 0,
+    purchasesById.root_clarity ?? 0,
+    purchasesById.old_sparring_shadows ?? 0,
+  );
+
+const buildFallbackReclaimRoute = (input: PrestigeLedgerExactLiveInput): PrestigeReclaimCurrentRoute => ({
+  lifeId: `life-${Math.max(1, input.prestige.prestigeCount + 1)}`,
+  realmIndex: input.game.realm.index,
+  composite: {
+    pathId: input.game.selectedPath,
+    heartLawId: input.heartLawName,
+    rootKey: null,
+    gateChainId: null,
+  },
+});
+
+const formatReclaimRouteLabel = (route: PrestigeReclaimCurrentRoute): string => {
+  const path = route.composite?.pathId ?? route.path?.pathId ?? 'no Path';
+  const law = route.composite?.heartLawId ?? route.heartLaw?.heartLawId ?? 'no Heart Law';
+  const root = route.composite?.rootKey ? 'root paired' : 'no root';
+  const gate = route.composite?.gateChainId ?? route.gate?.gateId ?? 'no gate chain';
+  return `${titleCase(path)} / ${titleCase(law)} / ${root} / ${titleCase(gate)}`;
 };
 
 const getUpgradeNextCost = (upgrade: PrestigeUpgradeDef, currentLevel: number): number | null => {
@@ -420,6 +453,18 @@ export function createPrestigeLedgerExactMockupFixture(): PrestigeLedgerExactSur
       tablets: PRESTIGE_LEDGER_RESET_TABLETS.map((tablet) => ({ ...tablet, bullets: [...tablet.bullets] })),
     },
     forecast: fixtureForecast,
+    reclaimMemory: buildReclaimMemorySurface({
+      resolved: resolvePrestigeReclaimState({
+        records: [],
+        current: {
+          lifeId: 'fixture-life',
+          realmIndex: 0,
+          composite: { pathId: 'heaven', heartLawId: 'fixture_law', rootKey: null, gateChainId: null },
+        },
+        reclaimRank: 0,
+      }),
+      currentRouteLabel: 'Heaven / Fixture Law / no root / no gate chain',
+    }),
   };
 }
 
@@ -429,6 +474,16 @@ export function buildPrestigeLedgerExactSurfaceFromStores(input: PrestigeLedgerE
   const sealState = resolveSealState(input);
   const canReview = input.prestige.canPrestige && input.prestige.apGain > 0;
   const forecast = input.forecast;
+  const memoryLedger = input.prestige.memoryLedger ?? createDefaultPrestigeMemoryLedger();
+  const reclaimRoute = input.reclaimRoute ?? buildFallbackReclaimRoute(input);
+  const reclaimMemory = buildReclaimMemorySurface({
+    resolved: resolvePrestigeReclaimState({
+      records: memoryLedger.records,
+      current: reclaimRoute,
+      reclaimRank: reclaimRankFor(input.prestige.purchasesById),
+    }),
+    currentRouteLabel: formatReclaimRouteLabel(reclaimRoute),
+  });
 
   return {
     meta: {
@@ -526,6 +581,7 @@ export function buildPrestigeLedgerExactSurfaceFromStores(input: PrestigeLedgerE
       },
       warnings: forecast?.warnings ?? [],
     },
+    reclaimMemory,
     postResetReclaimObjective: input.postResetReclaimObjective ?? null,
     debug: {
       notes: [

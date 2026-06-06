@@ -1,0 +1,1013 @@
+{
+  "viewport": "1366x768",
+  "name": "Gate Trial",
+  "url": "http://127.0.0.1:5173/",
+  "documentTitle": "cultivation-idle-temp",
+  "rootTestIds": [
+    "gate-trial-screen-owner",
+    "gate-trial-exact-page",
+    "gate-trial-exact-top-region",
+    "gate-trial-page-title",
+    "gate-trial-title-seal",
+    "gate-trial-macro-ribbon",
+    "gate-trial-top-status",
+    "gate-trial-icon-top-status",
+    "gate-trial-tactical-strip",
+    "gate-trial-tactical-cell-hp",
+    "gate-trial-icon-hp",
+    "gate-trial-tactical-cell-gate",
+    "gate-trial-icon-gate",
+    "gate-trial-tactical-cell-loadout",
+    "gate-trial-icon-loadout",
+    "gate-trial-tactical-cell-aiProfile",
+    "gate-trial-icon-aiProfile",
+    "gate-trial-tactical-cell-healing",
+    "gate-trial-icon-healing",
+    "gate-trial-tactical-cell-bounty",
+    "gate-trial-icon-bounty",
+    "gate-trial-tactical-cell-expedition",
+    "gate-trial-icon-expedition",
+    "gate-trial-exact-gate-header-slot",
+    "gate-trial-gate-header",
+    "gate-trial-gate-header-plaque",
+    "gate-trial-gate-header-title",
+    "gate-trial-gate-header-subtitle",
+    "gate-trial-gate-header-chips",
+    "gate-trial-gate-header-chip",
+    "gate-trial-icon-header-chip-milestone-gate",
+    "gate-trial-gate-header-chip",
+    "gate-trial-icon-header-chip-readiness-check",
+    "gate-trial-gate-header-chip",
+    "gate-trial-icon-header-chip-safety-net-tracked",
+    "gate-trial-exact-left-rail",
+    "gate-trial-minimum-checklist",
+    "gate-trial-minimum-title",
+    "gate-trial-minimum-stamp",
+    "gate-trial-minimum-rows",
+    "gate-trial-minimum-row-finalSubstage",
+    "gate-trial-minimum-row-icon-finalSubstage",
+    "gate-trial-icon-statusWarning",
+    "gate-trial-minimum-row-qiCap",
+    "gate-trial-minimum-row-icon-qiCap",
+    "gate-trial-icon-statusCheck",
+    "gate-trial-minimum-row-loadoutComplete",
+    "gate-trial-minimum-row-icon-loadoutComplete",
+    "gate-trial-icon-statusWarning",
+    "gate-trial-minimum-row-healingFloor",
+    "gate-trial-minimum-row-icon-healingFloor",
+    "gate-trial-icon-statusWarning",
+    "gate-trial-minimum-row-weaponFloor",
+    "gate-trial-minimum-row-icon-weaponFloor",
+    "gate-trial-icon-statusWarning",
+    "gate-trial-exact-scenic-slot",
+    "gate-trial-scenic-stage",
+    "gate-trial-scenic-frame",
+    "gate-trial-scenic-approved-plate",
+    "gate-trial-scenic-underpaint",
+    "gate-trial-scenic-mountain-left",
+    "gate-trial-scenic-mountain-right",
+    "gate-trial-scenic-gate-silhouette",
+    "gate-trial-scenic-portal-bloom",
+    "gate-trial-scenic-stairs",
+    "gate-trial-scenic-platform",
+    "gate-trial-scenic-torch-left",
+    "gate-trial-scenic-torch-right",
+    "gate-trial-scenic-cultivator-shadow",
+    "gate-trial-scenic-mist",
+    "gate-trial-scenic-edge-fade",
+    "gate-trial-readiness-seal",
+    "gate-trial-readiness-seal-halo",
+    "gate-trial-readiness-seal-ornament-left",
+    "gate-trial-readiness-seal-ornament-right",
+    "gate-trial-readiness-verdict",
+    "gate-trial-readiness-score",
+    "gate-trial-readiness-seal-bottom-gem",
+    "gate-trial-guardian-plaque",
+    "gate-trial-guardian-title",
+    "gate-trial-guardian-subtitle",
+    "gate-trial-guardian-reward-icon",
+    "gate-trial-icon-foundationPill",
+    "gate-trial-reward-line",
+    "gate-trial-reward-line",
+    "gate-trial-exact-right-rail",
+    "gate-trial-recommended-panel",
+    "gate-trial-recommended-title",
+    "gate-trial-recommended-prep-title",
+    "gate-trial-recommended-prep-rows",
+    "gate-trial-prep-row-refineGear",
+    "gate-trial-prep-row-icon-refineGear",
+    "gate-trial-icon-statusWarning",
+    "gate-trial-prep-row-boostStats",
+    "gate-trial-prep-row-icon-boostStats",
+    "gate-trial-icon-statusWarning",
+    "gate-trial-prep-row-upgradeTechniques",
+    "gate-trial-prep-row-icon-upgradeTechniques",
+    "gate-trial-icon-statusWarning",
+    "gate-trial-prep-row-ruinSupportRun",
+    "gate-trial-prep-row-icon-ruinSupportRun",
+    "gate-trial-icon-statusWarning",
+    "gate-trial-support-run",
+    "gate-trial-fail-safe-section",
+    "gate-trial-failsafe-title",
+    "gate-trial-failsafe-rows",
+    "gate-trial-failsafe-row-eligibleFailures",
+    "gate-trial-icon-failsafe-eligibleFailures",
+    "gate-trial-failsafe-row-cost",
+    "gate-trial-icon-failsafe-cost",
+    "gate-trial-failsafe-row-reserve",
+    "gate-trial-icon-failsafe-reserve",
+    "gate-trial-safety-net-button",
+    "gate-trial-icon-safetyNet",
+    "gate-trial-top-fixes",
+    "gate-trial-top-fixes-title",
+    "gate-trial-top-fix-forgeWeapon",
+    "gate-trial-icon-top-fix-forgeWeapon",
+    "gate-trial-top-fix-stockHealing",
+    "gate-trial-icon-top-fix-stockHealing"
+  ],
+  "headings": [
+    "Gate Trial",
+    "Gate Trial",
+    "Foundation Gate",
+    "Minimum Checklist",
+    "Forest Sentinel · Lv. 15",
+    "Recommended",
+    "Foundation Gate Readiness",
+    "Trial Summary"
+  ],
+  "primaryCta": {
+    "text": "Open Gate Trial",
+    "disabled": false,
+    "ariaLabel": null,
+    "rect": {
+      "x": 1050,
+      "y": 261,
+      "width": 271,
+      "height": 41,
+      "right": 1321,
+      "bottom": 302
+    }
+  },
+  "buttons": [
+    {
+      "text": "OutskirtsGold & Common MatsGold / Common MatsGold & Common Mats. Best used when you need gold, common materials, or low-risk combat reps.",
+      "disabled": false,
+      "ariaLabel": "Open Outskirts: Gold & Common Mats",
+      "rect": {
+        "x": 700,
+        "y": 295,
+        "width": 180,
+        "height": 34,
+        "right": 880,
+        "bottom": 329
+      }
+    },
+    {
+      "text": "RuinsTargeted MatsLocal Mats / Anchor DropTargeted Mats. Best used when you need targeted local materials and deterministic support rewards.",
+      "disabled": false,
+      "ariaLabel": "Open Ruins: Targeted Mats",
+      "rect": {
+        "x": 886,
+        "y": 370,
+        "width": 180,
+        "height": 34,
+        "right": 1066,
+        "bottom": 404
+      }
+    },
+    {
+      "text": "Gate TrialGate ItemFoundation Pill / BreakthroughGate Item. Use this hall when the current gate item is ready for judgment.",
+      "disabled": false,
+      "ariaLabel": "Open Gate Trial: Gate Item",
+      "rect": {
+        "x": 1150,
+        "y": 480,
+        "width": 133,
+        "height": 34,
+        "right": 1283,
+        "bottom": 514
+      }
+    },
+    {
+      "text": "Manual PavilionBuild CorrectionManuals / Technique FragmentsBuild Correction. Best used when you need build correction, manuals, or technique growth.",
+      "disabled": false,
+      "ariaLabel": "Open Manual Pavilion: Build Correction",
+      "rect": {
+        "x": 1068,
+        "y": 93,
+        "width": 180,
+        "height": 34,
+        "right": 1248,
+        "bottom": 127
+      }
+    },
+    {
+      "text": "ApothecaryImmediate ReadinessHealing Stock / Preparation RemediesImmediate Readiness. Best used when you need immediate readiness through healing stock, remedies, or pouch prep.",
+      "disabled": false,
+      "ariaLabel": "Open Apothecary: Immediate Readiness",
+      "rect": {
+        "x": 340,
+        "y": 269,
+        "width": 180,
+        "height": 34,
+        "right": 520,
+        "bottom": 303
+      }
+    },
+    {
+      "text": "ForgePermanent FloorRefines / Temper / RunesPermanent Floor. Best used when you need permanent floor through refine, temper, or rune work.",
+      "disabled": false,
+      "ariaLabel": "Open Forge: Permanent Floor",
+      "rect": {
+        "x": 728,
+        "y": 532,
+        "width": 180,
+        "height": 34,
+        "right": 908,
+        "bottom": 566
+      }
+    },
+    {
+      "text": "BountiesMerit & RoutingMerit / Spirit StonesMerit & Routing. Best used when you need Merit, routing help, or directed support rewards.",
+      "disabled": false,
+      "ariaLabel": "Open Bounties: Merit & Routing",
+      "rect": {
+        "x": 301,
+        "y": 500,
+        "width": 178,
+        "height": 34,
+        "right": 478,
+        "bottom": 534
+      }
+    },
+    {
+      "text": "ExpeditionsPassive SupportHerbs / OrePassive Support. Best used when you need passive shortage smoothing for herbs, ore, or fragments.",
+      "disabled": false,
+      "ariaLabel": "Open Expeditions: Passive Support",
+      "rect": {
+        "x": 300,
+        "y": 535,
+        "width": 180,
+        "height": 34,
+        "right": 480,
+        "bottom": 569
+      }
+    },
+    {
+      "text": "Open Gate Trial",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1050,
+        "y": 261,
+        "width": 271,
+        "height": 41,
+        "right": 1321,
+        "bottom": 302
+      }
+    },
+    {
+      "text": "Status",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 103,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 244,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "Cultivation",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 248,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 390,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "World",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 394,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 535,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "Inventory",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 539,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 681,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "Techniques",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 685,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 827,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "Records",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 831,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 972,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "Prestige",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 976,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 1118,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "Settings",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1122,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 1263,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "LoadoutLoadout 1",
+      "disabled": false,
+      "ariaLabel": "Loadout: Loadout 1",
+      "rect": {
+        "x": 426,
+        "y": 72,
+        "width": 173,
+        "height": 58,
+        "right": 599,
+        "bottom": 130
+      }
+    },
+    {
+      "text": "AI ProfileBalanced",
+      "disabled": false,
+      "ariaLabel": "AI Profile: Balanced",
+      "rect": {
+        "x": 611,
+        "y": 72,
+        "width": 173,
+        "height": 58,
+        "right": 783,
+        "bottom": 130
+      }
+    },
+    {
+      "text": "Healing0 / 20",
+      "disabled": false,
+      "ariaLabel": "Healing: 0 / 20",
+      "rect": {
+        "x": 795,
+        "y": 72,
+        "width": 173,
+        "height": 58,
+        "right": 967,
+        "bottom": 130
+      }
+    },
+    {
+      "text": "BountyNo tracked bounty",
+      "disabled": false,
+      "ariaLabel": "Bounty: No tracked bounty",
+      "rect": {
+        "x": 979,
+        "y": 72,
+        "width": 173,
+        "height": 58,
+        "right": 1152,
+        "bottom": 130
+      }
+    },
+    {
+      "text": "Expedition1 Idle",
+      "disabled": false,
+      "ariaLabel": "Expedition: 1 Idle",
+      "rect": {
+        "x": 1163,
+        "y": 72,
+        "width": 173,
+        "height": 58,
+        "right": 1336,
+        "bottom": 130
+      }
+    },
+    {
+      "text": "Safety Net Locked",
+      "disabled": true,
+      "ariaLabel": "Safety Net locked",
+      "rect": {
+        "x": 973,
+        "y": 617,
+        "width": 344,
+        "height": 34,
+        "right": 1317,
+        "bottom": 651
+      }
+    },
+    {
+      "text": "Forge Weapon +5",
+      "disabled": false,
+      "ariaLabel": "Route to forge from Gate Trial live surface",
+      "rect": {
+        "x": 973,
+        "y": 695,
+        "width": 344,
+        "height": 36,
+        "right": 1317,
+        "bottom": 731
+      }
+    },
+    {
+      "text": "Stock Healing",
+      "disabled": false,
+      "ariaLabel": "Route to apothecary from Gate Trial live surface",
+      "rect": {
+        "x": 973,
+        "y": 739,
+        "width": 344,
+        "height": 36,
+        "right": 1317,
+        "bottom": 775
+      }
+    },
+    {
+      "text": "Upgrade Iron Palm",
+      "disabled": false,
+      "ariaLabel": "Route to techniques from Gate Trial live surface",
+      "rect": {
+        "x": 973,
+        "y": 783,
+        "width": 344,
+        "height": 36,
+        "right": 1317,
+        "bottom": 819
+      }
+    },
+    {
+      "text": "",
+      "disabled": false,
+      "ariaLabel": "Qi Cap: success",
+      "rect": {
+        "x": 402,
+        "y": 650,
+        "width": 55,
+        "height": 55,
+        "right": 457,
+        "bottom": 705
+      }
+    },
+    {
+      "text": "",
+      "disabled": false,
+      "ariaLabel": "Loadout: warning",
+      "rect": {
+        "x": 478,
+        "y": 650,
+        "width": 55,
+        "height": 55,
+        "right": 533,
+        "bottom": 705
+      }
+    },
+    {
+      "text": "",
+      "disabled": false,
+      "ariaLabel": "Weapon: warning",
+      "rect": {
+        "x": 554,
+        "y": 650,
+        "width": 55,
+        "height": 55,
+        "right": 608,
+        "bottom": 705
+      }
+    },
+    {
+      "text": "",
+      "disabled": false,
+      "ariaLabel": "Medicine: warning",
+      "rect": {
+        "x": 630,
+        "y": 650,
+        "width": 55,
+        "height": 55,
+        "right": 684,
+        "bottom": 705
+      }
+    },
+    {
+      "text": "",
+      "disabled": false,
+      "ariaLabel": "Techniques: warning",
+      "rect": {
+        "x": 706,
+        "y": 650,
+        "width": 55,
+        "height": 55,
+        "right": 760,
+        "bottom": 705
+      }
+    },
+    {
+      "text": "",
+      "disabled": false,
+      "ariaLabel": "Safety Net: locked",
+      "rect": {
+        "x": 781,
+        "y": 650,
+        "width": 55,
+        "height": 55,
+        "right": 836,
+        "bottom": 705
+      }
+    },
+    {
+      "text": "",
+      "disabled": false,
+      "ariaLabel": "Gate: locked",
+      "rect": {
+        "x": 849,
+        "y": 632,
+        "width": 72,
+        "height": 72,
+        "right": 920,
+        "bottom": 704
+      }
+    },
+    {
+      "text": "Gate Locked",
+      "disabled": true,
+      "ariaLabel": "Not at final substage yet.",
+      "rect": {
+        "x": 387,
+        "y": 727,
+        "width": 540,
+        "height": 68,
+        "right": 927,
+        "bottom": 795
+      }
+    }
+  ],
+  "scrollWidth": 1366,
+  "innerWidth": 1366,
+  "scrollHeight": 768,
+  "innerHeight": 768,
+  "suspectedClippedText": [
+    {
+      "text": "Gold & Common Mats",
+      "rect": {
+        "x": 787,
+        "y": 301,
+        "width": 80,
+        "height": 11,
+        "right": 867,
+        "bottom": 311
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Gold / Common Mats",
+      "rect": {
+        "x": 787,
+        "y": 312,
+        "width": 80,
+        "height": 11,
+        "right": 867,
+        "bottom": 323
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Gold & Common Mats. Best used when you need gold, common materials, or low-risk combat reps.",
+      "rect": {
+        "x": 711,
+        "y": 311,
+        "width": 1,
+        "height": 1,
+        "right": 712,
+        "bottom": 312
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Local Mats / Anchor Drop",
+      "rect": {
+        "x": 955,
+        "y": 387,
+        "width": 98,
+        "height": 11,
+        "right": 1053,
+        "bottom": 398
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Targeted Mats. Best used when you need targeted local materials and deterministic support rewards.",
+      "rect": {
+        "x": 897,
+        "y": 386,
+        "width": 1,
+        "height": 1,
+        "right": 898,
+        "bottom": 387
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Gate Item",
+      "rect": {
+        "x": 1241,
+        "y": 486,
+        "width": 29,
+        "height": 11,
+        "right": 1270,
+        "bottom": 497
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Foundation Pill / Breakthrough",
+      "rect": {
+        "x": 1241,
+        "y": 498,
+        "width": 29,
+        "height": 11,
+        "right": 1270,
+        "bottom": 508
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Gate Item. Use this hall when the current gate item is ready for judgment.",
+      "rect": {
+        "x": 1161,
+        "y": 497,
+        "width": 1,
+        "height": 1,
+        "right": 1162,
+        "bottom": 498
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Build Correction",
+      "rect": {
+        "x": 1194,
+        "y": 99,
+        "width": 41,
+        "height": 11,
+        "right": 1235,
+        "bottom": 110
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Manuals / Technique Fragments",
+      "rect": {
+        "x": 1194,
+        "y": 111,
+        "width": 41,
+        "height": 11,
+        "right": 1235,
+        "bottom": 121
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Build Correction. Best used when you need build correction, manuals, or technique growth.",
+      "rect": {
+        "x": 1079,
+        "y": 110,
+        "width": 1,
+        "height": 1,
+        "right": 1080,
+        "bottom": 111
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Immediate Readiness",
+      "rect": {
+        "x": 439,
+        "y": 275,
+        "width": 68,
+        "height": 11,
+        "right": 507,
+        "bottom": 285
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Healing Stock / Preparation Remedies",
+      "rect": {
+        "x": 439,
+        "y": 286,
+        "width": 68,
+        "height": 11,
+        "right": 507,
+        "bottom": 297
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Immediate Readiness. Best used when you need immediate readiness through healing stock, remedies, or pouch prep.",
+      "rect": {
+        "x": 351,
+        "y": 285,
+        "width": 1,
+        "height": 1,
+        "right": 352,
+        "bottom": 286
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Permanent Floor. Best used when you need permanent floor through refine, temper, or rune work.",
+      "rect": {
+        "x": 739,
+        "y": 549,
+        "width": 1,
+        "height": 1,
+        "right": 740,
+        "bottom": 550
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Merit & Routing. Best used when you need Merit, routing help, or directed support rewards.",
+      "rect": {
+        "x": 312,
+        "y": 516,
+        "width": 1,
+        "height": 1,
+        "right": 313,
+        "bottom": 517
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Passive Support",
+      "rect": {
+        "x": 401,
+        "y": 541,
+        "width": 65,
+        "height": 11,
+        "right": 467,
+        "bottom": 552
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Passive Support. Best used when you need passive shortage smoothing for herbs, ore, or fragments.",
+      "rect": {
+        "x": 311,
+        "y": 552,
+        "width": 1,
+        "height": 1,
+        "right": 312,
+        "bottom": 553
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Select city",
+      "rect": {
+        "x": 512,
+        "y": 39,
+        "width": 1,
+        "height": 1,
+        "right": 513,
+        "bottom": 40
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Gate TrialEarly QiMiddle QiLate QiPeak QiFoundation GateEarly FoundationMiddle FoundationLate FoundationCore Gate1 Expedition Idle · 0 Tracked BountiesHP136 / 1",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 1366,
+        "height": 768,
+        "right": 1366,
+        "bottom": 768
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Middle Qi",
+      "rect": {
+        "x": 429,
+        "y": 41,
+        "width": 1,
+        "height": 1,
+        "right": 430,
+        "bottom": 42
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Foundation Gate",
+      "rect": {
+        "x": 618,
+        "y": 25,
+        "width": 1,
+        "height": 1,
+        "right": 619,
+        "bottom": 26
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Early Foundation",
+      "rect": {
+        "x": 702,
+        "y": 41,
+        "width": 1,
+        "height": 1,
+        "right": 703,
+        "bottom": 42
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Middle Foundation",
+      "rect": {
+        "x": 770,
+        "y": 41,
+        "width": 1,
+        "height": 1,
+        "right": 771,
+        "bottom": 42
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Late Foundation",
+      "rect": {
+        "x": 839,
+        "y": 41,
+        "width": 1,
+        "height": 1,
+        "right": 840,
+        "bottom": 42
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Core Gate",
+      "rect": {
+        "x": 907,
+        "y": 41,
+        "width": 1,
+        "height": 1,
+        "right": 908,
+        "bottom": 42
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Foundation · Lv. 15",
+      "rect": {
+        "x": 295,
+        "y": 100,
+        "width": 82,
+        "height": 14,
+        "right": 377,
+        "bottom": 115
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "No tracked bounty",
+      "rect": {
+        "x": 1032,
+        "y": 100,
+        "width": 82,
+        "height": 14,
+        "right": 1114,
+        "bottom": 115
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "RecommendedRecommended PrepStabilize weapon floorWeapon refine is below +5.Boost stats with pillsHealing stock is below the recommended floor.Upgrade major tech",
+      "rect": {
+        "x": 954,
+        "y": 176,
+        "width": 382,
+        "height": 600,
+        "right": 1336,
+        "bottom": 776
+      },
+      "overflow": "hidden/hidden/hidden"
+    }
+  ],
+  "viewportIssues": [],
+  "consoleSinceStart": [
+    "1366x768 debug: [vite] connecting...",
+    "1366x768 debug: [vite] connected.",
+    "1366x768 info: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+    "1366x768 log: [App] Initializing game...",
+    "1366x768 log: [GameLoop] Initializing game...",
+    "1366x768 log: [GameLoop] Store dependencies wired",
+    "1366x768 log: [GameLoop] Prestige store initialized",
+    "1366x768 log: [SpiritRoot] Generated: Mortal earth (71% purity)",
+    "1366x768 log: [GameLoop] Generated initial spirit root",
+    "1366x768 log: [GameLoop] No save found, starting new game",
+    "1366x768 log: [GameLoop] Added starter items to inventory",
+    "1366x768 log: [GameLoop] Starting game loop...",
+    "1366x768 log: [GameLoop] Game loop started",
+    "1366x768 log: [GameLoop] Game initialized successfully",
+    "1366x768 log: [App] Game initialized successfully",
+    "1366x768 log: [App] Initializing game...",
+    "1366x768 log: [GameLoop] Initializing game...",
+    "1366x768 log: [GameLoop] Store dependencies wired",
+    "1366x768 log: [GameLoop] Prestige store initialized",
+    "1366x768 log: [GameLoop] No save found, starting new game",
+    "1366x768 warning: [GameLoop] Already running",
+    "1366x768 log: [GameLoop] Game initialized successfully",
+    "1366x768 log: [App] Game initialized successfully",
+    "1366x768 warning: [ContentValidation] Technique counts by path: Heaven=20, Earth=20, Martial=20",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=heaven: 6",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=earth: 6",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=martial: 6",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=heaven: 7",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=earth: 9",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=martial: 8",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=heaven: 9",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=earth: 9",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=martial: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=heaven: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=earth: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=martial: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=heaven: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=earth: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=martial: 10",
+    "1366x768 info: [Content] Loaded 5 cities, 60 techniques (H/E/M: 20/20/20)",
+    "1366x768 info: [Content] Prestige upgrades: 27",
+    "1366x768 log: [SaveLoad] Saving game...",
+    "1366x768 log: [SaveLoad] Game saved successfully at 28/05/2026, 22:56:33",
+    "1366x768 log: [SaveLoad] Saving game...",
+    "1366x768 log: [SaveLoad] Game saved successfully at 28/05/2026, 22:56:35",
+    "1366x768 log: [UI] Notification added: success - Life begins: Heaven • Ember Thread Sutra • Balanced",
+    "1366x768 log: [SaveLoad] Saving game...",
+    "1366x768 log: [SaveLoad] Game saved successfully at 28/05/2026, 22:56:35",
+    "1366x768 log: [UI] Active tab changed to: status",
+    "1366x768 log: [UI] Active tab changed to: adventure",
+    "1366x768 log: [UI] Active tab changed to: inventory",
+    "1366x768 warning: [Inventory] Missing item definition for rusty_sword",
+    "1366x768 warning: [Inventory] Missing item definition for worn_talisman",
+    "1366x768 warning: [Inventory] Missing item definition for health_pill",
+    "1366x768 warning: [Inventory] Missing item definition for spirit_stone",
+    "1366x768 log: [UI] Active tab changed to: techniques",
+    "1366x768 log: [UI] Active tab changed to: records",
+    "1366x768 log: [UI] Active tab changed to: prestige",
+    "1366x768 log: [UI] Active tab changed to: settings",
+    "1366x768 log: [UI] Active tab changed to: adventure"
+  ],
+  "textSample": "Outskirts\nGOLD & COMMON MATS\nGold / Common Mats\nGold & Common Mats. Best used when you need gold, common materials, or low-risk combat reps.\nRuins\nTARGETED MATS\nLocal Mats / Anchor Drop\nTargeted Mats. Best used when you need targeted local materials and deterministic support rewards.\nGate Trial\nGATE ITEM\nFoundation Pill / Breakthrough\nGate Item. Use this hall when the current gate item is ready for judgment.\nManual Pavilion\nBUILD CORRECTION\nManuals / Technique Fragments\nBuild Correction. Best used when you need build correction, manuals, or technique growth.\nApothecary\nIMMEDIATE READINESS\nHealing Stock / Preparation Remedies\nImmediate Readiness. Best used when you need immediate readiness through healing stock, remedies, or pouch prep.\nForge\nPERMANENT FLOOR\nRefines / Temper / Runes\nPermanent Floor. Best used when you need permanent floor through refine, temper, or rune work.\nBounties\nMERIT & ROUTING\nMerit / Spirit Stones\nMerit & Routing. Best used when you need Merit, routing help, or directed support rewards.\nExpeditions\nPASSIVE SUPPORT\nHerbs / Ore\nPassive Support. Best used when you need passive shortage smoothing for herbs, ore, or fragments.\nWORLD\nCity Phase: Pinewind Hamlet - foundations\nSelect city\nPinewind Hamlet\nStonecrag Town — Locked — Reach Foundation Establishment\nSpirit Cavern City — Locked — Reach Core Formation\nLotusford — Locked — Reach Nascent Soul\nIronpeak Bastion — Locked — Reach Soul Formation\nPressure: Qi, first medicines, and a stable starter build.\nExpedition Slot Idle\n\nPINEWIND HAMLET\n\nGate Trial\n\nGate Item\n\nUse this hall when the current gate item is ready for judgment.\n\nFoundation Pill\nBreakthrough\nOpen Gate Trial\nStatus\nCultivation\nWorld\nInventory\nTechniques\nRecords\nPrestige\nSettings\nGate Trial\nEarly Qi\nMiddle Qi\nLate Qi\nPeak Qi\nFoundation Gate\nEarly Foundation\nMiddle Foundation\nLate Foundation\nCore Gate\n1 Expedition Idle · 0 Tracked Bounties\nHP\n136 / 136\nGate\nFoundation · Lv. 15\nLoadout\nLoadout 1\nAI Profile\nBalanced\nHealing\n0 / 20\nBounty\nNo tracked bounty\nExpedition\n1 Idle\nFoundation Gate\n\nMilestone readiness check — clears the path to Foundation\n\nMilestone Gate\nReadiness Check\nSafety Net Tracked\nMinimum Checklist\nLocked\nFinal Substage Reached\nMortal · 1 / 9\nQi Cap Reached\n2.3K / 100 Minimum Qi\nLoadout Complete\n0 Active / 0 Passive\nHealing Floor\n0 / 12 Recommended Minimum\nWeapon Floor\nRefine +0 / +5\nLOCKED\nReadiness 0 / 100\nForest Sentinel · Lv. 15\n\nFoundation Establishment Trial\n\nClear Reward: Foundation Pill ×1\nUsed for Foundation Breakthrough\nRecommended\nRecommended Prep\nStabilize weapon floor\nWeapon refine is below +5.\nBoost stats with pills\nHealing stock is below the recommended floor.\nUpgrade major techniques\nFill at least two active and one passive slot.\nComplete one Ruin support run\nTarget one ruins run if Forge or medicine stock remains the gate blocker.\nRuins support source ready\nTarget one ruins run if Forge or medicine stock remains the gate blocker.\nFail-Safe\nEligible Failures\n0 / 3\nCost\n10 Merit · 25K Gold · 0 Spirit Stones\nReserve\n0 Merit · 1K Gold · 0 Spirit Stones\nSafety Net Locked\nGate Corrections\nForge Weapon +5\nStock Healing\nUpgrade Iron Palm\nFoundation Gate Readiness\nQi Cap\nLoadout\nWeapon\nMedicine\nTechniques\nSafety Net\nGate\nGate Locked\nTrial Summary\nTarget\nFoundation\nReadiness\n0 / 100\nFailures\n0 / 3\nReward\nFoundation Pill\nNext Fix\nForge weapon"
+}

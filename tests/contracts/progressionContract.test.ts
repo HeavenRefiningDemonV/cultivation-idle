@@ -35,6 +35,13 @@ const FILES = {
   bounties: 'bounties.json',
   heart_laws: 'heart_laws.json',
   prestige_store: 'prestige_store.json',
+  pavilion_records: 'pavilion_records.json',
+  onboarding_milestones: 'onboarding_milestones.json',
+  cultivator_stats: 'stats.json',
+  training_regimens: 'training_regimens.json',
+  dao_heart_practices: 'dao_heart_practices.json',
+  spirit_roots: 'spirit_roots.json',
+  readiness_categories: 'readiness_categories.json',
 };
 
 const readJson = async <T>(fileName: string): Promise<T> =>

@@ -1,0 +1,313 @@
+{
+  "baseUrl": "http://127.0.0.1:5173",
+  "startedAt": "2026-06-01T23:18:56.617Z",
+  "browserPath": "Browser DOM/interaction succeeded; Browser screenshot timed out on Page.captureScreenshot, screenshots captured with standalone Playwright.",
+  "screenshots": [
+    {
+      "name": "dao-heart-sanctuary-idle-playwright",
+      "note": "Sanctuary default tab, selected Heart Law, no active practice.",
+      "png": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\training-heart-law\\mp3\\final\\browser\\dao-heart-sanctuary-idle-playwright.png",
+      "txt": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\training-heart-law\\mp3\\final\\browser\\dao-heart-sanctuary-idle-playwright.txt"
+    },
+    {
+      "name": "dao-heart-sanctuary-active-playwright",
+      "note": "Silent Sitting selected through the UI and foreground practice controls enabled.",
+      "png": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\training-heart-law\\mp3\\final\\browser\\dao-heart-sanctuary-active-playwright.png",
+      "txt": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\training-heart-law\\mp3\\final\\browser\\dao-heart-sanctuary-active-playwright.txt"
+    },
+    {
+      "name": "dao-heart-sanctuary-lag-turbulent-playwright",
+      "note": "Lagging Heart Law blocks Inner Demon Debate and high turbulence is visible.",
+      "png": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\training-heart-law\\mp3\\final\\browser\\dao-heart-sanctuary-lag-turbulent-playwright.png",
+      "txt": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\training-heart-law\\mp3\\final\\browser\\dao-heart-sanctuary-lag-turbulent-playwright.txt"
+    },
+    {
+      "name": "dao-heart-sanctuary-doctrine-ready-playwright",
+      "note": "Clarity and calm turbulence make Doctrine Trial available.",
+      "png": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\training-heart-law\\mp3\\final\\browser\\dao-heart-sanctuary-doctrine-ready-playwright.png",
+      "txt": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\training-heart-law\\mp3\\final\\browser\\dao-heart-sanctuary-doctrine-ready-playwright.txt"
+    },
+    {
+      "name": "dao-heart-sanctuary-reduced-motion-playwright",
+      "note": "Same Sanctuary state under reduced-motion media emulation.",
+      "png": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\training-heart-law\\mp3\\final\\browser\\dao-heart-sanctuary-reduced-motion-playwright.png",
+      "txt": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\training-heart-law\\mp3\\final\\browser\\dao-heart-sanctuary-reduced-motion-playwright.txt"
+    },
+    {
+      "name": "cultivation-risk-stable-playwright",
+      "note": "Cultivation readiness shows low/stable major breakthrough risk rows and failure preview.",
+      "png": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\training-heart-law\\mp3\\final\\browser\\cultivation-risk-stable-playwright.png",
+      "txt": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\training-heart-law\\mp3\\final\\browser\\cultivation-risk-stable-playwright.txt"
+    },
+    {
+      "name": "cultivation-risk-unstable-playwright",
+      "note": "Cultivation readiness shows unstable/turbulent cause rows and failure preview.",
+      "png": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\training-heart-law\\mp3\\final\\browser\\cultivation-risk-unstable-playwright.png",
+      "txt": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\training-heart-law\\mp3\\final\\browser\\cultivation-risk-unstable-playwright.txt"
+    },
+    {
+      "name": "breakthrough-failure-diagnosis-playwright",
+      "note": "Failed major breakthrough records and surfaces risk failure diagnosis.",
+      "png": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\training-heart-law\\mp3\\final\\browser\\breakthrough-failure-diagnosis-playwright.png",
+      "txt": "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\training-heart-law\\mp3\\final\\browser\\breakthrough-failure-diagnosis-playwright.txt"
+    }
+  ],
+  "console": [
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"
+    },
+    {
+      "type": "log",
+      "text": "[App] Initializing game..."
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Initializing game..."
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Store dependencies wired"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Prestige store initialized"
+    },
+    {
+      "type": "log",
+      "text": "[SpiritRoot] Generated: Uncommon metal (54% purity)"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Generated initial spirit root"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] No save found, starting new game"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Added starter items to inventory"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Starting game loop..."
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Game loop started"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Game initialized successfully"
+    },
+    {
+      "type": "log",
+      "text": "[App] Game initialized successfully"
+    },
+    {
+      "type": "log",
+      "text": "[App] Initializing game..."
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Initializing game..."
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Store dependencies wired"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Prestige store initialized"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] No save found, starting new game"
+    },
+    {
+      "type": "warning",
+      "text": "[GameLoop] Already running"
+    },
+    {
+      "type": "log",
+      "text": "[GameLoop] Game initialized successfully"
+    },
+    {
+      "type": "log",
+      "text": "[App] Game initialized successfully"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Technique counts by path: Heaven=20, Earth=20, Martial=20"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=heaven: 6"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=earth: 6"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=martial: 6"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=heaven: 7"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=earth: 9"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=martial: 8"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=heaven: 9"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=earth: 9"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=martial: 10"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=3 (city_lotusford) path=heaven: 10"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=3 (city_lotusford) path=earth: 10"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=3 (city_lotusford) path=martial: 10"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=heaven: 10"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=earth: 10"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=martial: 10"
+    },
+    {
+      "type": "info",
+      "text": "[Content] Loaded 5 cities, 60 techniques (H/E/M: 20/20/20)"
+    },
+    {
+      "type": "info",
+      "text": "[Content] Prestige upgrades: 27"
+    },
+    {
+      "type": "log",
+      "text": "[SaveLoad] Saving game..."
+    },
+    {
+      "type": "log",
+      "text": "[SaveLoad] Game saved successfully at 02/06/2026, 02:18:58"
+    },
+    {
+      "type": "log",
+      "text": "[SaveLoad] Saving game..."
+    },
+    {
+      "type": "log",
+      "text": "[SaveLoad] Game saved successfully at 02/06/2026, 02:18:59"
+    },
+    {
+      "type": "log",
+      "text": "[UI] Notification added: success - Life begins: Heaven • Ember Thread Sutra • Balanced"
+    },
+    {
+      "type": "log",
+      "text": "[SaveLoad] Saving game..."
+    },
+    {
+      "type": "log",
+      "text": "[SaveLoad] Game saved successfully at 02/06/2026, 02:18:59"
+    },
+    {
+      "type": "log",
+      "text": "[SaveLoad] Saving game..."
+    },
+    {
+      "type": "log",
+      "text": "[SaveLoad] Game saved successfully at 02/06/2026, 02:19:00"
+    },
+    {
+      "type": "log",
+      "text": "[SaveLoad] Saving game..."
+    },
+    {
+      "type": "log",
+      "text": "[SaveLoad] Game saved successfully at 02/06/2026, 02:19:02"
+    },
+    {
+      "type": "log",
+      "text": "[UI] Notification added: warning - Breakthrough failed: 15% Qi loss, +12 turbulence on failure."
+    }
+  ],
+  "checks": [
+    {
+      "name": "sanctuary idle visible",
+      "ok": true,
+      "detail": "Realm\nQi Condensation\nStage 1\nQi\n0\nCultivation Rate\n86.13 / s\nStability\n0%\nForeground\nIdle\nNext Milestone\nPush Qi\nNeed\nQi Cap\n100\nAction\nStart Cultivation\nIdle\nDao\nPath\nHeaven\nSpirit Root\nMetal / Uncommon\nHeart Law\nEmber Thread Sutra\nVerse\nChapter 1\nBreath / Focus\nBalanced\nBreakthrough\nSettled\nBREAKTHROUGH READINESS\nReach the realm edge and fill the Qi reservoir.\nQi\n100 short\nRealm edge\nReached\nGate item\nNot needed now\nQi 0 / 100\n+86.13/s\nStart Cultivation\n\nQi Cap 100\n\nBreak Through\nDao Heart\nSanctuary\nHeart Law\nStudy\n×\nDAO HEART SANCTUARY\nEmber Thread Sutra\nLevel\n1\nTier\nstarter\nChapter\nChapter 1\nSilent Sitting\nOffline eligible\nVerse Recitation\nOffline eligible\nScripture Copying\nOffline eligible\nBreath Harmonization\nOffline eligible\nInner Demon Debate\nActive only\nDoctrine Trial\nRequires 80 clarity and calm turbulence.\nVerse Mastery\n0%\n0 / 84 Heart Law XP\nNo active practice\nChoose one practice to make it the foreground activity.\nClarity\n0/100\nRaise clarity before forcing a gate.\nTurbulence\n0/100\nState: clear.\nDoctrine parity\n+0\nHeart Law matches vessel\nVerse mastery\n0%\nSupports chapter seals and doctrine trial readiness.\nAdvance 1 minute\nStop practice\nCultivation\nSettings\nNEXT STEP\nCULTIVATION\nGather your first Qi\n\nQi fills while you cultivate. Your first breakthrough teaches the shape of the realm ladder.\n\nHow calculated\nOpen Cultivation\nTutorial Ledger\nLife begins: Heaven • Ember Thread Sutra • Balanced"
+    },
+    {
+      "name": "sanctuary active practice visible",
+      "ok": true,
+      "detail": "Realm\nQi Condensation\nStage 1\nQi\n107.66\nCultivation Rate\n86.13 / s\nStability\n0%\nForeground\nDao Heart Practice\nNext Milestone\nBreakthrough\nNeed\nQi Cap\n100\nAction\nBreak Through\nBreakthrough Ready\nDao\nPath\nHeaven\nSpirit Root\nMetal / Uncommon\nHeart Law\nEmber Thread Sutra\nVerse\nChapter 1\nBreath / Focus\nBalanced\nBreakthrough\nReady\nBREAKTHROUGH READINESS\nQi and gate requirements are ready.\nQi\nReady\nRealm edge\nReached\nGate item\nNot needed now\nQi 107.66 / 100\n+86.13/s\nBreak Through\n\nGate and Qi are aligned.\n\nStart Cultivation\nDao Heart\nSanctuary\nHeart Law\nStudy\n×\nDAO HEART SANCTUARY\nEmber Thread Sutra\nLevel\n1\nTier\nstarter\nChapter\nChapter 1\nSilent Sitting\nOffline eligible\nVerse Recitation\nOffline eligible\nScripture Copying\nOffline eligible\nBreath Harmonization\nOffline eligible\nInner Demon Debate\nActive only\nDoctrine Trial\nRequires 80 clarity and calm turbulence.\nVerse Mastery\n0%\n0 / 84 Heart Law XP\nSilent Sitting\nPractice advances while it remains the foreground activity.\nClarity\n0/100\nRaise clarity before forcing a gate.\nTurbulence\n0/100\nState: clear.\nDoctrine parity\n+0\nHeart Law matches vessel\nVerse mastery\n0%\nSupports chapter seals and doctrine trial readiness.\nAdvance 1 minute\nStop practice\nCultivation\nSettings\nNEXT STEP\nCULTIVATION\nGather your first Qi\n\nQi fills while you cultivate. Your first breakthrough teaches the shape of the realm ladder.\n\nHow calculated\nOpen Cultivation\nTutorial Ledger\nLife begins: Heaven • Ember Thread Sutra • Balanced"
+    },
+    {
+      "name": "lagging turbulent state visible",
+      "ok": true,
+      "detail": "Realm\nQi Condensation\nStage 9\nQi\n1B\nCultivation Rate\n1K / s\nStability\n0%\nForeground\nIdle\nNext Milestone\nGate Seal\nNeed\nFoundation Pill\n0/1\nAction\nOpen Gate Trial\nIdle\nDao\nPath\nHeaven\nSpirit Root\nMetal / Uncommon\nHeart Law\nEmber Thread Sutra\nVerse\nChapter 1\nBreath / Focus\nBalanced\nGate Seal\nFoundation Pill\nBREAKTHROUGH READINESS\nFoundation Pill is still needed.\nQi\nReady\nRealm edge\nReached\nGate item\nFoundation Pill 0/1\nBreakthrough risk\n45% (Dangerous)\nQi margin\n0\nHeart Law parity\n+30\nDao Heart turbulence\n+9\nDao Heart clarity\n0\nGate confidence\n0\nFailure preview\n15% Qi loss, +12 turbulence on failure.\nPrepare for Gate\nTrain Dao Heart\nHarmonize breath\nReview doctrine fit\nQi 1B / 152.58K\n+1K/s\nPrepare for Gate\n\nFoundation Pill 0/1\n\nStart Cultivation\nDao Heart\nSanctuary\nHeart Law\nStudy\n×\nDAO HEART SANCTUARY\nEmber Thread Sutra\nLevel\n1\nTier\nstarter\nChapter\nChapter 1\nSilent Sitting\nOffline eligible\nVerse Recitation\nOffline eligible\nScripture Copying\nOffline eligible\nBreath Harmonization\nOffline eligible\nInner Demon Debate\nHeart Law lags too far behind the vessel.\nDoctrine Trial\nRequires 80 clarity and calm turbulence.\nVerse Mastery\n0%\n0 / 84 Heart Law XP\nNo active practice\nChoose one practice to make it the foreground activity.\nClarity\n20/100\nRaise clarity before forcing a gate.\nTurbulence\n70/100\nState: disturbed.\nDoctrine parity\n-8\nHeart Law is far behind vessel\nVerse mastery\n0%\nSupports chapter seals and doctrine trial readiness.\nAdvance 1 minute\nStop practice\nCultivation\nSettings\nNEXT STEP\nCULTIVATION\nGather your first Qi\n\nQi fills while you cultivate. Your first breakthrough teaches the shape of the realm ladder.\n\nHow calculated\nOpen Cultivation\nTutorial Ledger\nPINEWIND HAMLET\nFirst Gate Available\nGate Readiness\nThis is your first real milestone wall. Check readiness before "
+    },
+    {
+      "name": "doctrine trial ready state visible",
+      "ok": true,
+      "detail": "Realm\nQi Condensation\nStage 9\nQi\n1B\nCultivation Rate\n1K / s\nStability\n0%\nForeground\nIdle\nNext Milestone\nGate Seal\nNeed\nFoundation Pill\n0/1\nAction\nOpen Gate Trial\nIdle\nDao\nPath\nHeaven\nSpirit Root\nMetal / Uncommon\nHeart Law\nEmber Thread Sutra\nVerse\nChapter 1\nBreath / Focus\nBalanced\nGate Seal\nFoundation Pill\nBREAKTHROUGH READINESS\nFoundation Pill is still needed.\nQi\nReady\nRealm edge\nReached\nGate item\nFoundation Pill 0/1\nBreakthrough risk\n1% (Serene)\nQi margin\n0\nHeart Law parity\n-12\nDao Heart turbulence\n0\nDao Heart clarity\n-13\nGate confidence\n0\nFailure preview\n15% Qi loss, +12 turbulence on failure.\nPrepare for Gate\nReview doctrine fit\nQi 1B / 152.58K\n+1K/s\nPrepare for Gate\n\nFoundation Pill 0/1\n\nStart Cultivation\nDao Heart\nSanctuary\nHeart Law\nStudy\n×\nDAO HEART SANCTUARY\nEmber Thread Sutra\nLevel\n10\nTier\nstarter\nChapter\nChapter 2\nSilent Sitting\nOffline eligible\nVerse Recitation\nOffline eligible\nScripture Copying\nOffline eligible\nBreath Harmonization\nOffline eligible\nInner Demon Debate\nActive only\nDoctrine Trial\nActive only\nVerse Mastery\n0%\n0 / 357 Heart Law XP\nNo active practice\nChoose one practice to make it the foreground activity.\nClarity\n85/100\nSteadies major breakthroughs.\nTurbulence\n20/100\nState: stirred.\nDoctrine parity\n+1\nHeart Law leads vessel\nVerse mastery\n0%\nSupports chapter seals and doctrine trial readiness.\nAdvance 1 minute\nStop practice\nCultivation\nSettings\nNEXT STEP\nCULTIVATION\nGather your first Qi\n\nQi fills while you cultivate. Your first breakthrough teaches the shape of the realm ladder.\n\nHow calculated\nOpen Cultivation\nTutorial Ledger\nPINEWIND HAMLET\nFirst Gate Available\nGate Readiness\nThis is your first real milestone wall. Check readiness before brute-forcing the gate.\nOpen Gate Trial\nDismiss\nLife begins: Heaven • Ember Thread Sutra • Balanced"
+    },
+    {
+      "name": "reduced motion media active",
+      "ok": true,
+      "detail": "true"
+    },
+    {
+      "name": "cultivation stable risk rows visible",
+      "ok": true,
+      "detail": "Realm\nQi Condensation\nStage 9\nQi\n1B\nCultivation Rate\n1K / s\nStability\n0%\nForeground\nIdle\nNext Milestone\nBreakthrough\nNeed\nQi Cap\n152.58K\nAction\nBreak Through\nBreakthrough Ready\nDao\nPath\nHeaven\nSpirit Root\nMetal / Uncommon\nHeart Law\nEmber Thread Sutra\nVerse\nChapter 1\nBreath / Focus\nBalanced\nBreakthrough\nReady\nBREAKTHROUGH READINESS\nQi and gate requirements are ready.\nQi\nReady\nRealm edge\nReached\nGate item\nFoundation Pill 1/1\nBreakthrough risk\n1% (Serene)\nQi margin\n0\nHeart Law parity\n-12\nDao Heart turbulence\n0\nDao Heart clarity\n-18\nGate confidence\n0\nFailure preview\n15% Qi loss, +12 turbulence on failure.\nReview doctrine fit\nQi 1B / 152.58K\n+1K/s\nBreak Through\n\nGate and Qi are aligned.\n\nStart Cultivation\nCultivation\nSettings\nNEXT STEP\nCULTIVATION\nGather your first Qi\n\nQi fills while you cultivate. Your first breakthrough teaches the shape of the realm ladder.\n\nHow calculated\nOpen Cultivation\nTutorial Ledger"
+    },
+    {
+      "name": "cultivation unstable risk rows visible",
+      "ok": true,
+      "detail": "Realm\nQi Condensation\nStage 9\nQi\n1B\nCultivation Rate\n1K / s\nStability\n0%\nForeground\nIdle\nNext Milestone\nBreakthrough\nNeed\nQi Cap\n152.58K\nAction\nBreak Through\nBreakthrough Ready\nDao\nPath\nHeaven\nSpirit Root\nMetal / Uncommon\nHeart Law\nEmber Thread Sutra\nVerse\nChapter 1\nBreath / Focus\nBalanced\nBreakthrough\nReady\nBREAKTHROUGH READINESS\nQi and gate requirements are ready.\nQi\nReady\nRealm edge\nReached\nGate item\nFoundation Pill 2/1\nBreakthrough risk\n45% (Dangerous)\nQi margin\n0\nHeart Law parity\n+30\nDao Heart turbulence\n+15\nDao Heart clarity\n0\nGate confidence\n0\nFailure preview\n15% Qi loss, +12 turbulence on failure.\nTrain Dao Heart\nHarmonize breath\nReview doctrine fit\nQi 1B / 152.58K\n+1K/s\nBreak Through\n\nGate and Qi are aligned.\n\nStart Cultivation\nCultivation\nSettings\nNEXT STEP\nCULTIVATION\nGather your first Qi\n\nQi fills while you cultivate. Your first breakthrough teaches the shape of the realm ladder.\n\nHow calculated\nOpen Cultivation\nTutorial Ledger"
+    },
+    {
+      "name": "breakthrough failure diagnosis visible",
+      "ok": true,
+      "detail": "Realm\nQi Condensation\nStage 9\nQi\n999.98M\nCultivation Rate\n1K / s\nStability\n0%\nForeground\nIdle\nNext Milestone\nBreakthrough\nNeed\nQi Cap\n152.58K\nAction\nBreak Through\nBreakthrough Ready\nDao\nPath\nHeaven\nSpirit Root\nMetal / Uncommon\nHeart Law\nEmber Thread Sutra\nVerse\nChapter 1\nBreath / Focus\nBalanced\nBreakthrough\nReady\nBREAKTHROUGH READINESS\nQi and gate requirements are ready.\nQi\nReady\nRealm edge\nReached\nGate item\nFoundation Pill 3/1\nBreakthrough risk\n45% (Dangerous)\nQi margin\n0\nHeart Law parity\n+30\nDao Heart turbulence\n+15\nDao Heart clarity\n0\nGate confidence\n0\nFailure preview\n15% Qi loss, +12 turbulence on failure.\nTrain Dao Heart\nHarmonize breath\nReview doctrine fit\nQi 999.98M / 152.58K\n+1K/s\nBreak Through\n\nGate and Qi are aligned.\n\nStart Cultivation\nCultivation\nSettings\nNEXT STEP\nCULTIVATION\nGather your first Qi\n\nQi fills while you cultivate. Your first breakthrough teaches the shape of the realm ladder.\n\nHow calculated\nOpen Cultivation\nTutorial Ledger\nBreakthrough failed: 15% Qi loss, +12 turbulence on failure."
+    }
+  ],
+  "finishedAt": "2026-06-01T23:19:14.659Z",
+  "consoleErrorCount": 0
+}

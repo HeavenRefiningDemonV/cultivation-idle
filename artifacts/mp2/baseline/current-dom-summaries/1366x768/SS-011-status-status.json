@@ -1,0 +1,590 @@
+{
+  "viewport": "1366x768",
+  "name": "Status",
+  "url": "http://127.0.0.1:5173/",
+  "documentTitle": "cultivation-idle-temp",
+  "rootTestIds": [
+    "status-ledger-root",
+    "status-ledger-hero",
+    "status-ledger-hero-identity",
+    "status-ledger-hero-doctrine",
+    "status-ledger-hero-goal",
+    "status-ledger-primary-action",
+    "status-ledger-metrics",
+    "status-ledger-grid",
+    "status-ledger-card-milestone",
+    "status-ledger-card-cultivation-base",
+    "status-ledger-card-mission-requirements",
+    "status-ledger-card-best-improvements",
+    "status-ledger-card-safety-net",
+    "status-ledger-card-identity-doctrine",
+    "status-ledger-card-current-work",
+    "status-ledger-card-build-preparation",
+    "status-ledger-details",
+    "status-ledger-recent-changes"
+  ],
+  "headings": [
+    "Qi Condensation",
+    "Reach Foundation Establishment",
+    "Milestone",
+    "Cultivation Base",
+    "Mission Requirements",
+    "Best Improvements",
+    "Safety Net",
+    "Identity & Doctrine",
+    "Current Work",
+    "Build & Preparation",
+    "Build Readiness",
+    "Preparation Reserves",
+    "Recent Changes"
+  ],
+  "primaryCta": {
+    "text": "Open Gate Trial",
+    "disabled": false,
+    "ariaLabel": null,
+    "rect": {
+      "x": 302,
+      "y": 1134,
+      "width": 94,
+      "height": 28,
+      "right": 396,
+      "bottom": 1162
+    }
+  },
+  "buttons": [
+    {
+      "text": "Refine weapon",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 915,
+        "y": 170,
+        "width": 92,
+        "height": 30,
+        "right": 1007,
+        "bottom": 200
+      }
+    },
+    {
+      "text": "Refine weapon",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1219,
+        "y": 402,
+        "width": 90,
+        "height": 28,
+        "right": 1309,
+        "bottom": 430
+      }
+    },
+    {
+      "text": "Restock healing",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1215,
+        "y": 585,
+        "width": 95,
+        "height": 28,
+        "right": 1309,
+        "bottom": 613
+      }
+    },
+    {
+      "text": "Study doctrine",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1221,
+        "y": 858,
+        "width": 89,
+        "height": 28,
+        "right": 1309,
+        "bottom": 886
+      }
+    },
+    {
+      "text": "Refine weapon",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 304,
+        "y": 1063,
+        "width": 92,
+        "height": 30,
+        "right": 396,
+        "bottom": 1093
+      }
+    },
+    {
+      "text": "Open Gate Trial",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 302,
+        "y": 1134,
+        "width": 94,
+        "height": 28,
+        "right": 396,
+        "bottom": 1162
+      }
+    },
+    {
+      "text": "Restock healing",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 302,
+        "y": 1204,
+        "width": 95,
+        "height": 28,
+        "right": 396,
+        "bottom": 1232
+      }
+    },
+    {
+      "text": "Open Gate Trial",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 776,
+        "y": 1315,
+        "width": 94,
+        "height": 28,
+        "right": 870,
+        "bottom": 1343
+      }
+    },
+    {
+      "text": "Refine weapon",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1215,
+        "y": 1789,
+        "width": 92,
+        "height": 30,
+        "right": 1307,
+        "bottom": 1819
+      }
+    },
+    {
+      "text": "Status",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 103,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 244,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "Cultivation",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 248,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 390,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "World",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 394,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 535,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "Inventory",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 539,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 681,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "Techniques",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 685,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 827,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "Records",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 831,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 972,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "Prestige",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 976,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 1118,
+        "bottom": 760
+      }
+    },
+    {
+      "text": "Settings",
+      "disabled": false,
+      "ariaLabel": null,
+      "rect": {
+        "x": 1122,
+        "y": 699,
+        "width": 142,
+        "height": 61,
+        "right": 1263,
+        "bottom": 760
+      }
+    }
+  ],
+  "scrollWidth": 1366,
+  "innerWidth": 1366,
+  "scrollHeight": 768,
+  "innerHeight": 768,
+  "suspectedClippedText": [
+    {
+      "text": "RealmQi CondensationStage 1/9Pinewind HamletPathHeavenHeart LawEmber Thread SutraEarthMortal · 71% purityMismatched · 1.71xFocusBalancedBreathBalancedNext Major",
+      "rect": {
+        "x": 15,
+        "y": 0,
+        "width": 1336,
+        "height": 682,
+        "right": 1351,
+        "bottom": 682
+      },
+      "overflow": "hidden auto/hidden/auto"
+    },
+    {
+      "text": "Refine weapon",
+      "rect": {
+        "x": 915,
+        "y": 170,
+        "width": 92,
+        "height": 30,
+        "right": 1007,
+        "bottom": 200
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Reach Foundation Establishment",
+      "rect": {
+        "x": 274,
+        "y": 637,
+        "width": 113,
+        "height": 18,
+        "right": 387,
+        "bottom": 655
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Realm edge not reached",
+      "rect": {
+        "x": 274,
+        "y": 693,
+        "width": 113,
+        "height": 18,
+        "right": 387,
+        "bottom": 711
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Balanced / Balanced",
+      "rect": {
+        "x": 748,
+        "y": 719,
+        "width": 113,
+        "height": 18,
+        "right": 861,
+        "bottom": 737
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Ember Thread Sutra",
+      "rect": {
+        "x": 748,
+        "y": 802,
+        "width": 113,
+        "height": 18,
+        "right": 861,
+        "bottom": 820
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Primary blocker",
+      "rect": {
+        "x": 1118,
+        "y": 388,
+        "width": 92,
+        "height": 18,
+        "right": 1210,
+        "bottom": 406
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Balanced AI is under-supported: the current loadout lacks both survival and boss-pressure tools.",
+      "rect": {
+        "x": 971,
+        "y": 779,
+        "width": 242,
+        "height": 31,
+        "right": 1212,
+        "bottom": 810
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Balanced AI is under-supported: the current loadout lacks both survival and boss-pressure tools.",
+      "rect": {
+        "x": 971,
+        "y": 878,
+        "width": 241,
+        "height": 31,
+        "right": 1212,
+        "bottom": 909
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Balanced AI is under-supported: the current loadout lacks both survival and boss-pressure tools.",
+      "rect": {
+        "x": 971,
+        "y": 956,
+        "width": 113,
+        "height": 18,
+        "right": 1084,
+        "bottom": 974
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Balanced AI is under-supported: the current loadout lacks both survival and boss-pressure tools.",
+      "rect": {
+        "x": 971,
+        "y": 977,
+        "width": 242,
+        "height": 31,
+        "right": 1212,
+        "bottom": 1008
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Refine weapon",
+      "rect": {
+        "x": 304,
+        "y": 1063,
+        "width": 92,
+        "height": 30,
+        "right": 396,
+        "bottom": 1093
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Consumable shortages should route to Apothecary Buy first when the current city stocks them and the cap can still cover the gap.",
+      "rect": {
+        "x": 92,
+        "y": 1213,
+        "width": 201,
+        "height": 31,
+        "right": 293,
+        "bottom": 1244
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Safety Net progress: 0 / 3 eligible defeats",
+      "rect": {
+        "x": 748,
+        "y": 1136,
+        "width": 113,
+        "height": 18,
+        "right": 861,
+        "bottom": 1154
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Cost: 10 Merit / 0 Spirit Stones",
+      "rect": {
+        "x": 748,
+        "y": 1219,
+        "width": 113,
+        "height": 18,
+        "right": 861,
+        "bottom": 1237
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "No foreground activity is running; choose a route from Best Improvements when ready.",
+      "rect": {
+        "x": 497,
+        "y": 1595,
+        "width": 364,
+        "height": 15,
+        "right": 861,
+        "bottom": 1610
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "0 active / 0 claimable / 1 idle",
+      "rect": {
+        "x": 748,
+        "y": 1630,
+        "width": 113,
+        "height": 18,
+        "right": 861,
+        "bottom": 1648
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Refine weapon",
+      "rect": {
+        "x": 1215,
+        "y": 1789,
+        "width": 92,
+        "height": 30,
+        "right": 1307,
+        "bottom": 1819
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Auto-use disabled • 0/3 slots filled",
+      "rect": {
+        "x": 1153,
+        "y": 1949,
+        "width": 145,
+        "height": 15,
+        "right": 1298,
+        "bottom": 1964
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Realm edge not reached",
+      "rect": {
+        "x": 638,
+        "y": 2241,
+        "width": 113,
+        "height": 18,
+        "right": 752,
+        "bottom": 2259
+      },
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "text": "Two or more unlocked technique slots are empty.",
+      "rect": {
+        "x": 638,
+        "y": 2298,
+        "width": 113,
+        "height": 18,
+        "right": 752,
+        "bottom": 2316
+      },
+      "overflow": "hidden/hidden/hidden"
+    }
+  ],
+  "viewportIssues": [
+    "primary-cta-outside-viewport"
+  ],
+  "consoleSinceStart": [
+    "1366x768 debug: [vite] connecting...",
+    "1366x768 debug: [vite] connected.",
+    "1366x768 info: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+    "1366x768 log: [App] Initializing game...",
+    "1366x768 log: [GameLoop] Initializing game...",
+    "1366x768 log: [GameLoop] Store dependencies wired",
+    "1366x768 log: [GameLoop] Prestige store initialized",
+    "1366x768 log: [SpiritRoot] Generated: Mortal earth (71% purity)",
+    "1366x768 log: [GameLoop] Generated initial spirit root",
+    "1366x768 log: [GameLoop] No save found, starting new game",
+    "1366x768 log: [GameLoop] Added starter items to inventory",
+    "1366x768 log: [GameLoop] Starting game loop...",
+    "1366x768 log: [GameLoop] Game loop started",
+    "1366x768 log: [GameLoop] Game initialized successfully",
+    "1366x768 log: [App] Game initialized successfully",
+    "1366x768 log: [App] Initializing game...",
+    "1366x768 log: [GameLoop] Initializing game...",
+    "1366x768 log: [GameLoop] Store dependencies wired",
+    "1366x768 log: [GameLoop] Prestige store initialized",
+    "1366x768 log: [GameLoop] No save found, starting new game",
+    "1366x768 warning: [GameLoop] Already running",
+    "1366x768 log: [GameLoop] Game initialized successfully",
+    "1366x768 log: [App] Game initialized successfully",
+    "1366x768 warning: [ContentValidation] Technique counts by path: Heaven=20, Earth=20, Martial=20",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=heaven: 6",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=earth: 6",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=martial: 6",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=heaven: 7",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=earth: 9",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=martial: 8",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=heaven: 9",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=earth: 9",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=martial: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=heaven: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=earth: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=3 (city_lotusford) path=martial: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=heaven: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=earth: 10",
+    "1366x768 warning: [ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=martial: 10",
+    "1366x768 info: [Content] Loaded 5 cities, 60 techniques (H/E/M: 20/20/20)",
+    "1366x768 info: [Content] Prestige upgrades: 27",
+    "1366x768 log: [SaveLoad] Saving game...",
+    "1366x768 log: [SaveLoad] Game saved successfully at 28/05/2026, 22:56:33",
+    "1366x768 log: [SaveLoad] Saving game...",
+    "1366x768 log: [SaveLoad] Game saved successfully at 28/05/2026, 22:56:35",
+    "1366x768 log: [UI] Notification added: success - Life begins: Heaven • Ember Thread Sutra • Balanced",
+    "1366x768 log: [SaveLoad] Saving game...",
+    "1366x768 log: [SaveLoad] Game saved successfully at 28/05/2026, 22:56:35",
+    "1366x768 log: [UI] Active tab changed to: status"
+  ],
+  "textSample": "REALM\nQi Condensation\nStage 1/9\nPinewind Hamlet\nPATH\nHeaven\nHEART LAW\nEmber Thread Sutra\nEarth\nMortal · 71% purity\nMismatched · 1.71x\nFOCUS\nBalanced\nBREATH\nBalanced\nNEXT MAJOR GOAL\nReach Foundation Establishment\n\nAdvance to substage 9 before the gate opens.\n\nMAIN BOTTLENECK\nRealm edge not reached\nRefine Qi until the next gate threshold opens.\nRefine weapon\nQI\n628.35\nQI / S\n67.93 / s\nSTABILITY\n0/100\nHP\n136.8\nCOMBAT STRENGTH\n183.29\nATTACK\n22.23\nDEFENSE\n9.33\nCRIT RATE\n14%\nFOREGROUND\nIdle\nMILESTONE\nPreparing\n\nAdvance to substage 9 before the gate opens.\n\nQi Condensation\nStage 1/9\nNovice's Clearing\nViable — Apothecary route shows reserve pressure\nReach Foundation Establishment\nAdvance to substage 9 before the gate opens.\nHeaven\nNo stable archetype profile detected yet.\nREALM STEP\nQi Condensation\nStage 1/9\nGATE READINESS\nPreparing\nAdvance to substage 9 before the gate opens.\nNEXT MAJOR GOAL\nReach Foundation Establishment\nAdvance to substage 9 before the gate opens.\nMAIN GAP\nRealm edge not reached\nRealm edge not reached\nCITY\nPinewind Hamlet\nCurrent city anchor for routes and services.\nCULTIVATION BASE\nQI / QI CAP\n628.35 / 100\nCurrent Qi against the next breakthrough threshold.\nCultivation\nCULTIVATION RATE\n67.93 / s\nLive Qi gain rate.\nCultivation\nBREAKTHROUGH STATE\nPreparing\nAdvance to substage 9 before the gate opens.\nReadiness\nSTABILITY\n0/100\nInner stability reserve available for cultivation posture.\nHeart Law\nFOCUS / BREATH\nBalanced / Balanced\nCurrent doctrine posture for Qi, stability, and combat support.\nIdentity & Doctrine\nHEART LAW CHAPTER\nEmber Thread Sutra\nVerse I • Chapter 1\nHeart Law\nCURRENT CULTIVATION ACTIVITY\nIdle\nCultivation is not the foreground activity right now.\nCurrent Work\nMISSION REQUIREMENTS\nREALM EDGE NOT REACHED\nPrimary blocker\nAdvance to substage 9 before the gate opens.\nRefine weapon\nCURRENT STATE\nPriority 1\nBlocked\nApothecary\nViable — Apothecary route shows reserve pressure\nPOUCH FIT\nPriority 1\nApothecary\nbad\nRestock healing\nPOUCH FIT\nPriority 2\nbad\nApothecary\nbad\nLOADOUT COVERAGE\nPriority 1\nTechniques\nBalanced AI is under-supported: the current loadout lacks both survival and boss-pressure tools.\nLOADOUT WARNING\nPriority 1\nTechniques\nBalanced AI is under-supported: the current loadout lacks both survival and boss-pressure tools.\nStudy doctrine\nTOP WARNING\nPriority 2\nBalanced AI is under-supported: the current loadout lacks both survival and boss-pressure tools.\nTechniques\nBalanced AI is under-supported: the current loadout lacks both survival and boss-pressure tools.\nBEST IMPROVEMENTS\nREFINE WEAPON\nCultivation\nRefine Qi until the next gate threshold opens.\nRefine weapon\nOPEN GATE TRIAL\nGate Trial\nInspect the active gate threshold.\nOpen Gate Trial\nRESTOCK HEALING\nApothecary\nConsumable shortages should route to Apothecary Buy first when the current city stocks them and the cap can still cover the gap.\nRestock healing\nSAFETY NET\nSTATE\nToo Early\nNot at final substage yet.\nSafety Net\nPROGRESS\nSafety Net progress: 0 / 3 eligible defeats\nThreshold: 3\nSafety Net\nCOST\nCost: 10 Merit / 0 Spirit Stones\nToo Early\nSafety Net\nOPEN GATE TRIAL\nGate Trial\nOpen the gate surface for this gate requirement.\nOpen Gate Trial\nIDENTITY & DOCTRINE\nEarth - Mortal\nEarth\nMortal · 71% purity\nMismatched · 1.71x\nRESONANCE\nMismatched\nFOCUS\nBalanced\nPATH\nHeaven\nHEART LAW\nEmber Thread Sutra\nBREATH\nBalanced\nCITY ANCHOR\nPinewind Hamlet\nCURRENT WORK\nSTATE\nIdle\nCOMBAT\nIdle\nBOUNTY\nNone tracked\nEXPEDITIONS\n0 active / 0 claimable / 1 idle\nFOREGROUND\nIdle\nNo foreground activity is running; choose a route from Best Improvements when ready.\nEXPEDITIONS\n0 active / 0 claimable / 1 idle\nUse idle expedition slots for background materials.\nBUILD & PREPARATION\nTOP WARNING\nBalanced AI is under-supported: the current loadout lacks both survival and boss-pressure tools.\nBalanced AI is under-supported: the current loadout lacks both survival and boss-pressure tools.\nRefine weapon\nBUILD READINESS\n\nUnlocked technique slots without loadout coverage.\n\nPATH ALIGNMENT\n0%\nBuild path alignment score.\nEMPTY SLOTS\n3\nUnlocked technique slots without loadout coverage.\nMASTERY FLOOR\nMet\nMet\nRANK FLOOR\nMet\nMet\nRUNE FLOOR\nMet\nMet\nPOLICY FIT\nAI risky • Casting good\nAI risky • Casting good\n\nTop Gap\nTwo or more unlocked technique slots are empty.\n\nPREPARATION RESERVES\n\nMerit\nreserve: 0 (below minimum)\n\nMERIT RESERVE\n0 (below minimum)\nMerit reserve: 0 (below minimum)\nSPIRIT STONES RESERVE\n0 (below minimum)\nSpirit Stones reserve: 0 (below minimum)\nPOUCH\nAuto-use disabled • 0/3 slots filled\nCombat consumable auto-use and slots.\nPOUCH FIT\nbad\nbad\n\nTop Warning\nBalanced AI is under-supported: the current loadout lacks both survival and boss-pressure tools.\n\nHow calculated\nThis ledger combines cultivation, gate readiness, build, preparation, current work, safety net, and recent route data.\nStatus\nCultivation\nWorld\nInventory\nTechniques\nRecords\nPrestige\nSettings"
+}

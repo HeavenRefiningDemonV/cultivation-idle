@@ -1,0 +1,299 @@
+{
+  "version": "onboarding-v1",
+  "designNotes": [
+    "Qi Condensation is the first-life school.",
+    "Foundation Building is onboarding graduation.",
+    "Use progressive disclosure instead of front-loaded tutorial walls.",
+    "Every unlock must answer a current player question.",
+    "Source before sink, sink before scale.",
+    "Tutorial cards teach and replay; gameplay events complete milestones."
+  ],
+  "milestones": [
+    {
+      "id": "M0_life_start",
+      "order": 0,
+      "label": "Choose the shape of this life",
+      "phase": "life_start",
+      "firstLifeOnly": true,
+      "trigger": { "kind": "life_identity_missing" },
+      "unlocks": { "tabs": [], "worldModules": [], "teaserWorldModules": [], "flags": ["life_start_required"] },
+      "objective": {
+        "title": "Choose the shape of this life",
+        "why": "A life needs a Path and Heart Law before the climb begins.",
+        "route": { "kind": "life_start" },
+        "completion": { "kind": "store_fact", "fact": "life_identity_committed" },
+        "rewardPreview": "Cultivation begins.",
+        "optionalTip": "Pick one doctrine now; you will learn the city after you learn to cultivate."
+      },
+      "tutorialCard": {
+        "id": "card_life_start",
+        "title": "Choose the shape of this life",
+        "body": "Your Path and Heart Law define this life. The city can wait until the first breath is steady.",
+        "cta": "Begin Cultivation",
+        "moreDetail": "This is the only unavoidable setup step. Later guidance should be contextual and replayable."
+      },
+      "sourceSinkNote": null,
+      "replayId": "tutorial_life_start"
+    },
+    {
+      "id": "M1_cultivation_only",
+      "order": 1,
+      "label": "Gather your first Qi",
+      "phase": "cultivation",
+      "firstLifeOnly": true,
+      "trigger": { "kind": "life_identity_committed", "realmIndex": 0, "maxSubstage": 1 },
+      "unlocks": { "tabs": ["cultivation"], "worldModules": [], "teaserWorldModules": [], "flags": ["cultivation_only"] },
+      "objective": {
+        "title": "Gather your first Qi",
+        "why": "Qi fills while you cultivate. Your first breakthrough teaches the shape of the realm ladder.",
+        "route": { "kind": "tab", "tab": "cultivation" },
+        "completion": { "kind": "event", "eventType": "progression/breakthrough_completed", "match": { "fromRealmIndex": 0, "fromSubstage": 1, "toSubstage": 2 } },
+        "rewardPreview": "Status unlocks after your first breakthrough.",
+        "optionalTip": "For the first beat, there is no economy and no world map. Learn Qi first."
+      },
+      "tutorialCard": {
+        "id": "card_first_breath",
+        "title": "The first breath gathers",
+        "body": "Qi gathers while you cultivate. When the bar fills, you can attempt your first breakthrough.",
+        "cta": "Cultivate",
+        "moreDetail": "The rest of the city opens later. The first loop is deliberately quiet."
+      },
+      "sourceSinkNote": "Qi comes from cultivation and is spent on breakthrough.",
+      "replayId": "tutorial_first_breath"
+    },
+    {
+      "id": "M2_status_unlock",
+      "order": 2,
+      "label": "Read your status",
+      "phase": "diagnosis",
+      "firstLifeOnly": true,
+      "trigger": { "kind": "realm_substage", "realmIndex": 0, "minSubstage": 2, "requiresCompleted": ["M1_cultivation_only"] },
+      "unlocks": { "tabs": ["cultivation", "status"], "worldModules": [], "teaserWorldModules": [], "flags": ["diagnosis_unlocked"] },
+      "objective": {
+        "title": "Read your status",
+        "why": "Status shows what this life is and what is holding it back.",
+        "route": { "kind": "tab", "tab": "status" },
+        "completion": { "kind": "event", "eventType": "ui/tab_changed", "match": { "next": "status" } },
+        "rewardPreview": "The World will open once you understand the current life.",
+        "optionalTip": "Status is safe to unlock first because it gives diagnosis without creating a resource or sink mismatch."
+      },
+      "tutorialCard": {
+        "id": "card_status_unlock",
+        "title": "Know the shape of this life",
+        "body": "Status shows your path, root, current strength, and next pressure. Use it when you are unsure what to improve.",
+        "cta": "Open Status",
+        "moreDetail": "Read the run before the city starts offering resources. Diagnosis comes before economy."
+      },
+      "sourceSinkNote": "Status creates no resource; it teaches diagnosis before economy.",
+      "replayId": "tutorial_status_first_unlock"
+    },
+    {
+      "id": "M3_world_outskirts",
+      "order": 3,
+      "label": "Walk the Outskirts",
+      "phase": "field_loop",
+      "firstLifeOnly": true,
+      "trigger": { "kind": "realm_substage", "realmIndex": 0, "minSubstage": 3, "requiresCompleted": ["M2_status_unlock"] },
+      "unlocks": { "tabs": ["cultivation", "status", "adventure"], "worldModules": ["outskirts", "trainingHall"], "teaserWorldModules": ["manualPavilion"], "flags": ["inventory_lite_after_first_loot"] },
+      "objective": {
+        "title": "Walk the Outskirts",
+        "why": "Outskirts gives gold and common materials. You will use them soon.",
+        "route": { "kind": "world_module", "moduleKey": "outskirts" },
+        "completion": { "kind": "event", "eventType": "combat/resolved", "match": { "source": "outskirts", "outcome": "victory" } },
+        "rewardPreview": "Gold will soon become manuals in the Pavilion.",
+        "optionalTip": "Outskirts is the safe field route: gold, common materials, and low-risk combat reps."
+      },
+      "tutorialCard": {
+        "id": "card_outskirts_unlock",
+        "title": "The forest path opens",
+        "body": "Outskirts gives gold, common materials, and low-risk combat reps. It is your first field loop.",
+        "cta": "Start First Hunt",
+        "moreDetail": "The Pavilion is already visible as a sealed destination so gold has a near-term purpose."
+      },
+      "sourceSinkNote": "Gold and common materials come from Outskirts; gold soon becomes manuals and common materials later support Forge.",
+      "replayId": "tutorial_outskirts_first_unlock"
+    },
+    {
+      "id": "M4_pavilion_satchel",
+      "order": 4,
+      "label": "Buy your first manual",
+      "phase": "knowledge",
+      "firstLifeOnly": true,
+      "trigger": { "kind": "realm_or_resource", "realmIndex": 0, "minSubstage": 4, "alternateFact": "first_outskirts_reward_claimed" },
+      "unlocks": { "tabs": ["cultivation", "status", "adventure", "inventory", "records"], "worldModules": ["outskirts", "trainingHall", "manualPavilion"], "teaserWorldModules": [], "flags": ["manual_satchel_available"] },
+      "objective": {
+        "title": "Buy your first manual",
+        "why": "Gold becomes knowledge in the Pavilion.",
+        "route": { "kind": "world_module", "moduleKey": "manualPavilion" },
+        "completion": { "kind": "compound", "any": [{ "kind": "event", "eventType": "pavilion/buy_success" }, { "kind": "event", "eventType": "manuals/purchased" }, { "kind": "store_fact", "fact": "manual_owned_or_study_started" }] },
+        "rewardPreview": "Studied manuals can become techniques.",
+        "optionalTip": "Manuals are teachings. They are not combat behavior until studied and equipped later."
+      },
+      "tutorialCard": {
+        "id": "card_pavilion_unlock",
+        "title": "Gold becomes knowledge",
+        "body": "Manuals are teachings. Buy one, study it, and it will become a technique you can use in combat.",
+        "cta": "Visit Pavilion",
+        "moreDetail": "If you cannot afford the first manual, the correct route is back to Outskirts."
+      },
+      "sourceSinkNote": "Manual Pavilion is the first gold sink; it should never open into a dead unaffordable state in later UI packets.",
+      "replayId": "tutorial_pavilion_first_unlock"
+    },
+    {
+      "id": "M5_techniques_loadout",
+      "order": 5,
+      "label": "Equip your first technique",
+      "phase": "buildcraft",
+      "firstLifeOnly": true,
+      "trigger": { "kind": "manual_or_realm", "realmIndex": 0, "minSubstage": 5, "requiresFactOrBlockedRoute": "first_eligible_technique" },
+      "unlocks": { "tabs": ["cultivation", "status", "adventure", "inventory", "records", "techniques"], "worldModules": ["outskirts", "trainingHall", "manualPavilion"], "teaserWorldModules": [], "flags": ["loadout_lite", "ai_profile_lite"] },
+      "objective": {
+        "title": "Equip your first technique",
+        "why": "Studied knowledge only affects combat after it enters your loadout.",
+        "route": { "kind": "tab", "tab": "techniques" },
+        "completion": { "kind": "event", "eventType": "techniques/equip_changed", "match": { "action": "equip" } },
+        "rewardPreview": "Your build can now express learned doctrine in combat.",
+        "optionalTip": "If there is no eligible technique, finish studying a manual first."
+      },
+      "tutorialCard": {
+        "id": "card_techniques_unlock",
+        "title": "Knowledge becomes form",
+        "body": "Equip techniques into your loadout so your AI can express your build in combat.",
+        "cta": "Open Techniques",
+        "moreDetail": "This milestone should teach only equip, basic slots, and AI profile. Advanced mastery can wait."
+      },
+      "sourceSinkNote": "Manual study creates technique knowledge; the Techniques tab is the sink where knowledge becomes combat behavior.",
+      "replayId": "tutorial_techniques_first_unlock"
+    },
+    {
+      "id": "M6_apothecary_expedition",
+      "order": 6,
+      "label": "Stock your medicine pouch",
+      "phase": "preparation",
+      "firstLifeOnly": true,
+      "trigger": { "kind": "realm_substage_or_prep_pressure", "realmIndex": 0, "minSubstage": 6 },
+      "unlocks": { "tabs": ["cultivation", "status", "adventure", "inventory", "records", "techniques"], "worldModules": ["outskirts", "trainingHall", "manualPavilion", "apothecary", "expeditions"], "teaserWorldModules": ["forge"], "flags": ["medicine_pouch_guidance", "herb_route_lite"] },
+      "objective": {
+        "title": "Stock your medicine pouch",
+        "why": "Preparation keeps you alive when raw cultivation is not enough.",
+        "route": { "kind": "world_module", "moduleKey": "apothecary" },
+        "completion": { "kind": "compound", "any": [{ "kind": "event", "eventType": "pouch/equip" }, { "kind": "event", "eventType": "apothecary/buy_success" }] },
+        "rewardPreview": "Medicine can now support harder fights automatically.",
+        "optionalTip": "Expeditions bring herbs while you cultivate, fight, or study. Apothecary turns them into survival."
+      },
+      "tutorialCard": {
+        "id": "card_apothecary_expedition_unlock",
+        "title": "Prepare before the wound",
+        "body": "Medicine can be stocked in your pouch and used automatically in combat.",
+        "cta": "Open Apothecary",
+        "moreDetail": "Source and sink unlock together: Herb Route supplies, Apothecary prepares, Pouch uses."
+      },
+      "sourceSinkNote": "Expeditions supply herbs; Apothecary and Medicine Pouch consume them as survival prep.",
+      "replayId": "tutorial_apothecary_expedition_first_unlock"
+    },
+    {
+      "id": "M7_forge",
+      "order": 7,
+      "label": "Raise your weapon floor",
+      "phase": "gear_floor",
+      "firstLifeOnly": true,
+      "trigger": { "kind": "realm_substage_or_gear_shortfall", "realmIndex": 0, "minSubstage": 7 },
+      "unlocks": { "tabs": ["cultivation", "status", "adventure", "inventory", "records", "techniques"], "worldModules": ["outskirts", "trainingHall", "manualPavilion", "apothecary", "expeditions", "forge"], "teaserWorldModules": [], "flags": ["forge_floor_lite"] },
+      "objective": {
+        "title": "Raise your weapon floor",
+        "why": "The gate cares about lasting power, not one lucky fight.",
+        "route": { "kind": "world_module", "moduleKey": "forge" },
+        "completion": { "kind": "compound", "any": [{ "kind": "event", "eventType": "forge/refine_result", "match": { "ok": true } }, { "kind": "event", "eventType": "forge/temper_result", "match": { "ok": true } }, { "kind": "event", "eventType": "crafting/session_claimed", "match": { "station": "forge" } }] },
+        "rewardPreview": "Your combat floor becomes more stable.",
+        "optionalTip": "If materials are missing, the later UI must name the best source rather than leaving a disabled button."
+      },
+      "tutorialCard": {
+        "id": "card_forge_unlock",
+        "title": "Make strength hold its shape",
+        "body": "Forge raises your combat floor through gear. Gates will care about that floor.",
+        "cta": "Open Forge",
+        "moreDetail": "The first forge action should be simple and affordable from common materials."
+      },
+      "sourceSinkNote": "Common materials and gold become gear and refinement, establishing a minimum combat floor.",
+      "replayId": "tutorial_forge_first_unlock"
+    },
+    {
+      "id": "M8_ruins_bounties",
+      "order": 8,
+      "label": "Gather targeted support",
+      "phase": "support_rotation",
+      "firstLifeOnly": true,
+      "trigger": { "kind": "realm_substage_or_gate_prep_support", "realmIndex": 0, "minSubstage": 8 },
+      "unlocks": { "tabs": ["cultivation", "status", "adventure", "inventory", "records", "techniques"], "worldModules": ["outskirts", "trainingHall", "manualPavilion", "apothecary", "expeditions", "forge", "ruins", "bounties"], "teaserWorldModules": ["gateTrial"], "flags": ["merit_lite", "support_rotation_lite"] },
+      "objective": {
+        "title": "Gather targeted support",
+        "why": "Ruins and Bounties solve shortages before the gate.",
+        "route": { "kind": "world_module", "moduleKey": "ruins" },
+        "completion": { "kind": "compound", "any": [{ "kind": "event", "eventType": "combat/resolved", "match": { "source": "ruins", "outcome": "victory" } }, { "kind": "event", "eventType": "bounties/claimed" }, { "kind": "store_fact", "fact": "bounty_tracked" }] },
+        "rewardPreview": "Gate Trial becomes visible once the support loop is understood.",
+        "optionalTip": "Ruins target specific materials. Bounties point toward useful work and pay Merit."
+      },
+      "tutorialCard": {
+        "id": "card_ruins_bounties_unlock",
+        "title": "The city starts guiding you",
+        "body": "Ruins target specific materials. Bounties point you toward useful work and pay Merit, which supports gate safety nets.",
+        "cta": "Track Bounty",
+        "moreDetail": "Multiple activities now exist, so the city needs a routing layer."
+      },
+      "sourceSinkNote": "Ruins provide targeted support; Bounties provide direction and Merit for safety-net support.",
+      "replayId": "tutorial_ruins_bounties_first_unlock"
+    },
+    {
+      "id": "M9_gate_trial",
+      "order": 9,
+      "label": "Attempt the Foundation Gate",
+      "phase": "gate_exam",
+      "firstLifeOnly": true,
+      "trigger": { "kind": "final_qi_condensation_gate_ready", "realmIndex": 0, "requiresCompleted": ["M8_ruins_bounties"] },
+      "unlocks": { "tabs": ["cultivation", "status", "adventure", "inventory", "records", "techniques"], "worldModules": ["outskirts", "trainingHall", "manualPavilion", "apothecary", "expeditions", "forge", "ruins", "bounties", "gateTrial"], "teaserWorldModules": [], "flags": ["gate_trial_readiness_exam"] },
+      "objective": {
+        "title": "Attempt the Foundation Gate",
+        "why": "The gate tests the whole loop you have learned.",
+        "route": { "kind": "world_module", "moduleKey": "gateTrial" },
+        "completion": { "kind": "compound", "any": [{ "kind": "event", "eventType": "progression/gate_resolved", "match": { "resolution": "cleared" } }, { "kind": "event", "eventType": "progression/gate_resolved", "match": { "resolution": "bypassed" } }, { "kind": "event", "eventType": "trials/attempt_resolved", "match": { "outcome": "cleared" } }, { "kind": "event", "eventType": "trials/attempt_resolved", "match": { "outcome": "bypassed" } }] },
+        "rewardPreview": "The gate proof returns you to Cultivation for Foundation breakthrough.",
+        "optionalTip": "This is not a farm. If you fail, the gate should tell you what to fix next."
+      },
+      "tutorialCard": {
+        "id": "card_gate_trial_unlock",
+        "title": "The Foundation Gate awaits",
+        "body": "The gate checks whether your whole life is ready: Qi, build, medicine, gear, and support.",
+        "cta": "Review Readiness",
+        "moreDetail": "Clearing or bypassing the gate supplies the breakthrough handoff. The breakthrough itself remains in Cultivation."
+      },
+      "sourceSinkNote": "Gate Trial consumes readiness from every prior system and rewards the breakthrough catalyst or proof through existing gate systems.",
+      "replayId": "tutorial_gate_trial_first_unlock"
+    },
+    {
+      "id": "M10_foundation_graduation",
+      "order": 10,
+      "label": "Establish Foundation",
+      "phase": "graduation",
+      "firstLifeOnly": true,
+      "trigger": { "kind": "major_breakthrough", "toRealmIndex": 1, "requiresCompleted": ["M9_gate_trial"] },
+      "unlocks": { "tabs": ["cultivation", "status", "adventure", "inventory", "records", "techniques"], "worldModules": ["outskirts", "trainingHall", "manualPavilion", "apothecary", "expeditions", "forge", "ruins", "bounties", "gateTrial"], "teaserWorldModules": [], "flags": ["first_life_onboarding_complete", "contextual_help_mode"] },
+      "objective": {
+        "title": "Establish Foundation",
+        "why": "Return to Cultivation to transform the gate proof into a new realm.",
+        "route": { "kind": "tab", "tab": "cultivation" },
+        "completion": { "kind": "event", "eventType": "progression/breakthrough_completed", "match": { "major": true, "toRealmIndex": 1 } },
+        "rewardPreview": "Core onboarding complete. Future help becomes contextual.",
+        "optionalTip": "You now know the city loop: cultivate, read, gather, study, prepare, craft, rotate, and challenge the gate."
+      },
+      "tutorialCard": {
+        "id": "card_foundation_graduation",
+        "title": "Foundation established",
+        "body": "You have learned the first city loop. Future help will appear when the next milestone needs it.",
+        "cta": "Continue",
+        "moreDetail": "Foundation is graduation from core onboarding, not another heavy tutorial."
+      },
+      "sourceSinkNote": "Core onboarding complete; normal contextual guidance continues.",
+      "replayId": "tutorial_foundation_graduation"
+    }
+  ]
+}

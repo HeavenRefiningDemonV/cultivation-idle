@@ -133,6 +133,10 @@
   display: none;
 }
 
+.gateTrialFxScene[data-quality='reducedMotion'] .gateTrialFxScene__motes {
+  display: none;
+}
+
 .gateTrialFxScene[data-quality='low'] .gateTrialFxScene__mist,
 .gateTrialFxScene[data-quality='low'] .gateTrialFxScene__sealGlow,
 .gateTrialFxScene[data-quality='reducedMotion'] .gateTrialFxScene__mist,

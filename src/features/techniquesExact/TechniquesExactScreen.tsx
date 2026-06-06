@@ -202,7 +202,18 @@ export function TechniquesExactScreen({
             />
           ))}
           {surface.ownedLibrary.emptyState ? (
-            <div className="techniquesExactEmptyState">{surface.ownedLibrary.emptyState}</div>
+            <div className="techniquesExactEmptyState">
+              <strong>No techniques learned yet.</strong>
+              <span>{surface.ownedLibrary.emptyState}</span>
+              <span>Study a manual from the Manual Pavilion to fill the first combat slot and shape this loadout.</span>
+              <button
+                type="button"
+                className="techniquesExactSecondaryButton techniquesExactEmptyState__button"
+                onClick={() => onGoToManualPavilion?.()}
+              >
+                Open Manual Pavilion
+              </button>
+            </div>
           ) : null}
         </div>
       </section>

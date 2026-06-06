@@ -15,15 +15,29 @@ import { usePrestigeStore } from '../../stores/prestigeStore.js';
 import { useProfessionStore } from '../../stores/professionStore.js';
 import { useRecipeMasteryStore } from '../../stores/recipeMasteryStore.js';
 import { useRuinsStore } from '../../stores/ruinsStore.js';
+import { useTrainingStore } from '../../stores/trainingStore.js';
 import { useTechCollectionStore } from '../../stores/techCollectionStore.js';
 import { useTrialStore } from '../../stores/trialStore.js';
 import { useZoneStore } from '../../stores/zoneStore.js';
 import { useUIStore } from '../../stores/uiStore.js';
 import { hardResetBreakthroughEchoes } from '../../features/breakthroughEchoes/index.js';
 import { deriveMasteryRetentionCarryOver } from './PrestigeResetContract.js';
+import { GameEvents } from '../events/GameEvents.js';
+import { recomputeAndApplyPrestigeUnlocks } from '../../systems/prestige/applyPrestigeEffects.js';
+import {
+  buildPrestigeMemoryLedgerForReset,
+  type PrestigeMemoryAppliedRow,
+} from '../../systems/prestige/prestigeMemory.js';
+import { createTrainingRuntimeContent } from '../../systems/training/index.js';
+import type { PathId } from '../../content/types.js';
 
 export interface PrestigeResetOptions {
   resetGameRun: () => void;
+  currentLife?: {
+    selectedPath: PathId | null;
+    realmIndex: number;
+    substageIndex: number;
+  };
 }
 
 export interface PrestigeResetSummary {
@@ -33,6 +47,7 @@ export interface PrestigeResetSummary {
   };
   hybrid: {
     masteryRetentionCarryOver: number;
+    memoryAppliedRows: PrestigeMemoryAppliedRow[];
   };
   reset: {
     cityBaselineId: string | null;
@@ -89,19 +104,50 @@ const applyMasteryRetention = (carryOver: number, snapshots: { techniqueXp: Reco
   useRecipeMasteryStore.setState({ alchemy: retainedRecipeMastery });
 };
 
-export function performPrestigeReset({ resetGameRun }: PrestigeResetOptions): PrestigeResetSummary {
+export function performPrestigeReset({ resetGameRun, currentLife }: PrestigeResetOptions): PrestigeResetSummary {
   const prestigeState = usePrestigeStore.getState();
   const totalAP = prestigeState.totalAP;
   const purchasesById = { ...prestigeState.purchasesById };
+  const now = Date.now();
 
   const hybrid = {
     masteryRetentionCarryOver: deriveMasteryRetentionCarryOver(purchasesById),
+    memoryAppliedRows: [] as PrestigeMemoryAppliedRow[],
   };
 
   const masterySnapshots = {
     techniqueXp: snapshotTechniqueMasteryXp(),
     recipeMastery: snapshotRecipeMastery(),
   };
+  const rawContent = useContentStore.getState().raw;
+  const trainingContent = rawContent ? createTrainingRuntimeContent(rawContent) : null;
+  const trainingStateBeforeReset = useTrainingStore.getState().toSaveState();
+  const cultivationStateBeforeReset = useCultivationStore.getState();
+  const cityStateBeforeReset = useCityStore.getState();
+  const trialProgressBeforeReset = { ...useTrialStore.getState().progressByTrialId };
+  const memoryLedger = buildPrestigeMemoryLedgerForReset({
+    purchasesById,
+    previousLedger: prestigeState.memoryLedger,
+    trainingState: trainingStateBeforeReset,
+    trainingContent,
+    heartLawState: {
+      selectedHeartLawId: cultivationStateBeforeReset.selectedHeartLawId,
+      heartLawLevelById: { ...cultivationStateBeforeReset.heartLawLevelById },
+      heartLawXpById: { ...cultivationStateBeforeReset.heartLawXpById },
+      verseMasteryByLawId: { ...cultivationStateBeforeReset.verseMasteryByLawId },
+      rootResonanceByPair: { ...cultivationStateBeforeReset.rootResonanceByPair },
+    },
+    selectedPath: currentLife?.selectedPath,
+    realmIndex: currentLife?.realmIndex,
+    substageIndex: currentLife?.substageIndex,
+    spiritRoot: prestigeState.spiritRoot,
+    currentCityId: cityStateBeforeReset.currentCityId,
+    trialProgressByTrialId: trialProgressBeforeReset,
+    trialContent: rawContent?.trials ?? [],
+    prestigeCount: prestigeState.prestigeCount,
+    now,
+  });
+  hybrid.memoryAppliedRows = memoryLedger.lastAppliedRows.filter((row) => row.appliedAt === now);
 
   const hadActiveActivity = useActivityStore.getState().active !== null;
 
@@ -120,6 +166,7 @@ export function performPrestigeReset({ resetGameRun }: PrestigeResetOptions): Pr
   useManualPavilionStore.getState().hardReset();
   useTechCollectionStore.getState().hardReset();
   useRecipeMasteryStore.getState().hardReset();
+  useTrainingStore.getState().resetForNewLife();
   useProfessionStore.setState({ alchemyQueue: [], talismanQueue: [], forgeQueue: [], lastTickAt: 0 });
   useExpeditionStore.setState((state) => ({ ...state, active: [] }));
   useCraftSessionStore.setState({ activeSession: null });
@@ -140,6 +187,32 @@ export function performPrestigeReset({ resetGameRun }: PrestigeResetOptions): Pr
   }
 
   applyMasteryRetention(hybrid.masteryRetentionCarryOver, masterySnapshots);
+  recomputeAndApplyPrestigeUnlocks(purchasesById);
+  usePrestigeStore.getState().setPrestigeMemoryLedger(memoryLedger);
+
+  hybrid.memoryAppliedRows.forEach((row) => {
+    GameEvents.emit({
+      type: 'prestige/memory_applied',
+      payload: {
+        timestamp: now,
+        effectId: row.effectId,
+        rank: row.rank,
+        value: row.value,
+        targetId: row.targetId,
+      },
+    });
+  });
+  memoryLedger.lastResetBucketIds.forEach((bucketId) => {
+    GameEvents.emit({
+      type: 'prestige/reset_bucket_applied',
+      payload: {
+        timestamp: now,
+        bucketId,
+        kind: bucketId === 'root_clarity_floor' ? 'rebuilt' : bucketId.includes('memory') || bucketId.includes('echo') || bucketId.includes('sparring') || bucketId.includes('calm') || bucketId.includes('form') ? 'hybrid' : 'reset',
+        label: bucketId.replaceAll('_', ' '),
+      },
+    });
+  });
 
   return {
     permanent: {

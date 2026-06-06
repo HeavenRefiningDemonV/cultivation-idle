@@ -1,0 +1,47 @@
+﻿[
+    {
+        "slug":  "typecheck",
+        "command":  "npm run typecheck",
+        "exitCode":  0,
+        "timedOut":  false,
+        "durationMs":  872,
+        "stdout":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp5\\final\\commands\\typecheck.stdout.log",
+        "stderr":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp5\\final\\commands\\typecheck.stderr.log"
+    },
+    {
+        "slug":  "check-icons",
+        "command":  "npm run check:icons",
+        "exitCode":  0,
+        "timedOut":  false,
+        "durationMs":  831,
+        "stdout":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp5\\final\\commands\\check-icons.stdout.log",
+        "stderr":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp5\\final\\commands\\check-icons.stderr.log"
+    },
+    {
+        "slug":  "validate-content",
+        "command":  "npm run validate:content",
+        "exitCode":  0,
+        "timedOut":  false,
+        "durationMs":  1908,
+        "stdout":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp5\\final\\commands\\validate-content.stdout.log",
+        "stderr":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp5\\final\\commands\\validate-content.stderr.log"
+    },
+    {
+        "slug":  "build",
+        "command":  "npm run build",
+        "exitCode":  0,
+        "timedOut":  false,
+        "durationMs":  11091,
+        "stdout":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp5\\final\\commands\\build.stdout.log",
+        "stderr":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp5\\final\\commands\\build.stderr.log"
+    },
+    {
+        "slug":  "test-mp5",
+        "command":  "npm run test:mp5",
+        "exitCode":  0,
+        "timedOut":  false,
+        "durationMs":  15863,
+        "stdout":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp5\\final\\commands\\test-mp5.stdout.log",
+        "stderr":  "C:\\Users\\abdul\\Desktop\\cultivation-idle\\artifacts\\mp5\\final\\commands\\test-mp5.stderr.log"
+    }
+]

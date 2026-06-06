@@ -83,11 +83,11 @@ test('explicit live mismatches use the normalized mismatch rule only', () => {
   assert.deepEqual(getAffinityStatus(heavenFlame, EARTH_ROOT), { status: 'mismatch', percent: 4 });
 });
 
-test('non-live-only affinities are neutral instead of mismatches', () => {
+test('expanded MP4 live affinities mismatch when the root is outside declared affinities', () => {
   const starCore = getLaw(config, 'heart_star_core_refinement_law');
 
-  assert.equal(computeAffinityMultiplier(starCore, EARTH_ROOT), 1);
-  assert.deepEqual(getAffinityStatus(starCore, EARTH_ROOT), { status: 'none', percent: 0 });
+  approxEqual(computeAffinityMultiplier(starCore, EARTH_ROOT), 0.96);
+  assert.deepEqual(getAffinityStatus(starCore, EARTH_ROOT), { status: 'mismatch', percent: 4 });
 });
 
 test('null law or null root is neutral', () => {

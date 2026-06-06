@@ -5,7 +5,7 @@ import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 
 import { buildOutskirtsMockupSurface } from '../../src/features/world/outskirts/buildOutskirtsMockupSurface.js';
-import { createOutskirtsMockupFixture } from '../../src/features/world/outskirts/fixtures/createOutskirtsMockupFixture.js';
+import { createActiveOutskirtsMockupFixture, createOutskirtsMockupFixture } from '../../src/features/world/outskirts/fixtures/createOutskirtsMockupFixture.js';
 import {
   OUTSKIRTS_ALLOWED_ACTIVE_CONTRACT_SHELL,
   OUTSKIRTS_ALLOWED_PLANNING_SHELL,
@@ -26,7 +26,7 @@ void test('C3 planning route keeps scenic stage and does not mount theater shell
 });
 
 void test('C3 active route mounts theater shell and retains stage layers', () => {
-  const surface = buildOutskirtsMockupSurface(createOutskirtsMockupFixture({ isOutskirtsActive: true }), {
+  const surface = buildOutskirtsMockupSurface(createActiveOutskirtsMockupFixture(), {
     activityMode: 'active',
   });
 
@@ -70,6 +70,7 @@ void test('C3 shell contract enables hp bars only for active', () => {
     showCombatActors: false,
     showFloatingDamage: false,
     showCombatChips: false,
+    showCombatResultOverlay: false,
     showSummaryRail: false,
     showUtilityTray: false,
     showCombatLog: false,

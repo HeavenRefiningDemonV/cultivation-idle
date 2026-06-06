@@ -28,6 +28,9 @@ List the likely files to inspect before editing. Prefer owner/controller/builder
 ## Tests and commands
 Name the tests to add or update and the package commands to run. If a package command is unavailable or fails before the relevant test runs, record the exact failure and use the closest direct command only as supplemental evidence.
 
+## Onboarding release evidence packet rule
+For onboarding QA/release packets, do not claim release readiness from UI copy alone. Required evidence is: targeted onboarding tests, route/module guard matrix, source/sink dead-end checks, old-save and second-life checks, command logs, and a readiness document that distinguishes onboarding regressions from broad release blockers. Tool unavailability must be recorded rather than replaced with assumed evidence.
+
 ## Acceptance criteria
 Use observable conditions, not intent. Include source owner preservation, runtime behavior, test coverage, and release/reporting evidence.
 
