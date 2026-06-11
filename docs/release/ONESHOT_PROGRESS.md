@@ -99,3 +99,25 @@ Scoped to the Vitals ribbon (smallest, self-contained instrument). Life Decree r
 - `@media (max-width:1100px)` reflow (~scss 2724) does not fire at gate sizes; left for S13.
 - **Gate:** blocked @2560 screenshot — 9 clean medallion cells in a slim row (4.31M · 63.75/s · 0/100 · 278.88 · 345.36 · 34.86 · 11.62 · 20% · Idle), no source captions, no clipped pills. typecheck GREEN; default + blocked-state e2e green.
 - Screenshot: `artifacts/s10-exact-mockup/stage-gate/blocked-2560x1440.png` (post-vitals).
+
+---
+
+## SESSION END — PARTIAL (S0–S3) · resumable roadmap
+**Completed & committed:** S0 recon · S1 Stage · S2 region rects + palette purge · S3 Vitals (Life Decree deferred).
+**Verified GREEN this session:** typecheck · eslint (changed files) · production build (`✓ built in 5.77s`) · contracts 508/508 (baseline; no `src/systems` change since) · e2e (stage gate ×3 sizes, default route, blocked state normal+reduced) · testid superset (38/38 preserved).
+**Commits:** `cbc0eb33` S0 → `724745c4` S1 → `e1cbc011` S2 → `7a9906b5` S3.
+**Net effect:** Status went from a brown fluid card-grid to the Frame-I composition — 9 parchment plates at their exact rects on the slate-teal void, uniformly scaled to any monitor, with a clean slim vitals ribbon. The hard architectural foundation (the Stage) that every instrument depends on is done and proven.
+
+### Resume here (S4–S14) — the foundation now makes all of this straightforward:
+- **S3 remainder — Life Decree:** rebuild `StatusLifeDecreeScroll.tsx` as one scroll plate (10 cells, rolled ends, 状態堂 hanging tab, chop after title, opposed-root mini-chop, bottleneck in cinnabar, stamp variants). Rect `16,10·1640×148`. Binds `surface.lifeDecree`.
+- **S4 — Root/Law flagship:** port `status mockups and docs/prototype_spirit_root_astrolabe.html` (screenshot-verified) into `StatusSpiritRootAstrolabe`/`StatusRootLawCoupledInstrument`. Rect `24,228·506×446`. Binds `surface.rootLawInstrument`. Use `BridgeThread broken={bridge.broken}`. 3–5 parity loops vs Frame F/I.
+- **S5 — Vessel + Canopy:** ghost-cultivator SVG + 6 anatomic organ plaques + state-toned `QiThreadPath`; bamboo-rack canopy with all `canopyMode` branches (bottleneck/maintenance/failureDiagnosis/reincarnationEdict/capNotice). Rects vessel `538,228·562×446`, canopy `1108,168·548×506`.
+- **S6 — Belt:** 28-stat constellation (8/7/6/7, weak-link thread, legend), brass scale + 5 glass jars, layered wheel, 2 folded ledger slips. Belt rects in §6 of the prompt.
+- **S7** mid-gate · **S8** states (5×2 e2e harness already exists: `status-observatory-states.spec.ts`) · **S9** overlays (D/F/H/J, no-reflow assertion) · **S10** VFX (compose fx primitives 01–10,12 + reduced-motion) · **S11** copy hygiene + `formatObservatoryValue` + `statusObservatoryCopyHygiene.test.ts` · **S12** a11y · **S13** cleanup · **S14** final ladder + monitor-law 2560/1920 + report.
+
+### Known deferred / housekeeping notes:
+- **19 inline raw-hex** remain in OLD instrument rules in the monolithic scss (lines ~281–2238) — purge each as its instrument is rewritten (S4–S6); full `src/ui/status` hex-gate at S13/S14.
+- Per-instrument **title tabs + corner brackets** land with each instrument rebuild (`.obsTitleTab`/`.obsCornerBrackets` materials to add in `observatoryMaterials.scss`).
+- Dead `.obsVoidBackdrop` rule (`observatoryMaterials.scss:99`) and the `@media (max-width:1100px)` reflow → delete at S13.
+- A stray Vite dev server I spawned runs on **:5174** (the pre-existing one is :5173) — harmless, close at leisure.
+- A broken third-party **SQL-check plugin hook** errors on every Write/Edit (its script path doesn't exist); it does NOT block writes and is unrelated to this repo.
