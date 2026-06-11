@@ -1,0 +1,2863 @@
+@use './fx/observatoryMaterials';
+
+.statusObservatoryRoot {
+  --observatory-paper: #f4ead2;
+  --observatory-paper-deep: #e4cf9d;
+  --observatory-ink: #2e2417;
+  --observatory-muted: #6d5a3d;
+  --observatory-line: rgba(81, 54, 26, 0.26);
+  --observatory-jade: #2f7f62;
+  --observatory-gold: #a36c21;
+  --observatory-cinnabar: #a33a2c;
+  --observatory-bronze: #7a5a2c;
+  --observatory-shadow: rgba(48, 30, 9, 0.18);
+  color: var(--observatory-ink);
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  padding: 0;
+  background: none;
+}
+
+.statusObservatoryRoot[data-observatory-visual-state='blocked'],
+.statusObservatoryRoot[data-observatory-visual-state='postFailure'] {
+  --observatory-state: var(--observatory-cinnabar);
+}
+
+.statusObservatoryRoot[data-observatory-visual-state='healthy'] {
+  --observatory-state: var(--observatory-jade);
+}
+
+.statusObservatoryRoot[data-observatory-visual-state='prestigePressure'],
+.statusObservatoryRoot[data-observatory-visual-state='contentCap'] {
+  --observatory-state: var(--observatory-gold);
+}
+
+.statusObservatoryRoot[data-observatory-visual-state='unknown'] {
+  --observatory-state: var(--observatory-bronze);
+}
+
+/* The Observatory Stage: a fixed 1672×941 design canvas (mockup-native units)
+   floating on the dark slate-teal void, scaled uniformly to the monitor so the
+   painted composition reads identically at any size (Frame I law). The void is
+   the ONLY sanctioned dark surface — slate-teal, never brown. */
+.obsStageViewport {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: radial-gradient(
+    120% 90% at 50% 8%,
+    var(--obs-void-high) 0%,
+    var(--obs-void-mid) 55%,
+    var(--obs-void-deep) 100%
+  );
+  box-shadow: inset 0 0 240px var(--obs-void-vignette);
+}
+
+/* Tiny windows: stop shrinking at the floor and let the viewport scroll. */
+.obsStageViewport[data-obs-at-floor='true'] {
+  overflow: auto;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.obsStage {
+  position: relative;
+  flex: 0 0 auto;
+  width: 1672px;
+  height: 941px;
+  transform: scale(var(--obs-scale, 1));
+  transform-origin: center center;
+}
+
+.statusObservatoryCanvas {
+  position: relative;
+  width: 1672px;
+  height: 941px;
+  display: grid;
+  grid-template-columns: minmax(300px, 23fr) minmax(380px, 31fr) minmax(320px, 26fr);
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  grid-template-areas:
+    "decree decree decree"
+    "vitals vitals vitals"
+    "rootlaw vessel canopy"
+    "belt belt belt";
+  gap: var(--ui-layout-section-gap);
+}
+
+/* Semantic region wrappers are the canvas grid children; each instrument
+   keeps its own internal layout and test anchors inside its region. */
+.obsRegion {
+  display: grid;
+  min-width: 0;
+  min-height: 0;
+}
+
+.obsRegion--decree {
+  grid-area: decree;
+}
+
+.obsRegion--vitals {
+  grid-area: vitals;
+}
+
+.obsRegion--root-law {
+  grid-area: rootlaw;
+}
+
+.obsRegion--vessel {
+  grid-area: vessel;
+}
+
+.obsRegion--canopy {
+  grid-area: canopy;
+}
+
+/* Compact symbolic support belt: constellation | scales | wheel | ledgers. */
+.obsBelt {
+  grid-area: belt;
+  display: grid;
+  grid-template-columns:
+    minmax(0, 42fr)
+    minmax(0, 20fr)
+    minmax(0, 18fr)
+    minmax(0, 20fr);
+  gap: var(--ui-layout-card-gap);
+  min-width: 0;
+}
+
+/* Tone-attribute plumbing only (instrument-level theming lands in later
+   phases); each tone exposes a local accent custom property for reuse. */
+.statusObservatoryRoot[data-observatory-tone='cinnabarHeavy'] {
+  --obs-accent-strong: var(--paper-cinnabar-bright);
+}
+
+.statusObservatoryRoot[data-observatory-tone='goldRitual'] {
+  --obs-accent-strong: var(--paper-gold-leaf);
+}
+
+.statusObservatoryRoot[data-observatory-tone='jadeCalm'] {
+  --obs-accent-strong: var(--paper-jade-bright);
+}
+
+.statusObservatoryRoot[data-observatory-tone='inkJade'] {
+  --obs-accent-strong: var(--paper-jade);
+}
+
+.statusObservatoryRoot[data-observatory-tone='mutedCap'] {
+  --obs-accent-strong: var(--paper-bronze);
+}
+
+/* Reserved dominance hook (Phase 6 seam): subtle accent strengthening only. */
+.statusObservatoryRoot[data-observatory-dominant='canopy'] .obsRegion--canopy {
+  --obs-region-accent: var(--obs-accent-strong, var(--paper-gold-leaf));
+}
+
+.statusObservatoryLifeDecree {
+  grid-area: life;
+}
+
+.statusObservatoryVitals {
+  grid-area: vitals;
+}
+
+.statusObservatoryRootLaw {
+  grid-area: rootLaw;
+}
+
+.statusObservatoryVessel {
+  grid-area: vessel;
+}
+
+.statusObservatoryCanopy {
+  grid-area: canopy;
+}
+
+.statusObservatoryConstellation {
+  grid-area: constellation;
+}
+
+.statusObservatoryPreparation {
+  grid-area: preparation;
+}
+
+.statusObservatoryWorkWheel {
+  grid-area: work;
+}
+
+.statusObservatoryLedgerRail {
+  grid-area: ledgers;
+}
+
+.statusLifeDecree,
+.statusObservatoryInstrument,
+.statusVitalsRibbon,
+.statusFoldedLedgerRail__fold {
+  border: 1px solid var(--observatory-line);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 250, 232, 0.94), rgba(236, 217, 169, 0.94)),
+    var(--observatory-paper);
+  box-shadow: 0 16px 40px var(--observatory-shadow);
+}
+
+.statusLifeDecree {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  border-top: 3px solid var(--observatory-state);
+}
+
+.statusLifeDecree__titleRail {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr) minmax(180px, 0.32fr);
+  gap: 14px;
+  align-items: stretch;
+}
+
+.statusLifeDecree__verticalSeal {
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--observatory-state), rgba(122, 90, 44, 0.5));
+  box-shadow: inset 0 0 0 3px rgba(255, 248, 220, 0.32);
+}
+
+.statusLifeDecree__eyebrow,
+.statusLifeDecree__label,
+.statusVitalsRibbon__label,
+.statusObservatoryInstrument__header span,
+.statusSpiritRootAstrolabe__title span,
+.statusSpiritRootAstrolabe__summary span,
+.statusSpiritRootAstrolabe__proc span,
+.statusSpiritRootAstrolabe__validity span,
+.statusRootLawBridge__label,
+.statusHeartLawSeal__title span,
+.statusHeartLawSeal__state span,
+.statusMeridianVesselCompass__rail span,
+.statusMeridianVesselCompass__sharedCauseStamps > span,
+.statusMeridianVesselCompass__drawerHeader span,
+.statusMeridianVesselCompass__drawerRow span,
+.statusMeridianVesselCompass__drawerRoute span,
+.statusFocusLens__title span,
+.statusFocusLens__copy span,
+.statusFocusLens__route span,
+.statusFocusLens__sources > span,
+.statusCanopy__edict span,
+.statusCanopy__slip span,
+.statusCanopy__seal span,
+.statusWorkWheel__core span,
+.statusFoldedLedgerRail__fold small {
+  font-size: 0.74rem;
+  line-height: 1.2;
+  text-transform: uppercase;
+  color: var(--observatory-muted);
+}
+
+.statusLifeDecree__titleCopy h1,
+.statusObservatoryInstrument h2,
+.statusFoldedLedgerRail__fold h2 {
+  margin: 0;
+  font-size: clamp(1.05rem, 1.2rem, 1.35rem);
+  line-height: 1.14;
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+.statusLifeDecree__titleCopy p,
+.statusObservatoryInstrument p,
+.statusFoldedLedgerRail__fold p {
+  margin: 4px 0 0;
+  color: var(--observatory-muted);
+  line-height: 1.35;
+}
+
+.statusLifeDecree__stamp {
+  min-height: 64px;
+  display: grid;
+  place-items: center;
+  padding: 10px;
+  border: 2px solid color-mix(in srgb, var(--observatory-state) 70%, #4b2a16);
+  border-radius: 6px;
+  color: var(--observatory-state);
+  font-weight: 800;
+  text-align: center;
+  text-transform: uppercase;
+  background: rgba(255, 249, 226, 0.64);
+}
+
+.statusLifeDecree__scrollTiles {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.statusLifeDecree__tile {
+  min-height: 78px;
+  display: grid;
+  align-content: start;
+  gap: 4px;
+  padding: 10px;
+  border: 1px solid rgba(90, 62, 30, 0.18);
+  border-radius: 6px;
+  background: rgba(255, 249, 229, 0.54);
+}
+
+.statusLifeDecree__route {
+  background: rgba(163, 108, 33, 0.1);
+}
+
+.statusLifeDecree__value,
+.statusVitalsRibbon__value,
+.statusRootLaw__astrolabe strong,
+.statusRootLaw__seal strong,
+.statusMeridianVesselCompass__organSeal strong,
+.statusMeridianVesselCompass__rail strong,
+.statusMeridianVesselCompass__drawerHeader h3,
+.statusMeridianVesselCompass__drawerRow strong,
+.statusFocusLens strong,
+.statusCanopy__edict h2,
+.statusCanopy__slip strong,
+.statusCanopy__seal strong,
+.statusStatBeadLens h3,
+.statusStatBeadLens__facts strong,
+.statusStatConstellation__plaque span,
+.statusPreparation__scalePan strong,
+.statusWorkWheel__core strong,
+.statusWorkWheel__spoke strong {
+  overflow-wrap: anywhere;
+  line-height: 1.18;
+}
+
+.statusLifeDecree__detail,
+.statusVitalsRibbon__source,
+.statusSpiritRootAstrolabe__proc small,
+.statusHeartLawSeal__state small,
+.statusRootLawRouteButton small,
+.statusMeridianVesselCompass__organSeal small,
+.statusMeridianVesselCompass__organSeal em,
+.statusMeridianVesselCompass__rail small,
+.statusFocusLens__route small,
+.statusCanopy__slip small,
+.statusCanopy__seal small,
+.statusWorkWheel__core small {
+  color: var(--observatory-muted);
+  line-height: 1.25;
+}
+
+.statusVitalsRibbon {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px;
+  padding: 12px;
+}
+
+.statusVitalsRibbon__seal {
+  min-height: 90px;
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  grid-template-areas:
+    "icon label"
+    "icon value"
+    "icon source";
+  gap: 2px 8px;
+  align-items: center;
+  padding: 10px;
+  border-radius: 999px 999px 8px 8px;
+  border: 1px solid rgba(90, 62, 30, 0.18);
+  background: rgba(255, 249, 229, 0.62);
+}
+
+.statusVitalsRibbon__icon {
+  grid-area: icon;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  color: var(--observatory-state);
+}
+
+.statusVitalsRibbon__label {
+  grid-area: label;
+}
+
+.statusVitalsRibbon__value {
+  grid-area: value;
+}
+
+.statusVitalsRibbon__source {
+  grid-area: source;
+}
+
+.statusObservatoryInstrument {
+  position: relative;
+  display: grid;
+  gap: 12px;
+  min-height: 260px;
+  padding: 14px;
+  overflow: hidden;
+}
+
+.statusObservatoryInstrument__header {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.statusObservatoryInstrument__sigil {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  border: 2px solid var(--observatory-state);
+  background:
+    linear-gradient(90deg, transparent 45%, rgba(80, 50, 18, 0.4) 45% 55%, transparent 55%),
+    linear-gradient(0deg, transparent 45%, rgba(80, 50, 18, 0.4) 45% 55%, transparent 55%),
+    rgba(255, 248, 226, 0.72);
+}
+
+.statusRootLawCoupledInstrument {
+  min-height: 430px;
+  align-content: start;
+  background:
+    radial-gradient(circle at 24% 48%, rgba(47, 127, 98, 0.16), transparent 32%),
+    radial-gradient(circle at 76% 48%, rgba(163, 108, 33, 0.16), transparent 28%),
+    linear-gradient(180deg, rgba(255, 250, 232, 0.96), rgba(230, 207, 158, 0.9)),
+    var(--observatory-paper);
+}
+
+.statusRootLawCoupledInstrument__body {
+  display: grid;
+  grid-template-columns: minmax(220px, 1.08fr) minmax(76px, 0.42fr) minmax(190px, 0.92fr);
+  gap: 8px;
+  align-items: center;
+  min-height: 330px;
+}
+
+.statusSpiritRootAstrolabe,
+.statusHeartLawSeal,
+.statusCanopy__seal {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(90, 62, 30, 0.2);
+  background:
+    linear-gradient(180deg, rgba(255, 249, 229, 0.74), rgba(226, 202, 150, 0.5)),
+    rgba(255, 249, 229, 0.58);
+  box-shadow: inset 0 0 0 1px rgba(255, 252, 236, 0.36);
+}
+
+.statusSpiritRootAstrolabe__title,
+.statusHeartLawSeal__title {
+  display: grid;
+  gap: 2px;
+  text-align: center;
+}
+
+.statusSpiritRootAstrolabe__title strong,
+.statusHeartLawSeal__title strong {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.06rem;
+  color: var(--observatory-ink);
+}
+
+.statusSpiritRootAstrolabe__ring {
+  --notch-radius: 104px;
+  position: relative;
+  width: clamp(228px, 21vw, 272px);
+  aspect-ratio: 1;
+  margin: 0 auto;
+  border-radius: 50%;
+  border: 2px solid rgba(74, 48, 20, 0.34);
+  background:
+    radial-gradient(circle at 50% 50%, rgba(38, 50, 40, 0.92) 0 24%, transparent 24.5%),
+    radial-gradient(circle at 50% 50%, transparent 0 43%, rgba(255, 248, 220, 0.72) 43.5% 55%, transparent 55.5%),
+    conic-gradient(
+      from -8deg,
+      rgba(47, 127, 98, 0.46),
+      rgba(47, 127, 98, 0.18) 34%,
+      rgba(163, 108, 33, 0.28) 54%,
+      rgba(163, 58, 44, 0.28) 72%,
+      rgba(47, 127, 98, 0.36)
+    );
+  box-shadow:
+    inset 0 0 0 12px rgba(255, 250, 232, 0.28),
+    inset 0 0 0 32px rgba(55, 40, 22, 0.12),
+    0 10px 22px rgba(48, 30, 9, 0.16);
+}
+
+.statusSpiritRootAstrolabe__ring::before,
+.statusSpiritRootAstrolabe__ring::after {
+  content: "";
+  position: absolute;
+  inset: 17%;
+  border-radius: 50%;
+  border: 1px solid rgba(74, 48, 20, 0.28);
+  pointer-events: none;
+}
+
+.statusSpiritRootAstrolabe__ring::after {
+  inset: 31%;
+  border-style: dashed;
+  opacity: 0.72;
+}
+
+.statusSpiritRootAstrolabe__needle {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 3;
+  width: 43%;
+  height: 3px;
+  transform-origin: 0 50%;
+  transform: rotate(var(--root-angle));
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--observatory-gold), var(--observatory-cinnabar));
+  box-shadow: 0 0 8px rgba(163, 58, 44, 0.42);
+}
+
+.statusSpiritRootAstrolabe__notch {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 4;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  transform: rotate(var(--notch-angle)) translate(var(--notch-radius)) rotate(calc(-1 * var(--notch-angle)));
+  transform-origin: center;
+  margin: -17px 0 0 -17px;
+  border-radius: 50%;
+  border: 1px solid rgba(74, 48, 20, 0.42);
+  background: rgba(255, 248, 226, 0.88);
+  color: var(--observatory-muted);
+  font-size: 0.52rem;
+  line-height: 1;
+  text-align: center;
+  box-shadow: 0 2px 5px rgba(48, 30, 9, 0.18);
+}
+
+.statusSpiritRootAstrolabe__notch[data-active="true"] {
+  width: 42px;
+  height: 42px;
+  margin: -21px 0 0 -21px;
+  border: 2px solid var(--observatory-jade);
+  color: #173f33;
+  font-weight: 800;
+  background: rgba(224, 248, 220, 0.94);
+  box-shadow:
+    0 0 0 4px rgba(47, 127, 98, 0.16),
+    0 0 16px rgba(47, 127, 98, 0.32);
+}
+
+.statusSpiritRootAstrolabe__core {
+  position: absolute;
+  inset: 34%;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  border-radius: 50%;
+  text-align: center;
+  color: #fff8dc;
+  background:
+    radial-gradient(circle, rgba(47, 127, 98, 0.42), rgba(27, 31, 24, 0.94));
+  box-shadow: inset 0 0 0 2px rgba(255, 248, 220, 0.22);
+}
+
+.statusSpiritRootAstrolabe__summary,
+.statusSpiritRootAstrolabe__proc,
+.statusSpiritRootAstrolabe__validity,
+.statusHeartLawSeal__state {
+  display: grid;
+  gap: 3px;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(90, 62, 30, 0.18);
+  background: rgba(255, 250, 232, 0.58);
+}
+
+.statusRootLawBridge {
+  position: relative;
+  min-height: 210px;
+  display: grid;
+  align-content: center;
+  gap: 8px;
+  text-align: center;
+  padding: 10px 4px;
+  color: var(--observatory-muted);
+}
+
+.statusRootLawBridge__cord {
+  position: relative;
+  min-height: 86px;
+  display: grid;
+  place-items: center;
+}
+
+.statusRootLawBridge__line {
+  width: 100%;
+  height: 8px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--observatory-jade), var(--observatory-gold));
+  box-shadow: 0 0 14px rgba(47, 127, 98, 0.24);
+}
+
+.statusRootLawBridge__knot {
+  position: absolute;
+  top: 50%;
+  width: 24px;
+  height: 24px;
+  margin-top: -12px;
+  border-radius: 50%;
+  border: 2px solid rgba(71, 44, 18, 0.44);
+  background: rgba(255, 248, 220, 0.94);
+  box-shadow: 0 0 0 4px rgba(163, 108, 33, 0.12);
+}
+
+.statusRootLawBridge__knot--root {
+  left: -4px;
+}
+
+.statusRootLawBridge__knot--law {
+  right: -4px;
+}
+
+.statusRootLawBridge__crack {
+  position: absolute;
+  top: 50%;
+  width: 3px;
+  height: 52px;
+  margin-top: -26px;
+  border-radius: 999px;
+  background: var(--observatory-cinnabar);
+  transform: rotate(24deg);
+  box-shadow: 0 0 8px rgba(163, 58, 44, 0.36);
+}
+
+.statusRootLawBridge__crack--1 {
+  left: 34%;
+}
+
+.statusRootLawBridge__crack--2 {
+  left: 50%;
+  transform: rotate(-18deg);
+}
+
+.statusRootLawBridge__crack--3 {
+  left: 64%;
+  transform: rotate(31deg);
+}
+
+.statusRootLawBridge[data-bridge-state="aligned"] .statusRootLawBridge__line {
+  background: linear-gradient(90deg, var(--observatory-jade), #d0a039, var(--observatory-jade));
+}
+
+.statusRootLawBridge[data-bridge-state="compatible"] .statusRootLawBridge__line {
+  background: linear-gradient(90deg, rgba(47, 127, 98, 0.72), rgba(163, 108, 33, 0.72));
+}
+
+.statusRootLawBridge[data-bridge-state="strained"] .statusRootLawBridge__line {
+  height: 6px;
+  background: repeating-linear-gradient(90deg, var(--observatory-gold) 0 18px, var(--observatory-cinnabar) 18px 24px);
+  box-shadow: 0 0 12px rgba(163, 108, 33, 0.32);
+}
+
+.statusRootLawBridge[data-bridge-state="opposed"] .statusRootLawBridge__line {
+  height: 5px;
+  background: repeating-linear-gradient(90deg, var(--observatory-cinnabar) 0 12px, transparent 12px 21px);
+  box-shadow: 0 0 16px rgba(163, 58, 44, 0.42);
+}
+
+.statusRootLawBridge[data-bridge-state="unknown"] .statusRootLawBridge__line {
+  background: repeating-linear-gradient(90deg, rgba(109, 90, 61, 0.44) 0 14px, rgba(109, 90, 61, 0.12) 14px 22px);
+  box-shadow: none;
+}
+
+.statusRootLawBridge p {
+  margin: 0;
+  font-size: 0.76rem;
+  line-height: 1.25;
+}
+
+.statusHeartLawSeal__medallion {
+  position: relative;
+  width: clamp(142px, 14vw, 188px);
+  aspect-ratio: 1;
+  margin: 0 auto;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 2px solid rgba(116, 75, 24, 0.42);
+  background:
+    radial-gradient(circle at 50% 43%, rgba(255, 246, 208, 0.92) 0 31%, rgba(163, 108, 33, 0.38) 32% 48%, transparent 49%),
+    conic-gradient(from 8deg, rgba(117, 70, 22, 0.38), rgba(218, 172, 78, 0.68), rgba(117, 70, 22, 0.38));
+  box-shadow:
+    inset 0 0 0 12px rgba(255, 250, 232, 0.24),
+    0 10px 22px rgba(48, 30, 9, 0.16);
+}
+
+.statusHeartLawSeal__bookCore {
+  position: relative;
+  width: 58px;
+  height: 48px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3px;
+  transform: translateY(2px);
+}
+
+.statusHeartLawSeal__bookCore span {
+  border: 2px solid rgba(70, 42, 15, 0.72);
+  border-radius: 8px 3px 3px 8px;
+  background: linear-gradient(180deg, #fff4c9, #d9b76d);
+  box-shadow: inset 0 0 8px rgba(116, 72, 18, 0.2);
+}
+
+.statusHeartLawSeal__bookCore span + span {
+  border-radius: 3px 8px 8px 3px;
+}
+
+.statusHeartLawSeal__beads {
+  position: absolute;
+  inset: 6px;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.statusHeartLawSeal__bead {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 18px;
+  height: 18px;
+  margin: -9px 0 0 -9px;
+  border-radius: 50%;
+  border: 1px solid rgba(75, 48, 18, 0.5);
+  background: rgba(255, 250, 232, 0.8);
+}
+
+.statusHeartLawSeal__bead[data-filled="true"] {
+  background: var(--observatory-gold);
+  box-shadow: 0 0 8px rgba(163, 108, 33, 0.3);
+}
+
+.statusHeartLawSeal__bead[data-active="true"] {
+  border-color: var(--observatory-cinnabar);
+  box-shadow: 0 0 0 3px rgba(163, 58, 44, 0.16);
+}
+
+.statusHeartLawSeal__bead:nth-child(1) { transform: rotate(0deg) translate(70px) rotate(0deg); }
+.statusHeartLawSeal__bead:nth-child(2) { transform: rotate(40deg) translate(70px) rotate(-40deg); }
+.statusHeartLawSeal__bead:nth-child(3) { transform: rotate(80deg) translate(70px) rotate(-80deg); }
+.statusHeartLawSeal__bead:nth-child(4) { transform: rotate(120deg) translate(70px) rotate(-120deg); }
+.statusHeartLawSeal__bead:nth-child(5) { transform: rotate(160deg) translate(70px) rotate(-160deg); }
+.statusHeartLawSeal__bead:nth-child(6) { transform: rotate(200deg) translate(70px) rotate(-200deg); }
+.statusHeartLawSeal__bead:nth-child(7) { transform: rotate(240deg) translate(70px) rotate(-240deg); }
+.statusHeartLawSeal__bead:nth-child(8) { transform: rotate(280deg) translate(70px) rotate(-280deg); }
+.statusHeartLawSeal__bead:nth-child(9) { transform: rotate(320deg) translate(70px) rotate(-320deg); }
+
+.statusRootLawRouteButton {
+  display: grid;
+  gap: 2px;
+  min-height: 48px;
+  padding: 8px 10px;
+  border: 1px solid rgba(75, 48, 18, 0.32);
+  border-radius: 6px;
+  color: #fdf2c7;
+  background: linear-gradient(180deg, #294d3f, #17392e);
+  box-shadow: inset 0 0 0 1px rgba(255, 250, 232, 0.18);
+  cursor: pointer;
+}
+
+.statusRootLawRouteButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+.statusRootLawRouteButton:hover:not(:disabled),
+.statusRootLawRouteButton:focus-visible {
+  outline: 2px solid rgba(163, 108, 33, 0.58);
+  outline-offset: 2px;
+}
+
+.statusMeridianVesselCompass {
+  min-height: 620px;
+  align-content: start;
+  gap: 12px;
+  background:
+    radial-gradient(circle at 50% 38%, rgba(47, 127, 98, 0.09), transparent 34%),
+    linear-gradient(180deg, rgba(255, 250, 232, 0.96), rgba(230, 207, 158, 0.9)),
+    var(--observatory-paper);
+}
+
+.statusMeridianVesselCompass__header p {
+  max-width: 680px;
+}
+
+.statusMeridianVesselCompass__body {
+  display: grid;
+  grid-template-columns: minmax(130px, 0.38fr) minmax(360px, 1fr) minmax(132px, 0.4fr);
+  gap: 10px;
+  align-items: stretch;
+}
+
+.statusMeridianVesselCompass__rail {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+}
+
+.statusMeridianVesselCompass__rail > div,
+.statusMeridianVesselCompass__legend,
+.statusFocusLens,
+.statusMeridianVesselCompass__drawer {
+  border: 1px solid rgba(90, 62, 30, 0.22);
+  border-radius: 6px;
+  background: rgba(255, 248, 226, 0.68);
+  box-shadow: inset 0 0 0 1px rgba(255, 252, 236, 0.38);
+}
+
+.statusMeridianVesselCompass__rail > div {
+  display: grid;
+  gap: 4px;
+  padding: 10px;
+}
+
+.statusMeridianVesselCompass__figure {
+  position: relative;
+  min-height: 360px;
+  aspect-ratio: 1 / 0.82;
+  overflow: hidden;
+  border: 1px solid rgba(90, 62, 30, 0.24);
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 50% 47%, rgba(255, 250, 232, 0.72), transparent 27%),
+    radial-gradient(circle at 50% 54%, rgba(47, 127, 98, 0.1), transparent 40%),
+    linear-gradient(180deg, rgba(255, 249, 229, 0.64), rgba(218, 190, 130, 0.28));
+}
+
+.statusMeridianVesselCompass__bodyLinework,
+.statusMeridianVesselCompass__organLayer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.statusMeridianVesselCompass__bodyLinework {
+  display: block;
+  overflow: visible;
+}
+
+.statusMeridianVesselCompass__bodyAura {
+  fill: url("#statusMeridianCoreGlow");
+  stroke: rgba(92, 66, 35, 0.18);
+  stroke-width: 0.7;
+}
+
+.statusMeridianVesselCompass__bodyPath {
+  fill: none;
+  stroke: rgba(57, 48, 35, 0.27);
+  stroke-width: 0.74;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 0.8 0.45;
+}
+
+.statusMeridianVesselCompass__organThread {
+  fill: none;
+  stroke: var(--observatory-state);
+  stroke-width: 0.62;
+  stroke-linecap: round;
+  opacity: 0.58;
+}
+
+.statusMeridianVesselCompass__organThread[data-organ-state='healthy'] {
+  stroke: var(--observatory-jade);
+}
+
+.statusMeridianVesselCompass__organThread[data-organ-state='attention'] {
+  stroke: var(--observatory-gold);
+  stroke-dasharray: 0.7 0.35;
+}
+
+.statusMeridianVesselCompass__organThread[data-organ-state='danger'] {
+  stroke: var(--observatory-cinnabar);
+  stroke-width: 0.86;
+}
+
+.statusMeridianVesselCompass__organThread[data-selected='true'] {
+  opacity: 0.96;
+  stroke-width: 1.05;
+}
+
+.statusMeridianVesselCompass__coreSeal {
+  fill: rgba(163, 108, 33, 0.62);
+  stroke: rgba(255, 246, 218, 0.9);
+  stroke-width: 0.7;
+}
+
+.statusMeridianVesselCompass__coreSeal--outer {
+  fill: none;
+  stroke: rgba(90, 62, 30, 0.34);
+  stroke-dasharray: 0.8 0.48;
+}
+
+.statusMeridianVesselCompass__organLayer {
+  pointer-events: none;
+}
+
+.statusMeridianVesselCompass__organSeal {
+  position: absolute;
+  left: calc(var(--organ-x) * 1%);
+  top: calc(var(--organ-y) * 1%);
+  width: min(158px, 30%);
+  min-height: 106px;
+  transform: translate(-50%, -50%);
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 4px;
+  padding: 9px 10px;
+  border: 1px solid rgba(90, 62, 30, 0.28);
+  border-radius: 999px 999px 9px 9px;
+  background:
+    radial-gradient(circle at 50% 18%, rgba(255, 253, 235, 0.88), rgba(238, 216, 169, 0.72)),
+    rgba(255, 248, 226, 0.84);
+  color: var(--observatory-ink);
+  font: inherit;
+  text-align: center;
+  cursor: pointer;
+  pointer-events: auto;
+  box-shadow: 0 8px 18px rgba(51, 33, 12, 0.12), inset 0 0 0 3px rgba(255, 251, 229, 0.24);
+}
+
+.statusMeridianVesselCompass__organSealInner {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  color: var(--observatory-state);
+  font-weight: 800;
+  background:
+    radial-gradient(circle, rgba(255, 250, 232, 0.95), rgba(163, 108, 33, 0.16));
+}
+
+.statusMeridianVesselCompass__organSeal[data-organ-state='healthy'] {
+  --observatory-state: var(--observatory-jade);
+}
+
+.statusMeridianVesselCompass__organSeal[data-organ-state='attention'] {
+  --observatory-state: var(--observatory-gold);
+  border-style: dashed;
+}
+
+.statusMeridianVesselCompass__organSeal[data-organ-state='danger'] {
+  --observatory-state: var(--observatory-cinnabar);
+  border-width: 2px;
+}
+
+.statusMeridianVesselCompass__organSeal[data-organ-state='locked'],
+.statusMeridianVesselCompass__organSeal[data-organ-state='unknown'] {
+  --observatory-state: var(--observatory-bronze);
+  opacity: 0.82;
+}
+
+.statusMeridianVesselCompass__organSeal[data-selected='true'] {
+  box-shadow: 0 0 0 2px rgba(255, 246, 218, 0.82), 0 0 0 5px color-mix(in srgb, var(--observatory-state) 48%, transparent), 0 12px 22px rgba(51, 33, 12, 0.18);
+}
+
+.statusMeridianVesselCompass__organSeal:hover,
+.statusMeridianVesselCompass__organSeal:focus-visible {
+  outline: 2px solid var(--observatory-state);
+  outline-offset: 3px;
+}
+
+.statusMeridianVesselCompass__organSeal strong {
+  font-size: 0.82rem;
+}
+
+.statusMeridianVesselCompass__organSeal small,
+.statusMeridianVesselCompass__organSeal em {
+  font-size: 0.72rem;
+  font-style: normal;
+}
+
+.statusMeridianVesselCompass__legend {
+  display: grid;
+  gap: 6px;
+  padding: 10px;
+}
+
+.statusMeridianVesselCompass__legend span {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  grid-template-areas:
+    "mark label"
+    "mark detail";
+  gap: 0 6px;
+  align-items: center;
+}
+
+.statusMeridianVesselCompass__legend i {
+  grid-area: mark;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  border: 2px solid var(--observatory-state);
+}
+
+.statusMeridianVesselCompass__legend strong {
+  grid-area: label;
+}
+
+.statusMeridianVesselCompass__legend small {
+  grid-area: detail;
+  color: var(--observatory-muted);
+}
+
+.statusMeridianVesselCompass__focusLens {
+  min-height: 190px;
+}
+
+.statusFocusLens {
+  position: relative;
+  min-height: 100%;
+  display: grid;
+  gap: 8px;
+  padding: 14px 14px 12px;
+}
+
+.statusFocusLens__seal {
+  position: absolute;
+  top: 13px;
+  right: 13px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 2px solid var(--observatory-state);
+  opacity: 0.58;
+  background:
+    linear-gradient(90deg, transparent 44%, currentColor 44% 56%, transparent 56%),
+    linear-gradient(0deg, transparent 44%, currentColor 44% 56%, transparent 56%);
+  color: var(--observatory-state);
+}
+
+.statusFocusLens__title {
+  padding-right: 52px;
+}
+
+.statusFocusLens__title h3 {
+  margin: 2px 0 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.16rem;
+  line-height: 1.15;
+}
+
+.statusFocusLens__copy {
+  display: grid;
+  gap: 3px;
+}
+
+.statusFocusLens__copy p {
+  margin: 0;
+}
+
+.statusFocusLens__route,
+.statusMeridianVesselCompass__drawerRoute,
+.statusMeridianVesselCompass__openDrawer,
+.statusMeridianVesselCompass__drawerClose {
+  min-height: 38px;
+  display: inline-grid;
+  justify-items: start;
+  gap: 2px;
+  padding: 8px 10px;
+  border: 1px solid var(--observatory-line);
+  border-radius: 6px;
+  background: rgba(255, 246, 218, 0.86);
+  color: var(--observatory-ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.statusFocusLens__route:disabled,
+.statusMeridianVesselCompass__drawerRoute:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.statusFocusLens__route:hover:not(:disabled),
+.statusFocusLens__route:focus-visible,
+.statusMeridianVesselCompass__drawerRoute:hover:not(:disabled),
+.statusMeridianVesselCompass__drawerRoute:focus-visible,
+.statusMeridianVesselCompass__openDrawer:hover,
+.statusMeridianVesselCompass__openDrawer:focus-visible,
+.statusMeridianVesselCompass__drawerClose:hover,
+.statusMeridianVesselCompass__drawerClose:focus-visible {
+  outline: 2px solid var(--observatory-state);
+  outline-offset: 2px;
+}
+
+.statusFocusLens__sources {
+  display: grid;
+  gap: 5px;
+  padding-top: 6px;
+  border-top: 1px dashed rgba(90, 62, 30, 0.22);
+}
+
+.statusFocusLens__sources div,
+.statusMeridianVesselCompass__sharedCauseStamps div,
+.statusMeridianVesselCompass__drawerStamps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.statusFocusLens__sources i {
+  padding: 5px 7px;
+  border-radius: 999px;
+  border: 1px solid rgba(90, 62, 30, 0.2);
+  background: rgba(163, 108, 33, 0.1);
+  font-style: normal;
+  font-size: 0.76rem;
+}
+
+.statusMeridianVesselCompass__sharedCauseStamps {
+  display: grid;
+  gap: 7px;
+  padding: 10px;
+  border-top: 1px solid rgba(90, 62, 30, 0.16);
+}
+
+.statusMeridianVesselCompass__causeStamp {
+  min-height: 54px;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 2px;
+  min-width: 112px;
+  padding: 8px 10px;
+  border: 1px solid color-mix(in srgb, var(--observatory-state) 62%, rgba(90, 62, 30, 0.22));
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 50% 18%, rgba(255, 250, 232, 0.95), rgba(163, 108, 33, 0.12));
+  color: var(--observatory-ink);
+  font: inherit;
+  text-align: center;
+  cursor: pointer;
+}
+
+.statusMeridianVesselCompass__causeStamp small {
+  color: var(--observatory-state);
+}
+
+.statusMeridianVesselCompass__causeStamp:hover,
+.statusMeridianVesselCompass__causeStamp:focus-visible {
+  outline: 2px solid var(--observatory-state);
+  outline-offset: 2px;
+}
+
+.statusMeridianVesselCompass__openDrawer {
+  width: fit-content;
+}
+
+.statusMeridianVesselCompass__drawer {
+  position: relative;
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+}
+
+.statusMeridianVesselCompass__drawerHeader {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.statusMeridianVesselCompass__drawerHeader h3,
+.statusMeridianVesselCompass__drawerHeader p {
+  margin: 2px 0 0;
+}
+
+.statusMeridianVesselCompass__drawerRows {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.statusMeridianVesselCompass__drawerRow {
+  min-height: 92px;
+  display: grid;
+  align-content: start;
+  gap: 3px;
+  padding: 9px;
+  border: 1px solid rgba(90, 62, 30, 0.18);
+  border-radius: 6px;
+  background: rgba(255, 248, 226, 0.58);
+}
+
+.statusMeridianVesselCompass__drawerRow p {
+  margin: 0;
+}
+
+.statusMeridianVesselCompass__drawerRow small,
+.statusMeridianVesselCompass__drawerStamps span {
+  color: var(--observatory-muted);
+}
+
+.statusMeridianVesselCompass__drawerStamps span {
+  padding: 5px 7px;
+  border-radius: 999px;
+  border: 1px solid rgba(90, 62, 30, 0.16);
+  background: rgba(88, 59, 28, 0.08);
+  font-size: 0.78rem;
+}
+
+.statusBottleneckTalismanCanopy {
+  min-height: 760px;
+  align-content: start;
+  grid-template-rows: auto minmax(430px, 1fr) auto auto;
+  overflow: visible;
+  background:
+    radial-gradient(circle at 50% 34%, rgba(163, 108, 33, 0.18), transparent 34%),
+    radial-gradient(circle at 88% 78%, rgba(47, 127, 98, 0.12), transparent 26%),
+    linear-gradient(180deg, rgba(255, 250, 232, 0.96), rgba(229, 205, 154, 0.92)),
+    var(--observatory-paper);
+}
+
+.statusBottleneckTalismanCanopy__header {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.statusBottleneckTalismanCanopy__header p {
+  max-width: 36rem;
+}
+
+.statusBottleneckTalismanCanopy__board {
+  position: relative;
+  min-height: 430px;
+  border: 1px solid rgba(90, 62, 30, 0.24);
+  border-radius: 8px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 45%, rgba(255, 249, 229, 0.8), transparent 33%),
+    radial-gradient(circle at 20% 55%, rgba(163, 58, 44, 0.1), transparent 22%),
+    linear-gradient(180deg, rgba(255, 250, 232, 0.72), rgba(216, 185, 124, 0.34));
+}
+
+.statusBottleneckTalismanCanopy__backboard {
+  position: absolute;
+  inset: 12% 11% 18%;
+  border-radius: 48% 48% 12px 12px;
+  border: 2px solid rgba(86, 58, 25, 0.34);
+  background:
+    linear-gradient(90deg, transparent 0 18%, rgba(70, 43, 18, 0.14) 18% 21%, transparent 21% 79%, rgba(70, 43, 18, 0.14) 79% 82%, transparent 82%),
+    radial-gradient(circle at 50% 8%, rgba(163, 108, 33, 0.2), transparent 42%);
+  box-shadow:
+    inset 0 0 0 10px rgba(255, 249, 229, 0.22),
+    0 14px 30px rgba(48, 30, 9, 0.16);
+}
+
+.statusBottleneckTalismanCanopy__threads {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.statusBottleneckTalismanCanopy__thread {
+  fill: none;
+  stroke: var(--observatory-bronze);
+  stroke-width: 1.1;
+  stroke-linecap: round;
+  stroke-dasharray: 0.12 0.08;
+  opacity: 0.76;
+}
+
+.statusBottleneckTalismanCanopy__thread[data-tone='danger'],
+.statusBottleneckTalismanCanopy__thread[data-tone='warning'] {
+  stroke: var(--observatory-cinnabar);
+  opacity: 0.9;
+}
+
+.statusBottleneckTalismanCanopy__thread[data-tone='success'],
+.statusBottleneckTalismanCanopy__thread[data-tone='jade'] {
+  stroke: var(--observatory-jade);
+}
+
+.statusBottleneckTalismanCanopy__edict {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  z-index: 5;
+  width: min(260px, 54%);
+  min-height: 164px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 7px;
+  padding: 18px;
+  transform: translate(-50%, -50%);
+  border: 2px solid color-mix(in srgb, var(--observatory-state) 72%, #4b2a16);
+  border-radius: 8px 8px 18px 18px;
+  background:
+    linear-gradient(180deg, rgba(255, 252, 235, 0.96), rgba(229, 205, 154, 0.9)),
+    var(--observatory-paper);
+  box-shadow:
+    0 14px 24px rgba(48, 30, 9, 0.2),
+    inset 0 0 0 1px rgba(255, 250, 232, 0.6);
+  text-align: center;
+}
+
+.statusBottleneckTalismanCanopy__missionAnchor {
+  display: contents;
+}
+
+.statusBottleneckTalismanCanopy__edict h3 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.15rem, 1.45vw, 1.56rem);
+  line-height: 1.12;
+  color: var(--observatory-state);
+}
+
+.statusBottleneckTalismanCanopy__edict p {
+  margin: 0;
+  color: var(--observatory-muted);
+  line-height: 1.28;
+}
+
+.statusBottleneckTalismanCanopy__edictRoute,
+.statusBottleneckTalismanCanopy__routeCharm,
+.statusBottleneckInspector__route,
+.statusBottleneckTalismanCanopy__safetySeal button {
+  color: var(--observatory-ink);
+  font: inherit;
+  cursor: pointer;
+}
+
+.statusBottleneckTalismanCanopy__edictRoute {
+  min-height: 34px;
+  padding: 7px 11px;
+  border: 1px solid rgba(47, 127, 98, 0.34);
+  border-radius: 999px;
+  background: rgba(47, 127, 98, 0.12);
+}
+
+.statusBottleneckTalismanCanopy__slips {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+}
+
+.statusBottleneckTalismanCanopy__slip {
+  position: absolute;
+  left: calc(var(--slip-x) * 1%);
+  top: calc(var(--slip-y) * 1%);
+  width: clamp(118px, 33%, 166px);
+  min-height: 116px;
+  display: grid;
+  align-content: center;
+  gap: 5px;
+  padding: 12px;
+  transform: translate(-50%, -50%) rotate(var(--slip-rotation));
+  border: 1px solid rgba(90, 62, 30, 0.28);
+  border-top: 4px solid color-mix(in srgb, var(--observatory-state) 64%, #6a401b);
+  border-radius: 4px 4px 10px 10px;
+  background:
+    linear-gradient(180deg, rgba(255, 252, 235, 0.96), rgba(232, 207, 155, 0.92)),
+    var(--observatory-paper);
+  box-shadow:
+    0 10px 18px rgba(48, 30, 9, 0.2),
+    inset 0 0 0 1px rgba(255, 250, 232, 0.44);
+  color: var(--observatory-ink);
+  font: inherit;
+  text-align: left;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.statusBottleneckTalismanCanopy__slip::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -11px;
+  width: 18px;
+  height: 18px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  border: 2px solid rgba(84, 52, 20, 0.5);
+  background: radial-gradient(circle, #f8e5a8, var(--observatory-gold));
+  box-shadow: 0 2px 4px rgba(48, 30, 9, 0.24);
+}
+
+.statusBottleneckTalismanCanopy__slip strong,
+.statusBottleneckTalismanCanopy__routeCharm strong,
+.statusBottleneckTalismanCanopy__safetySeal strong,
+.statusBottleneckInspector__title h3,
+.statusBottleneckInspector__row strong {
+  overflow-wrap: anywhere;
+  line-height: 1.18;
+}
+
+.statusBottleneckTalismanCanopy__slip span,
+.statusBottleneckTalismanCanopy__routeCharm span,
+.statusBottleneckTalismanCanopy__safetySeal span,
+.statusBottleneckInspector__title span,
+.statusBottleneckInspector__meta span,
+.statusBottleneckInspector__row span,
+.statusBottleneckInspector__route span {
+  font-size: 0.72rem;
+  line-height: 1.18;
+  text-transform: uppercase;
+  color: var(--observatory-muted);
+}
+
+.statusBottleneckTalismanCanopy__slip small,
+.statusBottleneckTalismanCanopy__safetySeal small,
+.statusBottleneckInspector__row small,
+.statusBottleneckInspector__route small {
+  color: var(--observatory-muted);
+  line-height: 1.24;
+}
+
+.statusBottleneckTalismanCanopy__slip[data-selected='true'] {
+  outline: 2px solid var(--observatory-cinnabar);
+  outline-offset: 3px;
+  box-shadow:
+    0 0 0 4px rgba(163, 58, 44, 0.12),
+    0 12px 20px rgba(48, 30, 9, 0.24);
+}
+
+.statusBottleneckTalismanCanopy__slip:hover,
+.statusBottleneckTalismanCanopy__slip:focus-visible,
+.statusBottleneckTalismanCanopy__routeCharm:hover:not(:disabled),
+.statusBottleneckTalismanCanopy__routeCharm:focus-visible,
+.statusBottleneckTalismanCanopy__edictRoute:hover:not(:disabled),
+.statusBottleneckTalismanCanopy__edictRoute:focus-visible,
+.statusBottleneckInspector__route:hover:not(:disabled),
+.statusBottleneckInspector__route:focus-visible,
+.statusBottleneckTalismanCanopy__safetySeal button:hover:not(:disabled),
+.statusBottleneckTalismanCanopy__safetySeal button:focus-visible {
+  outline: 2px solid var(--observatory-state);
+  outline-offset: 2px;
+}
+
+.statusBottleneckTalismanCanopy__routeCharms {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 4px;
+  z-index: 7;
+  min-height: 102px;
+  pointer-events: none;
+}
+
+.statusBottleneckTalismanCanopy__routeCharm {
+  position: absolute;
+  left: calc(var(--charm-x) * 1%);
+  top: calc(var(--charm-y) * 1%);
+  width: 90px;
+  min-height: 74px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 4px;
+  padding: 9px;
+  transform: translate(-50%, -100%);
+  border: 2px solid rgba(78, 55, 24, 0.38);
+  border-radius: 999px 999px 12px 12px;
+  background:
+    radial-gradient(circle at 50% 24%, rgba(255, 250, 232, 0.92), rgba(47, 127, 98, 0.18) 45%, rgba(163, 108, 33, 0.3)),
+    rgba(255, 249, 229, 0.86);
+  box-shadow: 0 10px 16px rgba(48, 30, 9, 0.2);
+  text-align: center;
+  pointer-events: auto;
+}
+
+.statusBottleneckTalismanCanopy__routeCharm span {
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(47, 127, 98, 0.16);
+  color: var(--observatory-jade);
+  font-weight: 800;
+}
+
+.statusBottleneckTalismanCanopy__routeCharm:disabled,
+.statusBottleneckTalismanCanopy__edictRoute:disabled,
+.statusBottleneckInspector__route:disabled,
+.statusBottleneckTalismanCanopy__safetySeal button:disabled {
+  cursor: not-allowed;
+  opacity: 0.64;
+}
+
+.statusBottleneckInspector {
+  position: relative;
+  display: grid;
+  gap: 10px;
+  min-height: 214px;
+  padding: 14px;
+  border: 1px solid rgba(90, 62, 30, 0.26);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 250, 232, 0.96), rgba(230, 207, 158, 0.9)),
+    var(--observatory-paper);
+  box-shadow: 0 12px 24px rgba(48, 30, 9, 0.14);
+}
+
+.statusBottleneckInspector__seal {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 2px solid var(--observatory-cinnabar);
+  opacity: 0.7;
+  background:
+    linear-gradient(90deg, transparent 45%, currentColor 45% 55%, transparent 55%),
+    linear-gradient(0deg, transparent 45%, currentColor 45% 55%, transparent 55%);
+  color: var(--observatory-cinnabar);
+}
+
+.statusBottleneckInspector__title {
+  padding-right: 52px;
+}
+
+.statusBottleneckInspector__title h3 {
+  margin: 2px 0 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.14rem;
+}
+
+.statusBottleneckInspector__title p {
+  margin: 5px 0 0;
+}
+
+.statusBottleneckInspector__meta,
+.statusBottleneckInspector__row,
+.statusBottleneckInspector__route {
+  display: grid;
+  gap: 3px;
+  padding: 9px;
+  border: 1px solid rgba(90, 62, 30, 0.17);
+  border-radius: 6px;
+  background: rgba(255, 248, 226, 0.58);
+}
+
+.statusBottleneckInspector__rows {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.statusBottleneckInspector__route {
+  text-align: left;
+  background: rgba(47, 127, 98, 0.12);
+}
+
+.statusBottleneckTalismanCanopy__safetySeal {
+  width: min(250px, 100%);
+  min-height: 158px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  justify-self: end;
+  gap: 5px;
+  padding: 16px;
+  border: 3px double color-mix(in srgb, var(--observatory-state) 70%, #5d3d18);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(255, 250, 232, 0.94) 0 48%, rgba(232, 207, 155, 0.78) 49% 70%, transparent 71%),
+    conic-gradient(from 14deg, rgba(163, 108, 33, 0.42), rgba(163, 58, 44, 0.22), rgba(47, 127, 98, 0.34), rgba(163, 108, 33, 0.42));
+  box-shadow:
+    inset 0 0 0 9px rgba(255, 250, 232, 0.36),
+    0 10px 22px rgba(48, 30, 9, 0.16);
+  text-align: center;
+}
+
+.statusBottleneckTalismanCanopy__safetySeal button {
+  min-height: 30px;
+  padding: 5px 9px;
+  border: 1px solid rgba(90, 62, 30, 0.2);
+  border-radius: 999px;
+  background: rgba(255, 249, 229, 0.7);
+}
+
+.statusStatConstellation {
+  min-height: 580px;
+}
+
+.statusStatConstellation__body {
+  display: grid;
+  grid-template-columns: minmax(520px, 1fr) minmax(260px, 0.42fr);
+  gap: 14px;
+  align-items: stretch;
+}
+
+.statusStatConstellation__atlas {
+  position: relative;
+  min-height: 466px;
+  aspect-ratio: 16 / 10;
+  border: 1px solid rgba(90, 62, 30, 0.24);
+  border-radius: 8px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 49% 40%, rgba(47, 127, 98, 0.13), transparent 24%),
+    radial-gradient(circle at 24% 30%, rgba(111, 111, 103, 0.17), transparent 28%),
+    radial-gradient(circle at 77% 48%, rgba(163, 108, 33, 0.18), transparent 32%),
+    linear-gradient(180deg, rgba(255, 250, 232, 0.9), rgba(232, 209, 160, 0.72));
+}
+
+.statusStatConstellation__svg,
+.statusStatConstellation__hitLayer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.statusStatConstellation__svg {
+  display: block;
+  overflow: visible;
+}
+
+.statusStatConstellation__wash {
+  fill: none;
+  stroke-width: 4.2;
+  stroke-linecap: round;
+  opacity: 0.18;
+}
+
+.statusStatConstellation__wash--heaven {
+  stroke: #60665c;
+  stroke-dasharray: 0.6 1.6;
+}
+
+.statusStatConstellation__wash--earth {
+  stroke: #59472d;
+  stroke-dasharray: 2.2 1.2;
+}
+
+.statusStatConstellation__wash--martial {
+  stroke: #4b2c18;
+  stroke-width: 6.4;
+  opacity: 0.22;
+}
+
+.statusStatConstellation__branchPath {
+  fill: none;
+  stroke-width: 0.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: url("#statusStatBrushSoft");
+}
+
+.statusStatConstellation__branchPath--universal {
+  stroke: var(--observatory-jade);
+  stroke-width: 1.2;
+}
+
+.statusStatConstellation__branchPath--heaven,
+.statusStatConstellation__branchPath--earth {
+  stroke: rgba(74, 68, 56, 0.66);
+  stroke-dasharray: 0.06 0.05;
+}
+
+.statusStatConstellation__branchPath--martial {
+  stroke: var(--observatory-gold);
+  stroke-width: 1.3;
+}
+
+.statusStatConstellation__label {
+  font-size: 3px;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  fill: rgba(49, 36, 23, 0.76);
+  paint-order: stroke;
+  stroke: rgba(255, 246, 218, 0.82);
+  stroke-width: 0.8;
+}
+
+.statusStatConstellation__label--universal {
+  fill: var(--observatory-jade);
+}
+
+.statusStatConstellation__label--martial {
+  fill: var(--observatory-gold);
+}
+
+.statusStatConstellation__bridgeSocket {
+  color: rgba(84, 75, 61, 0.82);
+}
+
+.statusStatConstellation__bridgeSocket circle:first-of-type {
+  fill: rgba(255, 247, 220, 0.72);
+  stroke: currentColor;
+  stroke-width: 0.55;
+}
+
+.statusStatConstellation__bridgeSocket circle:last-of-type {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 0.44;
+  stroke-dasharray: 1.1 0.9;
+}
+
+.statusStatConstellation__weakThread {
+  fill: none;
+  stroke: var(--observatory-cinnabar);
+  stroke-width: 0.72;
+  stroke-linecap: round;
+  stroke-dasharray: 0.18 0.07;
+  opacity: 0.88;
+}
+
+.statusStatConstellation__nodeGlyph {
+  pointer-events: none;
+}
+
+.statusStatConstellation__nodeAura {
+  fill: rgba(255, 244, 205, 0.45);
+  stroke: rgba(89, 64, 30, 0.32);
+  stroke-width: 0.5;
+}
+
+.statusStatConstellation__nodeBead {
+  fill: rgba(91, 84, 70, 0.62);
+  stroke: rgba(255, 246, 218, 0.78);
+  stroke-width: 0.55;
+}
+
+.statusStatConstellation__nodeGlyph[data-node-state='foundation'] .statusStatConstellation__nodeBead {
+  fill: var(--observatory-jade);
+}
+
+.statusStatConstellation__nodeGlyph[data-node-state='lit'] .statusStatConstellation__nodeBead {
+  fill: url("#statusStatNodeGlow");
+  stroke: #f3cf62;
+}
+
+.statusStatConstellation__nodeGlyph[data-node-state='lifeless'] .statusStatConstellation__nodeBead {
+  fill: rgba(76, 74, 68, 0.6);
+  stroke: rgba(244, 232, 202, 0.44);
+}
+
+.statusStatConstellation__nodeGlyph[data-node-state='unlit_socket'] .statusStatConstellation__nodeBead,
+.statusStatConstellation__nodeGlyph[data-node-state='future'] .statusStatConstellation__nodeBead,
+.statusStatConstellation__nodeGlyph[data-node-state='inactive'] .statusStatConstellation__nodeBead {
+  fill: rgba(255, 249, 229, 0.2);
+  stroke: rgba(80, 66, 42, 0.72);
+  stroke-dasharray: 0.7 0.55;
+}
+
+.statusStatConstellation__nodeGlyph[data-selected='true'] .statusStatConstellation__nodeAura {
+  stroke: var(--observatory-cinnabar);
+  stroke-width: 0.9;
+}
+
+.statusStatConstellation__crack {
+  fill: none;
+  stroke: var(--observatory-cinnabar);
+  stroke-width: 0.75;
+  stroke-linecap: round;
+}
+
+.statusStatConstellation__hitLayer {
+  pointer-events: none;
+}
+
+.statusStatConstellation__node {
+  position: absolute;
+  left: calc(var(--node-x) * 1%);
+  top: calc(var(--node-y) * 1%);
+  width: 78px;
+  height: 62px;
+  transform: translate(-50%, -16px);
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  gap: 3px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--observatory-ink);
+  font: inherit;
+  font-size: 0.62rem;
+  line-height: 1.05;
+  text-align: center;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.statusStatConstellation__hitTarget {
+  position: relative;
+  width: 30px;
+  height: 30px;
+  display: block;
+  border-radius: 50%;
+  border: 2px solid rgba(76, 59, 33, 0.56);
+  background: rgba(255, 247, 220, 0.6);
+  box-shadow: inset 0 0 0 3px rgba(77, 54, 28, 0.12), 0 0 0 2px rgba(255, 246, 218, 0.48);
+}
+
+.statusStatConstellation__nodeName {
+  max-width: 76px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  background: rgba(255, 247, 220, 0.72);
+  box-shadow: 0 0 0 1px rgba(90, 62, 30, 0.13);
+  overflow-wrap: anywhere;
+}
+
+.statusStatConstellation__node[data-node-state='foundation'] .statusStatConstellation__hitTarget {
+  border-color: var(--observatory-jade);
+  background: radial-gradient(circle, rgba(255, 255, 231, 0.82), rgba(47, 127, 98, 0.78));
+}
+
+.statusStatConstellation__node[data-node-state='lit'] .statusStatConstellation__hitTarget {
+  border-color: #d3a332;
+  background: radial-gradient(circle, rgba(255, 250, 208, 0.95), rgba(163, 108, 33, 0.8));
+  box-shadow: inset 0 0 0 3px rgba(255, 249, 217, 0.24), 0 0 12px rgba(211, 163, 50, 0.48);
+}
+
+.statusStatConstellation__node[data-node-state='lifeless'] .statusStatConstellation__hitTarget {
+  border-style: double;
+  border-color: rgba(76, 74, 68, 0.74);
+  background: radial-gradient(circle, rgba(244, 232, 202, 0.48), rgba(78, 75, 68, 0.7));
+}
+
+.statusStatConstellation__node[data-node-state='unlit_socket'] .statusStatConstellation__hitTarget,
+.statusStatConstellation__node[data-node-state='future'] .statusStatConstellation__hitTarget,
+.statusStatConstellation__node[data-node-state='inactive'] .statusStatConstellation__hitTarget {
+  border-style: dashed;
+  background:
+    radial-gradient(circle, rgba(255, 249, 229, 0.3) 0 38%, transparent 40%),
+    rgba(98, 84, 61, 0.18);
+}
+
+.statusStatConstellation__node[data-weak-link='true'] .statusStatConstellation__hitTarget {
+  border-color: var(--observatory-cinnabar);
+}
+
+.statusStatConstellation__node[data-weak-link='true'] .statusStatConstellation__hitTarget::after {
+  content: "";
+  position: absolute;
+  left: 12px;
+  top: 3px;
+  width: 7px;
+  height: 21px;
+  border-left: 2px solid var(--observatory-cinnabar);
+  border-bottom: 2px solid var(--observatory-cinnabar);
+  transform: rotate(19deg);
+}
+
+.statusStatConstellation__node:hover .statusStatConstellation__hitTarget,
+.statusStatConstellation__node:focus-visible .statusStatConstellation__hitTarget,
+.statusStatConstellation__node[data-selected='true'] .statusStatConstellation__hitTarget {
+  outline: 2px solid var(--observatory-cinnabar);
+  outline-offset: 3px;
+}
+
+.statusStatConstellation__node[data-selected='true'] .statusStatConstellation__nodeName {
+  background: rgba(255, 238, 190, 0.92);
+  box-shadow: 0 0 0 1px var(--observatory-cinnabar);
+}
+
+.statusStatBeadLens {
+  position: relative;
+  min-height: 100%;
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  padding: 16px 14px 14px;
+  border: 1px solid rgba(90, 62, 30, 0.3);
+  border-radius: 6px;
+  background:
+    linear-gradient(180deg, rgba(255, 250, 232, 0.96), rgba(232, 209, 160, 0.86)),
+    var(--observatory-paper);
+  box-shadow: 0 10px 24px rgba(48, 30, 9, 0.14);
+}
+
+.statusStatBeadLens::before {
+  content: "";
+  position: absolute;
+  top: -9px;
+  left: 24px;
+  width: 26px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1px solid rgba(90, 62, 30, 0.26);
+  background: rgba(122, 90, 44, 0.34);
+}
+
+.statusStatBeadLens__seal {
+  position: absolute;
+  top: 16px;
+  right: 14px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 2px solid var(--observatory-bronze);
+  opacity: 0.66;
+  background:
+    linear-gradient(90deg, transparent 44%, currentColor 44% 56%, transparent 56%),
+    linear-gradient(0deg, transparent 44%, currentColor 44% 56%, transparent 56%);
+  color: var(--observatory-bronze);
+}
+
+.statusStatBeadLens__seal[data-weak-link='true'] {
+  border-color: var(--observatory-cinnabar);
+  color: var(--observatory-cinnabar);
+}
+
+.statusStatBeadLens__title {
+  padding-right: 50px;
+}
+
+.statusStatBeadLens__title span,
+.statusStatBeadLens__facts span,
+.statusStatBeadLens__copy span {
+  display: block;
+  font-size: 0.72rem;
+  line-height: 1.18;
+  text-transform: uppercase;
+  color: var(--observatory-muted);
+}
+
+.statusStatBeadLens h3 {
+  margin: 2px 0 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.18rem;
+}
+
+.statusStatBeadLens__facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.statusStatBeadLens__facts div {
+  min-height: 54px;
+  display: grid;
+  align-content: center;
+  gap: 3px;
+  padding: 8px;
+  border: 1px solid rgba(90, 62, 30, 0.16);
+  border-radius: 6px;
+  background: rgba(255, 247, 220, 0.55);
+}
+
+.statusStatBeadLens__copy {
+  display: grid;
+  gap: 3px;
+  padding-top: 8px;
+  border-top: 1px dashed rgba(90, 62, 30, 0.22);
+}
+
+.statusStatBeadLens__copy p {
+  margin: 0;
+}
+
+.statusStatBeadLens__route {
+  min-height: 42px;
+  display: grid;
+  justify-items: start;
+  gap: 2px;
+  padding: 8px 10px;
+  border: 1px solid rgba(90, 62, 30, 0.24);
+  border-radius: 6px;
+  background: rgba(47, 127, 98, 0.14);
+  color: var(--observatory-ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.statusStatBeadLens__route small {
+  color: var(--observatory-muted);
+}
+
+.statusStatBeadLens__route:disabled {
+  cursor: not-allowed;
+  opacity: 0.68;
+}
+
+.statusStatBeadLens__route:hover:not(:disabled),
+.statusStatBeadLens__route:focus-visible {
+  outline: 2px solid var(--observatory-state);
+  outline-offset: 2px;
+}
+
+.statusStatConstellation__legend,
+.statusStatConstellation__plaque,
+.statusPreparation__jars {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.statusStatConstellation__legend span,
+.statusStatConstellation__plaque span,
+.statusPreparation__jars span {
+  padding: 6px 8px;
+  border-radius: 999px;
+  background: rgba(88, 59, 28, 0.1);
+  border: 1px solid rgba(90, 62, 30, 0.16);
+  font-size: 0.82rem;
+}
+
+.statusStatConstellation__legend span {
+  display: inline-grid;
+  grid-template-columns: 18px minmax(0, auto);
+  grid-template-areas:
+    "mark label"
+    "mark detail";
+  gap: 0 6px;
+  align-items: center;
+  border-radius: 8px;
+}
+
+.statusStatConstellation__legend i {
+  grid-area: mark;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid rgba(76, 59, 33, 0.56);
+}
+
+.statusStatConstellation__legend strong {
+  grid-area: label;
+}
+
+.statusStatConstellation__legend small {
+  grid-area: detail;
+  color: var(--observatory-muted);
+}
+
+.statusStatConstellation__legend [data-node-state='lit'] i {
+  background: #d6a33a;
+}
+
+.statusStatConstellation__legend [data-node-state='lifeless'] i {
+  background: #6f6c62;
+  border-style: double;
+}
+
+.statusStatConstellation__legend [data-node-state='unlit_socket'] i {
+  background: transparent;
+  border-style: dashed;
+}
+
+.statusStatConstellation__legend [data-node-state='bridge_socket'] i {
+  background: transparent;
+  border-style: double;
+  border-color: var(--observatory-bronze);
+}
+
+.statusPreparation__scales {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 10px;
+  align-items: end;
+}
+
+.statusPreparation__scalePan {
+  min-height: 118px;
+  display: grid;
+  align-content: center;
+  gap: 6px;
+  padding: 12px;
+  border-radius: 8px 8px 44px 44px;
+  border: 1px solid rgba(90, 62, 30, 0.2);
+  background: rgba(255, 249, 229, 0.62);
+  text-align: center;
+}
+
+.statusPreparation__fulcrum {
+  align-self: stretch;
+  width: 70px;
+  display: grid;
+  place-items: center;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid var(--observatory-line);
+  background: rgba(122, 90, 44, 0.16);
+  text-align: center;
+  font-size: 0.78rem;
+}
+
+.statusWorkWheel {
+  min-height: 300px;
+  grid-template-columns: 180px minmax(0, 1fr);
+  align-items: center;
+}
+
+.statusWorkWheel__core {
+  min-height: 164px;
+  display: grid;
+  place-items: center;
+  gap: 4px;
+  padding: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--observatory-state);
+  background: rgba(255, 249, 229, 0.68);
+  text-align: center;
+}
+
+.statusWorkWheel__spokes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.statusWorkWheel__spoke {
+  min-height: 78px;
+  display: grid;
+  gap: 3px;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(90, 62, 30, 0.18);
+  background: rgba(255, 249, 229, 0.58);
+}
+
+.statusFoldedLedgerRail {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.statusFoldedLedgerRail__fold {
+  position: relative;
+  min-height: 140px;
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  padding: 14px;
+  overflow: hidden;
+}
+
+.statusFoldedLedgerRail__crease {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 42px;
+  height: 42px;
+  clip-path: polygon(100% 0, 0 0, 100% 100%);
+  background: rgba(122, 90, 44, 0.18);
+}
+
+.statusObservatoryAction {
+  min-height: 34px;
+  display: inline-grid;
+  gap: 2px;
+  justify-items: start;
+  padding: 7px 10px;
+  border: 1px solid var(--observatory-line);
+  border-radius: 6px;
+  background: rgba(255, 246, 218, 0.82);
+  color: var(--observatory-ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.statusObservatoryAction:disabled {
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+
+.statusObservatoryAction:hover:not(:disabled),
+.statusObservatoryAction:focus-visible {
+  outline: 2px solid var(--observatory-state);
+  outline-offset: 2px;
+}
+
+.statusBuildPreparationScales {
+  min-height: 560px;
+  align-content: start;
+  background:
+    radial-gradient(circle at 50% 34%, rgba(163, 108, 33, 0.14), transparent 34%),
+    linear-gradient(180deg, rgba(255, 250, 232, 0.96), rgba(230, 207, 158, 0.9)),
+    var(--observatory-paper);
+}
+
+.statusBuildPreparationScales__header {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+}
+
+.statusBuildPreparationScales__stamp {
+  align-self: center;
+  padding: 7px 10px;
+  border: 2px solid var(--observatory-state);
+  border-radius: 6px;
+  color: var(--observatory-state);
+  background: rgba(255, 248, 226, 0.68);
+  font-size: 0.74rem;
+  font-weight: 800;
+  line-height: 1.1;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.statusBuildPreparationScales__apparatus {
+  position: relative;
+  min-height: 176px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 90px minmax(0, 1fr);
+  gap: 10px;
+  align-items: end;
+  padding-top: 18px;
+}
+
+.statusBuildPreparationScales__beam {
+  position: absolute;
+  left: 11%;
+  right: 11%;
+  top: 34px;
+  height: 12px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #76542b, #d3a85c, #76542b);
+  box-shadow: 0 5px 14px rgba(55, 34, 13, 0.22);
+  transform: rotate(var(--scale-tilt));
+  transform-origin: center;
+  transition: transform 180ms ease;
+}
+
+.statusBuildPreparationScales__beam span {
+  position: absolute;
+  inset: -7px 49%;
+  border-left: 2px solid rgba(67, 42, 18, 0.7);
+  border-right: 2px solid rgba(67, 42, 18, 0.32);
+}
+
+.statusBuildPreparationScales__pan {
+  min-height: 126px;
+  display: grid;
+  align-content: center;
+  gap: 6px;
+  padding: 14px;
+  border: 1px solid rgba(90, 62, 30, 0.24);
+  border-radius: 8px 8px 48px 48px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 252, 236, 0.8), transparent 56%),
+    rgba(255, 249, 229, 0.72);
+  text-align: center;
+  box-shadow: inset 0 -10px 24px rgba(91, 57, 22, 0.12);
+}
+
+.statusBuildPreparationScales__pan--build {
+  transform: translateY(calc(var(--scale-tilt) * -0.7));
+}
+
+.statusBuildPreparationScales__pan--prep {
+  transform: translateY(calc(var(--scale-tilt) * 0.7));
+}
+
+.statusBuildPreparationScales__fulcrum {
+  min-height: 142px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 5px;
+  padding: 10px;
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  background: linear-gradient(180deg, rgba(122, 90, 44, 0.3), rgba(74, 48, 20, 0.18));
+  text-align: center;
+}
+
+.statusBuildPreparationScales__fulcrum span,
+.statusBuildPreparationScales__pan span,
+.statusBuildPreparationScales__weight span,
+.statusBuildPreparationScales__warning span,
+.statusReserveJars__ledgerTrigger span,
+.statusCurrentWorkTimeWheel__core span,
+.statusCurrentWorkTimeWheel__spoke span,
+.statusCurrentWorkTimeWheel__openLedger span,
+.statusFoldedLedgerRail__foldButton span,
+.statusObservatoryDrawer__header span,
+.statusObservatoryDrawer__row span,
+.statusObservatoryDrawer__action span {
+  font-size: 0.72rem;
+  line-height: 1.18;
+  text-transform: uppercase;
+  color: var(--observatory-muted);
+}
+
+.statusBuildPreparationScales__fulcrum strong,
+.statusBuildPreparationScales__pan strong,
+.statusBuildPreparationScales__weight strong,
+.statusBuildPreparationScales__warning strong,
+.statusReserveJars__jar strong,
+.statusReserveJars__ledgerTrigger strong,
+.statusCurrentWorkTimeWheel__core strong,
+.statusCurrentWorkTimeWheel__spoke strong,
+.statusCurrentWorkTimeWheel__openLedger strong,
+.statusFoldedLedgerRail__foldButton strong,
+.statusObservatoryDrawer__row strong,
+.statusObservatoryDrawer__action strong {
+  overflow-wrap: anywhere;
+  line-height: 1.18;
+}
+
+.statusBuildPreparationScales__weights {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.statusBuildPreparationScales__weight,
+.statusBuildPreparationScales__warning,
+.statusBuildPreparationScales__openLedger,
+.statusReserveJars__ledgerTrigger,
+.statusCurrentWorkTimeWheel__spoke,
+.statusCurrentWorkTimeWheel__openLedger,
+.statusCurrentWorkTimeWheel__core,
+.statusFoldedLedgerRail__foldButton,
+.statusObservatoryDrawer__action {
+  border: 1px solid rgba(90, 62, 30, 0.22);
+  border-radius: 7px;
+  background: rgba(255, 249, 229, 0.7);
+  color: var(--observatory-ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.statusBuildPreparationScales__weight,
+.statusBuildPreparationScales__warning,
+.statusBuildPreparationScales__openLedger,
+.statusReserveJars__ledgerTrigger,
+.statusCurrentWorkTimeWheel__spoke,
+.statusCurrentWorkTimeWheel__openLedger {
+  min-height: 62px;
+  display: grid;
+  align-content: center;
+  gap: 3px;
+  padding: 9px 10px;
+}
+
+.statusBuildPreparationScales__warning {
+  border-color: color-mix(in srgb, var(--observatory-cinnabar) 48%, rgba(90, 62, 30, 0.22));
+  background: rgba(163, 58, 44, 0.1);
+}
+
+.statusBuildPreparationScales__openLedger,
+.statusCurrentWorkTimeWheel__openLedger,
+.statusReserveJars__ledgerTrigger {
+  justify-items: center;
+  text-align: center;
+  border-style: dashed;
+}
+
+.statusReserveJars {
+  display: grid;
+  gap: 8px;
+}
+
+.statusReserveJars__shelf {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(88px, 1fr));
+  gap: 8px;
+  align-items: end;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(90, 62, 30, 0.18);
+  background: linear-gradient(180deg, rgba(107, 74, 36, 0.08), rgba(255, 249, 229, 0.44));
+}
+
+.statusReserveJars__jar {
+  min-height: 148px;
+  display: grid;
+  grid-template-rows: 76px minmax(28px, auto) minmax(18px, auto) minmax(16px, auto);
+  gap: 3px;
+  justify-items: center;
+  padding: 8px;
+  border: 1px solid rgba(90, 62, 30, 0.24);
+  border-radius: 8px;
+  background: rgba(255, 250, 236, 0.62);
+  color: var(--observatory-ink);
+  font: inherit;
+  text-align: center;
+  cursor: pointer;
+}
+
+.statusReserveJars__jar[data-jar-kind='spirit-stones'],
+.statusReserveJars__jar[data-jar-kind='healing-reserve'] {
+  grid-template-rows: 84px minmax(28px, auto) minmax(18px, auto) minmax(16px, auto);
+}
+
+.statusReserveJars__glass {
+  position: relative;
+  width: 48px;
+  height: 72px;
+  align-self: end;
+  overflow: hidden;
+  border: 2px solid rgba(77, 54, 28, 0.32);
+  border-radius: 20px 20px 10px 10px;
+  background: rgba(255, 255, 246, 0.5);
+  box-shadow: inset 0 0 0 4px rgba(255, 255, 255, 0.2);
+}
+
+.statusReserveJars__liquid {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  bottom: 4px;
+  height: var(--jar-fill);
+  max-height: calc(100% - 8px);
+  border-radius: 14px 14px 7px 7px;
+  background: linear-gradient(180deg, rgba(89, 146, 112, 0.82), rgba(47, 127, 98, 0.86));
+  transition: height 160ms ease;
+}
+
+.statusReserveJars__jar[data-tone='danger'] .statusReserveJars__liquid {
+  background: linear-gradient(180deg, rgba(194, 78, 60, 0.86), rgba(163, 58, 44, 0.88));
+}
+
+.statusReserveJars__jar[data-tone='warning'] .statusReserveJars__liquid {
+  background: linear-gradient(180deg, rgba(204, 143, 63, 0.86), rgba(163, 108, 33, 0.86));
+}
+
+.statusReserveJars__jar[data-tone='muted'] .statusReserveJars__liquid {
+  background: linear-gradient(180deg, rgba(115, 110, 100, 0.48), rgba(87, 81, 70, 0.42));
+}
+
+.statusReserveJars__shine {
+  position: absolute;
+  inset: 8px auto auto 9px;
+  width: 8px;
+  height: 46px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.36);
+}
+
+.statusReserveJars__label,
+.statusReserveJars__jar small,
+.statusCurrentWorkTimeWheel__core small,
+.statusCurrentWorkTimeWheel__spoke small,
+.statusObservatoryDrawer__row small,
+.statusObservatoryDrawer__action small {
+  color: var(--observatory-muted);
+  line-height: 1.22;
+}
+
+.statusCurrentWorkTimeWheel {
+  min-height: 440px;
+  align-content: start;
+}
+
+.statusCurrentWorkTimeWheel__body {
+  display: grid;
+  grid-template-columns: minmax(190px, 0.72fr) minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+}
+
+.statusCurrentWorkTimeWheel__dial {
+  position: relative;
+  width: min(236px, 100%);
+  aspect-ratio: 1;
+  margin: 0 auto;
+  border-radius: 50%;
+  border: 2px solid var(--observatory-state);
+  background:
+    radial-gradient(circle at 50% 50%, rgba(255, 249, 229, 0.92) 0 32%, transparent 33%),
+    radial-gradient(circle at 50% 50%, transparent 0 48%, rgba(122, 90, 44, 0.14) 49% 63%, transparent 64%),
+    rgba(255, 249, 229, 0.58);
+  box-shadow: inset 0 0 0 10px rgba(255, 250, 232, 0.36), 0 10px 24px rgba(48, 30, 9, 0.14);
+}
+
+.statusCurrentWorkTimeWheel__segmentLayer {
+  position: absolute;
+  inset: 14px;
+  border-radius: 50%;
+}
+
+.statusCurrentWorkTimeWheel__segment {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 42%;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--observatory-state);
+  opacity: 0.72;
+  transform: rotate(var(--segment-angle)) translateX(16px);
+  transform-origin: left center;
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.statusCurrentWorkTimeWheel__segment[data-segment-state='idle'],
+.statusCurrentWorkTimeWheel__segment[data-segment-state='none'],
+.statusCurrentWorkTimeWheel__segment[data-segment-state='unavailable'] {
+  opacity: 0.34;
+}
+
+.statusCurrentWorkTimeWheel__core {
+  position: absolute;
+  inset: 31%;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 2px;
+  padding: 10px;
+  border-radius: 50%;
+  text-align: center;
+  background: rgba(255, 250, 236, 0.94);
+}
+
+.statusCurrentWorkTimeWheel__spokes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.statusCurrentWorkTimeWheel__spoke {
+  min-height: 84px;
+}
+
+.statusCurrentWorkTimeWheel__spoke[data-segment-state='blocked'] {
+  border-color: rgba(163, 58, 44, 0.42);
+  background: rgba(163, 58, 44, 0.08);
+}
+
+.statusCurrentWorkTimeWheel__spoke[data-segment-state='active'] {
+  border-color: rgba(47, 127, 98, 0.38);
+  background: rgba(47, 127, 98, 0.08);
+}
+
+.statusFoldedLedgerRail__fold {
+  min-height: 148px;
+  padding: 0;
+}
+
+.statusFoldedLedgerRail__foldButton {
+  position: relative;
+  width: 100%;
+  min-height: 148px;
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  padding: 16px;
+  background: transparent;
+}
+
+.statusFoldedLedgerRail__foldButton:hover,
+.statusFoldedLedgerRail__foldButton:focus-visible,
+.statusBuildPreparationScales__weight:hover,
+.statusBuildPreparationScales__weight:focus-visible,
+.statusBuildPreparationScales__warning:hover,
+.statusBuildPreparationScales__warning:focus-visible,
+.statusBuildPreparationScales__openLedger:hover,
+.statusBuildPreparationScales__openLedger:focus-visible,
+.statusReserveJars__jar:hover,
+.statusReserveJars__jar:focus-visible,
+.statusReserveJars__ledgerTrigger:hover,
+.statusReserveJars__ledgerTrigger:focus-visible,
+.statusCurrentWorkTimeWheel__core:hover,
+.statusCurrentWorkTimeWheel__core:focus-visible,
+.statusCurrentWorkTimeWheel__spoke:hover,
+.statusCurrentWorkTimeWheel__spoke:focus-visible,
+.statusCurrentWorkTimeWheel__openLedger:hover,
+.statusCurrentWorkTimeWheel__openLedger:focus-visible,
+.statusObservatoryDrawer__close:hover,
+.statusObservatoryDrawer__close:focus-visible,
+.statusObservatoryDrawer__action:hover,
+.statusObservatoryDrawer__action:focus-visible {
+  outline: 2px solid var(--observatory-state);
+  outline-offset: 2px;
+}
+
+.statusObservatoryDrawer {
+  position: fixed;
+  z-index: 20;
+  top: clamp(16px, 4vh, 42px);
+  right: clamp(12px, 3vw, 42px);
+  width: min(620px, calc(100vw - 24px));
+  max-height: calc(100vh - 32px);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 12px;
+  padding: 16px;
+  overflow: auto;
+  border: 2px solid var(--observatory-bronze);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 250, 232, 0.98), rgba(232, 212, 166, 0.98)),
+    var(--observatory-paper);
+  box-shadow: 0 24px 60px rgba(22, 15, 8, 0.34);
+}
+
+.statusObservatoryDrawer__header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: start;
+  border-bottom: 1px solid rgba(90, 62, 30, 0.2);
+  padding-bottom: 10px;
+}
+
+.statusObservatoryDrawer__header h3,
+.statusObservatoryDrawer__section h4 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+.statusObservatoryDrawer__header p,
+.statusObservatoryDrawer__section p {
+  margin: 4px 0 0;
+  color: var(--observatory-muted);
+}
+
+.statusObservatoryDrawer__close {
+  min-height: 34px;
+  padding: 7px 10px;
+  border: 1px solid var(--observatory-line);
+  border-radius: 6px;
+  background: rgba(255, 246, 218, 0.86);
+  color: var(--observatory-ink);
+  font: inherit;
+  cursor: pointer;
+}
+
+.statusObservatoryDrawer__sections,
+.statusObservatoryDrawer__section,
+.statusObservatoryDrawer__rows {
+  display: grid;
+  gap: 10px;
+}
+
+.statusObservatoryDrawer__section {
+  border: 1px solid rgba(90, 62, 30, 0.18);
+  border-radius: 8px;
+  padding: 10px;
+  background: rgba(255, 249, 229, 0.52);
+}
+
+.statusObservatoryDrawer__row {
+  display: grid;
+  grid-template-columns: minmax(110px, 0.42fr) minmax(120px, 0.45fr) minmax(0, 1fr);
+  gap: 5px 10px;
+  align-items: start;
+  padding: 10px;
+  border: 1px solid rgba(90, 62, 30, 0.18);
+  border-left: 4px solid var(--observatory-state);
+  border-radius: 7px;
+  background: rgba(255, 252, 238, 0.68);
+}
+
+.statusObservatoryDrawer__row[data-selected-source='true'] {
+  box-shadow: inset 0 0 0 2px rgba(163, 108, 33, 0.3);
+}
+
+.statusObservatoryDrawer__row p {
+  margin: 0;
+  color: var(--observatory-muted);
+}
+
+.statusObservatoryDrawer__row small,
+.statusObservatoryDrawer__action {
+  grid-column: 1 / -1;
+}
+
+.statusObservatoryDrawer__action {
+  min-height: 40px;
+  display: inline-grid;
+  justify-self: start;
+  gap: 2px;
+  padding: 7px 10px;
+}
+
+[data-tone='success'],
+[data-state='healthy'] {
+  --observatory-state: var(--observatory-jade);
+}
+
+[data-tone='warning'],
+[data-tone='danger'],
+[data-state='blocked'],
+[data-state='postFailure'] {
+  --observatory-state: var(--observatory-cinnabar);
+}
+
+[data-tone='gold'],
+[data-tone='jade'] {
+  --observatory-state: var(--observatory-gold);
+}
+
+@media (max-width: 1120px) {
+  .statusObservatoryCanvas {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "decree"
+      "vitals"
+      "rootlaw"
+      "vessel"
+      "canopy"
+      "belt";
+  }
+
+  .obsBelt {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .statusLifeDecree__scrollTiles,
+  .statusVitalsRibbon {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .statusStatConstellation__body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .statusMeridianVesselCompass__body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .statusMeridianVesselCompass__rail {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .statusObservatoryRoot {
+    padding: 10px;
+  }
+
+  .statusObservatoryCanvas {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "decree"
+      "vitals"
+      "rootlaw"
+      "vessel"
+      "canopy"
+      "belt";
+  }
+
+  .obsBelt {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .statusLifeDecree__titleRail,
+  .statusRootLawCoupledInstrument__body,
+  .statusPreparation__scales,
+  .statusWorkWheel,
+  .statusBuildPreparationScales__apparatus,
+  .statusCurrentWorkTimeWheel__body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .statusRootLawCoupledInstrument__body {
+    gap: 12px;
+  }
+
+  .statusRootLawBridge {
+    min-height: 126px;
+  }
+
+  .statusSpiritRootAstrolabe__ring {
+    --notch-radius: 88px;
+    width: 210px;
+  }
+
+  .statusHeartLawSeal__medallion {
+    width: 156px;
+  }
+
+  .statusLifeDecree__scrollTiles,
+  .statusVitalsRibbon,
+  .statusMeridianVesselCompass__rail,
+  .statusMeridianVesselCompass__drawerRows,
+  .statusWorkWheel__spokes,
+  .statusBuildPreparationScales__weights,
+  .statusCurrentWorkTimeWheel__spokes,
+  .statusFoldedLedgerRail {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .statusObservatoryDrawer {
+    inset: 10px;
+    width: auto;
+    max-height: calc(100vh - 20px);
+  }
+
+  .statusObservatoryDrawer__row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .statusMeridianVesselCompass {
+    min-height: 720px;
+  }
+
+  .statusMeridianVesselCompass__figure {
+    min-height: 480px;
+    aspect-ratio: 3 / 4;
+  }
+
+  .statusMeridianVesselCompass__organSeal {
+    width: min(136px, 38%);
+    min-height: 92px;
+    padding: 8px;
+  }
+
+  .statusStatConstellation__atlas {
+    min-height: 520px;
+    aspect-ratio: 3 / 4;
+  }
+
+  .statusStatConstellation__node {
+    width: 64px;
+    font-size: 0.58rem;
+  }
+
+  .statusLifeDecree__verticalSeal {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .statusStatConstellation__branchPath,
+  .statusStatConstellation__weakThread,
+  .statusStatConstellation__node,
+  .statusStatBeadLens,
+  .statusSpiritRootAstrolabe__needle,
+  .statusRootLawBridge__line,
+  .statusRootLawBridge__crack,
+  .statusHeartLawSeal__bead,
+  .statusMeridianVesselCompass__organThread,
+  .statusMeridianVesselCompass__organSeal,
+  .statusFocusLens,
+  .statusMeridianVesselCompass__drawer,
+  .statusBottleneckTalismanCanopy__thread,
+  .statusBottleneckTalismanCanopy__slip,
+  .statusBottleneckTalismanCanopy__routeCharm,
+  .statusBottleneckInspector,
+  .statusBuildPreparationScales__beam,
+  .statusReserveJars__liquid,
+  .statusCurrentWorkTimeWheel__segment,
+  .statusFoldedLedgerRail__fold,
+  .statusObservatoryDrawer {
+    animation: none;
+    transition: none;
+  }
+}

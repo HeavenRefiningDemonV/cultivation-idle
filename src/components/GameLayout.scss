@@ -83,15 +83,14 @@
   opacity: 0;
 }
 
-.gameLayoutContent--scrollable {
-  overflow-y: auto;
-  scrollbar-gutter: stable both-edges;
-}
-
-@supports not (scrollbar-gutter: stable) {
-  .gameLayoutContent--scrollable {
-    overflow-y: scroll;
-  }
+/* Status route runs the Observatory Stage full-bleed: the void fills the
+   viewport edge-to-edge (no page-background leak, no scroll at the big sizes);
+   the stage scales itself to fit. */
+.gameLayoutContent--observatory {
+  height: calc(100vh - var(--ui-bottom-nav-total));
+  width: 100vw;
+  overflow: hidden;
+  padding: 0;
 }
 
 .gameLayoutPlaceholder {

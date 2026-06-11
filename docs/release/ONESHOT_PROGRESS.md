@@ -26,7 +26,7 @@ Crash-recovery spine: each stage is ticked, noted (3–6 lines), and committed (
 
 ## Stage checklist
 - [x] **S0** Recon
-- [ ] **S1** The Stage (fixed 1672×941 design space, scale hook, void viewport, full-bleed)
+- [x] **S1** The Stage (fixed 1672×941 design space, scale hook, void viewport, full-bleed)
 - [ ] **S2** Palette purge + Frame-I region rects + plate materials/title tabs
 - [ ] **S3** Life Decree + Vitals Ribbon
 - [ ] **S4** Root/Law Coupled Instrument (port the prototype astrolabe)
@@ -67,3 +67,15 @@ status-ledger-recent-changes  status-ledger-root  status-meridian-focus-lens
 status-meridian-shared-cause-stamps  status-meridian-vessel-drawer  status-observatory-drawer
 status-reserve-jars  status-root-law-instrument  status-stat-bead-lens  status-stat-constellation
 ```
+
+---
+
+## S1 — The Stage ✅
+Fixed-design-space Stage + uniform monitor scaling (the void frame everything sits inside).
+- New `useObservatoryScale.ts`: ResizeObserver on the viewport → `--obs-scale = clamp(0.45, min(w/1672, h/941), 1.75)`; SSR-safe; observer cleaned up. Exports `OBS_STAGE_WIDTH/HEIGHT`.
+- `StatusLivingStateObservatory.tsx`: inserted `.obsStageViewport > .obsStage` around the canvas; viewport carries the ref + inline `--obs-scale` + `data-obs-at-floor`. Drawers stay inside the stage (scale with it). All testids preserved.
+- `StatusLivingStateObservatory.scss`: removed the brown gradient from the root (D-1 start); added `.obsStageViewport` (slate-teal void radial + inset vignette, flex-center, overflow hidden; at-floor→scroll), `.obsStage` (1672×941, `transform: scale(var(--obs-scale))`, origin center), `.statusObservatoryCanvas` → fixed 1672×941 relative (grid kept for S1).
+- Full-bleed: `GameLayout.tsx` status content class `--scrollable`→`--observatory`; `GameLayout.scss` `.gameLayoutContent--observatory { 100vw × calc(100vh - nav); overflow:hidden; padding:0 }`. Void covers edge-to-edge; no `cbg_bgblue.png` leak.
+- **Gate (Playwright, blocked fixture):** 2560×1440 → scale 1.439, stage scaled to 2406px **centered with 77px void margins L/R**, void = rgb(32,48,44), content full-bleed 2560w, `docScrollW==innerW` (no h-scroll). 1280×800 + 1920×1080 captured & passing. Geometry JSON proves it; thumbnail looked light only because void margins are ~18px at thumb scale and the *old* card composition fills the rest (expected at S1).
+- Deviation: dead `.obsVoidBackdrop` rule left in `observatoryMaterials.scss` (class renamed) → S13 cleanup. `git add -A` not used (scoped commits — unrelated prior working-tree changes kept out).
+- typecheck GREEN. Screenshots: `artifacts/s10-exact-mockup/stage-gate/blocked-{2560x1440,1920x1080,1280x800}.png`.
