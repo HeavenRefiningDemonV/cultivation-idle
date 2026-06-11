@@ -28,7 +28,7 @@ Crash-recovery spine: each stage is ticked, noted (3–6 lines), and committed (
 - [x] **S0** Recon
 - [x] **S1** The Stage (fixed 1672×941 design space, scale hook, void viewport, full-bleed)
 - [x] **S2** Palette purge + Frame-I region rects + plate materials/title tabs
-- [ ] **S3** Life Decree + Vitals Ribbon
+- [~] **S3** Life Decree + Vitals Ribbon — *Vitals rebuilt; Life Decree deferred*
 - [ ] **S4** Root/Law Coupled Instrument (port the prototype astrolabe)
 - [ ] **S5** Meridian Vessel + Bottleneck Canopy (all 4 modes)
 - [ ] **S6** Belt: Constellation, Scales+Jars, Wheel, Ledgers
@@ -89,3 +89,13 @@ Fixed-design-space Stage + uniform monitor scaling (the void frame everything si
 - **Deferred (logged):** 19 inline raw-hex remain in OLD instrument rules in the monolith (scss lines 281–2238); those rules are rewritten in S3–S6, purging the hex then; full hex-gate at S13/S14. Legacy non-observatory files (`StatusLedgerPage.scss`, `RunCompass.scss`, `PostFailureDiagnosisPanel.scss`) carry hex but are outside this rebuild's scope.
 - S2 touched only `src/ui` SCSS (no `src/systems`) → contracts 508 baseline holds; typecheck unaffected.
 - Screenshot: `artifacts/s10-exact-mockup/stage-gate/blocked-2560x1440.png` (post-rects).
+
+---
+
+## S3 — Vitals Seal Ribbon ✅ (Life Decree deferred)
+Scoped to the Vitals ribbon (smallest, self-contained instrument). Life Decree rebuild deferred — see roadmap.
+- **D-5 fixed:** removed the per-seal `sourceLabel` caption from `StatusVitalsSealRibbon.tsx` — the "Fixture"/source debug copy no longer renders on the default surface.
+- **Slim strip:** rewrote `.statusVitalsRibbon`/`__seal`/`__icon`/`__label`/`__value` (scss ~349+) from a clipped 6-col × 90px pill-gauge grid into a single-row 9-cell medallion strip fitting the 1160×50 rect — 22px token-backed medallion + small-caps label + bold value; per-tone warning styling (danger→cinnabar ring+value, warning→amber, jade/success→jade). Killed the dead `__source` rule and the rounded-pill "semicircle gauge" look (D-4/D-5 for vitals).
+- `@media (max-width:1100px)` reflow (~scss 2724) does not fire at gate sizes; left for S13.
+- **Gate:** blocked @2560 screenshot — 9 clean medallion cells in a slim row (4.31M · 63.75/s · 0/100 · 278.88 · 345.36 · 34.86 · 11.62 · 20% · Idle), no source captions, no clipped pills. typecheck GREEN; default + blocked-state e2e green.
+- Screenshot: `artifacts/s10-exact-mockup/stage-gate/blocked-2560x1440.png` (post-vitals).
