@@ -1,0 +1,35 @@
+{
+  "innerW": 1280,
+  "innerH": 800,
+  "scaleVar": "0.7587672688629118",
+  "stageTransform": "matrix(0.758767, 0, 0, 0.758767, 0, 0)",
+  "contentClass": "gameLayoutContent gameLayoutContent--observatory",
+  "contentRect": {
+    "x": 0,
+    "y": 0,
+    "w": 1280,
+    "h": 714
+  },
+  "viewportRect": {
+    "x": 0,
+    "y": 0,
+    "w": 1280,
+    "h": 714
+  },
+  "stageRect": {
+    "x": 6,
+    "y": 0,
+    "w": 1269,
+    "h": 714
+  },
+  "canvasRect": {
+    "x": 6,
+    "y": 0,
+    "w": 1269,
+    "h": 714
+  },
+  "viewportBgImage": "radial-gradient(120% 90% at 50% 8%, rgb(32, 48, 44) 0%, rgb(22, 33, 30) 55%, rgb",
+  "viewportBgColor": "rgba(0, 0, 0, 0)",
+  "docScrollW": 1280,
+  "docScrollH": 800
+}

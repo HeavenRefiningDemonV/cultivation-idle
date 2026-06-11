@@ -1,15 +1,18 @@
 @use './fx/observatoryMaterials';
 
 .statusObservatoryRoot {
-  --observatory-paper: #f4ead2;
-  --observatory-paper-deep: #e4cf9d;
-  --observatory-ink: #2e2417;
-  --observatory-muted: #6d5a3d;
+  /* S2 palette purge (D-2): the local observatory palette is now a thin set of
+     aliases onto the real paperInk tokens — no raw hex, no contradiction. The
+     two rgba helpers were never hex and stay as gate-compliant rgba. */
+  --observatory-paper: var(--paper-parchment);
+  --observatory-paper-deep: var(--paper-parchment-strong);
+  --observatory-ink: var(--paper-ink);
+  --observatory-muted: var(--paper-ink-muted);
   --observatory-line: rgba(81, 54, 26, 0.26);
-  --observatory-jade: #2f7f62;
-  --observatory-gold: #a36c21;
-  --observatory-cinnabar: #a33a2c;
-  --observatory-bronze: #7a5a2c;
+  --observatory-jade: var(--paper-jade-bright);
+  --observatory-gold: var(--paper-amber);
+  --observatory-cinnabar: var(--paper-stamp);
+  --observatory-bronze: var(--paper-rare);
   --observatory-shadow: rgba(48, 30, 9, 0.18);
   color: var(--observatory-ink);
   width: 100%;
@@ -89,45 +92,42 @@
   gap: var(--ui-layout-section-gap);
 }
 
-/* Semantic region wrappers are the canvas grid children; each instrument
-   keeps its own internal layout and test anchors inside its region. */
+/* Semantic region wrappers are absolutely placed on the Stage canvas at the
+   Frame-I rects (design units). Each is a parchment instrument plate floating
+   on the void; the instrument renders its own internals inside. */
 .obsRegion {
-  display: grid;
+  position: absolute;
   min-width: 0;
   min-height: 0;
+  overflow: hidden;
+  border-radius: 7px;
+  background: radial-gradient(
+    140% 120% at 22% 18%,
+    var(--paper-parchment-soft) 0%,
+    var(--paper-parchment) 46%,
+    var(--paper-parchment-strong) 100%
+  );
+  box-shadow:
+    0 10px 26px rgba(8, 12, 10, 0.45),
+    var(--obs-plate-edge),
+    var(--obs-plate-age);
 }
 
-.obsRegion--decree {
-  grid-area: decree;
-}
+/* Frame-I macro composition — absolute region rects (x, y, w, h in design units). */
+.obsRegion--decree        { left: 16px;   top: 10px;  width: 1640px; height: 148px; }
+.obsRegion--vitals        { left: 70px;   top: 168px; width: 1160px; height: 50px; }
+.obsRegion--root-law      { left: 24px;   top: 228px; width: 506px;  height: 446px; }
+.obsRegion--vessel        { left: 538px;  top: 228px; width: 562px;  height: 446px; }
+.obsRegion--canopy        { left: 1108px; top: 168px; width: 548px;  height: 506px; }
+.obsRegion--constellation { left: 24px;   top: 684px; width: 678px;  height: 212px; }
+.obsRegion--scales        { left: 710px;  top: 684px; width: 404px;  height: 212px; }
+.obsRegion--wheel         { left: 1122px; top: 684px; width: 262px;  height: 212px; }
+.obsRegion--ledgers       { left: 1392px; top: 684px; width: 264px;  height: 212px; }
 
-.obsRegion--vitals {
-  grid-area: vitals;
-}
-
-.obsRegion--root-law {
-  grid-area: rootlaw;
-}
-
-.obsRegion--vessel {
-  grid-area: vessel;
-}
-
-.obsRegion--canopy {
-  grid-area: canopy;
-}
-
-/* Compact symbolic support belt: constellation | scales | wheel | ledgers. */
+/* The belt wrapper no longer lays out — its children position against the
+   canvas via their own absolute rects. */
 .obsBelt {
-  grid-area: belt;
-  display: grid;
-  grid-template-columns:
-    minmax(0, 42fr)
-    minmax(0, 20fr)
-    minmax(0, 18fr)
-    minmax(0, 20fr);
-  gap: var(--ui-layout-card-gap);
-  min-width: 0;
+  display: contents;
 }
 
 /* Tone-attribute plumbing only (instrument-level theming lands in later
