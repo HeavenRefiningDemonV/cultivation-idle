@@ -19,3 +19,4 @@ export { InkBanner } from './InkBanner.js';
 export type { InkBannerProps } from './InkBanner.js';
 export { InkGrain } from './InkGrain.js';
 export type { InkGrainProps } from './InkGrain.js';
+export { InkObservatoryDefs } from './InkObservatoryDefs.js';
