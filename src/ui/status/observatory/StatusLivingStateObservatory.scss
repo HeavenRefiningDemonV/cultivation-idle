@@ -1340,6 +1340,12 @@
   stroke: var(--observatory-jade);
 }
 
+/* Wave 1: the related subset brightens; the faint default stays the truth. */
+.statusBottleneckTalismanCanopy__thread[data-related='true'] {
+  opacity: 0.95;
+  stroke-width: 1.5;
+}
+
 /* Cross-instrument related highlight (Wave 1). Subtle, static, tokenized.
    Paired with the labelled thread + each node's own label, so this ring is
    enhancement, never the only signal. */

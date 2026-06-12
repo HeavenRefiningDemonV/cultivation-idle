@@ -2,10 +2,10 @@ import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import type { StatusLedgerActionSurface, StatusLedgerTone } from '../../../systems/ui/status/statusLedgerTypes.js';
 import type {
   StatusBottleneckTalismanSlipSurface,
-  StatusCausalThreadSurface,
   StatusObservatorySurfaceV1,
 } from '../../../systems/ui/status/statusObservatoryTypes.js';
 import { StatusBottleneckInspector } from './StatusBottleneckInspector.js';
+import { StatusCausalThreadLayer } from './StatusCausalThreadLayer.js';
 import { useObservatorySelection } from './useObservatorySelection.js';
 
 export interface StatusBottleneckTalismanCanopyProps {
@@ -34,14 +34,6 @@ function charmStyle(charm: StatusObservatorySurfaceV1['bottleneckCanopy']['route
     '--charm-x': `${charm.geometry.x}`,
     '--charm-y': `${charm.geometry.y}`,
   } as CSSProperties;
-}
-
-function threadPath(thread: StatusCausalThreadSurface, index: number): string {
-  const startY = 18 + ((index * 13) % 58);
-  const startX = thread.fromFamily === 'statConstellation' ? 4 : 0;
-  const targetY = 45 + ((index % 3) - 1) * 8;
-  const controlX = 28 + (index % 2) * 10;
-  return `M${startX} ${startY} C${controlX} ${startY} ${controlX + 18} ${targetY} 50 ${targetY}`;
 }
 
 function defaultSlipId(surface: StatusObservatorySurfaceV1['bottleneckCanopy']): string | null {
@@ -93,28 +85,10 @@ export function StatusBottleneckTalismanCanopy({
       <div className="statusBottleneckTalismanCanopy__board">
         <div className="statusBottleneckTalismanCanopy__backboard" aria-hidden="true" />
 
-        <svg
+        <StatusCausalThreadLayer
+          threads={surface.causalThreads}
           className="statusBottleneckTalismanCanopy__threads"
-          viewBox="0 0 100 100"
-          aria-hidden="true"
-          focusable="false"
-        >
-          {surface.causalThreads.slice(0, 8).map((thread, index) => (
-            <path
-              key={thread.id}
-              className="statusBottleneckTalismanCanopy__thread"
-              data-testid="status-bottleneck-thread"
-              data-thread-id={thread.id}
-              data-from-family={thread.fromFamily}
-              data-to-family={thread.toFamily}
-              data-tone={thread.tone}
-              d={threadPath(thread, index)}
-              pathLength={1}
-            >
-              <title>{`${thread.label}: ${thread.detail}`}</title>
-            </path>
-          ))}
-        </svg>
+        />
 
         <div className="statusBottleneckTalismanCanopy__missionAnchor" data-testid="status-ledger-mission-requirements">
           <article
