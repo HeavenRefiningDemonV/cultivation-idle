@@ -2,6 +2,13 @@ import type {
   StatusLedgerActionSurface,
   StatusLedgerSurfaceV1,
 } from '../../../systems/ui/status/statusLedgerTypes.js';
+import {
+  buildStatusObservatoryFixtureSurface,
+  isStatusObservatoryFixtureId,
+} from '../../../systems/ui/status/statusObservatoryFixtures.js';
+import { buildStatusObservatorySurface } from '../../../systems/ui/status/statusObservatorySurface.js';
+import { StatusLivingStateObservatory } from '../observatory/index.js';
+import { StatusObservatoryMaterialsGallery } from '../observatory/StatusObservatoryMaterialsGallery.js';
 import { StatusDetailsDrawer } from './StatusDetailsDrawer.js';
 import { StatusBuildPreparationPanel } from './StatusBuildPreparationPanel.js';
 import { StatusCurrentStatePanel } from './StatusCurrentStatePanel.js';
@@ -36,6 +43,7 @@ const CARD_LABELS = {
 interface StatusLedgerPageProps {
   surface: StatusLedgerSurfaceV1;
   onAction: (action: StatusLedgerActionSurface) => void;
+  forceLegacy?: boolean;
 }
 
 function MilestoneCard({ surface, onAction }: StatusLedgerPageProps) {
@@ -160,7 +168,7 @@ function BuildPreparationCard({ surface, onAction }: StatusLedgerPageProps) {
   );
 }
 
-export function StatusLedgerPage({ surface, onAction }: StatusLedgerPageProps) {
+function StatusLegacyLedgerPage({ surface, onAction }: StatusLedgerPageProps) {
   return (
     <div
       className="statusLedgerRoot"
@@ -168,7 +176,8 @@ export function StatusLedgerPage({ surface, onAction }: StatusLedgerPageProps) {
       data-surface-testid={surface.meta.rootTestId}
       data-schema-version={surface.meta.schemaVersion}
       data-content-loaded={surface.meta.contentLoaded}
-      data-ledger-mode={surface.meta.mode}
+      data-ledger-mode="legacy-fallback"
+      data-status-ledger-fallback="legacy"
     >
       <div className="statusLedgerCanvas">
         <StatusCurrentStatePanel surface={surface.currentState} onAction={onAction} />
@@ -194,4 +203,43 @@ export function StatusLedgerPage({ surface, onAction }: StatusLedgerPageProps) {
       </div>
     </div>
   );
+}
+
+export function StatusLedgerPage({ surface, onAction, forceLegacy = false }: StatusLedgerPageProps) {
+  if (forceLegacy) {
+    return <StatusLegacyLedgerPage surface={surface} onAction={onAction} />;
+  }
+
+  // Dev-only fixture mount: `?obsFixture=<state>` renders a deterministic
+  // fixture surface instead of the live one. Guarded by import.meta.env.DEV so
+  // production builds tree-shake the whole branch (and its fixture import).
+  if (import.meta.env.DEV && typeof window !== 'undefined') {
+    const fixtureId = new URLSearchParams(window.location.search).get('obsFixture');
+    if (fixtureId && isStatusObservatoryFixtureId(fixtureId)) {
+      const fixtureSurface = buildStatusObservatoryFixtureSurface(fixtureId);
+      if (fixtureSurface) {
+        return (
+          <StatusLivingStateObservatory
+            surface={fixtureSurface}
+            fixtureId={fixtureId}
+            onAction={(action) => {
+              console.info(`[obsFixture] action suppressed: ${action.id}`);
+            }}
+          />
+        );
+      }
+    }
+  }
+
+  // Dev-only materials gallery: `?obsGallery=materials` renders the Wave 0
+  // shared-materials acceptance harness. DEV-guarded so production tree-shakes it.
+  if (import.meta.env.DEV && typeof window !== 'undefined') {
+    const gallery = new URLSearchParams(window.location.search).get('obsGallery');
+    if (gallery === 'materials') {
+      return <StatusObservatoryMaterialsGallery />;
+    }
+  }
+
+  const observatorySurface = buildStatusObservatorySurface(surface);
+  return <StatusLivingStateObservatory surface={observatorySurface} onAction={onAction} />;
 }

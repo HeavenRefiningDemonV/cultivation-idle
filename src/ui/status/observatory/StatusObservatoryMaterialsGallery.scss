@@ -1,0 +1,125 @@
+@use '../../paper/paperPlateMaterial' as plate;
+@use '../../ink/inkGoldFrame' as goldFrame;
+@use './fx/observatoryMaterials';
+
+/* Dev-only Wave 0 materials gallery. Self-contained: reuses the shared mixins +
+   the existing .obsParchmentPlate / .obsCornerBrackets / .obsVoidBackdrop. */
+.materialsGallery {
+  position: relative;
+  width: 100%;
+  min-height: 100%;
+  box-sizing: border-box;
+  padding: 28px 32px 48px;
+  overflow: auto;
+  color: var(--paper-parchment-soft);
+  font-family: var(--serif, Georgia, 'Noto Serif', serif);
+}
+
+.materialsGallery__title {
+  margin: 0 0 6px;
+  font-size: 22px;
+  letter-spacing: 0.04em;
+  color: var(--paper-gold-pale);
+}
+
+.materialsGallery__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  margin: 22px 0;
+}
+
+.materialsGallery__cell {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.materialsGallery__cell figcaption {
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  color: var(--paper-gold-pale);
+}
+
+.materialsGallery__cell--seals {
+  flex-direction: row;
+  align-items: center;
+  gap: 22px;
+  flex-wrap: wrap;
+}
+
+.materialsGallery__plate {
+  position: relative;
+  width: 340px;
+  height: 200px;
+  border-radius: 7px;
+  overflow: hidden;
+}
+
+.materialsGallery__plate--foxing::before {
+  @include plate.paper-plate-material;
+}
+
+.materialsGallery__plate--framed::after {
+  @include goldFrame.ink-gold-frame;
+}
+
+.materialsGallery__brackets {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  pointer-events: none;
+}
+
+.materialsGallery__plateLabel {
+  position: absolute;
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+  z-index: 5;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--paper-ink-70);
+}
+
+.materialsGallery__swatches {
+  margin-top: 26px;
+}
+
+.materialsGallery__swTitle {
+  margin: 18px 0 8px;
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--paper-gold-pale);
+}
+
+.materialsGallery__swatchStrip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.materialsGallery__swatch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 96px;
+}
+
+.materialsGallery__chip {
+  width: 64px;
+  height: 32px;
+  border-radius: 4px;
+  border: 1px solid var(--paper-gold-deep);
+  box-shadow: inset 0 0 0 1px rgba(255, 250, 235, 0.18);
+}
+
+.materialsGallery__swatchLabel {
+  font-size: 10px;
+  letter-spacing: 0.01em;
+  color: var(--paper-parchment-soft);
+  text-align: center;
+  word-break: break-all;
+}
