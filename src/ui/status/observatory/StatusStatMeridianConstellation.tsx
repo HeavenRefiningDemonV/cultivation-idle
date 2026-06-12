@@ -307,6 +307,7 @@ export function StatusStatMeridianConstellation({ surface, onAction }: StatusSta
                   className="statusStatConstellation__weakThread"
                   data-stat-id={node.id}
                   data-thread-tone={node.tone}
+                  data-related={sharedSelection.isRelated('statConstellation', node.id) ? 'true' : 'false'}
                   d={weakThreadPath(node, Math.max(index, 0))}
                   pathLength={1}
                 >

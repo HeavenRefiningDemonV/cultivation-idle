@@ -1751,6 +1751,12 @@
   opacity: 0.88;
 }
 
+/* W3: weak thread brightens when its stat or the bottleneck is selected (cross-instrument causal glint) */
+.statusStatConstellation__weakThread[data-related='true'] {
+  opacity: 1;
+  stroke-width: 0.9;
+}
+
 /* ===== W3: node fidelity via the W0 defs sprite. States read in grayscale by
    fill-vs-outline + glow + the explicit label (lens + legend). No new tokens. ===== */
 .statusStatConstellation__nodeGlyph {
