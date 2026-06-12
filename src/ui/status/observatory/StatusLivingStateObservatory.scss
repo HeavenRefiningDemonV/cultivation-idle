@@ -1340,6 +1340,22 @@
   stroke: var(--observatory-jade);
 }
 
+/* Cross-instrument related highlight (Wave 1). Subtle, static, tokenized.
+   Paired with the labelled thread + each node's own label, so this ring is
+   enhancement, never the only signal. */
+.statusStatConstellation__node[data-related='true'],
+.statusMeridianVesselCompass__organSeal[data-related='true'],
+.statusBottleneckTalismanCanopy__slip[data-related='true'] {
+  outline: 1px solid var(--obs-glow-gold);
+  outline-offset: 1px;
+}
+
+.statusStatConstellation__nodeGlyph[data-related='true'] .statusStatConstellation__nodeAura,
+.statusMeridianVesselCompass__organThread[data-related='true'] {
+  stroke: var(--obs-glow-gold);
+  opacity: 0.9;
+}
+
 .statusBottleneckTalismanCanopy__edict {
   position: absolute;
   left: 50%;
