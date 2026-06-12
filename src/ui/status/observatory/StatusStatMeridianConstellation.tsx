@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type CSSProperties } from 'react';
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent } from 'react';
 import type {
   StatusLedgerActionSurface,
   StatusNamedStatBridgeSocket,
@@ -32,6 +32,8 @@ const BRANCH_ORDER: Record<StatusStatGeometryBranch, number> = {
   earth: 2,
   martial: 3,
 };
+
+const BRANCH_NAV_ORDER: StatusStatGeometryBranch[] = ['universal', 'heaven', 'earth', 'martial'];
 
 const BRANCH_LABEL_POINTS: Record<StatusStatGeometryBranch, { x: number; y: number }> = {
   universal: { x: 54, y: 12 },
@@ -134,6 +136,61 @@ export function StatusStatMeridianConstellation({ surface, onAction }: StatusSta
   const lensNode = selectedNode ?? orderedNodes[0] ?? null;
   const branchEntries = Object.entries(STATUS_OBSERVATORY_STAT_BRANCH_PATHS) as [StatusStatGeometryBranch, string][];
   const bridgeEntries = Object.values(STATUS_OBSERVATORY_STAT_BRIDGE_GEOMETRY);
+
+  const branchGroups = useMemo(() => {
+    const groups = new Map<StatusStatGeometryBranch, StatusObservatoryStatNodeSurface[]>();
+    for (const branch of BRANCH_NAV_ORDER) groups.set(branch, []);
+    for (const node of orderedNodes) groups.get(node.branchId)?.push(node);
+    return groups;
+  }, [orderedNodes]);
+  const buttonRefs = useRef(new Map<string, HTMLButtonElement>());
+  const focusNode = (id: string) => {
+    setSelectedStatId(id);
+    sharedSelection.select('stat', id);
+    buttonRefs.current.get(id)?.focus();
+  };
+  const handleRovingKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    const active = document.activeElement as HTMLElement | null;
+    const currentId = active?.getAttribute?.('data-stat-id');
+    if (!currentId) return;
+    const node = nodesById.get(currentId);
+    if (!node) return;
+    const group = branchGroups.get(node.branchId) ?? [];
+    const idxInBranch = group.findIndex((entry) => entry.id === currentId);
+    const branchIdx = BRANCH_NAV_ORDER.indexOf(node.branchId);
+    const go = (id?: string) => {
+      if (id) {
+        event.preventDefault();
+        focusNode(id);
+      }
+    };
+    switch (event.key) {
+      case 'ArrowRight':
+        go(group[Math.min(idxInBranch + 1, group.length - 1)]?.id);
+        break;
+      case 'ArrowLeft':
+        go(group[Math.max(idxInBranch - 1, 0)]?.id);
+        break;
+      case 'ArrowDown': {
+        const next = branchGroups.get(BRANCH_NAV_ORDER[Math.min(branchIdx + 1, BRANCH_NAV_ORDER.length - 1)]) ?? [];
+        go(next[Math.min(idxInBranch, next.length - 1)]?.id ?? next[0]?.id);
+        break;
+      }
+      case 'ArrowUp': {
+        const prev = branchGroups.get(BRANCH_NAV_ORDER[Math.max(branchIdx - 1, 0)]) ?? [];
+        go(prev[Math.min(idxInBranch, prev.length - 1)]?.id ?? prev[0]?.id);
+        break;
+      }
+      case 'Home':
+        go(group[0]?.id);
+        break;
+      case 'End':
+        go(group[group.length - 1]?.id);
+        break;
+      default:
+        break;
+    }
+  };
 
   return (
     <section
@@ -290,13 +347,21 @@ export function StatusStatMeridianConstellation({ surface, onAction }: StatusSta
             })}
           </svg>
 
-          <div className="statusStatConstellation__hitLayer" aria-label="Selectable stat beads">
+          <div
+            className="statusStatConstellation__hitLayer"
+            aria-label="Selectable stat beads"
+            onKeyDown={handleRovingKeyDown}
+          >
             {orderedNodes.map((node, index) => {
               const geometry = geometryFor(node, index);
               const selected = node.id === lensNode?.id;
               return (
                 <button
                   key={node.id}
+                  ref={(el) => {
+                    if (el) buttonRefs.current.set(node.id, el);
+                    else buttonRefs.current.delete(node.id);
+                  }}
                   type="button"
                   className="statusStatConstellation__node"
                   style={nodeStyle(geometry)}
@@ -307,8 +372,10 @@ export function StatusStatMeridianConstellation({ surface, onAction }: StatusSta
                   data-weak-link={node.weakLink ? 'true' : 'false'}
                   data-selected={selected ? 'true' : 'false'}
                   data-related={sharedSelection.isRelated('statConstellation', node.id) ? 'true' : 'false'}
+                  tabIndex={selected ? 0 : -1}
                   aria-pressed={selected}
                   aria-label={ariaLabelForNode(node)}
+                  title={node.effectSummary}
                   onClick={() => {
                     setSelectedStatId(node.id);
                     sharedSelection.select('stat', node.id);
