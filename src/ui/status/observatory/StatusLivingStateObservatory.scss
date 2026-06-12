@@ -22,6 +22,21 @@
   background: none;
 }
 
+/* W8.2: visually-hidden — present to assistive tech, removed from the visual + layout flow (no
+   layout shift, no colour, no hex). Hosts the polite visual-state announcer. */
+.obsVisuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 .statusObservatoryRoot[data-observatory-visual-state='blocked'],
 .statusObservatoryRoot[data-observatory-visual-state='postFailure'] {
   --observatory-state: var(--observatory-cinnabar);
@@ -528,18 +543,22 @@
   text-overflow: ellipsis;
 }
 
-/* At-risk vitals: cinnabar medallion ring + value (shape + color + label). */
-.statusVitalsRibbon__seal[data-tone='danger'] .statusVitalsRibbon__icon {
-  color: var(--paper-cinnabar-bright);
-  box-shadow: inset 0 0 0 1px var(--paper-stamp), 0 0 7px var(--obs-glow-cinnabar-soft);
+/* At-risk vitals (W8.2): the medallion gains a redundant RING — a shape that survives grayscale
+   (present on at-risk, absent on healthy) — plus the value renders cinnabar and the seal aria-label
+   carries the tone word (StatusVitalsSealRibbon.tsx). Never colour-alone. (Repoints the former dead
+   .__icon selectors onto the live .__medallion element.) */
+.statusVitalsRibbon__seal[data-tone='warning'] .statusVitalsRibbon__medallion {
+  border-radius: 50%;
+  box-shadow: 0 0 0 1.5px var(--observatory-gold);
+}
+
+.statusVitalsRibbon__seal[data-tone='danger'] .statusVitalsRibbon__medallion {
+  border-radius: 50%;
+  box-shadow: 0 0 0 1.5px var(--observatory-cinnabar), 0 0 7px var(--obs-glow-cinnabar-soft);
 }
 
 .statusVitalsRibbon__seal[data-tone='danger'] .statusVitalsRibbon__value {
   color: var(--paper-stamp);
-}
-
-.statusVitalsRibbon__seal[data-tone='warning'] .statusVitalsRibbon__icon {
-  color: var(--paper-amber);
 }
 
 .statusVitalsRibbon__seal[data-tone='jade'] .statusVitalsRibbon__icon,

@@ -4,6 +4,7 @@ import type {
   StatusObservatoryDrawerRequest,
   StatusObservatorySurfaceV1,
 } from '../../../systems/ui/status/statusObservatoryTypes.js';
+import { useObservatoryRoving } from './useObservatoryRoving.js';
 
 export interface StatusReserveJarsProps {
   jars: StatusObservatorySurfaceV1['buildPreparation']['reserveJars'];
@@ -70,6 +71,7 @@ const JAR_GLYPH: Record<string, string> = {
 
 export function StatusReserveJars({ jars, rows, onOpenDrawer }: StatusReserveJarsProps) {
   const exactRowCount = rows.length;
+  const jarsRoving = useObservatoryRoving(jars.length);
 
   return (
     <div
@@ -79,7 +81,11 @@ export function StatusReserveJars({ jars, rows, onOpenDrawer }: StatusReserveJar
       data-reserve-count={jars.length}
       aria-label={`${jars.length} reserve jars. ${exactRowCount} exact build and reserve rows available.`}
     >
-      <div className="statusReserveJars__shelf" aria-label="Physical reserve jar shelf">
+      <div
+        className="statusReserveJars__shelf"
+        aria-label="Physical reserve jar shelf"
+        onKeyDown={jarsRoving.onKeyDown}
+      >
         <svg
           className="statusReserveJars__plank"
           viewBox="0 0 100 100"
@@ -89,7 +95,7 @@ export function StatusReserveJars({ jars, rows, onOpenDrawer }: StatusReserveJar
         >
           <rect x="0" y="0" width="100" height="100" fill="url(#plank)" />
         </svg>
-        {jars.map((jar) => {
+        {jars.map((jar, index) => {
           const fill = jarFillFromText(jar.value, jar.tone);
           const state = toneLabel(jar.tone);
           const kind = jarKind(jar.label);
@@ -105,6 +111,7 @@ export function StatusReserveJars({ jars, rows, onOpenDrawer }: StatusReserveJar
               style={jarStyle(fill)}
               aria-label={`${jar.label}, ${state}, ${jar.value ?? jar.detail}. ${jar.detail}. Source ${jar.sourceLabel}. Opens exact reserve rows.`}
               onClick={() => onOpenDrawer?.({ kind: 'buildPreparation', sourceId: jar.id })}
+              {...jarsRoving.getItemProps(index)}
             >
               <span className="statusReserveJars__glass" aria-hidden="true">
                 <span className="statusReserveJars__liquid" />

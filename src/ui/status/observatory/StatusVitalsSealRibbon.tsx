@@ -35,7 +35,13 @@ export function StatusVitalsSealRibbon({ surface }: StatusVitalsSealRibbonProps)
           key={seal.id}
           className="statusVitalsRibbon__seal"
           data-tone={seal.tone}
-          aria-label={seal.ariaLabel}
+          aria-label={
+            seal.tone === 'danger'
+              ? `${seal.ariaLabel} At risk.`
+              : seal.tone === 'warning'
+                ? `${seal.ariaLabel} Caution.`
+                : seal.ariaLabel
+          }
         >
           <ObservatoryDiscMedallion
             className="statusVitalsRibbon__medallion"

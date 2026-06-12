@@ -2,6 +2,7 @@ import type {
   SpiritRootObservationSurfaceV1,
   SpiritRootObservationTabId,
 } from './spiritRootObservationTypes.js';
+import { useDialogFocusTrap } from '../../ui/status/observatory/useDialogFocusTrap.js';
 import './SpiritRootObservationDrawer.scss';
 
 interface SpiritRootObservationDrawerProps {
@@ -19,16 +20,20 @@ export function SpiritRootObservationDrawer({
   onTabChange,
   onClose,
 }: SpiritRootObservationDrawerProps) {
+  const dialogRef = useDialogFocusTrap<HTMLElement>(open, onClose);
   if (!open) return null;
 
   const selectedTab = surface.tabs.find((tab) => tab.id === activeTab) ?? surface.tabs[0];
 
   return (
     <aside
+      ref={dialogRef}
       className="spiritRootObservationDrawer"
       data-testid="spirit-root-observation-drawer"
       data-owner={surface.owner}
       data-active-tab={selectedTab.id}
+      role="dialog"
+      aria-modal="true"
       aria-label="Spirit Root Observation"
     >
       <header className="spiritRootObservationDrawer__header">

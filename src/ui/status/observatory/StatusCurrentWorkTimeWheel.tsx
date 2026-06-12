@@ -8,6 +8,7 @@ import type {
 import { useRitualMotion } from './fx/useRitualMotion.js';
 import { useObservatoryMotion } from './useObservatoryMotion.js';
 import { ObservatoryDiscMedallion, type ObservatoryDiscVariant } from './ObservatoryDiscMedallion.js';
+import { useObservatoryRoving } from './useObservatoryRoving.js';
 
 export interface StatusCurrentWorkTimeWheelProps {
   surface: StatusObservatorySurfaceV1['workWheel'];
@@ -94,6 +95,7 @@ export function StatusCurrentWorkTimeWheel({
   const foreground = foregroundRead(surface);
   const ritual = useRitualMotion();
   const motion = useObservatoryMotion({ purityPct: 0, fitAngleDeg: 0, qiPerSecond: null, cultivationRate: null });
+  const spokesRoving = useObservatoryRoving(spokes.length);
 
   return (
     <section
@@ -190,7 +192,11 @@ export function StatusCurrentWorkTimeWheel({
           </button>
         </div>
 
-        <div className="statusCurrentWorkTimeWheel__spokes" aria-label="Current work wheel segments">
+        <div
+          className="statusCurrentWorkTimeWheel__spokes"
+          aria-label="Current work wheel segments"
+          onKeyDown={spokesRoving.onKeyDown}
+        >
           {spokes.map((spoke, index) => {
             const state = toneToSegmentState(spoke.tone, `${spoke.label} ${spoke.value ?? ''} ${spoke.detail}`);
             const disabled = routeDisabled(spoke.route, onAction);
@@ -212,6 +218,7 @@ export function StatusCurrentWorkTimeWheel({
                     onOpenDrawer?.({ kind: 'currentWork', sourceId: spoke.id });
                   }
                 }}
+                {...spokesRoving.getItemProps(index)}
               >
                 <ObservatoryDiscMedallion
                   className="statusCurrentWorkTimeWheel__spokeMedallion"

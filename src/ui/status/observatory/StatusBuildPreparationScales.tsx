@@ -5,6 +5,7 @@ import type {
   StatusObservatorySurfaceV1,
 } from '../../../systems/ui/status/statusObservatoryTypes.js';
 import { StatusReserveJars } from './StatusReserveJars.js';
+import { useObservatoryRoving } from './useObservatoryRoving.js';
 
 export interface StatusBuildPreparationScalesProps {
   surface: StatusObservatorySurfaceV1['buildPreparation'];
@@ -67,6 +68,7 @@ export function StatusBuildPreparationScales({ surface, onOpenDrawer }: StatusBu
   const firstLowRow = surface.scales.lowStateRows[0] ?? null;
   const tilt = scaleTilt(surface);
   const heavyPan = tilt < 0 ? 'build' : tilt > 0 ? 'prep' : 'none';
+  const weightsRoving = useObservatoryRoving(weights.length);
 
   return (
     <section
@@ -147,8 +149,12 @@ export function StatusBuildPreparationScales({ surface, onOpenDrawer }: StatusBu
         </div>
       </div>
 
-      <div className="statusBuildPreparationScales__weights" aria-label="Top readiness tablets">
-        {weights.map((row) => (
+      <div
+        className="statusBuildPreparationScales__weights"
+        aria-label="Top readiness tablets"
+        onKeyDown={weightsRoving.onKeyDown}
+      >
+        {weights.map((row, index) => (
           <button
             key={row.id}
             type="button"
@@ -156,6 +162,7 @@ export function StatusBuildPreparationScales({ surface, onOpenDrawer }: StatusBu
             data-tone={row.tone}
             aria-label={`${row.label}: ${row.value ?? row.detail}. ${row.detail}. Opens Build and Preparation ledger.`}
             onClick={() => onOpenDrawer?.({ kind: 'buildPreparation', sourceId: row.id })}
+            {...weightsRoving.getItemProps(index)}
           >
             <span>{row.label}</span>
             <strong>{row.value ?? row.detail}</strong>

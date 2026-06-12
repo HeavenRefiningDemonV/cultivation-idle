@@ -1,6 +1,9 @@
 import { useState, type CSSProperties } from 'react';
 import type { StatusLedgerActionSurface } from '../../../systems/ui/status/statusLedgerTypes.js';
-import { resolveObservatoryPresentation } from '../../../systems/ui/status/statusObservatoryPresentation.js';
+import {
+  resolveObservatoryPresentation,
+  STATUS_OBSERVATORY_VISUAL_STATE_LABELS,
+} from '../../../systems/ui/status/statusObservatoryPresentation.js';
 import type {
   StatusObservatoryDrawerRequest,
   StatusObservatorySurfaceV1,
@@ -54,6 +57,9 @@ export function StatusLivingStateObservatory({ surface, onAction, fixtureId }: S
       data-observatory-fixture={fixtureId ?? undefined}
       aria-label="Status Living State Observatory"
     >
+      <div className="obsVisuallyHidden" role="status" aria-live="polite">
+        {STATUS_OBSERVATORY_VISUAL_STATE_LABELS[surface.meta.visualState]}
+      </div>
       <div
         ref={viewportRef}
         className="obsStageViewport"
