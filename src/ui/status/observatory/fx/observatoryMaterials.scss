@@ -1,0 +1,117 @@
+@use '../../../paper/paperPlateMaterial' as plate;
+
+/* ============================================================
+   Observatory material classes (Phase 0). Tokens only — never a
+   raw hex here; all colors resolve through paperInkTokens.scss.
+   Consumed by the observatory layer + fx primitives.
+   ============================================================ */
+
+/* Parchment instrument plate: aged radial gradient + inked edge +
+   age vignette + warm raised shadow. */
+.obsParchmentPlate {
+  background: radial-gradient(
+    140% 120% at 22% 18%,
+    var(--paper-parchment-soft) 0%,
+    var(--paper-parchment) 46%,
+    var(--paper-parchment-strong) 100%
+  );
+  border-radius: 10px;
+  box-shadow:
+    var(--obs-plate-edge),
+    var(--obs-plate-age),
+    var(--paper-shadow-raised);
+}
+
+/* Readout ledge: the lighter inset shelf exact values sit on. */
+.obsParchmentLedge {
+  background: linear-gradient(180deg, var(--paper-shell-raised), var(--paper-shell-inspector));
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 1px var(--paper-shell-border-subtle);
+}
+
+/* Hand-stamped cinnabar wax chip (state labels). Static truth marker. */
+.obsSealStamp {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  border: 1.5px solid var(--paper-stamp);
+  border-radius: 4px 6px 4px 5px;
+  background: var(--paper-chip-recommended-bg);
+  color: var(--paper-stamp);
+  font-size: var(--ui-type-meta);
+  letter-spacing: 0.04em;
+}
+
+/* Four gold-leaf corner brackets. Top corners are this element's own
+   pseudos; bottom corners hang off a nested .obsCornerBrackets__lower. */
+.obsCornerBrackets {
+  position: relative;
+}
+
+.obsCornerBrackets::before,
+.obsCornerBrackets::after,
+.obsCornerBrackets > .obsCornerBrackets__lower::before,
+.obsCornerBrackets > .obsCornerBrackets__lower::after {
+  content: '';
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--paper-gold-leaf);
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.obsCornerBrackets::before {
+  inset: 6px auto auto 6px;
+  border-right: 0;
+  border-bottom: 0;
+  border-top-left-radius: 5px;
+}
+
+.obsCornerBrackets::after {
+  inset: 6px 6px auto auto;
+  border-left: 0;
+  border-bottom: 0;
+  border-top-right-radius: 5px;
+}
+
+.obsCornerBrackets > .obsCornerBrackets__lower {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.obsCornerBrackets > .obsCornerBrackets__lower::before {
+  inset: auto auto 6px 6px;
+  border-right: 0;
+  border-top: 0;
+  border-bottom-left-radius: 5px;
+}
+
+.obsCornerBrackets > .obsCornerBrackets__lower::after {
+  inset: auto 6px 6px auto;
+  border-left: 0;
+  border-top: 0;
+  border-bottom-right-radius: 5px;
+}
+
+/* Frame-I dark "void" surround. The single sanctioned dark surface —
+   background atmosphere only, never panel/chrome. */
+.obsVoidBackdrop {
+  background:
+    radial-gradient(125% 120% at 50% 28%,
+      var(--obs-void-high) 0%,
+      var(--obs-void-mid) 52%,
+      var(--obs-void-deep) 100%);
+  box-shadow: inset 0 0 160px var(--obs-void-vignette);
+}
+
+/* Wave 0 — paper-plate material (foxing stains + edge vignette) painted over the
+   Frame-I region plates. Additive: sits above the plate's radial parchment fill
+   but pointer-events:none, so it never intercepts instrument controls; the
+   --observatory-state accent and the plate fill/shadow are untouched. Clipped to
+   the plate's rounded rect by the existing overflow:hidden + border-radius. */
+.obsRegion::before {
+  @include plate.paper-plate-material;
+}
