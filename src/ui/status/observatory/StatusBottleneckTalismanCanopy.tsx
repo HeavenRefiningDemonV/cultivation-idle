@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type CSSProperties } from 'react';
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent } from 'react';
 import type { StatusLedgerActionSurface, StatusLedgerTone } from '../../../systems/ui/status/statusLedgerTypes.js';
 import type {
   StatusBottleneckTalismanSlipSurface,
@@ -125,6 +125,40 @@ export function StatusBottleneckTalismanCanopy({
   const chop = edictChop(surface.centralEdict.visualState);
   const safetyPips = parseProgressPips(surface.safetySeal.progressLabel);
   const resolvedCanopyMode = canopyMode ?? canopyModeForVisualState(surface.centralEdict.visualState);
+  const slipButtonRefs = useRef(new Map<string, HTMLButtonElement>());
+  const handleSlipRovingKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    const active = document.activeElement as HTMLElement | null;
+    const currentId = active?.getAttribute?.('data-slip-id');
+    if (!currentId) return;
+    const slips = surface.talismanSlips;
+    const index = slips.findIndex((slip) => slip.id === currentId);
+    if (index < 0) return;
+    let target = index;
+    switch (event.key) {
+      case 'ArrowRight':
+      case 'ArrowDown':
+        target = Math.min(index + 1, slips.length - 1);
+        break;
+      case 'ArrowLeft':
+      case 'ArrowUp':
+        target = Math.max(index - 1, 0);
+        break;
+      case 'Home':
+        target = 0;
+        break;
+      case 'End':
+        target = slips.length - 1;
+        break;
+      default:
+        return;
+    }
+    event.preventDefault();
+    const next = slips[target];
+    if (!next || next.id === currentId) return;
+    setSelectedSlipId(next.id);
+    sharedSelection.select('talisman', next.id);
+    slipButtonRefs.current.get(next.id)?.focus();
+  };
 
   return (
     <section
@@ -230,12 +264,20 @@ export function StatusBottleneckTalismanCanopy({
           </article>
         </div>
 
-        <div className="statusBottleneckTalismanCanopy__slips" aria-label="Pinned bottleneck talisman slips">
+        <div
+          className="statusBottleneckTalismanCanopy__slips"
+          aria-label="Pinned bottleneck talisman slips"
+          onKeyDown={handleSlipRovingKeyDown}
+        >
           {surface.talismanSlips.map((slip) => {
             const selected = slip.id === selectedSlip?.id;
             return (
               <button
                 key={slip.id}
+                ref={(el) => {
+                  if (el) slipButtonRefs.current.set(slip.id, el);
+                  else slipButtonRefs.current.delete(slip.id);
+                }}
                 type="button"
                 className="statusBottleneckTalismanCanopy__slip"
                 style={slipStyle(slip)}
@@ -246,6 +288,7 @@ export function StatusBottleneckTalismanCanopy({
                 data-selected={selected ? 'true' : 'false'}
                 data-related={sharedSelection.isRelated('bottleneckCanopy', slip.id) ? 'true' : 'false'}
                 data-rotation={slip.geometry.rotationDeg}
+                tabIndex={selected ? 0 : -1}
                 aria-pressed={selected}
                 aria-label={slip.ariaLabel}
                 onClick={() => {
