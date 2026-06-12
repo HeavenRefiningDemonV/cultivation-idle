@@ -3017,6 +3017,7 @@
 
 .statusBuildPreparationScales__apparatus {
   position: relative;
+  isolation: isolate;
   min-height: 176px;
   display: grid;
   grid-template-columns: minmax(0, 1fr) 90px minmax(0, 1fr);
@@ -3025,25 +3026,48 @@
   padding-top: 18px;
 }
 
+/* W6: the brass-rig SVG <arm> is now the visible beam. The CSS __beam is demoted to
+   an invisible structural keep so it still drives --scale-tilt on a live element. */
 .statusBuildPreparationScales__beam {
   position: absolute;
   left: 11%;
   right: 11%;
   top: 34px;
   height: 12px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #76542b, #d3a85c, #76542b);
-  box-shadow: 0 5px 14px rgba(55, 34, 13, 0.22);
   transform: rotate(var(--scale-tilt));
   transform-origin: center;
   transition: transform 180ms ease;
 }
 
 .statusBuildPreparationScales__beam span {
+  display: none;
+}
+
+/* W6 brass balance apparatus (sprite-fed): base + post + pivot + tilting arm + pans.
+   Decorative chrome behind the build/prep text pans; pulled to the back of the
+   apparatus stacking context so all text overlays it. */
+.statusBuildPreparationScales__rig {
   position: absolute;
-  inset: -7px 49%;
-  border-left: 2px solid rgba(67, 42, 18, 0.7);
-  border-right: 2px solid rgba(67, 42, 18, 0.32);
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.statusBuildPreparationScales__rigArm {
+  transform: rotate(var(--scale-tilt));
+  transform-box: view-box;
+  transform-origin: 100px 58px;
+  transition: transform 180ms ease;
+}
+
+.statusBuildPreparationScales__rigShadow {
+  fill: var(--observatory-ink);
+  opacity: 0.4;
+}
+
+.statusBuildPreparationScales__rigCord {
+  stroke: color-mix(in srgb, var(--observatory-bronze) 64%, transparent);
+  stroke-width: 1.4;
 }
 
 .statusBuildPreparationScales__pan {
@@ -3171,6 +3195,8 @@
 }
 
 .statusReserveJars__shelf {
+  position: relative;
+  isolation: isolate;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(88px, 1fr));
   gap: 8px;
@@ -3179,6 +3205,16 @@
   border-radius: 8px;
   border: 1px solid rgba(90, 62, 30, 0.18);
   background: linear-gradient(180deg, rgba(107, 74, 36, 0.08), rgba(255, 249, 229, 0.44));
+}
+
+/* W6: sprite plank wood backing behind the jar shelf (no raw-hex/CSS gradient — the
+   plank gradient lives in the sprite). Pulled behind the jars. */
+.statusReserveJars__plank {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: 8px;
+  opacity: 0.5;
 }
 
 .statusReserveJars__jar {
@@ -3247,6 +3283,38 @@
   background: rgba(255, 255, 255, 0.36);
 }
 
+/* W6: glass-vessel sheen (sprite glass gradient) over the liquid, cork stopper seated
+   in the mouth, and a Kai-ti label glyph stamped on the jar. The CSS __liquid (driven
+   by --jar-fill) stays the fill truth behind the translucent sheen. */
+.statusReserveJars__sheen {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.statusReserveJars__cork {
+  position: absolute;
+  top: -1px;
+  left: 0;
+  width: 100%;
+  height: 16px;
+  pointer-events: none;
+}
+
+.statusReserveJars__glyph {
+  position: absolute;
+  inset: 17px 0 auto 0;
+  text-align: center;
+  font-family: var(--kai, "Kaiti SC", "STKaiti", serif);
+  font-size: 18px;
+  line-height: 1;
+  color: var(--observatory-ink);
+  opacity: 0.42;
+  pointer-events: none;
+}
+
 .statusReserveJars__label,
 .statusReserveJars__jar small,
 .statusCurrentWorkTimeWheel__core small,
@@ -3271,6 +3339,7 @@
 
 .statusCurrentWorkTimeWheel__dial {
   position: relative;
+  isolation: isolate;
   width: min(236px, 100%);
   aspect-ratio: 1;
   margin: 0 auto;
@@ -3329,6 +3398,7 @@
 }
 
 .statusCurrentWorkTimeWheel__spoke {
+  position: relative;
   min-height: 84px;
 }
 
@@ -3340,6 +3410,101 @@
 .statusCurrentWorkTimeWheel__spoke[data-segment-state='active'] {
   border-color: rgba(47, 127, 98, 0.38);
   background: rgba(47, 127, 98, 0.08);
+}
+
+/* W6 brass time-wheel rig (sprite-fed): rim + dark rings + spin rings + jade core +
+   行 watermark + breath glow. Decorative chrome pulled behind the data segments and
+   the interactive core/spokes; spin + breath are motion-gated below. */
+.statusCurrentWorkTimeWheel__rig {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.statusCurrentWorkTimeWheel__rigRim {
+  stroke-width: 2.4;
+}
+
+.statusCurrentWorkTimeWheel__rigRing {
+  stroke: color-mix(in srgb, var(--observatory-ink) 22%, transparent);
+  stroke-width: 0.6;
+}
+
+.statusCurrentWorkTimeWheel__rigDash {
+  stroke: color-mix(in srgb, var(--observatory-bronze) 60%, transparent);
+  stroke-width: 1;
+  stroke-dasharray: 1 5;
+}
+
+.statusCurrentWorkTimeWheel__rigTick {
+  stroke: color-mix(in srgb, var(--observatory-bronze) 52%, transparent);
+  stroke-width: 0.8;
+}
+
+.statusCurrentWorkTimeWheel__rigCore {
+  stroke-width: 1.4;
+}
+
+.statusCurrentWorkTimeWheel__rigCoreMark {
+  font-family: var(--kai, "Kaiti SC", "STKaiti", serif);
+  font-size: 16px;
+  fill: var(--observatory-paper);
+  opacity: 0.7;
+}
+
+.statusCurrentWorkTimeWheel__coreBreath {
+  fill: var(--observatory-jade);
+  opacity: 0.32;
+}
+
+.statusCurrentWorkTimeWheel__spinRing,
+.statusCurrentWorkTimeWheel__spinRingInner {
+  transform-box: view-box;
+  transform-origin: 50px 50px;
+}
+
+.statusCurrentWorkTimeWheel__spokeMedallion {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
+}
+
+@keyframes statusWorkWheelSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes statusWorkWheelSpinReverse {
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+@keyframes statusWorkWheelCoreBreath {
+  0%,
+  100% {
+    opacity: 0.28;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.statusCurrentWorkTimeWheel[data-animate='true'] .statusCurrentWorkTimeWheel__spinRing {
+  animation: statusWorkWheelSpin 64s linear infinite;
+}
+
+.statusCurrentWorkTimeWheel[data-animate='true'] .statusCurrentWorkTimeWheel__spinRingInner {
+  animation: statusWorkWheelSpinReverse 110s linear infinite;
+}
+
+.statusCurrentWorkTimeWheel[data-animate='true'] .statusCurrentWorkTimeWheel__coreBreath {
+  animation: statusWorkWheelCoreBreath var(--breath-period, 5.6s) ease-in-out infinite;
 }
 
 .statusFoldedLedgerRail__fold {
@@ -3382,6 +3547,26 @@
 .statusObservatoryDrawer__action:focus-visible {
   outline: 2px solid var(--observatory-state);
   outline-offset: 2px;
+}
+
+/* W6: folded-scroll cards — a tiny alternating tilt on the inner content (the fold
+   button), not the grid cell, so the 3-column footer grid is unmoved (overflow:hidden
+   on the fold clips the tilt). Plus a corner wax chop per fold. */
+.statusFoldedLedgerRail__fold:nth-child(odd) .statusFoldedLedgerRail__foldButton {
+  transform: rotate(-0.5deg);
+}
+
+.statusFoldedLedgerRail__fold:nth-child(even) .statusFoldedLedgerRail__foldButton {
+  transform: rotate(0.5deg);
+}
+
+.statusFoldedLedgerRail__foldChop {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  z-index: 1;
+  pointer-events: none;
+  filter: drop-shadow(0 1px 2px var(--observatory-shadow));
 }
 
 .statusObservatoryDrawer {
@@ -3662,8 +3847,12 @@
   .statusBottleneckTalismanCanopy__mercyRingOuter,
   .statusBottleneckInspector,
   .statusBuildPreparationScales__beam,
+  .statusBuildPreparationScales__rigArm,
   .statusReserveJars__liquid,
   .statusCurrentWorkTimeWheel__segment,
+  .statusCurrentWorkTimeWheel__spinRing,
+  .statusCurrentWorkTimeWheel__spinRingInner,
+  .statusCurrentWorkTimeWheel__coreBreath,
   .statusFoldedLedgerRail__fold,
   .statusObservatoryDrawer {
     animation: none;
