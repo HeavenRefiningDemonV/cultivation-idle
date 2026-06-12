@@ -17,6 +17,7 @@ import { StatusStatMeridianConstellation } from './StatusStatMeridianConstellati
 import { StatusVitalsSealRibbon } from './StatusVitalsSealRibbon.js';
 import { InkGrain } from '../../ink/InkGrain.js';
 import { InkObservatoryDefs } from '../../ink/InkObservatoryDefs.js';
+import { ObservatorySelectionProvider } from './useObservatorySelection.js';
 import { useObservatoryScale } from './useObservatoryScale.js';
 import './StatusLivingStateObservatory.scss';
 
@@ -61,6 +62,10 @@ export function StatusLivingStateObservatory({ surface, onAction, fixtureId }: S
         <div className="obsStage">
           <InkObservatoryDefs />
           <div className="statusObservatoryCanvas" data-testid="status-ledger-grid">
+          <ObservatorySelectionProvider
+            defaultSelection={surface.meta.selectedContext}
+            threads={surface.bottleneckCanopy.causalThreads}
+          >
           <section className="obsRegion obsRegion--decree" data-testid="obs-region-decree" aria-label="Life Decree">
             <StatusLifeDecreeScroll
               surface={surface.lifeDecree}
@@ -150,6 +155,7 @@ export function StatusLivingStateObservatory({ surface, onAction, fixtureId }: S
             onClose={() => setActiveDrawer(null)}
             onAction={onAction}
           />
+          </ObservatorySelectionProvider>
           </div>
         </div>
       </div>
