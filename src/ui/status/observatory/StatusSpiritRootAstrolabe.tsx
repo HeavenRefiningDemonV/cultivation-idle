@@ -2,6 +2,7 @@ import { useId, type CSSProperties } from 'react';
 import type { StatusLedgerActionSurface } from '../../../systems/ui/status/statusLedgerTypes.js';
 import type { StatusObservatorySurfaceV1 } from '../../../systems/ui/status/statusObservatoryTypes.js';
 import { InkWaxSeal } from '../../ink/InkWaxSeal.js';
+import { useObservatoryMotion } from './useObservatoryMotion.js';
 import {
   arcPath,
   donutPath,
@@ -91,6 +92,13 @@ export function StatusSpiritRootAstrolabe({ surface, onAction }: StatusSpiritRoo
 
   const cap = parseExpressionCap(surface.expressionCapLabel);
 
+  const motion = useObservatoryMotion({
+    purityPct,
+    fitAngleDeg: aAng,
+    qiPerSecond: null,
+    cultivationRate: null,
+  });
+
   // single-band tiers (strained / compatible / aligned / unknown)
   const half = tier === 'strained' ? 44 : tier === 'compatible' ? 50 : tier === 'unknown' ? 40 : 56;
   const bandCol = tier === 'strained' ? 'var(--paper-amber)' : tier === 'unknown' ? 'var(--paper-ink-25)' : 'var(--paper-jade)';
@@ -125,7 +133,7 @@ export function StatusSpiritRootAstrolabe({ surface, onAction }: StatusSpiritRoo
         className="statusSpiritRootAstrolabe__ring"
         role="img"
         aria-label={surface.ariaLabel}
-        style={{ '--needle-target-deg': `${aAng}deg` } as CSSProperties}
+        style={motion as CSSProperties}
       >
         <svg viewBox="0 0 336 336" aria-hidden="true" focusable={false}>
           <circle cx={C} cy={C} r={R_RIM} fill="url(#goldG)" />

@@ -573,6 +573,53 @@
   background: var(--paper-stamp);
 }
 
+/* Wave 2 motion (declarative; driven by useObservatoryMotion, gated by
+   prefers-reduced-motion below). The tick ring spins, the needle eases to the
+   fit angle, the core/aura breathe, the flame flickers. Every truth (angle,
+   purity fill, fit band + label, fracture) is static — motion is enhancement. */
+.statusSpiritRootAstrolabe__spin {
+  animation: obsAstrolabeSpin var(--tick-spin-dur, 90s) linear infinite;
+}
+
+.statusSpiritRootAstrolabe__needle {
+  transition: transform 0.9s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.statusSpiritRootAstrolabe__breath,
+.statusHeartLawSeal__breath {
+  animation: obsBreath var(--breath-period, 5.6s) ease-in-out infinite;
+}
+
+.statusHeartLawSeal__flame {
+  animation: obsFlicker 2.4s ease-in-out infinite;
+}
+
+@keyframes obsAstrolabeSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes obsBreath {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+@keyframes obsFlicker {
+  0%,
+  100% {
+    opacity: 0.82;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
 .statusSpiritRootAstrolabe__summary,
 .statusSpiritRootAstrolabe__proc,
 .statusSpiritRootAstrolabe__validity,
@@ -2815,9 +2862,13 @@
   .statusStatConstellation__node,
   .statusStatBeadLens,
   .statusSpiritRootAstrolabe__needle,
+  .statusSpiritRootAstrolabe__spin,
+  .statusSpiritRootAstrolabe__breath,
   .statusRootLawBridge__line,
   .statusRootLawBridge__crack,
   .statusHeartLawSeal__bead,
+  .statusHeartLawSeal__breath,
+  .statusHeartLawSeal__flame,
   .statusMeridianVesselCompass__organThread,
   .statusMeridianVesselCompass__organSeal,
   .statusFocusLens,
