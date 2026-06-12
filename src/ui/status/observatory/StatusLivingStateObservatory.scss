@@ -1793,17 +1793,20 @@
 
 .statusBottleneckInspector__seal {
   position: absolute;
-  top: 14px;
-  right: 14px;
-  width: 42px;
-  height: 42px;
+  top: -11px;
+  left: 30px;
+  width: 17px;
+  height: 17px;
   border-radius: 50%;
-  border: 2px solid var(--observatory-cinnabar);
-  opacity: 0.7;
-  background:
-    linear-gradient(90deg, transparent 45%, currentColor 45% 55%, transparent 55%),
-    linear-gradient(0deg, transparent 45%, currentColor 45% 55%, transparent 55%);
-  color: var(--observatory-cinnabar);
+  border: 2px solid rgba(74, 51, 14, 0.6);
+  background: radial-gradient(circle at 38% 32%, var(--observatory-gold), var(--observatory-bronze));
+  box-shadow: 0 2px 4px rgba(48, 30, 9, 0.26);
+}
+
+.statusBottleneckInspector__chop {
+  position: absolute;
+  top: 10px;
+  right: 12px;
 }
 
 .statusBottleneckInspector__title {
@@ -1868,6 +1871,263 @@
   border: 1px solid rgba(90, 62, 30, 0.2);
   border-radius: 999px;
   background: rgba(255, 249, 229, 0.7);
+}
+
+/* ===== W5 canopy fidelity: rail + cords, pin/stand/chop, charm medallions, mercy ring (additive) ===== */
+/* per-tone --observatory-state for slips + safety seal (grayscale-safe: border + label, not hue alone) */
+.statusBottleneckTalismanCanopy__slip[data-tone='success'],
+.statusBottleneckTalismanCanopy__slip[data-tone='jade'],
+.statusBottleneckTalismanCanopy__safetySeal[data-tone='success'],
+.statusBottleneckTalismanCanopy__safetySeal[data-tone='jade'] {
+  --observatory-state: var(--observatory-jade);
+}
+
+.statusBottleneckTalismanCanopy__slip[data-tone='warning'],
+.statusBottleneckTalismanCanopy__slip[data-tone='gold'],
+.statusBottleneckTalismanCanopy__safetySeal[data-tone='warning'],
+.statusBottleneckTalismanCanopy__safetySeal[data-tone='gold'] {
+  --observatory-state: var(--observatory-gold);
+}
+
+.statusBottleneckTalismanCanopy__slip[data-tone='danger'],
+.statusBottleneckTalismanCanopy__safetySeal[data-tone='danger'] {
+  --observatory-state: var(--observatory-cinnabar);
+}
+
+.statusBottleneckTalismanCanopy__slip[data-tone='info'],
+.statusBottleneckTalismanCanopy__slip[data-tone='muted'],
+.statusBottleneckTalismanCanopy__safetySeal[data-tone='info'],
+.statusBottleneckTalismanCanopy__safetySeal[data-tone='muted'] {
+  --observatory-state: var(--observatory-bronze);
+}
+
+/* slip priority/state stamp (bordered, tone-toned, slightly rotated) */
+.statusBottleneckTalismanCanopy__slip span {
+  justify-self: start;
+  border: 1.4px solid var(--observatory-state);
+  border-radius: 2px;
+  padding: 1px 6px;
+  color: var(--observatory-state);
+  transform: rotate(-1.5deg);
+}
+
+/* rail + cords */
+.statusBottleneckTalismanCanopy__rail {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.statusBottleneckTalismanCanopy__railArc {
+  fill: none;
+  stroke: url("#brassH");
+  stroke-width: 1.1;
+  stroke-linecap: round;
+}
+
+.statusBottleneckTalismanCanopy__railCap {
+  fill: url("#goldRad");
+  stroke: rgba(74, 51, 14, 0.8);
+  stroke-width: 0.3;
+}
+
+.statusBottleneckTalismanCanopy__cord {
+  fill: none;
+  stroke: var(--observatory-state);
+  stroke-width: 0.5;
+  opacity: 0.9;
+}
+
+.statusBottleneckTalismanCanopy__cordAnchor {
+  fill: var(--observatory-state);
+}
+
+/* edict pin + chop + stand */
+.statusBottleneckTalismanCanopy__pin {
+  position: absolute;
+  left: 50%;
+  top: -12px;
+  width: 18px;
+  height: 18px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  border: 2px solid rgba(74, 51, 14, 0.7);
+  background: radial-gradient(circle at 38% 32%, var(--observatory-gold), var(--observatory-bronze));
+  box-shadow: 0 2px 4px rgba(48, 30, 9, 0.28);
+}
+
+.statusBottleneckTalismanCanopy__edictChop {
+  position: absolute;
+  right: -10px;
+  bottom: -14px;
+}
+
+.statusBottleneckTalismanCanopy__stand {
+  position: absolute;
+  left: 50%;
+  bottom: -22px;
+  width: 78%;
+  height: 18px;
+  transform: translateX(-50%);
+}
+
+.statusBottleneckTalismanCanopy__stand path {
+  fill: none;
+  stroke: url("#brassH");
+  stroke-width: 1.4;
+}
+
+.statusBottleneckTalismanCanopy__stand circle {
+  fill: url("#goldRad");
+  stroke: rgba(74, 51, 14, 0.7);
+  stroke-width: 0.6;
+}
+
+/* charm rod + medallions */
+.statusBottleneckTalismanCanopy__charmRod {
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  top: 8px;
+  height: 3px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--observatory-bronze), var(--observatory-gold) 50%, var(--observatory-bronze));
+  box-shadow: 0 1px 2px rgba(48, 30, 9, 0.4);
+}
+
+.statusBottleneckTalismanCanopy__charmMedallion {
+  width: 46px;
+  height: auto;
+  overflow: visible;
+}
+
+.statusBottleneckTalismanCanopy__charmCord {
+  stroke: var(--observatory-bronze);
+  stroke-width: 1;
+}
+
+.statusBottleneckTalismanCanopy__charmRim {
+  fill: none;
+  stroke: url("#brass");
+  stroke-width: 1.6;
+}
+
+.statusBottleneckTalismanCanopy__charmDisc {
+  fill: url("#goldRad");
+}
+
+.statusBottleneckTalismanCanopy__charmDisc[data-charm-tone='jade'],
+.statusBottleneckTalismanCanopy__charmDisc[data-charm-tone='success'] {
+  fill: url("#jadeRad");
+}
+
+.statusBottleneckTalismanCanopy__charmMark {
+  fill: rgba(42, 29, 8, 0.92);
+  font-weight: 800;
+  font-size: 8px;
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+/* mercy ring + lotus + shape-coded progress pips */
+.statusBottleneckTalismanCanopy__mercyRing {
+  width: 76px;
+  height: 76px;
+  overflow: visible;
+}
+
+.statusBottleneckTalismanCanopy__mercyRingOuter {
+  fill: rgba(248, 243, 224, 0.4);
+  stroke: var(--observatory-state);
+  stroke-width: 1.2;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.statusBottleneckTalismanCanopy__mercyRingInner {
+  fill: none;
+  stroke: var(--observatory-state);
+  stroke-width: 0.5;
+  stroke-dasharray: 1.4 1.6;
+  opacity: 0.55;
+}
+
+.statusBottleneckTalismanCanopy__mercyBead {
+  fill: var(--observatory-state);
+  opacity: 0.72;
+}
+
+.statusBottleneckTalismanCanopy__lotus {
+  fill: none;
+  stroke: var(--observatory-state);
+  stroke-width: 0.7;
+  stroke-linecap: round;
+}
+
+.statusBottleneckTalismanCanopy__progressPips {
+  display: inline-flex;
+  gap: 4px;
+  justify-content: center;
+}
+
+.statusBottleneckTalismanCanopy__progressPips i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 1.5px solid var(--observatory-state);
+  background: transparent;
+}
+
+.statusBottleneckTalismanCanopy__progressPips i[data-on='true'] {
+  background: var(--observatory-state);
+}
+
+/* ===== W5 canopy motion - gated by the section's data-animate (reduced motion = frozen) ===== */
+@keyframes statusBottleneckCanopyCordShimmer {
+  to {
+    stroke-dashoffset: -16;
+  }
+}
+
+@keyframes statusBottleneckCanopyCharmSway {
+  0%,
+  100% {
+    transform: rotate(-2deg);
+  }
+
+  50% {
+    transform: rotate(2deg);
+  }
+}
+
+@keyframes statusBottleneckCanopySealPulse {
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+
+.statusBottleneckTalismanCanopy[data-animate='true'] .statusBottleneckTalismanCanopy__cord {
+  stroke-dasharray: 2 6;
+  animation: statusBottleneckCanopyCordShimmer 2.4s linear infinite;
+}
+
+.statusBottleneckTalismanCanopy[data-animate='true'] .statusBottleneckTalismanCanopy__charmMedallion {
+  transform-origin: 50% 0;
+  animation: statusBottleneckCanopyCharmSway var(--obs-motion-breathe) var(--obs-motion-ease) infinite;
+}
+
+.statusBottleneckTalismanCanopy[data-animate='true'] .statusBottleneckTalismanCanopy__mercyRingOuter {
+  animation: statusBottleneckCanopySealPulse var(--breath-period, 5.6s) ease-in-out infinite;
 }
 
 .statusStatConstellation {
@@ -3267,6 +3527,9 @@
   .statusBottleneckTalismanCanopy__thread,
   .statusBottleneckTalismanCanopy__slip,
   .statusBottleneckTalismanCanopy__routeCharm,
+  .statusBottleneckTalismanCanopy__cord,
+  .statusBottleneckTalismanCanopy__charmMedallion,
+  .statusBottleneckTalismanCanopy__mercyRingOuter,
   .statusBottleneckInspector,
   .statusBuildPreparationScales__beam,
   .statusReserveJars__liquid,
