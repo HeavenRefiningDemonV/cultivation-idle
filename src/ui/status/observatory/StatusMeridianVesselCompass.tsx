@@ -370,6 +370,28 @@ export function StatusMeridianVesselCompass({
       {selectedOrgan ? <StatusMeridianFocusLens organ={selectedOrgan} lens={surface.focusLens} onAction={onAction} /> : null}
 
       <div
+        className="statusMeridianVesselCompass__nextBottleneck"
+        data-tone={surface.nextBottleneck.primary.tone}
+        aria-label="Next bottleneck"
+      >
+        <span>Next Bottleneck</span>
+        <strong>{surface.nextBottleneck.primary.label}</strong>
+        {onAction && !surface.nextBottleneck.primary.disabled ? (
+          <button
+            type="button"
+            className="statusMeridianVesselCompass__nextBottleneckRoute"
+            data-tone={surface.nextBottleneck.primary.tone}
+            title={surface.nextBottleneck.primary.detail}
+            onClick={() => {
+              if (onAction) onAction(surface.nextBottleneck.primary);
+            }}
+          >
+            {surface.nextBottleneck.primary.destinationLabel}
+          </button>
+        ) : null}
+      </div>
+
+      <div
         className="statusMeridianVesselCompass__sharedCauseStamps"
         data-testid="status-meridian-shared-cause-stamps"
         aria-label="Shared causes across all organs"
@@ -389,6 +411,10 @@ export function StatusMeridianVesselCompass({
                 if (selectedOrgan) dispatch({ type: 'open-drawer' });
               }}
             >
+              <svg className="statusMeridianVesselCompass__causeSeal" viewBox="0 0 24 24" aria-hidden="true">
+                <circle className="statusMeridianVesselCompass__causeSealOuter" cx="12" cy="12" r="10.5" />
+                <circle className="statusMeridianVesselCompass__causeSealInner" cx="12" cy="12" r="6.5" />
+              </svg>
               <strong>{stamp.label}</strong>
               <small>{stamp.value ?? stamp.detail}</small>
             </button>

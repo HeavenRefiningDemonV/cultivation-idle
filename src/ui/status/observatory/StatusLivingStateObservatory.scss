@@ -1315,8 +1315,105 @@
   outline-offset: 2px;
 }
 
+/* W4: shared-cause seal tone map (grayscale-safe: ring + label/value text) */
+.statusMeridianVesselCompass__causeStamp[data-tone='success'],
+.statusMeridianVesselCompass__causeStamp[data-tone='jade'] {
+  --observatory-state: var(--observatory-jade);
+}
+
+.statusMeridianVesselCompass__causeStamp[data-tone='warning'],
+.statusMeridianVesselCompass__causeStamp[data-tone='gold'] {
+  --observatory-state: var(--observatory-gold);
+}
+
+.statusMeridianVesselCompass__causeStamp[data-tone='danger'] {
+  --observatory-state: var(--observatory-cinnabar);
+}
+
+.statusMeridianVesselCompass__causeStamp[data-tone='info'],
+.statusMeridianVesselCompass__causeStamp[data-tone='muted'] {
+  --observatory-state: var(--observatory-bronze);
+}
+
+.statusMeridianVesselCompass__causeSeal {
+  width: 22px;
+  height: 22px;
+  overflow: visible;
+}
+
+.statusMeridianVesselCompass__causeSealOuter {
+  fill: none;
+  stroke: var(--observatory-state);
+  stroke-width: 1.4;
+}
+
+.statusMeridianVesselCompass__causeSealInner {
+  fill: none;
+  stroke: var(--observatory-state);
+  stroke-width: 1;
+  stroke-dasharray: 2 2;
+  opacity: 0.8;
+}
+
 .statusMeridianVesselCompass__openDrawer {
   width: fit-content;
+}
+
+/* W4: next-bottleneck band (tone-coded via thick left border + label, grayscale-safe) */
+.statusMeridianVesselCompass__nextBottleneck {
+  display: grid;
+  gap: 3px;
+  margin: 0 10px;
+  padding: 9px 12px;
+  border: 1px solid color-mix(in srgb, var(--observatory-state) 58%, rgba(90, 62, 30, 0.22));
+  border-left: 4px solid var(--observatory-state);
+  border-radius: 8px;
+  background: radial-gradient(circle at 50% 0%, rgba(255, 250, 232, 0.92), rgba(238, 216, 169, 0.6));
+}
+
+.statusMeridianVesselCompass__nextBottleneck > span {
+  font-size: 0.66rem;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--observatory-muted);
+}
+
+.statusMeridianVesselCompass__nextBottleneck[data-tone='success'],
+.statusMeridianVesselCompass__nextBottleneck[data-tone='jade'] {
+  --observatory-state: var(--observatory-jade);
+}
+
+.statusMeridianVesselCompass__nextBottleneck[data-tone='warning'],
+.statusMeridianVesselCompass__nextBottleneck[data-tone='gold'] {
+  --observatory-state: var(--observatory-gold);
+}
+
+.statusMeridianVesselCompass__nextBottleneck[data-tone='danger'] {
+  --observatory-state: var(--observatory-cinnabar);
+}
+
+.statusMeridianVesselCompass__nextBottleneck[data-tone='info'],
+.statusMeridianVesselCompass__nextBottleneck[data-tone='muted'] {
+  --observatory-state: var(--observatory-bronze);
+}
+
+.statusMeridianVesselCompass__nextBottleneckRoute {
+  justify-self: start;
+  margin-top: 3px;
+  min-height: 30px;
+  padding: 5px 10px;
+  border: 1px solid var(--observatory-state);
+  border-radius: 6px;
+  background: rgba(255, 246, 218, 0.86);
+  color: var(--observatory-ink);
+  font: inherit;
+  cursor: pointer;
+}
+
+.statusMeridianVesselCompass__nextBottleneckRoute:hover,
+.statusMeridianVesselCompass__nextBottleneckRoute:focus-visible {
+  outline: 2px solid var(--observatory-state);
+  outline-offset: 2px;
 }
 
 .statusMeridianVesselCompass__drawer {
