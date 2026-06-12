@@ -206,6 +206,8 @@
 }
 
 .statusLifeDecree {
+  position: relative;
+  overflow: hidden;
   display: grid;
   gap: 14px;
   padding: 18px;
@@ -285,6 +287,7 @@
   text-align: center;
   text-transform: uppercase;
   background: rgba(255, 249, 226, 0.64);
+  box-shadow: inset 0 1px 3px var(--observatory-shadow);
 }
 
 .statusLifeDecree__scrollTiles {
@@ -294,6 +297,7 @@
 }
 
 .statusLifeDecree__tile {
+  position: relative;
   min-height: 78px;
   display: grid;
   align-content: start;
@@ -344,6 +348,93 @@
 .statusWorkWheel__core small {
   color: var(--observatory-muted);
   line-height: 1.25;
+}
+
+/* W6 supporting instruments: shared decorative disc medallion (gold/jade/cinnabar
+   radial from the sprite + optional Kai-ti glyph). aria-hidden chrome — the adjacent
+   label/value is always the truth. Stroke + glyph colors tokenized here (no raw hex). */
+.observatoryDiscMedallion {
+  display: block;
+  width: 20px;
+  height: 20px;
+  flex: none;
+}
+
+.observatoryDiscMedallion__disc {
+  stroke: color-mix(in srgb, var(--observatory-bronze) 70%, transparent);
+  stroke-width: 1;
+}
+
+.observatoryDiscMedallion__glyph {
+  font-family: var(--kai, "Kaiti SC", "STKaiti", serif);
+  font-size: 12px;
+  font-weight: 700;
+  fill: var(--observatory-ink);
+}
+
+.observatoryDiscMedallion--cinnabar .observatoryDiscMedallion__glyph,
+.observatoryDiscMedallion--jade .observatoryDiscMedallion__glyph {
+  fill: var(--observatory-paper);
+}
+
+/* W6 Life Decree: brass roller caps + title/state wax chops + per-tile gold
+   medallions. All additive + absolutely positioned over existing padding (the stamp
+   region already reserves ≥64px), so the title rail height is unchanged — no CLS. */
+.statusLifeDecree__rollerCap {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 9px;
+  pointer-events: none;
+  opacity: 0.9;
+}
+
+.statusLifeDecree__rollerCap--left {
+  left: 0;
+}
+
+.statusLifeDecree__rollerCap--right {
+  right: 0;
+}
+
+.statusLifeDecree__titleHeading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.statusLifeDecree__titleChop {
+  flex: none;
+  filter: drop-shadow(0 1px 2px var(--observatory-shadow));
+}
+
+.statusLifeDecree__stateSeal {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  pointer-events: none;
+  opacity: 0.95;
+  filter: drop-shadow(0 1px 2px var(--observatory-shadow));
+  z-index: 1;
+}
+
+.statusLifeDecree__medallion {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
+}
+
+/* W6 Vitals: the gold/cinnabar disc replaces the same-footprint __icon span in the
+   seal's reserved "icon" grid column — 22px, zero CLS. The existing
+   [data-tone='danger'] .statusVitalsRibbon__value cinnabar rule still carries at-risk
+   in grayscale alongside the cinnabar disc and the always-present label. */
+.statusVitalsRibbon__medallion {
+  grid-area: icon;
+  width: 22px;
+  height: 22px;
 }
 
 /* S3: slim seal-ribbon strip — 9 metric medallions in a single row that fits
