@@ -1,0 +1,57 @@
+/* W7.2 whole-stage state atmosphere. Lives inside .obsStage (1672×941 design units), above the
+   region plates, below the drawers. pointer-events:none so it never eats instrument clicks. Tokens
+   only — zero raw hex. The failure/prestige truth lives in the decree text + canopy edict +
+   data-observatory-visual-state; this layer is redundant atmosphere (aria-hidden). The two animated
+   classes are frozen under prefers-reduced-motion in StatusLivingStateObservatory.scss. */
+.statusObservatoryStateOverlays {
+  position: absolute;
+  inset: 0;
+  z-index: 5; /* above the .obsRegion plates; below the fixed/dialog drawers (z-index: 20) */
+  pointer-events: none;
+}
+
+/* postFailure — cinnabar scorch: a distressed cinnabar glow over the root-law -> heart-law coupling
+   plus a faint cinnabar edge vignette. The clear center keeps the instruments legible. */
+.statusObservatoryStateOverlays__scorch {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(48% 40% at 33% 46%, color-mix(in oklab, var(--paper-stamp) 22%, transparent), transparent 70%),
+    radial-gradient(140% 120% at 50% 50%, transparent 56%, color-mix(in oklab, var(--paper-cinnabar-bright) 16%, transparent) 100%);
+  mix-blend-mode: multiply;
+  opacity: 0.9;
+  animation: obsScorchPulse 6.4s ease-in-out infinite;
+}
+
+/* prestige — gold ritual sheen: a warm gold radial from the top + a faint bronze base glow,
+   echoing Frame G's bronze backdrop. */
+.statusObservatoryStateOverlays__ritual {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(70% 46% at 50% 0%, color-mix(in oklab, var(--paper-gold-leaf) 18%, transparent), transparent 64%),
+    radial-gradient(130% 120% at 50% 120%, transparent 60%, color-mix(in oklab, var(--paper-rare) 14%, transparent) 100%);
+  mix-blend-mode: screen;
+  opacity: 0.85;
+  animation: obsRitualBreath 7.2s ease-in-out infinite;
+}
+
+@keyframes obsScorchPulse {
+  0%,
+  100% {
+    opacity: 0.78;
+  }
+  50% {
+    opacity: 0.95;
+  }
+}
+
+@keyframes obsRitualBreath {
+  0%,
+  100% {
+    opacity: 0.72;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}

@@ -12,7 +12,7 @@ const LIFE_DECREE_SEAL: Record<string, { chars: string; variant: 'cinnabar' | 'j
   blocked: { chars: '順遂', variant: 'cinnabar' },
   healthy: { chars: '順遂', variant: 'jade' },
   postFailure: { chars: '敗', variant: 'cinnabar' },
-  prestigePressure: { chars: '功成', variant: 'jade' },
+  prestigePressure: { chars: '轉生', variant: 'cinnabar' },
   contentCap: { chars: '待續', variant: 'jade' },
   unknown: { chars: '順遂', variant: 'cinnabar' },
 };

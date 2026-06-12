@@ -68,6 +68,29 @@
   justify-content: flex-start;
 }
 
+/* W7.2: state-keyed void — prestige warms the slate-teal void toward bronze; postFailure gives it
+   a cinnabar rim. Default + healthy/blocked/contentCap keep the slate-teal void above (never brown,
+   per the L46 rule). Only the background/vignette swap — geometry is untouched, so no CLS. */
+.statusObservatoryRoot[data-observatory-visual-state='prestigePressure'] .obsStageViewport {
+  background: radial-gradient(
+    120% 90% at 50% 8%,
+    var(--obs-void-bronze-high) 0%,
+    var(--obs-void-bronze-mid) 55%,
+    var(--obs-void-bronze-deep) 100%
+  );
+  box-shadow: inset 0 0 240px var(--obs-void-bronze-vignette);
+}
+
+.statusObservatoryRoot[data-observatory-visual-state='postFailure'] .obsStageViewport {
+  background: radial-gradient(
+    120% 90% at 50% 8%,
+    var(--obs-void-high) 0%,
+    var(--obs-void-mid) 50%,
+    var(--obs-void-cinnabar-deep) 100%
+  );
+  box-shadow: inset 0 0 240px var(--obs-void-cinnabar-vignette);
+}
+
 .obsStage {
   position: relative;
   flex: 0 0 auto;
@@ -3854,6 +3877,8 @@
   .statusCurrentWorkTimeWheel__spinRingInner,
   .statusCurrentWorkTimeWheel__coreBreath,
   .statusFoldedLedgerRail__fold,
+  .statusObservatoryStateOverlays__scorch,
+  .statusObservatoryStateOverlays__ritual,
   .statusObservatoryDrawer {
     animation: none;
     transition: none;

@@ -15,6 +15,7 @@ import { StatusObservatoryDrawers } from './StatusObservatoryDrawers.js';
 import { StatusRootLawCoupledInstrument } from './StatusRootLawCoupledInstrument.js';
 import { StatusStatMeridianConstellation } from './StatusStatMeridianConstellation.js';
 import { StatusVitalsSealRibbon } from './StatusVitalsSealRibbon.js';
+import { StatusObservatoryStateOverlays } from './StatusObservatoryStateOverlays.js';
 import { InkGrain } from '../../ink/InkGrain.js';
 import { InkObservatoryDefs } from '../../ink/InkObservatoryDefs.js';
 import { ObservatorySelectionProvider } from './useObservatorySelection.js';
@@ -151,6 +152,8 @@ export function StatusLivingStateObservatory({ surface, onAction, fixtureId }: S
           </div>
 
           <InkGrain />
+
+          <StatusObservatoryStateOverlays presentation={presentation} />
 
           <StatusObservatoryDrawers
             open={activeDrawer !== null}

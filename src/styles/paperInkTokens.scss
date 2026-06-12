@@ -230,6 +230,15 @@
   --obs-void-mid: #16211e;
   --obs-void-high: #20302c;
   --obs-void-vignette: rgba(8, 12, 10, 0.6);
+  /* W7.2: state-keyed void variants — the slate-teal void warmed toward bronze (prestige)
+     or given a cinnabar rim (postFailure). Derived from the slate-teal void + palette tokens
+     via color-mix so they stay dark & tonal, never saturated/brown. No new raw hex. */
+  --obs-void-bronze-high: color-mix(in oklab, var(--obs-void-high), var(--paper-rare) 16%);
+  --obs-void-bronze-mid: color-mix(in oklab, var(--obs-void-mid), var(--paper-rare) 16%);
+  --obs-void-bronze-deep: color-mix(in oklab, var(--obs-void-deep), var(--paper-rare) 13%);
+  --obs-void-bronze-vignette: color-mix(in oklab, var(--obs-void-vignette), var(--paper-rare) 18%);
+  --obs-void-cinnabar-deep: color-mix(in oklab, var(--obs-void-deep), var(--paper-cinnabar-deep) 24%);
+  --obs-void-cinnabar-vignette: color-mix(in oklab, var(--obs-void-vignette), var(--paper-stamp) 22%);
   /* Material helpers for the parchment instrument plates */
   --obs-plate-edge: inset 0 0 0 1px rgba(122, 94, 53, 0.34);
   --obs-plate-age: inset 0 0 120px rgba(122, 94, 53, 0.12);
