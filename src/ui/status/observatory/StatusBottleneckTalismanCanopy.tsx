@@ -4,6 +4,7 @@ import type {
   StatusBottleneckTalismanSlipSurface,
   StatusObservatorySurfaceV1,
 } from '../../../systems/ui/status/statusObservatoryTypes.js';
+import type { ObservatoryCanopyMode } from '../../../systems/ui/status/statusObservatoryPresentation.js';
 import { StatusBottleneckInspector } from './StatusBottleneckInspector.js';
 import { StatusCausalThreadLayer } from './StatusCausalThreadLayer.js';
 import { useObservatorySelection } from './useObservatorySelection.js';
@@ -14,6 +15,7 @@ import { InkTassel } from '../../ink/InkTassel.js';
 
 export interface StatusBottleneckTalismanCanopyProps {
   surface: StatusObservatorySurfaceV1['bottleneckCanopy'];
+  canopyMode?: ObservatoryCanopyMode;
   onAction?: (action: StatusLedgerActionSurface) => void;
 }
 
@@ -76,8 +78,29 @@ function parseProgressPips(progressLabel: string): { on: number; of: number } | 
   return { on: Math.min(Math.max(on, 0), of), of };
 }
 
+/* Default canopyMode when the shell doesn't thread it (standalone / tests).
+   Mirrors resolveObservatoryPresentation()'s visualState -> canopyMode map
+   (single source of truth: statusObservatoryPresentation.ts). */
+function canopyModeForVisualState(visualState: string): ObservatoryCanopyMode {
+  switch (visualState) {
+    case 'healthy':
+      return 'maintenance';
+    case 'postFailure':
+      return 'failureDiagnosis';
+    case 'prestigePressure':
+      return 'reincarnationEdict';
+    case 'contentCap':
+      return 'capNotice';
+    case 'blocked':
+      return 'bottleneck';
+    default:
+      return 'maintenance';
+  }
+}
+
 export function StatusBottleneckTalismanCanopy({
   surface,
+  canopyMode,
   onAction,
 }: StatusBottleneckTalismanCanopyProps) {
   const slipsById = useMemo(() => new Map(surface.talismanSlips.map((slip) => [slip.id, slip])), [surface.talismanSlips]);
@@ -101,6 +124,7 @@ export function StatusBottleneckTalismanCanopy({
   const edictDisabled = !edictAction || edictAction.disabled || !onAction;
   const chop = edictChop(surface.centralEdict.visualState);
   const safetyPips = parseProgressPips(surface.safetySeal.progressLabel);
+  const resolvedCanopyMode = canopyMode ?? canopyModeForVisualState(surface.centralEdict.visualState);
 
   return (
     <section
@@ -109,6 +133,7 @@ export function StatusBottleneckTalismanCanopy({
       data-surface-testid={surface.rootTestId}
       data-s6-instrument="bottleneck-talisman-canopy"
       data-visual-state={surface.centralEdict.visualState}
+      data-canopy-mode={resolvedCanopyMode}
       data-selected-slip-id={selectedSlip?.id ?? 'none'}
       data-animate={ritual.animate ? 'true' : 'false'}
       style={motion as CSSProperties}

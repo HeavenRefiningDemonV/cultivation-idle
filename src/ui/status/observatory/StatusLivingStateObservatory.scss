@@ -2130,6 +2130,45 @@
   animation: statusBottleneckCanopySealPulse var(--breath-period, 5.6s) ease-in-out infinite;
 }
 
+/* ===== W5.2 canopy-mode silhouettes (keyed off data-canopy-mode; the visualState/edict label is the truth, tone is reinforcement) ===== */
+.statusBottleneckTalismanCanopy[data-canopy-mode='maintenance'] .statusBottleneckTalismanCanopy__board,
+.statusBottleneckTalismanCanopy[data-canopy-mode='capNotice'] .statusBottleneckTalismanCanopy__board {
+  background:
+    radial-gradient(circle at 50% 42%, rgba(47, 127, 98, 0.12), transparent 36%),
+    linear-gradient(180deg, rgba(255, 250, 232, 0.74), rgba(216, 200, 150, 0.32));
+}
+
+.statusBottleneckTalismanCanopy[data-canopy-mode='maintenance'] .statusBottleneckTalismanCanopy__edict,
+.statusBottleneckTalismanCanopy[data-canopy-mode='capNotice'] .statusBottleneckTalismanCanopy__edict {
+  border-color: color-mix(in srgb, var(--observatory-jade) 56%, transparent);
+}
+
+.statusBottleneckTalismanCanopy[data-canopy-mode='failureDiagnosis'] .statusBottleneckTalismanCanopy__board {
+  background:
+    radial-gradient(circle at 50% 40%, rgba(163, 58, 44, 0.18), transparent 34%),
+    linear-gradient(180deg, rgba(255, 244, 232, 0.72), rgba(214, 176, 140, 0.34));
+}
+
+.statusBottleneckTalismanCanopy[data-canopy-mode='failureDiagnosis'] .statusBottleneckTalismanCanopy__edict {
+  border-color: color-mix(in srgb, var(--observatory-cinnabar) 64%, transparent);
+  box-shadow:
+    0 14px 24px rgba(110, 36, 30, 0.24),
+    inset 0 0 0 1px rgba(255, 234, 226, 0.5);
+}
+
+.statusBottleneckTalismanCanopy[data-canopy-mode='reincarnationEdict'] .statusBottleneckTalismanCanopy__board {
+  background:
+    radial-gradient(circle at 50% 38%, rgba(163, 108, 33, 0.2), transparent 38%),
+    linear-gradient(180deg, rgba(255, 247, 224, 0.78), rgba(231, 210, 160, 0.4));
+}
+
+.statusBottleneckTalismanCanopy[data-canopy-mode='reincarnationEdict'] .statusBottleneckTalismanCanopy__edict {
+  border-color: color-mix(in srgb, var(--observatory-gold) 62%, transparent);
+  box-shadow:
+    0 16px 30px rgba(120, 80, 20, 0.28),
+    inset 0 0 0 2px rgba(217, 189, 128, 0.5);
+}
+
 .statusStatConstellation {
   min-height: 580px;
 }

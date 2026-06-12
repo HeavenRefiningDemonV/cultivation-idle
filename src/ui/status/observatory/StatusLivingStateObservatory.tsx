@@ -104,7 +104,11 @@ export function StatusLivingStateObservatory({ surface, onAction, fixtureId }: S
             data-testid="obs-region-canopy"
             aria-label="Bottleneck Talisman Canopy"
           >
-            <StatusBottleneckTalismanCanopy surface={surface.bottleneckCanopy} onAction={onAction} />
+            <StatusBottleneckTalismanCanopy
+              surface={surface.bottleneckCanopy}
+              canopyMode={presentation.canopyMode}
+              onAction={onAction}
+            />
           </section>
 
           <div className="obsBelt">
