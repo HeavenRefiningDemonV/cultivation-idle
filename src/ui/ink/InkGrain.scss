@@ -1,0 +1,23 @@
+/* Wave 0 paper-grain overlay (artifact .grain): a multiply-blended
+   fractal-noise texture. The noise is an SVG <rect> filtered by the shared
+   #grainF (declared once in InkObservatoryDefs). Static texture, no motion.
+   Layer order inside a plate: above the parchment fill + foxing, below the
+   gold frame (z-index 1, matching the artifact). */
+@mixin ink-grain {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.5;
+  mix-blend-mode: multiply;
+}
+
+.inkGrain {
+  @include ink-grain;
+}
+
+.inkGrain > svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}

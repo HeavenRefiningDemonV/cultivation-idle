@@ -17,3 +17,5 @@ export type { InkModalFrameProps, InkModalFrameSize, InkModalFrameTone } from '.
 export { PurposeSourceCallout } from './PurposeSourceCallout.js';
 export { InkBanner } from './InkBanner.js';
 export type { InkBannerProps } from './InkBanner.js';
+export { InkGrain } from './InkGrain.js';
+export type { InkGrainProps } from './InkGrain.js';
