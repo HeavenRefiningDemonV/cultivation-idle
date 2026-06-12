@@ -19,6 +19,7 @@ import {
 } from '../../../systems/ui/status/statusObservatoryPresentation.js';
 import { StatusStatBeadLens } from './StatusStatBeadLens.js';
 import { useObservatorySelection } from './useObservatorySelection.js';
+import { useRitualMotion } from './fx/useRitualMotion.js';
 
 export interface StatusStatMeridianConstellationProps {
   surface: StatusObservatorySurfaceV1['statConstellation'];
@@ -123,6 +124,7 @@ export function StatusStatMeridianConstellation({ surface, onAction }: StatusSta
   );
   const [selectedStatId, setSelectedStatId] = useState<string | null>(initialSelectedStatId);
   const sharedSelection = useObservatorySelection();
+  const motion = useRitualMotion();
 
   useEffect(() => {
     setSelectedStatId((current) => (current && nodesById.has(current) ? current : initialSelectedStatId));
@@ -158,6 +160,7 @@ export function StatusStatMeridianConstellation({ surface, onAction }: StatusSta
             className="statusStatConstellation__svg"
             viewBox="0 0 100 100"
             role="img"
+            data-animate={motion.animate ? 'true' : 'false'}
             aria-label="Fixed Universal, Heaven, Earth, and Martial stat branch geometry"
           >
             <defs>
@@ -174,6 +177,24 @@ export function StatusStatMeridianConstellation({ surface, onAction }: StatusSta
             <path className="statusStatConstellation__wash statusStatConstellation__wash--heaven" d="M9 28 C16 9 36 4 50 18 C42 29 45 42 33 52 C18 58 8 47 9 28" />
             <path className="statusStatConstellation__wash statusStatConstellation__wash--earth" d="M6 86 C13 66 26 58 42 64 C51 73 42 91 25 94 C14 96 8 93 6 86" />
             <path className="statusStatConstellation__wash statusStatConstellation__wash--martial" d="M60 29 C75 15 96 35 91 54 C87 73 63 83 56 71 C76 67 88 47 78 33 C72 26 65 27 60 29" />
+
+            {/* W3 atmosphere - painterly, decorative, aria-hidden */}
+            <path
+              className="statusStatConstellation__brush statusStatConstellation__brush--martial"
+              d="M62 30 C72 16 92 22 90 40 C88 58 70 64 62 56 C76 52 84 40 78 32 C73 27 66 28 62 30"
+              aria-hidden="true"
+            />
+            <path
+              className="statusStatConstellation__spineGlow"
+              d={STATUS_OBSERVATORY_STAT_BRANCH_PATHS.universal}
+              aria-hidden="true"
+            />
+            <path
+              className="statusStatConstellation__qiFlow"
+              d={STATUS_OBSERVATORY_STAT_BRANCH_PATHS.universal}
+              pathLength={1}
+              aria-hidden="true"
+            />
 
             {branchEntries.map(([branchId, path]) => (
               <path
@@ -239,6 +260,10 @@ export function StatusStatMeridianConstellation({ surface, onAction }: StatusSta
 
             {orderedNodes.map((node, index) => {
               const geometry = geometryFor(node, index);
+              const isSocket =
+                node.nodeState === 'unlit_socket' ||
+                node.nodeState === 'future' ||
+                node.nodeState === 'inactive';
               return (
                 <g
                   key={node.id}
@@ -254,7 +279,11 @@ export function StatusStatMeridianConstellation({ surface, onAction }: StatusSta
                 >
                   <title>{ariaLabelForNode(node)}</title>
                   <circle className="statusStatConstellation__nodeAura" r={node.weakLink ? 4.8 : 3.8} />
-                  <circle className="statusStatConstellation__nodeBead" r={node.nodeState === 'unlit_socket' || node.nodeState === 'future' ? 2.15 : 2.75} />
+                  <circle className="statusStatConstellation__nodeBead" r={isSocket ? 2.15 : 2.75} />
+                  {node.nodeState === 'foundation' && !node.weakLink ? (
+                    <circle className="statusStatConstellation__nodeCore" r={1.15} />
+                  ) : null}
+                  {node.weakLink ? <circle className="statusStatConstellation__weakPulse" r={5.6} /> : null}
                   {node.weakLink ? <path className="statusStatConstellation__crack" d="M-1.4 -2.6 L0.2 -0.5 L-0.9 0.2 L1.3 2.5" /> : null}
                 </g>
               );

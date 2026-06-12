@@ -1751,54 +1751,185 @@
   opacity: 0.88;
 }
 
+/* ===== W3: node fidelity via the W0 defs sprite. States read in grayscale by
+   fill-vs-outline + glow + the explicit label (lens + legend). No new tokens. ===== */
 .statusStatConstellation__nodeGlyph {
   pointer-events: none;
 }
 
 .statusStatConstellation__nodeAura {
-  fill: rgba(255, 244, 205, 0.45);
-  stroke: rgba(89, 64, 30, 0.32);
-  stroke-width: 0.5;
+  fill: none;
+  opacity: 0;
+  transition: opacity 120ms ease;
 }
 
 .statusStatConstellation__nodeBead {
-  fill: rgba(91, 84, 70, 0.62);
-  stroke: rgba(255, 246, 218, 0.78);
+  fill: var(--paper-parchment-deep);
+  stroke: rgba(120, 110, 90, 0.6);
   stroke-width: 0.55;
 }
 
+.statusStatConstellation__nodeCore {
+  fill: none;
+  stroke: #cfe6cf;
+  stroke-width: 0.4;
+}
+
+/* foundation - universal spine (jade) */
 .statusStatConstellation__nodeGlyph[data-node-state='foundation'] .statusStatConstellation__nodeBead {
-  fill: var(--observatory-jade);
+  fill: url("#jadeRad");
+  stroke: var(--paper-jade-ink);
+  stroke-width: 0.6;
 }
 
+.statusStatConstellation__nodeGlyph[data-node-state='foundation'] .statusStatConstellation__nodeAura {
+  fill: var(--obs-glow-jade-soft);
+  opacity: 0.9;
+}
+
+/* lit - current path (gold) */
 .statusStatConstellation__nodeGlyph[data-node-state='lit'] .statusStatConstellation__nodeBead {
-  fill: url("#statusStatNodeGlow");
-  stroke: #f3cf62;
+  fill: url("#goldRad");
+  stroke: var(--paper-gold-deep);
+  stroke-width: 0.6;
 }
 
+.statusStatConstellation__nodeGlyph[data-node-state='lit'] .statusStatConstellation__nodeAura {
+  fill: var(--obs-glow-gold-soft);
+  opacity: 0.95;
+}
+
+/* lifeless - off-path, muted dark grey (matches Image 8, not the artifact's parchment) */
 .statusStatConstellation__nodeGlyph[data-node-state='lifeless'] .statusStatConstellation__nodeBead {
   fill: rgba(76, 74, 68, 0.6);
   stroke: rgba(244, 232, 202, 0.44);
+  stroke-width: 0.5;
 }
 
+.statusStatConstellation__nodeGlyph[data-node-state='lifeless'] .statusStatConstellation__nodeAura {
+  fill: none;
+  stroke: rgba(120, 110, 90, 0.5);
+  stroke-width: 0.4;
+  opacity: 0.7;
+}
+
+/* sockets - outline only, dashed */
 .statusStatConstellation__nodeGlyph[data-node-state='unlit_socket'] .statusStatConstellation__nodeBead,
 .statusStatConstellation__nodeGlyph[data-node-state='future'] .statusStatConstellation__nodeBead,
 .statusStatConstellation__nodeGlyph[data-node-state='inactive'] .statusStatConstellation__nodeBead {
-  fill: rgba(255, 249, 229, 0.2);
-  stroke: rgba(80, 66, 42, 0.72);
+  fill: none;
+  stroke: rgba(120, 90, 46, 0.6);
+  stroke-width: 0.5;
   stroke-dasharray: 0.7 0.55;
 }
 
-.statusStatConstellation__nodeGlyph[data-selected='true'] .statusStatConstellation__nodeAura {
+/* weak-link overlay - wins over any state (last in cascade) */
+.statusStatConstellation__nodeGlyph[data-weak-link='true'] .statusStatConstellation__nodeBead {
+  fill: url("#cinnDisc");
+  stroke: var(--paper-cinnabar-deep);
+  stroke-width: 0.7;
+}
+
+.statusStatConstellation__nodeGlyph[data-weak-link='true'] .statusStatConstellation__nodeAura {
+  fill: var(--obs-glow-cinnabar-soft);
+  opacity: 0.95;
+}
+
+.statusStatConstellation__weakPulse {
+  fill: none;
   stroke: var(--observatory-cinnabar);
-  stroke-width: 0.9;
+  stroke-width: 0.7;
+  opacity: 0.55;
 }
 
 .statusStatConstellation__crack {
   fill: none;
-  stroke: var(--observatory-cinnabar);
+  stroke: rgba(251, 231, 227, 0.92);
   stroke-width: 0.75;
   stroke-linecap: round;
+}
+
+/* selected ring (W1) - keep, ensure aura visible when selected */
+.statusStatConstellation__nodeGlyph[data-selected='true'] .statusStatConstellation__nodeAura {
+  stroke: var(--observatory-cinnabar);
+  stroke-width: 0.9;
+  opacity: 1;
+}
+
+/* ===== atmosphere ===== */
+.statusStatConstellation__spineGlow {
+  fill: none;
+  stroke: var(--obs-glow-jade);
+  stroke-width: 6;
+  stroke-linecap: round;
+  opacity: 0.5;
+  filter: url("#soft");
+}
+
+.statusStatConstellation__qiFlow {
+  fill: none;
+  stroke: #cfe6cf;
+  stroke-width: 1.2;
+  opacity: 0.75;
+  stroke-dasharray: 3 13;
+}
+
+.statusStatConstellation__brush {
+  fill: none;
+  opacity: 0.42;
+}
+
+.statusStatConstellation__brush--martial {
+  stroke: url("#goldBrushG");
+  stroke-width: 3;
+  stroke-linecap: round;
+  filter: url("#brushRough");
+}
+
+/* ===== motion - gated entirely by the svg's data-animate flag (reduced motion = frozen) ===== */
+@keyframes statusStatTwinkle {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+
+  50% {
+    opacity: 0.95;
+  }
+}
+
+@keyframes statusStatQiFlow {
+  to {
+    stroke-dashoffset: -64;
+  }
+}
+
+@keyframes statusStatWeakPulse {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.16);
+  }
+}
+
+.statusStatConstellation__svg[data-animate='true'] .statusStatConstellation__nodeGlyph[data-node-state='lit'] .statusStatConstellation__nodeAura,
+.statusStatConstellation__svg[data-animate='true'] .statusStatConstellation__nodeGlyph[data-node-state='foundation'] .statusStatConstellation__nodeAura {
+  animation: statusStatTwinkle var(--obs-motion-breathe) var(--obs-motion-ease) infinite;
+}
+
+.statusStatConstellation__svg[data-animate='true'] .statusStatConstellation__qiFlow {
+  animation: statusStatQiFlow var(--obs-motion-drift) linear infinite;
+}
+
+.statusStatConstellation__svg[data-animate='true'] .statusStatConstellation__weakPulse {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: statusStatWeakPulse var(--obs-motion-pulse) var(--obs-motion-ease) infinite;
 }
 
 .statusStatConstellation__hitLayer {
