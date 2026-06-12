@@ -15,3 +15,5 @@ export type { PaperChipVariant, PaperChipTone, PaperChipProps } from './PaperChi
 export { InkModalFrame } from './InkModalFrame.js';
 export type { InkModalFrameProps, InkModalFrameSize, InkModalFrameTone } from './InkModalFrame.js';
 export { PurposeSourceCallout } from './PurposeSourceCallout.js';
+export { InkBanner } from './InkBanner.js';
+export type { InkBannerProps } from './InkBanner.js';

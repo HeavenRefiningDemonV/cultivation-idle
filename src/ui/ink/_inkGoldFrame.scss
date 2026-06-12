@@ -1,0 +1,26 @@
+// Wave 0 gold corner-frame: the artifact .gframe gradient border + .gframe2
+// inset hairline, as a mixin for a plate ::after. Tokenized gold; keep BOTH
+// -webkit-mask and mask-composite for Chromium/Safari parity. The mask color
+// supplies opacity only, so it uses an opaque token (not raw hex).
+
+@mixin ink-gold-frame {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  border-radius: inherit;
+  border: 2.5px solid transparent;
+  background: linear-gradient(
+    135deg,
+    var(--paper-gold-pale),
+    var(--paper-amber) 45%,
+    var(--paper-gold-deep)
+  ) border-box;
+  -webkit-mask:
+    linear-gradient(var(--paper-ink) 0 0) padding-box,
+    linear-gradient(var(--paper-ink) 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--paper-amber) 45%, transparent);
+}

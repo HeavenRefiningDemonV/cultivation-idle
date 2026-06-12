@@ -1,4 +1,5 @@
 @use '../../../paper/paperPlateMaterial' as plate;
+@use '../../../ink/inkGoldFrame' as goldFrame;
 
 /* ============================================================
    Observatory material classes (Phase 0). Tokens only — never a
@@ -114,4 +115,12 @@
    the plate's rounded rect by the existing overflow:hidden + border-radius. */
 .obsRegion::before {
   @include plate.paper-plate-material;
+}
+
+/* Wave 0 — gold gradient corner-frame (artifact .gframe + .gframe2 hairline) on
+   the plate's ::after. Decorative only: pointer-events:none and a masked-out
+   centre, so it frames without obscuring instrument content or intercepting
+   clicks. NOT a state signal — the --observatory-state accent stays the truth. */
+.obsRegion::after {
+  @include goldFrame.ink-gold-frame;
 }
