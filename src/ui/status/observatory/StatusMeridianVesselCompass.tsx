@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useReducer, type CSSProperties } from 'react';
+import { useEffect, useMemo, useReducer, useRef, type CSSProperties, type KeyboardEvent } from 'react';
 import type { StatusLedgerActionSurface } from '../../../systems/ui/status/statusLedgerTypes.js';
 import type {
   StatusMeridianOrganSurface,
@@ -14,6 +14,8 @@ import {
 import { StatusMeridianFocusLens } from './StatusMeridianFocusLens.js';
 import { StatusObservatoryDrawers } from './StatusObservatoryDrawers.js';
 import { useObservatorySelection } from './useObservatorySelection.js';
+import { useRitualMotion } from './fx/useRitualMotion.js';
+import { useObservatoryMotion } from './useObservatoryMotion.js';
 
 export interface StatusMeridianVesselCompassProps {
   surface: StatusObservatorySurfaceV1['meridianVessel'];
@@ -48,6 +50,10 @@ function meridianVesselReducer(state: MeridianVesselState, action: MeridianVesse
       return state;
   }
 }
+
+const MERIDIAN_CENTRAL_CHANNEL_D =
+  STATUS_OBSERVATORY_MERIDIAN_BODY_LINEWORK.find((path) => path.id === 'central-channel')?.d ?? '';
+const MERIDIAN_DANTIAN_PEARL_Y = [28, 40, 64, 76];
 
 function organStateRank(state: StatusMeridianOrganSurface['state']): number {
   if (state === 'danger') return 0;
@@ -106,6 +112,63 @@ export function StatusMeridianVesselCompass({
 
   const selectedOrgan = organsById.get(state.selectedOrganId) ?? organs[0] ?? null;
 
+  const ritual = useRitualMotion();
+  const motion = useObservatoryMotion({
+    purityPct: 0,
+    fitAngleDeg: 0,
+    qiPerSecond: null,
+    cultivationRate: null,
+  });
+
+  const organsByOrdinal = useMemo(
+    () => new Map(organs.map((organ) => [organ.ordinal as number, organ])),
+    [organs],
+  );
+  const organButtonRefs = useRef(new Map<string, HTMLButtonElement>());
+  const focusOrgan = (organId: StatusMeridianOrganId) => {
+    dispatch({ type: 'select-organ', organId });
+    sharedSelection.select('organ', organId);
+    organButtonRefs.current.get(organId)?.focus();
+  };
+  const handleOrganRovingKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    const active = document.activeElement as HTMLElement | null;
+    const currentId = active?.getAttribute?.('data-organ-id');
+    if (!currentId) return;
+    const organ = organsById.get(currentId);
+    if (!organ) return;
+    const row = Math.floor((organ.ordinal - 1) / 2);
+    const col = (organ.ordinal - 1) % 2;
+    const ordinalAt = (nextRow: number, nextCol: number): number =>
+      Math.min(Math.max(nextRow, 0), 2) * 2 + nextCol + 1;
+    let targetOrdinal: number | null = null;
+    switch (event.key) {
+      case 'ArrowUp':
+        targetOrdinal = ordinalAt(row - 1, col);
+        break;
+      case 'ArrowDown':
+        targetOrdinal = ordinalAt(row + 1, col);
+        break;
+      case 'ArrowLeft':
+        targetOrdinal = ordinalAt(row, 0);
+        break;
+      case 'ArrowRight':
+        targetOrdinal = ordinalAt(row, 1);
+        break;
+      case 'Home':
+        targetOrdinal = 1;
+        break;
+      case 'End':
+        targetOrdinal = 6;
+        break;
+      default:
+        return;
+    }
+    const target = targetOrdinal === null ? undefined : organsByOrdinal.get(targetOrdinal);
+    if (!target) return;
+    event.preventDefault();
+    focusOrgan(target.id);
+  };
+
   return (
     <section
       className="statusObservatoryInstrument statusObservatoryVessel statusMeridianVesselCompass"
@@ -147,6 +210,8 @@ export function StatusMeridianVesselCompass({
             className="statusMeridianVesselCompass__bodyLinework"
             viewBox="0 0 100 100"
             role="img"
+            data-animate={ritual.animate ? 'true' : 'false'}
+            style={motion as CSSProperties}
             aria-label="Faint seated cultivator silhouette with meridian linework"
           >
             <defs>
@@ -160,33 +225,79 @@ export function StatusMeridianVesselCompass({
             {STATUS_OBSERVATORY_MERIDIAN_BODY_LINEWORK.map((path) => (
               <path key={path.id} className="statusMeridianVesselCompass__bodyPath" d={path.d} pathLength={1} />
             ))}
+            {MERIDIAN_CENTRAL_CHANNEL_D ? (
+              <path
+                className="statusMeridianVesselCompass__channelFlow"
+                d={MERIDIAN_CENTRAL_CHANNEL_D}
+                pathLength={1}
+                aria-hidden="true"
+              />
+            ) : null}
+            {MERIDIAN_DANTIAN_PEARL_Y.map((cy, index) => (
+              <g
+                key={cy}
+                className="statusMeridianVesselCompass__dantian"
+                data-dantian-index={index}
+                aria-hidden="true"
+              >
+                <circle className="statusMeridianVesselCompass__dantianRing" cx="50" cy={cy} r="2.2" />
+                <circle className="statusMeridianVesselCompass__dantianBead" cx="50" cy={cy} r="1.25" />
+              </g>
+            ))}
             {organs.map((organ) => {
               const geometry = STATUS_OBSERVATORY_MERIDIAN_ORGAN_GEOMETRY[organ.id];
+              const threadPath = `M${geometry.x} ${geometry.y} C${(geometry.x + geometry.lineTargetX) / 2} ${geometry.y} ${(geometry.x + geometry.lineTargetX) / 2} ${geometry.lineTargetY} ${geometry.lineTargetX} ${geometry.lineTargetY}`;
+              const threadSelected = organ.id === selectedOrgan?.id;
               return (
-                <path
-                  key={organ.id}
-                  className="statusMeridianVesselCompass__organThread"
-                  data-organ-id={organ.id}
-                  data-organ-state={organ.state}
-                  data-selected={organ.id === selectedOrgan?.id ? 'true' : 'false'}
-                  data-related={sharedSelection.isRelated('meridianVessel', organ.id) ? 'true' : 'false'}
-                  d={`M${geometry.x} ${geometry.y} C${(geometry.x + geometry.lineTargetX) / 2} ${geometry.y} ${(geometry.x + geometry.lineTargetX) / 2} ${geometry.lineTargetY} ${geometry.lineTargetX} ${geometry.lineTargetY}`}
-                  pathLength={1}
-                >
-                  <title>{organ.ariaLabel}</title>
-                </path>
+                <g key={organ.id}>
+                  <path
+                    className="statusMeridianVesselCompass__organThread"
+                    data-organ-id={organ.id}
+                    data-organ-state={organ.state}
+                    data-selected={threadSelected ? 'true' : 'false'}
+                    data-related={sharedSelection.isRelated('meridianVessel', organ.id) ? 'true' : 'false'}
+                    d={threadPath}
+                    pathLength={1}
+                  >
+                    <title>{organ.ariaLabel}</title>
+                  </path>
+                  <path
+                    className="statusMeridianVesselCompass__threadGlow"
+                    data-organ-state={organ.state}
+                    data-selected={threadSelected ? 'true' : 'false'}
+                    d={threadPath}
+                    pathLength={1}
+                    aria-hidden="true"
+                  />
+                  <circle
+                    className="statusMeridianVesselCompass__threadBead"
+                    data-organ-state={organ.state}
+                    cx={geometry.lineTargetX}
+                    cy={geometry.lineTargetY}
+                    r={1.1}
+                    aria-hidden="true"
+                  />
+                </g>
               );
             })}
             <circle className="statusMeridianVesselCompass__coreSeal" cx="50" cy="52" r="4.4" />
             <circle className="statusMeridianVesselCompass__coreSeal statusMeridianVesselCompass__coreSeal--outer" cx="50" cy="52" r="7.6" />
           </svg>
 
-          <div className="statusMeridianVesselCompass__organLayer" aria-label="Selectable meridian organs">
+          <div
+            className="statusMeridianVesselCompass__organLayer"
+            aria-label="Selectable meridian organs"
+            onKeyDown={handleOrganRovingKeyDown}
+          >
             {organs.map((organ) => {
               const selected = organ.id === selectedOrgan?.id;
               return (
                 <button
                   key={organ.id}
+                  ref={(el) => {
+                    if (el) organButtonRefs.current.set(organ.id, el);
+                    else organButtonRefs.current.delete(organ.id);
+                  }}
                   type="button"
                   className="statusMeridianVesselCompass__organSeal"
                   style={organStyle(organ)}
@@ -195,6 +306,7 @@ export function StatusMeridianVesselCompass({
                   data-state={organ.state}
                   data-selected={selected ? 'true' : 'false'}
                   data-related={sharedSelection.isRelated('meridianVessel', organ.id) ? 'true' : 'false'}
+                  tabIndex={selected ? 0 : -1}
                   aria-pressed={selected}
                   aria-label={organ.ariaLabel}
                   onClick={() => {
@@ -207,7 +319,27 @@ export function StatusMeridianVesselCompass({
                   }}
                 >
                   <span className="statusMeridianVesselCompass__organSealInner" data-icon={organ.icon} aria-hidden="true">
-                    {organ.ordinal}
+                    {/* W4-deferred: per-organ glyph atlas (lotus/book/swords/etc.) - own Design packet. */}
+                    <svg className="statusMeridianVesselCompass__organMedallion" viewBox="0 0 24 24" aria-hidden="true">
+                      <circle className="statusMeridianVesselCompass__organRimOuter" cx="12" cy="12" r="11" />
+                      <circle
+                        className="statusMeridianVesselCompass__organRing"
+                        data-organ-state={organ.state}
+                        cx="12"
+                        cy="12"
+                        r="8.6"
+                      />
+                      <circle className="statusMeridianVesselCompass__organDisc" cx="12" cy="12" r="6" />
+                      <text
+                        className="statusMeridianVesselCompass__organMark"
+                        x="12"
+                        y="12"
+                        textAnchor="middle"
+                        dominantBaseline="central"
+                      >
+                        {organ.ordinal}
+                      </text>
+                    </svg>
                   </span>
                   <strong>{organ.title}</strong>
                   <small>{organ.valueLabel}</small>

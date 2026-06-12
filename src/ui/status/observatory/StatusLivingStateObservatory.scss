@@ -906,6 +906,99 @@
   stroke-dasharray: 0.8 0.48;
 }
 
+/* W4: central qi channel flow + dantian pearls (additive, decorative, aria-hidden) */
+.statusMeridianVesselCompass__channelFlow {
+  fill: none;
+  stroke: rgba(244, 227, 173, 0.78);
+  stroke-width: 1;
+  opacity: 0.72;
+  stroke-dasharray: 3 13;
+}
+
+.statusMeridianVesselCompass__dantianRing {
+  fill: none;
+  stroke: rgba(150, 120, 60, 0.55);
+  stroke-width: 0.4;
+}
+
+.statusMeridianVesselCompass__dantianBead {
+  fill: url("#goldRad");
+  filter: url("#glowJ");
+}
+
+/* W4: organ qi-thread bright overlay + anchor bead (tone by state, grayscale-safe) */
+.statusMeridianVesselCompass__threadGlow {
+  fill: none;
+  stroke: rgba(255, 240, 200, 0.85);
+  stroke-width: 0.42;
+  opacity: 0;
+  stroke-dasharray: 2.5 11;
+}
+
+.statusMeridianVesselCompass__threadGlow[data-organ-state='healthy'],
+.statusMeridianVesselCompass__threadGlow[data-organ-state='attention'] {
+  opacity: 0.7;
+}
+
+.statusMeridianVesselCompass__threadGlow[data-organ-state='danger'] {
+  stroke: rgba(251, 231, 227, 0.92);
+  opacity: 0.85;
+}
+
+.statusMeridianVesselCompass__threadGlow[data-selected='true'] {
+  opacity: 1;
+}
+
+.statusMeridianVesselCompass__threadBead {
+  fill: var(--observatory-bronze);
+  stroke: rgba(255, 246, 218, 0.7);
+  stroke-width: 0.3;
+}
+
+.statusMeridianVesselCompass__threadBead[data-organ-state='healthy'] {
+  fill: var(--observatory-jade);
+}
+
+.statusMeridianVesselCompass__threadBead[data-organ-state='attention'] {
+  fill: var(--observatory-gold);
+}
+
+.statusMeridianVesselCompass__threadBead[data-organ-state='danger'] {
+  fill: var(--observatory-cinnabar);
+}
+
+/* W4 vessel motion - gated entirely by the svg's data-animate flag (reduced motion = frozen) */
+@keyframes statusMeridianVesselQiFlow {
+  to {
+    stroke-dashoffset: -64;
+  }
+}
+
+@keyframes statusMeridianVesselTwinkle {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+
+  50% {
+    opacity: 0.95;
+  }
+}
+
+.statusMeridianVesselCompass__bodyLinework[data-animate='true'] .statusMeridianVesselCompass__bodyAura,
+.statusMeridianVesselCompass__bodyLinework[data-animate='true'] .statusMeridianVesselCompass__coreSeal {
+  animation: obsBreath var(--breath-period, 5.6s) ease-in-out infinite;
+}
+
+.statusMeridianVesselCompass__bodyLinework[data-animate='true'] .statusMeridianVesselCompass__channelFlow,
+.statusMeridianVesselCompass__bodyLinework[data-animate='true'] .statusMeridianVesselCompass__threadGlow {
+  animation: statusMeridianVesselQiFlow var(--obs-motion-drift) linear infinite;
+}
+
+.statusMeridianVesselCompass__bodyLinework[data-animate='true'] .statusMeridianVesselCompass__dantian {
+  animation: statusMeridianVesselTwinkle var(--obs-motion-breathe) var(--obs-motion-ease) infinite;
+}
+
 .statusMeridianVesselCompass__organLayer {
   pointer-events: none;
 }
@@ -936,16 +1029,58 @@
 }
 
 .statusMeridianVesselCompass__organSealInner {
-  width: 28px;
-  height: 28px;
+  width: 34px;
+  height: 34px;
   display: grid;
   place-items: center;
-  border-radius: 50%;
-  border: 2px solid currentColor;
   color: var(--observatory-state);
+}
+
+/* W4: concentric ring medallion (gold rim + state-toned ring + disc + ordinal mark) */
+.statusMeridianVesselCompass__organMedallion {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.statusMeridianVesselCompass__organRimOuter {
+  fill: none;
+  stroke: var(--observatory-gold);
+  stroke-width: 1.1;
+  opacity: 0.78;
+}
+
+.statusMeridianVesselCompass__organRing {
+  fill: none;
+  stroke: var(--observatory-state);
+  stroke-width: 1.4;
+}
+
+.statusMeridianVesselCompass__organRing[data-organ-state='attention'] {
+  stroke-dasharray: 2.4 1.6;
+}
+
+.statusMeridianVesselCompass__organRing[data-organ-state='danger'] {
+  stroke-width: 2.2;
+}
+
+.statusMeridianVesselCompass__organRing[data-organ-state='locked'],
+.statusMeridianVesselCompass__organRing[data-organ-state='unknown'] {
+  stroke-dasharray: 1 1.4;
+  opacity: 0.72;
+}
+
+.statusMeridianVesselCompass__organDisc {
+  fill: rgba(255, 250, 232, 0.95);
+  stroke: rgba(163, 108, 33, 0.22);
+  stroke-width: 0.5;
+}
+
+.statusMeridianVesselCompass__organMark {
+  fill: var(--observatory-state);
   font-weight: 800;
-  background:
-    radial-gradient(circle, rgba(255, 250, 232, 0.95), rgba(163, 108, 33, 0.16));
+  font-size: 9px;
+  font-family: Georgia, "Times New Roman", serif;
 }
 
 .statusMeridianVesselCompass__organSeal[data-organ-state='healthy'] {
@@ -1023,6 +1158,23 @@
 
 .statusMeridianVesselCompass__focusLens {
   min-height: 190px;
+}
+
+/* W4: torn cinnabar focus-lens slip + sources-as-seals */
+.statusMeridianVesselCompass__focusLens .statusFocusLens {
+  clip-path: polygon(0 2.5%, 100% 0, 99.4% 97%, 0.6% 100%);
+  border: 2px solid color-mix(in srgb, var(--observatory-cinnabar) 40%, transparent);
+  background:
+    radial-gradient(circle at 30% 14%, rgba(255, 251, 233, 0.92), rgba(238, 216, 169, 0.7)),
+    rgba(255, 248, 226, 0.9);
+  box-shadow: inset 0 0 22px rgba(122, 94, 53, 0.12);
+}
+
+.statusMeridianVesselCompass__focusLens .statusFocusLens__sources i {
+  border: 1px solid color-mix(in srgb, var(--observatory-cinnabar) 38%, rgba(90, 62, 30, 0.3));
+  border-radius: 999px;
+  background: radial-gradient(circle at 50% 22%, rgba(255, 250, 232, 0.95), rgba(163, 108, 33, 0.14));
+  box-shadow: inset 0 0 0 1px rgba(255, 251, 229, 0.4);
 }
 
 .statusFocusLens {
@@ -3008,6 +3160,11 @@
   .statusHeartLawSeal__flame,
   .statusMeridianVesselCompass__organThread,
   .statusMeridianVesselCompass__organSeal,
+  .statusMeridianVesselCompass__channelFlow,
+  .statusMeridianVesselCompass__threadGlow,
+  .statusMeridianVesselCompass__dantian,
+  .statusMeridianVesselCompass__bodyAura,
+  .statusMeridianVesselCompass__coreSeal,
   .statusFocusLens,
   .statusMeridianVesselCompass__drawer,
   .statusBottleneckTalismanCanopy__thread,
