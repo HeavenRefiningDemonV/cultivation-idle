@@ -198,4 +198,77 @@
   --ui-reserved-badge-block-size-tab-button: 1.1rem;
   --ui-reserved-badge-block-size-spine-badge: 1.2rem;
   --ui-reserved-badge-block-size-slot-badge: 1.1rem;
+  /* ============================================================
+     Observatory foundation tokens (Phase 0) - Status Living
+     State Observatory. Hex values may exist ONLY in this file.
+     ============================================================ */
+  /* Bright accents (mockup-sampled companions to the base paper tokens) */
+  --paper-jade-bright: #0f6f5a;        /* lit jade cores, healthy fills   */
+  --paper-gold-strong: #b2832d;        /* active-path gold                */
+  --paper-gold-leaf: #caa24a;          /* gold-leaf frames, bead rings    */
+  --paper-cinnabar-bright: #a94835;    /* live warning accents            */
+  /* Five-element accents (spirit-root flavor; decorative accents only) */
+  --element-wood: #2d7844;
+  --element-fire: #a44731;
+  --element-earth: #8d642d;
+  --element-metal: #69717c;            /* note: a stone grey-METAL accent, not a UI gray */
+  --element-water: #2a668d;            /* note: element WATER accent, never panel chrome */
+  /* Glow tokens (the only sanctioned glow colors; used by fx primitives) */
+  --obs-glow-jade: rgba(46, 120, 90, 0.55);
+  --obs-glow-jade-soft: rgba(46, 120, 90, 0.22);
+  --obs-glow-gold: rgba(202, 162, 74, 0.60);
+  --obs-glow-gold-soft: rgba(202, 162, 74, 0.25);
+  --obs-glow-cinnabar: rgba(169, 72, 53, 0.60);
+  --obs-glow-cinnabar-soft: rgba(169, 72, 53, 0.24);
+  /* Ember palette (broken-bridge motes, scorch accents) */
+  --obs-ember-hot: #f0a35a;
+  --obs-ember-mid: #e07b4a;
+  --obs-ember-core: #c4513c;
+  /* The dark "void" surround of Frame I (background atmosphere ONLY -
+     never a panel/chrome color; this is the one sanctioned dark surface) */
+  --obs-void-deep: #0e1715;
+  --obs-void-mid: #16211e;
+  --obs-void-high: #20302c;
+  --obs-void-vignette: rgba(8, 12, 10, 0.6);
+  /* Material helpers for the parchment instrument plates */
+  --obs-plate-edge: inset 0 0 0 1px rgba(122, 94, 53, 0.34);
+  --obs-plate-age: inset 0 0 120px rgba(122, 94, 53, 0.12);
+  /* Motion aliases for the observatory layer (reference, never redefine) */
+  --obs-motion-breathe: var(--ui-motion-ritual-breathe-duration);
+  --obs-motion-ring: var(--ui-motion-ritual-ring-duration);
+  --obs-motion-drift: var(--ui-motion-ritual-drift-duration);
+  --obs-motion-pulse: var(--ui-motion-ritual-pulse-duration);
+  --obs-motion-ease: var(--ui-motion-ritual-ease);
+
+  /* === W0 (Wave 0) shared-materials tokens: artifact :root mapped to codified.
+     Ported from the living-state-observatory artifact. Hex sanctioned here only;
+     consuming SCSS builds every gradient/mix. */
+  --paper-parchment-warm: #efe3c9;   /* artifact --paper-warm */
+  --paper-parchment-deep: #d9c79e;   /* artifact --paper-shade */
+  --paper-ink-70: rgba(31, 26, 23, 0.7);
+  --paper-ink-45: rgba(31, 26, 23, 0.45);
+  --paper-ink-25: rgba(31, 26, 23, 0.25);
+  --paper-ink-12: rgba(31, 26, 23, 0.12);
+  --paper-gold-pale: #d9bd80;        /* artifact --gold-pale */
+  --paper-gold-deep: #84591b;        /* artifact --gold-deep */
+  --paper-jade-ink: #2f4a40;         /* artifact --jade-ink (banner ground) */
+  --paper-cinnabar-deep: #6e241e;    /* artifact --cinn-deep (seal stroke) */
+  --paper-foxing: #785228;           /* artifact foxing rgb(120,82,40); alpha via color-mix */
+
+  /* 14-root palette: the Spirit Root Astrolabe (later wave) needs all 14;
+     only the 5 elements coincide with --element-*. Decorative accents only. */
+  --root-wood: var(--element-wood);
+  --root-fire: var(--element-fire);
+  --root-earth: var(--element-earth);
+  --root-metal: var(--element-metal);
+  --root-water: var(--element-water);
+  --root-wind: #6f8a5e;
+  --root-lightning: var(--paper-gold-strong);
+  --root-ice: #6f93a8;
+  --root-light: #c8a04b;
+  --root-shadow: #4a4039;
+  --root-soul: #9c5a4e;
+  --root-void: #3a332d;
+  --root-time: var(--element-earth);
+  --root-astral: #b59a55;
 }
