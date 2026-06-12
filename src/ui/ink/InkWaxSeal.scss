@@ -1,0 +1,32 @@
+/* Wave 0 wax-seal chop (artifact waxSeal()). Disc fill comes from the shared
+   sprite gradients; stroke / inner ring / glyph colors are tokenized here. */
+.inkWaxSeal {
+  overflow: visible;
+}
+
+.inkWaxSeal__rim {
+  stroke-width: 1.3;
+}
+
+.inkWaxSeal__inner {
+  fill: none;
+  stroke-width: 0.8;
+  stroke: color-mix(in srgb, var(--paper-parchment-soft) 50%, transparent);
+}
+
+.inkWaxSeal__text {
+  font-family: var(--kai, 'Kaiti SC', 'STKaiti', serif);
+  font-weight: 700;
+  letter-spacing: 0;
+  fill: var(--paper-parchment-soft);
+}
+
+.inkWaxSeal--cinnabar .inkWaxSeal__rim {
+  fill: url(#cinnDisc);
+  stroke: var(--paper-cinnabar-deep);
+}
+
+.inkWaxSeal--jade .inkWaxSeal__rim {
+  fill: url(#jadeRad);
+  stroke: var(--paper-jade-ink);
+}

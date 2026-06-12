@@ -1,0 +1,22 @@
+/* Wave 0 sway tassel (artifact tassel() + swayK). Motion gated by reduced-motion. */
+@keyframes inkTasselSway {
+  0%,
+  100% {
+    transform: rotate(-2.6deg);
+  }
+  50% {
+    transform: rotate(2.6deg);
+  }
+}
+
+.inkTassel__sway {
+  transform-box: fill-box;
+  transform-origin: 50% 0%;
+  animation: inkTasselSway 5.2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .inkTassel__sway {
+    animation: none;
+  }
+}

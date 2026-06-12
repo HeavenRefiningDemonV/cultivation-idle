@@ -20,3 +20,7 @@ export type { InkBannerProps } from './InkBanner.js';
 export { InkGrain } from './InkGrain.js';
 export type { InkGrainProps } from './InkGrain.js';
 export { InkObservatoryDefs } from './InkObservatoryDefs.js';
+export { InkWaxSeal } from './InkWaxSeal.js';
+export type { InkWaxSealProps } from './InkWaxSeal.js';
+export { InkTassel } from './InkTassel.js';
+export type { InkTasselProps } from './InkTassel.js';
