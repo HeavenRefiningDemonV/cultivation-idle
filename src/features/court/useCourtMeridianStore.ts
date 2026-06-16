@@ -14,6 +14,7 @@ import {
   type SpiritRootGrade,
 } from '../../systems/meridians/index.js';
 import { rollSpiritRootGrade } from '../../systems/prestige/formMemory.js';
+import { createDefaultMeridianCourtSaveState, type SaveMeridianCourtState } from './courtSaveTypes.js';
 
 /**
  * W13a-2 — the live meridian-training store (flag-gated; NOT default). Owns the Court's
@@ -29,13 +30,9 @@ import { rollSpiritRootGrade } from '../../systems/prestige/formMemory.js';
 /** Base Court training rate — 2.4 xp/min at mult 1.0 (mirrors the THIS PRACTICE display). */
 export const COURT_BASE_RATE_PER_MIN = 2.4;
 
-export interface CourtMeridianState extends MeridianTrainingState {
-  /** Persisted-later: per-meridian sum of all rating ever invested (Form-Memory, §2.11). */
-  lifetimeTotals: Record<string, number>;
-  intensityId: CourtIntensityId;
-  /** Forge heat 0..100 (§2.12). */
-  fatigue: number;
-}
+/** The live store state — identical to the persisted slice (W13a-5). */
+export type CourtMeridianState = SaveMeridianCourtState;
+export type { SaveMeridianCourtState } from './courtSaveTypes.js';
 
 export interface AdvanceActiveInput {
   /** Elapsed seconds since the last advance. */
@@ -54,6 +51,10 @@ export interface CourtMeridianStore extends CourtMeridianState {
   advanceActive: (input: AdvanceActiveInput) => void;
   /** Forge heat eases while not training (§2.12). */
   recoverFatigue: (dtSeconds: number, perMinute?: number) => void;
+  /** W13a-5 — serialize the persisted slice for the save blob. */
+  toSaveState: () => SaveMeridianCourtState;
+  /** W13a-5 — restore from a saved slice (defensive: defaults any missing field). */
+  hydrateFromSave: (saved: SaveMeridianCourtState | null | undefined) => void;
 }
 
 const FATIGUE_RECOVERY_PER_MIN = 6;
@@ -133,4 +134,31 @@ export const useCourtMeridianStore = create<CourtMeridianStore>((set, get) => ({
       if (dtSeconds <= 0 || state.fatigue <= 0) return {};
       return { fatigue: Math.max(0, state.fatigue - (perMinute / 60) * dtSeconds) };
     }),
+
+  toSaveState: () => {
+    const s = get();
+    return {
+      activeMeridianId: s.activeMeridianId,
+      rootByMeridianId: { ...s.rootByMeridianId },
+      progressByMeridianId: { ...s.progressByMeridianId },
+      lifetimeTotals: { ...s.lifetimeTotals },
+      intensityId: s.intensityId,
+      fatigue: s.fatigue,
+    };
+  },
+
+  hydrateFromSave: (saved) => {
+    if (!saved) {
+      set(createDefaultMeridianCourtSaveState());
+      return;
+    }
+    set({
+      activeMeridianId: saved.activeMeridianId ?? null,
+      rootByMeridianId: { ...(saved.rootByMeridianId ?? {}) },
+      progressByMeridianId: { ...(saved.progressByMeridianId ?? {}) },
+      lifetimeTotals: { ...(saved.lifetimeTotals ?? {}) },
+      intensityId: saved.intensityId ?? 'steady',
+      fatigue: typeof saved.fatigue === 'number' && Number.isFinite(saved.fatigue) ? saved.fatigue : 0,
+    });
+  },
 }));

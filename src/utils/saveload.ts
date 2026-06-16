@@ -28,6 +28,7 @@ import { useOnboardingStore } from '../stores/onboardingStore.js';
 import { useCraftSessionStore } from '../stores/craftSessionStore.js';
 import { useRecipeMasteryStore } from '../stores/recipeMasteryStore.js';
 import { useTrainingStore } from '../stores/trainingStore.js';
+import { useCourtMeridianStore } from '../features/court/useCourtMeridianStore.js';
 import { usePavilionStore } from '../stores/pavilionStore.js';
 import { useStoryStore } from '../features/story/storyStore.js';
 import { useContentStore } from '../stores/contentStore.js';
@@ -203,6 +204,7 @@ function gatherGameState(): SaveData {
   const craftSessionState = useCraftSessionStore.getState();
   const recipeMasteryState = useRecipeMasteryStore.getState();
   const trainingState = useTrainingStore.getState();
+  const meridianCourtState = useCourtMeridianStore.getState();
   const pavilionState = usePavilionStore.getState();
   const storyState = useStoryStore.getState();
   const activityState = useActivityStore.getState();
@@ -257,6 +259,7 @@ function gatherGameState(): SaveData {
     medicinePouchState: medicinePouchState.toSaveState(),
     recipeMasteryState: recipeMasteryState.toSaveState(),
     trainingState: trainingState.toSaveState(),
+    meridianCourtState: meridianCourtState.toSaveState(),
     pavilionState: pavilionState.toSaveState(),
     storyState: storyState.toSaveState(),
 
@@ -1457,6 +1460,8 @@ function applySaveData(saveData: SaveData): void {
       history: Array.isArray(activityState.history) ? ([...activityState.history] as any) : [],
     });
     useTrainingStore.getState().hydrateFromSave(trainingState, { activeActivityType: sanitizedActivity?.type ?? null });
+    // W13a-5: restore the Court meridian slice (optional — legacy saves default to empty).
+    useCourtMeridianStore.getState().hydrateFromSave(saveData.meridianCourtState ?? defaults.meridianCourtState);
 
     useOutskirtsStore.setState({
       progressByOutskirtsId: {

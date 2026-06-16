@@ -3,15 +3,19 @@ import test from 'node:test';
 
 import {
   DERIVED_STAT_DISPLAY,
-  MERIDIAN_CONSTELLATION_NODE_MAP,
-  MERIDIAN_CONSTELLATION_TIER2_KEYS,
   MERIDIAN_ROOTS,
-  buildMeridianConstellationSurface,
-  meridianAstrolabeAptitudeChips,
   type CourtStatView,
   type DerivedStatKey,
-  type MeridianConstellationInput,
 } from '../../src/systems/meridians/index.js';
+// observatoryMeridianBinding is imported from its leaf (not the meridians barrel), which
+// no longer re-exports it — the barrel must stay ui-free for the save/progression projects.
+import {
+  MERIDIAN_CONSTELLATION_NODE_MAP,
+  MERIDIAN_CONSTELLATION_TIER2_KEYS,
+  buildMeridianConstellationSurface,
+  meridianAstrolabeAptitudeChips,
+  type MeridianConstellationInput,
+} from '../../src/systems/meridians/observatoryMeridianBinding.js';
 import { STATUS_OBSERVATORY_STAT_NODE_GEOMETRY } from '../../src/systems/ui/status/statusObservatoryPresentation.js';
 
 /**

@@ -20,11 +20,12 @@ export * from './passiveCombatTraining.js';
  *  TrainingHallSurfaceV1 is untouched until W13). The W7 UI renders this. */
 export * from './temperingCourtSurface.js';
 
-/** W8 — the Observatory ⇄ Three-Treasures re-bind (D8/D9): the explicit 20→28 node
- *  map + drop-in constellation-surface builder + astrolabe aptitude chips. ADDITIVE +
- *  flag-gated — NOT wired into the live (legacy-bound, public-default) observatory;
- *  swaps in at the W13 cutover. */
-export * from './observatoryMeridianBinding.js';
+/** W8 — the Observatory ⇄ Three-Treasures re-bind (D8/D9): the explicit 20→28 node map
+ *  + drop-in constellation-surface builder + astrolabe aptitude chips. NOT re-exported
+ *  here: it imports ui/status types (the observatory surface it produces), and this barrel
+ *  flows into the save layer + the systems/progression tsc project (no jsx) — re-exporting
+ *  would drag ui/icons (.tsx) into it. Import it directly from
+ *  './observatoryMeridianBinding.js' where needed (its W8 test + the W13b live wiring). */
 
 /** W12 — the single balance-tuning surface: every ‹tune W12› coefficient aggregated
  *  into one COURT_BALANCE audit object (references the live consts; numbers tunable,
