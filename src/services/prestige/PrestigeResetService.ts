@@ -16,6 +16,9 @@ import { useProfessionStore } from '../../stores/professionStore.js';
 import { useRecipeMasteryStore } from '../../stores/recipeMasteryStore.js';
 import { useRuinsStore } from '../../stores/ruinsStore.js';
 import { useTrainingStore } from '../../stores/trainingStore.js';
+import { isTemperingCourtEnabled } from '../../ui/court/courtFlag.js';
+import { useCourtMeridianStore } from '../../features/court/useCourtMeridianStore.js';
+import { getMeridianPackCache } from '../../features/court/meridianPackCache.js';
 import { useTechCollectionStore } from '../../stores/techCollectionStore.js';
 import { useTrialStore } from '../../stores/trialStore.js';
 import { useZoneStore } from '../../stores/zoneStore.js';
@@ -164,6 +167,15 @@ export function performPrestigeReset({ resetGameRun, currentLife }: PrestigeRese
   useUIStore.getState().clearCurrentChapterExhaustedAcknowledgement();
   useManualSatchelStore.getState().hardReset();
   useManualPavilionStore.getState().hardReset();
+  // W13a-6: reincarnation applies the Court's Form-Memory floor + re-rolls meridian roots
+  // (§2.11). Flag-gated; the legacy training reset above is unchanged on the off path.
+  if (isTemperingCourtEnabled()) {
+    const path = currentLife?.selectedPath ?? null;
+    const meridianIds = getMeridianPackCache()
+      .filter((def) => !path || def.path === path)
+      .map((def) => def.id);
+    useCourtMeridianStore.getState().resetForPrestige(meridianIds);
+  }
   useTechCollectionStore.getState().hardReset();
   useRecipeMasteryStore.getState().hardReset();
   useTrainingStore.getState().resetForNewLife();

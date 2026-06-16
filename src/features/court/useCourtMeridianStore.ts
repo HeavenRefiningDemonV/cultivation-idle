@@ -13,7 +13,7 @@ import {
   type PathMeridianDef,
   type SpiritRootGrade,
 } from '../../systems/meridians/index.js';
-import { rollSpiritRootGrade } from '../../systems/prestige/formMemory.js';
+import { applyFormMemoryReset, rollSpiritRootGrade } from '../../systems/prestige/formMemory.js';
 import { createDefaultMeridianCourtSaveState, type SaveMeridianCourtState } from './courtSaveTypes.js';
 
 /**
@@ -55,6 +55,9 @@ export interface CourtMeridianStore extends CourtMeridianState {
   toSaveState: () => SaveMeridianCourtState;
   /** W13a-5 — restore from a saved slice (defensive: defaults any missing field). */
   hydrateFromSave: (saved: SaveMeridianCourtState | null | undefined) => void;
+  /** W13a-6 — reincarnation: fold lifetime, start each meridian at its Form-Memory floor,
+   *  reset comprehension, re-roll roots, clear forge heat (§2.11). */
+  resetForPrestige: (meridianIds: readonly string[], rng?: () => number) => void;
 }
 
 const FATIGUE_RECOVERY_PER_MIN = 6;
@@ -161,4 +164,17 @@ export const useCourtMeridianStore = create<CourtMeridianStore>((set, get) => ({
       fatigue: typeof saved.fatigue === 'number' && Number.isFinite(saved.fatigue) ? saved.fatigue : 0,
     });
   },
+
+  resetForPrestige: (meridianIds, rng = Math.random) =>
+    set((state) => {
+      const result = applyFormMemoryReset(state.lifetimeTotals, state, meridianIds, rng);
+      return {
+        activeMeridianId: result.state.activeMeridianId,
+        rootByMeridianId: result.state.rootByMeridianId,
+        progressByMeridianId: result.state.progressByMeridianId,
+        lifetimeTotals: result.lifetime,
+        fatigue: 0,
+        // intensityId carries across lives (a UI preference, not run state).
+      };
+    }),
 }));
