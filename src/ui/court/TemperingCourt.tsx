@@ -1,5 +1,7 @@
 import './temperingCourt.scss';
+import './motion/courtMotion.scss';
 import { useObservatoryScale } from '../status/observatory/useObservatoryScale';
+import { courtMotionVars } from './motion/courtMotionVars';
 import { CourtDefs } from './CourtDefs';
 import { CourtPanel } from './CourtPanel';
 import {
@@ -54,7 +56,12 @@ export function TemperingCourt({
 
   return (
     <div className="courtViewport" ref={viewportRef}>
-      <div className="courtStage" style={{ transform: `scale(${scale})` }} data-testid="tempering-court">
+      <div
+        className="courtStage"
+        style={{ transform: `scale(${scale})`, ...courtMotionVars(surface) }}
+        data-rm={reducedMotion ? 'true' : undefined}
+        data-testid="tempering-court"
+      >
         <CourtDefs />
 
         <CourtPanel

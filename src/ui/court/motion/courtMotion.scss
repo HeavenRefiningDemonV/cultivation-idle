@@ -1,0 +1,35 @@
+/* W9 — Court motion layer (artifact §1.8 / §1.9).
+ *
+ * The --th-* vars are SET on .courtStage (courtMotionVars) and consumed by
+ * .court-room .qiflow / .breatheA (durations, courtRoom.scss). This file adds the two
+ * pieces W7 did not: the forge-heat shimmer (≥80, heatShimK — ported from the artifact)
+ * and the reduced-motion PROP kill that mirrors the artifact's body.rm toggle (so the
+ * Court freezes to static marks whether reduced motion comes from the OS media query
+ * OR the app/test prop). No new motion beyond the artifact. */
+
+@keyframes heatShimK {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.95;
+  }
+}
+
+/* Forge bar overheat shimmer: a cinnabar segment from the 80 mark to the current
+ * value, pulsing — the artifact's `f>=80 && !rm` inline shimmer (§1.8). */
+.court-forgebar .court-ffill--shim {
+  background: linear-gradient(90deg, var(--court-cinnabar), var(--court-cinn-deep));
+  animation: heatShimK 1.4s ease-in-out infinite;
+}
+
+/* The reducedMotion PROP (independent of `prefers-reduced-motion`) freezes ALL Court
+ * motion to its static painterly marks — the artifact's body.rm. Every state that
+ * motion conveyed still reads via shape + colour + label (§1.9), so nothing is lost. */
+.courtStage[data-rm='true'] *,
+.courtStage[data-rm='true'] *::before,
+.courtStage[data-rm='true'] *::after {
+  animation: none !important;
+  transition: none !important;
+}

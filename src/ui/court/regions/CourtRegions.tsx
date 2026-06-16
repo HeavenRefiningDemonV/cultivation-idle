@@ -148,6 +148,9 @@ export function ForgeHeatContent({ surface }: { surface: TemperingCourtSurface }
       </div>
       <div className="court-forgebar">
         <div className="court-ffill" style={{ width: `${Math.min(100, heat.value)}%` }} />
+        {heat.value >= 80 ? (
+          <div className="court-ffill court-ffill--shim" style={{ left: '80%', width: `${Math.min(20, heat.value - 80)}%` }} />
+        ) : null}
         <div className="court-tick" style={{ left: '35%' }} />
         <div className="court-tick" style={{ left: '60%' }} />
         <div className="court-line80" style={{ left: '80%' }}>
