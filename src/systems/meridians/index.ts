@@ -15,3 +15,7 @@ export * from './derivedStats.js';
 /** W5 — passive combat training: trigger→meridian mapping + the per-fight-capped
  *  0.15× grant routed through advanceMeridian('…','combat'). */
 export * from './passiveCombatTraining.js';
+
+/** W6 — the render-only Tempering Court surface + builder (additive; the legacy
+ *  TrainingHallSurfaceV1 is untouched until W13). The W7 UI renders this. */
+export * from './temperingCourtSurface.js';
