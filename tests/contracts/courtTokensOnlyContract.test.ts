@@ -13,8 +13,9 @@ import test from 'node:test';
  */
 
 const COURT_DIR = path.resolve(process.cwd(), 'src', 'ui', 'court');
-// Hex-allowed zones: the SVG sprite (gradient stops) and the Court palette file.
-const ALLOWED_HEX_FILES = new Set(['CourtDefs.tsx', 'courtTokens.scss']);
+// Hex-allowed zones: the SVG sprite <defs>, the Court palette file, and the Room
+// scene/figure/channel sprite art (decorative sprite data, not UI-state colour).
+const ALLOWED_HEX_FILES = new Set(['CourtDefs.tsx', 'courtTokens.scss', 'courtRoomSprites.ts']);
 const CHECKED_EXT = new Set(['.ts', '.tsx', '.scss']);
 const HEX_RE = /#[0-9a-fA-F]{6}\b/;
 

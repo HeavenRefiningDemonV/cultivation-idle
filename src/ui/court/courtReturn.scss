@@ -1,0 +1,66 @@
+/* Return-from-offline modal (artifact §1.5.10). Stage overlay; tokens-only. */
+.court-return-wrap {
+  position: absolute;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+}
+.court-return-scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(20, 14, 8, 0.5);
+}
+.court-return {
+  position: relative;
+  width: 760px;
+  max-height: 460px;
+  overflow: auto;
+  border-radius: 5px;
+  padding: 26px 30px 20px;
+  background: linear-gradient(168deg, var(--court-paper-warm), var(--court-paper) 42%, var(--court-paper-deep));
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.6),
+    inset 0 0 60px rgba(120, 90, 46, 0.06);
+}
+.court-return h3 {
+  font: 700 15px var(--court-serif);
+  text-align: center;
+  margin-bottom: 4px;
+  letter-spacing: 0.08em;
+}
+.court-return-lead {
+  text-align: center;
+  color: var(--court-ink-70);
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+.court-rrow {
+  display: flex;
+  justify-content: space-between;
+  font: 600 13px var(--court-serif);
+  padding: 3px 0;
+}
+.court-rrow .court-rv {
+  font-weight: 800;
+}
+.court-rrow--jade span {
+  color: var(--court-jade-deep);
+}
+.court-rrow--gold {
+  border-top: 1px solid var(--court-ink-12);
+  margin-top: 4px;
+  padding-top: 4px;
+}
+.court-rrow--gold span {
+  color: var(--court-gold-deep);
+}
+.court-return-seal {
+  position: absolute;
+  left: 18px;
+  top: 12px;
+}
+.court-return-resume {
+  text-align: right;
+  margin-top: 12px;
+}

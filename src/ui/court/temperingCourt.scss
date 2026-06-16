@@ -1,0 +1,80 @@
+/* The Tempering Court fixed stage (artifact §1.1 / Appendix H.0). Authored at
+   2048×1152, scaled uniformly by useObservatoryScale. Grid rows 116/1fr/196/46
+   (gap 12, pad 15); main cols 440/1fr/430, bottom cols 720/540/1fr (gap 13);
+   right column rows 1.45fr/1fr. Tokens-only; the stage ground uses --court-stage-*. */
+
+.courtViewport {
+  width: 100vw;
+  height: 100vh;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.courtStage {
+  position: relative;
+  width: 2048px;
+  height: 1152px;
+  transform-origin: top center;
+  display: grid;
+  gap: 12px;
+  padding: 15px;
+  grid-template-rows: 116px 1fr 196px 46px;
+  background:
+    radial-gradient(60% 50% at 50% 0%, var(--court-stage-glow), transparent 70%),
+    linear-gradient(160deg, var(--court-stage-hi), var(--court-stage-mid) 60%, var(--court-stage-lo));
+}
+
+/* the thin gold keyline framing the whole stage */
+.courtStage::after {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  z-index: 60;
+  pointer-events: none;
+  border-radius: 3px;
+  border: 1px solid rgba(178, 131, 45, 0.55);
+  outline: 1px solid rgba(120, 86, 38, 0.32);
+  outline-offset: 3px;
+}
+
+.courtStage__lintel {
+  grid-row: 1;
+}
+
+.courtRowMain {
+  grid-row: 2;
+  display: grid;
+  grid-template-columns: 440px 1fr 430px;
+  gap: 13px;
+  min-height: 0;
+}
+
+.courtRowBottom {
+  grid-row: 3;
+  display: grid;
+  grid-template-columns: 720px 540px 1fr;
+  gap: 13px;
+  min-height: 0;
+}
+
+.courtRightCol {
+  display: grid;
+  grid-template-rows: minmax(0, 1.45fr) minmax(0, 1fr);
+  gap: 13px;
+  min-height: 0;
+}
+
+.courtNav {
+  grid-row: 4;
+}
+
+/* temporary scaffold content until each region is built (W7 region passes) */
+.courtPlaceholder {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  font: 600 12px var(--court-serif);
+  letter-spacing: 0.08em;
+  color: var(--court-ink-45);
+}

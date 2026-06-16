@@ -3,6 +3,9 @@
 export { CourtDefs } from './CourtDefs';
 export { CourtPanel } from './CourtPanel';
 export type { CourtPanelProps } from './CourtPanel';
+/** W7 — the Court stage shell (region content filled in across parity passes). */
+export { TemperingCourt } from './TemperingCourt';
+export type { TemperingCourtProps } from './TemperingCourt';
 export { CourtChip, CourtRootChip } from './courtChips';
 export type { CourtChipTone, CourtChipProps, CourtRootGrade, CourtRootChipProps } from './courtChips';
 export { CourtWaxSeal, CourtMedallion, CourtFlame, courtCornerUri } from './courtSeals';
