@@ -1,36 +1,17 @@
 import { useEffect, useState } from 'react';
 
 import type { PathMeridianDef } from '../../systems/meridians/index.js';
+import { getMeridianPackCache, loadMeridianPack } from './meridianPackCache.js';
 
 /**
- * W13a — load the path-meridians content pack at runtime. The pack lives in public/ and
- * (per W2) is NOT exposed on contentStore.raw (ValidatedContent), so the live Court fetches
- * it directly and caches it module-wide. Returns [] until loaded.
+ * W13a — React hook driving the async load of the path-meridians pack (cache lives in the
+ * leaf meridianPackCache.ts so the systems-layer tick can read it without React). Returns
+ * the cached defs, or [] until loaded.
  */
-let cache: PathMeridianDef[] | null = null;
-let inflight: Promise<PathMeridianDef[]> | null = null;
-
-function loadMeridianPack(): Promise<PathMeridianDef[]> {
-  if (cache) return Promise.resolve(cache);
-  if (!inflight) {
-    inflight = fetch('/cultivation_idle_content_bible_v1_config/path_meridians.json')
-      .then((res) => res.json())
-      .then((json: { meridians?: PathMeridianDef[] }) => {
-        cache = json.meridians ?? [];
-        return cache;
-      })
-      .catch(() => {
-        inflight = null;
-        return [];
-      });
-  }
-  return inflight;
-}
-
 export function useMeridianPack(): PathMeridianDef[] {
-  const [defs, setDefs] = useState<PathMeridianDef[]>(cache ?? []);
+  const [defs, setDefs] = useState<PathMeridianDef[]>(getMeridianPackCache());
   useEffect(() => {
-    if (cache) return;
+    if (defs.length > 0) return;
     let active = true;
     void loadMeridianPack().then((loaded) => {
       if (active) setDefs(loaded);
@@ -38,6 +19,6 @@ export function useMeridianPack(): PathMeridianDef[] {
     return () => {
       active = false;
     };
-  }, []);
+  }, [defs.length]);
   return defs;
 }

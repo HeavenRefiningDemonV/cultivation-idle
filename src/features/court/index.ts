@@ -5,7 +5,10 @@ export { buildLiveCourtSurface, resolveCourtRealmIndex, resolveCourtStatus } fro
 export type { BuildLiveCourtInput } from './buildLiveCourtSurface.js';
 export { useCourtMeridianStore, COURT_BASE_RATE_PER_MIN } from './useCourtMeridianStore.js';
 export type { CourtMeridianStore } from './useCourtMeridianStore.js';
-export { COURT_SHARED_STATS, resolveCourtSharedStats } from './courtSharedStats.js';
+export { COURT_SHARED_STATS, resolveCourtSharedStats, courtPerceptionValue } from './courtSharedStats.js';
 export { useMeridianPack } from './useMeridianPack.js';
+export { getMeridianPackCache, loadMeridianPack } from './meridianPackCache.js';
+export { runCourtTrainingTick } from './courtTrainingTick.js';
+export type { CourtTickContext } from './courtTrainingTick.js';
 export { CourtScreenOwner } from './CourtScreenOwner.js';
 export type { CourtScreenOwnerProps } from './CourtScreenOwner.js';

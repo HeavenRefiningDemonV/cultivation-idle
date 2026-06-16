@@ -44,6 +44,15 @@ export const COURT_SHARED_STATS: readonly CourtSharedStatDef[] = [
 /** The Three-Treasures id used by the rate formula's Perception term. */
 export const COURT_PERCEPTION_STAT_ID = 'perception';
 
+/** The live cultivator stat id whose rating supplies Perception (for the rate formula). */
+export const COURT_PERCEPTION_LIVE_STAT_ID =
+  COURT_SHARED_STATS.find((s) => s.id === COURT_PERCEPTION_STAT_ID)?.liveStatId ?? 'recovery_depth';
+
+/** Perception value from the live cultivator ratings — the rate's Perception term. */
+export function courtPerceptionValue(statRatingsById: Record<string, number>): number {
+  return Math.round(statRatingsById[COURT_PERCEPTION_LIVE_STAT_ID] ?? 0);
+}
+
 export interface CourtSharedStats {
   axes: CourtStatView[];
   foundation: CourtStatView[];

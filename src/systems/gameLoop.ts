@@ -23,6 +23,10 @@ import { useActivityStore } from '../stores/activityStore.js';
 import { RewardService } from '../services/rewards/index.js';
 import { COMBAT_ACTIVITY_TYPES } from '../types/activity.js';
 import { resolveForegroundGrowthMode } from './cultivation/foregroundGrowthResolver.js';
+import { isTemperingCourtEnabled } from '../ui/court/courtFlag.js';
+import { runCourtTrainingTick } from '../features/court/courtTrainingTick.js';
+import { courtPerceptionValue } from '../features/court/courtSharedStats.js';
+import { getMeridianPackCache } from '../features/court/meridianPackCache.js';
 import { PERF_LABELS, incrementCounter, recordMeasure, startTimer } from '../services/performance/index.js';
 import { SimulationScheduler, type ScheduledJobRunContext } from '../services/time/SimulationScheduler.js';
 import { trackProgressionGateAvailabilityNow } from '../services/diagnostics/progressionGateAvailability.js';
@@ -73,6 +77,18 @@ function defaultQueueTick(nowWall: number): void {
 
 function defaultTrainingTick(elapsedMs: number): void {
   const foreground = resolveForegroundGrowthMode(useActivityStore.getState().active);
+  // W13a-4: when the Court is enabled, training routes to the meridian engine (advance the
+  // active meridian while its path_training is foreground; otherwise forge heat recovers).
+  // The legacy tri-stat training tick is bypassed entirely on the Court path.
+  if (isTemperingCourtEnabled()) {
+    runCourtTrainingTick(elapsedMs, {
+      trainingAllowed: foreground.trainingAllowed,
+      realmIndex0Based: useGameStore.getState().realm.index,
+      perception: courtPerceptionValue(useTrainingStore.getState().statRatingsById),
+      meridianDefs: getMeridianPackCache(),
+    });
+    return;
+  }
   if (!foreground.trainingAllowed) return;
   useTrainingStore.getState().tickTraining(elapsedMs);
 }
