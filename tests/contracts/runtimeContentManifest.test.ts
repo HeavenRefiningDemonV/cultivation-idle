@@ -41,6 +41,7 @@ test('runtime content manifest declares the exact loader file set once', () => {
     'dao_heart_practices.json',
     'spirit_roots.json',
     'readiness_categories.json',
+    'path_meridians.json',
   ]);
 });
 

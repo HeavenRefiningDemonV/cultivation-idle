@@ -26,6 +26,7 @@ export const RUNTIME_CONTENT_FILE_BY_KEY = {
   dao_heart_practices: 'dao_heart_practices.json',
   spirit_roots: 'spirit_roots.json',
   readiness_categories: 'readiness_categories.json',
+  path_meridians: 'path_meridians.json',
 } as const;
 
 export type RuntimeContentKey = keyof typeof RUNTIME_CONTENT_FILE_BY_KEY;

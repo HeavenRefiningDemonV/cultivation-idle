@@ -22,6 +22,8 @@ import type {
   HeartLawsConfig,
   ItemsConfig,
   OutskirtsConfig,
+  PathMeridianDef,
+  PathMeridiansConfig,
   PavilionDef,
   PavilionsConfig,
   PrestigeCostCurve,
@@ -898,6 +900,89 @@ function validateReadinessCategories(
   READINESS_CATEGORY_IDS.forEach((id) => {
     if (!categories.some((category) => category.id === id)) {
       addErr(`readiness_categories.json missing category ${id}`);
+    }
+  });
+
+  return config;
+}
+
+const MERIDIAN_EFFECT_TONES = new Set(['atk', 'def', 'util', '']);
+
+function validatePathMeridians(
+  config: LoadedContentRaw['path_meridians'] | undefined,
+  addErr: ErrorCollector['addErr'],
+): PathMeridiansConfig {
+  if (config === undefined) {
+    return { version: 'legacy-test-raw-without-court-content', meridians: [] };
+  }
+
+  assertObject(config, 'path_meridians.json root');
+  assertArray(config.meridians, 'path_meridians.json.meridians');
+  const meridians = config.meridians as PathMeridianDef[];
+  assertArrayItemsHaveId(meridians as any[], 'path_meridians.json.meridians');
+  assertUniqueIds(meridians, 'path_meridians.json.meridians');
+  if (meridians.length !== 21) {
+    addErr(`path_meridians.json must define exactly 21 path meridians (7 per path), found ${meridians.length}`);
+  }
+
+  const byPath = new Map<string, PathMeridianDef[]>();
+  meridians.forEach((meridian, idx) => {
+    const label = `path_meridians.json.meridians[${idx}] (${meridian.id})`;
+    assertNoBasePracticeCosts(meridian as unknown as Record<string, unknown>, label, addErr);
+    if (!TRAINING_PATH_IDS.has(String(meridian.path))) {
+      addErr(`${label} invalid path '${String(meridian.path)}'`);
+    }
+    (['name', 'zi', 'exercise', 'room', 'trigger', 'pathEffect', 'trait'] as const).forEach((field) => {
+      if (typeof meridian[field] !== 'string' || (meridian[field] as string).length === 0) {
+        addErr(`${label} missing required string field '${field}'`);
+      }
+    });
+    if (
+      typeof meridian.unlockRealm !== 'number'
+      || !Number.isInteger(meridian.unlockRealm)
+      || meridian.unlockRealm < 1
+      || meridian.unlockRealm > 7
+    ) {
+      addErr(`${label} unlockRealm must be an integer 1..7`);
+    }
+    if (
+      typeof meridian.traitRank !== 'number'
+      || !Number.isInteger(meridian.traitRank)
+      || meridian.traitRank < 1
+      || meridian.traitRank > 10
+    ) {
+      addErr(`${label} traitRank must be an integer 1..10`);
+    }
+    if (!Array.isArray(meridian.eff) || meridian.eff.length === 0) {
+      addErr(`${label} must define at least one combat effect`);
+    } else {
+      meridian.eff.forEach((effect, effIdx) => {
+        if (!isObject(effect) || !MERIDIAN_EFFECT_TONES.has(String((effect as { tone?: unknown }).tone))) {
+          addErr(`${label}.eff[${effIdx}] has invalid tone`);
+        }
+        if (typeof (effect as { label?: unknown }).label !== 'string' || String((effect as { label?: unknown }).label).length === 0) {
+          addErr(`${label}.eff[${effIdx}] missing label`);
+        }
+      });
+    }
+    const list = byPath.get(meridian.path) ?? [];
+    list.push(meridian);
+    byPath.set(meridian.path, list);
+  });
+
+  ['heaven', 'earth', 'martial'].forEach((pathId) => {
+    const list = byPath.get(pathId) ?? [];
+    if (list.length !== 7) {
+      addErr(`path_meridians.json must define exactly 7 meridians for ${pathId}, found ${list.length}`);
+      return;
+    }
+    // Drip cadence: exactly one meridian per realm 1..7 (signature=1, capstone Dao=7).
+    const realms = list.map((meridian) => meridian.unlockRealm).sort((a, b) => a - b);
+    for (let realm = 1; realm <= 7; realm += 1) {
+      if (realms[realm - 1] !== realm) {
+        addErr(`path_meridians.json ${pathId} must reveal one meridian per realm 1..7 (drip cadence); found ${realms.join(', ')}`);
+        break;
+      }
     }
   });
 
@@ -2167,6 +2252,9 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
     addErr,
   );
   const readinessCategories = validateReadinessCategories(raw.readiness_categories, addErr);
+  // Tier-2 path meridians (Three Treasures, W2). Validated for its own correctness;
+  // not yet surfaced on ValidatedContent (the W6 surface builder will consume it).
+  validatePathMeridians(raw.path_meridians, addErr);
   const normalizedTrials = trials.map((trial) => normalizeTrialFailSafeDefinition(trial, raw.economy));
 
   // Build maps for cross references

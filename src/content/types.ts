@@ -202,6 +202,46 @@ export interface SpiritRootProgressStateDraft {
   variantByElementId: Partial<Record<string, string>>;
 }
 
+// ===== The Tempering Court — Tier-2 Path Meridians (Three Treasures engine, W2) =====
+// 7 per path, drip-revealed one per breakthrough (signature unlockRealm=1, capstone=7).
+// Aptitude (spirit-root grade) + per-meridian rating live in save state, not here.
+export type MeridianPathId = PathId;
+
+export type MeridianEffectTone = 'atk' | 'def' | 'util' | '';
+
+/** A derived-stat the meridian feeds, as previewed by the Court codex chips (§2.10). */
+export interface MeridianCombatEffect {
+  tone: MeridianEffectTone;
+  label: string;
+}
+
+export interface PathMeridianDef {
+  id: string;
+  path: MeridianPathId;
+  name: string;
+  zi: string;
+  exercise: string;
+  room: string;
+  /** 1..7 — the realm whose breakthrough reveals this meridian (signature=1, capstone Dao=7). */
+  unlockRealm: number;
+  /** combat passive trigger phrase that hones this meridian (§2.9). */
+  trigger: string;
+  eff: MeridianCombatEffect[];
+  pathEffect: string;
+  trait: string;
+  traitRank: number;
+  // The Court trains at no resource cost (engine-enforced); meridian data never declares costs.
+  cost?: never;
+  costs?: never;
+  requiredItems?: never;
+  requiredCurrencies?: never;
+}
+
+export interface PathMeridiansConfig {
+  version?: string | number;
+  meridians: PathMeridianDef[];
+}
+
 export type TechniqueScalingTag = string;
 
 export type ReadinessCategoryId =

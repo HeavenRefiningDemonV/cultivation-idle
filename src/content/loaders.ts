@@ -12,6 +12,7 @@ import type {
   HeartLawsConfig,
   ItemsConfig,
   OutskirtsConfig,
+  PathMeridiansConfig,
   PavilionsConfig,
   PrestigeStoreConfig,
   PavilionRecordsConfig,
@@ -73,6 +74,7 @@ export interface LoadedContentRaw {
   dao_heart_practices: DaoHeartPracticesConfig;
   spirit_roots: SpiritRootProgressionsConfig;
   readiness_categories: ReadinessCategoriesConfig;
+  path_meridians: PathMeridiansConfig;
 }
 
 export async function fetchJson<T>(url: string): Promise<T> {

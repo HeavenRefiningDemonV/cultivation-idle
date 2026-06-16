@@ -1,0 +1,372 @@
+{
+  "version": "tempering-court-w2-v1",
+  "meridians": [
+    {
+      "id": "martial_weapon_intent",
+      "path": "martial",
+      "name": "Weapon Intent",
+      "zi": "兵意",
+      "exercise": "Shadow-Ring form drills",
+      "room": "Shadow Ring",
+      "unlockRealm": 1,
+      "trigger": "dealing weapon-skill damage",
+      "eff": [
+        { "tone": "atk", "label": "Physical Attack ↑↑" },
+        { "tone": "util", "label": "Weapon technique power" }
+      ],
+      "pathEffect": "Empowers weapon arts",
+      "trait": "Counters cost 8% less stamina",
+      "traitRank": 7
+    },
+    {
+      "id": "martial_flowing_step",
+      "path": "martial",
+      "name": "Flowing Step",
+      "zi": "流步",
+      "exercise": "Footwork laps",
+      "room": "The Ring",
+      "unlockRealm": 2,
+      "trigger": "dodging / repositioning",
+      "eff": [
+        { "tone": "", "label": "Speed ↑" },
+        { "tone": "", "label": "Evasion ↑" },
+        { "tone": "util", "label": "Initiative" }
+      ],
+      "pathEffect": "Travel speed; escape chance",
+      "trait": "+10% gap-close",
+      "traitRank": 7
+    },
+    {
+      "id": "martial_battle_rhythm",
+      "path": "martial",
+      "name": "Battle Rhythm",
+      "zi": "战律",
+      "exercise": "Drum-rhythm sparring",
+      "room": "Drum Court",
+      "unlockRealm": 3,
+      "trigger": "landing consecutive hits",
+      "eff": [
+        { "tone": "", "label": "Attack Speed ↑" },
+        { "tone": "atk", "label": "Combo scaling" },
+        { "tone": "util", "label": "Qi/stamina efficiency" }
+      ],
+      "pathEffect": "Combo windows widen",
+      "trait": "+10% rhythm window",
+      "traitRank": 7
+    },
+    {
+      "id": "martial_killing_intent",
+      "path": "martial",
+      "name": "Killing Intent",
+      "zi": "杀意",
+      "exercise": "Killing-intent meditation",
+      "room": "The Post",
+      "unlockRealm": 4,
+      "trigger": "opening strikes / executing weak foes",
+      "eff": [
+        { "tone": "atk", "label": "Crit Chance ↑↑" },
+        { "tone": "atk", "label": "First-strike dmg" },
+        { "tone": "util", "label": "Suppression" }
+      ],
+      "pathEffect": "Intimidation; flee chance on weaker foes",
+      "trait": "Execute threshold +5%",
+      "traitRank": 7
+    },
+    {
+      "id": "martial_sword_heart",
+      "path": "martial",
+      "name": "Sword Heart",
+      "zi": "剑心",
+      "exercise": "Sword-heart sitting",
+      "room": "Quiet Edge",
+      "unlockRealm": 5,
+      "trigger": "counters / parries",
+      "eff": [
+        { "tone": "atk", "label": "Crit Damage ↑↑" },
+        { "tone": "atk", "label": "Armor penetration" }
+      ],
+      "pathEffect": "Crits ignore a % of defense",
+      "trait": "Counter dmg +15%",
+      "traitRank": 7
+    },
+    {
+      "id": "martial_unbroken_momentum",
+      "path": "martial",
+      "name": "Unbroken Momentum",
+      "zi": "不破势",
+      "exercise": "Thousand-Cuts endurance",
+      "room": "War Yard",
+      "unlockRealm": 6,
+      "trigger": "sustained offense (no idle turns)",
+      "eff": [
+        { "tone": "atk", "label": "Snowball dmg / action" },
+        { "tone": "", "label": "Stagger immunity" }
+      ],
+      "pathEffect": "Each attacking turn stacks damage",
+      "trait": "Stacks last longer",
+      "traitRank": 7
+    },
+    {
+      "id": "martial_dao_asura",
+      "path": "martial",
+      "name": "Martial Dao · Asura",
+      "zi": "修罗道",
+      "exercise": "War-banner Dao comprehension",
+      "room": "Asura Altar",
+      "unlockRealm": 7,
+      "trigger": "high-realm kills",
+      "eff": [
+        { "tone": "atk", "label": "Global offense scalar" },
+        { "tone": "util", "label": "Ultimate technique" }
+      ],
+      "pathEffect": "Path tribulation becomes a duel",
+      "trait": "Asura form",
+      "traitRank": 7
+    },
+
+    {
+      "id": "earth_body_temper",
+      "path": "earth",
+      "name": "Body Temper",
+      "zi": "体锻",
+      "exercise": "Marrow-Furnace tempering",
+      "room": "Marrow Furnace",
+      "unlockRealm": 1,
+      "trigger": "taking & dealing physical blows",
+      "eff": [
+        { "tone": "def", "label": "Max HP ↑↑" },
+        { "tone": "atk", "label": "Body-cultivation attack" },
+        { "tone": "def", "label": "Physical Defense" }
+      ],
+      "pathEffect": "Body-cultivation attack scaling",
+      "trait": "+12% body XP while strained",
+      "traitRank": 7
+    },
+    {
+      "id": "earth_bone_forging",
+      "path": "earth",
+      "name": "Bone Forging",
+      "zi": "锻骨",
+      "exercise": "Stone-press stand",
+      "room": "Stone Terrace",
+      "unlockRealm": 2,
+      "trigger": "blocking / being hit",
+      "eff": [
+        { "tone": "def", "label": "Physical Defense ↑↑" },
+        { "tone": "def", "label": "Knockback resist" }
+      ],
+      "pathEffect": "Weapon-block; structure",
+      "trait": "Fatigue accrues 6% slower",
+      "traitRank": 7
+    },
+    {
+      "id": "earth_marrow_essence",
+      "path": "earth",
+      "name": "Marrow Essence",
+      "zi": "髓元",
+      "exercise": "Marrow-cleansing furnace",
+      "room": "Cleansing Pit",
+      "unlockRealm": 3,
+      "trigger": "enduring damage-over-time",
+      "eff": [
+        { "tone": "def", "label": "HP Regen ↑↑" },
+        { "tone": "", "label": "Vitality & qi capacity" },
+        { "tone": "util", "label": "Poison/illness resist" }
+      ],
+      "pathEffect": "Body stores qi; longevity",
+      "trait": "DoT taken −10%",
+      "traitRank": 7
+    },
+    {
+      "id": "earth_root_depth",
+      "path": "earth",
+      "name": "Root Depth",
+      "zi": "根深",
+      "exercise": "Deep-root meditation",
+      "room": "Root Hollow",
+      "unlockRealm": 4,
+      "trigger": "holding ground (not moving)",
+      "eff": [
+        { "tone": "def", "label": "Anti-CC / stability ↑↑" },
+        { "tone": "util", "label": "Grounded qi-gather" }
+      ],
+      "pathEffect": "Cannot be displaced while rooted",
+      "trait": "Root regen +",
+      "traitRank": 7
+    },
+    {
+      "id": "earth_iron_skin",
+      "path": "earth",
+      "name": "Iron Skin",
+      "zi": "金身",
+      "exercise": "Blade-rain tempering",
+      "room": "Blade Rain",
+      "unlockRealm": 5,
+      "trigger": "absorbing hits",
+      "eff": [
+        { "tone": "def", "label": "Flat Damage Reduction" },
+        { "tone": "def", "label": "Reflect" }
+      ],
+      "pathEffect": "Hits below a threshold deal 0",
+      "trait": "Threshold +",
+      "traitRank": 7
+    },
+    {
+      "id": "earth_mountain_stance",
+      "path": "earth",
+      "name": "Mountain Stance",
+      "zi": "山岳",
+      "exercise": "Bear-the-Mountain stand",
+      "room": "Mountain Dais",
+      "unlockRealm": 6,
+      "trigger": "tanking big hits / taunting",
+      "eff": [
+        { "tone": "def", "label": "Massive Defense" },
+        { "tone": "atk", "label": "Convert Def → counter" }
+      ],
+      "pathEffect": "Anchor allies; reflect a % of Def",
+      "trait": "Taunt radius +",
+      "traitRank": 7
+    },
+    {
+      "id": "earth_dao_sovereign",
+      "path": "earth",
+      "name": "Earth Dao · Sovereign",
+      "zi": "后土道",
+      "exercise": "Earth-Dao comprehension",
+      "room": "Sovereign Seat",
+      "unlockRealm": 7,
+      "trigger": "surviving lethal blows",
+      "eff": [
+        { "tone": "def", "label": "Global def/HP scalar" },
+        { "tone": "util", "label": "Ultimate technique" }
+      ],
+      "pathEffect": "Body becomes a treasure",
+      "trait": "Sovereign form",
+      "traitRank": 7
+    },
+
+    {
+      "id": "heaven_spirit_sense",
+      "path": "heaven",
+      "name": "Spirit Sense",
+      "zi": "神识",
+      "exercise": "Star-Listening",
+      "room": "Star-Listening Pavilion",
+      "unlockRealm": 1,
+      "trigger": "landing precise / ranged hits",
+      "eff": [
+        { "tone": "", "label": "Accuracy ↑↑" },
+        { "tone": "util", "label": "Detection" },
+        { "tone": "atk", "label": "Soul-attack base" }
+      ],
+      "pathEffect": "See hidden; range",
+      "trait": "+10% insight from breakthroughs",
+      "traitRank": 7
+    },
+    {
+      "id": "heaven_mind_eye",
+      "path": "heaven",
+      "name": "Mind Eye",
+      "zi": "心眼",
+      "exercise": "Empty-Mind sitting",
+      "room": "Quiet Hall",
+      "unlockRealm": 2,
+      "trigger": "dodging / perceiving",
+      "eff": [
+        { "tone": "", "label": "Evasion ↑↑" },
+        { "tone": "atk", "label": "Crit (find weakness)" }
+      ],
+      "pathEffect": "Reveal weaknesses; anti-ambush",
+      "trait": "Foresight window +",
+      "traitRank": 7
+    },
+    {
+      "id": "heaven_soul_clarity",
+      "path": "heaven",
+      "name": "Soul Clarity",
+      "zi": "魂明",
+      "exercise": "Soul-cleansing",
+      "room": "Clarity Spring",
+      "unlockRealm": 3,
+      "trigger": "resisting soul / mental attacks",
+      "eff": [
+        { "tone": "def", "label": "Soul Defense ↑↑" },
+        { "tone": "util", "label": "Qi control & stability" }
+      ],
+      "pathEffect": "Cleanse debuffs; steady cast",
+      "trait": "Soul dmg taken −8%",
+      "traitRank": 7
+    },
+    {
+      "id": "heaven_dao_heart",
+      "path": "heaven",
+      "name": "Dao Heart",
+      "zi": "道心",
+      "exercise": "Heart-of-Dao meditation",
+      "room": "Heart Altar",
+      "unlockRealm": 4,
+      "trigger": "composure under pressure",
+      "eff": [
+        { "tone": "def", "label": "Tribulation Resist ↑↑" },
+        { "tone": "util", "label": "Qi efficiency" },
+        { "tone": "util", "label": "Immune fear/charm" }
+      ],
+      "pathEffect": "Unshakeable; cheaper techniques",
+      "trait": "Tribulation resist +",
+      "traitRank": 7
+    },
+    {
+      "id": "heaven_void_gaze",
+      "path": "heaven",
+      "name": "Void Gaze",
+      "zi": "虚瞳",
+      "exercise": "Void-gazing",
+      "room": "Void Window",
+      "unlockRealm": 5,
+      "trigger": "landing soul / curse effects",
+      "eff": [
+        { "tone": "atk", "label": "Soul Attack ↑↑" },
+        { "tone": "atk", "label": "Armor-pen via weakness" },
+        { "tone": "util", "label": "Debuff power" }
+      ],
+      "pathEffect": "See through stealth / illusion",
+      "trait": "Curse potency +",
+      "traitRank": 7
+    },
+    {
+      "id": "heaven_heavenly_mandate",
+      "path": "heaven",
+      "name": "Heavenly Mandate",
+      "zi": "天命",
+      "exercise": "Mandate meditation",
+      "room": "Mandate Terrace",
+      "unlockRealm": 6,
+      "trigger": "controlling / suppressing foes",
+      "eff": [
+        { "tone": "util", "label": "Control Power ↑↑" },
+        { "tone": "atk", "label": "Suppression aura" }
+      ],
+      "pathEffect": "Domain weakens enemies in range",
+      "trait": "Domain radius +",
+      "traitRank": 7
+    },
+    {
+      "id": "heaven_dao_firmament",
+      "path": "heaven",
+      "name": "Heaven Dao · Firmament",
+      "zi": "天道",
+      "exercise": "Heaven-Dao comprehension",
+      "room": "Firmament Seat",
+      "unlockRealm": 7,
+      "trigger": "high-realm soul kills",
+      "eff": [
+        { "tone": "util", "label": "Global control/soul scalar" },
+        { "tone": "util", "label": "Ultimate technique" }
+      ],
+      "pathEffect": "Law-based devastation",
+      "trait": "Firmament form",
+      "traitRank": 7
+    }
+  ]
+}
