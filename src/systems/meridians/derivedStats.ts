@@ -94,17 +94,23 @@ export const MERIDIAN_DERIVED_MAP: Record<string, MeridianDerivedTarget[]> = {
   earth_body_temper: [
     { channel: 'maxHp', weight: 'upup' },
     { channel: 'physDefense', weight: 'up' },
+    { channel: 'physAttack', weight: 'up' }, // W12: Appendix B body-attack
   ],
   earth_bone_forging: [{ channel: 'physDefense', weight: 'upup' }],
   earth_marrow_essence: [
     { channel: 'hpRegen', weight: 'upup' },
     { channel: 'qiPool', weight: 'up' },
+    { channel: 'maxHp', weight: 'up' }, // W12: Appendix B (Earth scales HP hard)
   ],
   earth_root_depth: [{ channel: 'staggerResist', weight: 'upup' }],
-  earth_iron_skin: [{ channel: 'flatDamageReduction', weight: 'upup' }],
+  earth_iron_skin: [
+    { channel: 'flatDamageReduction', weight: 'upup' },
+    { channel: 'physDefense', weight: 'up' }, // W12: Appendix B (Iron Skin → Phys Def)
+  ],
   earth_mountain_stance: [
     { channel: 'physDefense', weight: 'up' },
     { channel: 'flatDamageReduction', weight: 'up' },
+    { channel: 'staggerResist', weight: 'up' }, // W12: Appendix B (Mountain Stance → Stagger)
   ],
   earth_dao_sovereign: [
     { channel: 'maxHp', weight: 'up' },

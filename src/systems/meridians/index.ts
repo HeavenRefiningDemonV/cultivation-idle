@@ -25,3 +25,8 @@ export * from './temperingCourtSurface.js';
  *  flag-gated — NOT wired into the live (legacy-bound, public-default) observatory;
  *  swaps in at the W13 cutover. */
 export * from './observatoryMeridianBinding.js';
+
+/** W12 — the single balance-tuning surface: every ‹tune W12› coefficient aggregated
+ *  into one COURT_BALANCE audit object (references the live consts; numbers tunable,
+ *  structure fixed). Guarded by courtBalanceGuard.test.ts. */
+export * from './courtBalance.js';
