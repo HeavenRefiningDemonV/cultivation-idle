@@ -7,3 +7,7 @@ export * from './meridianModel.js';
  *  until W13): the §2.5 rate formula + the single advanceMeridian path. */
 export * from './computeMeridianRate.js';
 export * from './meridianTrainingState.js';
+
+/** W4 — the Tier-3 derived-stat resolver + the shared meridian→derived mapping
+ *  (codex chips + engine, single source) + signature-effect flags. */
+export * from './derivedStats.js';
