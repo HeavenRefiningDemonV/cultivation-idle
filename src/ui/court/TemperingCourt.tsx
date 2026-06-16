@@ -16,6 +16,7 @@ import {
 } from './regions/CourtRegions';
 import { Room } from './room/Room';
 import { ReturnModal } from './ReturnModal';
+import { CourtAnnouncer } from './a11y/CourtAnnouncer';
 import { COURT_PATH_DISPLAY } from './courtPathDisplay';
 import type { CourtIntensityId, TemperingCourtSurface } from '../../systems/meridians/index.js';
 
@@ -63,6 +64,7 @@ export function TemperingCourt({
         data-testid="tempering-court"
       >
         <CourtDefs />
+        <CourtAnnouncer surface={surface} />
 
         <CourtPanel
           ariaLabel="Tempering Court"

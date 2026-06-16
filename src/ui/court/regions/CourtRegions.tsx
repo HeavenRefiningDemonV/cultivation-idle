@@ -2,6 +2,7 @@ import './courtRegions.scss';
 import { CourtChip, CourtRootChip } from '../courtChips';
 import { CourtFlame, CourtMedallion, CourtWaxSeal } from '../courtSeals';
 import { COURT_INTENSITIES, COURT_PATH_DISPLAY } from '../courtPathDisplay';
+import { useObservatoryRoving } from '../../status/observatory/useObservatoryRoving';
 import {
   COURT_REALM_NAMES,
   type CourtIntensityId,
@@ -107,9 +108,10 @@ export function IntensityBellowsContent({
   onSelectIntensity?: (id: CourtIntensityId) => void;
 }) {
   const active = surface.status === 'active';
+  const { onKeyDown, getItemProps } = useObservatoryRoving(COURT_INTENSITIES.length);
   return (
-    <div className="court-bellows">
-      {COURT_INTENSITIES.map((intensity) => {
+    <div className="court-bellows" role="group" aria-label="Forge intensity" onKeyDown={onKeyDown}>
+      {COURT_INTENSITIES.map((intensity, i) => {
         const selected = intensity.id === surface.intensity.id;
         return (
           <button
@@ -119,6 +121,7 @@ export function IntensityBellowsContent({
             aria-pressed={selected}
             aria-label={`${intensity.label}, ${intensity.xp} experience, ${intensity.fpm} fatigue per minute`}
             onClick={() => onSelectIntensity?.(intensity.id)}
+            {...getItemProps(i)}
           >
             <CourtMedallion glyph={intensity.glyph} ink={selected} />
             <span className="court-detent-label">{intensity.label}</span>

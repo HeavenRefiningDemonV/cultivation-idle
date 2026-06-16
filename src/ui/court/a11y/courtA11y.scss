@@ -1,0 +1,14 @@
+/* W10 — Court a11y. The visually-hidden host for the polite state announcer: present to
+ * assistive tech, removed from the visual + layout flow (no layout shift, no colour, no
+ * hex). Mirrors the observatory's obsVisuallyHidden. */
+.courtSrOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
