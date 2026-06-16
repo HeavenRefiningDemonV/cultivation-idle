@@ -1,0 +1,225 @@
+/* The Tempering Court panel material — the 10 stacked layers (artifact Part 1.3 /
+   Appendix H.1), ported verbatim with court- prefixes and tokens-only colour.
+   rgba() alphas are texture/shadow (not themeable hex); the mask sentinel #000 is
+   not a colour. All themeable hues resolve to --court-* (Court material tokens). */
+
+.courtPanel {
+  position: relative;
+  border-radius: 4px;
+  overflow: hidden;
+  background: linear-gradient(168deg, var(--court-paper-warm), var(--court-paper) 42%, var(--court-paper-deep));
+  box-shadow:
+    0 6px 20px rgba(0, 0, 0, 0.45),
+    inset 0 0 60px rgba(120, 90, 46, 0.06);
+}
+
+/* (z0) vignette + 3 foxing spots + centre bloom */
+.courtPanel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(40% 30% at 8% 6%, rgba(120, 82, 40, 0.12), transparent 70%),
+    radial-gradient(36% 28% at 94% 92%, rgba(120, 82, 40, 0.12), transparent 70%),
+    radial-gradient(50% 40% at 50% 46%, rgba(255, 250, 236, 0.3), transparent 72%),
+    radial-gradient(3% 3% at 22% 70%, rgba(120, 82, 40, 0.12), transparent 60%),
+    radial-gradient(2.5% 2.5% at 76% 28%, rgba(120, 82, 40, 0.1), transparent 60%),
+    radial-gradient(2% 2% at 62% 82%, rgba(120, 82, 40, 0.14), transparent 60%),
+    radial-gradient(120% 120% at 50% 50%, transparent 60%, rgba(64, 42, 22, 0.34));
+}
+
+/* (z1) paper grain */
+.courtPanel__grain {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.5;
+  mix-blend-mode: multiply;
+}
+.courtPanel__grain svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* (z2) faint giant kai watermark */
+.courtPanel__watermark {
+  position: absolute;
+  top: 44px;
+  right: 18px;
+  writing-mode: vertical-rl;
+  font-family: var(--court-kai);
+  font-weight: 700;
+  font-size: 42px;
+  letter-spacing: 16px;
+  color: rgba(31, 26, 23, 0.055);
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* (z3) padded content */
+.courtPanel__content {
+  position: relative;
+  z-index: 3;
+  height: 100%;
+  padding: 18px;
+}
+
+/* (z7) gold double-frame via border-image + mask-exclude (gold reads as a frame) */
+.courtPanel__gframe {
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  pointer-events: none;
+  border-radius: 4px;
+  border: 2.5px solid transparent;
+  background: linear-gradient(135deg, var(--court-frame-hi), var(--court-gold) 45%, var(--court-frame-lo)) border-box;
+  -webkit-mask:
+    linear-gradient(#000 0 0) padding-box,
+    linear-gradient(#000 0 0);
+  mask:
+    linear-gradient(#000 0 0) padding-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+/* (z7) inner hairline */
+.courtPanel__gframe2 {
+  position: absolute;
+  inset: 5px;
+  z-index: 7;
+  pointer-events: none;
+  border: 1px solid rgba(162, 113, 42, 0.45);
+  border-radius: 2px;
+}
+
+/* (z8) four corner brackets */
+.courtPanel__gc {
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  z-index: 8;
+  pointer-events: none;
+  border: 0 solid var(--court-gold);
+}
+.courtPanel__gc--tl {
+  left: 6px;
+  top: 6px;
+  border-left-width: 2px;
+  border-top-width: 2px;
+}
+.courtPanel__gc--tr {
+  right: 6px;
+  top: 6px;
+  border-right-width: 2px;
+  border-top-width: 2px;
+}
+.courtPanel__gc--bl {
+  left: 6px;
+  bottom: 6px;
+  border-left-width: 2px;
+  border-bottom-width: 2px;
+}
+.courtPanel__gc--br {
+  right: 6px;
+  bottom: 6px;
+  border-right-width: 2px;
+  border-bottom-width: 2px;
+}
+
+/* (z9) jade-cloth banner with diamond end-caps */
+.courtPanel__banner {
+  position: absolute;
+  top: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9;
+  white-space: nowrap;
+  padding: 4px 22px;
+  font: 700 12px/1 var(--court-serif);
+  letter-spacing: 0.15em;
+  color: var(--court-gold-pale);
+  background: linear-gradient(180deg, var(--court-jade-ink), var(--court-banner-jade-mid) 55%, var(--court-banner-jade-lo));
+  border: 1px solid var(--court-gold-deep);
+  border-radius: 0 0 3px 3px;
+  box-shadow:
+    0 3px 6px rgba(20, 14, 8, 0.5),
+    inset 0 1px 0 rgba(217, 189, 128, 0.35);
+}
+.courtPanel__banner::before,
+.courtPanel__banner::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  background: linear-gradient(135deg, var(--court-frame-hi), var(--court-gold-deep));
+  transform: translateY(-50%) rotate(45deg);
+}
+.courtPanel__banner::before {
+  left: -4px;
+}
+.courtPanel__banner::after {
+  right: -4px;
+}
+.courtPanel__banner--cinn {
+  background: linear-gradient(
+    180deg,
+    var(--court-banner-cinn-hi),
+    var(--court-banner-cinn-mid) 55%,
+    var(--court-banner-cinn-lo)
+  );
+}
+.courtPanel__banner b {
+  color: white;
+  font-weight: 700;
+}
+
+/* (z10) cinnabar vertical chop (Lintel) */
+.courtPanel__tag {
+  position: absolute;
+  left: 13px;
+  top: 13px;
+  width: 46px;
+  height: 80px;
+  z-index: 10;
+  background: linear-gradient(160deg, var(--court-tag-hi), var(--court-banner-cinn-hi) 55%, var(--court-tag-lo));
+  border: 1px solid var(--court-cinn-deep);
+  border-radius: 3px;
+  box-shadow:
+    0 3px 8px rgba(30, 12, 8, 0.5),
+    inset 0 1px 0 rgba(255, 200, 180, 0.3);
+  display: grid;
+  place-items: center;
+}
+.courtPanel__tag-glyphs {
+  writing-mode: vertical-rl;
+  font-family: var(--court-kai);
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: 4px;
+  color: var(--court-seal-text);
+  text-shadow: 0 1px 2px rgba(40, 10, 6, 0.6);
+}
+
+/* (z6) Lintel scroll-rod caps */
+.courtPanel__roller {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  width: 14px;
+  z-index: 6;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--court-roller-edge), var(--court-roller-mid) 50%, var(--court-roller-edge));
+  box-shadow: inset 0 0 0 1px rgba(178, 131, 45, 0.4);
+}
+.courtPanel__roller--l {
+  left: 4px;
+}
+.courtPanel__roller--r {
+  right: 4px;
+}

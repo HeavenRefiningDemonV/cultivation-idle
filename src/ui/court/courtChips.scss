@@ -1,0 +1,74 @@
+/* Court chips + root chips (artifact Part 1.4). Tokens-only; rgba() alphas of the
+   token hues are texture, not raw hex. */
+
+.courtChip {
+  font: 800 9px var(--court-serif);
+  letter-spacing: 0.05em;
+  padding: 1px 6px;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+.courtChip--jade {
+  background: rgba(15, 111, 90, 0.15);
+  color: var(--court-jade-deep);
+  border: 1px solid rgba(15, 111, 90, 0.4);
+}
+
+.courtChip--gold {
+  background: rgba(162, 113, 42, 0.15);
+  color: var(--court-gold-deep);
+  border: 1px solid rgba(162, 113, 42, 0.45);
+}
+
+.courtChip--cinn {
+  background: rgba(139, 48, 40, 0.15);
+  color: var(--court-cinn-deep);
+  border: 1px solid rgba(139, 48, 40, 0.45);
+}
+
+.courtChip--ink {
+  background: rgba(31, 26, 23, 0.08);
+  color: var(--court-ink-70);
+  border: 1px solid var(--court-ink-25);
+}
+
+.courtRootChip {
+  font: 800 8px var(--court-serif);
+  letter-spacing: 0.04em;
+  padding: 1px 5px;
+  border-radius: 2px;
+  white-space: nowrap;
+  flex: 0 0 auto;
+  border: 1px solid;
+}
+
+.courtRootChip--heavenly {
+  color: var(--court-root-heavenly);
+  background: rgba(122, 58, 134, 0.12);
+  border-color: rgba(122, 58, 134, 0.4);
+}
+
+.courtRootChip--true {
+  color: var(--court-jade-deep);
+  background: rgba(15, 111, 90, 0.12);
+  border-color: rgba(15, 111, 90, 0.4);
+}
+
+.courtRootChip--earthly {
+  color: var(--court-gold-deep);
+  background: rgba(162, 113, 42, 0.12);
+  border-color: rgba(162, 113, 42, 0.4);
+}
+
+.courtRootChip--mortal {
+  color: var(--court-ink-45);
+  background: rgba(31, 26, 23, 0.06);
+  border-color: var(--court-ink-25);
+}
+
+.courtRootChip--chaos {
+  color: var(--court-cinn-deep);
+  background: rgba(139, 48, 40, 0.12);
+  border-color: rgba(139, 48, 40, 0.4);
+}

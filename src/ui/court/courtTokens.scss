@@ -1,0 +1,70 @@
+/* The Tempering Court (Three Treasures) — palette bridge (W1).
+ *
+ * Court component SCSS references --court-* ONLY. These alias the canonical
+ * paper-ink tokens where the value matches the tempering-court artifact (pixel
+ * SoT); literal values appear only where the repo lacks an exact match
+ * (--court-paper-deep, --court-bronze, the serif/kai stacks, and the frame/banner/
+ * tag/medallion/seal/stage gradient stops, which are Court material).
+ *
+ * This is a Court-owned palette file (HEX-ALLOWED ZONE, like CourtDefs.tsx). It
+ * lives in the Court feature rather than src/styles/paperInkTokens.scss only to
+ * keep W1 a clean, isolated commit over an in-flight working tree; the var(--paper-*)
+ * aliases still resolve because paperInkTokens.scss is loaded app-wide (and by the
+ * W1 harness). A later wave may fold these into paperInkTokens.scss per Appendix D.
+ * Imported by CourtPanel so the tokens are present wherever a Court region renders. */
+:root {
+  --court-paper: var(--paper-parchment); /* #f3ead7 */
+  --court-paper-warm: var(--paper-parchment-warm); /* #efe3c9 */
+  --court-paper-deep: #e7d9ba; /* artifact --paper-deep (no exact repo match) */
+  --court-paper-shade: var(--paper-parchment-deep); /* #d9c79e (repo 'deep' = artifact 'shade') */
+  --court-ink: var(--paper-ink); /* #1f1a17 */
+  --court-ink-70: var(--paper-ink-70);
+  --court-ink-45: var(--paper-ink-45);
+  --court-ink-25: var(--paper-ink-25);
+  --court-ink-12: var(--paper-ink-12);
+  --court-jade: var(--paper-jade); /* #4e6b5e */
+  --court-jade-deep: var(--paper-jade-bright); /* #0f6f5a (artifact 'missing' token #1) */
+  --court-jade-ink: var(--paper-jade-ink); /* #2f4a40 */
+  --court-gold: var(--paper-amber); /* #a2712a */
+  --court-gold-bright: var(--paper-gold-strong); /* #b2832d (artifact 'missing' token #2) */
+  --court-gold-pale: var(--paper-gold-pale); /* #d9bd80 */
+  --court-gold-deep: var(--paper-gold-deep); /* #84591b */
+  --court-bronze: #7a5b26; /* artifact --bronze (repo --paper-rare differs) */
+  --court-cinnabar: var(--paper-stamp); /* #8b3028 */
+  --court-cinnabar-bright: var(--paper-cinnabar-bright); /* #a94835 (artifact 'missing' token #3) */
+  --court-cinn-deep: var(--paper-cinnabar-deep); /* #6e241e */
+  --court-el-wood: var(--element-wood); /* #2d7844 */
+  --court-el-fire: var(--element-fire); /* #a44731 */
+  --court-el-earth: var(--element-earth); /* #8d642d */
+  --court-el-metal: var(--element-metal); /* #69717c */
+  --court-el-water: var(--element-water); /* #2a668d */
+  --court-serif: Georgia, 'Songti SC', 'Noto Serif SC', serif;
+  --court-kai: 'Kaiti SC', 'STKaiti', 'KaiTi', 'Songti SC', serif;
+  /* Court material gradient stops (frame / banner / tag / medallion / root chip). */
+  --court-frame-hi: #e7cd92; /* gold double-frame highlight */
+  --court-frame-lo: #6e4c16; /* gold double-frame shadow */
+  --court-banner-jade-mid: #20352d;
+  --court-banner-jade-lo: #182a23;
+  --court-banner-cinn-hi: #7a2a22;
+  --court-banner-cinn-mid: #601e18;
+  --court-banner-cinn-lo: #4e150f;
+  --court-tag-hi: #9a3b30;
+  --court-tag-lo: #5e1c16;
+  --court-seal-text: #f4dccb; /* cinnabar wax-seal glyph fill */
+  --court-medallion-hi: #f0d99e;
+  --court-medallion-mid: #9a6f24;
+  --court-medallion-lo: #684a16;
+  --court-medallion-border: #5e4214;
+  --court-root-heavenly: #7a3a86; /* purple aptitude grade (only non-jade/gold/cinn state-safe accent) */
+  --court-comp: #7a3a86; /* comprehension-purple (codex bar) */
+  --court-comp-hi: #9a7ec8;
+  --court-flame-cold: rgba(120, 90, 46, 0.25); /* unlit intensity flame */
+  --court-flame-hot: #fff4d6; /* lit flame inner */
+  --court-roller-edge: #4a330e; /* lintel scroll-rod caps */
+  --court-roller-mid: #8a6a36;
+  /* The fixed-stage ground (artifact .stage background; reused by the W7 stage). */
+  --court-stage-glow: #3a2c1a;
+  --court-stage-hi: #2a2013;
+  --court-stage-mid: #1c150d;
+  --court-stage-lo: #140e08;
+}
