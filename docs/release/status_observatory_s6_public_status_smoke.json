@@ -1,0 +1,107 @@
+{
+  "url": "http://127.0.0.1:5174/",
+  "title": "cultivation-idle-temp",
+  "statusRootVisible": true,
+  "legacyHeroVisible": true,
+  "legacyMetricStripVisible": true,
+  "observatoryMounted": false,
+  "bottleneckCanopyMounted": false,
+  "visibleTextStart": "CURRENT STATE\n\nCurrent State\n\nCadence Control resists Ember Thread Sutra; speed and law XP fall until a recovery route is practiced.\n\nCURRENT BOTTLENECK\nObserve Spirit Root\nOpen the Status-owned Spirit Root Observation drawer.\nObserve Spirit Root\nCultivate Qi\nRestock Apothecary\nGate Trial\nCULTIVATION BODY\nQi Condensation - Stage 1/9\nSTABLE\n\nCultivation base and Qi flow are stable enough for the current milestone.\n\nOpen Cultivation\nHOW CALCULATED\nMIND / DAO HEART\nEmber Thread Sutra; 0 stages; Qi speed +3%; risk -10\nNEEDS WORK\n\nLow clarity makes doctrine practice more fragile.\n\nOpen Dao Heart Sanctuary\nHOW CALCULATED\nSPIRIT ROOT\nTime Root; Opposed\nAT RISK\n\nCadence Control resists Ember Thread Sutra; speed and law XP fall until a recovery route is practiced.\n\nObserve Spirit Root\nHOW CALCULATED\nTRAINING FOUNDATION\nHeaven Path; 0 / 16 average; fatigue 0%\nNEEDS WORK\n\nQi Control is the lowest unlocked Training stat.\n\nOpen Training Hall\nHOW CALCULATED\nBUILD / PREP\n0 (below minimum)\nAT RISK\n\nMerit reserve: 0 (below minimum)\n\nOpen Apothecary\nHOW CALCULATED\nACTIVE WORK\nIdle\nSTABLE\n\nCultivate Qi: Refine Qi until the next gate threshold opens.\n\nOpen Cultivation\nHOW CALCULATED\nSHARED CAUSE ROWS\nREALM\nQi Condensation\nStage 1/9\nPinewind Hamlet\nPATH\nHeaven\nHEART LAW\nEmber Thread Sutra\nTime\nCommon · 68% purity\nMismatched · 2.35x\nObserve\nFOCUS\nBalanced\nBREATH\nBalanced\nNEXT MAJOR GOAL\nReach Foundation Establishment\n\nAdvance to substage 9 before the gate opens.\n\nMAIN BOTTLENECK\nRealm edge not reached\nRefine Qi until the next gate threshold opens.\nRefine weapon\nQI\n846.81\nQI / S\n75.27 / s\nSTABILITY\n0/100\nHP\n188.16\nCOMBAT STRENGTH\n244.32\nATTACK\n30.57\nDEFENSE\n10.58\nCRIT RATE\n15%\nFOREGROUND\nIdle\nMILESTONE\nPreparing\n\nAdvance to substage 9 before the gate opens.\n\nQi Condensation\nStage 1/9\nNovice's Clearing\nViable — Apothecary route shows reserve pressure\nReach Foundation Establishment\nAdvance to substage 9 before the gate opens.\nHeaven\nNo stable archetype profile detected yet.\nREALM STEP\nQi Co",
+  "testIds": [
+    "status-ledger-root",
+    "status-current-state",
+    "status-current-state-block-current-state-cultivation",
+    "status-current-state-block-current-state-dao-heart",
+    "status-current-state-block-current-state-spirit-root",
+    "status-current-state-block-current-state-training",
+    "status-current-state-block-current-state-build-prep",
+    "status-current-state-block-current-state-active-work",
+    "status-ledger-hero",
+    "status-ledger-hero-identity",
+    "status-ledger-hero-doctrine",
+    "status-ledger-hero-goal",
+    "status-ledger-primary-action",
+    "status-ledger-metrics",
+    "status-ledger-grid",
+    "status-ledger-card-milestone",
+    "status-ledger-card-cultivation-base",
+    "status-ledger-card-mission-requirements",
+    "status-ledger-card-best-improvements",
+    "status-ledger-card-safety-net",
+    "status-ledger-card-identity-doctrine",
+    "status-ledger-card-current-work",
+    "status-ledger-card-build-preparation",
+    "status-ledger-details",
+    "status-ledger-recent-changes"
+  ],
+  "consoleMessages": [
+    {
+      "type": "warning",
+      "text": "[GameLoop] Already running"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Technique counts by path: Heaven=20, Earth=20, Martial=20"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=heaven: 6"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=earth: 6"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=0 (city_pinewind_hamlet) path=martial: 6"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=heaven: 7"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=earth: 9"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=1 (city_stonecrag_town) path=martial: 8"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=heaven: 9"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=earth: 9"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=2 (city_spirit_cavern_city) path=martial: 10"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=3 (city_lotusford) path=heaven: 10"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=3 (city_lotusford) path=earth: 10"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=3 (city_lotusford) path=martial: 10"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=heaven: 10"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=earth: 10"
+    },
+    {
+      "type": "warning",
+      "text": "[ContentValidation] Pavilion pool size city=4 (city_ironpeak_bastion) path=martial: 10"
+    }
+  ]
+}

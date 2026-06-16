@@ -1,7 +1,7 @@
 # Release Sign-off Sheet
 
 ## Release candidate identity
-- generatedAt: 2026-06-05T16:10:25.135Z
+- generatedAt: 2026-06-16T18:23:51.849Z
 - releaseDecision: NO_GO
 - cleanPass: false
 - acceptedWaiverCount: 0

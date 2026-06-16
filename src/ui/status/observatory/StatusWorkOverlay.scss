@@ -1,0 +1,169 @@
+/* Current Work Time Wheel detail overlay (artifact ovWork). */
+.statusWorkOverlay {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 740px;
+  font-family: Georgia, "Times New Roman", serif;
+  color: var(--observatory-ink);
+}
+
+.statusWorkOverlay__card {
+  background:
+    linear-gradient(168deg, rgba(248, 243, 224, 0.92), rgba(233, 221, 191, 0.86)),
+    var(--observatory-paper);
+  border: 1px solid rgba(120, 90, 46, 0.34);
+  border-radius: 4px;
+  padding: 12px 14px;
+  box-shadow:
+    0 4px 10px rgba(40, 26, 12, 0.14),
+    inset 0 1px 0 rgba(255, 250, 235, 0.5);
+}
+
+.statusWorkOverlay__sub {
+  font-weight: 700;
+  font-size: 0.58rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--observatory-muted);
+}
+.statusWorkOverlay__sub--cinnabar { color: var(--observatory-cinnabar); }
+.statusWorkOverlay__sub--jade { color: var(--observatory-jade); }
+.statusWorkOverlay__sub--gold { color: var(--observatory-gold-deep, var(--observatory-gold)); }
+
+/* Wheel card */
+.statusWorkOverlay__wheelCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.statusWorkOverlay__wheel {
+  width: clamp(280px, 90%, 380px);
+  aspect-ratio: 1;
+  margin: 6px auto;
+}
+.statusWorkOverlay__wheel .statusCurrentWorkTimeWheel,
+.statusWorkOverlay__wheel > * {
+  width: 100%;
+  height: 100%;
+}
+.statusWorkOverlay__wheelCard p {
+  margin: 8px 0 0;
+  max-width: 330px;
+  text-align: center;
+  font-size: 0.56rem;
+  color: var(--observatory-muted);
+  line-height: 1.45;
+}
+
+/* Active & queued systems */
+.statusWorkOverlay__system {
+  padding: 6.5px 0;
+  border-bottom: 1px dashed rgba(120, 90, 46, 0.2);
+}
+.statusWorkOverlay__systemHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.66rem;
+  font-weight: 700;
+}
+.statusWorkOverlay__systemName {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.statusWorkOverlay__systemName i {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+}
+.statusWorkOverlay__systemName b { font-size: 0.7rem; }
+.statusWorkOverlay__systemSub {
+  padding-left: 21px;
+  margin-top: 1px;
+  font-size: 0.5rem;
+  color: var(--observatory-muted);
+}
+
+/* Offline rows / queue / forecast */
+.statusWorkOverlay__row {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  border-bottom: 1px dashed rgba(120, 90, 46, 0.2);
+  font-size: 0.6rem;
+}
+.statusWorkOverlay__row--tight { padding: 3.5px 0; }
+.statusWorkOverlay__row span { color: var(--observatory-muted); }
+.statusWorkOverlay__queue {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.statusWorkOverlay__queueNote {
+  font-size: 0.5rem;
+  color: var(--observatory-muted);
+  line-height: 1.4;
+  align-self: center;
+}
+
+/* Right log */
+.statusWorkOverlay__logRow {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 5px 0;
+  border-bottom: 1px dashed rgba(120, 90, 46, 0.2);
+  font-size: 0.58rem;
+  color: var(--observatory-muted);
+}
+.statusWorkOverlay__logRow--muted { color: rgba(120, 110, 90, 0.85); }
+.statusWorkOverlay__logDot {
+  flex: 0 0 auto;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--observatory-gold-deep, var(--observatory-gold));
+}
+.statusWorkOverlay__logDot[data-bad='true'] { background: var(--observatory-cinnabar); }
+.statusWorkOverlay__logDot[data-muted='true'] { width: 6px; height: 6px; background: rgba(120, 110, 90, 0.6); }
+.statusWorkOverlay__timeline {
+  display: flex;
+  height: 14px;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid rgba(120, 90, 46, 0.35);
+}
+.statusWorkOverlay__timeline span { display: block; height: 100%; }
+.statusWorkOverlay__timelineKeys {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+.statusWorkOverlay__timelineKeys span {
+  font-size: 0.5rem;
+  color: var(--observatory-muted);
+}
+.statusWorkOverlay__ownership {
+  display: flex;
+  justify-content: space-between;
+}
+.statusWorkOverlay__ownership div { text-align: center; }
+.statusWorkOverlay__ownership small {
+  display: block;
+  font-size: 0.44rem;
+  color: var(--observatory-muted);
+}
+.statusWorkOverlay__note {
+  margin: 9px 0 0;
+  font-size: 0.56rem;
+  color: var(--observatory-muted);
+  line-height: 1.5;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .statusWorkOverlay * { animation: none !important; }
+}

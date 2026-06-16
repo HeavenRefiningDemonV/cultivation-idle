@@ -1,5 +1,7 @@
+import { memo } from 'react';
 import type { StatusLedgerActionSurface } from '../../../systems/ui/status/statusLedgerTypes.js';
 import type { StatusObservatorySurfaceV1 } from '../../../systems/ui/status/statusObservatoryTypes.js';
+import { deepEqualProps } from './fx/memoProps.js';
 import { StatusHeartLawSeal } from './StatusHeartLawSeal.js';
 import { StatusSpiritRootAstrolabe } from './StatusSpiritRootAstrolabe.js';
 
@@ -14,7 +16,24 @@ function bridgeMarkerCount(state: StatusObservatorySurfaceV1['rootLawInstrument'
   return 0;
 }
 
-export function StatusRootLawCoupledInstrument({
+type AstrolabeSurface = StatusObservatorySurfaceV1['rootLawInstrument']['astrolabe'];
+
+function observeAction(astrolabe: AstrolabeSurface): StatusLedgerActionSurface | null {
+  // The surface lists the spirit-root observation action first (statusObservatory
+  // Surface builds routeActions = [observationAction, ...]). Prefer the typed
+  // status_observation route, then the named one, then fall back to that first
+  // route so the foot's Observe button is present whenever a route exists.
+  return (
+    astrolabe.routeActions.find((action) => action.target.kind === 'status_observation') ??
+    astrolabe.routeActions.find((action) => action.label === 'Observe Spirit Root') ??
+    astrolabe.routeActions[0] ??
+    null
+  );
+}
+
+export const StatusRootLawCoupledInstrument = memo(StatusRootLawCoupledInstrumentBase, deepEqualProps);
+
+function StatusRootLawCoupledInstrumentBase({
   surface,
   onAction,
 }: StatusRootLawCoupledInstrumentProps) {
@@ -22,6 +41,29 @@ export function StatusRootLawCoupledInstrument({
   const forwardAction = (action: StatusLedgerActionSurface) => {
     if (!action.disabled && onAction) onAction(action);
   };
+
+  // Artifact rootFoot: a thin full-width row of small stats below both columns.
+  // "bad" (cinnabar) reads off the fit tier — opposed/strained suppress expression,
+  // run validity, and the fit verdict.
+  const tier = surface.bridge.fitTier;
+  const fitBad = tier === 'opposed' || tier === 'strained';
+  const footStats: Array<{ label: string; value: string; bad: boolean }> = [];
+  if (surface.astrolabe.purityLabel) footStats.push({ label: 'Purity', value: surface.astrolabe.purityLabel, bad: false });
+  if (surface.astrolabe.expressionCapLabel) footStats.push({ label: 'Expression Cap', value: surface.astrolabe.expressionCapLabel, bad: tier === 'opposed' });
+  if (surface.astrolabe.proc) {
+    footStats.push({
+      label: 'Root Proc',
+      value: surface.astrolabe.proc.cooldownLabel ? `${surface.astrolabe.proc.name} · ${surface.astrolabe.proc.cooldownLabel}` : surface.astrolabe.proc.name,
+      bad: false,
+    });
+  }
+  if (surface.astrolabe.runValidityLabel) footStats.push({ label: 'Run Validity', value: surface.astrolabe.runValidityLabel, bad: fitBad });
+  if (surface.astrolabe.fitLabel) footStats.push({ label: 'Root / Law Fit', value: surface.astrolabe.fitLabel, bad: fitBad });
+
+  const observe = observeAction(surface.astrolabe);
+  const daoHeart = surface.heartLawSeal.routeAction;
+  const observeDisabled = !observe || observe.disabled || !onAction;
+  const daoDisabled = !daoHeart || daoHeart.disabled || !onAction;
 
   return (
     <section
@@ -34,16 +76,8 @@ export function StatusRootLawCoupledInstrument({
       data-fit-tier={surface.bridge.fitTier}
       aria-label={surface.bridge.ariaLabel}
     >
-      <div className="statusObservatoryInstrument__header statusRootLawCoupledInstrument__header">
-        <span className="statusObservatoryInstrument__sigil" aria-hidden="true" />
-        <div>
-          <h2>{surface.title}</h2>
-          <p>{surface.bridge.label}</p>
-        </div>
-      </div>
-
       <div className="statusRootLawCoupledInstrument__body">
-        <StatusSpiritRootAstrolabe surface={surface.astrolabe} onAction={forwardAction} />
+        <StatusSpiritRootAstrolabe surface={surface.astrolabe} />
 
         <div
           className="statusRootLawBridge"
@@ -71,9 +105,48 @@ export function StatusRootLawCoupledInstrument({
 
         <StatusHeartLawSeal
           surface={surface.heartLawSeal}
-          onAction={forwardAction}
           distress={surface.bridge.fitTier === 'opposed'}
         />
+      </div>
+
+      {/* Artifact rootFoot: small full-width stat row + the two route buttons. */}
+      <div className="statusRootLawCoupledInstrument__foot">
+        <div className="statusRootLawCoupledInstrument__footStats">
+          {footStats.map((stat) => (
+            <div key={stat.label} className="statusRootLawCoupledInstrument__footStat" data-bad={stat.bad ? 'true' : 'false'}>
+              <span>{stat.label}</span>
+              <strong>{stat.value}</strong>
+            </div>
+          ))}
+        </div>
+        <div className="statusRootLawCoupledInstrument__footActions">
+          {observe ? (
+            <button
+              type="button"
+              className="statusRootLawRouteButton statusRootLawRouteButton--observe"
+              data-route-kind={observe.target.kind}
+              data-disabled={observeDisabled ? 'true' : 'false'}
+              disabled={observeDisabled}
+              title={observe.disabled ? observe.disabledReason ?? observe.detail : observe.detail}
+              onClick={() => forwardAction(observe)}
+            >
+              {observe.label}
+            </button>
+          ) : null}
+          {daoHeart ? (
+            <button
+              type="button"
+              className="statusRootLawRouteButton statusRootLawRouteButton--daoHeart"
+              data-route-kind={daoHeart.target.kind}
+              data-disabled={daoDisabled ? 'true' : 'false'}
+              disabled={daoDisabled}
+              title={daoHeart.disabled ? daoHeart.disabledReason ?? daoHeart.detail : daoHeart.detail}
+              onClick={() => forwardAction(daoHeart)}
+            >
+              {daoHeart.label}
+            </button>
+          ) : null}
+        </div>
       </div>
     </section>
   );

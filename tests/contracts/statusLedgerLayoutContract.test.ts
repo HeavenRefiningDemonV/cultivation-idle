@@ -60,23 +60,34 @@ test('StatusScreen renders the Status Ledger surface without old Dao public comp
 });
 
 test('Status Ledger exposes required public test ids', () => {
-  const src = STATUS_LEDGER_FILES.map((file) => readIfExists(file)).join('\n');
+  const src = [
+    ...STATUS_LEDGER_FILES.map((file) => readIfExists(file)),
+    readIfExists('src/ui/status/observatory/StatusLivingStateObservatory.tsx'),
+    readIfExists('src/ui/status/observatory/StatusLifeDecreeScroll.tsx'),
+    readIfExists('src/ui/status/observatory/StatusVitalsSealRibbon.tsx'),
+    readIfExists('src/ui/status/observatory/StatusRootLawCoupledInstrument.tsx'),
+    readIfExists('src/ui/status/observatory/StatusMeridianVesselCompass.tsx'),
+    readIfExists('src/ui/status/observatory/StatusBottleneckTalismanCanopy.tsx'),
+    readIfExists('src/ui/status/observatory/StatusStatMeridianConstellation.tsx'),
+    readIfExists('src/ui/status/observatory/StatusBuildPreparationScales.tsx'),
+    readIfExists('src/ui/status/observatory/StatusCurrentWorkTimeWheel.tsx'),
+    readIfExists('src/ui/status/observatory/StatusFoldedLedgerRail.tsx'),
+  ].join('\n');
 
   for (const id of [
     'status-ledger-root',
     'status-ledger-hero',
     'status-ledger-metrics',
     'status-ledger-grid',
-    'status-ledger-card-milestone',
-    'status-ledger-card-cultivation-base',
-    'status-ledger-card-mission-requirements',
-    'status-ledger-card-best-improvements',
-    'status-ledger-card-safety-net',
-    'status-ledger-card-identity-doctrine',
-    'status-ledger-card-current-work',
-    'status-ledger-card-build-preparation',
+    'status-current-state',
+    'status-ledger-cultivation-base',
+    'status-ledger-mission-requirements',
+    'status-ledger-current-work',
+    'status-ledger-build-preparation',
     'status-ledger-details',
-    'status-ledger-recent-changes',
+    'status-root-law-instrument',
+    'status-bottleneck-canopy',
+    'status-stat-constellation',
   ]) {
     assert.match(src, new RegExp(escapeRegex(id)), `${id} should be present in Packet C render files.`);
   }

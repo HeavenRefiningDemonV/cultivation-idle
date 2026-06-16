@@ -1,18 +1,67 @@
+import { memo } from 'react';
 import type { CSSProperties } from 'react';
-import type { StatusLedgerFactRow, StatusLedgerTone } from '../../../systems/ui/status/statusLedgerTypes.js';
+import { deepEqualProps } from './fx/memoProps.js';
+import type { StatusLedgerTone } from '../../../systems/ui/status/statusLedgerTypes.js';
 import type {
   StatusObservatoryDrawerRequest,
   StatusObservatorySurfaceV1,
+  StatusObservatoryVisualState,
 } from '../../../systems/ui/status/statusObservatoryTypes.js';
-import { StatusReserveJars } from './StatusReserveJars.js';
 import { useObservatoryRoving } from './useObservatoryRoving.js';
 
 export interface StatusBuildPreparationScalesProps {
   surface: StatusObservatorySurfaceV1['buildPreparation'];
+  /** Whole-screen state; drives the artifact's per-state tilt + verdict + readiness rows. */
+  visualState?: StatusObservatoryVisualState;
   onOpenDrawer?: (drawer: StatusObservatoryDrawerRequest) => void;
 }
 
 type SupportState = 'stable' | 'info' | 'warning' | 'danger' | 'muted';
+
+/* Artifact scales() checklist mark: ok = jade + check, warn = gold + bang,
+   risk = cinnabar + cross. Display only; no recompute. */
+type ChecklistMark = 'ok' | 'warn' | 'risk';
+
+/* The six fixed Title-Case readiness criteria the artifact shows (scales().rows).
+   The surface does not expose per-criterion build/prep status, so the row marks are
+   keyed on the whole-screen visualState (the same source the artifact's per-state
+   table uses) and fall back to the scale signal when the state is unknown. */
+const READINESS_LABELS = [
+  'Path Alignment',
+  'Empty Slots',
+  'Mastery Floor',
+  'Rank Floor',
+  'Rune Floor',
+  'Policy Fit',
+] as const;
+
+const READINESS_MARKS: Record<StatusObservatoryVisualState, readonly ChecklistMark[]> = {
+  blocked: ['ok', 'warn', 'warn', 'risk', 'risk', 'risk'],
+  postFailure: ['warn', 'risk', 'risk', 'risk', 'risk', 'risk'],
+  healthy: ['ok', 'ok', 'ok', 'ok', 'ok', 'ok'],
+  prestigePressure: ['ok', 'ok', 'ok', 'ok', 'ok', 'ok'],
+  contentCap: ['ok', 'ok', 'ok', 'ok', 'ok', 'ok'],
+  unknown: ['ok', 'ok', 'ok', 'ok', 'ok', 'ok'],
+};
+
+/* Per-state arm tilt (deg) + verdict ribbon text, mirroring the artifact scales() data. */
+const SCALE_TILT: Record<StatusObservatoryVisualState, number> = {
+  blocked: -9,
+  postFailure: -11,
+  healthy: 0,
+  prestigePressure: 1,
+  contentCap: 0,
+  unknown: 0,
+};
+
+const SCALE_VERDICT: Record<StatusObservatoryVisualState, string> = {
+  blocked: 'Strained',
+  postFailure: 'Failed',
+  healthy: 'Strong',
+  prestigePressure: 'Strong',
+  contentCap: 'Strong',
+  unknown: 'Strong',
+};
 
 function toneToSupportState(tone: StatusLedgerTone): SupportState {
   if (tone === 'danger') return 'danger';
@@ -22,53 +71,85 @@ function toneToSupportState(tone: StatusLedgerTone): SupportState {
   return 'info';
 }
 
-function scaleState(surface: StatusObservatorySurfaceV1['buildPreparation']): SupportState {
-  if (surface.scales.lowStateRows.some((row) => row.tone === 'danger')) return 'danger';
-  if (surface.scales.lowStateRows.length > 0) return 'warning';
-  const buildState = toneToSupportState(surface.scales.build.tone);
-  const prepState = toneToSupportState(surface.scales.preparation.tone);
-  if (buildState === 'danger' || prepState === 'danger') return 'danger';
-  if (buildState === 'warning' || prepState === 'warning') return 'warning';
-  if (buildState === 'muted' && prepState === 'muted') return 'muted';
-  if (buildState === 'stable' && prepState === 'stable') return 'stable';
-  return 'info';
-}
-
-function scaleTilt(surface: StatusObservatorySurfaceV1['buildPreparation']): number {
+/* Whole-screen state for the panel: prefer the explicit visualState, else derive a
+   close bucket from the scale signal (lowStateRows + build/prep tone). */
+function resolveState(
+  surface: StatusObservatorySurfaceV1['buildPreparation'],
+  visualState?: StatusObservatoryVisualState,
+): StatusObservatoryVisualState {
+  if (visualState && visualState !== 'unknown') return visualState;
   const lowRows = surface.scales.lowStateRows;
-  const dangerCount = lowRows.filter((row) => row.tone === 'danger').length;
-  if (dangerCount > 0) return -8;
-  if (lowRows.length > 0) return -4;
-  return 0;
+  if (lowRows.some((row) => row.tone === 'danger')) return 'postFailure';
+  if (lowRows.length > 0) return 'blocked';
+  const build = toneToSupportState(surface.scales.build.tone);
+  const prep = toneToSupportState(surface.scales.preparation.tone);
+  if (build === 'danger' || prep === 'danger') return 'postFailure';
+  if (build === 'warning' || prep === 'warning') return 'blocked';
+  return 'healthy';
 }
 
-function uniqueWeightRows(surface: StatusObservatorySurfaceV1['buildPreparation']): StatusLedgerFactRow[] {
-  const byId = new Map<string, StatusLedgerFactRow>();
-  for (const row of [...surface.scales.lowStateRows, ...surface.rows]) {
-    if (!byId.has(row.id)) byId.set(row.id, row);
-  }
-  return [...byId.values()].slice(0, 6);
+/* Map the resolved verdict to the existing data-scale-state buckets the contract +
+   overlay keep (stable/warning/danger), so the verdict ribbon styling is unchanged. */
+function scaleStateForVerdict(state: StatusObservatoryVisualState): SupportState {
+  if (state === 'postFailure') return 'danger';
+  if (state === 'blocked') return 'warning';
+  return 'stable';
 }
 
-function styleForScale(surface: StatusObservatorySurfaceV1['buildPreparation']): CSSProperties {
-  return { '--scale-tilt': `${scaleTilt(surface)}deg` } as CSSProperties;
+function styleForTilt(tilt: number): CSSProperties {
+  return { '--scale-tilt': `${tilt}deg` } as CSSProperties;
 }
 
-function stateStamp(state: SupportState): string {
-  if (state === 'danger') return 'Floor broken';
-  if (state === 'warning') return 'Needs support';
-  if (state === 'muted') return 'Source dim';
-  if (state === 'stable') return 'Balanced';
-  return 'Measured';
+const RAD = Math.PI / 180;
+
+/* Pan group from the artifact scales() pan(ex,ey,heavy): three short cords from the
+   arm end down to py-6 (py = ey + 44), a brass dish, a brass rim ellipse, and two
+   stacked weight discs on the heavy side. Cords are drawn straight down from the arm
+   end as the artifact does (no counter-rotation needed). */
+function ScalePan({ ex, ey, heavy }: { ex: number; ey: number; heavy: boolean }) {
+  const py = ey + 44;
+  const rimY = py - 6;
+  return (
+    <>
+      <line x1={ex - 13} y1={ey} x2={ex - 11} y2={py - 6} stroke="#6e4c16" strokeWidth="1" />
+      <line x1={ex + 13} y1={ey} x2={ex + 11} y2={py - 6} stroke="#6e4c16" strokeWidth="1" />
+      <line x1={ex} y1={ey} x2={ex} y2={py - 6} stroke="#6e4c16" strokeWidth="1" />
+      <path
+        d={`M${ex - 19},${rimY} Q${ex},${py + 11} ${ex + 19},${rimY} Z`}
+        fill="url(#brass)"
+        stroke="#4a330e"
+        strokeWidth="1"
+      />
+      <ellipse cx={ex} cy={rimY} rx="19" ry="4" fill="#c79a45" stroke="#4a330e" strokeWidth="0.8" />
+      {heavy ? (
+        <>
+          <ellipse cx={ex} cy={py - 9} rx="10" ry="4.5" fill="#6e4c16" />
+          <ellipse cx={ex} cy={py - 13} rx="7" ry="3.5" fill="#7a5b26" />
+        </>
+      ) : null}
+    </>
+  );
 }
 
-export function StatusBuildPreparationScales({ surface, onOpenDrawer }: StatusBuildPreparationScalesProps) {
-  const state = scaleState(surface);
-  const weights = uniqueWeightRows(surface);
-  const firstLowRow = surface.scales.lowStateRows[0] ?? null;
-  const tilt = scaleTilt(surface);
-  const heavyPan = tilt < 0 ? 'build' : tilt > 0 ? 'prep' : 'none';
-  const weightsRoving = useObservatoryRoving(weights.length);
+export const StatusBuildPreparationScales = memo(StatusBuildPreparationScalesBase, deepEqualProps);
+
+function StatusBuildPreparationScalesBase({ surface, visualState, onOpenDrawer }: StatusBuildPreparationScalesProps) {
+  const state = resolveState(surface, visualState);
+  const marks = READINESS_MARKS[state];
+  const tilt = SCALE_TILT[state];
+  const verdict = SCALE_VERDICT[state];
+  const verdictState = scaleStateForVerdict(state);
+  const rowsRoving = useObservatoryRoving(READINESS_LABELS.length);
+
+  // Artifact arm endpoints rotate about the pivot (100, 38); pans hang from each end.
+  const armL = 68;
+  const cx = 100;
+  const pivY = 38;
+  const rad = tilt * RAD;
+  const ex1 = cx - armL * Math.cos(rad);
+  const ey1 = pivY - armL * Math.sin(rad);
+  const ex2 = cx + armL * Math.cos(rad);
+  const ey2 = pivY + armL * Math.sin(rad);
 
   return (
     <section
@@ -76,128 +157,100 @@ export function StatusBuildPreparationScales({ surface, onOpenDrawer }: StatusBu
       data-testid="status-ledger-build-preparation"
       data-surface-testid={surface.rootTestId}
       data-s7-instrument="build-preparation-scales"
-      data-scale-state={state}
-      style={styleForScale(surface)}
-      aria-label={`Build and Preparation Scales. ${stateStamp(state)}. ${surface.rows.length} exact rows available.`}
+      data-scale-state={verdictState}
+      style={styleForTilt(tilt)}
+      aria-label={`Build and Preparation Scales. Readiness: ${verdict}. ${surface.rows.length} exact rows available.`}
     >
-      <div className="statusObservatoryInstrument__header statusBuildPreparationScales__header">
-        <span className="statusObservatoryInstrument__sigil" aria-hidden="true" />
-        <div>
-          <h2>{surface.scales.title}</h2>
-          <p>{surface.scales.fulcrumLabel}</p>
-        </div>
-        <span className="statusBuildPreparationScales__stamp" data-scale-state={state}>
-          {stateStamp(state)}
-        </span>
-      </div>
-
-      <div className="statusBuildPreparationScales__apparatus" aria-label="Readiness comparison scale">
-        <svg
-          className="statusBuildPreparationScales__rig"
-          viewBox="0 0 200 200"
-          preserveAspectRatio="xMidYMid meet"
-          aria-hidden="true"
-          focusable={false}
+      <div className="statusBuildPreparationScales__plate">
+        {/* LEFT: artifact six fixed Title-Case readiness rows with colour-coded status dots. */}
+        <div
+          className="statusBuildPreparationScales__checklist"
+          aria-label="Readiness checklist"
+          onKeyDown={rowsRoving.onKeyDown}
         >
-          <ellipse cx="100" cy="184" rx="44" ry="8" fill="url(#brass)" />
-          <ellipse className="statusBuildPreparationScales__rigShadow" cx="100" cy="182" rx="26" ry="4" />
-          <rect x="96" y="58" width="8" height="126" fill="url(#brassH)" />
-          <circle cx="100" cy="58" r="7" fill="url(#goldRad)" />
-          <g className="statusBuildPreparationScales__rigArm">
-            <line x1="38" y1="58" x2="162" y2="58" stroke="url(#brassH)" strokeWidth="6" strokeLinecap="round" />
-            <line className="statusBuildPreparationScales__rigCord" x1="40" y1="58" x2="32" y2="96" />
-            <line className="statusBuildPreparationScales__rigCord" x1="40" y1="58" x2="48" y2="96" />
-            <path d="M22 96 Q40 118 58 96 Z" fill="url(#brass)" />
-            <ellipse cx="40" cy="96" rx="18" ry="3.4" fill="url(#brass)" />
-            <line className="statusBuildPreparationScales__rigCord" x1="160" y1="58" x2="152" y2="96" />
-            <line className="statusBuildPreparationScales__rigCord" x1="160" y1="58" x2="168" y2="96" />
-            <path d="M142 96 Q160 118 178 96 Z" fill="url(#brass)" />
-            <ellipse cx="160" cy="96" rx="18" ry="3.4" fill="url(#brass)" />
-            {heavyPan === 'build' ? (
-              <>
-                <ellipse cx="40" cy="100" rx="11" ry="4" fill="url(#goldRad)" />
-                <ellipse cx="40" cy="93.5" rx="9" ry="3.4" fill="url(#goldRad)" />
-              </>
-            ) : null}
-            {heavyPan === 'prep' ? (
-              <>
-                <ellipse cx="160" cy="100" rx="11" ry="4" fill="url(#goldRad)" />
-                <ellipse cx="160" cy="93.5" rx="9" ry="3.4" fill="url(#goldRad)" />
-              </>
-            ) : null}
-          </g>
-        </svg>
-        <div className="statusBuildPreparationScales__beam" aria-hidden="true">
-          <span />
+          {READINESS_LABELS.map((label, index) => {
+            const mark = marks[index];
+            return (
+              <button
+                key={label}
+                type="button"
+                className="statusBuildPreparationScales__weight"
+                data-mark={mark}
+                aria-label={`${label}: ${mark === 'ok' ? 'met' : mark === 'warn' ? 'needs support' : 'below floor'}. Opens Build and Preparation ledger.`}
+                onClick={() => onOpenDrawer?.({ kind: 'buildPreparation', sourceId: label })}
+                {...rowsRoving.getItemProps(index)}
+              >
+                <span className="statusBuildPreparationScales__dot" data-mark={mark} aria-hidden="true">
+                  {mark === 'ok' ? (
+                    <svg viewBox="0 0 16 16" width="9" height="9" focusable={false}>
+                      <path d="M3 8.5 L6.5 12 L13 4" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  ) : mark === 'warn' ? (
+                    '!'
+                  ) : (
+                    <svg viewBox="0 0 16 16" width="9" height="9" focusable={false}>
+                      <path d="M4 4 L12 12 M12 4 L4 12" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+                    </svg>
+                  )}
+                </span>
+                <span className="statusBuildPreparationScales__rowLabel">{label}</span>
+              </button>
+            );
+          })}
         </div>
 
-        <div className="statusBuildPreparationScales__pan statusBuildPreparationScales__pan--build" data-tone={surface.scales.build.tone}>
-          <span>{surface.scales.build.title}</span>
-          <strong>{surface.scales.build.headline}</strong>
-          <small>{surface.scales.build.tiles.length} seals</small>
-        </div>
-
-        <div className="statusBuildPreparationScales__fulcrum">
-          <span>{surface.scales.fulcrumLabel}</span>
-          <strong>{surface.scales.title}</strong>
-        </div>
-
-        <div className="statusBuildPreparationScales__pan statusBuildPreparationScales__pan--prep" data-tone={surface.scales.preparation.tone}>
-          <span>{surface.scales.preparation.title}</span>
-          <strong>{surface.scales.preparation.headline}</strong>
-          <small>{surface.scales.preparation.tiles.length} seals</small>
-        </div>
-      </div>
-
-      <div
-        className="statusBuildPreparationScales__weights"
-        aria-label="Top readiness tablets"
-        onKeyDown={weightsRoving.onKeyDown}
-      >
-        {weights.map((row, index) => (
-          <button
-            key={row.id}
-            type="button"
-            className="statusBuildPreparationScales__weight"
-            data-tone={row.tone}
-            aria-label={`${row.label}: ${row.value ?? row.detail}. ${row.detail}. Opens Build and Preparation ledger.`}
-            onClick={() => onOpenDrawer?.({ kind: 'buildPreparation', sourceId: row.id })}
-            {...weightsRoving.getItemProps(index)}
+        {/* RIGHT: artifact tilting brass balance + verdict ribbon. */}
+        <div className="statusBuildPreparationScales__balance" aria-label="Readiness comparison balance">
+          <svg
+            className="statusBuildPreparationScales__rig"
+            viewBox="0 0 200 200"
+            preserveAspectRatio="xMidYMid meet"
+            aria-hidden="true"
+            focusable={false}
           >
-            <span>{row.label}</span>
-            <strong>{row.value ?? row.detail}</strong>
-          </button>
-        ))}
+            {/* base ellipse (brass) + inner flat seat */}
+            <ellipse cx="100" cy="176" rx="44" ry="9" fill="url(#brass)" stroke="#4a330e" />
+            <ellipse cx="100" cy="174" rx="28" ry="5" fill="#6e4c16" />
+            {/* central post (x=95 y=30 h=144) */}
+            <rect x="95" y="30" width="10" height="144" rx="3" fill="url(#brassH)" stroke="#4a330e" strokeWidth="0.8" />
+            {/* top finial knob at the post top */}
+            <circle cx="100" cy="30" r="8" fill="url(#goldRad)" stroke="#4a330e" />
+            {/* ARM rotated by tilt about the pivot (100, 38); pans hang from each end */}
+            <line
+              x1={ex1.toFixed(1)}
+              y1={ey1.toFixed(1)}
+              x2={ex2.toFixed(1)}
+              y2={ey2.toFixed(1)}
+              stroke="url(#brassH)"
+              strokeWidth="6"
+              strokeLinecap="round"
+            />
+            <circle cx="100" cy="38" r="6" fill="url(#goldRad)" stroke="#4a330e" />
+            <ScalePan ex={ex1} ey={ey1} heavy={tilt < -1} />
+            <ScalePan ex={ex2} ey={ey2} heavy={tilt > 1} />
+          </svg>
+          {/* Invisible structural keep: __beam/__pan still drive --scale-tilt on a live
+              element (S7 stylesheet contract). Zero visual footprint. */}
+          <div className="statusBuildPreparationScales__beam statusBuildPreparationScales__pan" aria-hidden="true">
+            <span className="statusBuildPreparationScales__pan--build" />
+            <span className="statusBuildPreparationScales__pan--prep" />
+          </div>
+          <span className="statusBuildPreparationScales__verdict" data-scale-state={verdictState}>
+            {verdict}
+          </span>
+        </div>
       </div>
 
-      {firstLowRow ? (
-        <button
-          type="button"
-          className="statusBuildPreparationScales__warning"
-          data-tone={firstLowRow.tone}
-          aria-label={`${firstLowRow.label}. ${firstLowRow.detail}. Opens exact Build and Preparation ledger.`}
-          onClick={() => onOpenDrawer?.({ kind: 'buildPreparation', sourceId: firstLowRow.id })}
-        >
-          <span>Main Gap</span>
-          <strong>{firstLowRow.label}</strong>
-          <small>{firstLowRow.value ?? firstLowRow.detail}</small>
-        </button>
-      ) : null}
-
-      <StatusReserveJars
-        jars={surface.reserveJars}
-        rows={surface.rows}
-        onOpenDrawer={onOpenDrawer}
-      />
-
+      {/* Artifact bottom-right hint replaces the row-dump footer; reaches the exact
+          Build / Prep Ledger drawer (onOpenDrawer with kind: 'buildPreparation'). */}
       <button
         type="button"
-        className="statusBuildPreparationScales__openLedger"
+        className="statusBuildPreparationScales__inspector"
         aria-haspopup="dialog"
+        aria-label={`Open Build / Prep Ledger. ${surface.rows.length} exact rows.`}
         onClick={() => onOpenDrawer?.({ kind: 'buildPreparation' })}
       >
-        <span>Open Build / Prep Ledger</span>
-        <strong>{surface.rows.length} exact rows</strong>
+        Open Inspector ⤢
       </button>
     </section>
   );

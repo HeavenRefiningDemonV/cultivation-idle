@@ -104,6 +104,19 @@ export function InkObservatoryDefs() {
           <feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="1" seed="7" result="n" />
           <feDisplacementMap in="SourceGraphic" in2="n" scale="9" />
         </filter>
+        {/* Meridian-vessel qi aura/core (artifact compass() inline defs, L293-294):
+            gold-amber fading out, and parchment-soft fading out. Referenced by the
+            ported Vessel overlay (§10.3) via url(#qiAura) / url(#qiCore). */}
+        <radialGradient id="qiAura" cx="50%" cy="42%" r="55%">
+          <stop offset="0" stopColor="#e7c878" stopOpacity=".42" />
+          <stop offset=".4" stopColor="#d8b45e" stopOpacity=".2" />
+          <stop offset=".72" stopColor="#caa84e" stopOpacity=".07" />
+          <stop offset="1" stopColor="#caa84e" stopOpacity="0" />
+        </radialGradient>
+        <radialGradient id="qiCore" cx="50%" cy="50%" r="50%">
+          <stop offset="0" stopColor="#fff4d6" stopOpacity=".9" />
+          <stop offset="1" stopColor="#e7c878" stopOpacity="0" />
+        </radialGradient>
       </defs>
     </svg>
   );

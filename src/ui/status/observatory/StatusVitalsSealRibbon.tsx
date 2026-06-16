@@ -20,6 +20,7 @@ const VITALS_GLYPH: Record<string, string> = {
   defense: '守',
   crit: '暴',
   'crit-rate': '暴',
+  foreground: '行',
 };
 
 export function StatusVitalsSealRibbon({ surface }: StatusVitalsSealRibbonProps) {
@@ -46,7 +47,9 @@ export function StatusVitalsSealRibbon({ surface }: StatusVitalsSealRibbonProps)
           <ObservatoryDiscMedallion
             className="statusVitalsRibbon__medallion"
             glyph={VITALS_GLYPH[seal.id] ?? null}
-            variant={seal.tone === 'danger' ? 'cinnabar' : 'gold'}
+            // Artifact keeps ALL vitals medallions gold; at-risk reads via the
+            // cinnabar value text + the data-tone ring, not a red disc.
+            variant="gold"
           />
           <span className="statusVitalsRibbon__label">{seal.label}</span>
           <strong className="statusVitalsRibbon__value">{seal.value ?? 'Unavailable'}</strong>

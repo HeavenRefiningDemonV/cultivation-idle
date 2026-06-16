@@ -1,0 +1,303 @@
+/* ============================================================
+   Observatory fx primitive styles (Phase 0). Tokens only — no
+   raw hex. Animation is gated by the data-attributes the JS hook
+   (useRitualMotion) sets; the @media block at the bottom is a
+   defense-in-depth reduced-motion kill switch.
+   ============================================================ */
+
+@use './observatoryMaterials';
+
+/* ---- keyframes (defined once for the whole fx layer) ---- */
+@keyframes obsBreathe {
+  from {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+}
+
+@keyframes obsEmberFloat {
+  0% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+  22% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-14px);
+  }
+}
+
+@keyframes obsGlintTravel {
+  from {
+    stroke-dashoffset: 254;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes obsFlowDrift {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: -36;
+  }
+}
+
+/* ---- BreathingGlow (VFX-01) ---- */
+.obsFxBreathingGlow {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.obsFxBreathingGlow__halo {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0.78;
+}
+
+.obsFxBreathingGlow--circle .obsFxBreathingGlow__halo {
+  border-radius: 50%;
+}
+
+.obsFxBreathingGlow--pill .obsFxBreathingGlow__halo {
+  border-radius: 999px;
+}
+
+.obsFxBreathingGlow--jade .obsFxBreathingGlow__halo {
+  box-shadow: 0 0 14px var(--obs-glow-jade), 0 0 34px var(--obs-glow-jade-soft);
+}
+
+.obsFxBreathingGlow--gold .obsFxBreathingGlow__halo {
+  box-shadow: 0 0 14px var(--obs-glow-gold), 0 0 34px var(--obs-glow-gold-soft);
+}
+
+.obsFxBreathingGlow--cinnabar .obsFxBreathingGlow__halo {
+  box-shadow: 0 0 14px var(--obs-glow-cinnabar), 0 0 34px var(--obs-glow-cinnabar-soft);
+}
+
+.obsFxBreathingGlow--soft .obsFxBreathingGlow__halo {
+  opacity: 0.5;
+}
+
+.obsFxBreathingGlow[data-animate='true'] .obsFxBreathingGlow__halo {
+  animation: obsBreathe var(--obs-motion-breathe) var(--obs-motion-ease) infinite alternate;
+}
+
+.obsFxBreathingGlow__content {
+  position: relative;
+  z-index: 1;
+}
+
+/* ---- BridgeThread (VFX-02) ---- */
+.obsFxBridgeThread {
+  display: block;
+  overflow: visible;
+}
+
+.obsFxBridgeThread__glow {
+  fill: none;
+  stroke: var(--obs-glow-jade);
+  stroke-width: 5;
+  stroke-linecap: round;
+  opacity: 0.7;
+}
+
+.obsFxBridgeThread--gold .obsFxBridgeThread__glow {
+  stroke: var(--obs-glow-gold);
+}
+
+.obsFxBridgeThread__line {
+  fill: none;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.obsFxBridgeThread[data-animate='true'] .obsFxBridgeThread__intactGroup {
+  transform-origin: center;
+  animation: obsBreathe var(--obs-motion-breathe) var(--obs-motion-ease) infinite alternate;
+}
+
+.obsFxBridgeThread__crackHalo {
+  fill: none;
+  stroke: var(--obs-glow-cinnabar);
+  stroke-width: 5;
+  stroke-linecap: round;
+  opacity: 0.65;
+}
+
+.obsFxBridgeThread__crackBase {
+  fill: none;
+  stroke: var(--paper-ink);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.obsFxBridgeThread__crackCore {
+  fill: none;
+  stroke: var(--obs-ember-core);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.obsFxBridgeThread[data-animate='true'] .obsFxBridgeThread__crackHalo {
+  animation: obsBreathe var(--obs-motion-pulse) var(--obs-motion-ease) infinite alternate;
+}
+
+.obsFxBridgeThread__ember {
+  opacity: 0.9;
+}
+
+.obsFxBridgeThread__ember--hot {
+  fill: var(--obs-ember-hot);
+}
+
+.obsFxBridgeThread__ember--mid {
+  fill: var(--obs-ember-mid);
+}
+
+.obsFxBridgeThread[data-flourish='true'] .obsFxBridgeThread__ember {
+  animation: obsEmberFloat 3.4s var(--obs-motion-ease) infinite;
+}
+
+/* ---- GlintPath (VFX-03) ---- */
+.obsFxGlintPath {
+  display: block;
+  overflow: visible;
+}
+
+.obsFxGlintPath__base {
+  fill: none;
+  opacity: 0.85;
+  stroke-linecap: round;
+}
+
+.obsFxGlintPath--cinnabar .obsFxGlintPath__base {
+  stroke: var(--paper-cinnabar-bright);
+}
+
+.obsFxGlintPath--jade .obsFxGlintPath__base {
+  stroke: var(--paper-jade-bright);
+}
+
+.obsFxGlintPath--gold .obsFxGlintPath__base {
+  stroke: var(--paper-gold-leaf);
+}
+
+.obsFxGlintPath__glint {
+  fill: none;
+  stroke: var(--paper-parchment-soft);
+  stroke-linecap: round;
+  opacity: 0;
+}
+
+.obsFxGlintPath[data-flourish='true'] .obsFxGlintPath__glint {
+  opacity: 0.9;
+  stroke-dasharray: 14 240;
+  animation: obsGlintTravel var(--obs-motion-ring) linear infinite;
+}
+
+/* ---- QiThreadPath (VFX-04) ---- */
+.obsFxQiThread {
+  display: block;
+  overflow: visible;
+}
+
+.obsFxQiThread__under {
+  fill: none;
+  stroke-linecap: round;
+  opacity: 0.5;
+}
+
+.obsFxQiThread--jade .obsFxQiThread__under {
+  stroke: var(--obs-glow-jade);
+}
+
+.obsFxQiThread--gold .obsFxQiThread__under {
+  stroke: var(--obs-glow-gold);
+}
+
+.obsFxQiThread--cinnabar .obsFxQiThread__under {
+  stroke: var(--obs-glow-cinnabar);
+}
+
+.obsFxQiThread--glow-soft .obsFxQiThread__under {
+  opacity: 0.32;
+}
+
+.obsFxQiThread__top {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.obsFxQiThread[data-flow='true'] .obsFxQiThread__top {
+  stroke-dasharray: 10 8;
+  animation: obsFlowDrift var(--obs-motion-drift) linear infinite;
+}
+
+/* ---- SealStamp tone modifiers (chip body = .obsSealStamp material) ---- */
+.obsFxSealStamp {
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.obsFxSealStamp--sm {
+  padding: 1px 5px;
+  font-size: calc(var(--ui-type-meta) - 1px);
+}
+
+.obsFxSealStamp--cinnabar {
+  border-color: var(--paper-stamp);
+  color: var(--paper-stamp);
+  background: var(--paper-chip-recommended-bg);
+}
+
+.obsFxSealStamp--gold {
+  border-color: var(--paper-gold-strong);
+  color: var(--paper-gold-strong);
+  background: var(--paper-chip-warning-bg);
+}
+
+.obsFxSealStamp--jade {
+  border-color: var(--paper-jade);
+  color: var(--paper-jade);
+  background: var(--paper-chip-ready-bg);
+}
+
+.obsFxSealStamp--ink {
+  border-color: var(--paper-ink-muted);
+  color: var(--paper-ink);
+  background: var(--paper-chip-role-bg);
+}
+
+.obsFxSealStamp__glyph {
+  display: inline-flex;
+}
+
+/* Defense-in-depth: useRitualMotion already gates animation JS-side, but kill
+   every fx keyframe when the OS asks for reduced motion. */
+@media (prefers-reduced-motion: reduce) {
+  .obsFxBreathingGlow__halo,
+  .obsFxBridgeThread__intactGroup,
+  .obsFxBridgeThread__crackHalo,
+  .obsFxBridgeThread__ember,
+  .obsFxGlintPath__glint,
+  .obsFxQiThread__top {
+    animation: none !important;
+  }
+}

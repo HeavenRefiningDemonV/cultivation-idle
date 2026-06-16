@@ -61,3 +61,23 @@ test('Status route action adapter navigates tab and world module targets only th
   assert.equal(state.worldBuildingModalKey, 'apothecary');
 });
 
+test('Status route action adapter owns observation and Dao Heart drawer routes', () => {
+  useUIStore.setState({
+    spiritRootObservationOpen: false,
+    spiritRootObservationActiveTab: 'profile',
+    daoHeartModalOpen: false,
+    daoHeartModalInitialTab: 'sanctuary',
+  });
+
+  const observation = performStatusRouteTarget({ kind: 'status_observation', tab: 'fit' });
+  assert.equal(observation.performed, true);
+  assert.equal(observation.reason, null);
+  assert.equal(useUIStore.getState().spiritRootObservationOpen, true);
+  assert.equal(useUIStore.getState().spiritRootObservationActiveTab, 'fit');
+
+  const daoHeart = performStatusRouteTarget({ kind: 'dao_heart_sanctuary', tab: 'heartLaw' });
+  assert.equal(daoHeart.performed, true);
+  assert.equal(daoHeart.reason, null);
+  assert.equal(useUIStore.getState().daoHeartModalOpen, true);
+  assert.equal(useUIStore.getState().daoHeartModalInitialTab, 'heartLaw');
+});

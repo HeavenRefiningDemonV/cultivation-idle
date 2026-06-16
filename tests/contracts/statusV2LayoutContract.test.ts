@@ -77,7 +77,7 @@ test('Status Ledger strict render assertions activate after Packet C', (t) => {
     'status-ledger-hero',
     'status-ledger-metrics',
     'status-ledger-grid',
-    'status-ledger-card-mission-requirements',
+    'status-ledger-mission-requirements',
   ]) {
     assert.match(src, new RegExp(id), `Expected Packet C Status Ledger render id ${id}.`);
   }

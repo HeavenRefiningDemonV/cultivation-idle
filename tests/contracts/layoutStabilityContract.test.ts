@@ -5,14 +5,47 @@ import test from 'node:test';
 
 const readRepoFile = (relativePath: string) => fs.readFile(path.resolve(process.cwd(), relativePath), 'utf8');
 
-test('Status layout renders the public Status Ledger without chamber or V2 diagnostic anchors', async () => {
-  const [statusScreen, statusLedgerPage, statusLedgerHero, statusMetricStrip] = await Promise.all([
+test('Status layout renders the public Status Observatory without chamber or V2 diagnostic anchors', async () => {
+  const [
+    statusScreen,
+    statusLedgerPage,
+    statusLivingStateObservatory,
+    statusLifeDecree,
+    statusVitals,
+    statusRootLaw,
+    statusMeridian,
+    statusCanopy,
+    statusConstellation,
+    statusBuildPreparation,
+    statusWorkWheel,
+    statusLedgerRail,
+  ] = await Promise.all([
     readRepoFile('src/components/screens/StatusScreen.tsx'),
     readRepoFile('src/ui/status/ledger/StatusLedgerPage.tsx'),
-    readRepoFile('src/ui/status/ledger/StatusLedgerHero.tsx'),
-    readRepoFile('src/ui/status/ledger/StatusMetricStrip.tsx'),
+    readRepoFile('src/ui/status/observatory/StatusLivingStateObservatory.tsx'),
+    readRepoFile('src/ui/status/observatory/StatusLifeDecreeScroll.tsx'),
+    readRepoFile('src/ui/status/observatory/StatusVitalsSealRibbon.tsx'),
+    readRepoFile('src/ui/status/observatory/StatusRootLawCoupledInstrument.tsx'),
+    readRepoFile('src/ui/status/observatory/StatusMeridianVesselCompass.tsx'),
+    readRepoFile('src/ui/status/observatory/StatusBottleneckTalismanCanopy.tsx'),
+    readRepoFile('src/ui/status/observatory/StatusStatMeridianConstellation.tsx'),
+    readRepoFile('src/ui/status/observatory/StatusBuildPreparationScales.tsx'),
+    readRepoFile('src/ui/status/observatory/StatusCurrentWorkTimeWheel.tsx'),
+    readRepoFile('src/ui/status/observatory/StatusFoldedLedgerRail.tsx'),
   ]);
-  const statusLedgerSources = `${statusLedgerPage}\n${statusLedgerHero}\n${statusMetricStrip}`;
+  const statusLedgerSources = [
+    statusLedgerPage,
+    statusLivingStateObservatory,
+    statusLifeDecree,
+    statusVitals,
+    statusRootLaw,
+    statusMeridian,
+    statusCanopy,
+    statusConstellation,
+    statusBuildPreparation,
+    statusWorkWheel,
+    statusLedgerRail,
+  ].join('\n');
 
   assert.equal(statusScreen.includes('StatusLedgerPage'), true);
   assert.equal(statusScreen.includes('surface.statusLedger'), true);
@@ -23,14 +56,15 @@ test('Status layout renders the public Status Ledger without chamber or V2 diagn
     'status-ledger-hero',
     'status-ledger-metrics',
     'status-ledger-grid',
-    'status-ledger-card-milestone',
-    'status-ledger-card-cultivation-base',
-    'status-ledger-card-mission-requirements',
-    'status-ledger-card-best-improvements',
-    'status-ledger-card-safety-net',
-    'status-ledger-card-identity-doctrine',
-    'status-ledger-card-current-work',
-    'status-ledger-card-build-preparation',
+    'status-current-state',
+    'status-ledger-cultivation-base',
+    'status-ledger-mission-requirements',
+    'status-ledger-current-work',
+    'status-ledger-build-preparation',
+    'status-ledger-details',
+    'status-root-law-instrument',
+    'status-bottleneck-canopy',
+    'status-stat-constellation',
   ];
   expectedLedgerTestIds.forEach((testId) => {
     assert.equal(statusLedgerSources.includes(testId), true, `missing Status Ledger anchor ${testId}`);

@@ -1,0 +1,170 @@
+/* Folded Ledgers detail overlay (artifact ovLedger). */
+.statusLedgerOverlay {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 640px;
+  font-family: Georgia, "Times New Roman", serif;
+  color: var(--observatory-ink);
+}
+
+.statusLedgerOverlay__card {
+  background:
+    linear-gradient(168deg, rgba(248, 243, 224, 0.92), rgba(233, 221, 191, 0.86)),
+    var(--observatory-paper);
+  border: 1px solid rgba(120, 90, 46, 0.34);
+  border-radius: 4px;
+  padding: 14px 16px;
+  box-shadow:
+    0 4px 10px rgba(40, 26, 12, 0.14),
+    inset 0 1px 0 rgba(255, 250, 235, 0.5);
+}
+
+/* Brass scroll rods top + bottom, with gold end beads. */
+.statusLedgerOverlay__rod {
+  position: absolute;
+  left: -8px;
+  right: -8px;
+  height: 13px;
+  border-radius: 7px;
+  background: linear-gradient(180deg, #caa15a, #7a5b26);
+  border: 1px solid #4a330e;
+  box-shadow: inset 0 2px 2px rgba(255, 244, 210, 0.45);
+}
+.statusLedgerOverlay__rod--top { top: -9px; }
+.statusLedgerOverlay__rod--bottom { bottom: -9px; }
+.statusLedgerOverlay__rod::before,
+.statusLedgerOverlay__rod::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 20px;
+  height: 20px;
+  margin-top: -10px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #f0d99e, #9a6f24);
+  border: 1.5px solid #4a330e;
+}
+.statusLedgerOverlay__rod::before { left: -15px; }
+.statusLedgerOverlay__rod::after { right: -15px; }
+
+.statusLedgerOverlay__sub {
+  font-weight: 700;
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--observatory-muted);
+  margin-bottom: 8px;
+}
+.statusLedgerOverlay__sub--cinnabar { color: var(--observatory-cinnabar); }
+.statusLedgerOverlay__sub--jade { color: var(--observatory-jade); }
+
+/* Filter chips */
+.statusLedgerOverlay__filters {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.statusLedgerOverlay__chip {
+  padding: 2px 8px;
+  border-radius: 2px;
+  border: 1px solid rgba(120, 90, 46, 0.4);
+  font-weight: 800;
+  font-size: 0.5rem;
+  letter-spacing: 0.04em;
+  color: var(--observatory-ink);
+}
+.statusLedgerOverlay__chip[data-active='true'] {
+  background: #243a30;
+  border-color: var(--observatory-jade);
+  color: #e9efe2;
+}
+
+/* Change rows */
+.statusLedgerOverlay__change {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 0;
+  border-bottom: 1px dashed rgba(120, 90, 46, 0.2);
+}
+.statusLedgerOverlay__changeName {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 0.6rem;
+  color: var(--observatory-muted);
+}
+.statusLedgerOverlay__change em {
+  font-style: normal;
+  font-size: 0.5rem;
+  color: rgba(120, 110, 90, 0.85);
+}
+
+.statusLedgerOverlay__note {
+  margin: 10px 0 0;
+  font-size: 0.55rem;
+  color: var(--observatory-muted);
+  line-height: 1.5;
+}
+.statusLedgerOverlay__folded {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+  padding-top: 7px;
+  border-top: 1px solid rgba(120, 90, 46, 0.25);
+}
+.statusLedgerOverlay__folded span {
+  font-size: 0.5rem;
+  color: rgba(120, 110, 90, 0.85);
+}
+.statusLedgerOverlay__folded b { color: var(--observatory-gold-deep, var(--observatory-gold)); }
+
+/* Calc / formula sources */
+.statusLedgerOverlay__calc {
+  padding: 7px 0;
+  border-bottom: 1px dashed rgba(120, 90, 46, 0.2);
+}
+.statusLedgerOverlay__calcHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.statusLedgerOverlay__calcHead > b { font-size: 0.68rem; }
+.statusLedgerOverlay__calcMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.statusLedgerOverlay__calcMeta small {
+  font-size: 0.48rem;
+  color: var(--observatory-muted);
+}
+.statusLedgerOverlay__calcMeta small b { color: var(--observatory-gold-deep, var(--observatory-gold)); }
+.statusLedgerOverlay__formulaChip {
+  padding: 2px 8px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #3a5b4d, #274034);
+  color: #e9efe2;
+  font-weight: 700;
+  font-size: 0.48rem;
+}
+.statusLedgerOverlay__breakdown {
+  margin-top: 5px;
+  padding: 6px 10px;
+  border-radius: 3px;
+  background: rgba(120, 90, 46, 0.06);
+}
+.statusLedgerOverlay__breakdownRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 2px 0;
+  font-size: 0.56rem;
+}
+.statusLedgerOverlay__breakdownRow span { color: var(--observatory-muted); }
+.statusLedgerOverlay__breakdownRow b { font-weight: 700; }
+
+@media (prefers-reduced-motion: reduce) {
+  .statusLedgerOverlay * { animation: none !important; }
+}

@@ -1,6 +1,6 @@
 # Go / No-Go Checklist
 
-- generatedAt: 2026-06-05T16:10:25.135Z
+- generatedAt: 2026-06-16T18:23:51.849Z
 - release gate status: NO_GO (gate headline: NO_GO)
 - cleanPass: false
 - acceptedWaivers: 0

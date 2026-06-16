@@ -1,12 +1,10 @@
 import { useId, type CSSProperties } from 'react';
-import type { StatusLedgerActionSurface } from '../../../systems/ui/status/statusLedgerTypes.js';
 import type { StatusObservatorySurfaceV1 } from '../../../systems/ui/status/statusObservatoryTypes.js';
-import { InkWaxSeal } from '../../ink/InkWaxSeal.js';
 import { useObservatoryMotion } from './useObservatoryMotion.js';
+import { useRitualMotion } from './fx/useRitualMotion.js';
 import {
   arcPath,
   donutPath,
-  parseExpressionCap,
   parseLeadingInt,
   polar,
 } from './observatoryAstrolabeGeometry.js';
@@ -15,7 +13,6 @@ type AstrolabeSurface = StatusObservatorySurfaceV1['rootLawInstrument']['astrola
 
 export interface StatusSpiritRootAstrolabeProps {
   surface: AstrolabeSurface;
-  onAction?: (action: StatusLedgerActionSurface) => void;
 }
 
 const C = 168;
@@ -43,14 +40,6 @@ const N_R = polar(C, C, 28, 90);
 const N_TAIL = polar(C, C, 34, 180);
 const p = (xy: [number, number]) => `${xy[0].toFixed(1)},${xy[1].toFixed(1)}`;
 
-function observeAction(surface: AstrolabeSurface): StatusLedgerActionSurface | null {
-  return (
-    surface.routeActions.find(
-      (action) => action.label === 'Observe Spirit Root' && action.target.kind === 'status_observation',
-    ) ?? surface.routeActions.find((action) => action.target.kind === 'status_observation') ?? null
-  );
-}
-
 /** Jagged cinnabar bolt along the active angle — the diegetic "opposed" signal. */
 function fracturePath(aAng: number): string {
   let d = '';
@@ -64,10 +53,9 @@ function fracturePath(aAng: number): string {
   return d.trim();
 }
 
-export function StatusSpiritRootAstrolabe({ surface, onAction }: StatusSpiritRootAstrolabeProps) {
+export function StatusSpiritRootAstrolabe({ surface }: StatusSpiritRootAstrolabeProps) {
   const uid = useId().replace(/[:]/g, '');
-  const action = observeAction(surface);
-  const disabled = !action || action.disabled || !onAction;
+  const ritual = useRitualMotion();
 
   const activeNotch = surface.notches.find((notch) => notch.active);
   const aAng = activeNotch?.angleDeg ?? 0;
@@ -79,7 +67,6 @@ export function StatusSpiritRootAstrolabe({ surface, onAction }: StatusSpiritRoo
       : tier === 'unknown' ? 'var(--paper-ink-45)'
       : 'var(--paper-jade-bright)';
   const glow = opposed ? 'glowR' : 'glowJ';
-  const validityOk = tier === 'aligned' || tier === 'compatible';
 
   const purityPct = parseLeadingInt(surface.purityLabel);
   const pp = purityPct == null ? PA0 : PA0 + (PA1 - PA0) * (purityPct / 100);
@@ -89,8 +76,6 @@ export function StatusSpiritRootAstrolabe({ surface, onAction }: StatusSpiritRoo
       : purityPct > 45 ? 'var(--paper-amber)'
       : 'var(--paper-stamp)';
   const [pex, pey] = polar(C, C, R_PUR, pp);
-
-  const cap = parseExpressionCap(surface.expressionCapLabel);
 
   const motion = useObservatoryMotion({
     purityPct,
@@ -122,6 +107,7 @@ export function StatusSpiritRootAstrolabe({ surface, onAction }: StatusSpiritRoo
       data-active-root-id={surface.activeRootId}
       data-fit-tier={surface.fitTier}
       data-tone={surface.spiritRoot.tone}
+      data-animate={ritual.animate ? 'true' : undefined}
       aria-label={surface.ariaLabel}
     >
       <div className="statusSpiritRootAstrolabe__title">
@@ -214,7 +200,7 @@ export function StatusSpiritRootAstrolabe({ surface, onAction }: StatusSpiritRoo
           </g>
 
           {opposed ? (
-            <path className="statusSpiritRootAstrolabe__fracture" d={fracturePath(aAng)} stroke="var(--paper-stamp)" strokeWidth={2.2} fill="none" filter="url(#glowR)" opacity={0.8} />
+            <path className="statusSpiritRootAstrolabe__fracture" d={fracturePath(aAng)} stroke="var(--paper-stamp)" strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round" fill="none" filter="url(#glowR)" opacity={0.6} />
           ) : null}
 
           <circle cx={C} cy={C} r={R_CORE + 6} fill="none" stroke="rgba(217,189,128,.5)" strokeWidth={1.6} className="statusSpiritRootAstrolabe__breath" />
@@ -229,65 +215,21 @@ export function StatusSpiritRootAstrolabe({ surface, onAction }: StatusSpiritRoo
         </svg>
       </div>
 
-      <div className="statusSpiritRootAstrolabe__summary">
-        <span>Grade</span>
-        <strong>{surface.gradeLabel}</strong>
-        {surface.purityLabel ? <span>Purity {surface.purityLabel}</span> : null}
-        <span data-fit-tier={surface.fitTier}>Fit {surface.fitLabel}</span>
-      </div>
-
-      {cap ? (
-        <div className="statusSpiritRootAstrolabe__cap" aria-label={`Expression cap ${surface.expressionCapLabel}`}>
-          <span className="statusSpiritRootAstrolabe__capTrack">
-            <span
-              className="statusSpiritRootAstrolabe__capFill"
-              data-low={cap.value / cap.max < 0.6 ? 'true' : 'false'}
-              style={{ width: `${Math.round((cap.value / cap.max) * 100)}%` }}
-            />
+      {/* Artifact buildRoot: under the dial sit just two small rchip pills
+          (Grade, Total Mult.). Purity / Expression Cap / Root Proc / Run Validity /
+          Root-Law Fit live in the full-width foot row owned by the instrument. */}
+      <div className="statusSpiritRootAstrolabe__chips">
+        <span className="statusSpiritRootAstrolabe__rchip">
+          <i>Grade</i>
+          <b>{surface.gradeLabel}</b>
+        </span>
+        {surface.totalMultiplierLabel ? (
+          <span className="statusSpiritRootAstrolabe__rchip" data-fit-tier={surface.fitTier}>
+            <i>Total Mult.</i>
+            <b className="statusSpiritRootAstrolabe__mult">{surface.totalMultiplierLabel}</b>
           </span>
-          <small>Expression {surface.expressionCapLabel}</small>
-        </div>
-      ) : surface.expressionCapLabel ? (
-        <div className="statusSpiritRootAstrolabe__cap">
-          <small>Expression {surface.expressionCapLabel}</small>
-        </div>
-      ) : null}
-
-      {surface.proc ? (
-        <div className="statusSpiritRootAstrolabe__proc">
-          <span>Root Proc</span>
-          <strong>{surface.proc.name}</strong>
-          <small>
-            {surface.proc.statusLabel}
-            {surface.proc.cooldownLabel ? ` - ${surface.proc.cooldownLabel}` : ''}
-          </small>
-        </div>
-      ) : null}
-
-      {surface.runValidityLabel ? (
-        <div className="statusSpiritRootAstrolabe__validity">
-          <span>Run Validity</span>
-          <strong>{surface.runValidityLabel}</strong>
-          <InkWaxSeal chars="勉強" size={34} rotation={-5} variant={validityOk ? 'jade' : 'cinnabar'} />
-        </div>
-      ) : null}
-
-      {action ? (
-        <button
-          type="button"
-          className="statusRootLawRouteButton statusRootLawRouteButton--observe"
-          data-route-kind={action.target.kind}
-          data-disabled={disabled ? 'true' : 'false'}
-          disabled={disabled}
-          title={action.disabled ? action.disabledReason ?? action.detail : action.detail}
-          onClick={() => {
-            if (!disabled) onAction?.(action);
-          }}
-        >
-          <strong>{action.label}</strong>
-          <small>{action.destinationLabel}</small>
-        </button>
-      ) : null}
+        ) : null}
+      </div>
     </section>
   );
 }

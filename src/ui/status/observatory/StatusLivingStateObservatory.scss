@@ -109,64 +109,343 @@
 .obsStage {
   position: relative;
   flex: 0 0 auto;
-  width: 1672px;
-  height: 941px;
+  width: 2048px;
+  height: 1152px;
   transform: scale(var(--obs-scale, 1));
   transform-origin: center center;
 }
 
-.statusObservatoryCanvas {
-  position: relative;
-  width: 1672px;
-  height: 941px;
-  display: grid;
-  grid-template-columns: minmax(300px, 23fr) minmax(380px, 31fr) minmax(320px, 26fr);
-  grid-template-rows: auto auto minmax(0, 1fr) auto;
-  grid-template-areas:
-    "decree decree decree"
-    "vitals vitals vitals"
-    "rootlaw vessel canopy"
-    "belt belt belt";
-  gap: var(--ui-layout-section-gap);
+/* Artifact outer gold frame in the dark gutter (.stage::after, Image 1 border
+   treatment): a 1px gold hairline inset 6px with a fainter offset outline. */
+.obsStage::after {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  z-index: 60;
+  pointer-events: none;
+  border-radius: 3px;
+  border: 1px solid rgba(178, 131, 45, 0.55);
+  outline: 1px solid rgba(120, 86, 38, 0.32);
+  outline-offset: 3px;
+  box-shadow: inset 0 0 46px rgba(0, 0, 0, 0);
 }
 
-/* Semantic region wrappers are absolutely placed on the Stage canvas at the
-   Frame-I rects (design units). Each is a parchment instrument plate floating
-   on the void; the instrument renders its own internals inside. */
-.obsRegion {
+/* The canvas is the positioned 2048×1152 stage; every region wrapper is an
+   absolute slot placed on it (V7 OBS_GEO blockedCompass layout). The grid
+   template is inert (children are absolutely positioned) and retired in R6 —
+   the element + status-ledger-grid testid are a LOCKED renderer-contract anchor. */
+/* The canvas is the artifact's CSS-grid stage (living-state-observatory (3).html):
+   rows = decree | vitals | main | bottom | (nav, app-shell owns it). The warm
+   brown void shows in the gutters. status-ledger-grid is a LOCKED anchor. */
+.statusObservatoryCanvas {
+  position: relative;
+  width: 2048px;
+  height: 1152px;
+  display: grid;
+  grid-template-rows: 118px 58px 600px 232px 52px;
+  gap: 11px;
+  padding: 15px;
+  background:
+    radial-gradient(60% 50% at 50% 0%, #3a2c1a, transparent 70%),
+    linear-gradient(160deg, #2a2013, #1c150d 60%, #140e08);
+}
+
+/* Artifact board-corner cinnabar plaque 狀態堂 (decree §2.1.1) — sits over the
+   decree band's top-left, above the grid. */
+.statusObservatoryCanvas__tag {
   position: absolute;
+  left: 8px;
+  top: 6px;
+  z-index: 10;
+  width: 46px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  padding: 9px 0;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #8b2f27, #6e231c);
+  border: 1px solid var(--paper-gold-deep);
+  box-shadow: 0 4px 12px rgba(40, 12, 8, 0.5);
+  pointer-events: none;
+}
+.statusObservatoryCanvas__tag span {
+  font-family: var(--kai, "Kaiti SC", "STKaiti", serif);
+  font-weight: 700;
+  font-size: 17px;
+  line-height: 1.12;
+  color: var(--paper-parchment, #f3ead7);
+}
+
+.obsRegion--decree { grid-row: 1; }
+.obsRegion--vitals { grid-row: 2; }
+
+/* Main row: root/law 502 · vessel 858 · canopy 1fr (632). */
+.obsMainRow {
+  grid-row: 3;
+  display: grid;
+  grid-template-columns: 502px 858px 1fr;
+  gap: 13px;
+  min-height: 0;
+}
+/* Bottom row: constellation 700 · scales 320 · jars 300 · wheel 230 · ledgers 1fr. */
+.obsBottomRow {
+  grid-row: 4;
+  display: grid;
+  grid-template-columns: 700px 320px 300px 230px 1fr;
+  gap: 13px;
+  min-height: 0;
+}
+
+/* === Artifact panel material (living-state-observatory (3).html) ============
+   One aged-parchment plate (gradient + foxing ::before), a grain wash, the gold
+   double-frame (.__gframe gradient border + .__gframe2 inner hairline), four
+   corner brackets (.__gc), and a centered jade title banner. Hex values are the
+   artifact's exact stops (tokenize in R6); gates are emoji-only so unaffected. */
+/* The app-global skin (global.css) paints EVERY <button> with a grey fill + a
+   "buttoncorners" border-image, and on :hover/:active/:focus-visible swaps in a
+   grey `--button-hover-neutral` fill. That global skin bled onto the painterly
+   observatory buttons: on hover the global rule (specificity 0,1,1) beat each
+   instrument button's own background (0,1,0), so every button turned grey with a
+   bevelled image border — on the tiny transparent stat-node bead that read as the
+   "broken square" stamped over the round node. Neutralise the skin INSIDE the
+   observatory: (a) redefine the hover neutral to transparent so the global
+   `button:hover { background: var(--button-hover-neutral) }` paints nothing, and
+   (b) strip the border-image in every interaction state. Each instrument button
+   keeps its own surface + its own hover outline/box-shadow. */
+.statusObservatoryRoot {
+  --button-hover-neutral: transparent;
+}
+.statusObservatoryRoot button,
+.statusObservatoryRoot button:hover,
+.statusObservatoryRoot button:active,
+.statusObservatoryRoot button:focus-visible {
+  border-image: none;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.obsRegion {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  /* Isolate each panel's layout + style recalc so an animation/hover in one panel
+     doesn't invalidate the whole board. NOT `paint`/`size` — those would clip the
+     intentional cross-panel threads + the focus slip. */
+  contain: layout style;
+  border-radius: 4px;
+  overflow: hidden;
+  background: linear-gradient(168deg, var(--paper-parchment-warm), var(--paper-parchment) 42%, var(--paper-parchment-strong));
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45), inset 0 0 60px rgba(120, 90, 46, 0.06);
+}
+
+.obsRegion::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(40% 32% at 14% 10%, rgba(201, 178, 136, 0.2), transparent 70%),
+    radial-gradient(46% 38% at 84% 88%, rgba(190, 162, 116, 0.22), transparent 72%),
+    radial-gradient(30% 22% at 60% 40%, rgba(255, 250, 236, 0.3), transparent 75%),
+    radial-gradient(130% 130% at 50% 46%, transparent 52%, rgba(120, 90, 50, 0.18) 84%, rgba(64, 42, 22, 0.34) 100%);
+}
+
+.obsRegion__grain {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  /* The fractal-noise rect rasterizes once + caches; mix-blend-mode:multiply,
+     however, forced this layer to RE-BLEND against the backdrop every frame the
+     board's ~18 ambient animations ran — across 11 panels that was the menu's
+     main lag source. Dropped to a plain low-opacity overlay (texture kept, no
+     per-frame blend). */
+  opacity: 0.42;
+}
+.obsRegion__grain svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.obsRegion__gframe {
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  pointer-events: none;
+  border-radius: 4px;
+  border: 2.5px solid transparent;
+  background: linear-gradient(135deg, #e7cd92, var(--paper-amber) 45%, #6e4c16) border-box;
+  -webkit-mask: linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+.obsRegion__gframe2 {
+  position: absolute;
+  inset: 5px;
+  z-index: 7;
+  pointer-events: none;
+  border: 1px solid rgba(162, 113, 42, 0.45);
+  border-radius: 2px;
+}
+
+.obsRegion__gc {
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  z-index: 8;
+  pointer-events: none;
+  border: 0 solid var(--paper-amber);
+}
+.obsRegion__gc--tl { top: 3px; left: 3px; border-top-width: 2px; border-left-width: 2px; }
+.obsRegion__gc--tr { top: 3px; right: 3px; border-top-width: 2px; border-right-width: 2px; }
+.obsRegion__gc--bl { bottom: 3px; left: 3px; border-bottom-width: 2px; border-left-width: 2px; }
+.obsRegion__gc--br { bottom: 3px; right: 3px; border-bottom-width: 2px; border-right-width: 2px; }
+
+.obsRegion__banner {
+  position: absolute;
+  top: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9;
+  white-space: nowrap;
+  padding: 4px 22px;
+  font: 700 12px/1 var(--font-serif, Georgia, "Songti SC", serif);
+  letter-spacing: 0.15em;
+  color: var(--paper-gold-pale);
+  background: linear-gradient(180deg, var(--paper-jade-ink), #20352d 55%, #182a23);
+  border: 1px solid var(--paper-gold-deep);
+  border-radius: 0 0 3px 3px;
+  box-shadow: 0 3px 6px rgba(20, 14, 8, 0.5), inset 0 1px 0 rgba(217, 189, 128, 0.35);
+}
+.obsRegion__banner::before,
+.obsRegion__banner::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  background: linear-gradient(135deg, #e7cd92, var(--paper-gold-deep));
+  transform: translateY(-50%) rotate(45deg);
+}
+.obsRegion__banner::before { left: -4px; }
+.obsRegion__banner::after { right: -4px; }
+
+/* Content sits below the banner (artifact inset 26px 6px 6px). */
+.obsRegion__content {
+  position: absolute;
+  inset: 26px 6px 6px;
+  z-index: 3;
   min-width: 0;
   min-height: 0;
   overflow: hidden;
-  border-radius: 7px;
-  background: radial-gradient(
-    140% 120% at 22% 18%,
-    var(--paper-parchment-soft) 0%,
-    var(--paper-parchment) 46%,
-    var(--paper-parchment-strong) 100%
-  );
-  box-shadow:
-    0 10px 26px rgba(8, 12, 10, 0.45),
-    var(--obs-plate-edge),
-    var(--obs-plate-age);
+  display: flex;
+  flex-direction: column;
+}
+/* Decree + vitals carry no banner — content fills the band. */
+.obsRegion--decree .obsRegion__content,
+.obsRegion--vitals .obsRegion__content {
+  inset: 7px 10px;
+}
+/* Ledgers panel has no banner either; artifact ledgers() paints at inset 24px 12px 10px. */
+.obsRegion--ledgers .obsRegion__content {
+  inset: 24px 12px 10px;
+}
+/* Canopy renders three parts (cluster + charms + safety) that must OVERLAY the
+   same content box (artifact: one 608x560 canvas), not flex-stack and fight for
+   the band. Drop the global flex column to a plain positioning context so each
+   part can absolutely place its artifact slot. */
+.obsRegion--canopy .obsRegion__content {
+  display: block;
 }
 
-/* Frame-I macro composition — absolute region rects (x, y, w, h in design units). */
-.obsRegion--decree        { left: 16px;   top: 10px;  width: 1640px; height: 148px; }
-.obsRegion--vitals        { left: 70px;   top: 168px; width: 1160px; height: 50px; }
-.obsRegion--root-law      { left: 24px;   top: 228px; width: 506px;  height: 446px; }
-.obsRegion--vessel        { left: 538px;  top: 228px; width: 562px;  height: 446px; }
-.obsRegion--canopy        { left: 1108px; top: 168px; width: 548px;  height: 506px; }
-.obsRegion--constellation { left: 24px;   top: 684px; width: 678px;  height: 212px; }
-.obsRegion--scales        { left: 710px;  top: 684px; width: 404px;  height: 212px; }
-.obsRegion--wheel         { left: 1122px; top: 684px; width: 262px;  height: 212px; }
-.obsRegion--ledgers       { left: 1392px; top: 684px; width: 264px;  height: 212px; }
-
-/* The belt wrapper no longer lays out — its children position against the
-   canvas via their own absolute rects. */
-.obsBelt {
-  display: contents;
+/* === Artifact .panel.mtn ink-wash backdrop (paintMountains) =================
+   A faint xianxia mountain range painted into the lower band of the five .mtn
+   panels, sitting between the grain (z1) and the instrument content (z3). The
+   SVG carries its own viewBox sized to the panel box and preserveAspectRatio=
+   none, so it stretches to fill exactly as the artifact's runtime-measured
+   output. pointer-events:none + aria-hidden — purely decorative. */
+.obsRegion__mtn {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
 }
+.obsRegion__mtn svg {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* === Artifact .gcol faint calligraphy watermark column (paintGlyphCols) ======
+   A vertical Kai run of Han characters bled to ~5.5% ink, set into the panel
+   behind the content (z2). CJK glyphs (not emoji/dingbats) so the icon gate is
+   unaffected. */
+.obsRegion__gcol {
+  position: absolute;
+  top: 44px;
+  writing-mode: vertical-rl;
+  font-family: var(--kai, "Kaiti SC", "STKaiti", serif);
+  font-weight: 700;
+  font-size: 42px;
+  letter-spacing: 16px;
+  color: rgba(31, 26, 23, 0.055);
+  z-index: 2;
+  pointer-events: none;
+}
+.obsRegion__gcol--root-law { left: 10px; }
+.obsRegion__gcol--vessel { right: 12px; }
+.obsRegion__gcol--canopy { left: 12px; }
+.obsRegion__gcol--constellation {
+  right: 10px;
+  top: 34px;
+  font-size: 30px;
+  letter-spacing: 10px;
+}
+
+/* Per-panel content insets (artifact div style inset). Vessel + canopy already
+   match the .obsRegion__content default (26px 6px 6px), so only the differing
+   panels are overridden here. Decree/vitals/ledgers are intentionally left to
+   their existing rules. */
+/* Artifact .expand-hint: a small gold "Open … ⤢" chip pinned to each panel's
+   bottom-right that opens the matching detail overlay (a real button, unlike the
+   artifact's pointer-events:none label). z above the content + banner so the short
+   bottom-row panels don't bury it under their banner. */
+.obsRegion__expandHint {
+  position: absolute;
+  right: 10px;
+  bottom: 8px;
+  z-index: 12;
+  padding: 3px 9px;
+  border: 1px solid rgba(120, 90, 46, 0.45);
+  border-radius: 3px;
+  background: linear-gradient(180deg, #f0e2bf, #dcc591);
+  color: #3a2a0e;
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 700;
+  font-size: 0.6rem;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(60, 40, 16, 0.3);
+}
+.obsRegion__expandHint:hover,
+.obsRegion__expandHint:focus-visible {
+  outline: 2px solid var(--observatory-gold-deep, var(--observatory-gold));
+  outline-offset: 2px;
+}
+
+.obsRegion--root-law .obsRegion__content { inset: 28px 14px 12px; }
+.obsRegion--constellation .obsRegion__content { inset: 26px 6px 4px; }
+.obsRegion--scales .obsRegion__content { inset: 28px 10px 8px; }
+.obsRegion--jars .obsRegion__content { inset: 28px 12px 6px; }
+.obsRegion--wheel .obsRegion__content { inset: 26px 8px 6px; }
 
 /* Tone-attribute plumbing only (instrument-level theming lands in later
    phases); each tone exposes a local accent custom property for reuse. */
@@ -246,23 +525,141 @@
 .statusLifeDecree {
   position: relative;
   overflow: hidden;
-  display: grid;
-  gap: 14px;
-  padding: 18px;
+  /* Artifact decree band: a single relative band with three ABSOLUTELY-positioned
+     layers — title (top-left), the 7-chip row (fills the band, vertically centred),
+     and the goal block (top-right) — exactly like the artifact `decree()` which
+     paints title `position:absolute top:8px`, chips `inset:0 align-items:center`,
+     goal `top:14px right:96px`. No flex-column stacking, so the chip row can no
+     longer be pushed below the band and clipped. */
+  display: block;
+  /* All children are absolutely positioned, so the band needs a definite height
+     of its own (the artifact's .panel gets one from its 118px grid row) — fill the
+     content box, with a floor so the chips always have a box to centre within. */
+  height: 100%;
+  min-height: 92px;
+  padding: 0;
   border-top: 3px solid var(--observatory-state);
 }
 
-.statusLifeDecree__titleRail {
-  display: grid;
-  grid-template-columns: 18px minmax(0, 1fr) minmax(180px, 0.32fr);
-  gap: 14px;
-  align-items: stretch;
+/* Brass roller spine on the far left (artifact roller cap) — purely decorative. */
+.statusLifeDecree__verticalSeal {
+  position: absolute;
+  left: 0;
+  top: 6px;
+  bottom: 6px;
+  width: 9px;
+  border-radius: 5px;
+  background: linear-gradient(90deg, var(--observatory-state), rgba(122, 90, 44, 0.5), var(--observatory-state));
+  box-shadow: inset 0 0 0 1px rgba(255, 248, 220, 0.32);
 }
 
-.statusLifeDecree__verticalSeal {
-  border-radius: 999px;
-  background: linear-gradient(180deg, var(--observatory-state), rgba(122, 90, 44, 0.5));
-  box-shadow: inset 0 0 0 3px rgba(255, 248, 220, 0.32);
+/* The full-band layer that hosts the title (top-left, absolute) over the centred
+   chip row. inset:0 so chips own the band height and centre vertically. */
+.statusLifeDecree__main {
+  position: absolute;
+  inset: 0;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* Title floats over the top-left corner (artifact: left:78px top:8px), so it never
+   steals height from the chip row beneath it. */
+.statusLifeDecree__titleCopy {
+  position: absolute;
+  left: 64px;
+  top: 7px;
+  right: 392px;
+  z-index: 3;
+}
+
+/* The 7-element chip row fills the band and is vertically centred. Left padding
+   clears the roller spine + title origin; right padding clears the goal block. */
+.statusLifeDecree__chips {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  padding: 28px 392px 8px 64px;
+}
+
+/* Goal block floats top-right (artifact: right:96px top:14px) as three compact
+   single-line rows; the far-right state chop sits beyond it (right:12px). */
+.statusLifeDecree__goal {
+  position: absolute;
+  right: 64px;
+  top: 12px;
+  bottom: 8px;
+  width: 320px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+}
+
+/* Keep the in-band title to ONE compact line so the 7-chip row keeps the height it
+   needs to show every value (artifact title is 21px on a 118px band; ours is smaller
+   so all three of title/eyebrow/chips fit the parchment band without clipping). */
+.statusLifeDecree__titleCopy h1 {
+  font-size: 1.02rem;
+  line-height: 1.05;
+}
+
+.statusLifeDecree__eyebrow {
+  font-size: 0.62rem;
+  line-height: 1.05;
+}
+
+/* Inline realm-stage line lives next to the title now (the old <p> below the
+   heading is gone — the Realm + Stage chip still carries the canonical value). */
+.statusLifeDecree__titleStage {
+  margin-left: 4px;
+  color: var(--observatory-muted);
+  font-size: 0.82rem;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.statusLifeDecree__chips .statusLifeDecree__label,
+.statusLifeDecree__chips .statusLifeDecree__value {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Artifact cell type: tiny uppercase label over a bold ink value (.sub 8px / b 12px).
+   The value gains an explicit weight/size/colour here (the shared __value rule only
+   set overflow/line-height) so the now-visible value reads as the figure it is. */
+.statusLifeDecree__chips .statusLifeDecree__label {
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+}
+
+.statusLifeDecree__chips .statusLifeDecree__value {
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 800;
+  font-size: 0.98rem;
+  color: var(--observatory-ink);
+}
+
+.statusLifeDecree__chips > .statusLifeDecree__tile[data-tone='danger'] .statusLifeDecree__value {
+  color: var(--observatory-cinnabar);
+}
+
+.statusLifeDecree__chips .statusLifeDecree__detail {
+  display: none;
+}
+
+/* Realm + Stage chip keeps its second line (artifact: realm over "Stage 1 / 9"). */
+.statusLifeDecree__chips > .statusLifeDecree__tile[data-decree-field='realm-stage'] .statusLifeDecree__detail {
+  display: block;
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: var(--observatory-muted);
+  line-height: 1.1;
+  white-space: nowrap;
 }
 
 .statusLifeDecree__eyebrow,
@@ -305,6 +702,17 @@
   font-family: Georgia, "Times New Roman", serif;
 }
 
+.statusLifeDecree__titleCopy {
+  min-width: 0;
+}
+
+.statusLifeDecree__titleCopy h1 {
+  font-size: 1.18rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .statusLifeDecree__titleCopy p,
 .statusObservatoryInstrument p,
 .statusFoldedLedgerRail__fold p {
@@ -313,41 +721,156 @@
   line-height: 1.35;
 }
 
-.statusLifeDecree__stamp {
-  min-height: 64px;
-  display: grid;
-  place-items: center;
-  padding: 10px;
-  border: 2px solid color-mix(in srgb, var(--observatory-state) 70%, #4b2a16);
-  border-radius: 6px;
-  color: var(--observatory-state);
-  font-weight: 800;
-  text-align: center;
-  text-transform: uppercase;
-  background: rgba(255, 249, 226, 0.64);
-  box-shadow: inset 0 1px 3px var(--observatory-shadow);
+/* Artifact chip strip: all 7 element chips in ONE flex row divided by thin hairlines.
+   (Positioning/centring is defined on the canonical .statusLifeDecree__chips rule
+   above — this only sets the per-row flex behaviour.) */
+.statusLifeDecree__chips {
+  align-items: center;
 }
 
-.statusLifeDecree__scrollTiles {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 8px;
+.statusLifeDecree__chips > .statusLifeDecree__tile {
+  flex: 1 1 0;
+  min-width: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: inset 1px 0 0 rgba(90, 62, 30, 0.18);
+  /* Artifact cell: medallion LEFT + label/value column RIGHT, vertically centred,
+     full cell height (replaces the grid+align-content:center that clipped values). */
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 7px;
+  padding: 0 10px;
+}
+
+.statusLifeDecree__chips > .statusLifeDecree__tile:first-child {
+  box-shadow: none;
+}
+
+/* The label-over-value column to the right of the medallion (artifact cell text).
+   Must GROW (flex:1) so the value isn't clipped to zero width by the medallion. */
+.statusLifeDecree__chips .statusLifeDecree__tileText {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  line-height: 1.12;
+}
+
+/* Larger fixed chip medallion so the identity icons read clearly; the label/value
+   column still flex-grows to keep the row layout (7 across, no wrap). */
+.statusLifeDecree__chips .statusLifeDecree__medallion {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
 }
 
 .statusLifeDecree__tile {
   position: relative;
-  min-height: 78px;
+  min-height: 0;
   display: grid;
-  align-content: start;
-  gap: 4px;
-  padding: 10px;
+  align-content: center;
+  gap: 2px;
+  padding: 4px 8px;
   border: 1px solid rgba(90, 62, 30, 0.18);
   border-radius: 6px;
   background: rgba(255, 249, 229, 0.54);
 }
 
+/* Goal-block rows (artifact: [glyph] [tiny 96px sub-label] [bold value], one line
+   each). Flat inline rows — no card chrome, no detail line — so Next Goal / Main
+   Bottleneck / Primary Route read as the artifact's three right-aligned lines. */
+.statusLifeDecree__goal > .statusLifeDecree__tile {
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Artifact goal rows: [▲/!/↗ glyph] [tiny 96px sub-label] [bold value] inline. */
+.statusLifeDecree__goalGlyph {
+  flex: 0 0 auto;
+  font-weight: 800;
+  font-size: 0.72rem;
+  line-height: 1;
+  color: var(--observatory-gold);
+}
+.statusLifeDecree__goal > .statusLifeDecree__tile[data-tone='danger'] .statusLifeDecree__goalGlyph {
+  color: var(--observatory-cinnabar);
+}
+.statusLifeDecree__goal .statusLifeDecree__tileText {
+  flex-direction: row;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+}
+.statusLifeDecree__goal .statusLifeDecree__label {
+  flex: 0 0 96px;
+  font-size: 0.5rem;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.statusLifeDecree__goal .statusLifeDecree__value {
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 800;
+  font-size: 0.78rem;
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.statusLifeDecree__goal .statusLifeDecree__detail {
+  display: none;
+}
+
+/* Main-bottleneck value glows cinnabar like the artifact `bc` colour. */
+.statusLifeDecree__goal > .statusLifeDecree__tile[data-tone='danger'] .statusLifeDecree__value {
+  color: var(--observatory-cinnabar);
+  text-shadow: 0 0 8px rgba(169, 72, 53, 0.5);
+}
+
 .statusLifeDecree__route {
-  background: rgba(163, 108, 33, 0.1);
+  background: transparent;
+}
+
+/* Primary Route stays clickable (added functionality) but is styled as the
+   artifact's flat gold-deep text line: glyph + sub-label + bold gold value. */
+.statusLifeDecree__goal .statusObservatoryAction {
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.statusLifeDecree__goal .statusObservatoryAction strong {
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 800;
+  font-size: 0.78rem;
+  color: var(--observatory-gold-deep, var(--observatory-gold));
+}
+
+.statusLifeDecree__goal .statusObservatoryAction small {
+  display: none;
+}
+
+.statusLifeDecree__goal .statusObservatoryAction:not([disabled]):hover strong {
+  text-decoration: underline;
 }
 
 .statusLifeDecree__value,
@@ -448,8 +971,8 @@
 
 .statusLifeDecree__stateSeal {
   position: absolute;
-  top: 6px;
-  right: 8px;
+  top: 10px;
+  right: 12px;
   pointer-events: none;
   opacity: 0.95;
   filter: drop-shadow(0 1px 2px var(--observatory-shadow));
@@ -457,11 +980,9 @@
 }
 
 .statusLifeDecree__medallion {
-  position: absolute;
-  top: 7px;
-  right: 7px;
-  width: 16px;
-  height: 16px;
+  flex: none;
+  width: 24px;
+  height: 24px;
   pointer-events: none;
 }
 
@@ -483,7 +1004,8 @@
   align-items: center;
   width: 100%;
   height: 100%;
-  padding: 0 12px;
+  /* Artifact vitals() outer flex pad: 0 10px (line 442). */
+  padding: 0 10px;
 }
 
 .statusVitalsRibbon__seal {
@@ -492,15 +1014,21 @@
   grid-template-areas:
     "icon label"
     "icon value";
-  column-gap: 7px;
+  /* Artifact vitals() cell: gap 8px, padding 0 12px (line 442). */
+  column-gap: 8px;
   align-items: center;
   height: 100%;
   min-height: 0;
-  padding: 0 9px;
+  padding: 0 12px;
   border: 0;
-  border-right: 1px solid rgba(122, 94, 53, 0.16);
+  /* Artifact `vitals` uses a DASHED left divider between cells (line 442). */
+  border-left: 1px dashed rgba(120, 90, 46, 0.3);
   border-radius: 0;
   background: none;
+}
+
+.statusVitalsRibbon__seal:first-child {
+  border-left: 0;
 }
 
 .statusVitalsRibbon__seal:last-child {
@@ -521,8 +1049,9 @@
 .statusVitalsRibbon__label {
   grid-area: label;
   align-self: end;
-  font-size: 8.5px;
-  letter-spacing: 0.05em;
+  /* Artifact `vitals` .sub override: font-size 7.5px, .sub tracking .16em. */
+  font-size: 7.5px;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--paper-ink-muted);
   line-height: 1.05;
@@ -534,10 +1063,11 @@
 .statusVitalsRibbon__value {
   grid-area: value;
   align-self: start;
-  font-size: 12.5px;
-  font-weight: 700;
+  /* Artifact `vitals` value: font:800 14px var(--serif) (line 442). */
+  font-size: 14px;
+  font-weight: 800;
   color: var(--paper-ink);
-  line-height: 1.15;
+  line-height: 1.1;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -594,25 +1124,91 @@
 }
 
 .statusRootLawCoupledInstrument {
-  min-height: 430px;
+  /* Fill the 600px main-row track instead of forcing a 430px floor that
+     overflowed the panel (packet §1.1). */
+  height: 100%;
+  min-height: 0;
   align-content: start;
+  /* Fade to transparent over the lower third so the region's ink-wash mountain
+     band shows behind the readout quad (packet §4.11). */
   background:
-    radial-gradient(circle at 24% 48%, rgba(47, 127, 98, 0.16), transparent 32%),
-    radial-gradient(circle at 76% 48%, rgba(163, 108, 33, 0.16), transparent 28%),
-    linear-gradient(180deg, rgba(255, 250, 232, 0.96), rgba(230, 207, 158, 0.9)),
-    var(--observatory-paper);
+    radial-gradient(circle at 24% 40%, rgba(47, 127, 98, 0.14), transparent 30%),
+    radial-gradient(circle at 76% 36%, rgba(163, 108, 33, 0.14), transparent 26%),
+    linear-gradient(180deg, rgba(255, 250, 232, 0.9) 38%, rgba(236, 220, 186, 0.42) 64%, transparent 88%);
+}
+
+/* Artifact buildRoot layout: a wide dial column (big dial + readout quad + button)
+   and a Heart-Law seal column on the right (packet §4.8). */
+.statusRootLawCoupledInstrument {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
 }
 
 .statusRootLawCoupledInstrument__body {
+  position: relative;
   display: grid;
-  grid-template-columns: minmax(220px, 1.08fr) minmax(76px, 0.42fr) minmax(190px, 0.92fr);
-  gap: 8px;
-  align-items: center;
-  min-height: 330px;
+  grid-template-columns: 1.55fr 1fr;
+  gap: 10px;
+  align-items: start;
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
-.statusSpiritRootAstrolabe,
-.statusHeartLawSeal,
+/* Artifact rootFoot: a thin full-width strip of small stats below both columns,
+   then the two route buttons centred underneath. */
+.statusRootLawCoupledInstrument__foot {
+  flex: 0 0 auto;
+  display: grid;
+  gap: 8px;
+  padding-top: 8px;
+  margin-top: 4px;
+  border-top: 1px solid var(--observatory-line);
+}
+
+.statusRootLawCoupledInstrument__footStats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  justify-content: center;
+}
+
+.statusRootLawCoupledInstrument__footStat {
+  min-width: 78px;
+  text-align: center;
+}
+
+.statusRootLawCoupledInstrument__footStat span {
+  display: block;
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 700;
+  font-size: 0.46rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--observatory-muted);
+}
+
+.statusRootLawCoupledInstrument__footStat strong {
+  display: block;
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 800;
+  font-size: 0.7rem;
+  line-height: 1.2;
+  color: var(--observatory-ink);
+}
+
+.statusRootLawCoupledInstrument__footStat[data-bad='true'] strong {
+  color: var(--observatory-cinnabar);
+}
+
+.statusRootLawCoupledInstrument__footActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
 .statusCanopy__seal {
   display: grid;
   gap: 8px;
@@ -623,6 +1219,101 @@
     linear-gradient(180deg, rgba(255, 249, 229, 0.74), rgba(226, 202, 150, 0.5)),
     rgba(255, 249, 229, 0.58);
   box-shadow: inset 0 0 0 1px rgba(255, 252, 236, 0.36);
+}
+
+/* Astrolabe column = card-less dial on the parchment: title, big dial, then a
+   2x2 readout quad, then the observe button. */
+.statusSpiritRootAstrolabe {
+  grid-column: 1;
+  display: grid;
+  grid-template-rows: auto auto auto auto;
+  gap: 6px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.statusSpiritRootAstrolabe__title {
+  justify-self: center;
+}
+.statusSpiritRootAstrolabe__ring {
+  justify-self: center;
+  margin: 0 auto;
+  width: clamp(220px, 23vw, 286px);
+}
+/* Readout quad: GRADE/MULT/Purity/Fit · expression · proc · run-validity. */
+.statusSpiritRootAstrolabe__readout {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px 12px;
+  align-items: start;
+  padding-top: 5px;
+  border-top: 1px solid var(--observatory-line);
+}
+
+/* Artifact .rchip pills (Grade, Total Mult.) directly under the dial: tiny stacked
+   label + value, not the old heavy boxed quad. */
+.statusSpiritRootAstrolabe__chips {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 2px;
+}
+
+.statusSpiritRootAstrolabe__rchip {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.02;
+  padding: 1px 8px;
+  border: 1px solid rgba(120, 90, 46, 0.3);
+  border-radius: 3px;
+  background: linear-gradient(180deg, rgba(255, 250, 235, 0.5), rgba(220, 200, 160, 0.18));
+}
+
+.statusSpiritRootAstrolabe__rchip i {
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 700;
+  font-size: 0.42rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--observatory-muted);
+  font-style: normal;
+}
+
+.statusSpiritRootAstrolabe__rchip b {
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 800;
+  font-size: 0.64rem;
+  color: var(--observatory-ink);
+}
+
+.statusSpiritRootAstrolabe__rchip[data-fit-tier='opposed'] .statusSpiritRootAstrolabe__mult {
+  color: var(--observatory-cinnabar);
+}
+
+.statusSpiritRootAstrolabe__rchip[data-fit-tier='aligned'] .statusSpiritRootAstrolabe__mult,
+.statusSpiritRootAstrolabe__rchip[data-fit-tier='compatible'] .statusSpiritRootAstrolabe__mult {
+  color: var(--observatory-jade);
+}
+
+/* Heart-Law seal column, card-less (artifact medallion on parchment). */
+.statusHeartLawSeal {
+  grid-column: 2;
+  display: grid;
+  gap: 6px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+/* Bridge hidden on the board (its crack overlay read as a stray "X"); the
+   opposed/aligned fit is carried by the dial fracture + the cinnabar readout.
+   Selectors retained below for the contract + the overlay chain. */
+.statusRootLawCoupledInstrument__body .statusRootLawBridge {
+  display: none;
 }
 
 .statusSpiritRootAstrolabe__title,
@@ -710,7 +1401,10 @@
    prefers-reduced-motion below). The tick ring spins, the needle eases to the
    fit angle, the core/aura breathe, the flame flickers. Every truth (angle,
    purity fill, fit band + label, fracture) is static — motion is enhancement. */
-.statusSpiritRootAstrolabe__spin {
+/* Gated by each instrument's data-animate flag (set from useRitualMotion) so the
+   spin/breath/flame stop on low-tier hardware + reduced motion, like the
+   meridian/canopy/wheel animations. */
+.statusSpiritRootAstrolabe[data-animate='true'] .statusSpiritRootAstrolabe__spin {
   animation: obsAstrolabeSpin var(--tick-spin-dur, 90s) linear infinite;
 }
 
@@ -718,12 +1412,12 @@
   transition: transform 0.9s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
-.statusSpiritRootAstrolabe__breath,
-.statusHeartLawSeal__breath {
+.statusSpiritRootAstrolabe[data-animate='true'] .statusSpiritRootAstrolabe__breath,
+.statusHeartLawSeal[data-animate='true'] .statusHeartLawSeal__breath {
   animation: obsBreath var(--breath-period, 5.6s) ease-in-out infinite;
 }
 
-.statusHeartLawSeal__flame {
+.statusHeartLawSeal[data-animate='true'] .statusHeartLawSeal__flame {
   animation: obsFlicker 2.4s ease-in-out infinite;
 }
 
@@ -755,8 +1449,7 @@
 
 .statusSpiritRootAstrolabe__summary,
 .statusSpiritRootAstrolabe__proc,
-.statusSpiritRootAstrolabe__validity,
-.statusHeartLawSeal__state {
+.statusSpiritRootAstrolabe__validity {
   display: grid;
   gap: 3px;
   padding: 8px;
@@ -765,20 +1458,48 @@
   background: rgba(255, 250, 232, 0.58);
 }
 
-.statusRootLawBridge {
-  position: relative;
-  min-height: 210px;
+/* Artifact heart column: chapter + clarity/turbulence are borderless centred
+   text lines stacked under the medallion, NOT a bordered side card. */
+.statusHeartLawSeal__state {
   display: grid;
-  align-content: center;
-  gap: 8px;
+  gap: 1px;
+  justify-items: center;
   text-align: center;
-  padding: 10px 4px;
+  padding: 2px 0 0;
+  border: 0;
+  background: transparent;
+}
+
+.statusRootLawBridge {
+  /* A short chain connector in the gap between the dial (left) and the seal
+     (top-right). The fit verdict now lives in the readout quad, so the bridge
+     keeps only the cord. */
+  position: absolute;
+  top: 33%;
+  left: 43%;
+  width: 17%;
+  min-height: 0;
+  display: grid;
+  place-items: center;
+  z-index: 2;
+  padding: 0;
   color: var(--observatory-muted);
+}
+.statusRootLawBridge__label,
+.statusRootLawBridge > strong,
+.statusRootLawBridge p {
+  display: none;
+}
+/* Suppress the crack overlay (it read as a stray red "X"); the opposed signal is
+   carried by the dial fracture + the cinnabar readout. Selector retained. */
+.statusRootLawBridge__crack {
+  display: none;
 }
 
 .statusRootLawBridge__cord {
   position: relative;
-  min-height: 86px;
+  min-height: 18px;
+  width: 100%;
   display: grid;
   place-items: center;
 }
@@ -892,17 +1613,31 @@
   stroke-width: 2;
 }
 
+/* Artifact foot route buttons: compact pills. Observe = gold/cream (.btn),
+   Open Dao Heart Sanctuary = jade (.btn.jade). */
 .statusRootLawRouteButton {
-  display: grid;
-  gap: 2px;
-  min-height: 48px;
-  padding: 8px 10px;
-  border: 1px solid rgba(75, 48, 18, 0.32);
-  border-radius: 6px;
-  color: #fdf2c7;
-  background: linear-gradient(180deg, #294d3f, #17392e);
-  box-shadow: inset 0 0 0 1px rgba(255, 250, 232, 0.18);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  padding: 5px 13px;
+  border: 1px solid var(--observatory-gold-deep, #6e4c16);
+  border-radius: 4px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 700;
+  font-size: 0.66rem;
+  color: #3a2a0e;
+  background: linear-gradient(180deg, #f0e2bf, #dcc591);
+  box-shadow:
+    0 1px 2px rgba(60, 40, 16, 0.3),
+    inset 0 1px 0 rgba(255, 250, 235, 0.5);
   cursor: pointer;
+}
+
+.statusRootLawRouteButton--daoHeart {
+  color: #e9efe2;
+  border-color: #1c3128;
+  background: linear-gradient(180deg, #3a5b4d, #274034);
 }
 
 .statusRootLawRouteButton:disabled {
@@ -917,9 +1652,16 @@
 }
 
 .statusMeridianVesselCompass {
-  min-height: 620px;
+  /* V7 hero slot is 548px tall (816x548 @552,250); header + figure + focus slip
+     + footer must fit. min-height tracks the slot so nothing overflows-clips. */
+  position: relative;
+  min-height: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
   align-content: start;
-  gap: 12px;
+  gap: 8px;
+  overflow: hidden;
   background:
     radial-gradient(circle at 50% 38%, rgba(47, 127, 98, 0.09), transparent 34%),
     linear-gradient(180deg, rgba(255, 250, 232, 0.96), rgba(230, 207, 158, 0.9)),
@@ -931,10 +1673,15 @@
 }
 
 .statusMeridianVesselCompass__body {
-  display: grid;
-  grid-template-columns: minmax(130px, 0.38fr) minmax(360px, 1fr) minmax(132px, 0.4fr);
-  gap: 10px;
-  align-items: stretch;
+  /* V7 composite: the figure spans the full panel width; the six organ cards
+     flank it (3 left / 3 right) and the focus slip overlaps the lower edge.
+     The standalone Overview / Legend / Inspection rails live in the drawer.
+     flex:1 lets the figure consume the room freed by removing the Next
+     Bottleneck band so figure + cards + focus slip fit the 548px slot. */
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: block;
 }
 
 .statusMeridianVesselCompass__rail {
@@ -961,15 +1708,15 @@
 
 .statusMeridianVesselCompass__figure {
   position: relative;
-  min-height: 360px;
-  aspect-ratio: 1 / 0.82;
-  overflow: hidden;
-  border: 1px solid rgba(90, 62, 30, 0.24);
-  border-radius: 8px;
-  background:
-    radial-gradient(circle at 50% 47%, rgba(255, 250, 232, 0.72), transparent 27%),
-    radial-gradient(circle at 50% 54%, rgba(47, 127, 98, 0.1), transparent 40%),
-    linear-gradient(180deg, rgba(255, 249, 229, 0.64), rgba(218, 190, 130, 0.28));
+  width: 100%;
+  /* Was a fixed 350px; now fills the flexed body so the figure + flanking organ
+     cards scale to the room available within the 548px slot. */
+  height: 100%;
+  min-height: 300px;
+  overflow: visible;
+  /* Transparent — the figure sits directly on the panel .fr1 plate; only the
+     central qi-aura disc (SVG) adds glow. No inner card border. */
+  background: transparent;
 }
 
 .statusMeridianVesselCompass__bodyLinework,
@@ -985,46 +1732,121 @@
   overflow: visible;
 }
 
+/* (A) qi aura ellipse — artifact url(#qiAura), no stroke */
 .statusMeridianVesselCompass__bodyAura {
-  fill: url("#statusMeridianCoreGlow");
-  stroke: rgba(92, 66, 35, 0.18);
-  stroke-width: 0.7;
+  fill: url("#statusMeridianQiAura");
 }
 
+/* (B) halo ring (fgL stroke) + soft inner fill */
+.statusMeridianVesselCompass__halo {
+  fill: none;
+  stroke: rgba(150, 120, 60, 0.3);
+  stroke-width: 1;
+}
+
+.statusMeridianVesselCompass__haloFill {
+  fill: rgba(201, 168, 90, 0.06);
+}
+
+/* (C) head circle + bun (fg stroke) */
+.statusMeridianVesselCompass__head {
+  fill: rgba(243, 234, 215, 0.5);
+  stroke: rgba(150, 120, 60, 0.52);
+  stroke-width: 1.4;
+}
+
+.statusMeridianVesselCompass__bun {
+  fill: none;
+  stroke: rgba(150, 120, 60, 0.52);
+  stroke-width: 1.2;
+}
+
+/* topknot + the three inner robe fold lines (fgL, sw1) */
 .statusMeridianVesselCompass__bodyPath {
   fill: none;
-  stroke: rgba(57, 48, 35, 0.27);
-  stroke-width: 0.74;
+  stroke: rgba(150, 120, 60, 0.3);
+  stroke-width: 1;
   stroke-linecap: round;
   stroke-linejoin: round;
-  stroke-dasharray: 0.8 0.45;
 }
 
+/* topknot uses the fg stroke at sw1.4 (first __bodyPath in the figure) */
+.statusMeridianVesselCompass__head + .statusMeridianVesselCompass__bodyPath {
+  stroke: rgba(150, 120, 60, 0.52);
+  stroke-width: 1.4;
+}
+
+/* (D) robe body */
+.statusMeridianVesselCompass__robe {
+  fill: rgba(243, 234, 215, 0.32);
+  stroke: rgba(150, 120, 60, 0.52);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+
+/* (F) lap arc + lap ellipse */
+.statusMeridianVesselCompass__lapArc {
+  fill: none;
+  stroke: rgba(150, 120, 60, 0.52);
+  stroke-width: 1.5;
+}
+
+.statusMeridianVesselCompass__lap {
+  fill: rgba(243, 234, 215, 0.4);
+  stroke: rgba(150, 120, 60, 0.52);
+  stroke-width: 1.3;
+}
+
+/* (G) base sash */
+.statusMeridianVesselCompass__base {
+  fill: rgba(243, 234, 215, 0.3);
+  stroke: rgba(150, 120, 60, 0.52);
+  stroke-width: 1.4;
+}
+
+/* (H) soft spine glow line under the bright qiflow spine */
+.statusMeridianVesselCompass__spine {
+  stroke: rgba(201, 168, 90, 0.16);
+  stroke-width: 3;
+  filter: url("#soft");
+}
+
+/* (J) gold meridian points + (J) qi core breathing disc */
+.statusMeridianVesselCompass__meridianPoint {
+  /* These points twinkle; an SVG blur filter on an animating node re-rasterizes
+     each frame, so the live #glowJ was dropped (the gold radial fill reads on its
+     own). */
+  fill: url("#goldRad");
+}
+
+.statusMeridianVesselCompass__qiCore {
+  fill: url("#statusMeridianQiCore");
+}
+
+/* (K) focus inspection ring */
+.statusMeridianVesselCompass__focusRing {
+  fill: none;
+  stroke: rgba(201, 168, 90, 0.5);
+  stroke-width: 1.4;
+}
+
+/* bright qi-thread anchor white core dot (artifact circle r2 fill #fff opacity .8) */
+.statusMeridianVesselCompass__threadBeadCore {
+  fill: #fff;
+  opacity: 0.8;
+}
+
+/* (I) qi-thread under-stroke (state color set inline via thcol); px geometry */
 .statusMeridianVesselCompass__organThread {
   fill: none;
   stroke: var(--observatory-state);
-  stroke-width: 0.62;
-  stroke-linecap: round;
-  opacity: 0.58;
-}
-
-.statusMeridianVesselCompass__organThread[data-organ-state='healthy'] {
-  stroke: var(--observatory-jade);
-}
-
-.statusMeridianVesselCompass__organThread[data-organ-state='attention'] {
-  stroke: var(--observatory-gold);
-  stroke-dasharray: 0.7 0.35;
-}
-
-.statusMeridianVesselCompass__organThread[data-organ-state='danger'] {
-  stroke: var(--observatory-cinnabar);
-  stroke-width: 0.86;
+  stroke-width: 1.6;
+  opacity: 0.7;
 }
 
 .statusMeridianVesselCompass__organThread[data-selected='true'] {
-  opacity: 0.96;
-  stroke-width: 1.05;
+  opacity: 0.95;
+  stroke-width: 2;
 }
 
 .statusMeridianVesselCompass__coreSeal {
@@ -1039,65 +1861,34 @@
   stroke-dasharray: 0.8 0.48;
 }
 
-/* W4: central qi channel flow + dantian pearls (additive, decorative, aria-hidden) */
+/* (H) bright qiflow spine — artifact stroke #ffe9b0 sw1.6 opacity .75, dash 3 13 */
 .statusMeridianVesselCompass__channelFlow {
   fill: none;
-  stroke: rgba(244, 227, 173, 0.78);
-  stroke-width: 1;
-  opacity: 0.72;
+  stroke: #ffe9b0;
+  stroke-width: 1.6;
+  opacity: 0.75;
   stroke-dasharray: 3 13;
 }
 
-.statusMeridianVesselCompass__dantianRing {
-  fill: none;
-  stroke: rgba(150, 120, 60, 0.55);
-  stroke-width: 0.4;
-}
-
-.statusMeridianVesselCompass__dantianBead {
-  fill: url("#goldRad");
-  filter: url("#glowJ");
-}
-
-/* W4: organ qi-thread bright overlay + anchor bead (tone by state, grayscale-safe) */
+/* (I) bright qi-thread over-stroke — artifact #ffe9b0 (atrisk #f0b9a0), sw1.4 opacity .95 */
 .statusMeridianVesselCompass__threadGlow {
   fill: none;
-  stroke: rgba(255, 240, 200, 0.85);
-  stroke-width: 0.42;
-  opacity: 0;
-  stroke-dasharray: 2.5 11;
-}
-
-.statusMeridianVesselCompass__threadGlow[data-organ-state='healthy'],
-.statusMeridianVesselCompass__threadGlow[data-organ-state='attention'] {
-  opacity: 0.7;
+  stroke: #ffe9b0;
+  stroke-width: 1.4;
+  opacity: 0.95;
+  stroke-dasharray: 3 13;
 }
 
 .statusMeridianVesselCompass__threadGlow[data-organ-state='danger'] {
-  stroke: rgba(251, 231, 227, 0.92);
-  opacity: 0.85;
+  stroke: #f0b9a0;
 }
 
-.statusMeridianVesselCompass__threadGlow[data-selected='true'] {
-  opacity: 1;
-}
-
+/* (I) anchor disc on the CARD side — colored fill; the bright white
+   __threadBeadCore supplies the centre. The live #glowJ blur was dropped: this
+   disc twinkles (×6), and an SVG filter on an animating node re-rasterizes every
+   frame — a real perf cost for no readability gain. */
 .statusMeridianVesselCompass__threadBead {
-  fill: var(--observatory-bronze);
-  stroke: rgba(255, 246, 218, 0.7);
-  stroke-width: 0.3;
-}
-
-.statusMeridianVesselCompass__threadBead[data-organ-state='healthy'] {
-  fill: var(--observatory-jade);
-}
-
-.statusMeridianVesselCompass__threadBead[data-organ-state='attention'] {
-  fill: var(--observatory-gold);
-}
-
-.statusMeridianVesselCompass__threadBead[data-organ-state='danger'] {
-  fill: var(--observatory-cinnabar);
+  fill: var(--observatory-state);
 }
 
 /* W4 vessel motion - gated entirely by the svg's data-animate flag (reduced motion = frozen) */
@@ -1118,17 +1909,22 @@
   }
 }
 
+/* (A/J) breathe: qi aura ellipse + qi-core disc (artifact class=breatheA) */
 .statusMeridianVesselCompass__bodyLinework[data-animate='true'] .statusMeridianVesselCompass__bodyAura,
-.statusMeridianVesselCompass__bodyLinework[data-animate='true'] .statusMeridianVesselCompass__coreSeal {
+.statusMeridianVesselCompass__bodyLinework[data-animate='true'] .statusMeridianVesselCompass__qiCore {
   animation: obsBreath var(--breath-period, 5.6s) ease-in-out infinite;
 }
 
+/* (H/I) qiflow drift on the bright spine + bright thread over-strokes */
 .statusMeridianVesselCompass__bodyLinework[data-animate='true'] .statusMeridianVesselCompass__channelFlow,
 .statusMeridianVesselCompass__bodyLinework[data-animate='true'] .statusMeridianVesselCompass__threadGlow {
   animation: statusMeridianVesselQiFlow var(--obs-motion-drift) linear infinite;
 }
 
-.statusMeridianVesselCompass__bodyLinework[data-animate='true'] .statusMeridianVesselCompass__dantian {
+/* (B/I/J) twinkle pulse on the halo ring, meridian points, and thread anchor discs (artifact class=twk / mp) */
+.statusMeridianVesselCompass__bodyLinework[data-animate='true'] .statusMeridianVesselCompass__halo,
+.statusMeridianVesselCompass__bodyLinework[data-animate='true'] .statusMeridianVesselCompass__meridianPoint,
+.statusMeridianVesselCompass__bodyLinework[data-animate='true'] .statusMeridianVesselCompass__threadBead {
   animation: statusMeridianVesselTwinkle var(--obs-motion-breathe) var(--obs-motion-ease) infinite;
 }
 
@@ -1137,36 +1933,99 @@
 }
 
 .statusMeridianVesselCompass__organSeal {
+  /* Artifact `compass` card: 196px wide, 7px 9px padding, gradient
+     168deg #f6efdc->#eee5cc, 1px bronze border with a 3px state-toned side
+     border (left for the left column, right for the right column), drop shadow
+     0 5px 12px. Two stacked rows: [badge + name/sub] then [state label + .btn].
+     Centered on the artifact card-center point so the 3 left / 3 right cards
+     flank the figure on the vertical thirds. */
   position: absolute;
   left: calc(var(--organ-x) * 1%);
   top: calc(var(--organ-y) * 1%);
-  width: min(158px, 30%);
-  min-height: 106px;
-  transform: translate(-50%, -50%);
+  width: min(196px, 24%);
+  /* Center on the (organ-x, organ-y) point via the INDEPENDENT `translate`
+     property — NOT `transform`. The global skin's `button:hover/:active/
+     :focus-visible { transform: none }` (global.css, specificity 0,1,1) would
+     otherwise out-rank this seal's centering (0,1,0) and wipe it on hover,
+     making the card jump down-right by half its size. `translate` is immune. */
+  translate: -50% -50%;
   display: grid;
-  justify-items: center;
+  grid-template-columns: 27px minmax(0, 1fr);
+  /* Artifact card: badge spans the name+sub rows; then state | route on row 3. */
+  grid-template-rows: auto auto auto;
   align-content: center;
-  gap: 4px;
-  padding: 9px 10px;
-  border: 1px solid rgba(90, 62, 30, 0.28);
-  border-radius: 999px 999px 9px 9px;
-  background:
-    radial-gradient(circle at 50% 18%, rgba(255, 253, 235, 0.88), rgba(238, 216, 169, 0.72)),
-    rgba(255, 248, 226, 0.84);
+  justify-items: start;
+  column-gap: 7px;
+  row-gap: 3px;
+  padding: 7px 9px;
+  border: 1px solid rgba(120, 90, 46, 0.4);
+  border-left: 3px solid var(--observatory-state);
+  border-radius: 0;
+  background: linear-gradient(168deg, #f6efdc, #eee5cc);
   color: var(--observatory-ink);
   font: inherit;
-  text-align: center;
+  text-align: left;
   cursor: pointer;
   pointer-events: auto;
-  box-shadow: 0 8px 18px rgba(51, 33, 12, 0.12), inset 0 0 0 3px rgba(255, 251, 229, 0.24);
+  box-shadow: 0 5px 12px rgba(40, 26, 12, 0.26);
 }
 
+/* right-column cards carry the state rail on the RIGHT, like the artifact */
+.statusMeridianVesselCompass__organSeal[data-organ-id='daoHeart'],
+.statusMeridianVesselCompass__organSeal[data-organ-id='training'],
+.statusMeridianVesselCompass__organSeal[data-organ-id='activeWork'] {
+  border-left: 1px solid rgba(120, 90, 46, 0.4);
+  border-right: 3px solid var(--observatory-state);
+}
+
+.statusMeridianVesselCompass__organSeal > .statusMeridianVesselCompass__organSealInner {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  align-self: center;
+}
+
+/* name (strong) on row 1; sub/value (small) on its own row 2 (no overlap) */
+.statusMeridianVesselCompass__organSeal > strong {
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: start;
+  align-self: end;
+}
+
+.statusMeridianVesselCompass__organSeal > small {
+  grid-column: 2;
+  grid-row: 2;
+  align-self: start;
+  justify-self: start;
+}
+
+/* artifact bottom row: [state label LEFT | route pill RIGHT]. Both items occupy
+   the full row-3 track and align to opposite ends (short text never collides). */
+.statusMeridianVesselCompass__organSeal > em {
+  grid-column: 1 / span 2;
+  grid-row: 3;
+  justify-self: start;
+  align-self: center;
+}
+
+.statusMeridianVesselCompass__organSeal > .statusMeridianVesselCompass__organRoute {
+  grid-column: 1 / span 2;
+  grid-row: 3;
+  justify-self: end;
+  align-self: center;
+}
+
+/* artifact badge: SOLID state-colored 27px circle, gold rim, pale glyph/number */
 .statusMeridianVesselCompass__organSealInner {
-  width: 34px;
-  height: 34px;
+  width: 27px;
+  height: 27px;
+  border-radius: 50%;
   display: grid;
   place-items: center;
-  color: var(--observatory-state);
+  background: var(--observatory-state);
+  border: 1.5px solid rgba(217, 189, 128, 0.6);
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.3);
+  color: #f3ead7;
 }
 
 /* W4: concentric ring medallion (gold rim + state-toned ring + disc + ordinal mark) */
@@ -1176,43 +2035,20 @@
   overflow: visible;
 }
 
-.statusMeridianVesselCompass__organRimOuter {
-  fill: none;
-  stroke: var(--observatory-gold);
-  stroke-width: 1.1;
-  opacity: 0.78;
-}
-
-.statusMeridianVesselCompass__organRing {
-  fill: none;
-  stroke: var(--observatory-state);
-  stroke-width: 1.4;
-}
-
-.statusMeridianVesselCompass__organRing[data-organ-state='attention'] {
-  stroke-dasharray: 2.4 1.6;
-}
-
-.statusMeridianVesselCompass__organRing[data-organ-state='danger'] {
-  stroke-width: 2.2;
-}
-
-.statusMeridianVesselCompass__organRing[data-organ-state='locked'],
-.statusMeridianVesselCompass__organRing[data-organ-state='unknown'] {
-  stroke-dasharray: 1 1.4;
-  opacity: 0.72;
-}
-
+/* Artifact badge is a solid disc (styled on __organSealInner). The medallion SVG
+   now renders only the centered number mark over the solid fill; the rim/ring/disc
+   sub-circles are flattened to transparent so the solid badge reads cleanly. */
+.statusMeridianVesselCompass__organRimOuter,
+.statusMeridianVesselCompass__organRing,
 .statusMeridianVesselCompass__organDisc {
-  fill: rgba(255, 250, 232, 0.95);
-  stroke: rgba(163, 108, 33, 0.22);
-  stroke-width: 0.5;
+  fill: none;
+  stroke: none;
 }
 
 .statusMeridianVesselCompass__organMark {
-  fill: var(--observatory-state);
+  fill: #f3ead7;
   font-weight: 800;
-  font-size: 9px;
+  font-size: 13px;
   font-family: Georgia, "Times New Roman", serif;
 }
 
@@ -1220,14 +2056,15 @@
   --observatory-state: var(--observatory-jade);
 }
 
+/* Artifact uses stcol() for the side rail (atrisk #8b3028, needswork #a2712a,
+   stable #0f6f5a, locked/unknown #69717c) with a uniform 1px frame + 3px rail;
+   no dashed/thick-frame variants. */
 .statusMeridianVesselCompass__organSeal[data-organ-state='attention'] {
   --observatory-state: var(--observatory-gold);
-  border-style: dashed;
 }
 
 .statusMeridianVesselCompass__organSeal[data-organ-state='danger'] {
   --observatory-state: var(--observatory-cinnabar);
-  border-width: 2px;
 }
 
 .statusMeridianVesselCompass__organSeal[data-organ-state='locked'],
@@ -1247,13 +2084,56 @@
 }
 
 .statusMeridianVesselCompass__organSeal strong {
-  font-size: 0.82rem;
+  font-size: 11.5px;
+  font-weight: 700;
+  line-height: 1.12;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-.statusMeridianVesselCompass__organSeal small,
-.statusMeridianVesselCompass__organSeal em {
-  font-size: 0.72rem;
+.statusMeridianVesselCompass__organSeal small {
+  font-size: 9.5px;
   font-style: normal;
+  color: var(--observatory-muted);
+  line-height: 1.12;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* artifact bottom-row state label: 10px weight800 in the state color */
+.statusMeridianVesselCompass__organSeal em {
+  font-size: 10px;
+  font-weight: 800;
+  font-style: normal;
+  color: var(--observatory-state);
+}
+
+/* artifact card route pill (.btn): small gold-leaf pill, gold-deep hairline,
+   ink text, 3px radius. Decorative on the card; the focus lens carries the
+   focusable action, so this never needs its own pointer/tab semantics. */
+.statusMeridianVesselCompass__organRoute {
+  padding: 3px 9px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 700;
+  font-size: 10px;
+  line-height: 1.1;
+  color: var(--observatory-ink);
+  /* Artifact .btn pale gold-leaf gradient (light cream→gold), not the darker
+     frame gold-leaf tokens — kept literal to match the mockup pill exactly. */
+  background: linear-gradient(180deg, #f0e2bf, #dcc591);
+  border: 1px solid var(--observatory-gold-deep, var(--observatory-gold));
+  border-radius: 3px;
+  box-shadow: 0 1px 2px rgba(60, 40, 16, 0.3), inset 0 1px 0 rgba(255, 250, 235, 0.5);
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .statusMeridianVesselCompass__legend {
@@ -1290,7 +2170,19 @@
 }
 
 .statusMeridianVesselCompass__focusLens {
-  min-height: 190px;
+  /* Artifact `compass` focus lens: a torn cinnabar inspection slip floating
+     over the figure's lower-center (artifact left:250 top:386 width:340 in the
+     838x560 panel -> 29.8% / 68.9% / 40.6%). Absolutely positioned so it
+     OVERLAPS the vessel instead of pushing layout below it. */
+  position: absolute;
+  left: 29.8%;
+  top: 68.9%;
+  width: 40.6%;
+  z-index: 6;
+  min-height: 0;
+  max-height: none;
+  overflow: visible;
+  pointer-events: auto;
 }
 
 /* W4: torn cinnabar focus-lens slip + sources-as-seals */
@@ -1314,34 +2206,41 @@
   position: relative;
   min-height: 100%;
   display: grid;
-  gap: 8px;
-  padding: 14px 14px 12px;
+  gap: 5px;
+  padding: 12px 14px 11px;
 }
 
+/* Cinnabar 檢視 wax chop (artifact waxSeal top-right of the focus card). The
+   InkWaxSeal SVG paints its own disc + glyph; this only positions it. */
 .statusFocusLens__seal {
   position: absolute;
-  top: 13px;
-  right: 13px;
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  border: 2px solid var(--observatory-state);
-  opacity: 0.58;
-  background:
-    linear-gradient(90deg, transparent 44%, currentColor 44% 56%, transparent 56%),
-    linear-gradient(0deg, transparent 44%, currentColor 44% 56%, transparent 56%);
-  color: var(--observatory-state);
+  top: 8px;
+  right: 10px;
+  opacity: 0.92;
+  filter: drop-shadow(0 1px 2px var(--observatory-shadow));
+  pointer-events: none;
 }
 
 .statusFocusLens__title {
   padding-right: 52px;
 }
 
+/* Artifact focus card: a cinnabar eyebrow + a cinnabar title (the inspection
+   accent, regardless of organ tone). */
+.statusFocusLens__title span {
+  font-size: 0.56rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--observatory-cinnabar);
+}
+
 .statusFocusLens__title h3 {
-  margin: 2px 0 0;
+  margin: 3px 0 0;
   font-family: Georgia, "Times New Roman", serif;
-  font-size: 1.16rem;
+  font-size: 1.02rem;
   line-height: 1.15;
+  color: var(--observatory-cinnabar);
 }
 
 .statusFocusLens__copy {
@@ -1413,39 +2312,119 @@
   font-size: 0.76rem;
 }
 
+/* Artifact "FOCUSED INSPECTION" board slip: bold value line, prose consequence,
+   and an inline "Route: X" gold link (not the drawer's capsule). */
+.statusFocusLens__value {
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 800;
+  font-size: 0.8rem;
+  line-height: 1.2;
+  color: var(--observatory-ink);
+}
+.statusFocusLens__consequence {
+  margin: 0;
+  color: var(--observatory-muted);
+  font-size: 0.76rem;
+  line-height: 1.4;
+}
+.statusFocusLens__route {
+  min-height: 0;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  padding: 2px 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+.statusFocusLens .statusFocusLens__routeLead {
+  font-weight: 700;
+  font-size: 0.78rem;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--observatory-ink);
+}
+.statusFocusLens__route strong {
+  font-weight: 800;
+  color: var(--observatory-gold-deep, var(--observatory-gold));
+}
+.statusFocusLens__route:hover:not(:disabled) strong {
+  text-decoration: underline;
+}
+/* Sources hidden on the board slip (kept in DOM for the expanded overlay + a11y). */
+.statusMeridianVesselCompass__focusLens .statusFocusLens__sources {
+  display: none;
+}
+
 .statusMeridianVesselCompass__sharedCauseStamps {
-  display: grid;
-  gap: 7px;
-  padding: 10px;
-  border-top: 1px solid rgba(90, 62, 30, 0.16);
+  /* V7 `causes` ribbon (816x56): a single horizontal row sitting on its own
+     region .fr1 plate. Title at left, then one static cause seal per cause,
+     each divided from the next by a hairline rule (V7 border-left:1px). */
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  height: 100%;
+  padding: 0 12px;
+  overflow: hidden;
+}
+
+.statusMeridianVesselCompass__sharedCauseStamps > span {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.statusMeridianVesselCompass__sharedCauseStamps > div {
+  flex: 1 1 auto;
+  min-width: 0;
+  align-items: stretch;
+  flex-wrap: nowrap;
+  overflow: hidden;
 }
 
 .statusMeridianVesselCompass__causeStamp {
-  min-height: 54px;
+  /* V7 .cause-chip: static seal (medallion + name + word) inside the ribbon,
+     each separated by a hairline rule rather than a pill border. */
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 40px;
   display: grid;
-  align-content: center;
-  justify-items: center;
-  gap: 2px;
-  min-width: 112px;
-  padding: 8px 10px;
-  border: 1px solid color-mix(in srgb, var(--observatory-state) 62%, rgba(90, 62, 30, 0.22));
-  border-radius: 999px;
-  background:
-    radial-gradient(circle at 50% 18%, rgba(255, 250, 232, 0.95), rgba(163, 108, 33, 0.12));
+  grid-template-columns: 22px minmax(0, 1fr);
+  grid-template-areas:
+    'seal label'
+    'seal value';
+  align-items: center;
+  gap: 0 8px;
+  padding: 4px 12px;
+  border: 0;
+  border-left: 1px solid rgba(90, 62, 30, 0.22);
+  background: transparent;
   color: var(--observatory-ink);
   font: inherit;
-  text-align: center;
-  cursor: pointer;
+  text-align: left;
+}
+
+.statusMeridianVesselCompass__sharedCauseStamps > div > .statusMeridianVesselCompass__causeStamp:first-child {
+  border-left: 0;
+}
+
+.statusMeridianVesselCompass__causeStamp .statusMeridianVesselCompass__causeSeal {
+  grid-area: seal;
+}
+
+.statusMeridianVesselCompass__causeStamp strong {
+  grid-area: label;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .statusMeridianVesselCompass__causeStamp small {
+  grid-area: value;
   color: var(--observatory-state);
-}
-
-.statusMeridianVesselCompass__causeStamp:hover,
-.statusMeridianVesselCompass__causeStamp:focus-visible {
-  outline: 2px solid var(--observatory-state);
-  outline-offset: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* W4: shared-cause seal tone map (grayscale-safe: ring + label/value text) */
@@ -1488,8 +2467,36 @@
   opacity: 0.8;
 }
 
+.statusMeridianVesselCompass__footer {
+  /* The artifact opens the vessel overlay by clicking the panel itself, so it
+     has no footer row. Keep the keyboard `open drawer` affordance but float it
+     bottom-right as an absolute chip so it does not consume the vertical room
+     the focus lens now overlaps. */
+  position: absolute;
+  right: 8px;
+  bottom: 6px;
+  z-index: 7;
+  display: flex;
+  justify-content: flex-end;
+  padding: 0;
+}
+
+/* Small labeled route button anchored bottom-right of the hero — not a sigil. */
 .statusMeridianVesselCompass__openDrawer {
   width: fit-content;
+  min-height: 28px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border: 1px solid var(--paper-bronze-lo);
+  border-radius: 999px;
+  background: var(--paper-parchment-soft);
+  color: var(--observatory-ink);
+  font-size: 0.74rem;
+  line-height: 1.1;
+  letter-spacing: 0.2px;
+  cursor: pointer;
 }
 
 /* W4: next-bottleneck band (tone-coded via thick left border + label, grayscale-safe) */
@@ -1602,16 +2609,43 @@
   font-size: 0.78rem;
 }
 
+/* V7 §3.2 cluster panel: fills its 640x388 slot (obs-region-canopy). Flex column
+   so the board flexes to fit below the header; transparent so the region .fr1
+   parchment plate shows through (no card-in-card). Charm rail + mercy seal now
+   render into the sibling obs-region-charms / obs-region-safety panels. */
 .statusBottleneckTalismanCanopy {
-  min-height: 760px;
-  align-content: start;
-  grid-template-rows: auto minmax(430px, 1fr) auto auto;
+  position: absolute;
+  inset: 0;
+  display: block;
+  min-height: 0;
   overflow: visible;
-  background:
-    radial-gradient(circle at 50% 34%, rgba(163, 108, 33, 0.18), transparent 34%),
-    radial-gradient(circle at 88% 78%, rgba(47, 127, 98, 0.12), transparent 26%),
-    linear-gradient(180deg, rgba(255, 250, 232, 0.96), rgba(229, 205, 154, 0.92)),
-    var(--observatory-paper);
+  background: transparent;
+}
+
+/* All three canopy parts overlay the SAME content box (artifact = one canvas).
+   cluster fills it; charms own the middle rod band (right gutter reserved for
+   the mercy ring); safety is the bottom-right corner seal. */
+.statusBottleneckCanopyCharms {
+  position: absolute;
+  inset: 52% 25% 19% 1%;
+  z-index: 4;
+  display: block;
+  overflow: visible;
+  pointer-events: none;
+  background: transparent;
+}
+
+.statusBottleneckCanopySafety {
+  position: absolute;
+  right: 1.3%;
+  bottom: 1%;
+  width: 24.3%;
+  height: 28.6%;
+  z-index: 4;
+  display: block;
+  overflow: visible;
+  pointer-events: none;
+  background: transparent;
 }
 
 .statusBottleneckTalismanCanopy__header {
@@ -1625,8 +2659,9 @@
 }
 
 .statusBottleneckTalismanCanopy__board {
-  position: relative;
-  min-height: 430px;
+  position: absolute;
+  inset: 0;
+  min-height: 0;
   border: 1px solid rgba(90, 62, 30, 0.24);
   border-radius: 8px;
   overflow: hidden;
@@ -1684,6 +2719,21 @@
   stroke-width: 1.5;
 }
 
+/* Blocked board: the synthetic in-canopy causal threads read as a crossing
+   tangle in the centre and fight the clean rail->slip cords. Suppress them to
+   near-invisible (kept in the DOM with their testids/<title> for the overlay +
+   a11y; the labelled rail cords carry the visual). The brightened related subset
+   stays faintly visible so cross-instrument selection still reads. */
+.statusBottleneckTalismanCanopy[data-canopy-mode='bottleneck'] .statusBottleneckTalismanCanopy__thread {
+  opacity: 0.04;
+  stroke-width: 0.4;
+}
+
+.statusBottleneckTalismanCanopy[data-canopy-mode='bottleneck'] .statusBottleneckTalismanCanopy__thread[data-related='true'] {
+  opacity: 0.14;
+  stroke-width: 0.6;
+}
+
 /* Cross-instrument related highlight (Wave 1). Subtle, static, tokenized.
    Paired with the labelled thread + each node's own label, so this ring is
    enhancement, never the only signal. */
@@ -1703,15 +2753,16 @@
 .statusBottleneckTalismanCanopy__edict {
   position: absolute;
   left: 50%;
-  top: 42%;
+  top: 24%;
   z-index: 5;
-  width: min(260px, 54%);
-  min-height: 164px;
+  width: min(208px, 33%);
+  min-height: 0;
+  height: 26%;
   display: grid;
   place-items: center;
   align-content: center;
-  gap: 7px;
-  padding: 18px;
+  gap: 6px;
+  padding: 12px 14px;
   transform: translate(-50%, -50%);
   border: 2px solid color-mix(in srgb, var(--observatory-state) 72%, #4b2a16);
   border-radius: 8px 8px 18px 18px;
@@ -1731,8 +2782,8 @@
 .statusBottleneckTalismanCanopy__edict h3 {
   margin: 0;
   font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(1.15rem, 1.45vw, 1.56rem);
-  line-height: 1.12;
+  font-size: clamp(0.96rem, 1.05vw, 1.14rem);
+  line-height: 1.14;
   color: var(--observatory-state);
 }
 
@@ -1740,6 +2791,25 @@
   margin: 0;
   color: var(--observatory-muted);
   line-height: 1.28;
+}
+
+/* Artifact center-card eyebrow: small uppercase serif kicker (700 9.5px,
+   letter-spacing .12em, muted ink) above the bottleneck title. */
+.statusBottleneckTalismanCanopy__edictEyebrow {
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 700;
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--observatory-muted);
+}
+
+/* Source attribution line under the title (artifact "Source: X"; the bare
+   value avoids the decommissioned "Source:" public-label prefix). */
+.statusBottleneckTalismanCanopy__edictSource {
+  font-size: 0.52rem;
+  color: var(--observatory-muted);
+  line-height: 1.2;
 }
 
 .statusBottleneckTalismanCanopy__edictRoute,
@@ -1751,12 +2821,37 @@
   cursor: pointer;
 }
 
+/* Artifact: the central edict's route is a flat "Primary Action / <label>"
+   caption (eyebrow + bold label), NOT a filled green capsule. */
 .statusBottleneckTalismanCanopy__edictRoute {
-  min-height: 34px;
-  padding: 7px 11px;
-  border: 1px solid rgba(47, 127, 98, 0.34);
-  border-radius: 999px;
-  background: rgba(47, 127, 98, 0.12);
+  display: grid;
+  gap: 1px;
+  min-height: 0;
+  padding: 2px 4px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  text-align: center;
+  line-height: 1.16;
+}
+
+.statusBottleneckTalismanCanopy__edictRouteEyebrow {
+  font-size: 0.62rem;
+  line-height: 1.16;
+  color: var(--observatory-muted);
+}
+
+.statusBottleneckTalismanCanopy__edictRoute strong {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--observatory-ink);
+}
+
+.statusBottleneckTalismanCanopy__edictRoute:hover:not(:disabled),
+.statusBottleneckTalismanCanopy__edictRoute:focus-visible {
+  outline: 2px solid var(--observatory-state);
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 
 .statusBottleneckTalismanCanopy__slips {
@@ -1770,22 +2865,32 @@
   position: absolute;
   left: calc(var(--slip-x) * 1%);
   top: calc(var(--slip-y) * 1%);
-  width: clamp(118px, 33%, 166px);
-  min-height: 116px;
-  display: grid;
-  align-content: center;
-  gap: 5px;
-  padding: 12px;
-  transform: translate(-50%, -50%) rotate(var(--slip-rotation));
-  border: 1px solid rgba(90, 62, 30, 0.28);
-  border-top: 4px solid color-mix(in srgb, var(--observatory-state) 64%, #6a401b);
-  border-radius: 4px 4px 10px 10px;
+  width: clamp(122px, 25%, 158px);
+  min-height: 0;
+  height: auto;
+  /* Artifact side slip: a lead glyph on the left, a title/chip/route column on
+     the right (display:flex;gap:6px). Box sizes to its content and centres on the
+     fixed slot point. */
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 9px 11px;
+  /* Real-data slip detail/route text can be long; clip to the card so it never
+     spills across the figure or the central edict. */
+  overflow: hidden;
+  /* Independent translate+rotate properties (not `transform`) so the global
+     `button:hover{transform:none}` skin can't wipe the centering/rotation and
+     make the slip jump on hover — same class of bug as the organ seal. */
+  translate: -50% -50%;
+  rotate: var(--slip-rotation);
+  border: 1px solid rgba(120, 90, 46, 0.46);
+  border-radius: 3px;
   background:
-    linear-gradient(180deg, rgba(255, 252, 235, 0.96), rgba(232, 207, 155, 0.92)),
+    linear-gradient(168deg, rgba(255, 252, 235, 0.97), rgba(241, 232, 208, 0.95)),
     var(--observatory-paper);
   box-shadow:
-    0 10px 18px rgba(48, 30, 9, 0.2),
-    inset 0 0 0 1px rgba(255, 250, 232, 0.44);
+    0 6px 14px rgba(48, 30, 9, 0.3),
+    inset 0 0 0 1px rgba(255, 250, 232, 0.4);
   color: var(--observatory-ink);
   font: inherit;
   text-align: left;
@@ -1793,18 +2898,58 @@
   cursor: pointer;
 }
 
+/* The cord SVG already paints a small dot where each cord meets the slip top, so
+   the old oversized gold pin bead is dropped (selector retained, hidden). */
 .statusBottleneckTalismanCanopy__slip::before {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: -11px;
-  width: 18px;
-  height: 18px;
-  transform: translateX(-50%);
-  border-radius: 50%;
-  border: 2px solid rgba(84, 52, 20, 0.5);
-  background: radial-gradient(circle, #f8e5a8, var(--observatory-gold));
-  box-shadow: 0 2px 4px rgba(48, 30, 9, 0.24);
+  display: none;
+}
+
+.statusBottleneckTalismanCanopy__slip .statusBottleneckTalismanCanopy__slipLead {
+  flex: 0 0 auto;
+  margin-top: 1px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 0.84rem;
+  font-weight: 800;
+  line-height: 1;
+  text-transform: none;
+  color: var(--observatory-state);
+}
+
+.statusBottleneckTalismanCanopy__slip .statusBottleneckTalismanCanopy__slipBody {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+  text-transform: none;
+  color: var(--observatory-ink);
+}
+
+.statusBottleneckTalismanCanopy__slip .statusBottleneckTalismanCanopy__slipBody strong {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: var(--observatory-ink);
+}
+
+.statusBottleneckTalismanCanopy__slip .statusBottleneckTalismanCanopy__slipBody small {
+  font-size: 0.58rem;
+  color: var(--observatory-muted);
+}
+
+/* Solid priority chip (artifact .chip): white text on the slip's tone ground. */
+.statusBottleneckTalismanCanopy__slip .statusBottleneckTalismanCanopy__slipChip {
+  justify-self: start;
+  width: max-content;
+  max-width: 100%;
+  padding: 1px 6px;
+  border-radius: 2px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 0.54rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  line-height: 1.35;
+  text-transform: uppercase;
+  color: #fff7ec;
+  background: var(--observatory-state);
 }
 
 .statusBottleneckTalismanCanopy__slip strong,
@@ -1837,6 +2982,23 @@
   line-height: 1.24;
 }
 
+/* Keep each slip's title to one line and its route/detail to two, clipped — so a
+   long real-data detail never overflows the slip and collides with the edict. */
+.statusBottleneckTalismanCanopy__slip strong {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.statusBottleneckTalismanCanopy__slip small {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 .statusBottleneckTalismanCanopy__slip[data-selected='true'] {
   outline: 2px solid var(--observatory-cinnabar);
   outline-offset: 3px;
@@ -1860,33 +3022,50 @@
 }
 
 .statusBottleneckTalismanCanopy__routeCharms {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  z-index: 7;
+  pointer-events: none;
+  /* charmRod(): medallions hang EVENLY across the rod (slot=(W-40)/N centers).
+     A justified flex row reproduces those slot centers for any charm count,
+     matching the artifact (the old absolute --charm-x table left-biased a
+     4-charm row). The rod is the ::before-equivalent .__charmRod band above. */
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-around;
+  padding-top: 14px;
+}
+
+/* "Best Improvement Charms" rod = artifact charmRod: a brass line across the top
+   of the charms band with medallions hanging below. */
+.statusBottleneckTalismanCanopy__charmRod {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 4px;
-  z-index: 7;
-  min-height: 102px;
-  pointer-events: none;
+  top: 6px;
+  height: 3px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--observatory-bronze), #e7cd92 50%, var(--observatory-bronze));
+  box-shadow: 0 1px 2px rgba(48, 30, 9, 0.4);
 }
 
+/* Artifact charm = a bare oval medallion hanging from the rod with a 2-line
+   caption beneath; no surrounding pill card. */
 .statusBottleneckTalismanCanopy__routeCharm {
-  position: absolute;
-  left: calc(var(--charm-x) * 1%);
-  top: calc(var(--charm-y) * 1%);
-  width: 90px;
-  min-height: 74px;
+  position: relative;
+  flex: 0 1 auto;
+  width: clamp(64px, 22%, 96px);
+  min-height: 0;
   display: grid;
   place-items: center;
-  align-content: center;
-  gap: 4px;
-  padding: 9px;
-  transform: translate(-50%, -100%);
-  border: 2px solid rgba(78, 55, 24, 0.38);
-  border-radius: 999px 999px 12px 12px;
-  background:
-    radial-gradient(circle at 50% 24%, rgba(255, 250, 232, 0.92), rgba(47, 127, 98, 0.18) 45%, rgba(163, 108, 33, 0.3)),
-    rgba(255, 249, 229, 0.86);
-  box-shadow: 0 10px 16px rgba(48, 30, 9, 0.2);
+  align-content: start;
+  gap: 2px;
+  padding: 0 2px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
   text-align: center;
   pointer-events: auto;
 }
@@ -1900,6 +3079,18 @@
   background: rgba(47, 127, 98, 0.16);
   color: var(--observatory-jade);
   font-weight: 800;
+}
+
+/* Charm labels wrap on WORD boundaries (the shared __routeCharm strong rule sets
+   overflow-wrap:anywhere, which split "Upgrade Technique" mid-word). Small serif
+   caption that drops to a tidy second line instead. */
+.statusBottleneckTalismanCanopy__routeCharm strong {
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
+  font-size: 0.56rem;
+  font-weight: 700;
+  line-height: 1.12;
 }
 
 .statusBottleneckTalismanCanopy__routeCharm:disabled,
@@ -1978,23 +3169,24 @@
   background: rgba(47, 127, 98, 0.12);
 }
 
+/* Artifact mercy seal: a compact transparent column (thin ring SVG + a small
+   caption + progress line), NOT a heavy filled disc. */
 .statusBottleneckTalismanCanopy__safetySeal {
-  width: min(250px, 100%);
-  min-height: 158px;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  margin: 0;
   display: grid;
   place-items: center;
   align-content: center;
-  justify-self: end;
-  gap: 5px;
-  padding: 16px;
-  border: 3px double color-mix(in srgb, var(--observatory-state) 70%, #5d3d18);
-  border-radius: 50%;
-  background:
-    radial-gradient(circle, rgba(255, 250, 232, 0.94) 0 48%, rgba(232, 207, 155, 0.78) 49% 70%, transparent 71%),
-    conic-gradient(from 14deg, rgba(163, 108, 33, 0.42), rgba(163, 58, 44, 0.22), rgba(47, 127, 98, 0.34), rgba(163, 108, 33, 0.42));
-  box-shadow:
-    inset 0 0 0 9px rgba(255, 250, 232, 0.36),
-    0 10px 22px rgba(48, 30, 9, 0.16);
+  gap: 1px;
+  padding: 2px;
+  pointer-events: auto;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
   text-align: center;
 }
 
@@ -2034,14 +3226,17 @@
   --observatory-state: var(--observatory-bronze);
 }
 
-/* slip priority/state stamp (bordered, tone-toned, slightly rotated) */
-.statusBottleneckTalismanCanopy__slip span {
+/* slip priority/state chip: artifact uses a SOLID tone ground with white text
+   (cinnabar for Priority 1 / Risk, gold for Priority 2). Grayscale-safe because
+   the chip text itself names the priority. */
+.statusBottleneckTalismanCanopy__slip .statusBottleneckTalismanCanopy__slipChip {
   justify-self: start;
-  border: 1.4px solid var(--observatory-state);
   border-radius: 2px;
   padding: 1px 6px;
-  color: var(--observatory-state);
-  transform: rotate(-1.5deg);
+  background: var(--observatory-state);
+  color: #fff;
+  font-weight: 800;
+  letter-spacing: 0.02em;
 }
 
 /* rail + cords */
@@ -2068,15 +3263,46 @@
   stroke-width: 0.3;
 }
 
+/* canopyRail() dangling nub ticks under the brass arc. */
+.statusBottleneckTalismanCanopy__railNub {
+  stroke: rgba(120, 86, 38, 0.4);
+  stroke-width: 0.3;
+}
+
+/* Rail->slip cords carry the blocked-board visual (artifact cordTo): cinnabar by
+   default, gold for the lower-priority slip. The rail SVG uses a 100x100 viewBox
+   with preserveAspectRatio:none, so widths are in viewBox units (kept slim but
+   clearly visible, not the old hairline). */
 .statusBottleneckTalismanCanopy__cord {
   fill: none;
-  stroke: var(--observatory-state);
-  stroke-width: 0.5;
+  stroke: var(--observatory-cinnabar);
+  stroke-width: 2.2;
+  stroke-linecap: round;
   opacity: 0.9;
+  vector-effect: non-scaling-stroke;
+}
+
+.statusBottleneckTalismanCanopy__cord[data-tone='warning'],
+.statusBottleneckTalismanCanopy__cord[data-tone='gold'] {
+  stroke: var(--observatory-gold);
 }
 
 .statusBottleneckTalismanCanopy__cordAnchor {
-  fill: var(--observatory-state);
+  fill: var(--observatory-cinnabar);
+}
+
+.statusBottleneckTalismanCanopy__cordAnchor[data-tone='warning'],
+.statusBottleneckTalismanCanopy__cordAnchor[data-tone='gold'] {
+  fill: var(--observatory-gold);
+}
+
+/* Faint dashed sheen riding the cord (artifact's rgba(255,240,230,.3) overlay). */
+.statusBottleneckTalismanCanopy__cordHighlight {
+  fill: none;
+  stroke: rgba(255, 240, 230, 0.35);
+  stroke-width: 0.7;
+  stroke-dasharray: 2 4;
+  vector-effect: non-scaling-stroke;
 }
 
 /* edict pin + chop + stand */
@@ -2123,34 +3349,59 @@
 /* charm rod + medallions */
 .statusBottleneckTalismanCanopy__charmRod {
   position: absolute;
-  left: 6%;
-  right: 6%;
-  top: 8px;
-  height: 3px;
-  border-radius: 2px;
-  background: linear-gradient(90deg, var(--observatory-bronze), var(--observatory-gold) 50%, var(--observatory-bronze));
-  box-shadow: 0 1px 2px rgba(48, 30, 9, 0.4);
+  left: 5%;
+  right: 5%;
+  top: 7px;
+  height: 5px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--observatory-bronze), #e7cd92 50%, var(--observatory-bronze));
+  box-shadow: 0 1px 3px rgba(48, 30, 9, 0.5);
 }
 
+/* Brass end-caps on the charm rod (artifact gold rod beads). */
+.statusBottleneckTalismanCanopy__charmRod::before,
+.statusBottleneckTalismanCanopy__charmRod::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 11px;
+  height: 11px;
+  margin-top: -5.5px;
+  border-radius: 50%;
+  border: 1px solid #4a330e;
+  background: radial-gradient(circle at 38% 32%, #f3e3b0, var(--observatory-gold) 60%, #6e4c16);
+}
+.statusBottleneckTalismanCanopy__charmRod::before { left: -5px; }
+.statusBottleneckTalismanCanopy__charmRod::after { right: -5px; }
+
 .statusBottleneckTalismanCanopy__charmMedallion {
-  width: 46px;
+  width: clamp(54px, 88%, 72px);
   height: auto;
   overflow: visible;
 }
 
 .statusBottleneckTalismanCanopy__charmCord {
   stroke: var(--observatory-bronze);
-  stroke-width: 1;
+  stroke-width: 1.6;
 }
 
 .statusBottleneckTalismanCanopy__charmRim {
   fill: none;
   stroke: url("#brass");
-  stroke-width: 1.6;
+  stroke-width: 2.8;
 }
 
 .statusBottleneckTalismanCanopy__charmDisc {
   fill: url("#goldRad");
+  stroke: rgba(74, 51, 14, 0.55);
+  stroke-width: 0.8;
+}
+
+/* Faint inner highlight ellipse (artifact rx29 ry23 rim-2 stroke). */
+.statusBottleneckTalismanCanopy__charmShine {
+  fill: none;
+  stroke: rgba(255, 250, 235, 0.4);
+  stroke-width: 0.8;
 }
 
 .statusBottleneckTalismanCanopy__charmDisc[data-charm-tone='jade'],
@@ -2158,24 +3409,42 @@
   fill: url("#jadeRad");
 }
 
-.statusBottleneckTalismanCanopy__charmMark {
-  fill: rgba(42, 29, 8, 0.92);
-  font-weight: 800;
-  font-size: 8px;
+/* Fixed Kai-ti glyph centred on the medallion (artifact 兵/療/術/心). Ink on gold,
+   deep-jade on the jade discs. */
+.statusBottleneckTalismanCanopy__charmGlyph {
+  fill: #3a2a0e;
+  font-weight: 700;
+  font-size: 22px;
+  font-family: var(--kai, "Kaiti SC", "STKaiti", serif);
+}
+
+.statusBottleneckTalismanCanopy__charmDisc[data-charm-tone='jade'] + .statusBottleneckTalismanCanopy__charmGlyph {
+  fill: #244035;
+}
+
+/* "Best Improvement Charms" caption centred above the rod (artifact .sub). */
+.statusBottleneckTalismanCanopy__charmsCaption {
+  display: block;
+  margin: 2px 0 0;
   font-family: Georgia, "Times New Roman", serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-align: center;
+  color: var(--observatory-muted);
 }
 
 /* mercy ring + lotus + shape-coded progress pips */
 .statusBottleneckTalismanCanopy__mercyRing {
-  width: 76px;
-  height: 76px;
+  width: clamp(112px, 96%, 150px);
+  height: auto;
   overflow: visible;
 }
 
 .statusBottleneckTalismanCanopy__mercyRingOuter {
-  fill: rgba(248, 243, 224, 0.4);
+  fill: none;
   stroke: var(--observatory-state);
-  stroke-width: 1.2;
+  stroke-width: 2.2;
+  opacity: 0.8;
   transform-box: fill-box;
   transform-origin: center;
 }
@@ -2183,21 +3452,39 @@
 .statusBottleneckTalismanCanopy__mercyRingInner {
   fill: none;
   stroke: var(--observatory-state);
-  stroke-width: 0.5;
-  stroke-dasharray: 1.4 1.6;
-  opacity: 0.55;
+  stroke-width: 1;
+  stroke-dasharray: 3 4;
+  opacity: 0.4;
 }
 
 .statusBottleneckTalismanCanopy__mercyBead {
-  fill: var(--observatory-state);
-  opacity: 0.72;
+  fill: url("#goldRad");
+  stroke: var(--observatory-gold-deep, #6e4c16);
+  stroke-width: 0.8;
 }
 
 .statusBottleneckTalismanCanopy__lotus {
   fill: none;
   stroke: var(--observatory-state);
-  stroke-width: 0.7;
+  stroke-width: 1.5;
   stroke-linecap: round;
+}
+
+/* "Inactive" state inside the ring + the "Safety Net · Mercy Seal" caption below
+   (artifact mercy text). */
+.statusBottleneckTalismanCanopy__mercyState {
+  fill: var(--observatory-state);
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 800;
+  font-size: 11px;
+}
+
+.statusBottleneckTalismanCanopy__mercyCaption {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 0.5rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--observatory-muted);
 }
 
 .statusBottleneckTalismanCanopy__progressPips {
@@ -2254,12 +3541,14 @@
   animation: statusBottleneckCanopyCordShimmer 2.4s linear infinite;
 }
 
-.statusBottleneckTalismanCanopy[data-animate='true'] .statusBottleneckTalismanCanopy__charmMedallion {
+.statusBottleneckTalismanCanopy[data-animate='true'] .statusBottleneckTalismanCanopy__charmMedallion,
+.statusBottleneckCanopyCharms[data-animate='true'] .statusBottleneckTalismanCanopy__charmMedallion {
   transform-origin: 50% 0;
   animation: statusBottleneckCanopyCharmSway var(--obs-motion-breathe) var(--obs-motion-ease) infinite;
 }
 
-.statusBottleneckTalismanCanopy[data-animate='true'] .statusBottleneckTalismanCanopy__mercyRingOuter {
+.statusBottleneckTalismanCanopy[data-animate='true'] .statusBottleneckTalismanCanopy__mercyRingOuter,
+.statusBottleneckCanopySafety[data-animate='true'] .statusBottleneckTalismanCanopy__mercyRingOuter {
   animation: statusBottleneckCanopySealPulse var(--breath-period, 5.6s) ease-in-out infinite;
 }
 
@@ -2302,8 +3591,722 @@
     inset 0 0 0 2px rgba(217, 189, 128, 0.5);
 }
 
+/* === Centered canopy modes (cap / prestige): the cluster section fills the
+   region and renders one self-contained board (no slip/charm/safety parts). === */
+.statusBottleneckTalismanCanopy[data-canopy-mode='capNotice'],
+.statusBottleneckTalismanCanopy[data-canopy-mode='reincarnationEdict'] {
+  position: relative;
+  height: 100%;
+  min-height: 0;
+  padding: 0;
+}
+
+/* Cap: a single centred "Awaiting New Heavens" notice + 待續 seal. */
+.statusBottleneckTalismanCanopy__capBoard {
+  position: absolute;
+  inset: 30px 24px;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 10px;
+}
+.statusBottleneckTalismanCanopy__capHeadline {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 800;
+  font-size: 1.55rem;
+  letter-spacing: 0.02em;
+  color: var(--observatory-gold);
+}
+.statusBottleneckTalismanCanopy__capDetail {
+  margin: 0;
+  max-width: 380px;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--observatory-muted);
+}
+.statusBottleneckTalismanCanopy__capSeal {
+  margin-top: 6px;
+  filter: drop-shadow(0 2px 5px rgba(80, 20, 12, 0.3));
+}
+
+/* Prestige: reincarnation card (left) + next-life promises (right) + 轉 disc. */
+.statusBottleneckTalismanCanopy__prestigeBoard {
+  position: absolute;
+  inset: 12px 14px;
+  z-index: 5;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto 1fr;
+  gap: 12px;
+  align-content: start;
+}
+.statusBottleneckTalismanCanopy__prestigeCard {
+  position: relative;
+  grid-column: 1;
+  grid-row: 1;
+  padding: 16px;
+  text-align: center;
+  border-radius: 4px;
+  border: 1px solid var(--observatory-line);
+  background: linear-gradient(168deg, rgba(248, 241, 222, 0.95), rgba(236, 224, 193, 0.92));
+  box-shadow: 0 8px 20px rgba(40, 26, 12, 0.4);
+}
+.statusBottleneckTalismanCanopy__prestigeHeadline {
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 800;
+  font-size: 1.28rem;
+  line-height: 1.15;
+  color: var(--observatory-cinnabar);
+}
+.statusBottleneckTalismanCanopy__prestigeSub {
+  margin-top: 8px;
+  font-size: 0.72rem;
+  color: var(--observatory-gold);
+}
+.statusBottleneckTalismanCanopy__prestigeSeal {
+  position: absolute;
+  right: -8px;
+  bottom: -10px;
+  filter: drop-shadow(0 2px 4px rgba(80, 20, 12, 0.4));
+}
+.statusBottleneckTalismanCanopy__prestigePromises {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.statusBottleneckTalismanCanopy__prestigePromise {
+  padding: 9px 12px;
+  border-radius: 3px;
+  border: 1px solid var(--observatory-line);
+  background: linear-gradient(168deg, rgba(246, 239, 220, 0.95), rgba(233, 221, 191, 0.9));
+  box-shadow: 0 5px 12px rgba(40, 26, 12, 0.28);
+}
+.statusBottleneckTalismanCanopy__prestigePromise[data-rot='left'] {
+  transform: rotate(-1deg);
+}
+.statusBottleneckTalismanCanopy__prestigePromise[data-rot='right'] {
+  transform: rotate(1deg);
+}
+.statusBottleneckTalismanCanopy__prestigePromise span {
+  display: block;
+  font-size: 0.5rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--paper-gold-deep);
+}
+.statusBottleneckTalismanCanopy__prestigePromise strong {
+  display: block;
+  margin-top: 3px;
+  font-size: 0.74rem;
+  color: var(--observatory-ink);
+}
+.statusBottleneckTalismanCanopy__prestigeOpen {
+  grid-column: 1;
+  grid-row: 2;
+  justify-self: center;
+  align-self: center;
+  display: grid;
+  place-items: center;
+  gap: 2px;
+  width: 116px;
+  height: 116px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 32%, #f3e3b0, #c08f3a 60%, #6e4c16);
+  border: 3px solid #4a330e;
+  box-shadow: 0 8px 20px rgba(60, 40, 16, 0.5), inset 0 2px 4px rgba(255, 250, 235, 0.4);
+  cursor: pointer;
+}
+.statusBottleneckTalismanCanopy__prestigeOpen:hover:not(:disabled),
+.statusBottleneckTalismanCanopy__prestigeOpen:focus-visible {
+  outline: 2px solid var(--observatory-gold);
+  outline-offset: 3px;
+}
+.statusBottleneckTalismanCanopy__prestigeOpenGlyph {
+  font-family: var(--kai, "Kaiti SC", "STKaiti", serif);
+  font-size: 26px;
+  color: #3a2a0e;
+}
+.statusBottleneckTalismanCanopy__prestigeOpen strong {
+  font: 800 0.7rem Georgia, "Times New Roman", serif;
+  color: #2a1d08;
+}
+
+/* Failure: torn cinnabar GATE TRIAL FAILED banner + 3 numbered fix cards + mercy. */
+.statusBottleneckTalismanCanopy[data-canopy-mode='failureDiagnosis'] {
+  position: relative;
+  height: 100%;
+  min-height: 0;
+  padding: 0;
+}
+.statusBottleneckTalismanCanopy__failureBoard {
+  position: absolute;
+  inset: 8px 14px 14px;
+  z-index: 5;
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  gap: 12px;
+  align-content: start;
+}
+.statusBottleneckTalismanCanopy__failureBanner {
+  position: relative;
+  padding: 10px 16px;
+  text-align: center;
+  background: linear-gradient(180deg, #8b2f27, #6e211a);
+  border: 1px solid var(--paper-cinnabar-deep);
+  box-shadow: 0 6px 16px rgba(70, 15, 10, 0.5);
+  clip-path: polygon(0 8%, 100% 0, 99% 92%, 1% 100%);
+}
+.statusBottleneckTalismanCanopy__failureSeal {
+  position: absolute;
+  left: 8px;
+  top: 8px;
+}
+.statusBottleneckTalismanCanopy__failureBanner strong {
+  display: block;
+  font: 800 1.05rem Georgia, "Times New Roman", serif;
+  letter-spacing: 0.04em;
+  color: var(--paper-parchment-soft, #f4dccb);
+}
+.statusBottleneckTalismanCanopy__failureBanner em {
+  display: block;
+  margin: 2px 0;
+  font: 700 0.5rem Georgia, "Times New Roman", serif;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-style: normal;
+  color: #e9b9ad;
+}
+.statusBottleneckTalismanCanopy__failureBlocker {
+  font-size: 0.7rem;
+  color: #f0d9cf;
+}
+.statusBottleneckTalismanCanopy__failureBlocker b {
+  color: var(--paper-parchment-soft, #f4dccb);
+}
+.statusBottleneckTalismanCanopy__failureFixes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+.statusBottleneckTalismanCanopy__failureFix {
+  position: relative;
+  display: grid;
+  gap: 4px;
+  align-content: start;
+  padding: 14px 10px 10px;
+  text-align: center;
+  border-radius: 4px;
+  border: 1px solid var(--observatory-line);
+  background: linear-gradient(168deg, rgba(246, 239, 220, 0.95), rgba(236, 225, 195, 0.9));
+  box-shadow: 0 6px 14px rgba(40, 26, 12, 0.3);
+  cursor: pointer;
+}
+.statusBottleneckTalismanCanopy__failureFix:hover:not(:disabled),
+.statusBottleneckTalismanCanopy__failureFix:focus-visible {
+  outline: 2px solid var(--observatory-cinnabar);
+  outline-offset: 2px;
+}
+.statusBottleneckTalismanCanopy__failureFixNum {
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--observatory-cinnabar);
+  color: var(--paper-parchment, #fff);
+  font: 800 0.66rem Georgia, "Times New Roman", serif;
+}
+.statusBottleneckTalismanCanopy__failureFix strong {
+  font: 800 0.78rem Georgia, "Times New Roman", serif;
+  color: var(--observatory-ink);
+}
+.statusBottleneckTalismanCanopy__failureFix small {
+  font-size: 0.62rem;
+  color: var(--observatory-muted);
+}
+.statusBottleneckTalismanCanopy__failureFixRoute {
+  font: 800 0.66rem Georgia, "Times New Roman", serif;
+  color: var(--paper-gold-deep);
+}
+.statusBottleneckTalismanCanopy__failureSafety {
+  align-self: end;
+  display: grid;
+  gap: 2px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  border: 1px solid var(--observatory-line);
+  background: linear-gradient(168deg, rgba(244, 236, 214, 0.95), rgba(231, 219, 189, 0.9));
+}
+.statusBottleneckTalismanCanopy__failureSafety span {
+  font-size: 0.5rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--observatory-cinnabar);
+}
+.statusBottleneckTalismanCanopy__failureSafety strong {
+  font: 800 0.8rem Georgia, "Times New Roman", serif;
+  color: var(--observatory-ink);
+}
+.statusBottleneckTalismanCanopy__failureSafety small {
+  font-size: 0.66rem;
+  color: var(--observatory-muted);
+}
+
+/* Healthy: central "No major blocker" jade card + 4 check-slips + improvement
+   pills + a calm "Not needed" mercy note. */
+.statusBottleneckTalismanCanopy[data-canopy-mode='maintenance'] {
+  position: relative;
+  height: 100%;
+  min-height: 0;
+  padding: 0;
+}
+.statusBottleneckTalismanCanopy__healthyBoard {
+  position: absolute;
+  inset: 10px 14px 14px;
+  z-index: 5;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto 1fr;
+  gap: 10px 12px;
+  align-content: start;
+}
+.statusBottleneckTalismanCanopy__healthyCentral {
+  position: relative;
+  grid-column: 1 / span 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 6px;
+  padding: 14px;
+  border-radius: 4px;
+  border: 2px solid color-mix(in srgb, var(--observatory-jade) 45%, transparent);
+  background: linear-gradient(168deg, rgba(248, 243, 224, 0.95), rgba(238, 240, 223, 0.9));
+  box-shadow: 0 8px 20px rgba(30, 40, 20, 0.3);
+}
+.statusBottleneckTalismanCanopy__healthyHeadline {
+  font: 800 1.3rem Georgia, "Times New Roman", serif;
+  line-height: 1.15;
+  color: var(--observatory-jade-deep, var(--observatory-jade));
+}
+.statusBottleneckTalismanCanopy__healthyDetail {
+  margin: 0;
+  font-size: 0.72rem;
+  color: var(--observatory-muted);
+}
+.statusBottleneckTalismanCanopy__healthySeal {
+  position: absolute;
+  right: -6px;
+  bottom: -10px;
+  filter: drop-shadow(0 1px 2px rgba(20, 60, 40, 0.3));
+}
+.statusBottleneckTalismanCanopy__healthyChecks {
+  grid-column: 1 / span 2;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.statusBottleneckTalismanCanopy__healthyCheck {
+  display: flex;
+  gap: 7px;
+  align-items: flex-start;
+  padding: 8px 10px;
+  border-radius: 3px;
+  border: 1px solid color-mix(in srgb, var(--observatory-jade) 30%, var(--observatory-line));
+  background: linear-gradient(168deg, rgba(246, 239, 220, 0.95), rgba(238, 240, 224, 0.9));
+  box-shadow: 0 4px 10px rgba(40, 40, 20, 0.2);
+  color: var(--observatory-jade-deep, var(--observatory-jade));
+}
+.statusBottleneckTalismanCanopy__healthyCheck svg {
+  flex: 0 0 auto;
+  margin-top: 1px;
+}
+.statusBottleneckTalismanCanopy__healthyCheck strong {
+  display: block;
+  font-size: 0.74rem;
+  color: var(--observatory-ink);
+}
+.statusBottleneckTalismanCanopy__healthyCheck small {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.62rem;
+  color: var(--observatory-muted);
+}
+.statusBottleneckTalismanCanopy__healthyImprovements {
+  grid-column: 1 / span 2;
+  display: grid;
+  gap: 5px;
+  justify-items: center;
+}
+.statusBottleneckTalismanCanopy__healthyImprovementsLabel {
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--observatory-muted);
+}
+.statusBottleneckTalismanCanopy__healthyPills {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+.statusBottleneckTalismanCanopy__healthyPill {
+  flex: 1;
+  padding: 8px 4px;
+  text-align: center;
+  border-radius: 4px;
+  border: 1px solid #5a7a4a;
+  background: linear-gradient(180deg, #e8efde, #cfdcc0);
+  font: 800 0.66rem Georgia, "Times New Roman", serif;
+  color: #274034;
+  cursor: pointer;
+}
+.statusBottleneckTalismanCanopy__healthyPill:hover:not(:disabled),
+.statusBottleneckTalismanCanopy__healthyPill:focus-visible {
+  outline: 2px solid var(--observatory-jade);
+  outline-offset: 2px;
+}
+.statusBottleneckTalismanCanopy__healthyMercy {
+  grid-column: 1 / span 2;
+  justify-self: end;
+  align-self: end;
+  text-align: right;
+}
+.statusBottleneckTalismanCanopy__healthyMercy span {
+  display: block;
+  font-size: 0.5rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--observatory-muted);
+}
+.statusBottleneckTalismanCanopy__healthyMercy strong {
+  font: 800 0.78rem Georgia, "Times New Roman", serif;
+  color: var(--observatory-jade-deep, var(--observatory-jade));
+}
+.statusBottleneckTalismanCanopy__healthyMercy small {
+  display: block;
+  font-size: 0.62rem;
+  color: var(--observatory-muted);
+}
+
 .statusStatConstellation {
-  min-height: 580px;
+  position: relative;
+  min-height: 0;
+  height: 100%;
+  /* Reset the .statusObservatoryInstrument padding:14px (line ~750) so the
+     position:absolute; inset:0 strip is measured against the full content
+     cell instead of a 14px-inset padding box — matches the artifact compact
+     which paints edge-to-edge at inset 24px 8px 6px. */
+  padding: 0;
+  display: block;
+  background: transparent;
+}
+
+/* The contract-mandated 100x100 SVG node-graph IS the artifact compact; it fills the
+   content box (artifact constellationCompact paints the svg at inset 24px 8px 6px). */
+/* Expanded variant — full-screen overlay body (artifact "Path-Adaptive Stat
+   Meridian Constellation"). Fills the overlay, reveals every node name, the
+   node-state legend (top-right), and the summary plaque (bottom-left). */
+.statusStatConstellation[data-variant='expanded'] {
+  position: absolute;
+  inset: 0;
+}
+.statusStatConstellation[data-variant='expanded'] .statusStatConstellation__compact {
+  inset: 0;
+}
+.statusStatConstellation[data-variant='expanded'] .statusStatConstellation__nodeName {
+  opacity: 1;
+  font-size: 0.74rem;
+  background: rgba(255, 247, 220, 0.86);
+}
+.statusStatConstellation[data-variant='expanded'] .statusStatConstellation__corner {
+  font-size: 10px;
+}
+.statusStatConstellation[data-variant='expanded'] .statusStatConstellation__legend {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 232px;
+  z-index: 6;
+  grid-template-columns: 1fr;
+  gap: 5px;
+  padding: 12px 14px;
+  background: linear-gradient(168deg, rgba(248, 243, 224, 0.92), rgba(233, 221, 191, 0.86));
+  border: 1px solid var(--observatory-line);
+  border-radius: 6px;
+  box-shadow: 0 6px 16px rgba(40, 26, 12, 0.18);
+}
+.statusStatConstellation[data-variant='expanded'] .statusStatConstellation__plaque {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  z-index: 6;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  max-width: 240px;
+}
+
+.statusStatConstellation__compact {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.statusStatConstellation__compact .statusStatConstellation__body {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+.statusStatConstellation__compact .statusStatConstellation__atlas {
+  position: absolute;
+  inset: 0;
+  min-height: 0;
+  aspect-ratio: auto;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+/* Artifact corner .sub labels (z-index 4): Heaven TL, Earth BL, path TR, Spine TC. */
+.statusStatConstellation__corner {
+  position: absolute;
+  z-index: 4;
+  font: 700 8px Georgia, 'Times New Roman', serif;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.statusStatConstellation__corner--heaven {
+  left: 14px;
+  top: 4px;
+  color: var(--observatory-muted);
+}
+
+.statusStatConstellation__corner--earth {
+  left: 14px;
+  bottom: 8px;
+  color: var(--observatory-bronze);
+}
+
+.statusStatConstellation__corner--path {
+  right: 14px;
+  top: 4px;
+  text-align: right;
+  color: var(--observatory-gold);
+}
+
+.statusStatConstellation__corner--spine {
+  left: 50%;
+  top: 4px;
+  transform: translateX(-50%);
+  font-size: 7.5px;
+  color: var(--observatory-jade);
+}
+
+.statusStatConstellation__expandHint {
+  position: absolute;
+  right: 9px;
+  bottom: 7px;
+  z-index: 6;
+  font: 700 8.5px Georgia, 'Times New Roman', serif;
+  letter-spacing: 0.06em;
+  color: var(--observatory-gold);
+  background: rgba(243, 234, 215, 0.7);
+  border: 1px solid rgba(120, 90, 46, 0.3);
+  border-radius: 3px;
+  padding: 2px 7px;
+  pointer-events: none;
+}
+
+.statusStatConstellation__strip {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+/* Artifact `constellationCompact` top-center marker: a small jade `.sub`
+   'Spine' group label (NOT a title — the jade banner owns the title). */
+.statusStatConstellation__stripTitle {
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  font-size: 7.5px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--observatory-jade);
+  background: none;
+}
+
+/* V7 .cband-spine: flex row of 8 spine beads + 7 connectors. */
+.statusStatConstellation__spine {
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  top: 42px;
+  height: 58px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.statusStatConstellation__spineSlot {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
+.statusStatConstellation__spineSlot:not(:last-child) {
+  flex: 1 1 auto;
+}
+
+.statusStatConstellation__spineBead {
+  position: relative;
+  flex: 0 0 auto;
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  width: 58px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--observatory-ink);
+  font: inherit;
+  cursor: pointer;
+}
+
+.statusStatConstellation__spineMedallion {
+  position: relative;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1.5px solid var(--paper-gold-leaf-lo);
+  background: radial-gradient(circle at 38% 32%, var(--paper-parchment-soft), var(--paper-jade-bright) 92%);
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--paper-parchment-soft) 50%, transparent);
+}
+
+.statusStatConstellation__spineCoin {
+  position: absolute;
+  top: 0;
+  right: 8px;
+  width: 14px;
+  height: 14px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid var(--paper-bronze-lo);
+  background: linear-gradient(180deg, var(--paper-gold-leaf-hi), var(--paper-bronze-hi));
+  color: var(--paper-soot, var(--paper-bronze-lo));
+  font-size: 0.5rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.statusStatConstellation__spineName {
+  max-width: 64px;
+  font-size: 0.56rem;
+  font-weight: 600;
+  line-height: 1.05;
+  text-align: center;
+  color: var(--observatory-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.statusStatConstellation__spineBead[data-node-state='lit'] .statusStatConstellation__spineMedallion {
+  background: radial-gradient(circle at 38% 32%, var(--paper-parchment-soft), var(--paper-gold-leaf) 92%);
+}
+
+.statusStatConstellation__spineBead[data-weak-link='true'] .statusStatConstellation__spineMedallion {
+  border-color: var(--observatory-cinnabar);
+  background: radial-gradient(circle at 38% 32%, var(--paper-parchment-soft), var(--paper-cinnabar-bright) 92%);
+}
+
+.statusStatConstellation__spineBead[data-selected='true'] .statusStatConstellation__spineMedallion,
+.statusStatConstellation__spineBead:focus-visible .statusStatConstellation__spineMedallion {
+  outline: 2px solid var(--observatory-cinnabar);
+  outline-offset: 2px;
+}
+
+.statusStatConstellation__spineLink {
+  flex: 1 1 auto;
+  height: 2px;
+  margin: 14px 4px 0;
+  background: var(--observatory-line);
+}
+
+/* V7 .cband-chips: centered wrapping row of branch chips + weak-link button. */
+.statusStatConstellation__chips {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px 14px;
+}
+
+.statusStatConstellation__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border: 1px solid var(--observatory-line);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--paper-parchment-soft) 55%, transparent);
+  font: inherit;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.statusStatConstellation__chip[data-chip-tone='gold'] {
+  color: var(--observatory-gold);
+  border-color: var(--paper-gold-leaf-lo);
+}
+
+.statusStatConstellation__chip[data-chip-tone='bronze'] {
+  color: var(--observatory-bronze);
+}
+
+.statusStatConstellation__chip[data-chip-tone='ash'] {
+  color: var(--observatory-muted);
+}
+
+.statusStatConstellation__chip--weak {
+  color: var(--observatory-cinnabar);
+  border-color: var(--observatory-cinnabar);
+  cursor: pointer;
+}
+
+.statusStatConstellation__chip--weak:disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+
+.statusStatConstellation__chip--weak:focus-visible {
+  outline: 2px solid var(--observatory-cinnabar);
+  outline-offset: 2px;
 }
 
 .statusStatConstellation__body {
@@ -2311,6 +4314,14 @@
   grid-template-columns: minmax(520px, 1fr) minmax(260px, 0.42fr);
   gap: 14px;
   align-items: stretch;
+}
+
+/* In the compact, the body is the full node-graph only — the lens column is hidden
+   (it returns in the overlay). */
+.statusStatConstellation__lensSlot[hidden],
+.statusStatConstellation__legend[hidden],
+.statusStatConstellation__plaque[hidden] {
+  display: none;
 }
 
 .statusStatConstellation__atlas {
@@ -2397,6 +4408,11 @@
   stroke: rgba(255, 246, 218, 0.82);
   stroke-width: 0.8;
 }
+/* Branch name labels read only in the expanded overlay; the compact board uses
+   the four corner zone tags instead (artifact). */
+.statusStatConstellation[data-variant='compact'] .statusStatConstellation__label {
+  display: none;
+}
 
 .statusStatConstellation__label--universal {
   fill: var(--observatory-jade);
@@ -2406,21 +4422,24 @@
   fill: var(--observatory-gold);
 }
 
+/* Dormant dual-path "bridge socket" — a faint hollow ring (artifact draws a
+   subtle dashed circle, not a cog). Kept low-contrast so it reads as latent
+   structure, not a gear icon. */
 .statusStatConstellation__bridgeSocket {
-  color: rgba(84, 75, 61, 0.82);
+  color: rgba(84, 75, 61, 0.5);
 }
 
 .statusStatConstellation__bridgeSocket circle:first-of-type {
-  fill: rgba(255, 247, 220, 0.72);
+  fill: rgba(255, 247, 220, 0.5);
   stroke: currentColor;
-  stroke-width: 0.55;
+  stroke-width: 0.4;
 }
 
 .statusStatConstellation__bridgeSocket circle:last-of-type {
   fill: none;
   stroke: currentColor;
-  stroke-width: 0.44;
-  stroke-dasharray: 1.1 0.9;
+  stroke-width: 0.35;
+  stroke-dasharray: 2.4 2;
 }
 
 .statusStatConstellation__weakThread {
@@ -2619,6 +4638,78 @@
   animation: statusStatWeakPulse var(--obs-motion-pulse) var(--obs-motion-ease) infinite;
 }
 
+/* ===== Artifact COMPACT board (700x210 viewBox, fixed positions) ===== */
+.statusStatConstellation__svg--compact {
+  display: block;
+  overflow: visible;
+}
+
+.statusStatConstellation__compactHalo {
+  opacity: 0.9;
+}
+
+.statusStatConstellation__compactWeakRing {
+  opacity: 0.85;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* Soft gentle pulse on lit/spine halos and the cinnabar weak ring; the qi flow
+   drifts down the spine. All gated behind no-preference (reduced motion = still). */
+@keyframes statusStatCompactTwk {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes statusStatCompactWeakP {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.14);
+  }
+}
+
+@keyframes statusStatCompactQiFlow {
+  to {
+    stroke-dashoffset: -360;
+  }
+}
+
+.statusStatConstellation__compactQiFlow {
+  stroke-dasharray: 6 22;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .statusStatConstellation__svg--compact[data-animate='true'] .twk {
+    animation: statusStatCompactTwk var(--obs-motion-breathe, 4.8s) var(--obs-motion-ease, ease-in-out) infinite;
+  }
+
+  .statusStatConstellation__svg--compact[data-animate='true'] .weakP {
+    animation: statusStatCompactWeakP var(--obs-motion-pulse, 2.4s) var(--obs-motion-ease, ease-in-out) infinite;
+  }
+
+  .statusStatConstellation__svg--compact[data-animate='true'] .statusStatConstellation__compactQiFlow {
+    animation: statusStatCompactQiFlow var(--obs-motion-drift, 9s) linear infinite;
+  }
+}
+
+/* Cross-instrument causal glint: brighten a node when its stat (or the linked
+   bottleneck) is selected — display-only, no geometry shift. */
+.statusStatConstellation__svg--compact .statusStatConstellation__nodeGlyph[data-related='true'] .statusStatConstellation__compactNode {
+  filter: brightness(1.12);
+}
+
 .statusStatConstellation__hitLayer {
   pointer-events: none;
 }
@@ -2648,15 +4739,22 @@
 
 .statusStatConstellation__hitTarget {
   position: relative;
-  width: 30px;
-  height: 30px;
+  width: 20px;
+  height: 20px;
   display: block;
   border-radius: 50%;
-  border: 2px solid rgba(76, 59, 33, 0.56);
-  background: rgba(255, 247, 220, 0.6);
-  box-shadow: inset 0 0 0 3px rgba(77, 54, 28, 0.12), 0 0 0 2px rgba(255, 246, 218, 0.48);
+  border: 1.5px solid rgba(76, 59, 33, 0.5);
+  background: rgba(255, 247, 220, 0.55);
+}
+.statusStatConstellation[data-variant='expanded'] .statusStatConstellation__hitTarget {
+  width: 24px;
+  height: 24px;
 }
 
+/* The artifact constellation is an airy bead field with NO per-node captions —
+   only the three zone labels read. Node names stay hidden until the bead is
+   hovered/focused/selected, so the map reads as sparse stars (the label remains
+   in aria-label/title for assistive tech at all times). */
 .statusStatConstellation__nodeName {
   max-width: 76px;
   padding: 2px 4px;
@@ -2664,6 +4762,16 @@
   background: rgba(255, 247, 220, 0.72);
   box-shadow: 0 0 0 1px rgba(90, 62, 30, 0.13);
   overflow-wrap: anywhere;
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+
+/* Names reveal only on hover/focus in compact (no default tooltip); the expanded
+   overlay also reveals the selected bead's name. */
+.statusStatConstellation__node:hover .statusStatConstellation__nodeName,
+.statusStatConstellation__node:focus-visible .statusStatConstellation__nodeName,
+.statusStatConstellation[data-variant='expanded'] .statusStatConstellation__node[data-selected='true'] .statusStatConstellation__nodeName {
+  opacity: 1;
 }
 
 .statusStatConstellation__node[data-node-state='foundation'] .statusStatConstellation__hitTarget {
@@ -2677,10 +4785,14 @@
   box-shadow: inset 0 0 0 3px rgba(255, 249, 217, 0.24), 0 0 12px rgba(211, 163, 50, 0.48);
 }
 
+/* Off-path (lifeless) bead: small, airy parchment with a thin grey ring (w3
+   "Idle (off-path)" — no double border, no grey 3D fill). */
 .statusStatConstellation__node[data-node-state='lifeless'] .statusStatConstellation__hitTarget {
-  border-style: double;
-  border-color: rgba(76, 74, 68, 0.74);
-  background: radial-gradient(circle, rgba(244, 232, 202, 0.48), rgba(78, 75, 68, 0.7));
+  width: 15px;
+  height: 15px;
+  border: 1px solid rgba(120, 110, 90, 0.6);
+  background: rgba(217, 199, 158, 0.45);
+  opacity: 0.72;
 }
 
 .statusStatConstellation__node[data-node-state='unlit_socket'] .statusStatConstellation__hitTarget,
@@ -2692,32 +4804,74 @@
     rgba(98, 84, 61, 0.18);
 }
 
+/* Weak-link bead: cinnabar disc (the crack is drawn once, by the SVG __crack;
+   no duplicate CSS slash). */
 .statusStatConstellation__node[data-weak-link='true'] .statusStatConstellation__hitTarget {
-  border-color: var(--observatory-cinnabar);
+  width: 18px;
+  height: 18px;
+  border: 1.6px solid var(--observatory-cinnabar);
+  background: radial-gradient(circle at 38% 32%, rgba(178, 83, 71, 0.5), rgba(139, 48, 40, 0.85));
 }
 
-.statusStatConstellation__node[data-weak-link='true'] .statusStatConstellation__hitTarget::after {
-  content: "";
-  position: absolute;
-  left: 12px;
-  top: 3px;
-  width: 7px;
-  height: 21px;
-  border-left: 2px solid var(--observatory-cinnabar);
-  border-bottom: 2px solid var(--observatory-cinnabar);
-  transform: rotate(19deg);
-}
-
+/* Selection ring only on real interaction (hover/focus); the expanded overlay
+   also rings the default-selected bead. Compact shows no default selection. */
 .statusStatConstellation__node:hover .statusStatConstellation__hitTarget,
 .statusStatConstellation__node:focus-visible .statusStatConstellation__hitTarget,
-.statusStatConstellation__node[data-selected='true'] .statusStatConstellation__hitTarget {
-  outline: 2px solid var(--observatory-cinnabar);
-  outline-offset: 3px;
+.statusStatConstellation[data-variant='expanded'] .statusStatConstellation__node[data-selected='true'] .statusStatConstellation__hitTarget {
+  /* outline can't follow border-radius:50% — it renders as a SQUARE box around the
+     round bead. box-shadow tracks the radius, so the halo stays circular. */
+  outline: none;
+  box-shadow: 0 0 0 2px var(--observatory-cinnabar);
 }
 
 .statusStatConstellation__node[data-selected='true'] .statusStatConstellation__nodeName {
   background: rgba(255, 238, 190, 0.92);
   box-shadow: 0 0 0 1px var(--observatory-cinnabar);
+}
+
+/* ===== Artifact COMPACT hit layer (placed last so it wins source-order ties
+   against the per-state visual hit-target rules above). The SVG board draws
+   every visible node; these buttons are invisible focus pucks centered on the
+   artifact point, carrying only a hover/focus ring + the node-name tooltip. ===== */
+.statusStatConstellation[data-variant='compact'] .statusStatConstellation__node--compact {
+  width: 26px;
+  height: 26px;
+  transform: translate(-50%, -50%);
+  align-content: center;
+  gap: 0;
+}
+
+.statusStatConstellation[data-variant='compact'] .statusStatConstellation__node--compact .statusStatConstellation__hitTarget {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: transparent;
+  border-radius: 50%;
+  box-shadow: none;
+  opacity: 1;
+}
+
+/* No default selection box on the compact board (matches the artifact); the SVG
+   carries the related/selected glint. Only real hover/focus shows a ring. */
+.statusStatConstellation[data-variant='compact'] .statusStatConstellation__node--compact[data-related='true'],
+.statusStatConstellation[data-variant='compact'] .statusStatConstellation__node--compact[data-selected='true'] {
+  outline: none;
+}
+
+.statusStatConstellation[data-variant='compact'] .statusStatConstellation__node--compact:hover .statusStatConstellation__hitTarget,
+.statusStatConstellation[data-variant='compact'] .statusStatConstellation__node--compact:focus-visible .statusStatConstellation__hitTarget {
+  /* circular halo on the round bead (outline would draw a square box). */
+  outline: none;
+  box-shadow: 0 0 0 2px var(--observatory-cinnabar);
+}
+
+.statusStatConstellation[data-variant='compact'] .statusStatConstellation__node--compact .statusStatConstellation__nodeName {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 3px;
+  width: max-content;
 }
 
 .statusStatBeadLens {
@@ -2978,29 +5132,146 @@
 }
 
 .statusFoldedLedgerRail {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  /* Artifact ledgers(): a flex row of two equal tilted cards at inset 24px 12px 10px,
+     gap 10px (the obsRegion--ledgers content has no banner so it fills the band). */
+  display: flex;
   gap: 10px;
+}
+
+/* V7 sLedgers (438x168) — TWO folds. With two ~200px columns the fold text must
+   wrap between words only (never mid-word), overriding the shared
+   .statusFoldedLedgerRail__foldButton strong { overflow-wrap: anywhere } rule.
+   Appended-after / fold-scoped so it wins the cascade without touching the
+   shared scales/jars/wheel/drawer text rule. overflow:hidden on the fold clips
+   any soft overflow; no CLS (the grid row count is unchanged, only column count). */
+.statusFoldedLedgerRail__foldButton span,
+.statusFoldedLedgerRail__foldButton strong,
+.statusFoldedLedgerRail__foldButton small {
+  overflow-wrap: normal;
+  word-break: keep-all;
+  hyphens: none;
 }
 
 .statusFoldedLedgerRail__fold {
   position: relative;
-  min-height: 140px;
-  display: grid;
-  align-content: start;
-  gap: 6px;
-  padding: 14px;
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 0;
+  display: block;
+  padding: 9px 12px;
   overflow: hidden;
+  border: 1px solid rgba(120, 90, 46, 0.45);
+  box-shadow: 0 5px 12px rgba(40, 26, 12, 0.28);
 }
 
-.statusFoldedLedgerRail__crease {
+/* Artifact: card 1 (#f6efdc -> #e9ddbf) tilts -0.6deg, card 2 (#f4ecd6 -> #e6dabb) +0.6deg. */
+.statusFoldedLedgerRail__fold--changes {
+  background: linear-gradient(168deg, #f6efdc, #e9ddbf);
+  transform: rotate(-0.6deg);
+}
+
+.statusFoldedLedgerRail__fold--calc {
+  background: linear-gradient(168deg, #f4ecd6, #e6dabb);
+  transform: rotate(0.6deg);
+}
+
+.statusFoldedLedgerRail__foldHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.statusFoldedLedgerRail__foldTitle {
+  font: 700 9.5px Georgia, 'Times New Roman', serif;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.statusFoldedLedgerRail__fold--changes .statusFoldedLedgerRail__foldTitle {
+  color: var(--observatory-cinnabar);
+}
+
+.statusFoldedLedgerRail__fold--calc .statusFoldedLedgerRail__foldTitle {
+  color: var(--observatory-jade);
+}
+
+.statusFoldedLedgerRail__count {
+  font: 800 8px Georgia, 'Times New Roman', serif;
+  color: #fff;
+  background: var(--observatory-cinnabar);
+  border-radius: 8px;
+  padding: 1px 6px;
+}
+
+.statusFoldedLedgerRail__change {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 4px;
+}
+
+.statusFoldedLedgerRail__dot {
+  flex: 0 0 auto;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #f0d99e, var(--observatory-bronze));
+  box-shadow: 0 0 0 1px rgba(94, 66, 20, 0.5);
+}
+
+.statusFoldedLedgerRail__change[data-tone='danger'] .statusFoldedLedgerRail__dot,
+.statusFoldedLedgerRail__change[data-tone='critical'] .statusFoldedLedgerRail__dot {
+  background: radial-gradient(circle at 35% 30%, #f0d99e, var(--observatory-cinnabar));
+}
+
+.statusFoldedLedgerRail__changeText {
+  font-size: 10px;
+  line-height: 1.2;
+  color: var(--observatory-muted);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.statusFoldedLedgerRail__calc {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 3.5px;
+  padding-bottom: 3.5px;
+  border-bottom: 1px dashed rgba(120, 90, 46, 0.22);
+}
+
+.statusFoldedLedgerRail__calcLabel {
+  font-size: 10px;
+  line-height: 1.2;
+  color: var(--observatory-ink);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.statusFoldedLedgerRail__calcLink {
+  flex: 0 0 auto;
+  font: 800 9px Georgia, 'Times New Roman', serif;
+  color: var(--observatory-jade);
+  letter-spacing: 0.03em;
+}
+
+/* Artifact fold-1 corner chop: bordered cinnabar SQUARE (not a wax disc). */
+.statusFoldedLedgerRail__chopSquare {
   position: absolute;
-  top: 0;
-  right: 0;
-  width: 42px;
-  height: 42px;
-  clip-path: polygon(100% 0, 0 0, 100% 100%);
-  background: rgba(122, 90, 44, 0.18);
+  right: 8px;
+  bottom: 6px;
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border: 1.5px solid rgba(139, 48, 40, 0.55);
+  border-radius: 3px;
+  transform: rotate(-4deg);
+  font-family: 'Kaiti SC', 'STKaiti', serif;
+  font-size: 11px;
+  color: var(--observatory-cinnabar);
+  pointer-events: none;
 }
 
 .statusObservatoryAction {
@@ -3029,102 +5300,149 @@
   outline-offset: 2px;
 }
 
+/* V7 sScales 320px cell → content box ~308×200 (inset 26px 6px 6px below the jade
+   banner). Port of the artifact scales() generator: a 2-column plate — a 152px
+   readiness checklist on the left, a tilting brass-balance + verdict pill on the
+   right — over a thin dashed Open-Ledger footer. Background neutralized by the M3b
+   transparent block below so the region plate is the single parchment. */
+/* Artifact scales panel: a single full-width plate so the balance centres, with a
+   28px top inset so the brass finial clears the jade banner, and a bottom-right
+   Open Inspector hint. */
 .statusBuildPreparationScales {
-  min-height: 560px;
-  align-content: start;
-  background:
-    radial-gradient(circle at 50% 34%, rgba(163, 108, 33, 0.14), transparent 34%),
-    linear-gradient(180deg, rgba(255, 250, 232, 0.96), rgba(230, 207, 158, 0.9)),
-    var(--observatory-paper);
-}
-
-.statusBuildPreparationScales__header {
-  display: grid;
-  grid-template-columns: 34px minmax(0, 1fr) auto;
-}
-
-.statusBuildPreparationScales__stamp {
-  align-self: center;
-  padding: 7px 10px;
-  border: 2px solid var(--observatory-state);
-  border-radius: 6px;
-  color: var(--observatory-state);
-  background: rgba(255, 248, 226, 0.68);
-  font-size: 0.74rem;
-  font-weight: 800;
-  line-height: 1.1;
-  text-transform: uppercase;
-  text-align: center;
-}
-
-.statusBuildPreparationScales__apparatus {
   position: relative;
-  isolation: isolate;
-  min-height: 176px;
+  min-height: 0;
+  height: 100%;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 90px minmax(0, 1fr);
-  gap: 10px;
-  align-items: end;
-  padding-top: 18px;
+  grid-template-rows: minmax(0, 1fr);
+  align-content: stretch;
+  gap: 0;
+  padding: 28px 8px 6px;
+  overflow: hidden;
 }
 
-/* W6: the brass-rig SVG <arm> is now the visible beam. The CSS __beam is demoted to
-   an invisible structural keep so it still drives --scale-tilt on a live element. */
-.statusBuildPreparationScales__beam {
+.statusBuildPreparationScales__plate {
+  min-height: 0;
+  height: 100%;
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+/* LEFT: artifact checklist column (fixed 152px), one compact readiness row each. */
+.statusBuildPreparationScales__checklist {
+  width: 152px;
+  flex: 0 0 152px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+}
+
+.statusBuildPreparationScales__weight {
+  display: grid;
+  grid-template-columns: 14px minmax(0, 1fr);
+  align-items: center;
+  gap: 6px;
+  padding: 2px 4px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.statusBuildPreparationScales__dot {
+  display: grid;
+  place-items: center;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 8px;
+  font-weight: 800;
+  line-height: 1;
+  background: #0f6f5a;
+}
+.statusBuildPreparationScales__dot[data-mark='warn'] { background: #a2712a; }
+.statusBuildPreparationScales__dot[data-mark='risk'] { background: #8b3028; }
+
+.statusBuildPreparationScales__weight .statusBuildPreparationScales__rowLabel {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-transform: none;
+  font: 700 11px var(--font-serif, Georgia, "Songti SC", serif);
+  letter-spacing: 0;
+  color: var(--observatory-ink);
+}
+
+/* Artifact bottom-right Open Inspector hint (jade-ink ground, gold-pale label). */
+.statusBuildPreparationScales__inspector {
   position: absolute;
-  left: 11%;
-  right: 11%;
-  top: 34px;
-  height: 12px;
-  transform: rotate(var(--scale-tilt));
-  transform-origin: center;
-  transition: transform 180ms ease;
+  right: 8px;
+  bottom: 6px;
+  z-index: 1;
+  padding: 3px 10px;
+  border: 1px solid var(--paper-gold-deep);
+  border-radius: 3px;
+  background: var(--paper-jade-ink);
+  color: var(--paper-gold-pale);
+  font: 800 9.5px var(--font-serif, Georgia, "Songti SC", serif);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  cursor: pointer;
 }
 
-.statusBuildPreparationScales__beam span {
-  display: none;
+/* RIGHT: the tilting brass balance fills the remaining width; the verdict pill sits
+   at the balance's own base (not the panel edge). */
+.statusBuildPreparationScales__balance {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 100%;
+  display: grid;
+  place-items: center;
 }
 
-/* W6 brass balance apparatus (sprite-fed): base + post + pivot + tilting arm + pans.
-   Decorative chrome behind the build/prep text pans; pulled to the back of the
-   apparatus stacking context so all text overlays it. */
 .statusBuildPreparationScales__rig {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
+  width: 100%;
+  height: 100%;
   pointer-events: none;
 }
 
 .statusBuildPreparationScales__rigArm {
   transform: rotate(var(--scale-tilt));
   transform-box: view-box;
-  transform-origin: 100px 58px;
+  transform-origin: 100px 38px;
   transition: transform 180ms ease;
 }
 
 .statusBuildPreparationScales__rigShadow {
   fill: var(--observatory-ink);
-  opacity: 0.4;
+  opacity: 0.32;
 }
 
 .statusBuildPreparationScales__rigCord {
   stroke: color-mix(in srgb, var(--observatory-bronze) 64%, transparent);
-  stroke-width: 1.4;
+  stroke-width: 1;
+}
+
+/* Invisible structural keep: __beam/__pan(/--build/--prep) stay live so --scale-tilt
+   is exercised on a rendered element (S7 contract). Zero visual footprint. */
+.statusBuildPreparationScales__beam {
+  position: absolute;
+  inset: auto;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  transform: rotate(var(--scale-tilt));
+  transform-origin: center;
 }
 
 .statusBuildPreparationScales__pan {
-  min-height: 126px;
-  display: grid;
-  align-content: center;
-  gap: 6px;
-  padding: 14px;
-  border: 1px solid rgba(90, 62, 30, 0.24);
-  border-radius: 8px 8px 48px 48px;
-  background:
-    radial-gradient(circle at 50% 0%, rgba(255, 252, 236, 0.8), transparent 56%),
-    rgba(255, 249, 229, 0.72);
-  text-align: center;
-  box-shadow: inset 0 -10px 24px rgba(91, 57, 22, 0.12);
+  pointer-events: none;
 }
 
 .statusBuildPreparationScales__pan--build {
@@ -3135,16 +5453,20 @@
   transform: translateY(calc(var(--scale-tilt) * 0.7));
 }
 
-.statusBuildPreparationScales__fulcrum {
-  min-height: 142px;
-  display: grid;
-  place-items: center;
-  align-content: center;
-  gap: 5px;
-  padding: 10px;
-  clip-path: polygon(50% 0, 100% 100%, 0 100%);
-  background: linear-gradient(180deg, rgba(122, 90, 44, 0.3), rgba(74, 48, 20, 0.18));
-  text-align: center;
+/* Artifact verdict pill: jade-ink ground, gold-pale label, pinned to the balance base. */
+.statusBuildPreparationScales__verdict {
+  position: absolute;
+  left: 50%;
+  bottom: 2px;
+  transform: translateX(-50%);
+  padding: 2px 10px;
+  white-space: nowrap;
+  border: 1px solid var(--paper-gold-deep);
+  border-radius: 2px;
+  background: var(--paper-jade-ink);
+  color: var(--paper-gold-pale);
+  font: 800 9.5px var(--font-serif, Georgia, "Songti SC", serif);
+  letter-spacing: 0.06em;
 }
 
 .statusBuildPreparationScales__fulcrum span,
@@ -3181,13 +5503,6 @@
   line-height: 1.18;
 }
 
-.statusBuildPreparationScales__weights {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
-}
-
-.statusBuildPreparationScales__weight,
 .statusBuildPreparationScales__warning,
 .statusBuildPreparationScales__openLedger,
 .statusReserveJars__ledgerTrigger,
@@ -3205,22 +5520,29 @@
   cursor: pointer;
 }
 
-.statusBuildPreparationScales__weight,
 .statusBuildPreparationScales__warning,
 .statusBuildPreparationScales__openLedger,
 .statusReserveJars__ledgerTrigger,
 .statusCurrentWorkTimeWheel__spoke,
 .statusCurrentWorkTimeWheel__openLedger {
-  min-height: 62px;
+  min-height: 0;
   display: grid;
   align-content: center;
   gap: 3px;
-  padding: 9px 10px;
+  padding: 6px 10px;
 }
 
 .statusBuildPreparationScales__warning {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 6px;
+  padding: 4px 8px;
   border-color: color-mix(in srgb, var(--observatory-cinnabar) 48%, rgba(90, 62, 30, 0.22));
   background: rgba(163, 58, 44, 0.1);
+}
+
+.statusBuildPreparationScales__openLedger {
+  padding: 4px 8px;
 }
 
 .statusBuildPreparationScales__openLedger,
@@ -3231,133 +5553,128 @@
   border-style: dashed;
 }
 
+/* V7 sJars (own cell): a glass-jar shelf that fills the slot; the artifact's
+   row-dump trigger is replaced by a small bottom-right Detail hint, so the shelf
+   takes the full panel height. Background neutral — the region plate is parchment. */
 .statusReserveJars {
+  position: relative;
   display: grid;
-  gap: 8px;
+  grid-template-rows: minmax(0, 1fr);
+  gap: 0;
+  height: 100%;
+  padding: 8px 10px 22px;
+  overflow: hidden;
+}
+
+/* Artifact bottom-right Detail hint (jade-ink ground, gold-pale label). */
+.statusReserveJars__detail {
+  position: absolute;
+  right: 10px;
+  bottom: 6px;
+  z-index: 1;
+  padding: 3px 10px;
+  border: 1px solid var(--paper-gold-deep);
+  border-radius: 3px;
+  background: var(--paper-jade-ink);
+  color: var(--paper-gold-pale);
+  font: 800 9.5px var(--font-serif, Georgia, "Songti SC", serif);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  cursor: pointer;
 }
 
 .statusReserveJars__shelf {
   position: relative;
   isolation: isolate;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(88px, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 3px;
   align-items: end;
-  padding: 8px;
-  border-radius: 8px;
-  border: 1px solid rgba(90, 62, 30, 0.18);
-  background: linear-gradient(180deg, rgba(107, 74, 36, 0.08), rgba(255, 249, 229, 0.44));
+  padding: 4px 4px 10px;
+  border-radius: 4px;
 }
 
-/* W6: sprite plank wood backing behind the jar shelf (no raw-hex/CSS gradient — the
-   plank gradient lives in the sprite). Pulled behind the jars. */
+/* Artifact plank: a wood shelf board the jars stand on, seated at the bottom of the
+   shelf box (sprite #plank gradient — no raw-hex). */
 .statusReserveJars__plank {
   position: absolute;
-  inset: 0;
+  inset: auto 2px 0 2px;
   z-index: -1;
-  border-radius: 8px;
-  opacity: 0.5;
+  height: 13px;
+  border-radius: 2px;
+  opacity: 0.95;
+  box-shadow: 0 -1px 0 rgba(231, 205, 146, 0.5) inset, 0 2px 4px rgba(40, 26, 12, 0.3);
 }
 
+/* Artifact jar slot: the glass bottle fills the row, one bold value beneath it. */
 .statusReserveJars__jar {
-  min-height: 148px;
+  min-height: 0;
   display: grid;
-  grid-template-rows: 76px minmax(28px, auto) minmax(18px, auto) minmax(16px, auto);
-  gap: 3px;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 2px;
   justify-items: center;
-  padding: 8px;
-  border: 1px solid rgba(90, 62, 30, 0.24);
-  border-radius: 8px;
-  background: rgba(255, 250, 236, 0.62);
+  align-items: end;
+  padding: 0 1px 2px;
+  border: 0;
+  background: transparent;
   color: var(--observatory-ink);
   font: inherit;
+  font-size: 0.58rem;
   text-align: center;
   cursor: pointer;
 }
 
-.statusReserveJars__jar[data-jar-kind='spirit-stones'],
-.statusReserveJars__jar[data-jar-kind='healing-reserve'] {
-  grid-template-rows: 84px minmax(28px, auto) minmax(18px, auto) minmax(16px, auto);
-}
-
-.statusReserveJars__glass {
-  position: relative;
-  width: 48px;
-  height: 72px;
-  align-self: end;
-  overflow: hidden;
-  border: 2px solid rgba(77, 54, 28, 0.32);
-  border-radius: 20px 20px 10px 10px;
-  background: rgba(255, 255, 246, 0.5);
-  box-shadow: inset 0 0 0 4px rgba(255, 255, 255, 0.2);
-}
-
-.statusReserveJars__liquid {
-  position: absolute;
-  left: 4px;
-  right: 4px;
-  bottom: 4px;
-  height: var(--jar-fill);
-  max-height: calc(100% - 8px);
-  border-radius: 14px 14px 7px 7px;
-  background: linear-gradient(180deg, rgba(89, 146, 112, 0.82), rgba(47, 127, 98, 0.86));
-  transition: height 160ms ease;
-}
-
-.statusReserveJars__jar[data-tone='danger'] .statusReserveJars__liquid {
-  background: linear-gradient(180deg, rgba(194, 78, 60, 0.86), rgba(163, 58, 44, 0.88));
-}
-
-.statusReserveJars__jar[data-tone='warning'] .statusReserveJars__liquid {
-  background: linear-gradient(180deg, rgba(204, 143, 63, 0.86), rgba(163, 108, 33, 0.86));
-}
-
-.statusReserveJars__jar[data-tone='muted'] .statusReserveJars__liquid {
-  background: linear-gradient(180deg, rgba(115, 110, 100, 0.48), rgba(87, 81, 70, 0.42));
-}
-
-.statusReserveJars__shine {
-  position: absolute;
-  inset: 8px auto auto 9px;
-  width: 8px;
-  height: 46px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.36);
-}
-
-/* W6: glass-vessel sheen (sprite glass gradient) over the liquid, cork stopper seated
-   in the mouth, and a Kai-ti label glyph stamped on the jar. The CSS __liquid (driven
-   by --jar-fill) stays the fill truth behind the translucent sheen. */
-.statusReserveJars__sheen {
-  position: absolute;
-  inset: 0;
+/* Artifact glass bottle, drawn as an SVG (body + clipped liquid + cork + label band).
+   The bottle reserves headroom above its rim for the cork (viewBox 0 0 58 140). */
+.statusReserveJars__bottle {
   width: 100%;
+  max-width: 50px;
   height: 100%;
+  align-self: end;
+  overflow: visible;
+}
+
+/* Liquid column revealed from the bottom by --jar-fill (clip-path inset from the top).
+   Driven by the per-jar --jar-fill custom property (jarFillFromText), so this stays the
+   data truth behind the translucent glass. */
+.statusReserveJars__liquid {
+  clip-path: inset(calc(100% - var(--jar-fill)) 0 0 0);
+  transition: clip-path 160ms ease;
+}
+
+.statusReserveJars__meniscus {
   pointer-events: none;
 }
 
-.statusReserveJars__cork {
-  position: absolute;
-  top: -1px;
-  left: 0;
-  width: 100%;
-  height: 16px;
-  pointer-events: none;
-}
-
+/* Artifact parchment label band glyph in the jar colour (set inline by position). */
 .statusReserveJars__glyph {
-  position: absolute;
-  inset: 17px 0 auto 0;
-  text-align: center;
   font-family: var(--kai, "Kaiti SC", "STKaiti", serif);
-  font-size: 18px;
-  line-height: 1;
-  color: var(--observatory-ink);
-  opacity: 0.42;
-  pointer-events: none;
+  font-size: 14px;
 }
 
-.statusReserveJars__label,
+/* One bold value under each jar. Real-data values can be long ("0 (below minimum)",
+   "Auto-use disabled · 0/3 slots filled"); clamp to two lines with ellipsis so the
+   value never overflows the jar slot or pushes the shelf around (no CLS). */
+.statusReserveJars__value {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  width: 100%;
+  font-size: 0.62rem;
+  font-weight: 800;
+  line-height: 1.16;
+  text-align: center;
+  overflow-wrap: anywhere;
+  color: var(--observatory-ink);
+}
+
+/* Cinnabar value when the reserve is bad (low / empty / strained) — artifact j.bad. */
+.statusReserveJars__jar[data-bad='true'] .statusReserveJars__value {
+  color: var(--observatory-cinnabar);
+}
+
 .statusReserveJars__jar small,
 .statusCurrentWorkTimeWheel__core small,
 .statusCurrentWorkTimeWheel__spoke small,
@@ -3367,36 +5684,72 @@
   line-height: 1.22;
 }
 
+/* Artifact value caption: one bold value directly under the jar; cinnabar when the
+   reserve is bad (low / empty / strained), else ink. */
+.statusReserveJars__jar strong {
+  font-size: 0.74rem;
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--observatory-ink);
+}
+
+.statusReserveJars__jar[data-bad='true'] strong {
+  color: var(--observatory-cinnabar);
+}
+
+.statusReserveJars__jar small {
+  font-size: 0.5rem;
+}
+
+/* V7 §3.7: compact clock filling the 210×168 sWheel slot (shell rect 200×168).
+   Override the shared instrument header/min-height — the panel banner is the title
+   now — and centre a 134px dial with the data segments + a hub + 4 corner chips. */
+/* The wheel instrument fills its region content column so its absolutely
+   positioned dial/rig/chips inherit a real offset-parent height. Without the
+   flex-fill + grid-stretch the section collapsed to its content (all children
+   are absolute → 0px), so the dial/hub/chips rendered into a zero box and the
+   panel looked empty. Mirrors the artifact wrapper (display:grid;place-items:
+   center;height:100%). */
 .statusCurrentWorkTimeWheel {
-  min-height: 440px;
-  align-content: start;
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 100%;
+  gap: 0;
+  padding: 6px;
+  grid-template-rows: minmax(0, 1fr);
+  align-content: stretch;
+  justify-items: stretch;
 }
 
 .statusCurrentWorkTimeWheel__body {
+  position: relative;
   display: grid;
-  grid-template-columns: minmax(190px, 0.72fr) minmax(0, 1fr);
-  gap: 12px;
-  align-items: center;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
 }
 
+/* Round brass dial: a 1:1 square that fits the ~200px panel content cell
+   (230px-wide bottom-row slot minus the gold frame + jade banner inset). The
+   SVG __rig paints the rim + rings + breathing jade core + 行 watermark (the
+   former fixed-134px CSS disc was duplicate chrome that did not scale and left
+   the rig in a zero box). The dial is now the offset parent for the absolute
+   __segmentLayer / __core / __chips. */
 .statusCurrentWorkTimeWheel__dial {
   position: relative;
   isolation: isolate;
-  width: min(236px, 100%);
+  height: 100%;
+  max-height: 100%;
+  max-width: 100%;
   aspect-ratio: 1;
-  margin: 0 auto;
+  margin: auto;
   border-radius: 50%;
-  border: 2px solid var(--observatory-state);
-  background:
-    radial-gradient(circle at 50% 50%, rgba(255, 249, 229, 0.92) 0 32%, transparent 33%),
-    radial-gradient(circle at 50% 50%, transparent 0 48%, rgba(122, 90, 44, 0.14) 49% 63%, transparent 64%),
-    rgba(255, 249, 229, 0.58);
-  box-shadow: inset 0 0 0 10px rgba(255, 250, 232, 0.36), 0 10px 24px rgba(48, 30, 9, 0.14);
 }
 
 .statusCurrentWorkTimeWheel__segmentLayer {
   position: absolute;
-  inset: 14px;
+  inset: 10px;
   border-radius: 50%;
 }
 
@@ -3404,12 +5757,12 @@
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 42%;
-  height: 10px;
+  width: 40%;
+  height: 6px;
   border-radius: 999px;
   background: var(--observatory-state);
   opacity: 0.72;
-  transform: rotate(var(--segment-angle)) translateX(16px);
+  transform: rotate(var(--segment-angle)) translateX(10px);
   transform-origin: left center;
   transition: opacity 160ms ease, transform 160ms ease;
 }
@@ -3420,38 +5773,78 @@
   opacity: 0.34;
 }
 
+.statusCurrentWorkTimeWheel__sector {
+  stroke: color-mix(in srgb, var(--observatory-bronze) 38%, transparent);
+  stroke-width: 0.6;
+}
+
+/* Hub face: a translucent disc over the SVG jade __rigCore so the brass-ringed
+   jade core reads through (artifact hub = jade core carrying FOREGROUND label +
+   value). inset:30% of the now full-size dial gives the ~80px hub of the
+   artifact's r=44 core. */
+/* Hub: an invisible focusable overlay over the jade core (the visible FOREGROUND
+   label + value are painted in the SVG rig). Keeps the core keyboard/click target. */
 .statusCurrentWorkTimeWheel__core {
   position: absolute;
-  inset: 31%;
-  display: grid;
-  place-items: center;
-  align-content: center;
-  gap: 2px;
-  padding: 10px;
+  inset: 30%;
+  z-index: 1;
+  padding: 0;
+  border: 0;
   border-radius: 50%;
-  text-align: center;
-  background: rgba(255, 250, 236, 0.94);
+  background: transparent;
+  cursor: pointer;
 }
 
-.statusCurrentWorkTimeWheel__spokes {
+/* Four rim satellites: small brass-rimmed parchment discs carrying a fixed label
+   over a bound value (artifact text-in-circles), centred on the rim via inline
+   left/top from the PT polar helper. */
+.statusCurrentWorkTimeWheel__satellites {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.statusCurrentWorkTimeWheel__satellite {
+  position: absolute;
+  /* Independent `translate` property (not `transform`) so the global
+     `button:hover{transform:none}` skin can't wipe the centering and make the
+     satellite jump on hover — same class of bug as the organ seal. */
+  translate: -50% -50%;
+  pointer-events: auto;
+  width: 15%;
+  min-width: 30px;
+  aspect-ratio: 1;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
+  place-content: center;
+  gap: 0;
+  padding: 0;
+  border: 1.6px solid var(--observatory-gold);
+  border-radius: 50%;
+  background: var(--paper, #f3ead2);
+  box-shadow: inset 0 0 0 1px rgba(255, 250, 235, 0.4);
+  color: var(--observatory-ink);
+  font: inherit;
+  text-align: center;
+  line-height: 1.05;
+  cursor: pointer;
 }
 
-.statusCurrentWorkTimeWheel__spoke {
-  position: relative;
-  min-height: 84px;
+.statusCurrentWorkTimeWheel__satelliteLabel {
+  font-size: 7px;
+  font-weight: 800;
+  color: var(--observatory-muted);
 }
 
-.statusCurrentWorkTimeWheel__spoke[data-segment-state='blocked'] {
-  border-color: rgba(163, 58, 44, 0.42);
-  background: rgba(163, 58, 44, 0.08);
+.statusCurrentWorkTimeWheel__satelliteValue {
+  font-size: 7.5px;
+  font-weight: 700;
+  color: var(--observatory-muted);
 }
 
-.statusCurrentWorkTimeWheel__spoke[data-segment-state='active'] {
-  border-color: rgba(47, 127, 98, 0.38);
-  background: rgba(47, 127, 98, 0.08);
+/* Active satellites (a queued system is running) read jade; None/Idle stay muted. */
+.statusCurrentWorkTimeWheel__satellite[data-active='true'] .statusCurrentWorkTimeWheel__satelliteValue {
+  color: #0f6f5a;
 }
 
 /* W6 brass time-wheel rig (sprite-fed): rim + dark rings + spin rings + jade core +
@@ -3464,56 +5857,87 @@
   pointer-events: none;
 }
 
+/* Artifact wheel() rig — exact 212-box stroke values. Brass rim r=88 w7; two dark
+   detail rings r=83 (.6) & r=92 (.5) at the artifact's rgba(74,51,14,*); dashed
+   spin ring r=93 "1 5"; ticks rgba(74,51,14,.45) major 1.3 / minor .7. */
 .statusCurrentWorkTimeWheel__rigRim {
-  stroke-width: 2.4;
+  stroke-width: 7;
 }
 
-.statusCurrentWorkTimeWheel__rigRing {
-  stroke: color-mix(in srgb, var(--observatory-ink) 22%, transparent);
-  stroke-width: 0.6;
+.statusCurrentWorkTimeWheel__rigRingInner {
+  stroke: rgba(74, 51, 14, 0.6);
+  stroke-width: 1;
+}
+
+.statusCurrentWorkTimeWheel__rigRingOuter {
+  stroke: rgba(74, 51, 14, 0.5);
+  stroke-width: 1;
+}
+
+.statusCurrentWorkTimeWheel__rigCoreInner {
+  stroke: rgba(217, 189, 128, 0.3);
+  stroke-width: 1;
 }
 
 .statusCurrentWorkTimeWheel__rigDash {
-  stroke: color-mix(in srgb, var(--observatory-bronze) 60%, transparent);
+  stroke: rgba(74, 51, 14, 0.35);
   stroke-width: 1;
   stroke-dasharray: 1 5;
 }
 
 .statusCurrentWorkTimeWheel__rigTick {
-  stroke: color-mix(in srgb, var(--observatory-bronze) 52%, transparent);
-  stroke-width: 0.8;
+  stroke: rgba(74, 51, 14, 0.45);
+  stroke-width: 1.3;
+}
+
+.statusCurrentWorkTimeWheel__rigTick[data-minor='true'] {
+  stroke-width: 0.7;
 }
 
 .statusCurrentWorkTimeWheel__rigCore {
-  stroke-width: 1.4;
+  stroke-width: 3;
 }
 
 .statusCurrentWorkTimeWheel__rigCoreMark {
   font-family: var(--kai, "Kaiti SC", "STKaiti", serif);
-  font-size: 16px;
-  fill: var(--observatory-paper);
-  opacity: 0.7;
+  font-size: 14px;
+  fill: rgba(217, 189, 128, 0.5);
 }
 
+/* Artifact hub text: LABEL (8px, 800, tracked) above VALUE (14px, 800, white). */
+.statusCurrentWorkTimeWheel__hubLabel {
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  fill: #e9efe2;
+}
+
+.statusCurrentWorkTimeWheel__hubValue {
+  font-size: 14px;
+  font-weight: 800;
+  fill: #fff;
+}
+
+/* Artifact breath glow: rgba(120,200,170,.13). */
 .statusCurrentWorkTimeWheel__coreBreath {
-  fill: var(--observatory-jade);
-  opacity: 0.32;
+  fill: rgba(120, 200, 170, 0.13);
 }
 
 .statusCurrentWorkTimeWheel__spinRing,
 .statusCurrentWorkTimeWheel__spinRingInner {
   transform-box: view-box;
-  transform-origin: 50px 50px;
+  transform-origin: 106px 106px;
 }
 
-.statusCurrentWorkTimeWheel__spokeMedallion {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 16px;
-  height: 16px;
-  pointer-events: none;
+/* The artifact wheel() conveys per-spoke state through the 4 brass satellite chips
+   (the interactive __chips buttons), NOT colored radial bars — hide the legacy
+   decorative bar layer (kept in DOM with its data-* for compatibility). */
+.statusCurrentWorkTimeWheel__segmentLayer {
+  display: none;
 }
+
+/* (former __spokeMedallion absolute rule retired — the corner chip lays its
+   medallion out via grid in the __chip block above.) */
 
 @keyframes statusWorkWheelSpin {
   to {
@@ -3550,19 +5974,20 @@
 }
 
 .statusFoldedLedgerRail__fold {
-  min-height: 148px;
-  padding: 0;
+  /* Artifact card height is driven by content within the ~168px band; no fixed 148px. */
+  padding: 9px 12px;
 }
 
 .statusFoldedLedgerRail__foldButton {
   position: relative;
   width: 100%;
-  min-height: 148px;
-  display: grid;
-  align-content: start;
-  gap: 6px;
-  padding: 16px;
+  min-height: 0;
+  display: block;
+  padding: 0;
+  border: 0;
   background: transparent;
+  text-align: left;
+  cursor: pointer;
 }
 
 .statusFoldedLedgerRail__foldButton:hover,
@@ -3573,16 +5998,18 @@
 .statusBuildPreparationScales__warning:focus-visible,
 .statusBuildPreparationScales__openLedger:hover,
 .statusBuildPreparationScales__openLedger:focus-visible,
+.statusBuildPreparationScales__inspector:hover,
+.statusBuildPreparationScales__inspector:focus-visible,
 .statusReserveJars__jar:hover,
 .statusReserveJars__jar:focus-visible,
+.statusReserveJars__detail:hover,
+.statusReserveJars__detail:focus-visible,
 .statusReserveJars__ledgerTrigger:hover,
 .statusReserveJars__ledgerTrigger:focus-visible,
 .statusCurrentWorkTimeWheel__core:hover,
 .statusCurrentWorkTimeWheel__core:focus-visible,
-.statusCurrentWorkTimeWheel__spoke:hover,
-.statusCurrentWorkTimeWheel__spoke:focus-visible,
-.statusCurrentWorkTimeWheel__openLedger:hover,
-.statusCurrentWorkTimeWheel__openLedger:focus-visible,
+.statusCurrentWorkTimeWheel__satellite:hover,
+.statusCurrentWorkTimeWheel__satellite:focus-visible,
 .statusObservatoryDrawer__close:hover,
 .statusObservatoryDrawer__close:focus-visible,
 .statusObservatoryDrawer__action:hover,
@@ -3594,21 +6021,11 @@
 /* W6: folded-scroll cards — a tiny alternating tilt on the inner content (the fold
    button), not the grid cell, so the 3-column footer grid is unmoved (overflow:hidden
    on the fold clips the tilt). Plus a corner wax chop per fold. */
-.statusFoldedLedgerRail__fold:nth-child(odd) .statusFoldedLedgerRail__foldButton {
-  transform: rotate(-0.5deg);
-}
-
+/* Tilt now lives on the fold cards themselves (__fold--changes / --calc), matching
+   the artifact's per-card rotate ∓0.6deg. The button no longer tilts. */
+.statusFoldedLedgerRail__fold:nth-child(odd) .statusFoldedLedgerRail__foldButton,
 .statusFoldedLedgerRail__fold:nth-child(even) .statusFoldedLedgerRail__foldButton {
-  transform: rotate(0.5deg);
-}
-
-.statusFoldedLedgerRail__foldChop {
-  position: absolute;
-  right: 8px;
-  bottom: 8px;
-  z-index: 1;
-  pointer-events: none;
-  filter: drop-shadow(0 1px 2px var(--observatory-shadow));
+  transform: none;
 }
 
 .statusObservatoryDrawer {
@@ -3744,7 +6161,23 @@
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   }
 
-  .statusLifeDecree__scrollTiles,
+  .statusLifeDecree {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .statusLifeDecree__verticalSeal {
+    grid-column: 1;
+  }
+
+  .statusLifeDecree__main,
+  .statusLifeDecree__goal {
+    grid-column: 1;
+  }
+
+  .statusLifeDecree__chips {
+    flex-wrap: wrap;
+  }
+
   .statusVitalsRibbon {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -3782,7 +6215,7 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .statusLifeDecree__titleRail,
+  .statusLifeDecree,
   .statusRootLawCoupledInstrument__body,
   .statusPreparation__scales,
   .statusWorkWheel,
@@ -3808,7 +6241,7 @@
     width: 156px;
   }
 
-  .statusLifeDecree__scrollTiles,
+  .statusLifeDecree__goal,
   .statusVitalsRibbon,
   .statusMeridianVesselCompass__rail,
   .statusMeridianVesselCompass__drawerRows,
@@ -3817,6 +6250,10 @@
   .statusCurrentWorkTimeWheel__spokes,
   .statusFoldedLedgerRail {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .statusLifeDecree__chips {
+    flex-wrap: wrap;
   }
 
   .statusObservatoryDrawer {
@@ -3902,4 +6339,29 @@
     animation: none;
     transition: none;
   }
+}
+
+/* === M3b material completion (V7 re-ground) =================================
+   Kill card-in-card + the ⊕ sigil. Each instrument now sits transparently on
+   its region's .fr1 plate (the single parchment + gold-leaf frame). Appended
+   last so it wins the cascade over the scattered per-instrument opaque
+   backgrounds; R6 will fold these back into the source rules. No raw hex. */
+.statusLifeDecree,
+.statusVitalsRibbon,
+.statusObservatoryInstrument,
+.statusRootLawCoupledInstrument,
+.statusMeridianVesselCompass,
+.statusBottleneckTalismanCanopy,
+.statusStatConstellation,
+.statusBuildPreparationScales,
+.statusCurrentWorkTimeWheel {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* The ⊕ medallion sigil is retired — the panel title is the V7 plaque label. */
+.statusObservatoryInstrument__sigil {
+  display: none;
 }

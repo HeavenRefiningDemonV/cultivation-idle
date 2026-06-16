@@ -1,4 +1,6 @@
+import { memo } from 'react';
 import type { CSSProperties } from 'react';
+import { deepEqualProps } from './fx/memoProps.js';
 import type { StatusLedgerFactRow, StatusLedgerTone } from '../../../systems/ui/status/statusLedgerTypes.js';
 import type {
   StatusObservatoryDrawerRequest,
@@ -28,6 +30,14 @@ export function jarFillFromText(value: string | null, tone: StatusLedgerTone): n
     return clamp((current / maximum) * 100, 0, 100);
   }
 
+  // Qualitative levels mirror the artifact jar levels (Empty/Low/Poor … Max/Full).
+  const normalized = raw.toLowerCase();
+  if (/empty/.test(normalized)) return 8;
+  if (/\b(max|full)\b/.test(normalized)) return 94;
+  if (/good|sufficient|healthy|stable|available/.test(normalized)) return 72;
+  if (/poor/.test(normalized)) return 20;
+  if (/low/.test(normalized)) return 26;
+
   if (tone === 'danger') return 18;
   if (tone === 'warning') return 36;
   if (tone === 'success' || tone === 'jade') return 78;
@@ -35,12 +45,18 @@ export function jarFillFromText(value: string | null, tone: StatusLedgerTone): n
   return 42;
 }
 
+/* Kind is informational only (data-jar-kind + a stable key); it is NO LONGER the
+   source of the glyph/colour. The old loose regex collided multiple real-data
+   labels onto one kind (e.g. "pouch"/"fit" and "heal"/"reserve"), which duplicated
+   the 囊/療 glyphs. Glyph + liquid colour are now driven purely by POSITION (see
+   JAR_POSITION_GLYPH / JAR_POSITION_COLOR), so no two visible jars can ever share
+   a glyph regardless of label. */
 function jarKind(label: string): string {
   const normalized = label.toLowerCase();
   if (/merit/.test(normalized)) return 'merit-reserve';
   if (/spirit stone|stone/.test(normalized)) return 'spirit-stones';
-  if (/medicine|pouch/.test(normalized)) return 'medicine-pouch';
-  if (/fit/.test(normalized)) return 'pouch-fit';
+  if (/medicine/.test(normalized)) return 'medicine-pouch';
+  if (/pouch|fit/.test(normalized)) return 'pouch-fit';
   if (/heal|reserve/.test(normalized)) return 'healing-reserve';
   return 'reserve';
 }
@@ -54,22 +70,41 @@ function toneLabel(tone: StatusLedgerTone): string {
   return 'Available';
 }
 
-function jarStyle(fill: number): CSSProperties {
-  return { '--jar-fill': `${fill}%` } as CSSProperties;
+/* The value reads cinnabar when the reserve is bad (low / empty / strained), else
+   ink — matching the artifact j.bad colouring. */
+function jarBad(value: string | null, tone: StatusLedgerTone): boolean {
+  const raw = (value ?? '').toLowerCase();
+  if (/empty|low|poor/.test(raw)) return true;
+  return tone === 'danger' || tone === 'warning' || tone === 'muted';
 }
 
-/* W6-decorative Kai-ti label glyph keyed on the existing data-jar-kind; the jar
-   label + value + state remain the truth. Unmapped kinds omit the glyph. */
-const JAR_GLYPH: Record<string, string> = {
-  'merit-reserve': '功',
-  'spirit-stones': '石',
-  'medicine-pouch': '藥',
-  'pouch-fit': '契',
-  'healing-reserve': '癒',
-  reserve: '備',
-};
+/* Decorative Kai-ti label glyph + liquid tint keyed on the jar's POSITION, exactly
+   like the artifact (fixed per-slot 功 石 藥 囊 療 with gold / blue / red / earth /
+   cinnabar liquid). Driving these from the index — not jarKind — guarantees every
+   visible jar gets a distinct glyph + colour even when real-data labels collide
+   (the old kind-regex duplicated 囊/療). The jar label + value + tone stay the
+   data truth; the glyph/colour are decorative-by-position. Position 5+ falls back
+   to a neutral 備 reserve mark, but the real game only ever shows ≤5 jars. */
+const JAR_POSITION_GLYPH = ['功', '石', '藥', '囊', '療'] as const;
+const JAR_POSITION_COLOR = ['#c79a45', '#5a8bb0', '#a44731', '#8d642d', '#9c4a3e'] as const;
+const JAR_RESERVE_GLYPH = '備';
+const JAR_RESERVE_COLOR = '#7f9a86';
 
-export function StatusReserveJars({ jars, rows, onOpenDrawer }: StatusReserveJarsProps) {
+function jarGlyphForIndex(index: number): string {
+  return JAR_POSITION_GLYPH[index] ?? JAR_RESERVE_GLYPH;
+}
+
+function jarColorForIndex(index: number): string {
+  return JAR_POSITION_COLOR[index] ?? JAR_RESERVE_COLOR;
+}
+
+function jarStyle(fill: number, color: string): CSSProperties {
+  return { '--jar-fill': `${fill}%`, '--jar-color': color } as CSSProperties;
+}
+
+export const StatusReserveJars = memo(StatusReserveJarsBase, deepEqualProps);
+
+function StatusReserveJarsBase({ jars, rows, onOpenDrawer }: StatusReserveJarsProps) {
   const exactRowCount = rows.length;
   const jarsRoving = useObservatoryRoving(jars.length);
 
@@ -86,6 +121,7 @@ export function StatusReserveJars({ jars, rows, onOpenDrawer }: StatusReserveJar
         aria-label="Physical reserve jar shelf"
         onKeyDown={jarsRoving.onKeyDown}
       >
+        {/* Artifact wood shelf board the jars stand on (sprite #plank gradient). */}
         <svg
           className="statusReserveJars__plank"
           viewBox="0 0 100 100"
@@ -99,6 +135,9 @@ export function StatusReserveJars({ jars, rows, onOpenDrawer }: StatusReserveJar
           const fill = jarFillFromText(jar.value, jar.tone);
           const state = toneLabel(jar.tone);
           const kind = jarKind(jar.label);
+          const color = jarColorForIndex(index);
+          const glyph = jarGlyphForIndex(index);
+          const bad = jarBad(jar.value, jar.tone);
 
           return (
             <button
@@ -108,51 +147,82 @@ export function StatusReserveJars({ jars, rows, onOpenDrawer }: StatusReserveJar
               data-tone={jar.tone}
               data-reserve-id={jar.id}
               data-jar-kind={kind}
-              style={jarStyle(fill)}
+              data-bad={bad ? 'true' : 'false'}
+              style={jarStyle(fill, color)}
               aria-label={`${jar.label}, ${state}, ${jar.value ?? jar.detail}. ${jar.detail}. Source ${jar.sourceLabel}. Opens exact reserve rows.`}
               onClick={() => onOpenDrawer?.({ kind: 'buildPreparation', sourceId: jar.id })}
               {...jarsRoving.getItemProps(index)}
             >
-              <span className="statusReserveJars__glass" aria-hidden="true">
-                <span className="statusReserveJars__liquid" />
-                <svg
-                  className="statusReserveJars__sheen"
-                  viewBox="0 0 48 72"
-                  preserveAspectRatio="none"
-                  aria-hidden="true"
-                  focusable={false}
-                >
-                  <rect x="0" y="0" width="48" height="72" fill="url(#glass)" />
-                </svg>
-                <span className="statusReserveJars__shine" />
-                {JAR_GLYPH[kind] ? <span className="statusReserveJars__glyph">{JAR_GLYPH[kind]}</span> : null}
-                <svg
-                  className="statusReserveJars__cork"
-                  viewBox="0 0 48 16"
-                  preserveAspectRatio="none"
-                  aria-hidden="true"
-                  focusable={false}
-                >
-                  <rect x="13" y="0" width="22" height="5" rx="1.5" fill="url(#cork)" />
-                  <path d="M15 5 L33 5 L31 14 L17 14 Z" fill="url(#cork)" />
-                </svg>
-              </span>
-              <span className="statusReserveJars__label">{jar.label}</span>
-              <strong>{jar.value ?? state}</strong>
-              <small>{state}</small>
+              {/* Artifact glass bottle: jw58 jh126 topY14 in a 58×140 box (cork above
+                  the rim). The liquid rect rides --jar-fill from the jar bottom inside
+                  a clip of the bottle body; a parchment label band carries the glyph. */}
+              <svg
+                className="statusReserveJars__bottle"
+                viewBox="0 0 58 140"
+                preserveAspectRatio="xMidYMax meet"
+                aria-hidden="true"
+                focusable={false}
+              >
+                <defs>
+                  <clipPath id={`jarClip-${jar.id}`}>
+                    <path d="M6,14 Q0,14 0,24 L0,132 Q0,140 8,140 L50,140 Q58,140 58,132 L58,24 Q58,14 52,14 Z" />
+                  </clipPath>
+                </defs>
+                {/* glass body */}
+                <path
+                  d="M6,14 Q0,14 0,24 L0,132 Q0,140 8,140 L50,140 Q58,140 58,132 L58,24 Q58,14 52,14 Z"
+                  fill="url(#glass)"
+                  stroke="rgba(120,130,120,.45)"
+                  strokeWidth="1.3"
+                />
+                {/* liquid: a full-interior column tinted to the jar color, revealed
+                    from the bottom by the CSS clip-path driven by --jar-fill. The
+                    meniscus rides the same clipped element's top edge. */}
+                <g clipPath={`url(#jarClip-${jar.id})`}>
+                  <g className="statusReserveJars__liquid">
+                    <rect x="0" y="16" width="58" height="124" fill={color} opacity="0.82" />
+                    <rect className="statusReserveJars__meniscus" x="2" y="16" width="54" height="3" fill="rgba(255,255,255,.3)" />
+                  </g>
+                </g>
+                {/* vertical highlight streak */}
+                <rect x="7" y="26" width="6" height="96" rx="3" fill="rgba(255,255,255,.3)" />
+                {/* cork stopper + neck band above the rim */}
+                <path d="M10,2 L48,2 L45,16 L13,16 Z" fill="url(#cork)" stroke="#4a330e" strokeWidth="1" />
+                <rect x="13" y="-1" width="32" height="5" rx="2" fill="#8a6a3a" stroke="#4a330e" strokeWidth="0.8" />
+                {/* parchment label band at ~42% height with the Kai-ti glyph in jar color */}
+                <rect x="5" y="67" width="48" height="24" rx="2" fill="rgba(245,238,220,.92)" stroke="rgba(120,90,46,.5)" />
+                {glyph ? (
+                  <text
+                    className="statusReserveJars__glyph"
+                    x="29"
+                    y="83"
+                    textAnchor="middle"
+                    fill={color}
+                  >
+                    {glyph}
+                  </text>
+                ) : null}
+              </svg>
+              {/* One bold value beneath the shelf. Real-data values can be long
+                  ("0 (below minimum)", "Auto-use disabled · 0/3 slots filled"); the
+                  class clamps to 2 lines with ellipsis so it never overflows the
+                  jar slot. Cinnabar when the reserve is bad, ink otherwise. */}
+              <strong className="statusReserveJars__value">{jar.value ?? state}</strong>
             </button>
           );
         })}
       </div>
 
+      {/* Artifact bottom-right detail hint; reaches the exact reserve rows drawer
+          (onOpenDrawer with kind: 'buildPreparation'). */}
       <button
         type="button"
-        className="statusReserveJars__ledgerTrigger"
+        className="statusReserveJars__detail"
         aria-haspopup="dialog"
+        aria-label={`Reserve detail. ${exactRowCount} exact rows.`}
         onClick={() => onOpenDrawer?.({ kind: 'buildPreparation' })}
       >
-        <span>Reserve Ledger</span>
-        <strong>{exactRowCount} exact rows</strong>
+        Detail ⤢
       </button>
     </div>
   );

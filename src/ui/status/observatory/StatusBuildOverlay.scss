@@ -1,0 +1,275 @@
+/* Build & Preparation Inspector detail overlay (artifact ovBuild). */
+.statusBuildOverlay {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 720px;
+  font-family: Georgia, "Times New Roman", serif;
+  color: var(--observatory-ink);
+}
+
+.statusBuildOverlay__card {
+  background:
+    linear-gradient(168deg, rgba(248, 243, 224, 0.92), rgba(233, 221, 191, 0.86)),
+    var(--observatory-paper);
+  border: 1px solid rgba(120, 90, 46, 0.34);
+  border-radius: 4px;
+  padding: 12px 14px;
+  box-shadow:
+    0 4px 10px rgba(40, 26, 12, 0.14),
+    inset 0 1px 0 rgba(255, 250, 235, 0.5);
+}
+
+.statusBuildOverlay__sub {
+  font-weight: 700;
+  font-size: 0.58rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--observatory-muted);
+}
+.statusBuildOverlay__sub--cinnabar { color: var(--observatory-cinnabar); }
+.statusBuildOverlay__sub--jade { color: var(--observatory-jade); }
+.statusBuildOverlay__sub--gold { color: var(--observatory-gold-deep, var(--observatory-gold)); }
+
+/* Build floors */
+.statusBuildOverlay__floor {
+  padding: 8px 0;
+  border-bottom: 1px dashed rgba(120, 90, 46, 0.22);
+}
+.statusBuildOverlay__floorHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.6rem;
+  font-weight: 800;
+}
+.statusBuildOverlay__floorTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.statusBuildOverlay__floorTitle b { font-size: 0.7rem; }
+.statusBuildOverlay__mark {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.6rem;
+}
+.statusBuildOverlay__floorReq {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+  padding-left: 26px;
+  font-size: 0.56rem;
+  color: var(--observatory-ink);
+}
+.statusBuildOverlay__floorReq em {
+  font-style: normal;
+  color: var(--observatory-gold-deep, var(--observatory-gold));
+}
+.statusBuildOverlay__floorDesc {
+  padding-left: 26px;
+  margin-top: 1px;
+  font-size: 0.5rem;
+  color: var(--observatory-muted);
+}
+.statusBuildOverlay__verdict {
+  margin-top: 10px;
+  padding: 7px;
+  text-align: center;
+  border-radius: 4px;
+  background: rgba(139, 48, 40, 0.07);
+  font-weight: 800;
+  font-size: 0.78rem;
+  color: var(--observatory-cinnabar);
+}
+.statusBuildOverlay__doctrine {
+  margin-top: 9px;
+  padding: 8px 10px;
+  border: 1px dashed rgba(120, 90, 46, 0.35);
+  border-radius: 4px;
+  font-size: 0.54rem;
+  color: var(--observatory-muted);
+  line-height: 1.5;
+}
+.statusBuildOverlay__doctrine b { color: var(--observatory-ink); }
+.statusBuildOverlay__pouch {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.statusBuildOverlay__pouch .statusBuildOverlay__doctrine {
+  flex: 1;
+  margin-top: 9px;
+}
+.statusBuildOverlay__pouch .statusRootLawRouteButton {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+/* Reserve jars */
+.statusBuildOverlay__jar {
+  padding: 9px 0;
+  border-bottom: 1px dashed rgba(120, 90, 46, 0.22);
+}
+.statusBuildOverlay__jarHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+.statusBuildOverlay__jarName {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.statusBuildOverlay__jarName b { font-size: 0.7rem; }
+.statusBuildOverlay__jarMeter {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.statusBuildOverlay__jarTrack {
+  width: 150px;
+  height: 9px;
+  border-radius: 5px;
+  background: rgba(120, 90, 46, 0.2);
+  overflow: hidden;
+}
+.statusBuildOverlay__jarTrack span {
+  display: block;
+  height: 100%;
+}
+.statusBuildOverlay__jarMeter strong {
+  width: 58px;
+  text-align: right;
+  font-weight: 800;
+  font-size: 0.66rem;
+}
+.statusBuildOverlay__jarFoot {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+  padding-left: 30px;
+  font-size: 0.54rem;
+  color: var(--observatory-muted);
+}
+.statusBuildOverlay__jarFoot em {
+  font-style: normal;
+  color: var(--observatory-gold-deep, var(--observatory-gold));
+}
+.statusBuildOverlay__forecast {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 0;
+  border-bottom: 1px dashed rgba(120, 90, 46, 0.2);
+  font-size: 0.6rem;
+}
+.statusBuildOverlay__forecast b { color: var(--observatory-muted); }
+
+.statusBuildOverlay__check {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  border-bottom: 1px dashed rgba(120, 90, 46, 0.18);
+  font-size: 0.56rem;
+}
+.statusBuildOverlay__check span { color: var(--observatory-muted); }
+.statusBuildOverlay__balance {
+  display: block;
+  width: 150px;
+  height: auto;
+  margin: 10px auto 0;
+  opacity: 0.9;
+}
+.statusBuildOverlay__shelf {
+  display: block;
+  width: 100%;
+  max-width: 360px;
+  height: auto;
+  margin: 12px auto 0;
+}
+.statusBuildOverlay__lastGate {
+  margin-top: 10px;
+  padding: 7px 9px;
+  border-radius: 4px;
+  background: rgba(139, 48, 40, 0.07);
+  font-size: 0.54rem;
+  color: var(--observatory-cinnabar);
+}
+.statusBuildOverlay__lastGate b { color: var(--observatory-cinnabar); }
+
+/* Gate readiness */
+.statusBuildOverlay__readHead {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 4px;
+}
+.statusBuildOverlay__readHead p {
+  margin: 0;
+  flex: 1;
+  font-size: 0.58rem;
+  line-height: 1.55;
+  color: var(--observatory-muted);
+}
+.statusBuildOverlay__loadout {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 5px;
+}
+.statusBuildOverlay__slot { text-align: center; }
+.statusBuildOverlay__slot small {
+  display: block;
+  margin-top: 1px;
+  font-size: 0.46rem;
+  color: var(--observatory-muted);
+}
+.statusBuildOverlay__slot b {
+  display: block;
+  font-weight: 800;
+  font-size: 0.44rem;
+}
+.statusBuildOverlay__comp { margin-bottom: 6px; }
+.statusBuildOverlay__compHead {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.52rem;
+}
+.statusBuildOverlay__compHead span { color: var(--observatory-muted); }
+.statusBuildOverlay__compTrack {
+  display: block;
+  height: 7px;
+  margin-top: 2px;
+  border-radius: 4px;
+  background: rgba(120, 90, 46, 0.16);
+  overflow: hidden;
+}
+.statusBuildOverlay__compTrack span {
+  display: block;
+  height: 100%;
+}
+.statusBuildOverlay__threshold {
+  margin-top: 2px;
+  font-size: 0.52rem;
+  color: var(--observatory-muted);
+}
+.statusBuildOverlay__routes {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 5px;
+}
+.statusBuildOverlay__routes .statusRootLawRouteButton {
+  width: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .statusBuildOverlay * { animation: none !important; }
+}

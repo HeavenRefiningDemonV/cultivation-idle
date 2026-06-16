@@ -1,0 +1,334 @@
+/* Spirit Root Astrolabe detail overlay (artifact ovAstrolabe). Panels are
+   absolutely positioned within a relative stage; coordinates are ported as % of
+   the artifact's ~1810x900 content box (see box() in the component). */
+.statusRootLawOverlay {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 760px;
+  font-family: Georgia, "Times New Roman", serif;
+  color: var(--observatory-ink);
+}
+
+/* Shared ovcard chrome. */
+.statusRootLawOverlay__card {
+  background:
+    linear-gradient(168deg, rgba(248, 243, 224, 0.92), rgba(233, 221, 191, 0.86)),
+    var(--observatory-paper);
+  border: 1px solid rgba(120, 90, 46, 0.34);
+  border-radius: 4px;
+  padding: 10px 12px;
+  box-shadow:
+    0 4px 10px rgba(40, 26, 12, 0.14),
+    inset 0 1px 0 rgba(255, 250, 235, 0.5);
+}
+
+.statusRootLawOverlay__sub {
+  font-weight: 700;
+  font-size: 0.58rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--observatory-muted);
+}
+.statusRootLawOverlay__sub--cinnabar { color: var(--observatory-cinnabar); }
+.statusRootLawOverlay__sub--jade { color: var(--observatory-jade); }
+.statusRootLawOverlay__sub--gold { color: var(--observatory-gold-deep, var(--observatory-gold)); }
+.statusRootLawOverlay__divider {
+  margin-top: 9px;
+  text-align: center;
+}
+
+/* Profile */
+.statusRootLawOverlay__profileHead {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.statusRootLawOverlay__profileName {
+  font-weight: 800;
+  font-size: 1rem;
+}
+.statusRootLawOverlay__profileSub {
+  font-size: 0.62rem;
+  color: var(--observatory-muted);
+}
+.statusRootLawOverlay__profileBody {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(120, 90, 46, 0.25);
+  font-size: 0.64rem;
+  line-height: 1.6;
+}
+
+/* 14-root legend */
+.statusRootLawOverlay__legend {
+  z-index: 4;
+}
+.statusRootLawOverlay__legendRow {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: 2.5px 0;
+  font-size: 0.55rem;
+  color: var(--observatory-muted);
+}
+.statusRootLawOverlay__legendRow[data-active='true'] {
+  font-weight: 800;
+  color: var(--observatory-ink);
+}
+
+/* Dial — reuse the live in-panel astrolabe; show only its ring here. */
+.statusRootLawOverlay__dial {
+  display: grid;
+  place-items: center;
+}
+.statusRootLawOverlay__dial .statusSpiritRootAstrolabe {
+  width: 100%;
+  gap: 0;
+}
+.statusRootLawOverlay__dial .statusSpiritRootAstrolabe__title,
+.statusRootLawOverlay__dial .statusSpiritRootAstrolabe__chips {
+  display: none;
+}
+.statusRootLawOverlay__dial .statusSpiritRootAstrolabe__ring {
+  width: min(100%, 430px);
+  max-width: 100%;
+}
+
+/* Chain bridge */
+.statusRootLawOverlay__bridge {
+  z-index: 5;
+  text-align: center;
+  pointer-events: none;
+}
+.statusRootLawOverlay__bridgeLabel {
+  font-weight: 800;
+  font-size: 0.68rem;
+  margin-top: -2px;
+}
+.statusRootLawOverlay__bridgeSeal {
+  display: flex;
+  justify-content: center;
+  margin-top: 3px;
+  filter: drop-shadow(0 2px 3px rgba(80, 20, 12, 0.35));
+}
+
+/* Heart-law seal scroll: tighten the reused seal to fit the card. */
+.statusRootLawOverlay__seal {
+  text-align: center;
+}
+.statusRootLawOverlay__seal .statusHeartLawSeal {
+  gap: 4px;
+}
+.statusRootLawOverlay__seal .statusHeartLawSeal__medallion {
+  width: clamp(150px, 70%, 200px);
+  margin: 0 auto;
+}
+.statusRootLawOverlay__daoState {
+  margin-top: 8px;
+  font-size: 0.6rem;
+  color: var(--observatory-muted);
+}
+.statusRootLawOverlay__daoState span {
+  margin-left: 6px;
+  padding: 1px 8px;
+  border: 1.4px solid var(--observatory-jade);
+  border-radius: 2px;
+  font-weight: 800;
+  font-size: 0.62rem;
+  color: var(--observatory-jade);
+}
+.statusRootLawOverlay__daoState span[data-bad='true'] {
+  border-color: var(--observatory-cinnabar);
+  color: var(--observatory-cinnabar);
+}
+.statusRootLawOverlay__seal .statusRootLawRouteButton {
+  margin-top: 8px;
+}
+
+/* Mid columns */
+.statusRootLawOverlay__mid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 4;
+}
+.statusRootLawOverlay__validityBody {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 4px;
+}
+.statusRootLawOverlay__validityBody strong {
+  font-weight: 800;
+  font-size: 0.82rem;
+  line-height: 1.2;
+  text-align: left;
+}
+.statusRootLawOverlay__capValue {
+  font-weight: 800;
+  font-size: 1.05rem;
+  margin: 2px 0 5px;
+}
+.statusRootLawOverlay__capTrack {
+  display: block;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(120, 90, 46, 0.2);
+  overflow: hidden;
+}
+.statusRootLawOverlay__capFill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--observatory-jade);
+}
+.statusRootLawOverlay__capFill[data-bad='true'] {
+  background: var(--observatory-cinnabar);
+}
+.statusRootLawOverlay__card small {
+  display: block;
+  margin-top: 3px;
+  font-size: 0.55rem;
+  color: var(--observatory-muted);
+}
+.statusRootLawOverlay__procName {
+  display: block;
+  font-weight: 800;
+  font-size: 0.78rem;
+  margin-top: 2px;
+}
+
+/* Note card (with corner seal) */
+.statusRootLawOverlay__note {
+  display: flex;
+  gap: 9px;
+  align-items: flex-start;
+}
+.statusRootLawOverlay__note p {
+  margin: 0;
+  font-size: 0.64rem;
+  font-weight: 700;
+  line-height: 1.5;
+}
+.statusRootLawOverlay__notesBody {
+  margin: 6px 0 0;
+  font-size: 0.6rem;
+  color: var(--observatory-muted);
+  line-height: 1.5;
+}
+
+/* Diagnostic row lists */
+.statusRootLawOverlay__diag {
+  margin-top: 5px;
+}
+.statusRootLawOverlay__diagRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 3px 0;
+  border-bottom: 1px dashed rgba(120, 90, 46, 0.2);
+  font-size: 0.62rem;
+}
+.statusRootLawOverlay__diagRow span { color: var(--observatory-muted); }
+.statusRootLawOverlay__diagRow b { color: var(--observatory-ink); font-weight: 800; }
+.statusRootLawOverlay__diagRow b[data-bad='true'] { color: var(--observatory-cinnabar); }
+
+/* Observation drawer */
+.statusRootLawOverlay__drawer {
+  padding: 0;
+  display: flex;
+  overflow: hidden;
+}
+.statusRootLawOverlay__drawerTabs {
+  flex: 0 0 auto;
+  width: 30px;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, #3a5b4d, #243a30);
+  border-radius: 4px 0 0 4px;
+}
+.statusRootLawOverlay__drawerTabs span {
+  flex: 1;
+  writing-mode: vertical-rl;
+  text-align: center;
+  padding: 7px 2px;
+  font-weight: 800;
+  font-size: 0.5rem;
+  color: #9fb3a4;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+}
+.statusRootLawOverlay__drawerTabs span[data-active='true'] {
+  color: #f3ead7;
+  background: rgba(255, 255, 255, 0.08);
+}
+.statusRootLawOverlay__drawerBody {
+  flex: 1;
+  min-width: 0;
+  padding: 11px 13px;
+}
+.statusRootLawOverlay__guide {
+  margin: 6px 0 0;
+  font-size: 0.6rem;
+  color: var(--observatory-muted);
+  line-height: 1.5;
+}
+.statusRootLawOverlay__guide b { color: var(--observatory-ink); }
+.statusRootLawOverlay__observe {
+  display: block;
+  width: 100%;
+  margin-top: 9px;
+  text-align: center;
+}
+
+/* Band label + bottom band */
+.statusRootLawOverlay__bandLabel {
+  z-index: 5;
+  font-weight: 700;
+  font-size: 0.56rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--observatory-muted);
+}
+.statusRootLawOverlay__synergy {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 6px 0 4px;
+}
+.statusRootLawOverlay__synergyVerdict {
+  text-align: center;
+  font-weight: 800;
+  font-size: 0.66rem;
+}
+.statusRootLawOverlay__improve {
+  margin-top: 5px;
+}
+.statusRootLawOverlay__improveRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  border-bottom: 1px dashed rgba(120, 90, 46, 0.2);
+  font-size: 0.62rem;
+}
+.statusRootLawOverlay__improveRow em {
+  font-style: normal;
+  font-size: 0.54rem;
+  color: var(--observatory-gold-deep, var(--observatory-gold));
+}
+.statusRootLawOverlay__improveRow b {
+  font-weight: 800;
+  font-size: 0.56rem;
+  color: var(--observatory-muted);
+}
+.statusRootLawOverlay__improveRow b[data-good='true'] { color: var(--observatory-jade); }
+.statusRootLawOverlay__improveRow b[data-bad='true'] { color: var(--observatory-cinnabar); }
+
+@media (prefers-reduced-motion: reduce) {
+  .statusRootLawOverlay * {
+    animation: none !important;
+  }
+}

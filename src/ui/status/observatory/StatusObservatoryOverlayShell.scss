@@ -1,0 +1,268 @@
+/* Shared full-screen detail-overlay chrome — artifact `ovShell`. A parchment sheet
+   over a dark scrim, with grain, gold corner brackets, a vertical CJK tag rail, a
+   header (title / sub / Next Goal·Main Bottleneck·Primary Action context / wax chop /
+   close), a faint calligraphy watermark, and an ink-mountain foot band. Colours use
+   the shared --observatory-* tokens (artifact hex as fallback). */
+
+.statusObservatoryOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.statusObservatoryOverlay__scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(20, 14, 9, 0.72);
+  backdrop-filter: blur(2px);
+}
+
+.statusObservatoryOverlay__panel {
+  position: relative;
+  z-index: 1;
+  width: min(1820px, 96vw);
+  height: min(900px, 92vh);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 10px;
+  border: 1px solid var(--observatory-gold-deep, #84591b);
+  background:
+    linear-gradient(168deg, rgba(248, 243, 224, 0.97), rgba(233, 221, 191, 0.95)),
+    var(--observatory-paper, #f3ead7);
+  box-shadow:
+    0 30px 80px rgba(20, 12, 6, 0.6),
+    inset 0 0 0 3px rgba(255, 250, 232, 0.5),
+    inset 0 0 0 4px var(--observatory-gold-deep, #84591b);
+  color: var(--observatory-ink, #1f1a17);
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+/* faint paper grain */
+.statusObservatoryOverlay__grain {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.5;
+  mix-blend-mode: multiply;
+  background-image: radial-gradient(rgba(120, 90, 46, 0.06) 0.5px, transparent 0.5px);
+  background-size: 3px 3px;
+}
+
+/* four gold L-corner brackets */
+.statusObservatoryOverlay__gc {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  z-index: 8;
+  pointer-events: none;
+  border: 0 solid var(--observatory-gold, #a2712a);
+}
+.statusObservatoryOverlay__gc--tl {
+  left: 9px;
+  top: 9px;
+  border-left-width: 2px;
+  border-top-width: 2px;
+}
+.statusObservatoryOverlay__gc--tr {
+  right: 9px;
+  top: 9px;
+  border-right-width: 2px;
+  border-top-width: 2px;
+}
+.statusObservatoryOverlay__gc--bl {
+  left: 9px;
+  bottom: 9px;
+  border-left-width: 2px;
+  border-bottom-width: 2px;
+}
+.statusObservatoryOverlay__gc--br {
+  right: 9px;
+  bottom: 9px;
+  border-right-width: 2px;
+  border-bottom-width: 2px;
+}
+
+/* vertical cinnabar CJK tag rail (artifact .ovtag) */
+.statusObservatoryOverlay__tag {
+  position: absolute;
+  left: 16px;
+  top: 12px;
+  width: 44px;
+  z-index: 8;
+  padding: 7px 0;
+  border-radius: 3px;
+  border: 1px solid var(--observatory-gold-deep, #84591b);
+  background: linear-gradient(180deg, #8b2f27, #6e231c);
+  box-shadow: 0 5px 12px rgba(40, 12, 8, 0.5);
+  display: grid;
+  place-items: center;
+}
+.statusObservatoryOverlay__tag span {
+  font-family: var(--kai, "Kaiti SC", "STKaiti", serif);
+  font-weight: 700;
+  font-size: 17px;
+  line-height: 1.15;
+  color: var(--observatory-paper, #f3ead7);
+  white-space: pre;
+  text-align: center;
+}
+
+/* header */
+.statusObservatoryOverlay__head {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 26px 14px 74px;
+  border-bottom: 2px solid var(--observatory-line, rgba(120, 90, 46, 0.4));
+  background: linear-gradient(180deg, rgba(58, 45, 28, 0.1), transparent);
+}
+.statusObservatoryOverlay__title {
+  font-weight: 800;
+  font-size: 1.62rem;
+  letter-spacing: 0.01em;
+  line-height: 1.05;
+  color: var(--observatory-ink, #1f1a17);
+}
+.statusObservatoryOverlay__sub {
+  margin-top: 2px;
+  font-weight: 600;
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--observatory-muted, rgba(31, 26, 23, 0.45));
+}
+.statusObservatoryOverlay__headRight {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Next Goal / Main Bottleneck / Primary Action context block */
+.statusObservatoryOverlay__ctx {
+  display: flex;
+  border: 1px solid var(--observatory-line, rgba(120, 90, 46, 0.4));
+  border-radius: 4px;
+  overflow: hidden;
+  background: linear-gradient(168deg, rgba(248, 243, 224, 0.9), rgba(233, 221, 191, 0.85));
+  box-shadow: 0 3px 8px rgba(40, 26, 12, 0.18);
+}
+.statusObservatoryOverlay__ctx > div {
+  padding: 6px 12px;
+  min-width: 96px;
+}
+.statusObservatoryOverlay__ctx > div + div {
+  border-left: 1px solid var(--observatory-line, rgba(120, 90, 46, 0.3));
+}
+.statusObservatoryOverlay__ctx i {
+  display: block;
+  font-size: 0.5rem;
+  font-style: normal;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--observatory-muted, rgba(31, 26, 23, 0.45));
+}
+.statusObservatoryOverlay__ctx b {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--observatory-ink, #1f1a17);
+}
+.statusObservatoryOverlay__ctx b[data-tone='danger'] {
+  color: var(--observatory-cinnabar, #8b3028);
+}
+.statusObservatoryOverlay__ctx b[data-tone='jade'] {
+  color: var(--observatory-jade-deep, var(--observatory-jade, #0f6f5a));
+}
+
+.statusObservatoryOverlay__close {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--observatory-paper, #f3ead7);
+  background: linear-gradient(180deg, #8b2f27, #6e231c);
+  border: 1px solid var(--observatory-gold-deep, #84591b);
+  box-shadow: 0 2px 6px rgba(40, 12, 8, 0.5);
+}
+.statusObservatoryOverlay__close:hover,
+.statusObservatoryOverlay__close:focus-visible {
+  outline: 2px solid var(--observatory-gold, #a2712a);
+  outline-offset: 2px;
+}
+
+.statusObservatoryOverlay__seal {
+  filter: drop-shadow(0 2px 4px rgba(80, 20, 12, 0.3));
+}
+
+/* content area */
+.statusObservatoryOverlay__content {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  min-height: 0;
+  padding: 16px 22px 18px;
+  overflow: auto;
+}
+.statusObservatoryOverlay__watermark {
+  position: absolute;
+  right: 54px;
+  top: 26px;
+  z-index: 0;
+  font-family: var(--kai, "Kaiti SC", "STKaiti", serif);
+  font-size: 52px;
+  line-height: 1.1;
+  color: rgba(31, 26, 23, 0.055);
+  pointer-events: none;
+  writing-mode: vertical-rl;
+}
+.statusObservatoryOverlay__mtn {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 240px;
+  z-index: 0;
+  opacity: 0.5;
+  pointer-events: none;
+}
+.statusObservatoryOverlay__mtn path {
+  fill: color-mix(in srgb, var(--observatory-bronze, #7a5b26) 24%, transparent);
+}
+.statusObservatoryOverlay__mtn .statusObservatoryOverlay__mtnFar {
+  fill: color-mix(in srgb, var(--observatory-bronze, #7a5b26) 13%, transparent);
+}
+.statusObservatoryOverlay__body {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+}
+
+/* shared overlay card chrome (artifact .ovcard) for overlay bodies to reuse */
+.statusObservatoryOverlay__card {
+  background: linear-gradient(168deg, rgba(248, 243, 224, 0.92), rgba(233, 221, 191, 0.86));
+  border: 1px solid var(--observatory-line, rgba(120, 90, 46, 0.34));
+  border-radius: 4px;
+  padding: 10px 12px;
+  box-shadow:
+    0 4px 10px rgba(40, 26, 12, 0.14),
+    inset 0 1px 0 rgba(255, 250, 235, 0.5);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .statusObservatoryOverlay__scrim {
+    backdrop-filter: none;
+  }
+}

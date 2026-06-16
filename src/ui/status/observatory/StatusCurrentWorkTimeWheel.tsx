@@ -1,4 +1,6 @@
+import { memo } from 'react';
 import type { CSSProperties } from 'react';
+import { deepEqualProps } from './fx/memoProps.js';
 import type { StatusLedgerActionSurface, StatusLedgerTone } from '../../../systems/ui/status/statusLedgerTypes.js';
 import type {
   StatusObservatoryDrawerRequest,
@@ -6,8 +8,7 @@ import type {
   StatusWorkWheelSpokeSurface,
 } from '../../../systems/ui/status/statusObservatoryTypes.js';
 import { useRitualMotion } from './fx/useRitualMotion.js';
-import { useObservatoryMotion } from './useObservatoryMotion.js';
-import { ObservatoryDiscMedallion, type ObservatoryDiscVariant } from './ObservatoryDiscMedallion.js';
+import { polar } from './observatoryAstrolabeGeometry.js';
 import { useObservatoryRoving } from './useObservatoryRoving.js';
 
 export interface StatusCurrentWorkTimeWheelProps {
@@ -17,6 +18,18 @@ export interface StatusCurrentWorkTimeWheelProps {
 }
 
 type WorkSegmentState = 'active' | 'idle' | 'blocked' | 'warning' | 'low-yield' | 'none' | 'unavailable';
+
+/* Artifact wheel(): four fixed rim satellites at NE/SE/SW/NW (Combat 45, Exped 135,
+   Prof 225, Bounty 315). The labels are fixed chrome; the value/tone bind from the
+   matching surface spoke (by keyword), defaulting to None when there is no spoke. */
+const WORK_WHEEL_DIAL = 212;
+const WORK_WHEEL_RADIUS = 88;
+const WORK_WHEEL_SATELLITES = [
+  { slot: 'ne', label: 'Combat', angle: 45, match: /combat|attack|battle|fight/ },
+  { slot: 'se', label: 'Exped', angle: 135, match: /exped|expedition|gather|scout/ },
+  { slot: 'sw', label: 'Prof', angle: 225, match: /prof|refine|forge|craft|alchemy/ },
+  { slot: 'nw', label: 'Bounty', angle: 315, match: /bounty|quest|mission|task/ },
+] as const;
 
 function toneToSegmentState(tone: StatusLedgerTone, text: string): WorkSegmentState {
   const normalized = text.toLowerCase();
@@ -46,10 +59,10 @@ function routeDisabled(action: StatusLedgerActionSurface | null, onAction?: (act
 }
 
 function forwardSpokeAction(
-  spoke: StatusWorkWheelSpokeSurface,
+  spoke: StatusWorkWheelSpokeSurface | null,
   onAction?: (action: StatusLedgerActionSurface) => void,
 ): boolean {
-  if (!spoke.route || spoke.route.disabled || !onAction) return false;
+  if (!spoke?.route || spoke.route.disabled || !onAction) return false;
   onAction?.(spoke.route);
   return true;
 }
@@ -77,15 +90,19 @@ function foregroundRead(surface: StatusObservatorySurfaceV1['workWheel']): {
   };
 }
 
-/* Decorative per-spoke disc tone — the spoke's label + value + data-segment-state
-   remain the truth; the disc tint is redundant chrome. */
-function spokeVariant(state: WorkSegmentState): ObservatoryDiscVariant {
-  if (state === 'active') return 'jade';
-  if (state === 'blocked') return 'cinnabar';
-  return 'gold';
+/* Position (as a % of the dial box) of a rim satellite centre, from the artifact
+   PT(C, C, R-1, angle) polar helper (-90deg = up, clockwise). */
+function satelliteStyle(angle: number): CSSProperties {
+  const [x, y] = polar(WORK_WHEEL_DIAL / 2, WORK_WHEEL_DIAL / 2, WORK_WHEEL_RADIUS - 1, angle);
+  return {
+    left: `${(x / WORK_WHEEL_DIAL) * 100}%`,
+    top: `${(y / WORK_WHEEL_DIAL) * 100}%`,
+  };
 }
 
-export function StatusCurrentWorkTimeWheel({
+export const StatusCurrentWorkTimeWheel = memo(StatusCurrentWorkTimeWheelBase, deepEqualProps);
+
+function StatusCurrentWorkTimeWheelBase({
   surface,
   onAction,
   onOpenDrawer,
@@ -93,9 +110,19 @@ export function StatusCurrentWorkTimeWheel({
   const spokes = surface.spokes;
   const segmentCount = Math.max(1, spokes.length);
   const foreground = foregroundRead(surface);
+
+  // Bind each fixed rim slot to the first matching surface spoke (by keyword).
+  const satellites = WORK_WHEEL_SATELLITES.map((sat) => {
+    const spoke = spokes.find((entry) => sat.match.test(`${entry.label} ${entry.detail}`.toLowerCase())) ?? null;
+    const value = spoke?.value ?? 'None';
+    const tone = spoke?.tone ?? 'muted';
+    const state = toneToSegmentState(tone, `${value} ${spoke?.detail ?? ''}`);
+    const active = !/^(none|idle)$/i.test(value.trim());
+    return { ...sat, spoke, value, tone, state, active };
+  });
+
   const ritual = useRitualMotion();
-  const motion = useObservatoryMotion({ purityPct: 0, fitAngleDeg: 0, qiPerSecond: null, cultivationRate: null });
-  const spokesRoving = useObservatoryRoving(spokes.length);
+  const satellitesRoving = useObservatoryRoving(satellites.length);
 
   return (
     <section
@@ -105,65 +132,83 @@ export function StatusCurrentWorkTimeWheel({
       data-s7-instrument="current-work-time-wheel"
       data-work-segments={spokes.length}
       data-animate={ritual.animate ? 'true' : 'false'}
-      style={motion as CSSProperties}
       aria-label={`Current Work Wheel. ${foreground.label}: ${foreground.value}. ${surface.rows.length} exact work rows available.`}
     >
-      <div className="statusObservatoryInstrument__header statusCurrentWorkTimeWheel__header">
-        <span className="statusObservatoryInstrument__sigil" aria-hidden="true" />
-        <div>
-          <h2>{surface.title}</h2>
-          <p>Foreground, combat, bounty, expeditions, queues, and pressure read as one time wheel.</p>
-        </div>
-      </div>
-
       <div className="statusCurrentWorkTimeWheel__body">
         <div
           className="statusCurrentWorkTimeWheel__dial"
           data-foreground-tone={foreground.tone}
           aria-label={`${foreground.label}. ${foreground.value}. ${foreground.detail}`}
         >
+          {/* Artifact wheel(): exact 0 0 212 212 brass dial (C=106, R=88). Paint
+              servers (#brass / #jadeRad / #soft / #goldRad) come from the shared
+              <InkObservatoryDefs/> mounted in the Observatory shell. */}
           <svg
             className="statusCurrentWorkTimeWheel__rig"
-            viewBox="0 0 100 100"
+            viewBox="0 0 212 212"
             aria-hidden="true"
             focusable={false}
           >
-            <circle className="statusCurrentWorkTimeWheel__rigRim" cx="50" cy="50" r="46" fill="none" stroke="url(#brass)" />
-            <circle className="statusCurrentWorkTimeWheel__rigRing" cx="50" cy="50" r="48" fill="none" />
-            <circle className="statusCurrentWorkTimeWheel__rigRing" cx="50" cy="50" r="43" fill="none" />
+            {/* outer dashed ring (64s forward spin) */}
             <g className="statusCurrentWorkTimeWheel__spinRing">
-              <circle className="statusCurrentWorkTimeWheel__rigDash" cx="50" cy="50" r="40" fill="none" />
+              <circle
+                className="statusCurrentWorkTimeWheel__rigDash"
+                cx="106"
+                cy="106"
+                r="93"
+                fill="none"
+              />
             </g>
+            {/* brass rim + two dark detail rings */}
+            <circle className="statusCurrentWorkTimeWheel__rigRim" cx="106" cy="106" r="88" fill="none" stroke="url(#brass)" />
+            <circle className="statusCurrentWorkTimeWheel__rigRingInner" cx="106" cy="106" r="83" fill="none" />
+            <circle className="statusCurrentWorkTimeWheel__rigRingOuter" cx="106" cy="106" r="92" fill="none" />
+            {/* inner tick ring (110s reverse spin): 24 ticks at i*15deg, exact PT geometry */}
             <g className="statusCurrentWorkTimeWheel__spinRingInner">
               {Array.from({ length: 24 }, (_, i) => {
-                const a = (i / 24) * 2 * Math.PI;
-                const r1 = 29;
-                const r2 = i % 3 === 0 ? 35 : 32;
+                const ang = (i * 15 - 90) * (Math.PI / 180);
+                const cos = Math.cos(ang);
+                const sin = Math.sin(ang);
+                const innerR = i % 3 ? 77 : 73;
+                const minor = i % 3 !== 0;
                 return (
                   <line
                     key={i}
                     className="statusCurrentWorkTimeWheel__rigTick"
-                    x1={(50 + r1 * Math.cos(a)).toFixed(2)}
-                    y1={(50 + r1 * Math.sin(a)).toFixed(2)}
-                    x2={(50 + r2 * Math.cos(a)).toFixed(2)}
-                    y2={(50 + r2 * Math.sin(a)).toFixed(2)}
+                    data-minor={minor ? 'true' : 'false'}
+                    x1={(106 + 81 * cos).toFixed(1)}
+                    y1={(106 + 81 * sin).toFixed(1)}
+                    x2={(106 + innerR * cos).toFixed(1)}
+                    y2={(106 + innerR * sin).toFixed(1)}
                   />
                 );
               })}
             </g>
-            <circle className="statusCurrentWorkTimeWheel__coreBreath" cx="50" cy="50" r="21" filter="url(#soft)" />
-            <circle className="statusCurrentWorkTimeWheel__rigCore" cx="50" cy="50" r="20" fill="url(#jadeRad)" stroke="url(#brass)" />
+            {/* jade breath glow */}
+            <circle className="statusCurrentWorkTimeWheel__coreBreath" cx="106" cy="106" r="52" filter="url(#soft)" />
+            {/* jade core: brass-rimmed disc + inner detail ring */}
+            <circle className="statusCurrentWorkTimeWheel__rigCore" cx="106" cy="106" r="44" fill="url(#jadeRad)" stroke="url(#brass)" />
+            <circle className="statusCurrentWorkTimeWheel__rigCoreInner" cx="106" cy="106" r="38" fill="none" />
+            {/* Hub text: 行 watermark, then the LABEL above the VALUE (artifact order). */}
             <text
               className="statusCurrentWorkTimeWheel__rigCoreMark"
-              x="50"
-              y="50"
+              x="106"
+              y="90"
               textAnchor="middle"
-              dominantBaseline="central"
             >
               行
             </text>
+            <text className="statusCurrentWorkTimeWheel__hubLabel" x="106" y="104" textAnchor="middle">
+              {foreground.label.toUpperCase()}
+            </text>
+            <text className="statusCurrentWorkTimeWheel__hubValue" x="106" y="120" textAnchor="middle">
+              {foreground.value}
+            </text>
           </svg>
 
+          {/* Legacy decorative bar layer kept in DOM with its data-* + --segment-angle
+              for the S7 stylesheet contract (hidden — the artifact conveys per-spoke
+              state through the satellites, not radial bars). */}
           <div className="statusCurrentWorkTimeWheel__segmentLayer" aria-hidden="true">
             {spokes.map((spoke, index) => {
               const state = toneToSegmentState(spoke.tone, `${spoke.label} ${spoke.value ?? ''} ${spoke.detail}`);
@@ -180,68 +225,52 @@ export function StatusCurrentWorkTimeWheel({
             })}
           </div>
 
+          {/* Hub: an invisible focusable overlay over the jade core that opens the
+              exact Current Work drawer (the visible label/value live in the SVG). */}
           <button
             type="button"
             className="statusCurrentWorkTimeWheel__core"
             aria-haspopup="dialog"
+            aria-label={`${foreground.label}: ${foreground.value}. Opens the Current Work ledger.`}
             onClick={() => onOpenDrawer?.({ kind: 'currentWork', sourceId: surface.foreground?.id })}
+          />
+
+          {/* Four rim satellites (artifact text-in-circles), as positioned buttons so
+              they stay keyboard reachable and forward the matched spoke route. */}
+          <div
+            className="statusCurrentWorkTimeWheel__satellites"
+            aria-label="Current work wheel satellites"
+            onKeyDown={satellitesRoving.onKeyDown}
           >
-            <span>Foreground</span>
-            <strong>{foreground.value}</strong>
-            <small>{foreground.label}</small>
-          </button>
-        </div>
-
-        <div
-          className="statusCurrentWorkTimeWheel__spokes"
-          aria-label="Current work wheel segments"
-          onKeyDown={spokesRoving.onKeyDown}
-        >
-          {spokes.map((spoke, index) => {
-            const state = toneToSegmentState(spoke.tone, `${spoke.label} ${spoke.value ?? ''} ${spoke.detail}`);
-            const disabled = routeDisabled(spoke.route, onAction);
-
-            return (
-              <button
-                key={spoke.id}
-                type="button"
-                className="statusCurrentWorkTimeWheel__spoke"
-                data-spoke-index={index}
-                data-spoke-id={spoke.id}
-                data-tone={spoke.tone}
-                data-segment-state={state}
-                aria-disabled={disabled ? 'true' : undefined}
-                aria-label={`${spoke.label}, ${state}, ${spoke.value ?? spoke.detail}. ${spoke.detail}`}
-                title={spoke.route?.disabled ? spoke.route.disabledReason ?? spoke.route.detail : spoke.detail}
-                onClick={() => {
-                  if (!forwardSpokeAction(spoke, onAction)) {
-                    onOpenDrawer?.({ kind: 'currentWork', sourceId: spoke.id });
-                  }
-                }}
-                {...spokesRoving.getItemProps(index)}
-              >
-                <ObservatoryDiscMedallion
-                  className="statusCurrentWorkTimeWheel__spokeMedallion"
-                  variant={spokeVariant(state)}
-                />
-                <span>{spoke.label}</span>
-                <strong>{spoke.value ?? state}</strong>
-                <small>{spoke.detail}</small>
-              </button>
-            );
-          })}
+            {satellites.map((sat, index) => {
+              const disabled = routeDisabled(sat.spoke?.route ?? null, onAction);
+              return (
+                <button
+                  key={sat.slot}
+                  type="button"
+                  className="statusCurrentWorkTimeWheel__satellite"
+                  data-slot={sat.slot}
+                  data-segment-state={sat.state}
+                  data-active={sat.active ? 'true' : 'false'}
+                  style={satelliteStyle(sat.angle)}
+                  aria-disabled={disabled ? 'true' : undefined}
+                  aria-label={`${sat.label}, ${sat.value}. ${sat.spoke?.detail ?? 'No active work.'}`}
+                  title={sat.spoke?.route?.disabled ? sat.spoke.route.disabledReason ?? sat.spoke.route.detail : sat.spoke?.detail}
+                  onClick={() => {
+                    if (!forwardSpokeAction(sat.spoke, onAction)) {
+                      onOpenDrawer?.({ kind: 'currentWork', sourceId: sat.spoke?.id });
+                    }
+                  }}
+                  {...satellitesRoving.getItemProps(index)}
+                >
+                  <span className="statusCurrentWorkTimeWheel__satelliteLabel">{sat.label}</span>
+                  <span className="statusCurrentWorkTimeWheel__satelliteValue">{sat.value}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
-
-      <button
-        type="button"
-        className="statusCurrentWorkTimeWheel__openLedger"
-        aria-haspopup="dialog"
-        onClick={() => onOpenDrawer?.({ kind: 'currentWork' })}
-      >
-        <span>Open Current Work Ledger</span>
-        <strong>{surface.rows.length} exact rows</strong>
-      </button>
     </section>
   );
 }

@@ -33,9 +33,14 @@ import type {
   StatusLedgerRequirementRow,
   StatusLedgerSurfaceV1,
   StatusLedgerTone,
+  StatusNamedStatContributionState,
+  StatusNamedStatNodeState,
+  StatusNamedStatSourceEntry,
+  StatusNamedStatUnlockState,
   StatusSpiritRootElement,
   StatusSpiritRootSurface,
 } from './statusLedgerTypes.js';
+import type { CultivatorPathId, CultivatorStatDef, PathId } from '../../../content/types.js';
 import type { CultivationMindAlignmentSnapshot } from '../../cultivation/cultivationMindAlignmentResolver.js';
 import {
   buildSpiritRootObservationSurface,
@@ -45,7 +50,11 @@ import {
   buildStatusCurrentStateSurface,
   type StatusCurrentStateBuildContext,
 } from './statusCurrentStateSurface.js';
-import type { TrainingReadOnlySnapshot } from '../../training/index.js';
+import {
+  getTrainingStatUnlockRealmIndex,
+  getTrainingUnlockRealmLabel,
+  type TrainingReadOnlySnapshot,
+} from '../../training/index.js';
 
 export interface StatusLedgerBuildContext {
   generatedAt: number;
@@ -53,6 +62,8 @@ export interface StatusLedgerBuildContext {
   cityLabel: string;
   currentCityId: string | null;
   debugNotes: string[];
+  selectedPath?: PathId | null;
+  cultivatorStats?: CultivatorStatDef[] | null;
   game: {
     qi: string;
     qiPerSecond: string;
@@ -1178,6 +1189,316 @@ function buildDetails(dashboard: Omit<StatusDashboardSurfaceV1, 'statusLedger'>)
   };
 }
 
+const STAT_BRANCH_IDS = ['universal', 'heaven', 'earth', 'martial'] as const satisfies readonly CultivatorPathId[];
+
+function normalizeStatPath(stat: CultivatorStatDef): CultivatorPathId {
+  const path = stat.path;
+  if (path && (STAT_BRANCH_IDS as readonly string[]).includes(path)) return path;
+  return stat.category === 'foundation' ? 'universal' : 'universal';
+}
+
+function statShortLabel(displayName: string): string {
+  const words = displayName
+    .replace(/[^a-z0-9\s]/gi, ' ')
+    .split(/\s+/)
+    .filter(Boolean);
+  if (words.length === 0) return 'ST';
+  const initials = words.map((word) => word[0]?.toUpperCase() ?? '').join('');
+  return initials.slice(0, 3) || displayName.slice(0, 2).toUpperCase();
+}
+
+function statUnlockRealmIndex(path: CultivatorPathId, statId: string): number | null {
+  if (path === 'universal') return 0;
+  return getTrainingStatUnlockRealmIndex(path, statId);
+}
+
+function trainingHallStatAction(
+  context: StatusLedgerBuildContext,
+  stat: CultivatorStatDef,
+  unlockState: StatusNamedStatUnlockState,
+): StatusLedgerActionSurface {
+  const target: StatusLedgerActionSurface['target'] = context.currentCityId
+    ? { kind: 'world_module', cityId: context.currentCityId, moduleKey: 'trainingHall' }
+    : { kind: 'none', reason: 'No active city is available for Training Hall.' };
+  const disabled = target.kind === 'none' || unlockState === 'path_not_selected';
+  const disabledReason = unlockState === 'path_not_selected'
+    ? 'Choose a path before starting Training Hall practice.'
+    : target.kind === 'none'
+      ? target.reason
+      : null;
+
+  return sanitizeLedgerAction({
+    id: `named-stat-route-${stat.id}`,
+    label: 'Open Training Hall',
+    detail: `Review ${stat.displayName} training source data and path availability.`,
+    destinationLabel: target.kind === 'world_module' ? 'Training Hall' : 'Unavailable',
+    target,
+    disabled,
+    disabledReason,
+    tone: disabled ? 'muted' : 'info',
+    source: 'status',
+  });
+}
+
+function deriveNamedStatState(args: {
+  statPath: CultivatorPathId;
+  currentPath: PathId | null;
+  unlockRealmIndex: number | null;
+  currentRealmIndex: number;
+  hasLivePathRow: boolean;
+}): {
+  unlockState: StatusNamedStatUnlockState;
+  nodeState: StatusNamedStatNodeState;
+  contributionState: StatusNamedStatContributionState;
+  tone: StatusLedgerTone;
+} {
+  if (args.statPath === 'universal') {
+    return {
+      unlockState: 'unlocked',
+      nodeState: 'foundation',
+      contributionState: 'foundation',
+      tone: 'jade',
+    };
+  }
+
+  if (!args.currentPath) {
+    return {
+      unlockState: 'path_not_selected',
+      nodeState: 'inactive',
+      contributionState: 'unselected_path',
+      tone: 'muted',
+    };
+  }
+
+  const unlockedByRealm = args.unlockRealmIndex !== null && args.unlockRealmIndex <= args.currentRealmIndex;
+  if (args.statPath === args.currentPath) {
+    if (args.hasLivePathRow || unlockedByRealm) {
+      return {
+        unlockState: 'unlocked',
+        nodeState: 'lit',
+        contributionState: 'current_path',
+        tone: 'jade',
+      };
+    }
+    return {
+      unlockState: 'future_current_path',
+      nodeState: 'unlit_socket',
+      contributionState: 'future_current_path',
+      tone: 'muted',
+    };
+  }
+
+  if (unlockedByRealm) {
+    return {
+      unlockState: 'off_path_unlocked',
+      nodeState: 'lifeless',
+      contributionState: 'off_path',
+      tone: 'muted',
+    };
+  }
+
+  return {
+    unlockState: 'future_off_path',
+    nodeState: 'future',
+    contributionState: 'future_off_path',
+    tone: 'muted',
+  };
+}
+
+function inactiveReason(args: {
+  stat: CultivatorStatDef;
+  statPath: CultivatorPathId;
+  currentPath: PathId | null;
+  unlockState: StatusNamedStatUnlockState;
+  unlockRealmLabel: string | null;
+}): string | null {
+  if (args.statPath === 'universal' || args.unlockState === 'unlocked') return null;
+  if (!args.currentPath) return 'Choose a path to light path-specific stat sockets.';
+  if (args.unlockState === 'off_path_unlocked') {
+    return `${args.stat.displayName} belongs to the ${args.statPath} path and remains visible but inactive for this life.`;
+  }
+  if (args.unlockState === 'future_current_path') {
+    return args.unlockRealmLabel
+      ? `${args.stat.displayName} opens at ${args.unlockRealmLabel}.`
+      : `${args.stat.displayName} is a future ${args.statPath} path socket.`;
+  }
+  return args.unlockRealmLabel
+    ? `${args.stat.displayName} belongs to the ${args.statPath} path and opens at ${args.unlockRealmLabel}.`
+    : `${args.stat.displayName} belongs to the ${args.statPath} path and remains a future inactive socket.`;
+}
+
+function sourceSystemsForStat(args: {
+  live: TrainingReadOnlySnapshot['pathStats'][number] | null;
+  future: TrainingReadOnlySnapshot['futureStats'][number] | null;
+  unlockRealmIndex: number | null;
+}): string[] {
+  const systems = ['stats.json'];
+  if (args.live || args.future) systems.push('trainingReadOnlySnapshot');
+  if (args.unlockRealmIndex !== null) systems.push('trainingUnlockPolicy');
+  return systems;
+}
+
+function buildStatDetailRows(args: {
+  stat: CultivatorStatDef;
+  path: CultivatorPathId;
+  entryState: ReturnType<typeof deriveNamedStatState>;
+  rating: number;
+  cap: number;
+  capPct: number;
+  unlockRealmLabel: string | null;
+  lockedReason: string | null;
+}): StatusLedgerFactRow[] {
+  return [
+    factRow({
+      id: `named-stat-${args.stat.id}-state`,
+      label: 'Constellation State',
+      value: args.entryState.nodeState.replace(/_/g, ' '),
+      detail: args.lockedReason ?? `${args.stat.displayName} is available from current source data.`,
+      tone: args.entryState.tone,
+      icon: args.path === 'universal' ? 'foundationPill' : args.path === 'heaven' ? 'bookHeaven' : args.path === 'earth' ? 'bookEarth' : 'jadeSword',
+      sourceLabel: 'Stat Meridian Constellation',
+      action: null,
+    }),
+    factRow({
+      id: `named-stat-${args.stat.id}-rating`,
+      label: 'Training Rating',
+      value: `${args.rating} / ${args.cap}`,
+      detail: `Current known rating is ${args.rating}; current realm cap is ${args.cap}; cap fill is ${args.capPct}%.`,
+      tone: args.rating > 0 ? 'jade' : 'muted',
+      icon: 'hourglassProgress',
+      sourceLabel: 'Training Hall',
+      action: null,
+    }),
+    factRow({
+      id: `named-stat-${args.stat.id}-effect`,
+      label: 'Max Effect',
+      value: args.unlockRealmLabel,
+      detail: args.stat.maxEffectSummary ?? args.stat.description ?? 'Effect summary unavailable.',
+      tone: 'info',
+      icon: 'recordSlip',
+      sourceLabel: 'stats.json',
+      action: null,
+    }),
+  ];
+}
+
+function buildBridgeSockets(stats: StatusNamedStatSourceEntry[]): StatusLedgerSurfaceV1['namedStats']['bridgeSockets'] {
+  const handlingStats = stats.filter((stat) => stat.category === 'handling');
+  if (handlingStats.length === 0) return [];
+  return [{
+    id: 'handling-bridge-sockets',
+    label: 'Handling Bridges',
+    detail: 'Handling stats remain visible as dormant bridge opportunities until a later renderer gives them dedicated geometry.',
+    state: 'dormant',
+    sourceStatIds: handlingStats.map((stat) => stat.id),
+  }];
+}
+
+function buildNamedStats(context: StatusLedgerBuildContext): StatusLedgerSurfaceV1['namedStats'] {
+  const stats = context.contentLoaded && Array.isArray(context.cultivatorStats)
+    ? context.cultivatorStats
+    : [];
+  const snapshot = context.trainingSnapshot ?? null;
+  const currentPath = context.selectedPath ?? snapshot?.path ?? null;
+  const currentRealmIndex = Math.max(0, Math.floor(context.game.realmIndex));
+  const realmCap = Math.max(0, snapshot?.realmCap ?? 0);
+  const liveById = new Map((snapshot?.pathStats ?? []).map((row) => [row.statId, row]));
+  const futureById = new Map((snapshot?.futureStats ?? []).map((row) => [row.statId, row]));
+  const weakStatId = snapshot?.currentBottleneck?.statId
+    ?? [...liveById.values()].sort((left, right) => {
+      if (left.rating !== right.rating) return left.rating - right.rating;
+      return left.displayName.localeCompare(right.displayName);
+    })[0]?.statId
+    ?? null;
+
+  const allStats = stats.map((stat): StatusNamedStatSourceEntry => {
+    const path = normalizeStatPath(stat);
+    const live = liveById.get(stat.id) ?? null;
+    const future = futureById.get(stat.id) ?? null;
+    const unlockRealmIndex = future?.unlockRealmIndex ?? statUnlockRealmIndex(path, stat.id);
+    const unlockRealmLabel = future?.unlockRealmLabel
+      ?? (unlockRealmIndex === null ? null : getTrainingUnlockRealmLabel(unlockRealmIndex));
+    const state = deriveNamedStatState({
+      statPath: path,
+      currentPath,
+      unlockRealmIndex,
+      currentRealmIndex,
+      hasLivePathRow: Boolean(live),
+    });
+    const rating = Math.max(0, live?.rating ?? 0);
+    const cap = Math.max(0, live?.cap ?? realmCap);
+    const capPct = Math.max(0, Math.min(100, live?.capPct ?? 0));
+    const lockedReason = inactiveReason({
+      stat,
+      statPath: path,
+      currentPath,
+      unlockState: state.unlockState,
+      unlockRealmLabel,
+    });
+    const effectSummary = sanitizeStatusLedgerCopy(
+      stat.maxEffectSummary ?? stat.description ?? 'Effect summary unavailable.',
+    );
+    const weakLink = stat.id === weakStatId;
+
+    return {
+      id: stat.id,
+      displayName: sanitizeStatusLedgerCopy(stat.displayName),
+      shortLabel: statShortLabel(stat.displayName),
+      label: sanitizeStatusLedgerCopy(stat.displayName),
+      detail: lockedReason ?? effectSummary,
+      path,
+      branchId: path,
+      category: stat.category,
+      tier: stat.tier ?? null,
+      sourceSystems: sourceSystemsForStat({ live, future, unlockRealmIndex }),
+      effectSummary,
+      currentRating: rating,
+      cap,
+      capPct,
+      unlockRealmIndex,
+      unlockRealmLabel,
+      lockedReason,
+      unlockState: state.unlockState,
+      nodeState: state.nodeState,
+      contributionState: state.contributionState,
+      visible: true,
+      weakLink,
+      weakReason: weakLink ? 'Current Training bottleneck or lowest current-path stat.' : null,
+      tone: state.tone,
+      routeAction: trainingHallStatAction(context, stat, state.unlockState),
+      detailRows: buildStatDetailRows({
+        stat,
+        path,
+        entryState: state,
+        rating,
+        cap,
+        capPct,
+        unlockRealmLabel,
+        lockedReason,
+      }),
+    };
+  });
+
+  const byPath = (path: CultivatorPathId) => allStats.filter((stat) => stat.path === path);
+  const debugNotes = stats.length === 0
+    ? ['Named stat content unavailable; Stat Meridian Constellation source is empty.']
+    : [];
+
+  return {
+    title: 'Stat Meridian Constellation',
+    currentPath,
+    realmCap,
+    allStats,
+    universal: byPath('universal'),
+    heaven: byPath('heaven'),
+    earth: byPath('earth'),
+    martial: byPath('martial'),
+    weakLinks: allStats.filter((stat) => stat.weakLink),
+    bridgeSockets: buildBridgeSockets(allStats),
+    debugNotes,
+  };
+}
+
 export function buildStatusLedgerSurfaceFromDashboard(
   dashboard: Omit<StatusDashboardSurfaceV1, 'statusLedger'>,
   context: StatusLedgerBuildContext,
@@ -1264,5 +1585,6 @@ export function buildStatusLedgerSurfaceFromDashboard(
     buildPreparation: buildBuildPreparation(dashboard),
     recentChanges: buildRecentChanges(dashboard),
     details: buildDetails(dashboard),
+    namedStats: buildNamedStats(context),
   };
 }

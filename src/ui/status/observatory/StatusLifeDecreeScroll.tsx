@@ -1,8 +1,10 @@
+import { memo } from 'react';
 import type { StatusLedgerActionSurface } from '../../../systems/ui/status/statusLedgerTypes.js';
 import type {
   StatusObservatorySurfaceV1,
   StatusObservatoryVisualState,
 } from '../../../systems/ui/status/statusObservatoryTypes.js';
+import { deepEqualProps } from './fx/memoProps.js';
 import { InkWaxSeal } from '../../ink/InkWaxSeal.js';
 import { ObservatoryDiscMedallion, type ObservatoryDiscVariant } from './ObservatoryDiscMedallion.js';
 
@@ -47,9 +49,11 @@ interface DecreeTileProps {
   detail?: string | null;
   tone?: string | null;
   testId?: string;
+  /** Artifact goal-row lead glyph: ▲ Next Goal / ! Main Bottleneck / ↗ route. */
+  leadGlyph?: string | null;
 }
 
-function DecreeTile({ field, label, value, detail, tone, testId }: DecreeTileProps) {
+function DecreeTile({ field, label, value, detail, tone, testId, leadGlyph }: DecreeTileProps) {
   const glyph = DECREE_TILE_GLYPH[field] ?? null;
   const medallionVariant: ObservatoryDiscVariant = tone === 'danger' ? 'cinnabar' : 'gold';
   return (
@@ -57,9 +61,14 @@ function DecreeTile({ field, label, value, detail, tone, testId }: DecreeTilePro
       {glyph ? (
         <ObservatoryDiscMedallion glyph={glyph} variant={medallionVariant} className="statusLifeDecree__medallion" />
       ) : null}
-      <span className="statusLifeDecree__label">{label}</span>
-      <strong className="statusLifeDecree__value">{value ?? 'Unavailable'}</strong>
-      {detail ? <small className="statusLifeDecree__detail">{detail}</small> : null}
+      {leadGlyph ? (
+        <span className="statusLifeDecree__goalGlyph" aria-hidden="true">{leadGlyph}</span>
+      ) : null}
+      <span className="statusLifeDecree__tileText">
+        <span className="statusLifeDecree__label">{label}</span>
+        <strong className="statusLifeDecree__value">{value ?? 'Unavailable'}</strong>
+        {detail ? <small className="statusLifeDecree__detail">{detail}</small> : null}
+      </span>
     </div>
   );
 }
@@ -85,6 +94,7 @@ function DecreeAction({
 
   return (
     <div className="statusLifeDecree__tile statusLifeDecree__route" data-decree-field="primary-action" data-tone={action.tone}>
+      <span className="statusLifeDecree__goalGlyph" aria-hidden="true">↗</span>
       <span className="statusLifeDecree__label">Primary Action</span>
       <button
         type="button"
@@ -107,7 +117,9 @@ function DecreeAction({
   );
 }
 
-export function StatusLifeDecreeScroll({
+export const StatusLifeDecreeScroll = memo(StatusLifeDecreeScrollBase, deepEqualProps);
+
+function StatusLifeDecreeScrollBase({
   surface,
   visualState,
   currentPath,
@@ -135,35 +147,6 @@ export function StatusLifeDecreeScroll({
         <rect width="10" height="100" fill="url(#brassH)" />
       </svg>
 
-      <div className="statusLifeDecree__titleRail">
-        <span className="statusLifeDecree__verticalSeal" aria-hidden="true" />
-        <div className="statusLifeDecree__titleCopy">
-          <span className="statusLifeDecree__eyebrow">Status Living State Observatory</span>
-          <div className="statusLifeDecree__titleHeading">
-            <h1>{surface.title}</h1>
-            <InkWaxSeal
-              className="statusLifeDecree__titleChop"
-              chars="觀"
-              size={26}
-              rotation={-3}
-              variant="cinnabar"
-            />
-          </div>
-          <p>{hero.realmName} - {hero.stageText}</p>
-        </div>
-        <div className="statusLifeDecree__stamp" data-state={visualState}>
-          {hero.mainBottleneckLabel}
-        </div>
-      </div>
-
-      <InkWaxSeal
-        className="statusLifeDecree__stateSeal"
-        chars={seal.chars}
-        size={52}
-        rotation={-4}
-        variant={seal.variant}
-      />
-
       <svg
         className="statusLifeDecree__rollerCap statusLifeDecree__rollerCap--right"
         viewBox="0 0 10 100"
@@ -174,24 +157,55 @@ export function StatusLifeDecreeScroll({
         <rect width="10" height="100" fill="url(#brassH)" />
       </svg>
 
-      <div className="statusLifeDecree__scrollTiles">
-        <DecreeTile
-          field="realm-stage"
-          label="Realm + Stage"
-          value={`${hero.realmName} ${hero.stageText}`}
-          tone={hero.realmTone}
-          testId="status-ledger-cultivation-base"
-        />
-        <DecreeTile field="city" label="City" value={hero.cityLabel} />
-        <DecreeTile field="path" label="Path" value={hero.pathLabel} />
-        <DecreeTile field="heart-law" label="Heart Law" value={hero.heartLawLabel} />
-        <DecreeTile field="spirit-root" label="Spirit Root" value={hero.spiritRootLabel} tone={hero.spiritRoot.tone} />
-        <DecreeTile field="focus" label="Focus" value={hero.focusLabel} />
-        <DecreeTile field="breath" label="Breath" value={hero.breathLabel} />
-        <DecreeTile field="next-goal" label="Next Goal" value={hero.nextMajorGoalLabel} detail={hero.nextMajorGoalDetail} />
-        <DecreeTile field="main-bottleneck" label="Main Gap" value={hero.mainBottleneckLabel} detail={hero.mainBottleneckDetail} tone={hero.mainBottleneckTone} />
+      <span className="statusLifeDecree__verticalSeal" aria-hidden="true" />
+
+      <div className="statusLifeDecree__main">
+        <div className="statusLifeDecree__titleCopy">
+          <div className="statusLifeDecree__titleHeading">
+            {/* Artifact paints "Status: Living State Observatory" as the band title;
+                surface.title ("Life Decree") remains the header aria-label. */}
+            <h1>Status: Living State Observatory</h1>
+            <InkWaxSeal
+              className="statusLifeDecree__titleChop"
+              chars="觀"
+              size={26}
+              rotation={-3}
+              variant="cinnabar"
+            />
+          </div>
+        </div>
+
+        <div className="statusLifeDecree__chips">
+          <DecreeTile
+            field="realm-stage"
+            label="Realm + Stage"
+            value={hero.realmName}
+            detail={hero.stageText}
+            tone={hero.realmTone}
+            testId="status-ledger-cultivation-base"
+          />
+          <DecreeTile field="city" label="City" value={hero.cityLabel} />
+          <DecreeTile field="path" label="Path" value={hero.pathLabel} />
+          <DecreeTile field="heart-law" label="Heart Law" value={hero.heartLawLabel} />
+          <DecreeTile field="spirit-root" label="Spirit Root" value={hero.spiritRootLabel} tone={hero.spiritRoot.tone} />
+          <DecreeTile field="focus" label="Focus" value={hero.focusLabel} />
+          <DecreeTile field="breath" label="Breath" value={hero.breathLabel} />
+        </div>
+      </div>
+
+      <div className="statusLifeDecree__goal" data-state={visualState}>
+        <DecreeTile field="next-goal" label="Next Goal" value={hero.nextMajorGoalLabel} detail={hero.nextMajorGoalDetail} leadGlyph="▲" />
+        <DecreeTile field="main-bottleneck" label="Main Bottleneck" value={hero.mainBottleneckLabel} detail={hero.mainBottleneckDetail} tone={hero.mainBottleneckTone} leadGlyph="!" />
         <DecreeAction action={hero.primaryAction} onAction={onAction} />
       </div>
+
+      <InkWaxSeal
+        className="statusLifeDecree__stateSeal"
+        chars={seal.chars}
+        size={44}
+        rotation={-4}
+        variant={seal.variant}
+      />
     </header>
   );
 }

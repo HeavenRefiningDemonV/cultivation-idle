@@ -2,7 +2,7 @@ import { expect, test, type Page } from '@playwright/test';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 
-const artifactRoot = path.resolve('artifacts/mp5/status-current-state');
+const artifactRoot = path.resolve('artifacts/s8-status-observatory/status-current-state');
 const screenshotRoot = path.join(artifactRoot, 'screenshots');
 const domSummaryRoot = path.join(artifactRoot, 'dom-summaries');
 
@@ -110,20 +110,23 @@ async function captureStatusEvidence(page: Page, id: string) {
   const summaryPath = path.join(domSummaryRoot, `${id}.json`);
   await page.screenshot({ path: screenshotPath, fullPage: false });
   const summary = await page.evaluate(() => {
+    const root = document.querySelector('[data-observatory-root="status-living-state-observatory"]');
     const currentState = document.querySelector('[data-testid="status-current-state"]');
     const hero = document.querySelector('[data-testid="status-ledger-hero"]');
-    const mission = document.querySelector('[data-testid="status-ledger-card-mission-requirements"]');
-    const best = document.querySelector('[data-testid="status-ledger-card-best-improvements"]');
+    const mission = document.querySelector('[data-testid="status-ledger-mission-requirements"]');
+    const buildPreparation = document.querySelector('[data-testid="status-ledger-build-preparation"]');
     const drawer = document.querySelector('[data-testid="spirit-root-observation-drawer"]');
     return {
       url: window.location.href,
       reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+      observatoryRoot: root?.getAttribute('data-observatory-root') ?? null,
+      observatoryMode: root?.getAttribute('data-observatory-mode') ?? null,
       noHorizontalOverflow: document.documentElement.scrollWidth <= window.innerWidth + 2,
       order: {
         currentStateTop: currentState?.getBoundingClientRect().top ?? null,
         heroTop: hero?.getBoundingClientRect().top ?? null,
         missionTop: mission?.getBoundingClientRect().top ?? null,
-        bestTop: best?.getBoundingClientRect().top ?? null,
+        buildPreparationTop: buildPreparation?.getBoundingClientRect().top ?? null,
       },
       drawer: drawer
         ? {
@@ -142,51 +145,50 @@ async function captureStatusEvidence(page: Page, id: string) {
   return summary;
 }
 
-test.describe('MP5 Status Current State', () => {
+test.describe('S8 Status Observatory default from Status route', () => {
   test.use({ viewport: { width: 1440, height: 980 } });
 
-  test('renders Current State first, preserves old Status ledger, and opens Spirit Root Observation', async ({ page }) => {
+  test('renders the live Observatory anchors and opens Spirit Root Observation', async ({ page }) => {
     test.setTimeout(120_000);
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/');
     await waitForApp(page);
     await seedStatusCurrentState(page);
 
-    const currentState = page.getByTestId('status-current-state');
-    await expect(currentState).toBeVisible();
-    await expect(currentState.getByRole('heading', { name: /^Current State$/ })).toBeVisible();
+    const root = page.locator('[data-observatory-root="status-living-state-observatory"]');
+    await expect(root).toBeVisible();
+    await expect(root).toHaveAttribute('data-observatory-mode', 'live');
 
-    for (const blockId of [
-      'current-state-cultivation',
-      'current-state-dao-heart',
-      'current-state-spirit-root',
-      'current-state-training',
-      'current-state-build-prep',
-      'current-state-active-work',
+    for (const testId of [
+      'status-ledger-root',
+      'status-ledger-hero',
+      'status-ledger-metrics',
+      'status-current-state',
+      'status-ledger-grid',
+      'status-root-law-instrument',
+      'status-bottleneck-canopy',
+      'status-stat-constellation',
+      'status-ledger-build-preparation',
+      'status-ledger-current-work',
+      'status-ledger-details',
+      'status-ledger-mission-requirements',
+      'status-ledger-cultivation-base',
     ]) {
-      await expect(currentState.getByTestId(`status-current-state-block-${blockId}`)).toBeVisible();
+      await expect(page.getByTestId(testId)).toBeVisible();
     }
-    await expect(currentState.getByLabel('Current Bottleneck')).toBeVisible();
 
-    await expect(page.getByTestId('status-ledger-hero')).toBeVisible();
-    await expect(page.getByTestId('status-ledger-card-mission-requirements')).toBeAttached();
-    await expect(page.getByTestId('status-ledger-card-best-improvements')).toBeAttached();
-    await expect(page.getByTestId('status-ledger-card-current-work')).toBeAttached();
-    await expect(page.getByTestId('status-ledger-card-build-preparation')).toBeAttached();
+    await expect(page.getByTestId('status-ledger-card-mission-requirements')).toHaveCount(0);
 
     const order = await page.evaluate(() => {
       const current = document.querySelector('[data-testid="status-current-state"]')?.getBoundingClientRect().top ?? Number.POSITIVE_INFINITY;
       const hero = document.querySelector('[data-testid="status-ledger-hero"]')?.getBoundingClientRect().top ?? Number.POSITIVE_INFINITY;
-      const mission = document.querySelector('[data-testid="status-ledger-card-mission-requirements"]')?.getBoundingClientRect().top ?? Number.POSITIVE_INFINITY;
-      const best = document.querySelector('[data-testid="status-ledger-card-best-improvements"]')?.getBoundingClientRect().top ?? Number.POSITIVE_INFINITY;
-      return { current, hero, mission, best };
+      const mission = document.querySelector('[data-testid="status-ledger-mission-requirements"]')?.getBoundingClientRect().top ?? Number.POSITIVE_INFINITY;
+      return { current, hero, mission };
     });
-    expect(order.current).toBeLessThan(order.hero);
-    expect(order.current).toBeLessThan(order.mission);
-    expect(order.current).toBeLessThan(order.best);
+    expect(order.hero).toBeLessThan(order.current);
 
-    await currentState
-      .getByTestId('status-current-state-block-current-state-spirit-root')
+    await page
+      .getByTestId('status-root-law-instrument')
       .getByRole('button', { name: /Observe Spirit Root/i })
       .click();
     const drawer = page.getByTestId('spirit-root-observation-drawer');
@@ -196,6 +198,8 @@ test.describe('MP5 Status Current State', () => {
 
     const summary = await captureStatusEvidence(page, 'status-current-state-root-observation');
     expect(summary.noHorizontalOverflow).toBe(true);
-    expect(summary.visibleText).not.toMatch(/\b(Current Omen|Gate Proof|Source Thread|Dao Mandate Interface|undefined|NaN|\[object Object\])\b/i);
+    expect(summary.observatoryRoot).toBe('status-living-state-observatory');
+    expect(summary.observatoryMode).toBe('live');
+    expect(summary.visibleText).not.toMatch(/\b(Current Omen|Gate Proof|Source Thread|Dao Mandate Interface|Omen evidence|Proof Detail|undefined|NaN|\[object Object\])\b/i);
   });
 });

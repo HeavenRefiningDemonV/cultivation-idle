@@ -2,12 +2,12 @@ import { useEffect, useRef, useState } from 'react';
 
 /**
  * Mockup-native design space. Every observatory layout/SVG coordinate is
- * authored in these units; the Stage scales the whole 1672×941 canvas
+ * authored in these units; the Stage scales the whole 2048×1152 canvas
  * uniformly so the painted composition reads identically at any monitor size
  * (Frame I law). One design unit = one mockup pixel.
  */
-export const OBS_STAGE_WIDTH = 1672;
-export const OBS_STAGE_HEIGHT = 941;
+export const OBS_STAGE_WIDTH = 2048;
+export const OBS_STAGE_HEIGHT = 1152;
 
 const MIN_SCALE = 0.45;
 const MAX_SCALE = 1.75;
@@ -25,7 +25,7 @@ export interface ObservatoryScaleHandle extends ObservatoryScaleState {
 
 /**
  * Observes the stage viewport and computes the uniform scale that fits the
- * 1672×941 design canvas inside it (the smaller of the width/height ratios, so
+ * 2048×1152 design canvas inside it (the smaller of the width/height ratios, so
  * the whole composition is always visible). SSR-safe: returns scale 1 until the
  * first client-side measurement. The ResizeObserver is cleaned up on unmount.
  */

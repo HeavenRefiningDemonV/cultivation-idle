@@ -1,4 +1,6 @@
-import { useEffect, useMemo, useReducer, useRef, type CSSProperties, type KeyboardEvent } from 'react';
+import { memo, useEffect, useMemo, useReducer, useRef, type CSSProperties, type KeyboardEvent } from 'react';
+import { deepEqualProps } from './fx/memoProps.js';
+import cultivatorArt from '../../../assets/onscreen/cbg_full.png';
 import type { StatusLedgerActionSurface } from '../../../systems/ui/status/statusLedgerTypes.js';
 import type {
   StatusMeridianOrganSurface,
@@ -7,7 +9,6 @@ import type {
 import {
   STATUS_OBSERVATORY_MERIDIAN_BODY_LINEWORK,
   STATUS_OBSERVATORY_MERIDIAN_FOCUS_LABELS,
-  STATUS_OBSERVATORY_MERIDIAN_INSPECTION_COPY,
   STATUS_OBSERVATORY_MERIDIAN_ORGAN_GEOMETRY,
   STATUS_OBSERVATORY_MERIDIAN_STATE_LABELS,
 } from '../../../systems/ui/status/statusObservatoryPresentation.js';
@@ -21,6 +22,49 @@ export interface StatusMeridianVesselCompassProps {
   surface: StatusObservatorySurfaceV1['meridianVessel'];
   visualState?: StatusObservatorySurfaceV1['meta']['visualState'];
   onAction?: (action: StatusLedgerActionSurface) => void;
+}
+
+export interface StatusMeridianSharedCauseStampsProps {
+  stamps: StatusObservatorySurfaceV1['meridianVessel']['sharedCauseStamps'];
+}
+
+/**
+ * V7 `causes` ribbon (816x56 @552,806): a horizontal row of static shared-cause
+ * seals divided by hairline rules. Lives in its OWN shell region
+ * (obs-region-causes), not inside the hero compass. Kept in this file so the
+ * `statusMeridianVesselCompass__sharedCauseStamps` class string stays co-located
+ * with the vessel renderer (S4 contract).
+ */
+export const StatusMeridianSharedCauseStamps = memo(StatusMeridianSharedCauseStampsBase, deepEqualProps);
+
+function StatusMeridianSharedCauseStampsBase({ stamps }: StatusMeridianSharedCauseStampsProps) {
+  return (
+    <div
+      className="statusMeridianVesselCompass__sharedCauseStamps"
+      data-testid="status-meridian-shared-cause-stamps"
+      aria-label="Shared causes across all organs"
+    >
+      <span>Shared Causes</span>
+      <div>
+        {stamps.map((stamp) => (
+          <span
+            key={stamp.id}
+            className="statusMeridianVesselCompass__causeStamp"
+            data-cause-id={stamp.id}
+            data-tone={stamp.tone}
+            aria-label={stamp.ariaLabel}
+          >
+            <svg className="statusMeridianVesselCompass__causeSeal" viewBox="0 0 24 24" aria-hidden="true">
+              <circle className="statusMeridianVesselCompass__causeSealOuter" cx="12" cy="12" r="10.5" />
+              <circle className="statusMeridianVesselCompass__causeSealInner" cx="12" cy="12" r="6.5" />
+            </svg>
+            <strong>{stamp.label}</strong>
+            <small>{stamp.value ?? stamp.detail}</small>
+          </span>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 type StatusMeridianOrganId = StatusMeridianOrganSurface['id'];
@@ -51,9 +95,37 @@ function meridianVesselReducer(state: MeridianVesselState, action: MeridianVesse
   }
 }
 
-const MERIDIAN_CENTRAL_CHANNEL_D =
-  STATUS_OBSERVATORY_MERIDIAN_BODY_LINEWORK.find((path) => path.id === 'central-channel')?.d ?? '';
-const MERIDIAN_DANTIAN_PEARL_Y = [28, 40, 64, 76];
+// Artifact compass() figure is painted in an 838x560 px viewBox (cx=419, hy=96).
+// These mirror the generator's mer[] meridian points and pos[]/anchor math so the
+// React figure reproduces the exact element-by-element output.
+const MERIDIAN_VIEW_W = 838;
+const MERIDIAN_VIEW_H = 560;
+const MERIDIAN_CX = 419;
+const MERIDIAN_MER: ReadonlyArray<readonly [number, number]> = [
+  [419, 62],
+  [419, 104],
+  [419, 150],
+  [419, 200],
+  [419, 256],
+  [419, 322],
+];
+// thread tone (under-stroke) matches the artifact thcol().
+function meridianThreadColor(state: StatusMeridianOrganSurface['state']): string {
+  if (state === 'danger') return '#a94835';
+  if (state === 'attention') return '#b2832d';
+  return '#3f7d63';
+}
+
+// Artifact organ-seal Kai glyph per organ (compass o.glyph): body / heart /
+// root / martial / prep / merit. The ordinal moves to the title ("1. …").
+const ORGAN_GLYPH: Record<string, string> = {
+  cultivation: '體',
+  daoHeart: '心',
+  spiritRoot: '根',
+  training: '武',
+  buildPrep: '備',
+  activeWork: '功',
+};
 
 function organStateRank(state: StatusMeridianOrganSurface['state']): number {
   if (state === 'danger') return 0;
@@ -90,7 +162,9 @@ function stateCopy(state: StatusMeridianOrganSurface['state']): string {
   return STATUS_OBSERVATORY_MERIDIAN_STATE_LABELS[state].label;
 }
 
-export function StatusMeridianVesselCompass({
+export const StatusMeridianVesselCompass = memo(StatusMeridianVesselCompassBase, deepEqualProps);
+
+function StatusMeridianVesselCompassBase({
   surface,
   visualState = 'unknown',
   onAction,
@@ -179,74 +253,57 @@ export function StatusMeridianVesselCompass({
       data-visual-state={visualState}
       aria-label="Meridian Vessel Compass"
     >
-      <div className="statusObservatoryInstrument__header statusMeridianVesselCompass__header">
-        <span className="statusObservatoryInstrument__sigil" aria-hidden="true" />
-        <div>
-          <h2>{surface.title}</h2>
-          <p>Full-state inner ledger of mind, body, root, path, preparation, and current work.</p>
-        </div>
-      </div>
-
+      {/* No title/header here: the jade region banner ("MERIDIAN VESSEL COMPASS")
+          owns the title, exactly as the artifact `compass` generator renders no
+          header. The figure + flanking cards span the full panel below the banner. */}
       <div className="statusMeridianVesselCompass__body">
-        <div className="statusMeridianVesselCompass__rail statusMeridianVesselCompass__rail--left">
-          <div>
-            <span>Overview</span>
-            <p>{STATUS_OBSERVATORY_MERIDIAN_INSPECTION_COPY.overview}</p>
-          </div>
-          <div>
-            <span>Current Focus</span>
-            <strong>{selectedOrgan?.title ?? surface.focusLens.label}</strong>
-            <small>{selectedOrgan?.valueLabel ?? surface.focusLens.value}</small>
-          </div>
-          <div>
-            <span>Inspection Mode</span>
-            <strong>{STATUS_OBSERVATORY_MERIDIAN_INSPECTION_COPY.inspectionMode}</strong>
-            <small>{STATUS_OBSERVATORY_MERIDIAN_INSPECTION_COPY.inspectionDetail}</small>
-          </div>
-        </div>
-
         <div className="statusMeridianVesselCompass__figure" aria-label="Six-organ meridian vessel anatomy">
           <svg
             className="statusMeridianVesselCompass__bodyLinework"
-            viewBox="0 0 100 100"
+            viewBox={`0 0 ${MERIDIAN_VIEW_W} ${MERIDIAN_VIEW_H}`}
+            preserveAspectRatio="xMidYMid meet"
             role="img"
             data-animate={ritual.animate ? 'true' : 'false'}
             style={motion as CSSProperties}
-            aria-label="Faint seated cultivator silhouette with meridian linework"
+            aria-label="Seated cultivator with qi threads to the six organs"
           >
             <defs>
-              <radialGradient id="statusMeridianCoreGlow" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stopColor="#f8efd2" stopOpacity="0.88" />
-                <stop offset="52%" stopColor="#d9b76d" stopOpacity="0.24" />
-                <stop offset="100%" stopColor="#5d4121" stopOpacity="0.04" />
+              <radialGradient id="statusMeridianQiAura" cx="50%" cy="42%" r="55%">
+                <stop offset="0" stopColor="#e7c878" stopOpacity="0.42" />
+                <stop offset="0.4" stopColor="#d8b45e" stopOpacity="0.2" />
+                <stop offset="0.72" stopColor="#caa84e" stopOpacity="0.07" />
+                <stop offset="1" stopColor="#caa84e" stopOpacity="0" />
+              </radialGradient>
+              <radialGradient id="statusMeridianQiCore" cx="50%" cy="50%" r="50%">
+                <stop offset="0" stopColor="#fff4d6" stopOpacity="0.9" />
+                <stop offset="1" stopColor="#e7c878" stopOpacity="0" />
               </radialGradient>
             </defs>
-            <circle className="statusMeridianVesselCompass__bodyAura" cx="50" cy="50" r="31" />
-            {STATUS_OBSERVATORY_MERIDIAN_BODY_LINEWORK.map((path) => (
-              <path key={path.id} className="statusMeridianVesselCompass__bodyPath" d={path.d} pathLength={1} />
-            ))}
-            {MERIDIAN_CENTRAL_CHANNEL_D ? (
-              <path
-                className="statusMeridianVesselCompass__channelFlow"
-                d={MERIDIAN_CENTRAL_CHANNEL_D}
-                pathLength={1}
-                aria-hidden="true"
-              />
-            ) : null}
-            {MERIDIAN_DANTIAN_PEARL_Y.map((cy, index) => (
-              <g
-                key={cy}
-                className="statusMeridianVesselCompass__dantian"
-                data-dantian-index={index}
-                aria-hidden="true"
-              >
-                <circle className="statusMeridianVesselCompass__dantianRing" cx="50" cy={cy} r="2.2" />
-                <circle className="statusMeridianVesselCompass__dantianBead" cx="50" cy={cy} r="1.25" />
-              </g>
-            ))}
-            {organs.map((organ) => {
+            {/* (A) qi aura ellipse */}
+            <ellipse className="statusMeridianVesselCompass__bodyAura" cx={MERIDIAN_CX} cy="206" rx="186" ry="232" />
+            {/* Cultivator portrait — the actual meditating-cultivator art (transparent
+               PNG) replaces the drawn anatomy figure, centered in the vessel behind the
+               per-organ qi threads. The threads still emanate from the centerline
+               (MERIDIAN_MER, x=419), i.e. up the cultivator's spine. */}
+            <image
+              className="statusMeridianVesselCompass__cultivatorArt"
+              href={cultivatorArt}
+              x="209"
+              y="40"
+              width="421"
+              height="330"
+              preserveAspectRatio="xMidYMid meet"
+              aria-hidden="true"
+            />
+            {/* (I) per-organ qi threads: spine meridian point -> card anchor */}
+            {organs.map((organ, index) => {
               const geometry = STATUS_OBSERVATORY_MERIDIAN_ORGAN_GEOMETRY[organ.id];
-              const threadPath = `M${geometry.x} ${geometry.y} C${(geometry.x + geometry.lineTargetX) / 2} ${geometry.y} ${(geometry.x + geometry.lineTargetX) / 2} ${geometry.lineTargetY} ${geometry.lineTargetX} ${geometry.lineTargetY}`;
+              const src = MERIDIAN_MER[geometry.src];
+              const ax = geometry.side === 'left' ? 200 : 638;
+              const ay = geometry.cardTop + 30;
+              const mx = (src[0] + ax) / 2;
+              const my = (src[1] + ay) / 2 - 16;
+              const threadPath = `M${src[0]},${src[1]} Q${mx},${my} ${ax},${ay}`;
               const threadSelected = organ.id === selectedOrgan?.id;
               return (
                 <g key={organ.id}>
@@ -257,6 +314,7 @@ export function StatusMeridianVesselCompass({
                     data-selected={threadSelected ? 'true' : 'false'}
                     data-related={sharedSelection.isRelated('meridianVessel', organ.id) ? 'true' : 'false'}
                     d={threadPath}
+                    style={{ stroke: meridianThreadColor(organ.state) }}
                     pathLength={1}
                   >
                     <title>{organ.ariaLabel}</title>
@@ -267,21 +325,24 @@ export function StatusMeridianVesselCompass({
                     data-selected={threadSelected ? 'true' : 'false'}
                     d={threadPath}
                     pathLength={1}
+                    style={{ animationDelay: `${(index * 0.4).toFixed(1)}s` }}
                     aria-hidden="true"
                   />
                   <circle
                     className="statusMeridianVesselCompass__threadBead"
                     data-organ-state={organ.state}
-                    cx={geometry.lineTargetX}
-                    cy={geometry.lineTargetY}
-                    r={1.1}
+                    cx={ax}
+                    cy={ay}
+                    r={4.5}
+                    style={{ fill: meridianThreadColor(organ.state), animationDelay: `${(index * 0.45).toFixed(1)}s` }}
                     aria-hidden="true"
                   />
+                  <circle className="statusMeridianVesselCompass__threadBeadCore" cx={ax} cy={ay} r={2} aria-hidden="true" />
                 </g>
               );
             })}
-            <circle className="statusMeridianVesselCompass__coreSeal" cx="50" cy="52" r="4.4" />
-            <circle className="statusMeridianVesselCompass__coreSeal statusMeridianVesselCompass__coreSeal--outer" cx="50" cy="52" r="7.6" />
+            {/* Meridian points + qi-core + focus ring removed: the cultivator portrait
+               now reads as the body, and the per-organ threads above carry the state. */}
           </svg>
 
           <div
@@ -337,99 +398,41 @@ export function StatusMeridianVesselCompass({
                         textAnchor="middle"
                         dominantBaseline="central"
                       >
-                        {organ.ordinal}
+                        {ORGAN_GLYPH[organ.id] ?? organ.ordinal}
                       </text>
                     </svg>
                   </span>
-                  <strong>{organ.title}</strong>
+                  <strong>{organ.ordinal}. {organ.title}</strong>
                   <small>{organ.valueLabel}</small>
                   <em>{stateCopy(organ.state)}</em>
+                  {organ.route ? (
+                    /* Artifact card carries a route pill bottom-right. Decorative
+                       here (aria-hidden) — selecting the organ routes the real,
+                       focusable action through the focus lens below. */
+                    <span className="statusMeridianVesselCompass__organRoute" data-tone={organ.route.tone} aria-hidden="true">
+                      {organ.route.label}
+                    </span>
+                  ) : null}
                 </button>
               );
             })}
           </div>
         </div>
 
-        <div className="statusMeridianVesselCompass__rail statusMeridianVesselCompass__rail--right">
-          <div className="statusMeridianVesselCompass__legend" aria-label="Meridian vessel state legend">
-            {surface.legend.map((entry) => (
-              <span key={entry.state} data-organ-state={entry.state}>
-                <i aria-hidden="true" />
-                <strong>{entry.label}</strong>
-                <small>{entry.detail}</small>
-              </span>
-            ))}
-          </div>
-          <div>
-            <span>How this works</span>
-            <p>{STATUS_OBSERVATORY_MERIDIAN_INSPECTION_COPY.howItWorks}</p>
-          </div>
-        </div>
       </div>
 
       {selectedOrgan ? <StatusMeridianFocusLens organ={selectedOrgan} lens={surface.focusLens} onAction={onAction} /> : null}
 
-      <div
-        className="statusMeridianVesselCompass__nextBottleneck"
-        data-tone={surface.nextBottleneck.primary.tone}
-        aria-label="Next bottleneck"
-      >
-        <span>Next Bottleneck</span>
-        <strong>{surface.nextBottleneck.primary.label}</strong>
-        {onAction && !surface.nextBottleneck.primary.disabled ? (
-          <button
-            type="button"
-            className="statusMeridianVesselCompass__nextBottleneckRoute"
-            data-tone={surface.nextBottleneck.primary.tone}
-            title={surface.nextBottleneck.primary.detail}
-            onClick={() => {
-              if (onAction) onAction(surface.nextBottleneck.primary);
-            }}
-          >
-            {surface.nextBottleneck.primary.destinationLabel}
-          </button>
-        ) : null}
+      <div className="statusMeridianVesselCompass__footer">
+        <button
+          type="button"
+          className="statusMeridianVesselCompass__openDrawer"
+          aria-expanded={state.drawerOpen}
+          onClick={() => dispatch({ type: 'open-drawer' })}
+        >
+          {STATUS_OBSERVATORY_MERIDIAN_FOCUS_LABELS.drawerButtonLabel}
+        </button>
       </div>
-
-      <div
-        className="statusMeridianVesselCompass__sharedCauseStamps"
-        data-testid="status-meridian-shared-cause-stamps"
-        aria-label="Shared causes across all organs"
-      >
-        <span>Shared Causes</span>
-        <div>
-          {surface.sharedCauseStamps.map((stamp) => (
-            <button
-              key={stamp.id}
-              type="button"
-              className="statusMeridianVesselCompass__causeStamp"
-              data-cause-id={stamp.id}
-              data-tone={stamp.tone}
-              aria-label={stamp.ariaLabel}
-              title={stamp.detail}
-              onClick={() => {
-                if (selectedOrgan) dispatch({ type: 'open-drawer' });
-              }}
-            >
-              <svg className="statusMeridianVesselCompass__causeSeal" viewBox="0 0 24 24" aria-hidden="true">
-                <circle className="statusMeridianVesselCompass__causeSealOuter" cx="12" cy="12" r="10.5" />
-                <circle className="statusMeridianVesselCompass__causeSealInner" cx="12" cy="12" r="6.5" />
-              </svg>
-              <strong>{stamp.label}</strong>
-              <small>{stamp.value ?? stamp.detail}</small>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <button
-        type="button"
-        className="statusMeridianVesselCompass__openDrawer"
-        aria-expanded={state.drawerOpen}
-        onClick={() => dispatch({ type: 'open-drawer' })}
-      >
-        {STATUS_OBSERVATORY_MERIDIAN_FOCUS_LABELS.drawerButtonLabel}
-      </button>
 
       {selectedOrgan ? (
         <StatusObservatoryDrawers

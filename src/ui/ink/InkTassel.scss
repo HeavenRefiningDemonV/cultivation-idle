@@ -12,11 +12,18 @@
 .inkTassel__sway {
   transform-box: fill-box;
   transform-origin: 50% 0%;
+}
+
+/* The sway only runs when an ancestor instrument opts into motion
+   (data-animate='true' from useRitualMotion — i.e. the high tier). On the
+   default tier the board stays static, consistent with the observatory motion
+   gate that freezes the ambient animation load driving the menu lag. */
+[data-animate='true'] .inkTassel__sway {
   animation: inkTasselSway 5.2s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .inkTassel__sway {
+  [data-animate='true'] .inkTassel__sway {
     animation: none;
   }
 }

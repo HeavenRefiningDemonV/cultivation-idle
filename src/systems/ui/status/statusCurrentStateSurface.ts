@@ -518,7 +518,12 @@ export function buildStatusCurrentStateSurface(
       severity: 'healthy',
       label: 'Cultivation Base',
       value: `${dashboard.hero.realmName} - ${dashboard.hero.stageText}`,
-      consequence: `Qi ${context.game.qi}; current flow ${context.game.qiPerSecond} / s toward ${context.game.breakthroughRequirementLabel}.`,
+      // Stable phrasing only — do NOT interpolate live qi/qiPerSecond here. This
+      // consequence is copied into the observatory's vessel + canopy inspector
+      // detailRows; a per-tick string defeats the instruments' deepEqualProps memo
+      // and re-renders those SVGs 4x/sec. Live Qi + flow are shown on the vitals
+      // ribbon / metric strip, which update independently.
+      consequence: `Qi accumulates toward the next threshold (${context.game.breakthroughRequirementLabel}).`,
       primaryFix: actions.cultivation,
       detail: 'Realm, substage, Qi, and Qi speed are read from GameStore and cultivation surfaces.',
       sourceSystem: 'GameStore',

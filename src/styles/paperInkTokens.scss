@@ -264,6 +264,20 @@
   --paper-cinnabar-deep: #6e241e;    /* artifact --cinn-deep (seal stroke) */
   --paper-foxing: #785228;           /* artifact foxing rgb(120,82,40); alpha via color-mix */
 
+  /* === V7 prototype frame material (STATUS_OBSERVATORY_V7_MASTER_PROTOTYPE).
+     Hex sanctioned here only; the observatory .fr1 panel builds gradients from these. */
+  --paper-parchment-shade: #e4d3ae;  /* V7 --paper-shade (fr1.p2 lower stop) */
+  --paper-parchment-aged: #e9dcc0;   /* V7 --paper-aged (fr1.p3 upper stop) */
+  --paper-parchment-soot: #d8c5a4;   /* V7 --paper-soot (fr1.p3 lower stop) */
+  --paper-gold-leaf-hi: #d9b36a;     /* V7 --gold-leaf-hi (frame highlight) */
+  --paper-gold-leaf-lo: #8a5f1f;     /* V7 --gold-leaf-lo (fr1 border) */
+  --paper-bronze-hi: #b08d57;        /* V7 --bronze-hi (stage frame, strip-title) */
+  --paper-bronze-lo: #6f5326;        /* V7 --bronze-lo (stage frame, plaque end-cap) */
+  --paper-lacquer-night: #1d1813;    /* V7 --lacquer-night (fr1.p4, void high) */
+  --paper-lacquer-deep: #14100c;     /* V7 --lacquer-deep (fr1.p4, void deep) */
+  --paper-umber-burn: rgba(74, 50, 24, 0.14);   /* V7 --umber-burn (panel inset glow) */
+  --paper-umber-burn-2: rgba(74, 50, 24, 0.2);  /* V7 --umber-burn2 */
+
   /* 14-root palette: the Spirit Root Astrolabe (later wave) needs all 14;
      only the 5 elements coincide with --element-*. Decorative accents only. */
   --root-wood: var(--element-wood);

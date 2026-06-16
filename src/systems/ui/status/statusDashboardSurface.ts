@@ -1189,6 +1189,8 @@ export function buildStatusDashboardSurface(now = Date.now()): StatusDashboardSu
     cityLabel,
     currentCityId,
     debugNotes: [],
+    selectedPath: gameState.selectedPath,
+    cultivatorStats: contentStore.raw?.cultivator_stats?.stats ?? [],
     game: {
       qi: gameState.qi,
       qiPerSecond: gameState.qiPerSecond,

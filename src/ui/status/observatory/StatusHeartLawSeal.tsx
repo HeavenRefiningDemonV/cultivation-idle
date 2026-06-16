@@ -1,13 +1,12 @@
-import type { StatusLedgerActionSurface } from '../../../systems/ui/status/statusLedgerTypes.js';
 import type { StatusObservatorySurfaceV1 } from '../../../systems/ui/status/statusObservatoryTypes.js';
 import { InkTassel } from '../../ink/InkTassel.js';
 import { polar } from './observatoryAstrolabeGeometry.js';
+import { useRitualMotion } from './fx/useRitualMotion.js';
 
 type SealSurface = StatusObservatorySurfaceV1['rootLawInstrument']['heartLawSeal'];
 
 export interface StatusHeartLawSealProps {
   surface: SealSurface;
-  onAction?: (action: StatusLedgerActionSurface) => void;
   /** True => the Root/Law fit is opposed; tints the book cinnabar + adds a crack. */
   distress?: boolean;
 }
@@ -15,9 +14,8 @@ export interface StatusHeartLawSealProps {
 const C = 135;
 const CY = 112;
 
-export function StatusHeartLawSeal({ surface, onAction, distress }: StatusHeartLawSealProps) {
-  const action = surface.routeAction;
-  const disabled = !action || action.disabled || !onAction;
+export function StatusHeartLawSeal({ surface, distress }: StatusHeartLawSealProps) {
+  const ritual = useRitualMotion();
   const red = distress ?? (surface.clarityLabel === 'Low' || surface.daoHeartStateLabel === 'Needs Work');
 
   const beads = surface.chapterBeads;
@@ -37,7 +35,7 @@ export function StatusHeartLawSeal({ surface, onAction, distress }: StatusHeartL
   const tasselCol = red ? 'var(--paper-stamp)' : 'var(--paper-amber)';
 
   return (
-    <section className="statusHeartLawSeal" aria-label={surface.ariaLabel}>
+    <section className="statusHeartLawSeal" data-animate={ritual.animate ? 'true' : undefined} aria-label={surface.ariaLabel}>
       <div className="statusHeartLawSeal__title">
         <span>Heart Law Seal</span>
         <strong>{surface.heartLawLabel}</strong>
@@ -97,23 +95,8 @@ export function StatusHeartLawSeal({ surface, onAction, distress }: StatusHeartL
         {surface.clarityLabel ? <small>Clarity {surface.clarityLabel}</small> : null}
         {surface.turbulenceLabel ? <small>Turbulence {surface.turbulenceLabel}</small> : null}
       </div>
-
-      {action ? (
-        <button
-          type="button"
-          className="statusRootLawRouteButton statusRootLawRouteButton--daoHeart"
-          data-route-kind={action.target.kind}
-          data-disabled={disabled ? 'true' : 'false'}
-          disabled={disabled}
-          title={action.disabled ? action.disabledReason ?? action.detail : action.detail}
-          onClick={() => {
-            if (!disabled) onAction?.(action);
-          }}
-        >
-          <strong>{action.label}</strong>
-          <small>{action.destinationLabel}</small>
-        </button>
-      ) : null}
+      {/* The Dao Heart route now lives in the instrument's full-width foot row
+          (artifact buildRoot footer), so the seal column ends at its state line. */}
     </section>
   );
 }

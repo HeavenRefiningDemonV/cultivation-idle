@@ -1,5 +1,6 @@
 import type { IconId } from '../../../ui/icons/index.js';
 import type { SpiritRootObservationSurfaceV1 } from '../../../features/spiritRootObservation/index.js';
+import type { CultivatorPathId, CultivatorStatCategory, CultivatorStatTier, PathId } from '../../../content/types.js';
 import type { StatusRequirementKind, StatusRouteTarget } from './statusDashboardSurface.js';
 
 export type StatusLedgerTone = 'success' | 'info' | 'warning' | 'danger' | 'muted' | 'jade' | 'gold';
@@ -150,6 +151,80 @@ export interface StatusCurrentStateSurfaceV1 {
   buffDebuffRows: StatusCauseRowSurface[];
 }
 
+export type StatusNamedStatUnlockState =
+  | 'unlocked'
+  | 'off_path_unlocked'
+  | 'future_current_path'
+  | 'future_off_path'
+  | 'path_not_selected';
+
+export type StatusNamedStatNodeState =
+  | 'lit'
+  | 'foundation'
+  | 'lifeless'
+  | 'unlit_socket'
+  | 'future'
+  | 'inactive';
+
+export type StatusNamedStatContributionState =
+  | 'foundation'
+  | 'current_path'
+  | 'off_path'
+  | 'future_current_path'
+  | 'future_off_path'
+  | 'unselected_path';
+
+export interface StatusNamedStatBridgeSocket {
+  id: string;
+  label: string;
+  detail: string;
+  state: 'dormant' | 'empty';
+  sourceStatIds: string[];
+}
+
+export interface StatusNamedStatSourceEntry {
+  id: string;
+  displayName: string;
+  shortLabel: string;
+  label: string;
+  detail: string;
+  path: CultivatorPathId;
+  branchId: CultivatorPathId;
+  category: CultivatorStatCategory;
+  tier: CultivatorStatTier | null;
+  sourceSystems: string[];
+  effectSummary: string;
+  currentRating: number;
+  cap: number;
+  capPct: number;
+  unlockRealmIndex: number | null;
+  unlockRealmLabel: string | null;
+  lockedReason: string | null;
+  unlockState: StatusNamedStatUnlockState;
+  nodeState: StatusNamedStatNodeState;
+  contributionState: StatusNamedStatContributionState;
+  visible: true;
+  weakLink: boolean;
+  weakReason: string | null;
+  tone: StatusLedgerTone;
+  routeAction: StatusLedgerActionSurface | null;
+  detailRows: StatusLedgerFactRow[];
+}
+
+export interface StatusNamedStatsSurface {
+  title: 'Stat Meridian Constellation';
+  currentPath: PathId | null;
+  realmCap: number;
+  allStats: StatusNamedStatSourceEntry[];
+  universal: StatusNamedStatSourceEntry[];
+  heaven: StatusNamedStatSourceEntry[];
+  earth: StatusNamedStatSourceEntry[];
+  martial: StatusNamedStatSourceEntry[];
+  weakLinks: StatusNamedStatSourceEntry[];
+  bridgeSockets: StatusNamedStatBridgeSocket[];
+  debugNotes: string[];
+}
+
 export interface StatusLedgerMilestoneNode {
   id: string;
   label: string;
@@ -274,4 +349,5 @@ export interface StatusLedgerSurfaceV1 {
     rows: StatusLedgerFactRow[];
     closedByDefault: true;
   };
+  namedStats: StatusNamedStatsSurface;
 }
