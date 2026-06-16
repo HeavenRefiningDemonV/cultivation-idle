@@ -19,3 +19,9 @@ export * from './passiveCombatTraining.js';
 /** W6 — the render-only Tempering Court surface + builder (additive; the legacy
  *  TrainingHallSurfaceV1 is untouched until W13). The W7 UI renders this. */
 export * from './temperingCourtSurface.js';
+
+/** W8 — the Observatory ⇄ Three-Treasures re-bind (D8/D9): the explicit 20→28 node
+ *  map + drop-in constellation-surface builder + astrolabe aptitude chips. ADDITIVE +
+ *  flag-gated — NOT wired into the live (legacy-bound, public-default) observatory;
+ *  swaps in at the W13 cutover. */
+export * from './observatoryMeridianBinding.js';
