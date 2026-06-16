@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Tempering Court · Cultivation Idle</title>
+<style>
+:root{
+  --paper:#f3ead7; --paper-warm:#efe3c9; --paper-deep:#e7d9ba; --paper-shade:#d9c79e;
+  --ink:#1f1a17; --ink-70:rgba(31,26,23,.70); --ink-45:rgba(31,26,23,.45);
+  --ink-25:rgba(31,26,23,.25); --ink-12:rgba(31,26,23,.12);
+  --jade:#4e6b5e; --jade-deep:#0f6f5a; --jade-ink:#2f4a40;
+  --gold:#a2712a; --gold-bright:#b2832d; --gold-pale:#d9bd80; --gold-deep:#84591b; --bronze:#7a5b26;
+  --cinnabar:#8b3028; --cinnabar-bright:#a94835; --cinn-deep:#6e241e;
+  --el-wood:#2d7844; --el-fire:#a44731; --el-earth:#8d642d; --el-metal:#69717c; --el-water:#2a668d;
+  --serif:Georgia,"Songti SC","Noto Serif SC",serif;
+  --kai:"Kaiti SC","STKaiti","KaiTi","Songti SC",serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:#0c0905;display:grid;place-items:center;font-family:var(--serif);color:var(--ink);overflow:auto}
+.th-viewport{width:100vw;height:100vh;display:grid;place-items:center;overflow:hidden}
+.stage{position:relative;width:2048px;height:1152px;transform-origin:top center;
+  background:radial-gradient(60% 50% at 50% 0%, #3a2c1a, transparent 70%),linear-gradient(160deg, #2a2013, #1c150d 60%, #140e08);
+  display:grid;gap:12px;padding:15px;grid-template-rows:116px 768px 150px 52px;}
+.stage::after{content:"";position:absolute;inset:6px;z-index:60;pointer-events:none;border-radius:3px;
+  border:1px solid rgba(178,131,45,.55);outline:1px solid rgba(120,86,38,.32);outline-offset:3px;}
+
+/* PANEL MATERIAL */
+.panel{position:relative;border-radius:4px;overflow:hidden;
+  background:linear-gradient(168deg, var(--paper-warm), var(--paper) 42%, var(--paper-deep));
+  box-shadow:0 6px 20px rgba(0,0,0,.45), inset 0 0 60px rgba(120,90,46,.06);}
+.panel::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(40% 30% at 8% 6%,rgba(120,82,40,.12),transparent 70%),
+    radial-gradient(36% 28% at 94% 92%,rgba(120,82,40,.12),transparent 70%),
+    radial-gradient(50% 40% at 50% 46%,rgba(255,250,236,.30),transparent 72%),
+    radial-gradient(3% 3% at 22% 70%,rgba(120,82,40,.12),transparent 60%),
+    radial-gradient(2.5% 2.5% at 76% 28%,rgba(120,82,40,.10),transparent 60%),
+    radial-gradient(2% 2% at 62% 82%,rgba(120,82,40,.14),transparent 60%),
+    radial-gradient(120% 120% at 50% 50%,transparent 60%,rgba(64,42,22,.34));}
+.content{position:relative;z-index:3;height:100%;padding:18px;}
+.grain{position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.5;mix-blend-mode:multiply;}
+.grain svg{width:100%;height:100%;display:block}
+.gframe{position:absolute;inset:0;z-index:7;pointer-events:none;border-radius:4px;border:2.5px solid transparent;
+  background:linear-gradient(135deg,#e7cd92,#a2712a 45%,#6e4c16) border-box;
+  -webkit-mask:linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0);mask:linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;}
+.gframe2{position:absolute;inset:5px;z-index:7;pointer-events:none;border:1px solid rgba(162,113,42,.45);border-radius:2px;}
+.gc{position:absolute;width:15px;height:15px;z-index:8;pointer-events:none;border:0 solid var(--gold);}
+.gc.tl{left:6px;top:6px;border-left-width:2px;border-top-width:2px;}
+.gc.tr{right:6px;top:6px;border-right-width:2px;border-top-width:2px;}
+.gc.bl{left:6px;bottom:6px;border-left-width:2px;border-bottom-width:2px;}
+.gc.br{right:6px;bottom:6px;border-right-width:2px;border-bottom-width:2px;}
+.banner{position:absolute;top:-1px;left:50%;transform:translateX(-50%);z-index:9;white-space:nowrap;
+  padding:4px 22px;font:700 12px/1 var(--serif);letter-spacing:.15em;color:var(--gold-pale);
+  background:linear-gradient(180deg, var(--jade-ink), #20352d 55%, #182a23);
+  border:1px solid var(--gold-deep);border-radius:0 0 3px 3px;
+  box-shadow:0 3px 6px rgba(20,14,8,.5), inset 0 1px 0 rgba(217,189,128,.35);}
+.banner::before,.banner::after{content:"";position:absolute;top:50%;width:8px;height:8px;
+  background:linear-gradient(135deg,#e7cd92,#84591b);transform:translateY(-50%) rotate(45deg);}
+.banner::before{left:-4px}.banner::after{right:-4px}
+.banner.cinn{background:linear-gradient(180deg,#7a2a22,#601e18 55%,#4e150f);}
+.banner b{color:#fff;font-weight:700}
+.tag{position:absolute;left:13px;top:13px;width:46px;height:80px;z-index:10;
+  background:linear-gradient(160deg,#9a3b30,#7a2a22 55%,#5e1c16);border:1px solid var(--cinn-deep);border-radius:3px;
+  box-shadow:0 3px 8px rgba(30,12,8,.5), inset 0 1px 0 rgba(255,200,180,.3);display:grid;place-items:center;}
+.tag .glyphs{writing-mode:vertical-rl;font-family:var(--kai);font-weight:700;font-size:18px;letter-spacing:4px;color:#f4dccb;text-shadow:0 1px 2px rgba(40,10,6,.6);}
+.gcol{position:absolute;top:44px;writing-mode:vertical-rl;font-family:var(--kai);font-weight:700;font-size:42px;letter-spacing:16px;color:rgba(31,26,23,.055);z-index:2;pointer-events:none;}
+.btn{display:inline-block;padding:4px 11px;font:700 10.5px var(--serif);color:#3a2a0e;cursor:pointer;
+  background:linear-gradient(180deg,#f0e2bf,#dcc591);border:1px solid var(--gold-deep);border-radius:3px;
+  box-shadow:0 1px 2px rgba(60,40,16,.3), inset 0 1px 0 rgba(255,250,235,.5);user-select:none;}
+.btn.jade{background:linear-gradient(180deg,#3a5b4d,#274034);color:#e9efe2;border-color:#1c3128;}
+.btn.big{padding:7px 20px;font:700 13px var(--serif);}
+.btn.is-disabled{opacity:.5;cursor:not-allowed;filter:grayscale(.3);}
+.btn:focus-visible{outline:2px solid var(--gold-bright);outline-offset:2px;}
+.btn:active{transform:scale(.97);}
+.chip{font:800 9px var(--serif);letter-spacing:.05em;padding:1px 6px;border-radius:2px;display:inline-block;}
+.chip.jade{background:rgba(15,111,90,.15);color:var(--jade-deep);border:1px solid rgba(15,111,90,.4);}
+.chip.gold{background:rgba(162,113,42,.15);color:var(--gold-deep);border:1px solid rgba(162,113,42,.45);}
+.chip.cinn{background:rgba(139,48,40,.15);color:var(--cinn-deep);border:1px solid rgba(139,48,40,.45);}
+.chip.ink{background:rgba(31,26,23,.08);color:var(--ink-70);border:1px solid var(--ink-25);}
+.sub{font:700 9.5px var(--serif);letter-spacing:.16em;text-transform:uppercase;color:var(--ink-45);}
+.rchip{font:700 10px var(--serif);color:var(--ink-70);background:var(--paper-deep);border:1px solid var(--ink-25);border-radius:2px;padding:2px 8px;display:inline-block;}
+.micro{font:600 10px var(--serif);letter-spacing:.02em;color:var(--ink-70);}
+.val{font:800 11px var(--serif);color:var(--ink);}
+
+/* LINTEL */
+.lintel-grid{display:grid;grid-template-columns:86px 1fr auto;height:100%;align-items:center;gap:18px;padding:0 20px 0 0;}
+.lintel-title{font:700 19px var(--serif);letter-spacing:.04em;display:flex;align-items:center;gap:12px;}
+.lintel-sub{font-style:italic;color:var(--ink-70);font-size:12px;margin-top:2px;}
+.realm-pips{display:flex;gap:4px;margin-top:6px;align-items:center}
+.rp{width:13px;height:6px;border-radius:1px;background:var(--paper-shade);box-shadow:inset 0 0 0 1px var(--ink-12)}
+.rp.on{background:linear-gradient(180deg,#f0d896,#a2712a)}
+.rp.cur{box-shadow:0 0 0 1.5px var(--jade-deep)}
+.lintel-right{display:flex;flex-direction:column;align-items:flex-end;gap:5px;}
+.lintel-roller{position:absolute;top:4px;bottom:4px;width:14px;z-index:6;border-radius:2px;background:linear-gradient(90deg,#4a330e,#8a6a36 50%,#4a330e);box-shadow:inset 0 0 0 1px rgba(178,131,45,.4);}
+.lintel-roller.l{left:4px}.lintel-roller.r{right:4px}
+
+/* SHELF */
+.shelf-scroll{height:100%;overflow-y:auto;padding-right:6px;display:flex;flex-direction:column;gap:11px;}
+.shelf-scroll::-webkit-scrollbar{width:6px}.shelf-scroll::-webkit-scrollbar-thumb{background:var(--gold);border-radius:3px}
+.plaque{position:relative;border-radius:3px;padding:10px 12px;cursor:pointer;background:linear-gradient(168deg,var(--paper-warm),var(--paper-deep));
+  box-shadow:inset 0 0 0 1px rgba(162,113,42,.35), 0 2px 5px rgba(40,28,12,.25);transition:box-shadow .14s ease, transform .14s ease;}
+.plaque:hover{box-shadow:inset 0 0 0 1px rgba(162,113,42,.6), 0 3px 8px rgba(40,28,12,.3);transform:translateY(-1px);}
+.plaque.sel{box-shadow:inset 0 0 0 2px var(--jade-deep), 0 0 14px rgba(15,111,90,.35);}
+.plaque .pname{font:600 14px var(--serif);}
+.plaque .proom{font:600 11px var(--serif);color:var(--ink-70);display:flex;align-items:center;gap:5px}
+.plaque .pforge{font:600 10px var(--serif);color:var(--ink-45);margin-top:3px;}
+.plaque .psel{position:absolute;right:8px;top:8px;}
+.pips{display:inline-flex;gap:3px;vertical-align:middle}
+.pip{width:6px;height:6px;transform:rotate(45deg);border:1px solid var(--gold-deep);}
+.pip.on{background:var(--gold)}.pip.off{background:transparent}
+.ladder{display:flex;gap:2px;margin-top:6px;align-items:center}
+.notch{width:23px;height:7px;border-radius:1px;background:var(--paper-shade);position:relative}
+.notch.on{background:linear-gradient(180deg,#f0d896,#a2712a);}
+.notch.cur{box-shadow:0 0 0 1.5px var(--jade-deep);}
+.notch .trait{position:absolute;top:-9px;left:50%;transform:translateX(-50%);color:var(--gold-deep);font-size:8px}
+.slip{position:relative;border-radius:3px;padding:9px 12px 9px 40px;background:repeating-linear-gradient(135deg,rgba(31,26,23,.045) 0 6px,transparent 6px 12px), var(--paper-deep);
+  border:1.5px dashed var(--ink-25);filter:grayscale(.45);opacity:.82;}
+.slip .seal-lock{position:absolute;left:8px;top:50%;transform:translateY(-50%)}
+.slip .sname{font:600 13px var(--serif);color:var(--ink-45);}
+.divider{font:700 9px var(--serif);letter-spacing:.2em;text-transform:uppercase;color:var(--ink-25);text-align:center;margin:2px 0;display:flex;align-items:center;gap:8px;justify-content:center}
+.divider::before,.divider::after{content:"";height:1px;flex:1;background:var(--ink-12)}
+
+/* ROOM layers */
+.room-atmos{position:absolute;inset:0;z-index:2;pointer-events:none;}
+.room-scene{position:absolute;inset:0;z-index:2;pointer-events:none;}
+.room-scene svg{width:100%;height:100%;display:block}
+.room-fig{position:absolute;inset:0;z-index:3;pointer-events:none;}
+.room-fig svg{width:100%;height:100%;display:block}
+.room-smoke{position:absolute;inset:0;z-index:4;pointer-events:none;}
+.room-smoke svg{width:100%;height:100%;display:block}
+.room-corner{position:absolute;z-index:5;width:78px;height:78px;pointer-events:none;opacity:.5}
+.room-corner.tl{left:10px;top:30px}.room-corner.tr{right:10px;top:30px;transform:scaleX(-1)}
+.room-corner.bl{left:10px;bottom:74px;transform:scaleY(-1)}.room-corner.br{right:10px;bottom:74px;transform:scale(-1,-1)}
+.room-seal{position:absolute;right:22px;top:30px;z-index:6;text-align:center;}
+.room-seal .lbl{margin-top:4px}
+.room-scrim{position:absolute;inset:0;z-index:5;pointer-events:none;}
+.mlabel{position:absolute;z-index:6;font:700 9px var(--serif);letter-spacing:.04em;white-space:nowrap;text-shadow:0 1px 2px rgba(20,14,8,.5)}
+.mlabel .mv{font-weight:800;font-size:10px}
+.forges{position:absolute;left:24px;right:24px;bottom:24px;height:42px;z-index:6;display:flex;align-items:center;gap:8px;padding:0 16px;
+  border-top:1px solid rgba(162,113,42,.5);background:rgba(243,234,215,.78);border-radius:3px;font:600 12px var(--serif);box-shadow:0 -2px 8px rgba(30,20,10,.15);}
+.forges .v{font-weight:800}
+.lens{position:absolute;left:24px;bottom:84px;width:330px;z-index:6;border-radius:3px;
+  background:linear-gradient(168deg,rgba(239,227,201,.97),rgba(231,217,186,.97));box-shadow:inset 0 0 0 1px rgba(162,113,42,.4), 0 6px 16px rgba(30,20,10,.4);padding:25px 12px 10px;}
+.lens .lensbar{position:absolute;top:-1px;left:14px;font:700 9px var(--serif);letter-spacing:.14em;color:var(--gold-pale);background:linear-gradient(180deg,var(--jade-ink),#182a23);border:1px solid var(--gold-deep);border-radius:0 0 3px 3px;padding:3px 10px;}
+.lens .head{display:flex;justify-content:space-between;align-items:center;font:800 16px var(--serif);margin-bottom:3px}
+.lens .row{display:flex;justify-content:space-between;font:600 10.5px var(--serif);color:var(--ink-70);padding:1px 0;}
+.lens .row .nm{color:var(--ink-45)}
+.dir-up{color:var(--jade-deep)}.dir-flat{color:var(--ink-45)}.dir-down{color:var(--gold-deep)}.dir-bad{color:var(--cinn-deep)}
+
+/* FOUNDATION */
+.fcol{height:100%;overflow-y:auto;display:flex;flex-direction:column;gap:6px;padding-right:4px;}
+.fcol::-webkit-scrollbar{width:6px}.fcol::-webkit-scrollbar-thumb{background:var(--gold);border-radius:3px}
+.fsummary{display:flex;align-items:center;gap:8px;font:600 11px var(--serif);}
+.frow{display:flex;align-items:center;gap:7px;}
+.fbead{flex:0 0 auto}
+.fname{font:600 12px var(--serif);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.fmeter{width:96px;height:8px;border-radius:2px;background:var(--paper-shade);position:relative;overflow:hidden;flex:0 0 auto}
+.fmeter .fill{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#f0d896,#a2712a);}
+.fmeter.cap .fill{background:linear-gradient(90deg,#e7cd92,#b2832d)}
+.fsealrow{display:flex;align-items:center;gap:7px;padding:2px 0;opacity:.85}
+.fsealrow .name{font:600 11px var(--serif);color:var(--ink-45);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fsealrow .seal-note{font:700 8px var(--serif);letter-spacing:.06em;text-transform:uppercase;color:var(--cinn-deep);background:rgba(139,48,40,.10);border:1px solid rgba(139,48,40,.3);border-radius:2px;padding:1px 5px;flex:0 0 auto}
+.wind{display:flex;align-items:center;gap:7px;font:600 10.5px var(--serif);}
+.wind .wv{font-weight:800;margin-left:auto}
+
+/* BELLOWS / FORGE / TRADE */
+.bellows{display:grid;grid-template-columns:repeat(4,1fr);height:100%;align-items:end;gap:6px;padding-bottom:4px;}
+.detent{display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;border-radius:4px;padding:6px 4px;position:relative;}
+.detent .num{font:600 9.5px var(--serif);color:var(--ink-70);text-align:center;line-height:1.3}
+.detent.sel{background:rgba(15,111,90,.08)}
+.detent.sel::after{content:"";position:absolute;left:14%;right:14%;bottom:0;height:3px;background:var(--jade-deep);border-radius:2px}
+.flamewrap{height:60px;display:flex;align-items:flex-end;}
+.forgebar{position:relative;height:18px;border-radius:3px;background:var(--paper-shade);overflow:visible;margin-top:6px}
+.forgebar .ffill{position:absolute;left:0;top:0;bottom:0;border-radius:3px;background:linear-gradient(90deg,#4e6b5e,#b2832d 55%,#a94835 80%,#8b3028);}
+.forgebar .tick{position:absolute;top:-3px;bottom:-3px;width:1px;background:var(--ink-45)}
+.forgebar .line80{position:absolute;top:-6px;bottom:-6px;width:2px;background:var(--cinnabar);}
+.forgebar .line80 b{position:absolute;top:-12px;left:50%;transform:translateX(-50%);font:700 7px var(--serif);color:var(--cinn-deep);white-space:nowrap}
+.zone{font:700 8px var(--serif);letter-spacing:.05em;color:var(--ink-45);text-transform:uppercase}
+.trade .tline{display:flex;justify-content:space-between;font:600 11px var(--serif);padding:1px 0}
+.trade .tline .tv{font-weight:800}
+.tbar{height:7px;border-radius:2px;background:var(--paper-shade);position:relative;overflow:hidden;margin-top:4px}
+.tbar .fill{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#f0d896,#a2712a)}
+
+/* NAV / ALERTS / RETURN */
+.navrow{display:grid;grid-template-columns:1fr auto;gap:13px;align-items:center;}
+.nav-left{display:flex;align-items:center;height:100%;padding-left:6px}
+.nav-right{display:flex;align-items:center;gap:10px;height:100%;justify-content:flex-end;padding-right:6px}
+.nav-right .reason{font:600 9.5px var(--serif);color:var(--cinn-deep);margin-right:6px}
+.alerts{position:absolute;left:24px;top:14px;z-index:6;display:flex;flex-direction:column;gap:5px;max-width:520px}
+.alert{display:flex;align-items:center;gap:7px;font:600 10.5px var(--serif);padding:4px 10px;border-radius:3px;background:rgba(243,234,215,.94);box-shadow:0 2px 6px rgba(30,20,10,.3);}
+.alert.cinn{border-left:3px solid var(--cinnabar)}.alert.gold{border-left:3px solid var(--gold)}.alert.jade{border-left:3px solid var(--jade-deep)}.alert.ink{border-left:3px solid var(--ink-45)}
+.alert .x{margin-left:auto;cursor:pointer;color:var(--ink-45);font-weight:800}
+.return-wrap{position:absolute;inset:0;z-index:80;display:none;place-items:center;}
+.return-wrap.show{display:grid}
+.return-scrim{position:absolute;inset:0;background:rgba(20,14,8,.5)}
+.return{position:relative;width:760px;max-height:460px;overflow:auto;border-radius:5px;padding:26px 30px 20px;
+  background:linear-gradient(168deg,var(--paper-warm),var(--paper) 42%,var(--paper-deep));box-shadow:0 20px 60px rgba(0,0,0,.6), inset 0 0 60px rgba(120,90,46,.06);}
+.return .rrow{display:flex;justify-content:space-between;font:600 13px var(--serif);padding:3px 0}
+.return .rrow .rv{font-weight:800}
+.return h3{font:700 15px var(--serif);text-align:center;margin-bottom:4px;letter-spacing:.08em}
+.return .lead{text-align:center;color:var(--ink-70);font-size:12px;margin-bottom:10px}
+
+/* MOTES */
+.fx-motes{position:absolute;inset:0;z-index:4;pointer-events:none;overflow:hidden;}
+.mote{position:absolute;width:5px;height:5px;border-radius:50%;z-index:4;pointer-events:none;background:radial-gradient(circle at 35% 30%,#fff2c8,#d9b35e 60%,transparent 75%);filter:blur(.3px) drop-shadow(0 0 4px rgba(231,200,120,.7));animation:moteUpK 6s linear infinite;}
+
+/* CONTROL BAR */
+.ctrl{position:fixed;left:8px;bottom:8px;z-index:200;display:flex;gap:6px;align-items:center;flex-wrap:wrap;background:rgba(20,14,8,.85);border:1px solid var(--gold-deep);border-radius:6px;padding:7px 10px;font:600 11px var(--serif);color:var(--gold-pale);max-width:96vw}
+.ctrl b{color:#fff;margin-right:2px}
+.ctrl select,.ctrl button{font:600 11px var(--serif);background:#2a2013;color:var(--gold-pale);border:1px solid var(--gold-deep);border-radius:3px;padding:2px 6px;cursor:pointer}
+.ctrl .grp{display:flex;gap:4px;align-items:center;padding-right:8px;border-right:1px solid rgba(178,131,45,.3)}
+.ctrl input[type=range]{width:90px}
+
+/* KEYFRAMES */
+@keyframes ovBreathe{0%,100%{opacity:.55;transform:scale(1)}50%{opacity:1;transform:scale(1.05)}}
+@keyframes qiflowK{to{stroke-dashoffset:-64}}
+@keyframes spinSlowK{to{transform:rotate(360deg)}}
+@keyframes mpulseK{0%,100%{transform:scale(1);opacity:.85}50%{transform:scale(1.55);opacity:1}}
+@keyframes twkK{0%,100%{opacity:.25}50%{opacity:1}}
+@keyframes weakPK{0%,100%{opacity:.45;transform:scale(1)}50%{opacity:1;transform:scale(1.16)}}
+@keyframes flickK{0%,100%{opacity:.85;transform:scaleY(1)}30%{opacity:1;transform:scaleY(1.07)}60%{opacity:.78;transform:scaleY(.95)}}
+@keyframes glowPulseK{0%,100%{opacity:.5}50%{opacity:.95}}
+@keyframes swayK{0%,100%{transform:rotate(-2.6deg)}50%{transform:rotate(2.6deg)}}
+@keyframes moteUpK{0%{transform:translateY(10px) translateX(0);opacity:0}14%{opacity:.85}55%{transform:translateY(-26px) translateX(4px)}88%{opacity:.45}100%{transform:translateY(-58px) translateX(-3px);opacity:0}}
+@keyframes heatShimK{0%,100%{opacity:.5}50%{opacity:.95}}
+@keyframes smokeRiseK{0%{opacity:0;transform:translateY(0) scaleX(1)}20%{opacity:.5}100%{opacity:0;transform:translateY(-120px) scaleX(1.6)}}
+@keyframes driftK{0%{transform:translateX(0)}50%{transform:translateX(40px)}100%{transform:translateX(0)}}
+.qiflow{stroke-dasharray:3 13;animation:qiflowK var(--th-qi-dur,2.4s) linear infinite;}
+.breatheA{transform-box:fill-box;transform-origin:center;animation:ovBreathe var(--th-breath-dur,5.6s) ease-in-out infinite;}
+.mp{transform-box:fill-box;transform-origin:center;animation:mpulseK 3s ease-in-out infinite;}
+.twk{animation:twkK 3.8s ease-in-out infinite;}
+.weakp{transform-box:fill-box;transform-origin:center;animation:weakPK 2.6s ease-in-out infinite;}
+.spinG{animation:spinSlowK 80s linear infinite;}
+.flame{transform-box:fill-box;transform-origin:bottom center;animation:flickK 2.2s ease-in-out infinite;}
+.glowP{animation:glowPulseK 4s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+.swayG{transform-box:fill-box;animation:swayK 4.5s ease-in-out infinite;}
+.driftG{animation:driftK 26s ease-in-out infinite}
+body.rm *,body.rm *::before,body.rm *::after{animation:none!important;transition:none!important}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+/* ===== v2 NEW COMPONENTS ===== */
+.tier-head{font:700 9px var(--serif);letter-spacing:.16em;text-transform:uppercase;color:var(--gold-deep);display:flex;align-items:center;gap:7px;margin:7px 0 3px}
+.tier-head::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,rgba(162,113,42,.5),transparent)}
+.tier-head.cinn{color:var(--cinn-deep)}.tier-head.jade{color:var(--jade-deep)}
+.rootchip{font:800 8px var(--serif);letter-spacing:.04em;padding:1px 5px;border-radius:2px;white-space:nowrap;flex:0 0 auto;border:1px solid}
+.root-heavenly{color:#7a3a86;background:rgba(122,58,134,.12);border-color:rgba(122,58,134,.4)}
+.root-true{color:var(--jade-deep);background:rgba(15,111,90,.12);border-color:rgba(15,111,90,.4)}
+.root-earthly{color:var(--gold-deep);background:rgba(162,113,42,.12);border-color:rgba(162,113,42,.4)}
+.root-mortal{color:var(--ink-45);background:rgba(31,26,23,.06);border-color:var(--ink-25)}
+.root-chaos{color:var(--cinn-deep);background:rgba(139,48,40,.12);border-color:rgba(139,48,40,.4)}
+/* cultivation base bar in lintel */
+.cbar-wrap{display:flex;align-items:center;gap:8px;margin-top:6px}
+.cbar{position:relative;height:9px;width:230px;border-radius:2px;background:var(--paper-shade);overflow:hidden;box-shadow:inset 0 0 0 1px var(--ink-12)}
+.cbar .fill{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#3a5b4d,#0f6f5a 60%,#4e6b5e)}
+/* exercise card additions */
+.plaque .ptemper{position:absolute;right:8px;top:8px;font:800 7.5px var(--serif);letter-spacing:.1em;color:var(--jade-deep);background:rgba(15,111,90,.12);border:1px solid rgba(15,111,90,.4);border-radius:2px;padding:1px 5px}
+.plaque .pmeta{display:flex;align-items:center;gap:6px;margin-top:4px;flex-wrap:wrap}
+.plaque .pbar{height:7px;border-radius:2px;background:var(--paper-shade);position:relative;overflow:hidden;flex:1;min-width:60px}
+.plaque .pbar .fill{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#f0d896,#a2712a)}
+.plaque .pbar.cap .fill{background:linear-gradient(90deg,#e7cd92,#b2832d)}
+/* path-meridian rows (right column) */
+.merrow{display:flex;align-items:center;gap:7px;padding:3px 4px;border-radius:3px}
+.merrow.active{background:rgba(15,111,90,.10);box-shadow:inset 0 0 0 1px rgba(15,111,90,.35)}
+.merrow .mname{font:600 12px var(--serif);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.merrow .mr{font:800 10.5px var(--serif);color:var(--ink)}
+.merrow .mmeter{width:70px;height:7px;border-radius:2px;background:var(--paper-shade);position:relative;overflow:hidden;flex:0 0 auto}
+.merrow .mmeter .fill{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#f0d896,#a2712a)}
+.merrow .mmeter.cap .fill{background:linear-gradient(90deg,#e7cd92,#b2832d)}
+.merlocked{display:flex;align-items:center;gap:7px;padding:3px 4px;opacity:.8}
+.merlocked .mname{font:600 11px var(--serif);color:var(--ink-45);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sealtag{font:700 7.5px var(--serif);letter-spacing:.05em;text-transform:uppercase;color:var(--cinn-deep);background:rgba(139,48,40,.10);border:1px solid rgba(139,48,40,.3);border-radius:2px;padding:1px 5px;flex:0 0 auto}
+/* constitution grid (Tier 0 / Tier 1) */
+.cgrid{display:grid;grid-template-columns:1fr 1fr;gap:3px 12px}
+.ccell{display:flex;align-items:center;gap:5px;font:600 10.5px var(--serif)}
+.ccell .cn{color:var(--ink-70);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ccell .cv{font-weight:800;color:var(--ink)}
+.ccell .cg{font-family:var(--kai);color:var(--gold-deep);font-size:9px}
+/* meridian codex card (room, right-bottom) */
+.codex{position:absolute;right:22px;bottom:84px;width:340px;z-index:6;border-radius:3px;
+  background:linear-gradient(168deg,rgba(239,227,201,.97),rgba(231,217,186,.97));box-shadow:inset 0 0 0 1px rgba(162,113,42,.4),0 6px 16px rgba(30,20,10,.4);padding:25px 13px 11px;}
+.codex .cbar2{position:absolute;top:-1px;left:14px;font:700 9px var(--serif);letter-spacing:.14em;color:var(--gold-pale);background:linear-gradient(180deg,var(--jade-ink),#182a23);border:1px solid var(--gold-deep);border-radius:0 0 3px 3px;padding:3px 10px}
+.codex .ctitle{display:flex;align-items:baseline;gap:7px;font:800 15px var(--serif)}
+.codex .ctitle .zi{font-family:var(--kai);color:var(--gold-deep);font-size:14px}
+.codex .crow{display:flex;gap:6px;font:600 10px var(--serif);color:var(--ink-70);padding:2px 0;align-items:flex-start}
+.codex .crow .k{color:var(--ink-45);flex:0 0 64px}
+.eff{display:inline-block;font:700 9px var(--serif);color:var(--jade-deep);background:rgba(15,111,90,.10);border:1px solid rgba(15,111,90,.32);border-radius:2px;padding:1px 5px;margin:1px 3px 1px 0}
+.eff.atk{color:var(--cinn-deep);background:rgba(139,48,40,.10);border-color:rgba(139,48,40,.32)}
+.eff.util{color:var(--gold-deep);background:rgba(162,113,42,.10);border-color:rgba(162,113,42,.32)}
+.compbar{height:6px;border-radius:2px;background:var(--paper-shade);position:relative;overflow:hidden;flex:1;margin-top:2px}
+.compbar .fill{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#9a7ec8,#7a3a86)}
+.passive-note{font:600 9.5px var(--serif);color:var(--ink-70);margin-top:3px;border-top:1px solid var(--ink-12);padding-top:4px}
+.passive-note b{color:var(--jade-deep)}
+/* this-practice extras */
+.pp-sec{font:700 8px var(--serif);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-45);margin-top:5px}
+</style>
+</head>
+<body>
+<div class="th-viewport">
+  <div class="stage" id="stage" style="grid-template-rows:116px 1fr 196px 46px">
+    <svg width="0" height="0" style="position:absolute"><defs>
+      <filter id="grainF"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="1" seed="7" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter>
+      <radialGradient id="cinnDisc" cx="40%" cy="34%" r="78%"><stop offset="0" stop-color="#b25347"/><stop offset=".5" stop-color="#8b3028"/><stop offset="1" stop-color="#54190f"/></radialGradient>
+      <radialGradient id="jadeRad" cx="40%" cy="34%" r="78%"><stop offset="0" stop-color="#cfdccb"/><stop offset=".5" stop-color="#7f9a86"/><stop offset="1" stop-color="#3c5849"/></radialGradient>
+      <linearGradient id="goldG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f0d896"/><stop offset=".5" stop-color="#a2712a"/><stop offset="1" stop-color="#6e4c16"/></linearGradient>
+      <radialGradient id="goldRad" cx="40%" cy="34%" r="75%"><stop offset="0" stop-color="#f3e3b0"/><stop offset=".5" stop-color="#c08f3a"/><stop offset="1" stop-color="#6e4c16"/></radialGradient>
+      <linearGradient id="plank" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8a6a36"/><stop offset=".5" stop-color="#5e4218"/><stop offset="1" stop-color="#4a330e"/></linearGradient>
+      <filter id="soft"><feGaussianBlur stdDeviation="1.6"/></filter>
+      <filter id="soft3"><feGaussianBlur stdDeviation="3.2"/></filter>
+      <filter id="soft6"><feGaussianBlur stdDeviation="7"/></filter>
+      <filter id="glowJ" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      <linearGradient id="goldBrushG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c9a85a" stop-opacity="0"/><stop offset=".35" stop-color="#b2832d" stop-opacity=".95"/><stop offset=".7" stop-color="#8a6422"/><stop offset="1" stop-color="#6e4c16" stop-opacity=".25"/></linearGradient>
+      <filter id="brushRough" x="-20%" y="-20%" width="140%" height="140%"><feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="1" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="9"/></filter>
+      <radialGradient id="qiAura" cx="50%" cy="42%" r="55%"><stop offset="0" stop-color="#e7c878" stop-opacity=".42"/><stop offset=".4" stop-color="#d8b45e" stop-opacity=".2"/><stop offset=".72" stop-color="#caa84e" stop-opacity=".07"/><stop offset="1" stop-color="#caa84e" stop-opacity="0"/></radialGradient>
+      <radialGradient id="qiCore" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#fff4d6" stop-opacity=".95"/><stop offset="1" stop-color="#e7c878" stop-opacity="0"/></radialGradient>
+      <radialGradient id="emberCore" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#ffd9a0" stop-opacity=".97"/><stop offset=".5" stop-color="#d8702f" stop-opacity=".55"/><stop offset="1" stop-color="#a44731" stop-opacity="0"/></radialGradient>
+      <!-- atmosphere washes -->
+      <radialGradient id="forgeGlow" cx="50%" cy="86%" r="62%"><stop offset="0" stop-color="#e0762a" stop-opacity=".62"/><stop offset=".4" stop-color="#b34a26" stop-opacity=".3"/><stop offset="1" stop-color="#7a2a16" stop-opacity="0"/></radialGradient>
+      <radialGradient id="furnaceFire" cx="50%" cy="60%" r="55%"><stop offset="0" stop-color="#ffe6a6"/><stop offset=".35" stop-color="#f0832c"/><stop offset=".75" stop-color="#b23c1e"/><stop offset="1" stop-color="#6e1e12" stop-opacity=".6"/></radialGradient>
+      <radialGradient id="starHalo" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#eaf2ff" stop-opacity=".9"/><stop offset=".4" stop-color="#bcd0e6" stop-opacity=".35"/><stop offset="1" stop-color="#9fb6d6" stop-opacity="0"/></radialGradient>
+      <radialGradient id="moonG" cx="42%" cy="40%" r="60%"><stop offset="0" stop-color="#f6f2e2"/><stop offset=".7" stop-color="#d9d2b6"/><stop offset="1" stop-color="#b9b08e" stop-opacity=".4"/></radialGradient>
+      <linearGradient id="mistG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfe0e6" stop-opacity=".5"/><stop offset="1" stop-color="#9fb6c0" stop-opacity="0"/></linearGradient>
+      <linearGradient id="lanternG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6c25a"/><stop offset="1" stop-color="#b23c1e"/></linearGradient>
+      <linearGradient id="steelG" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#aeb6bd"/><stop offset=".5" stop-color="#7c858d"/><stop offset="1" stop-color="#565d64"/></linearGradient>
+      <linearGradient id="bannerCloth" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9a3b30"/><stop offset="1" stop-color="#5e1c16"/></linearGradient>
+      <linearGradient id="meridP_earth" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#fff1cf"/><stop offset=".5" stop-color="#ffb15a"/><stop offset="1" stop-color="#e0762a"/></linearGradient>
+      <linearGradient id="meridP_martial" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#fff8e0"/><stop offset="1" stop-color="#e7c878"/></linearGradient>
+      <linearGradient id="meridP_heaven" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#eafff6"/><stop offset="1" stop-color="#9fe0c4"/></linearGradient>
+      <linearGradient id="meridS_c" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#cfe0d2"/><stop offset="1" stop-color="#7f9a86"/></linearGradient>
+    </defs></svg>
+
+    <!-- LINTEL -->
+    <section class="panel" id="lintel" role="region" aria-label="Tempering Court">
+      <div class="grain"><svg><rect width="100%" height="100%" filter="url(#grainF)"/></svg></div>
+      <div class="gcol" style="right:64px">堂</div>
+      <i class="lintel-roller l"></i><i class="lintel-roller r"></i>
+      <div class="content" style="padding:0 18px"><div class="lintel-grid" id="lintel-grid"></div></div>
+      <div class="gframe"></div><div class="gframe2"></div>
+      <i class="gc tl"></i><i class="gc tr"></i><i class="gc bl"></i><i class="gc br"></i>
+      <div class="tag"><div class="glyphs">锤炼堂</div></div>
+    </section>
+
+    <div style="grid-row:2;display:grid;grid-template-columns:440px 1fr 430px;gap:13px;min-height:0">
+      <section class="panel" id="shelf" role="region" aria-label="Regimens">
+        <div class="grain"><svg><rect width="100%" height="100%" filter="url(#grainF)"/></svg></div>
+        <div class="gcol" style="right:14px">法</div>
+        <div class="content"><div class="shelf-scroll" id="shelf-list"></div></div>
+        <div class="gframe"></div><div class="gframe2"></div>
+        <i class="gc tl"></i><i class="gc tr"></i><i class="gc bl"></i><i class="gc br"></i>
+        <div class="banner">REGIMENS</div>
+      </section>
+
+      <section class="panel" id="room" role="region" aria-label="The Room">
+        <div class="grain"><svg><rect width="100%" height="100%" filter="url(#grainF)"/></svg></div>
+        <div class="gcol" id="room-watermark" style="right:18px">气</div>
+        <div class="room-atmos" id="room-atmos"></div>
+        <div class="room-scene" id="room-scene"></div>
+        <div class="room-fig" id="room-fig"></div>
+        <div class="fx-motes" id="th-motes"></div>
+        <div class="room-smoke" id="room-smoke"></div>
+        <div class="room-scrim" id="room-scrim"></div>
+        <img class="room-corner tl" id="rc-tl" alt=""><img class="room-corner tr" id="rc-tr" alt="">
+        <div class="alerts" id="room-alerts"></div>
+        <div class="room-seal" id="room-seal"></div>
+        <div class="lens" id="room-lens"></div>
+        <div class="codex" id="room-codex"></div>
+        <div class="forges" id="room-forges"></div>
+        <div class="gframe"></div><div class="gframe2"></div>
+        <i class="gc tl"></i><i class="gc tr"></i><i class="gc bl"></i><i class="gc br"></i>
+        <div class="banner" id="room-banner">THE ROOM</div>
+      </section>
+
+      <div id="rightcol" style="display:grid;grid-template-rows:minmax(0,1.45fr) minmax(0,1fr);gap:13px;min-height:0">
+        <section class="panel" id="meridians-panel" role="region" aria-label="Path Meridians">
+          <div class="grain"><svg><rect width="100%" height="100%" filter="url(#grainF)"/></svg></div>
+          <div class="gcol" style="right:12px">脉</div>
+          <div class="content"><div class="fcol" id="mer-list"></div></div>
+          <div class="gframe"></div><div class="gframe2"></div>
+          <i class="gc tl"></i><i class="gc tr"></i><i class="gc bl"></i><i class="gc br"></i>
+          <div class="banner">PATH MERIDIANS</div>
+        </section>
+        <section class="panel" id="constitution-panel" role="region" aria-label="Constitution">
+          <div class="grain"><svg><rect width="100%" height="100%" filter="url(#grainF)"/></svg></div>
+          <div class="content"><div class="fcol" id="const-list"></div></div>
+          <div class="gframe"></div><div class="gframe2"></div>
+          <i class="gc tl"></i><i class="gc tr"></i><i class="gc bl"></i><i class="gc br"></i>
+          <div class="banner">CONSTITUTION</div>
+        </section>
+      </div>
+    </div>
+
+    <div style="grid-row:3;display:grid;grid-template-columns:720px 540px 1fr;gap:13px;min-height:0">
+      <section class="panel" id="bellows" role="region" aria-label="Intensity">
+        <div class="grain"><svg><rect width="100%" height="100%" filter="url(#grainF)"/></svg></div>
+        <div class="content"><div class="bellows" id="bellows-list"></div></div>
+        <div class="gframe"></div><div class="gframe2"></div>
+        <i class="gc tl"></i><i class="gc tr"></i><i class="gc bl"></i><i class="gc br"></i>
+        <div class="banner">INTENSITY</div>
+      </section>
+      <section class="panel" id="forge" role="region" aria-label="Forge Heat">
+        <div class="grain"><svg><rect width="100%" height="100%" filter="url(#grainF)"/></svg></div>
+        <div class="content" id="forge-c"></div>
+        <div class="gframe"></div><div class="gframe2"></div>
+        <i class="gc tl"></i><i class="gc tr"></i><i class="gc bl"></i><i class="gc br"></i>
+        <div class="banner">FORGE HEAT</div>
+      </section>
+      <section class="panel" id="trade" role="region" aria-label="This Practice">
+        <div class="grain"><svg><rect width="100%" height="100%" filter="url(#grainF)"/></svg></div>
+        <div class="content" id="trade-c"></div>
+        <div class="gframe"></div><div class="gframe2"></div>
+        <i class="gc tl"></i><i class="gc tr"></i><i class="gc bl"></i><i class="gc br"></i>
+        <div class="banner">THIS PRACTICE</div>
+      </section>
+    </div>
+
+    <div class="navrow" style="grid-row:4">
+      <div class="nav-left"><span class="btn" id="nav-back">◂ Return to Cloudreach · Adventure</span></div>
+      <div class="nav-right" id="nav-actions"></div>
+    </div>
+
+    <div class="return-wrap" id="return-wrap">
+      <div class="return-scrim" id="return-scrim"></div>
+      <div class="return" id="return-card" role="dialog" aria-modal="true" aria-label="While you were away"></div>
+    </div>
+  </div>
+</div>
+<div class="ctrl" id="ctrl"></div>
+<script>
+const PT=(cx,cy,r,a)=>[cx+r*Math.cos((a-90)*Math.PI/180),cy+r*Math.sin((a-90)*Math.PI/180)];
+const arc=(cx,cy,r,a0,a1)=>{const[x0,y0]=PT(cx,cy,r,a0),[x1,y1]=PT(cx,cy,r,a1);return `M${x0.toFixed(1)},${y0.toFixed(1)} A${r},${r} 0 ${Math.abs(a1-a0)>180?1:0} 1 ${x1.toFixed(1)},${y1.toFixed(1)}`;};
+function waxSeal(chars,size,rot,jade){
+  const C=size/2,r=size/2-2,N=22;let p='';
+  for(let i=0;i<=N;i++){const a=i/N*2*Math.PI;const rr=r*(0.90+0.06*Math.sin(i*2.7+1.3)+0.04*Math.cos(i*1.6+0.5));const x=C+rr*Math.cos(a),y=C+rr*Math.sin(a);p+=(i?'L':'M')+x.toFixed(1)+','+y.toFixed(1)+' ';}
+  p+='Z';const cs=[...chars],fs=size*(cs.length>2?0.27:0.32),gap=fs*1.02,y0=C-(cs.length-1)*gap/2;
+  const txt=cs.map((c,i)=>`<tspan x="${C}" y="${(y0+i*gap+fs*0.34).toFixed(1)}">${c}</tspan>`).join('');
+  const fill=jade?'url(#jadeRad)':'url(#cinnDisc)',str=jade?'#1c3128':'#54190f',inner=jade?'rgba(220,240,225,.4)':'rgba(255,214,196,.4)',tx=jade?'#e9efe2':'#f4dccb';
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="transform:rotate(${rot||0}deg);overflow:visible"><path d="${p}" fill="${fill}" stroke="${str}" stroke-width="1.3"/><path d="${p}" fill="none" stroke="${inner}" stroke-width=".8" transform="translate(${C} ${C}) scale(.82) translate(${-C} ${-C})"/><text text-anchor="middle" font-family="var(--kai)" font-weight="700" font-size="${fs.toFixed(1)}" fill="${tx}">${txt}</text></svg>`;
+}
+function medallion(glyph,col){return `<span style="width:26px;height:26px;border-radius:50%;flex:0 0 auto;background:radial-gradient(circle at 36% 30%,#f0d99e,#9a6f24 70%,#684a16);display:inline-grid;place-items:center;font-family:var(--kai);font-size:14px;color:${col||'#2a1d08'};border:1px solid #5e4214;box-shadow:inset 0 1px 1px rgba(255,250,235,.5)">${glyph}</span>`;}
+const nodeFill=st=>st==='lit'?'url(#goldRad)':st==='spine'?'url(#jadeRad)':st==='weak'?'url(#cinnDisc)':st==='socket'?'none':'var(--paper-deep)';
+const nodeStroke=st=>st==='lit'?'#6e4c16':st==='spine'?'#1c3128':st==='weak'?'#54190f':st==='socket'?'rgba(120,90,46,.5)':'var(--ink-25)';
+const qiDur=m=>`${(3.0-Math.min(2.25,Math.max(0.5,m))*0.8).toFixed(2)}s`;
+const capStateOf=p=>p>=1?'capped':p>=0.92?'near_cap':'open';
+const tierOf=f=>f>=80?'overworked':f>=60?'strained':f>=35?'tiring':'fresh';
+const dampOf=f=>Math.max(0.4,Math.min(1,1-Math.max(0,f-40)*0.009));
+const pipN=r=>r<=0.88?2:r<=0.95?3:r<=1.00?4:5;
+const fmt=n=>Number.isFinite(n)?(Math.round(n*100)/100):0;
+function cornerURI(col){const s=`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'><g fill='none' stroke='${col}' stroke-width='2' stroke-linecap='round'><path d='M8,72 C8,36 24,16 60,12'/><path d='M14,72 C14,42 30,24 62,20' opacity='.6'/><circle cx='62' cy='13' r='3.4' fill='${col}' stroke='none'/><path d='M8,72 q-2,-10 4,-16' /></g></svg>`;return 'data:image/svg+xml,'+encodeURIComponent(s);}
+
+/* ===== v2 constants ===== */
+const CAPS=[40,60,80,100,125,150,170];
+const REALMS=['Qi Condensation','Foundation Establishment','Core Formation','Nascent Soul','Spirit Severing','Tribulation','Immortal Ascension'];
+const ROOTS={
+  heavenly:{lbl:'Heavenly Root',cls:'root-heavenly',cap:1.6,rate:1.8},
+  true:{lbl:'True Root',cls:'root-true',cap:1.3,rate:1.4},
+  earthly:{lbl:'Earthly Root',cls:'root-earthly',cap:1.1,rate:1.1},
+  mortal:{lbl:'Mortal Root',cls:'root-mortal',cap:0.9,rate:0.85},
+  chaos:{lbl:'Chaos Root',cls:'root-chaos',cap:1.45,rate:1.6}
+};
+const capFalloffOf=p=>Math.max(0.35,1-Math.max(0,(p-0.85)/0.15)*0.62);
+/* ===== PER-PATH THEME ===== */
+const THEME={
+  earth:{watermark:'精',sealGlyph:'地',sealJade:false,
+    atmos:'radial-gradient(130% 95% at 50% 102%, rgba(226,120,40,.34), transparent 58%), linear-gradient(180deg, rgba(54,24,8,.20), rgba(40,18,8,.04) 45%, rgba(150,60,22,.16))',
+    meridP:'url(#meridP_earth)',core:'url(#emberCore)',aura:'#e7a860',auraOp:.55,rim:'#ffb15a',rimW:2.4,
+    moteCols:['#ffe0a8','#e0762a'],moteDur:1.15,moteW:6,corner:'#a44731'},
+  martial:{watermark:'气',sealGlyph:'武',sealJade:false,
+    atmos:'radial-gradient(120% 80% at 50% 0%, rgba(120,128,138,.16), transparent 55%), linear-gradient(180deg, rgba(40,42,48,.12), transparent 50%, rgba(96,40,30,.10))',
+    meridP:'url(#meridP_martial)',core:'url(#qiCore)',aura:'#d8b45e',auraOp:.5,rim:'#e7c878',rimW:2,
+    moteCols:['#fff2c8','#d9b35e'],moteDur:0.82,moteW:5,corner:'#8b6a2a'},
+  heaven:{watermark:'神',sealGlyph:'天',sealJade:true,
+    atmos:'linear-gradient(180deg, rgba(26,34,64,.40), rgba(30,44,70,.20) 48%, rgba(20,40,44,.10)), radial-gradient(70% 50% at 50% 30%, rgba(120,150,200,.16), transparent 70%)',
+    meridP:'url(#meridP_heaven)',core:'url(#qiCore)',aura:'#9fd0c0',auraOp:.5,rim:'#cfe8ff',rimW:1.8,
+    moteCols:['#fff6e2','#cfe0ff'],moteDur:1.3,moteW:5,corner:'#4e6b5e'},
+};
+
+
+/* ===== DATA — three 7-meridian path trees (Three Treasures engine) ===== */
+function mer(zi,name,exercise,room,trigger,eff,path,rootKey,invest,mr,nx,tr,trait,comp){
+  return {zi,name,exercise,room,trigger,eff,path,rootKey,invest,mastery:{rank:mr,next:nx},traitRank:tr,trait,comp:comp===undefined?1:comp};
+}
+const PATHS={
+  martial:{glyph:'武',scenery:'martial',watermark:'气',sealGlyph:'武',sealJade:false,
+    name:'Martial Path',triad:'武 · Qi-in-motion',focus:'offense · speed · killing',
+    subtitle:'Circulate the fire — rhythm, blade, and the moving orbit.',
+    meridians:[
+      mer('兵意','Weapon Intent','Shadow-Ring form drills','Shadow Ring','dealing weapon-skill damage',[['atk','Physical Attack ↑↑'],['util','Weapon technique power']],'Empowers weapon arts','true',0.82,6,3200,7,'Counters cost 8% less stamina'),
+      mer('流步','Flowing Step','Footwork laps','The Ring','dodging / repositioning',[['','Speed ↑'],['','Evasion ↑'],['util','Initiative']],'Travel speed; escape chance','earthly',0.55,3,900,7,'+10% gap-close'),
+      mer('战律','Battle Rhythm','Drum-rhythm sparring','Drum Court','landing consecutive hits',[['','Attack Speed ↑'],['atk','Combo scaling'],['util','Qi/stamina efficiency']],'Combo windows widen','true',0.42,2,600,7,'+10% rhythm window'),
+      mer('杀意','Killing Intent','Killing-intent meditation','The Post','opening strikes / executing weak foes',[['atk','Crit Chance ↑↑'],['atk','First-strike dmg'],['util','Suppression']],'Intimidation; flee chance on weaker foes','heavenly',0.30,1,400,7,'Execute threshold +5%',0.58),
+      mer('剑心','Sword Heart','Sword-heart sitting','Quiet Edge','counters / parries',[['atk','Crit Damage ↑↑'],['atk','Armor penetration']],'Crits ignore a % of defense','true',0.18,0,300,7,'Counter dmg +15%'),
+      mer('不破势','Unbroken Momentum','Thousand-Cuts endurance','War Yard','sustained offense (no idle turns)',[['atk','Snowball dmg / action'],['','Stagger immunity']],'Each attacking turn stacks damage','earthly',0.10,0,300,7,'Stacks last longer'),
+      mer('修罗道','Martial Dao · Asura','War-banner Dao comprehension','Asura Altar','high-realm kills',[['atk','Global offense scalar'],['util','Ultimate technique']],'Path tribulation becomes a duel','chaos',0.04,0,300,7,'Asura form')
+    ]},
+  earth:{glyph:'地',scenery:'earth',watermark:'精',sealGlyph:'地',sealJade:false,
+    name:'Earth Path',triad:'地 · Jing essence',focus:'body · defense · endurance',
+    subtitle:'Temper the marrow — furnace, stone, and the deep root.',
+    meridians:[
+      mer('体锻','Body Temper','Marrow-Furnace tempering','Marrow Furnace','taking & dealing physical blows',[['def','Max HP ↑↑'],['atk','Body-cultivation attack'],['def','Physical Defense']],'Body-cultivation attack scaling','true',0.85,8,5200,7,'+12% body XP while strained'),
+      mer('锻骨','Bone Forging','Stone-press stand','Stone Terrace','blocking / being hit',[['def','Physical Defense ↑↑'],['def','Knockback resist']],'Weapon-block; structure','earthly',0.60,5,2400,7,'Fatigue accrues 6% slower'),
+      mer('髓元','Marrow Essence','Marrow-cleansing furnace','Cleansing Pit','enduring damage-over-time',[['def','HP Regen ↑↑'],['','Vitality & qi capacity'],['util','Poison/illness resist']],'Body stores qi; longevity','true',0.45,3,900,7,'DoT taken −10%'),
+      mer('根深','Root Depth','Deep-root meditation','Root Hollow','holding ground (not moving)',[['def','Anti-CC / stability ↑↑'],['util','Grounded qi-gather']],'Cannot be displaced while rooted','heavenly',0.30,1,400,7,'Root regen +',0.58),
+      mer('金身','Iron Skin','Blade-rain tempering','Blade Rain','absorbing hits',[['def','Flat Damage Reduction'],['def','Reflect']],'Hits below a threshold deal 0','true',0.18,0,300,7,'Threshold +'),
+      mer('山岳','Mountain Stance','Bear-the-Mountain stand','Mountain Dais','tanking big hits / taunting',[['def','Massive Defense'],['atk','Convert Def → counter']],'Anchor allies; reflect a % of Def','earthly',0.10,0,300,7,'Taunt radius +'),
+      mer('后土道','Earth Dao · Sovereign','Earth-Dao comprehension','Sovereign Seat','surviving lethal blows',[['def','Global def/HP scalar'],['util','Ultimate technique']],'Body becomes a treasure','chaos',0.04,0,300,7,'Sovereign form')
+    ]},
+  heaven:{glyph:'天',scenery:'heaven',watermark:'神',sealGlyph:'天',sealJade:true,
+    name:'Heaven Path',triad:'天 · Shen spirit',focus:'perception · soul · control',
+    subtitle:'Refine the spirit toward emptiness — stars, law, and stillness.',
+    meridians:[
+      mer('神识','Spirit Sense','Star-Listening','Star-Listening Pavilion','landing precise / ranged hits',[['','Accuracy ↑↑'],['util','Detection'],['atk','Soul-attack base']],'See hidden; range','true',0.80,4,1600,7,'+10% insight from breakthroughs'),
+      mer('心眼','Mind Eye','Empty-Mind sitting','Quiet Hall','dodging / perceiving',[['','Evasion ↑↑'],['atk','Crit (find weakness)']],'Reveal weaknesses; anti-ambush','earthly',0.55,2,600,7,'Foresight window +'),
+      mer('魂明','Soul Clarity','Soul-cleansing','Clarity Spring','resisting soul / mental attacks',[['def','Soul Defense ↑↑'],['util','Qi control & stability']],'Cleanse debuffs; steady cast','true',0.42,2,600,7,'Soul dmg taken −8%'),
+      mer('道心','Dao Heart','Heart-of-Dao meditation','Heart Altar','composure under pressure',[['def','Tribulation Resist ↑↑'],['util','Qi efficiency'],['util','Immune fear/charm']],'Unshakeable; cheaper techniques','heavenly',0.30,1,400,7,'Tribulation resist +',0.58),
+      mer('虚瞳','Void Gaze','Void-gazing','Void Window','landing soul / curse effects',[['atk','Soul Attack ↑↑'],['atk','Armor-pen via weakness'],['util','Debuff power']],'See through stealth / illusion','true',0.18,0,300,7,'Curse potency +'),
+      mer('天命','Heavenly Mandate','Mandate meditation','Mandate Terrace','controlling / suppressing foes',[['util','Control Power ↑↑'],['atk','Suppression aura']],'Domain weakens enemies in range','earthly',0.10,0,300,7,'Domain radius +'),
+      mer('天道','Heaven Dao · Firmament','Heaven-Dao comprehension','Firmament Seat','high-realm soul kills',[['util','Global control/soul scalar'],['util','Ultimate technique']],'Law-based devastation','chaos',0.04,0,300,7,'Firmament form')
+    ]}
+};
+const AXES=[['修为','Cultivation Base',46],['灵力','Qi Pool',38],['气纯','Qi Purity',31],['经脉','Meridian Openness',34],['神识','Spiritual Sense',29],['魂','Soul Strength',27],['道','Dao Comprehension',22]];
+const BASE=[['体','Physique',24],['元','Vitality',26],['敏','Agility',21],['悟','Perception',30],['志','Willpower',23],['运','Luck',0]];
+const INTENSITIES=[{id:'quiet',glyph:'靜',label:'Quiet',xp:'0.70×',fpm:'0.04',h:1,m:0.70},{id:'steady',glyph:'穩',label:'Steady',xp:'1.00×',fpm:'0.14',h:2,m:1.00},{id:'harsh',glyph:'烈',label:'Harsh',xp:'1.35×',fpm:'0.35',h:3,m:1.35},{id:'limit',glyph:'極',label:'Limit',xp:'1.75×',fpm:'0.75',h:4,m:1.75}];
+const LUCK_GRADE='慧 · Auspicious';
+const S={path:'martial',realm:2,activeIndex:1,status:'active',fatigue:54,intensity:'steady',rm:false,showReturn:false,cultPct:0.46};
+
+/* ===== CURRENT DATA ===== */
+function currentData(){
+  const P=PATHS[S.path],T=THEME[S.path],f=S.fatigue,tier=tierOf(f),damp=dampOf(f);
+  const realm=Math.max(1,Math.min(7,S.realm)),cap=CAPS[realm-1];
+  // build meridian view
+  const meridians=P.meridians.map((m,i)=>{
+    const unlocked=i<realm,root=ROOTS[m.rootKey];
+    const mcap=Math.round(cap*root.cap);
+    const rating=unlocked?Math.min(mcap,Math.round(m.invest*mcap)):0;
+    const capPct=unlocked?Math.min(1,rating/mcap):0;
+    return {...m,index:i,unlocked,root,rootKey:m.rootKey,cap:mcap,rating,capPct,capState:unlocked?capStateOf(capPct):'locked',unlockRealm:i+1};
+  });
+  const unlockedList=meridians.filter(m=>m.unlocked);
+  // clamp active to an unlocked meridian
+  let ai=S.activeIndex; if(!meridians[ai]||!meridians[ai].unlocked) ai=realm-1; S.activeIndex=ai;
+  const active=meridians[ai];
+  meridians.forEach(m=>m.isActive=(m.index===ai));
+  // bottleneck = lowest capPct among unlocked
+  let bn=null; unlockedList.forEach(m=>{if(!bn||m.capPct<bn.capPct)bn=m;}); if(bn)bn.isBottleneck=true;
+  const nextSealed=meridians.find(m=>!m.unlocked);
+  // tier 1/0 values scale gently with realm
+  const scale=0.72+realm*0.16;
+  const axes=AXES.map(([zi,name,base])=>({zi,name,v:Math.round(base*scale)}));
+  const baseStats=BASE.map(([zi,name,base])=>({zi,name,v:name==='Luck'?null:Math.round(base*scale),fixed:name==='Luck'}));
+  // rate breakdown (the Tempering Winds, consolidated)
+  const intens=INTENSITIES.find(i=>i.id===S.intensity)||INTENSITIES[1];
+  const perc=baseStats.find(s=>s.name==='Perception').v;
+  const mastMult=1+active.mastery.rank*0.012;
+  const percMult=1+(perc-20)*0.006;
+  const rootMult=active.root.rate;
+  const compMult=active.comp;
+  const capFall=capFalloffOf(active.capPct);
+  const factors=[
+    {k:'regimen mastery',v:mastMult,dir:'up',note:'rank '+active.mastery.rank},
+    {k:'intensity',v:intens.m,dir:intens.m>1?'up':intens.m<1?'down':'flat',note:intens.label},
+    {k:'perception',v:percMult,dir:percMult>1?'up':'flat',note:'悟 '+perc},
+    {k:'spirit root',v:rootMult,dir:rootMult>1?'up':'down',note:active.root.lbl},
+    {k:'fatigue',v:damp,dir:damp<1?(damp<=0.5?'bad':'down'):'flat',note:tier[0].toUpperCase()+tier.slice(1)+' '+f},
+    {k:'comprehension',v:compMult,dir:compMult<1?'down':'flat',note:compMult<1?Math.round(compMult*100)+'% learned':'mastered'},
+    {k:'cap falloff',v:capFall,dir:capFall<1?'down':'flat',note:active.capState==='capped'?'at cap → mastery':active.capState==='near_cap'?'near cap':''},
+    {k:'path affinity',v:1.20,dir:'up',note:P.glyph+' resonance'},
+    {k:'offline',v:1.00,dir:'flat',note:'online — full rate'},
+    {k:'form memory',v:1.00,dir:'flat',note:'no prestige floor yet'}
+  ];
+  const mult=Math.min(2.25,factors.reduce((a,x)=>a*x.v,1));
+  // alerts
+  const alerts=[];
+  if(f>=60)alerts.push({tone:'cinn',glyph:'火',text:`Forge runs hot — fatigue ${f}. Practice eases at 80.`});
+  if(active.capState==='capped')alerts.push({tone:'gold',glyph:'滿',text:`${active.name} reached its realm cap — overflow now feeds mastery.`});
+  if(active.comp<1)alerts.push({tone:'jade',glyph:'悟',text:`Still comprehending ${active.name} — ${Math.round(active.comp*100)}% learned; rate climbs as you grasp the form.`});
+  if(nextSealed)alerts.push({tone:'ink',glyph:'封',text:`Next breakthrough (${REALMS[realm]}) unseals ${nextSealed.name}.`});
+  if(S.showReturn)alerts.push({tone:'jade',glyph:'歸',text:'Welcome back — see what the hall kept for you.'});
+  if(S.rm)alerts.push({tone:'ink',glyph:'止',text:'Reduced-motion shown with stable marks.'});
+  const statusLabel={active:`Tempering · ${intens.label}`,idle:'Ready to Temper',blocked_by_combat:'Court Closed · In Combat',blocked_by_activity:'Hall Occupied · Gathering',no_path:'No Path Chosen'}[S.status];
+  return {P,T,realm,realmName:REALMS[realm-1],cap,meridians,unlockedList,activeIndex:ai,active,nextUnlock:nextSealed,
+    f,tier,damp,intens,factors,mult,axes,baseStats,alerts,statusLabel,cultPct:S.cultPct,
+    startEnabled:S.status==='idle',startLabel:S.status==='active'?'Tempering':'Begin Tempering',
+    disabledReason:S.status==='blocked_by_combat'?'Combat must end before you may train.':S.status==='blocked_by_activity'?'Another activity holds the hall.':S.status==='no_path'?'Choose a path at Life Start.':'',
+    offlineSummary:S.showReturn?{minutes:'5h 12m',meridian:active.name,gained:'+22 xp',ratings:'3 ratings',mastery:'+140',fatigue:'+44',tier:'Strained',downgrades:3,passive:'+4 xp from 2 fights'}:null};
+}
+/* ===== RICH SCENERY ===== */
+function buildScene(d){
+  const sc=d.P.scenery, hot=(0.4+S.fatigue/220).toFixed(2);
+  if(sc==='earth'){return `<svg viewBox="0 0 1212 768" preserveAspectRatio="xMidYMid slice">
+    <!-- cavern walls -->
+    <path d="M0,0 H1212 V120 Q1000,150 900,90 Q820,150 720,100 Q620,160 520,100 Q400,150 300,95 Q180,150 0,110 Z" fill="rgba(36,24,16,.5)"/>
+    <path d="M0,768 V470 Q60,440 90,500 Q120,440 150,520 L150,768Z" fill="rgba(30,20,13,.5)"/>
+    <path d="M1212,768 V470 Q1150,440 1120,500 Q1090,440 1062,520 L1062,768Z" fill="rgba(30,20,13,.5)"/>
+    <!-- stone pillars -->
+    <rect x="120" y="150" width="56" height="520" rx="6" fill="rgba(44,30,20,.42)"/><rect x="120" y="150" width="56" height="520" rx="6" fill="none" stroke="rgba(120,80,46,.3)"/>
+    <rect x="1036" y="150" width="56" height="520" rx="6" fill="rgba(44,30,20,.42)"/><rect x="1036" y="150" width="56" height="520" rx="6" fill="none" stroke="rgba(120,80,46,.3)"/>
+    <!-- furnace mouth glow behind figure -->
+    <ellipse cx="606" cy="560" rx="360" ry="240" fill="url(#forgeGlow)" class="glowP" style="opacity:${hot}"/>
+    <path d="M396,690 L396,420 Q396,250 606,236 Q816,250 816,420 L816,690Z" fill="rgba(28,16,10,.5)"/>
+    <path d="M430,690 L430,440 Q430,290 606,278 Q782,290 782,440 L782,690Z" fill="url(#furnaceFire)" opacity=".5" class="glowP"/>
+    <!-- coal bed -->
+    <ellipse cx="606" cy="678" rx="220" ry="40" fill="url(#furnaceFire)" opacity=".55" class="glowP"/>
+    ${[...Array(9)].map((_,i)=>`<circle cx="${500+i*28}" cy="${672+(i%2)*8}" r="${4+(i%3)}" fill="#ffb15a" opacity=".7" class="flame" style="animation-delay:${(i*.2).toFixed(2)}s"/>`).join('')}
+    <!-- flame tongues -->
+    ${[540,606,672].map((x,i)=>`<path d="M${x},680 C${x-16},640 ${x-6},610 ${x},588 C${x+8},612 ${x+16},644 ${x},680Z" fill="url(#furnaceFire)" class="flame" style="animation-delay:${(i*.3).toFixed(2)}s;transform-origin:${x}px 680px"/>`).join('')}
+    <!-- anvil + hammer lower-left -->
+    <g transform="translate(214,604)"><path d="M-44,30 L44,30 L34,46 L-34,46Z" fill="rgba(40,44,50,.7)"/><rect x="-30" y="6" width="60" height="20" rx="3" fill="url(#steelG)" opacity=".8"/><path d="M-46,6 L34,-2 L34,8 L-30,12Z" fill="url(#steelG)" opacity=".85"/><rect x="-10" y="-2" width="20" height="10" fill="rgba(40,44,50,.7)"/></g>
+    <g transform="translate(150,560) rotate(-28)"><rect x="-4" y="0" width="8" height="70" rx="3" fill="#6e4c22"/><rect x="-22" y="-12" width="44" height="20" rx="4" fill="url(#steelG)"/></g>
+    <!-- hanging chain + hook -->
+    <g stroke="rgba(80,70,60,.6)" stroke-width="3" fill="none">${[...Array(7)].map((_,i)=>`<ellipse cx="980" cy="${120+i*22}" rx="5" ry="9"/>`).join('')}</g>
+    <path d="M980,272 q0,22 14,22 q12,0 12,-14" stroke="rgba(80,70,60,.7)" stroke-width="3" fill="none"/>
+    <!-- floor cracks -->
+    <g stroke="#e0762a" stroke-width="1.6" opacity=".4" class="glowP">${['M380,710 L470,690 L520,712','M740,712 L800,688 L900,706'].map(p=>`<path d="${p}" fill="none"/>`).join('')}</g>
+  </svg>`;}
+  if(sc==='martial'){return `<svg viewBox="0 0 1212 768" preserveAspectRatio="xMidYMid slice">
+    <!-- back wall + moon gate -->
+    <rect x="0" y="0" width="1212" height="520" fill="rgba(64,58,50,.10)"/>
+    <circle cx="606" cy="300" r="210" fill="rgba(120,128,138,.08)" stroke="rgba(31,26,23,.18)" stroke-width="3"/>
+    <circle cx="606" cy="300" r="210" fill="none" stroke="rgba(178,131,45,.18)" stroke-width="1"/>
+    <!-- hanging banner cloths -->
+    ${[[150,'武'],[1050,'勇']].map(([x,g])=>`<g class="swayG" style="transform-origin:${x}px 130px"><path d="M${x-26},130 L${x+26},130 L${x+22},420 L${x},432 L${x-22},420Z" fill="url(#bannerCloth)" opacity=".85"/><path d="M${x-26},130 L${x+26},130 L${x+24},150 L${x-24},150Z" fill="#3a1410"/><text x="${x}" y="210" text-anchor="middle" font-family="var(--kai)" font-size="34" fill="#f4dccb" opacity=".9">${g}</text><text x="${x}" y="270" text-anchor="middle" font-family="var(--kai)" font-size="34" fill="#f4dccb" opacity=".75">道</text></g>`).join('')}
+    <!-- sweeping blade arcs -->
+    <path d="M120,250 Q520,120 1090,300" fill="none" stroke="url(#goldBrushG)" stroke-width="11" filter="url(#brushRough)" opacity=".5" class="glowP"/>
+    <path d="M150,460 Q560,560 1080,410" fill="none" stroke="url(#goldBrushG)" stroke-width="7" filter="url(#brushRough)" opacity=".4"/>
+    <!-- weapon rack right -->
+    <g transform="translate(1000,360)"><rect x="-8" y="0" width="86" height="14" rx="3" fill="#6e4c22"/><rect x="-8" y="260" width="86" height="14" rx="3" fill="#6e4c22"/>
+      ${[0,1,2,3].map(i=>`<g transform="translate(${i*22},-150) rotate(${(i-1.5)*6})"><rect x="-2" y="0" width="4" height="410" fill="#7a5b26"/><path d="M-7,0 L7,0 L0,-22Z" fill="url(#steelG)"/></g>`).join('')}</g>
+    <!-- war drum lower-left -->
+    <g transform="translate(180,600)"><ellipse cx="0" cy="0" rx="64" ry="78" fill="rgba(120,40,30,.55)" stroke="#3a1410" stroke-width="3"/><ellipse cx="0" cy="0" rx="64" ry="78" fill="none" stroke="rgba(178,131,45,.4)"/><circle cx="0" cy="0" r="10" fill="#3a1410"/>${[0,45,90,135,180,225,270,315].map(a=>{const[x,y]=PT(0,0,64,a),[x2,y2]=PT(0,0,78,a);return `<circle cx="${x.toFixed(0)}" cy="${(y*78/64).toFixed(0)}" r="3" fill="#e7cd92"/>`;}).join('')}<rect x="-78" y="78" width="156" height="14" rx="4" fill="#6e4c22"/></g>
+    <!-- training post right-mid -->
+    <g transform="translate(1030,560)"><rect x="-9" y="0" width="18" height="150" rx="4" fill="#7a5b26"/><rect x="-26" y="20" width="52" height="14" rx="6" fill="#6e4c22"/><rect x="-22" y="50" width="44" height="12" rx="6" fill="#6e4c22"/></g>
+    <!-- footwork rings -->
+    <ellipse cx="606" cy="650" rx="320" ry="70" fill="none" stroke="rgba(31,26,23,.26)" stroke-width="2"/>
+    <ellipse cx="606" cy="650" rx="210" ry="46" fill="none" stroke="rgba(31,26,23,.22)" stroke-width="2"/>
+    <ellipse cx="606" cy="650" rx="110" ry="24" fill="none" stroke="rgba(139,48,40,.4)" stroke-width="2" stroke-dasharray="7 9"/>
+    <!-- plank seams -->
+    <g stroke="rgba(31,26,23,.10)" stroke-width="1">${[560,620,690,740].map(y=>`<line x1="160" y1="${y}" x2="1052" y2="${y}"/>`).join('')}</g>
+  </svg>`;}
+  /* heaven */
+  return `<svg viewBox="0 0 1212 768" preserveAspectRatio="xMidYMid slice">
+    <!-- stars -->
+    <g fill="#f3ead7">${[...Array(46)].map((_,i)=>{const x=(i*139+40)%1180+12,y=(i*83+30)%430+14,r=(i%5)*0.5+1;return `<circle cx="${x}" cy="${y}" r="${r.toFixed(1)}" opacity=".8" class="twk" style="animation-delay:${(i%9*.4).toFixed(1)}s"/>`;}).join('')}</g>
+    <!-- moon -->
+    <circle cx="950" cy="170" r="64" fill="url(#moonG)"/><circle cx="950" cy="170" r="64" fill="none" stroke="rgba(217,189,128,.4)"/>
+    <circle cx="930" cy="156" r="10" fill="rgba(120,110,80,.12)"/><circle cx="966" cy="188" r="7" fill="rgba(120,110,80,.10)"/>
+    <!-- constellation (dipper) reaching crown -->
+    <g stroke="rgba(207,224,255,.6)" stroke-width="1" fill="#eaf2ff"><circle cx="300" cy="150" r="2.6" class="twk"/><circle cx="386" cy="120" r="2.2" class="twk"/><circle cx="470" cy="150" r="2.8" class="twk"/><circle cx="556" cy="120" r="2.2" class="twk"/><circle cx="624" cy="170" r="3" class="twk"/><circle cx="690" cy="210" r="2.4" class="twk"/>
+      <path d="M300,150 L386,120 L470,150 L556,120 L624,170 L690,210" fill="none"/><path d="M556,120 L606,150" fill="none" stroke-dasharray="3 5"/></g>
+    <!-- drifting mist bands -->
+    <g class="driftG"><path d="M-40,470 Q300,440 620,470 Q900,496 1260,464 L1260,540 L-40,540Z" fill="url(#mistG)" opacity=".5"/></g>
+    <g class="driftG" style="animation-duration:34s;animation-direction:reverse"><path d="M-40,540 Q360,514 700,544 Q980,566 1260,536 L1260,610 L-40,610Z" fill="url(#mistG)" opacity=".4"/></g>
+    <!-- distant peaks -->
+    <path d="M0,768 L0,600 L150,650 L320,560 L520,660 L720,560 L920,650 L1212,590 L1212,768Z" fill="rgba(40,54,80,.38)"/>
+    <path d="M0,768 L0,660 L200,700 L420,630 L640,700 L860,640 L1080,700 L1212,660 L1212,768Z" fill="rgba(31,40,55,.5)"/>
+    <!-- pavilion eaves at top corners -->
+    ${[[70,1],[1142,-1]].map(([x,s])=>`<g transform="translate(${x},78) scale(${s},1)"><path d="M0,0 Q70,-26 150,10 L140,22 Q70,-8 6,16Z" fill="rgba(58,30,18,.6)"/><path d="M150,10 l10,-2 l-6,16 l-14,-2Z" fill="rgba(178,131,45,.5)"/></g>`).join('')}
+    <!-- hanging lanterns -->
+    ${[[230,150],[980,300]].map(([x,y])=>`<g transform="translate(${x},${y})"><line x1="0" y1="-${y-86}" x2="0" y2="-10" stroke="rgba(80,70,60,.5)" stroke-width="1.5"/><ellipse cx="0" cy="14" rx="20" ry="26" fill="url(#lanternG)" opacity=".88" class="glowP"/><ellipse cx="0" cy="14" rx="20" ry="26" fill="none" stroke="#5e1c16"/><rect x="-10" y="-14" width="20" height="6" rx="2" fill="#3a1410"/><rect x="-10" y="36" width="20" height="6" rx="2" fill="#3a1410"/><line x1="0" y1="42" x2="0" y2="58" stroke="#b23c1e" stroke-width="2"/></g>`).join('')}
+  </svg>`;
+}
+/* ===== MERIDIAN CHANNEL (7 nodes: sealed → unlocked → active) ===== */
+function buildMeridianChannel(d){
+  const T=d.T,mers=d.meridians,ai=d.activeIndex,realm=d.realm;
+  const ys=[452,400,348,296,244,192,138],x=606;
+  const highY=ys[realm-1],show=S.status!=='no_path',active=S.status==='active'&&!S.rm;
+  let s='';
+  s+=`<line x1="${x}" y1="470" x2="${x}" y2="138" stroke="rgba(120,96,52,.18)" stroke-width="6" stroke-linecap="round"/>`;
+  if(show)s+=`<line x1="${x}" y1="470" x2="${x}" y2="${highY}" stroke="${T.meridP}" stroke-width="6" stroke-linecap="round" filter="url(#glowJ)" opacity=".85"/>`;
+  if(show&&active&&ai>=0)s+=`<line x1="${x}" y1="470" x2="${x}" y2="${ys[ai]}" stroke="#fff6da" stroke-width="2.4" class="qiflow"/>`;
+  mers.forEach((m,i)=>{
+    const y=ys[i];
+    if(!m.unlocked){s+=`<g transform="translate(${x-11},${y-11})" opacity=".92">${waxSeal('封',22,-5)}</g>`;return;}
+    const isA=(i===ai),capped=m.capState==='capped',bottle=m.isBottleneck;
+    const col=capped?'url(#goldRad)':bottle?'url(#cinnDisc)':isA?T.core:'url(#jadeRad)';
+    const r=isA?13:9;
+    if(isA)s+=`<circle cx="${x}" cy="${y}" r="22" fill="${T.core}" opacity=".45" class="breatheA"/>`;
+    s+=`<circle cx="${x}" cy="${y}" r="${r}" fill="${col}" stroke="${capped?'#6e4c16':bottle?'#54190f':isA?T.rim:'#1c3128'}" stroke-width="1.6" ${isA?'filter="url(#glowJ)" class="mp"':(bottle&&!S.rm?'class="weakp"':'')}/>`;
+    if(capped)s+=`<text x="${x}" y="${y+4}" text-anchor="middle" font-family="var(--kai)" font-size="${isA?11:9}" fill="#3a2a0e">滿</text>`;
+  });
+  if(show&&ai>=0){
+    const m=mers[ai],y=ys[ai],capped=m.capState==='capped';
+    s+=`<line x1="${x+16}" y1="${y}" x2="${x+46}" y2="${y}" stroke="${T.rim}" stroke-width="1.2" opacity=".7"/>`;
+    s+=`<text x="${x+52}" y="${y-3}" font-family="var(--serif)" font-weight="800" font-size="13" fill="#2f2a22" paint-order="stroke" stroke="rgba(243,234,215,.92)" stroke-width="3.4">${m.name}</text>`;
+    s+=`<text x="${x+52}" y="${y+13}" font-family="var(--serif)" font-weight="800" font-size="12" fill="${m.capState==='open'?'#0f6f5a':'#84591b'}" paint-order="stroke" stroke="rgba(243,234,215,.92)" stroke-width="3.2">${m.rating}/${m.cap} · ${m.root.lbl}</text>`;
+    if(capped)s+=`<text x="${x+52}" y="${y+28}" font-family="var(--serif)" font-weight="700" font-size="9" fill="#84591b">overflow → mastery</text>`;
+  }
+  return s;
+}
+/* ===== DETAILED FIGURE ===== */
+function buildFigure(d){
+  const P=d.P,T=d.T,sc=P.scenery;
+  const active=S.status==='active'&&!S.rm;
+  const dim=S.status==='blocked_by_combat'?0.48:S.status==='blocked_by_activity'?0.7:S.status==='no_path'?0.45:1;
+  const robe=sc==='heaven'?'rgba(232,240,238,.5)':sc==='earth'?'rgba(245,228,206,.5)':'rgba(243,234,215,.5)';
+  const robeStroke='rgba(120,96,52,.65)';
+  // platform per path
+  let dais='';
+  if(sc==='earth') dais=`<path d="M430,628 L782,628 L834,690 L378,690Z" fill="rgba(40,26,16,.6)" stroke="rgba(120,80,46,.4)"/><path d="M430,628 L782,628 L788,640 L424,640Z" fill="rgba(70,46,26,.6)"/><g stroke="#e0762a" stroke-width="1.4" opacity=".5" class="glowP"><line x1="470" y1="664" x2="540" y2="664"/><line x1="640" y1="672" x2="730" y2="672"/></g>`;
+  if(sc==='martial') dais=`<ellipse cx="606" cy="660" rx="172" ry="34" fill="rgba(60,42,20,.4)" stroke="rgba(120,90,46,.4)"/><ellipse cx="606" cy="660" rx="120" ry="22" fill="none" stroke="rgba(178,131,45,.3)"/>`;
+  if(sc==='heaven') dais=`<ellipse cx="606" cy="664" rx="150" ry="30" fill="url(#starHalo)" opacity=".5"/>${[...Array(10)].map((_,i)=>{const a=i/10*2*Math.PI,x=606+Math.cos(a)*120,y=664+Math.sin(a)*24;return `<path d="M606,664 Q${(606+x)/2},${(664+y)/2-8} ${x.toFixed(0)},${y.toFixed(0)}" fill="none" stroke="rgba(159,224,196,.5)" stroke-width="2"/>`;}).join('')}<ellipse cx="606" cy="700" rx="130" ry="20" fill="rgba(159,208,255,.10)"/>`;
+  // back glow
+  let back='';
+  if(sc==='heaven') back=`<circle cx="606" cy="150" r="92" fill="url(#starHalo)" class="breatheA"/>`;
+  if(sc==='martial') back=`<circle cx="606" cy="396" r="196" fill="none" stroke="rgba(178,131,45,.32)" stroke-dasharray="3 13" class="spinG" style="transform-origin:606px 396px"/><circle cx="606" cy="396" r="168" fill="none" stroke="rgba(139,48,40,.22)" stroke-dasharray="2 16" class="spinG" style="transform-origin:606px 396px;animation-direction:reverse;animation-duration:60s"/>`;
+  return `<svg viewBox="0 0 1212 768" style="filter:${dim<1?'grayscale(.4)':'none'};opacity:${dim}">
+    ${dais}
+    <ellipse cx="606" cy="404" rx="200" ry="286" fill="url(#qiAura)" class="breatheA" style="opacity:${T.auraOp}"/>
+    ${back}
+    <!-- legs (lotus base) -->
+    <path d="M452,560 Q540,612 606,612 Q672,612 760,560 Q792,600 700,624 Q606,640 512,624 Q420,600 452,560Z" fill="${robe}" stroke="${robeStroke}" stroke-width="1.6"/>
+    <!-- robe body -->
+    <path d="M556,206 Q494,272 478,402 Q466,500 452,560 Q540,592 606,592 Q672,592 760,560 Q746,500 734,402 Q718,272 656,206 Q632,242 606,242 Q580,242 556,206Z" fill="${robe}" stroke="${robeStroke}" stroke-width="1.8"/>
+    <!-- robe fold lines -->
+    <g fill="none" stroke="rgba(120,96,52,.4)" stroke-width="1.4"><path d="M556,300 Q540,420 528,540"/><path d="M656,300 Q672,420 684,540"/><path d="M606,260 L606,560"/></g>
+    <!-- collar V -->
+    <path d="M566,212 L606,300 L646,212" fill="none" stroke="${robeStroke}" stroke-width="2"/>
+    <!-- rim light -->
+    <path d="M656,206 Q718,272 734,402 Q746,500 760,560" fill="none" stroke="${T.rim}" stroke-width="${T.rimW}" opacity=".55" filter="url(#soft)"/>
+    <!-- hands / mudra -->
+    <ellipse cx="606" cy="556" rx="46" ry="20" fill="${robe}" stroke="${robeStroke}" stroke-width="1.5"/>
+    <circle cx="606" cy="552" r="9" fill="${T.core==='url(#emberCore)'?'#ffca6a':'#ffe9b0'}" opacity=".5" filter="url(#soft)"/>
+    <!-- neck + head + topknot -->
+    <rect x="592" y="168" width="28" height="34" rx="10" fill="${robe}" stroke="${robeStroke}" stroke-width="1.4"/>
+    <circle cx="606" cy="150" r="46" fill="${robe}" stroke="${robeStroke}" stroke-width="1.6"/>
+    <path d="M576,138 Q606,108 636,138" fill="none" stroke="rgba(120,96,52,.5)" stroke-width="1.4"/>
+    <ellipse cx="606" cy="104" rx="16" ry="13" fill="${robe}" stroke="${robeStroke}" stroke-width="1.5"/><rect x="600" y="96" width="12" height="10" rx="3" fill="rgba(120,96,52,.5)"/>
+    ${buildMeridianChannel(d)}
+    <circle cx="606" cy="470" r="44" fill="${T.core}" class="breatheA"/>
+    <circle cx="606" cy="470" r="20" fill="none" stroke="rgba(150,120,60,.7)" stroke-width="1.4"/>
+    <circle cx="606" cy="470" r="28" fill="none" stroke="${T.rim}" stroke-width="1.4" opacity=".5" class="glowP"/>
+  </svg>`;
+}
+/* ===== SMOKE / INCENSE ===== */
+function buildSmoke(d){
+  if(S.rm)return '';
+  const sc=d.P.scenery;
+  if(sc==='earth'){return `<svg viewBox="0 0 1212 768">${[480,606,720].map((x,i)=>`<g style="transform-origin:${x}px 600px"><ellipse cx="${x}" cy="600" rx="26" ry="34" fill="rgba(60,46,38,.28)" style="animation:smokeRiseK ${(6+i).toFixed(0)}s ease-in infinite;animation-delay:${(i*1.6).toFixed(1)}s;transform-origin:${x}px 600px"/></g>`).join('')}</svg>`;}
+  if(sc==='martial'){return `<svg viewBox="0 0 1212 768">${[300,820].map((x,i)=>`<ellipse cx="${x}" cy="650" rx="20" ry="14" fill="rgba(120,100,70,.16)" style="animation:smokeRiseK ${(7+i).toFixed(0)}s ease-in infinite;animation-delay:${(i).toFixed(1)}s;transform-origin:${x}px 650px"/>`).join('')}</svg>`;}
+  return `<svg viewBox="0 0 1212 768"><g class="swayG" style="transform-origin:792px 560px"><path d="M792,600 q-10,-40 4,-78 q-12,-36 2,-70" fill="none" stroke="rgba(207,224,255,.35)" stroke-width="3" style="animation:smokeRiseK 9s ease-in infinite"/></g><rect x="784" y="598" width="16" height="6" rx="2" fill="rgba(80,70,60,.5)"/></svg>`;
+}
+/* ===== LINTEL ===== */
+function renderLintel(d){
+  const P=d.P,T=d.T;
+  const pips=REALMS.map((r,i)=>`<span class="rp ${i<d.realm?'on':''} ${i===d.realm-1?'cur on':''}" title="${r}"></span>`).join('');
+  const pathName=P.glyph==='天'?'HEAVEN':P.glyph==='地'?'EARTH':'MARTIAL';
+  document.getElementById('lintel-grid').innerHTML=`
+    <div></div>
+    <div>
+      <div class="sub">TRAINING HALL · ${pathName} PATH</div>
+      <div class="lintel-title">The Tempering Court<span style="display:inline-flex">${waxSeal(T.sealGlyph,34,-6,T.sealJade)}</span></div>
+      <div class="lintel-sub">${P.subtitle}</div>
+      <div class="realm-pips" title="Realm progress">${pips}<span class="micro" style="margin-left:6px">${d.realmName}</span></div>
+      <div class="cbar-wrap"><span class="micro">修为 Cultivation Base</span><span class="cbar"><span class="fill" style="width:${Math.round(d.cultPct*100)}%"></span></span><span class="micro">${Math.round(d.cultPct*100)}% → breakthrough</span></div>
+    </div>
+    <div class="lintel-right">
+      <span class="rchip">${d.realmName}</span>
+      <span class="rchip">Meridian Cap ${d.cap}</span>
+      <span class="rchip">${d.unlockedList.length}/7 meridians</span>
+      <span class="chip jade">▸ ${d.active.name}</span>
+      ${d.nextUnlock?`<span class="micro">Next: ${d.nextUnlock.name} · ${REALMS[d.realm]}</span>`:'<span class="micro">All meridians revealed</span>'}
+    </div>`;
+}
+/* ===== SHELF (one exercise per unlocked meridian + sealed) ===== */
+function renderShelf(d){
+  const host=document.getElementById('shelf-list');
+  const ladder=(rank,tr)=>{let h='';for(let i=1;i<=10;i++){const on=i<=rank,cur=i===rank;h+=`<div class="notch ${on?'on':''} ${cur?'cur':''}">${i===tr?'<span class="trait">◆</span>':''}</div>`;}return h;};
+  let html='';
+  d.meridians.filter(m=>m.unlocked).forEach(m=>{
+    const sel=m.isActive,pct=Math.round(m.capPct*100);
+    html+=`<div class="plaque ${sel?'sel':''}" data-mi="${m.index}" tabindex="0" role="button" aria-pressed="${sel}">
+      ${sel?`<span class="psel">${waxSeal('煉',22,0,true)}</span><span class="ptemper">TEMPERING</span>`:''}
+      <div class="pname">${m.exercise}</div>
+      <div class="proom">${m.room} · trains <b>${m.name}</b> <span style="font-family:var(--kai)">${m.zi}</span></div>
+      <div class="pmeta"><span class="rootchip ${m.root.cls}">${m.root.lbl}</span><span class="pbar ${m.capState!=='open'?'cap':''}"><span class="fill" style="width:${pct}%"></span></span><span class="val">${m.rating}/${m.cap}</span></div>
+      <div class="ladder">${ladder(m.mastery.rank,m.traitRank)}</div>
+      <div class="micro" style="margin-top:3px">Mastery ${m.mastery.rank}/10 · trait ◆ at ${m.traitRank} — ${m.trait}${m.comp<1?` · <span style="color:#7a3a86">learning ${Math.round(m.comp*100)}%</span>`:''}</div></div>`;});
+  html+=`<div class="divider">sealed meridians · unlocked by breakthrough</div>`;
+  d.meridians.filter(m=>!m.unlocked).forEach(m=>{
+    html+=`<div class="slip" data-locked="true" tabindex="0" role="button" aria-disabled="true" aria-label="${m.name}, sealed, opens at ${REALMS[m.unlockRealm-1]}">
+      <span class="seal-lock">${waxSeal('封',26,-8)}</span>
+      <div class="sname">${m.name} <span style="font-family:var(--kai);color:var(--ink-45);font-weight:400">${m.zi}</span></div>
+      <div class="micro" style="color:var(--ink-45)">opens at ${REALMS[m.unlockRealm-1]}</div>
+      <div class="micro" style="color:var(--ink-45);opacity:.85">promise: ${m.path}</div></div>`;});
+  host.innerHTML=html;
+  host.querySelectorAll('.plaque').forEach(el=>el.onclick=()=>{S.activeIndex=+el.dataset.mi;renderAll();});
+}
+/* ===== ROOM ===== */
+function renderRoom(d){
+  const P=d.P,T=d.T,m=d.active;
+  document.getElementById('room-watermark').textContent=T.watermark;
+  document.getElementById('room-banner').innerHTML=`THE ROOM · <b>${m.room}</b>`;
+  document.getElementById('room-atmos').style.background=T.atmos;
+  document.getElementById('room-scene').innerHTML=buildScene(d);
+  document.getElementById('room-fig').innerHTML=buildFigure(d);
+  document.getElementById('room-smoke').innerHTML=buildSmoke(d);
+  document.getElementById('rc-tl').src=cornerURI(T.corner);
+  document.getElementById('rc-tr').src=cornerURI(T.corner);
+  document.getElementById('room-scrim').style.background=S.status==='blocked_by_combat'?'rgba(110,36,30,.12)':S.status==='blocked_by_activity'?'rgba(162,113,42,.08)':'transparent';
+  const sealMap={active:['炼',64,-7,true,'jade','Tempering · '+d.intens.label],idle:['待',60,-5,false,'gold','Ready to Temper'],blocked_by_combat:['戰',64,4,false,'cinn','Court Closed · Combat'],blocked_by_activity:['占',60,3,false,'gold','Hall Occupied'],no_path:[null]};
+  const sm=sealMap[S.status];
+  document.getElementById('room-seal').innerHTML=sm[0]?`${waxSeal(sm[0],sm[1],sm[2],sm[3])}<div class="lbl"><span class="chip ${sm[4]}">${sm[5]}</span></div>`:`<span class="chip ink">No Path</span>`;
+  const dirG=x=>x==='up'?'↑':(x==='down'||x==='bad')?'↓':'–', dirC=x=>x==='up'?'dir-up':x==='down'?'dir-down':x==='bad'?'dir-bad':'dir-flat';
+  const ringPct=Math.min(1,d.mult/2.25),ringCol=d.mult<1.8?'#0f6f5a':d.mult<2.2?'#a2712a':'#b2832d';
+  const rows=d.factors.map(fc=>`<div class="row"><span class="nm">${fc.k}${fc.note?` <span style="color:var(--ink-25)">(${fc.note})</span>`:''}</span><span><b>${fmt(fc.v).toFixed(2)}×</b> <span class="${dirC(fc.dir)}">${dirG(fc.dir)}</span></span></div>`).join('');
+  document.getElementById('room-lens').innerHTML=`<div class="lensbar">PRACTICE TEMPO</div>
+    <div class="head"><span>${S.status==='active'?d.mult.toFixed(2)+'× / 2.25×':S.status==='idle'?'≈ '+d.mult.toFixed(2)+'×':'paused'}</span>
+      <svg width="56" height="56" viewBox="0 0 56 56"><circle cx="28" cy="28" r="21" fill="none" stroke="rgba(120,90,46,.2)" stroke-width="5"/><path d="${arc(28,28,21,-130,-130+260*ringPct)}" fill="none" stroke="${ringCol}" stroke-width="5" stroke-linecap="round"/></svg></div>${rows}`;
+  const effTag=e=>`<span class="eff ${e[0]}">${e[1]}</span>`;
+  const codex=document.getElementById('room-codex');
+  if(S.status==='no_path'){codex.style.display='none';}
+  else{codex.style.display='';
+    codex.innerHTML=`<div class="cbar2">THIS MERIDIAN</div>
+      <div class="ctitle">${m.name} <span class="zi">${m.zi}</span></div>
+      <div class="crow"><span class="k">In combat</span><span>${m.eff.map(effTag).join('')}</span></div>
+      <div class="crow"><span class="k">Path</span><span>${m.path}</span></div>
+      ${m.comp<1?`<div class="crow"><span class="k">Comprehend</span><span class="compbar"><span class="fill" style="width:${Math.round(m.comp*100)}%"></span></span><span style="color:#7a3a86;font-weight:700;flex:0 0 auto">${Math.round(m.comp*100)}%</span></div>`:''}
+      <div class="passive-note">Also honed in combat by <b>${m.trigger}</b> · ≈15% of training rate</div>`;}
+  const tint=s=>s.capState==='open'?'var(--jade-deep)':'var(--gold-deep)';
+  document.getElementById('room-forges').innerHTML=S.status==='no_path'?`<span class="micro">Choose a path at Life Start to begin tempering.</span>`:`<span>Tempering ▸ <span style="color:${tint(m)};font-weight:700">${m.name}</span> <span class="v">${m.rating}/${m.cap}</span>${m.capState==='capped'?' <span class="chip gold">capped → mastery</span>':''} <span style="color:var(--ink-25)">·</span> feeds <span style="font-weight:700">${m.eff[0][1]}</span></span>`;
+  document.getElementById('room-alerts').innerHTML=d.alerts.slice(0,3).map(a=>`<div class="alert ${a.tone}"><span style="font-family:var(--kai)">${a.glyph}</span><span>${a.text}</span><span class="x" onclick="this.parentElement.remove()">✕</span></div>`).join('');
+}
+/* ===== PATH MERIDIANS (right-top) ===== */
+function renderMeridians(d){
+  const host=document.getElementById('mer-list');
+  let html=`<div class="fsummary">Path Meridians <span class="val">${d.unlockedList.length}/7 unsealed</span></div>`;
+  d.meridians.forEach(m=>{
+    if(m.unlocked){const pct=Math.round(m.capPct*100);
+      html+=`<div class="merrow ${m.isActive?'active':''}">
+        <svg class="fbead" width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8" fill="${m.capState==='capped'?'url(#goldRad)':m.isBottleneck?'url(#cinnDisc)':'url(#jadeRad)'}" stroke="${m.isBottleneck?'#54190f':'#1c3128'}" stroke-width="1.5" class="${m.isBottleneck&&!S.rm?'weakp':''}"/></svg>
+        <span class="mname">${m.name} <span style="font-family:var(--kai);color:var(--ink-45);font-size:10px">${m.zi}</span></span>
+        <span class="rootchip ${m.root.cls}">${m.root.lbl.replace(' Root','')}</span>
+        <span class="mmeter ${m.capState!=='open'?'cap':''}"><span class="fill" style="width:${pct}%"></span></span>
+        <span class="mr">${m.rating}/${m.cap}</span>
+        ${m.isActive?'<span class="chip jade">▸</span>':m.isBottleneck?'<span class="chip gold">!</span>':m.capState==='capped'?'<span class="chip gold">滿</span>':''}</div>`;
+    }else{
+      html+=`<div class="merlocked"><span style="display:inline-flex">${waxSeal('封',20,-6)}</span><span class="mname">${m.name} <span style="font-family:var(--kai);font-size:10px">${m.zi}</span></span><span class="sealtag">${REALMS[m.unlockRealm-1]}</span></div>`;
+    }
+  });
+  host.innerHTML=html;
+}
+/* ===== CONSTITUTION (right-bottom: Tier 1 + Tier 0) ===== */
+function renderConstitution(d){
+  const host=document.getElementById('const-list');
+  const cell=s=>`<div class="ccell"><span style="font-family:var(--kai);color:var(--gold-deep);font-size:10px">${s.zi}</span><span class="cn">${s.name}</span><span class="cv">${s.v===null?'<span class="cg">'+LUCK_GRADE+'</span>':s.v}</span></div>`;
+  host.innerHTML=`<div class="tier-head jade">Cultivation Axes · 修为</div><div class="cgrid">${d.axes.map(cell).join('')}</div>
+    <div class="tier-head">Mortal Foundation · 体</div><div class="cgrid">${d.baseStats.map(cell).join('')}</div>
+    <div class="micro" style="margin-top:7px;color:var(--ink-45);line-height:1.4">Shared tiers — present from Qi Condensation, grown by the cultivation loop &amp; pills. The Court tempers <b>path meridians</b>; one at a time.</div>`;
+}
+/* ===== THIS PRACTICE (single active meridian) ===== */
+function renderTrade(d){const m=d.active,base=2.4*d.mult,c=document.getElementById('trade-c');
+  if(S.status==='blocked_by_combat'||S.status==='blocked_by_activity'){c.innerHTML=`<div class="micro" style="margin-top:18px">Paused — ${S.status==='blocked_by_combat'?'combat in progress':'the hall is occupied'}.</div>`;return;}
+  if(S.status==='no_path'){c.innerHTML=`<div class="micro" style="margin-top:18px">—</div>`;return;}
+  const toNext=(5/(base*0.9));
+  c.innerHTML=`<div class="micro" style="margin-bottom:4px">tempering <b>${m.name}</b>, at ${d.intens.label}:</div>
+    <div class="tline"><span style="color:var(--ink)">${m.name} <span style="font-family:var(--kai)">${m.zi}</span></span><span class="tv">≈ +${base.toFixed(1)} xp/min</span></div>
+    <div class="tline"><span>regimen mastery</span><span class="tv">≈ +${(base*0.33).toFixed(1)}/min</span></div>
+    <div class="tline"><span style="color:var(--gold-deep)">forge heat</span><span class="tv" style="color:var(--gold-deep)">+${d.intens.fpm}/min</span></div>
+    <div class="pp-sec">also in combat · passive</div>
+    <div class="tline"><span style="color:var(--jade-deep)">${m.trigger}</span><span class="tv" style="color:var(--jade-deep)">≈ +${(base*0.15).toFixed(1)}/min</span></div>
+    ${m.capState==='capped'?`<div class="tline" style="border-top:1px solid var(--ink-12);margin-top:3px;padding-top:3px"><span style="color:var(--gold-deep)">at realm cap</span><span class="tv" style="color:var(--gold-deep)">overflow → mastery</span></div>`:`<div class="micro" style="margin-top:6px">to next rating (${m.rating}→${m.rating+1})</div><div class="tbar"><span class="fill" style="width:${Math.round((m.rating%5)/5*100)}%"></span></div><div class="micro" style="margin-top:2px">~${toNext.toFixed(1)} min</div>`}`;}
+/* ===== RETURN ===== */
+function renderReturn(d){const wrap=document.getElementById('return-wrap');
+  if(!d.offlineSummary){wrap.classList.remove('show');return;}const o=d.offlineSummary;
+  document.getElementById('return-card').innerHTML=`<div style="position:absolute;left:18px;top:12px">${waxSeal('歸',40,-6,true)}</div>
+    <h3>WHILE YOU WERE AWAY</h3><div class="lead">The hall tempered <b>${o.meridian}</b> for ${o.minutes}.</div>
+    <div class="rrow"><span>${o.meridian}</span><span class="rv">${o.gained} <span class="chip jade">${o.ratings}</span></span></div>
+    <div class="rrow"><span>Regimen mastery</span><span class="rv">${o.mastery}</span></div>
+    <div class="rrow"><span style="color:var(--jade-deep)">Combat · passive</span><span class="rv" style="color:var(--jade-deep)">${o.passive}</span></div>
+    <div class="rrow" style="border-top:1px solid var(--ink-12);margin-top:4px;padding-top:4px"><span style="color:var(--gold-deep)">Forge heat</span><span class="rv" style="color:var(--gold-deep)">${o.fatigue} → ${o.tier}</span></div>
+    ${o.downgrades>0?`<div class="micro" style="margin-top:6px;color:var(--ink-70)">⤓ Your Limit eased ${o.downgrades} times as the forge ran hot.</div>`:''}
+    <div style="text-align:right;margin-top:12px"><span class="btn jade" id="btn-resume">Resume</span></div>`;
+  wrap.classList.add('show');const close=()=>{S.showReturn=false;syncCtrl();renderAll();};
+  document.getElementById('btn-resume').onclick=close;document.getElementById('return-scrim').onclick=close;}
+/* ===== BELLOWS ===== */
+function flameSVG(h,lit){const H=20+h*10;return `<svg width="34" height="${H}" viewBox="0 0 34 ${H}" class="${lit?'flame':''}"><path d="M17,${H} C2,${H-12} 8,${H*0.4} 14,${H*0.28} C13,${H*0.5} 20,${H*0.46} 19,${H*0.62} C24,${H*0.4} 30,${H-14} 17,${H}Z" fill="${lit?'url(#emberCore)':'rgba(120,90,46,.25)'}"/>${lit?`<path d="M17,${H} C9,${H-8} 13,${H*0.55} 17,${H*0.46} C21,${H*0.55} 25,${H-8} 17,${H}Z" fill="#fff4d6" opacity=".7"/>`:''}</svg>`;}
+function renderBellows(d){const host=document.getElementById('bellows-list');
+  host.innerHTML=INTENSITIES.map(it=>{const sel=it.id===S.intensity,lit=sel&&S.status==='active'&&!S.rm;
+    return `<div class="detent ${sel?'sel':''}" data-int="${it.id}" tabindex="0" role="button" aria-pressed="${sel}" aria-label="${it.label}, ${it.xp} experience, ${it.fpm} fatigue per minute">
+      <span>${medallion(it.glyph,sel?'#1c3128':'#2a1d08')}</span>
+      <div style="font:700 11px var(--serif);color:${sel?'var(--jade-deep)':'var(--ink-70)'}">${it.label}</div>
+      <div class="flamewrap">${flameSVG(it.h,lit||sel)}</div>
+      <div class="num">${it.xp} xp · ${it.fpm}/min</div></div>`;}).join('');
+  host.querySelectorAll('.detent').forEach(el=>el.onclick=()=>{S.intensity=el.dataset.int;syncCtrl();renderAll();});}
+
+/* ===== FORGE HEAT ===== */
+function renderForge(d){const f=d.f,tier=d.tier,chip=tier==='fresh'?'jade':tier==='overworked'?'cinn':'gold';
+  document.getElementById('forge-c').innerHTML=`
+    <div style="display:flex;justify-content:space-between;margin-top:2px"><span class="zone">fresh</span><span class="zone">tiring</span><span class="zone">strained</span><span class="zone" style="color:var(--cinn-deep)">overworked</span></div>
+    <div class="forgebar"><div class="ffill" style="width:${f}%"></div><div class="tick" style="left:35%"></div><div class="tick" style="left:60%"></div><div class="line80" style="left:80%"><b>downgrade</b></div>
+      ${f>=80&&!S.rm?`<div class="ffill" style="left:80%;width:${f-80}%;animation:heatShimK 1.4s ease-in-out infinite;background:linear-gradient(90deg,#a94835,#8b3028)"></div>`:''}</div>
+    <div style="display:flex;justify-content:space-between;font:600 8px var(--serif);color:var(--ink-45);margin-top:2px"><span>0</span><span>35</span><span>60</span><span>80</span><span>100</span></div>
+    <div style="margin-top:9px;display:flex;align-items:center;gap:8px"><span class="chip ${chip}">${tier[0].toUpperCase()+tier.slice(1)}</span><span class="val">${f} / 100</span><span class="micro">output ×${fmt(d.damp).toFixed(2)}</span>${tier==='overworked'?'<span class="micro" style="color:var(--cinn-deep)">⤓ practice eases</span>':''}</div>`;}
+/* ===== ACTIONS ===== */
+function renderActions(d){const host=document.getElementById('nav-actions');
+  host.innerHTML=`${!d.startEnabled&&d.disabledReason?`<span class="reason">${d.disabledReason}</span>`:''}
+    <span class="btn jade big ${d.startEnabled?'':'is-disabled'}" id="btn-start" ${d.startEnabled?'tabindex="0"':''} aria-disabled="${!d.startEnabled}">${d.startLabel}</span>
+    <span class="btn ${S.status==='active'?'':'is-disabled'}" id="btn-cease" aria-disabled="${S.status!=='active'}">Cease</span>`;
+  const bs=document.getElementById('btn-start');if(bs&&d.startEnabled)bs.onclick=()=>{S.status='active';syncCtrl();renderAll();};
+  const bc=document.getElementById('btn-cease');if(bc&&S.status==='active')bc.onclick=()=>{S.status='idle';syncCtrl();renderAll();};}
+/* ===== MOTES (per-path) ===== */
+function mountMotes(d){const host=document.getElementById('th-motes');host.setAttribute('data-th','training-hall-vfx-motes');host.innerHTML='';
+  if(S.rm)return;const count={active:24,idle:12,blocked_by_combat:6,blocked_by_activity:6,no_path:0}[S.status]||0;const T=d.T;
+  for(let i=0;i<count;i++){const m=document.createElement('div');m.className='mote';m.setAttribute('data-th','training-hall-vfx-mote');
+    m.style.left=(50+(Math.random()*18-9))+'%';m.style.top=(56+Math.random()*10)+'%';
+    m.style.background=`radial-gradient(circle at 35% 30%,${T.moteCols[0]},${T.moteCols[1]} 60%,transparent 75%)`;
+    m.style.width=m.style.height=T.moteW+'px';
+    m.style.animationDuration=((5.4+Math.random()*1.2)*T.moteDur).toFixed(2)+'s';m.style.animationDelay=(Math.random()*6).toFixed(2)+'s';
+    if(d.P.scenery==='heaven')m.classList.add('twk');host.appendChild(m);}}
+
+/* ===== MOTION VARS ===== */
+function setMotion(d){const r=document.getElementById('room');
+  r.style.setProperty('--th-fill-p',(d.active.rating/d.active.cap).toFixed(3));
+  r.style.setProperty('--th-qi-dur',qiDur(d.mult));
+  r.style.setProperty('--th-breath-dur',(6.8-Math.min(1,d.mult/2.25)*2.4).toFixed(2)+'s');
+  r.style.setProperty('--th-heat',(d.f/100).toFixed(3));}
+/* ===== CONTROL BAR ===== */
+function buildCtrl(){const c=document.getElementById('ctrl');
+  c.innerHTML=`<div class="grp"><b>锤炼堂</b> Tempering Court</div>
+    <div class="grp"><b>Path</b><select id="c-path"><option value="martial">Martial 武</option><option value="earth">Earth 地</option><option value="heaven">Heaven 天</option></select></div>
+    <div class="grp"><b>Realm</b><select id="c-realm"></select></div>
+    <div class="grp"><b>Tempering</b><select id="c-mer"></select></div>
+    <div class="grp"><b>Status</b><select id="c-status"><option value="active">active</option><option value="idle">idle</option><option value="blocked_by_combat">blocked: combat</option><option value="blocked_by_activity">blocked: activity</option><option value="no_path">no path</option></select></div>
+    <div class="grp"><b>Intensity</b><select id="c-int"><option value="quiet">Quiet</option><option value="steady">Steady</option><option value="harsh">Harsh</option><option value="limit">Limit</option></select></div>
+    <div class="grp"><b>Fatigue</b> <input type="range" id="c-fat" min="0" max="100" step="1"> <span id="c-fatv"></span></div>
+    <div class="grp"><label><input type="checkbox" id="c-rm"> reduced-motion</label></div>
+    <div class="grp"><button id="c-return">offline return ▸</button></div>`;
+  document.getElementById('c-path').onchange=e=>{S.path=e.target.value;if(S.activeIndex>S.realm-1)S.activeIndex=S.realm-1;renderAll();};
+  document.getElementById('c-realm').onchange=e=>{S.realm=+e.target.value;if(S.activeIndex>S.realm-1)S.activeIndex=S.realm-1;renderAll();};
+  document.getElementById('c-mer').onchange=e=>{S.activeIndex=+e.target.value;renderAll();};
+  document.getElementById('c-status').onchange=e=>{S.status=e.target.value;renderAll();};
+  document.getElementById('c-int').onchange=e=>{S.intensity=e.target.value;renderAll();};
+  document.getElementById('c-fat').oninput=e=>{S.fatigue=+e.target.value;document.getElementById('c-fatv').textContent=S.fatigue;renderAll();};
+  document.getElementById('c-rm').onchange=e=>{S.rm=e.target.checked;renderAll();};
+  document.getElementById('c-return').onclick=()=>{S.showReturn=!S.showReturn;renderAll();};syncCtrl();}
+function syncCtrl(){const set=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v;};
+  const rs=document.getElementById('c-realm');if(rs)rs.innerHTML=REALMS.map((r,i)=>`<option value="${i+1}">R${i+1} · ${r}</option>`).join('');
+  const ms=document.getElementById('c-mer');if(ms){const P=PATHS[S.path];ms.innerHTML=P.meridians.map((m,i)=>i<S.realm?`<option value="${i}">${m.name}</option>`:'').join('');}
+  set('c-path',S.path);set('c-realm',S.realm);set('c-mer',S.activeIndex);set('c-status',S.status);set('c-int',S.intensity);set('c-fat',S.fatigue);
+  const fv=document.getElementById('c-fatv');if(fv)fv.textContent=S.fatigue;const rm=document.getElementById('c-rm');if(rm)rm.checked=S.rm;}
+/* ===== RENDER ALL ===== */
+function renderAll(){document.body.classList.toggle('rm',S.rm);const d=currentData();
+  renderLintel(d);renderShelf(d);renderRoom(d);renderMeridians(d);renderConstitution(d);renderBellows(d);renderForge(d);renderTrade(d);renderActions(d);renderReturn(d);mountMotes(d);setMotion(d);syncCtrl();}
+/* ===== SCALE ===== */
+function fitScale(){const stage=document.getElementById('stage');const s=Math.min(window.innerWidth/2048,window.innerHeight/1152);
+  stage.style.transform='scale('+s+')';document.querySelector('.th-viewport').style.height=(1152*s)+'px';}
+window.addEventListener('resize',fitScale);
+
+/* ===== BOOT ===== */
+buildCtrl();renderAll();fitScale();
+/* ===== FAKE PRACTICE LOOP (artifact only) ===== */
+let _t=0;setInterval(()=>{if(S.rm||S.status!=='active')return;if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;_t++;
+  const d=currentData();const fillP=Math.min(1,d.active.rating/d.active.cap+(Math.sin(_t/40)+1)/40);
+  document.getElementById('room').style.setProperty('--th-fill-p',fillP.toFixed(3));},250);
+</script>
+</body>
+</html>
