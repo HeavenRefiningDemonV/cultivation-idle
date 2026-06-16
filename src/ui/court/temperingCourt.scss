@@ -4,18 +4,23 @@
    right column rows 1.45fr/1fr. Tokens-only; the stage ground uses --court-stage-*. */
 
 .courtViewport {
-  width: 100vw;
-  height: 100vh;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
   display: grid;
   place-items: center;
   overflow: hidden;
+  /* Fills the letterbox around the scaled stage so the full-screen Court reads as a
+     clean takeover (over the building modal at the live mount; over the dev harness). */
+  background: var(--court-stage-lo);
 }
 
 .courtStage {
   position: relative;
   width: 2048px;
   height: 1152px;
-  transform-origin: top center;
+  /* Centred pivot so the scaled stage sits centred in the viewport (no top-pinning). */
+  transform-origin: center;
   display: grid;
   gap: 12px;
   padding: 15px;

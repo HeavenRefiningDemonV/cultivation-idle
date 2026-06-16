@@ -23,6 +23,8 @@ import { BountiesExactScreenOwner } from '../../features/world/bountiesExact/ind
 import { ExpeditionsExactScreenOwner } from '../../features/world/expeditionsExact/index.js';
 import { ManualPavilionScreenOwner } from '../../features/world/manualPavilionExact/index.js';
 import { TrainingHallScreenOwner } from '../../features/trainingHall/index.js';
+import { CourtScreenOwner } from '../../features/court/index.js';
+import { isTemperingCourtEnabled } from '../../ui/court/index.js';
 import { PERF_LABELS } from '../../services/performance/index.js';
 import { PerfProfiler, useRenderCounter } from '../../services/performance/perfReact.js';
 
@@ -183,7 +185,11 @@ export function WorldBuildingModal({
         );
         break;
       case 'trainingHall':
-        content = (
+        // W13a: behind the off flag (dev override ?temperingCourt=1), mount the live
+        // Tempering Court in place of the legacy Training Hall. Default stays legacy.
+        content = isTemperingCourtEnabled() ? (
+          <CourtScreenOwner cityId={storeCityId} onReturn={close} />
+        ) : (
           <TrainingHallScreenOwner
             cityId={storeCityId}
           />
