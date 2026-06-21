@@ -4,7 +4,9 @@ import {
   setPrestigeStoreGetter,
   setCombatStoreGetter,
   setInventoryStoreGetter as setGameInventoryStoreGetter,
+  setDerivedStatInputGetter,
 } from '../stores/gameStore.js';
+import { toDerivedStatInput } from './meridians/derivedStatInput.js';
 import { useCombatStore } from '../stores/combatStore.js';
 import {
   usePrestigeStore,
@@ -321,6 +323,7 @@ export function initializeGame(): boolean {
     setGameStoreGetter(() => useGameStore.getState());
     setPrestigeStoreGetter(() => usePrestigeStore.getState());
     setCombatStoreGetter(() => useCombatStore.getState());
+    setDerivedStatInputGetter(() => toDerivedStatInput()); // F1 SA-A1 — wire the derived-stat seam input
     setGameInventoryStoreGetter(() => useInventoryStore.getState());
     setPrestigeInventoryStoreGetter(() => useInventoryStore.getState());
     console.log('[GameLoop] Store dependencies wired');

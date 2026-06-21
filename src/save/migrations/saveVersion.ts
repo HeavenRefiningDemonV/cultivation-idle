@@ -1,6 +1,6 @@
 export type SaveVersionString = string;
 
-export const CURRENT_SAVE_VERSION: SaveVersionString = '2.2.0';
+export const CURRENT_SAVE_VERSION: SaveVersionString = '2.3.0';
 
 export type LegacySaveVersionKind = 'current' | 'legacy-versioned' | 'legacy-unversioned' | 'malformed-version';
 

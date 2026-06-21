@@ -1,0 +1,122 @@
+{
+  "seed": {
+    "path": "heaven",
+    "focusMode": "balanced",
+    "substage": 1,
+    "upgradeTiers": {
+      "hp": 0,
+      "damage": 0
+    },
+    "equipment": {
+      "weapon": null,
+      "accessory": null
+    },
+    "pathPerks": [],
+    "activeBuffs": [],
+    "prestige": "spiritRoot=null (multiplier 1.0, no element bonus); combat ×1.0 (fresh, no upgrades)"
+  },
+  "capturedRows": [
+    {
+      "index": 0,
+      "rung": 1,
+      "id": "qi_condensation",
+      "name": "Qi Condensation",
+      "legacy": {
+        "maxHp": 80,
+        "atk": 13,
+        "def": 4.5,
+        "regen": 1,
+        "crit": 15,
+        "critDmg": 150,
+        "dodge": 10,
+        "speed": 1
+      },
+      "mirrorDamage": 12.440191387559809
+    },
+    {
+      "index": 1,
+      "rung": 2,
+      "id": "foundation_establishment",
+      "name": "Foundation Establishment",
+      "legacy": {
+        "maxHp": 400,
+        "atk": 65,
+        "def": 22.5,
+        "regen": 5,
+        "crit": 18,
+        "critDmg": 160,
+        "dodge": 13,
+        "speed": 1.1
+      },
+      "mirrorDamage": 53.06122448979592
+    },
+    {
+      "index": 2,
+      "rung": 3,
+      "id": "core_formation",
+      "name": "Core Formation",
+      "legacy": {
+        "maxHp": 2000,
+        "atk": 325,
+        "def": 112.5,
+        "regen": 25,
+        "crit": 22,
+        "critDmg": 175,
+        "dodge": 17,
+        "speed": 1.2
+      },
+      "mirrorDamage": 152.94117647058823
+    },
+    {
+      "index": 3,
+      "rung": 4,
+      "id": "nascent_soul",
+      "name": "Nascent Soul",
+      "legacy": {
+        "maxHp": 10000,
+        "atk": 1625,
+        "def": 562.5,
+        "regen": 125,
+        "crit": 25,
+        "critDmg": 190,
+        "dodge": 20,
+        "speed": 1.3
+      },
+      "mirrorDamage": 245.28301886792448
+    },
+    {
+      "index": 4,
+      "rung": 5,
+      "id": "soul_formation",
+      "name": "Soul Formation",
+      "legacy": {
+        "maxHp": 50000,
+        "atk": 8125,
+        "def": 2812.5,
+        "regen": 625,
+        "crit": 28,
+        "critDmg": 200,
+        "dodge": 23,
+        "speed": 1.4
+      },
+      "mirrorDamage": 278.9699570815453
+    },
+    {
+      "index": 5,
+      "rung": 6,
+      "id": "spirit_severing",
+      "name": "Spirit Severing",
+      "legacy": {
+        "maxHp": 250000,
+        "atk": 40625,
+        "def": 14062.5,
+        "regen": 3125,
+        "crit": 32,
+        "critDmg": 215,
+        "dodge": 27,
+        "speed": 1.5
+      },
+      "mirrorDamage": 286.84907325684134
+    }
+  ]
+}

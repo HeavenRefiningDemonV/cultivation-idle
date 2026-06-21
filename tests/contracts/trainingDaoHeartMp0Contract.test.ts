@@ -258,8 +258,9 @@ test('mp3 breakthrough risk rows are concrete, routed, and bounded by transition
 
 test('mp0 scaffold modules do not bypass RewardService, CombatStore, or Heart Law ownership', async () => {
   const checkedFiles = [
-    'src/systems/cultivatorStats/statProgressionResolver.ts',
-    'src/systems/cultivatorStats/statEffectResolver.ts',
+    // F1 SA-A3: the two cultivatorStats dead stubs (statProgressionResolver /
+    // statEffectResolver) were removed as confirmed zero-caller dead code — their absence
+    // is a stronger guarantee than this inertness guard, so they are dropped from the list.
     'src/systems/training/trainingProgressionResolver.ts',
     'src/systems/training/trainingFatigueResolver.ts',
     'src/systems/training/trainingOfflineAdapter.ts',

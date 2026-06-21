@@ -1,0 +1,419 @@
+{
+  "bandPct": 0.05,
+  "rows": [
+    {
+      "realm": {
+        "index": 0,
+        "rung": 1,
+        "id": "qi_condensation",
+        "name": "Qi Condensation"
+      },
+      "channels": [
+        {
+          "ch": "maxHp",
+          "legacy": 80,
+          "derived": 80,
+          "deltaPct": 0,
+          "inBand": true
+        },
+        {
+          "ch": "atk",
+          "legacy": 13,
+          "derived": 13,
+          "deltaPct": 0,
+          "inBand": true
+        },
+        {
+          "ch": "def",
+          "legacy": 4.5,
+          "derived": 4.5,
+          "deltaPct": 0,
+          "inBand": true
+        },
+        {
+          "ch": "regen",
+          "legacy": 1,
+          "derived": 1,
+          "deltaPct": 0,
+          "inBand": true
+        },
+        {
+          "ch": "crit",
+          "legacy": 15,
+          "derived": 15,
+          "deltaPct": 0,
+          "inBand": true
+        },
+        {
+          "ch": "critDmg",
+          "legacy": 150,
+          "derived": 150,
+          "deltaPct": 0,
+          "inBand": true
+        },
+        {
+          "ch": "dodge",
+          "legacy": 10,
+          "derived": 10,
+          "deltaPct": 0,
+          "inBand": true
+        },
+        {
+          "ch": "speed",
+          "legacy": 1,
+          "derived": 1,
+          "deltaPct": 0,
+          "inBand": true
+        }
+      ],
+      "dmgLegacy": 12.440191387559809,
+      "dmgDerived": 12.440191387559809,
+      "dmgInBand": true
+    },
+    {
+      "realm": {
+        "index": 1,
+        "rung": 2,
+        "id": "foundation_establishment",
+        "name": "Foundation Establishment"
+      },
+      "channels": [
+        {
+          "ch": "maxHp",
+          "legacy": 400,
+          "derived": 400,
+          "deltaPct": 0,
+          "inBand": true
+        },
+        {
+          "ch": "atk",
+          "legacy": 65,
+          "derived": 65,
+          "deltaPct": 0,
+          "inBand": true
+        },
+        {
+          "ch": "def",
+          "legacy": 22.5,
+          "derived": 22.5,
+          "deltaPct": 0,
+          "inBand": true
+        },
+        {
+          "ch": "regen",
+          "legacy": 5,
+          "derived": 5,
+          "deltaPct": 0,
+          "inBand": true
+        },
+        {
+          "ch": "crit",
+          "legacy": 18,
+          "derived": 18,
+          "deltaPct": 0,
+          "inBand": true
+        },
+        {
+          "ch": "critDmg",
+          "legacy": 160,
+          "derived": 160,
+          "deltaPct": 0,
+          "inBand": true
+        },
+        {
+          "ch": "dodge",
+          "legacy": 13,
+          "derived": 13,
+          "deltaPct": 0,
+          "inBand": true
+        },
+        {
+          "ch": "speed",
+          "legacy": 1.1,
+          "derived": 1.1,
+          "deltaPct": 0,
+          "inBand": true
+        }
+      ],
+      "dmgLegacy": 53.06122448979592,
+      "dmgDerived": 53.06122448979592,
+      "dmgInBand": true
+    },
+    {
+      "realm": {
+        "index": 2,
+        "rung": 3,
+        "id": "core_formation",
+        "name": "Core Formation"
+      },
+      "channels": [
+        {
+          "ch": "maxHp",
+          "legacy": 2000,
+          "derived": 2000,
+          "deltaPct": 0,
+          "inBand": true
+        },
+        {
+          "ch": "atk",
+          "legacy": 325,
+          "derived": 325,
+          "deltaPct": 0,
+          "inBand": true
+        },
+        {
+          "ch": "def",
+          "legacy": 112.5,
+          "derived": 112.5,
+          "deltaPct": 0,
+          "inBand": true
+        },
+        {
+          "ch": "regen",
+          "legacy": 25,
+          "derived": 25,
+          "deltaPct": 0,
+          "inBand": true
+        },
+        {
+          "ch": "crit",
+          "legacy": 22,
+          "derived": 22,
+          "deltaPct": 0,
+          "inBand": true
+        },
+        {
+          "ch": "critDmg",
+          "legacy": 175,
+          "derived": 175,
+          "deltaPct": 0,
+          "inBand": true
+        },
+        {
+          "ch": "dodge",
+          "legacy": 17,
+          "derived": 17,
+          "deltaPct": 0,
+          "inBand": true
+        },
+        {
+          "ch": "speed",
+          "legacy": 1.2,
+          "derived": 1.2,
+          "deltaPct": 0,
+          "inBand": true
+        }
+      ],
+      "dmgLegacy": 152.94117647058823,
+      "dmgDerived": 152.94117647058823,
+      "dmgInBand": true
+    },
+    {
+      "realm": {
+        "index": 3,
+        "rung": 4,
+        "id": "nascent_soul",
+        "name": "Nascent Soul"
+      },
+      "channels": [
+        {
+          "ch": "maxHp",
+          "legacy": 10000,
+          "derived": 10000,
+          "deltaPct": 0,
+          "inBand": true
+        },
+        {
+          "ch": "atk",
+          "legacy": 1625,
+          "derived": 1625,
+          "deltaPct": 0,
+          "inBand": true
+        },
+        {
+          "ch": "def",
+          "legacy": 562.5,
+          "derived": 562.5,
+          "deltaPct": 0,
+          "inBand": true
+        },
+        {
+          "ch": "regen",
+          "legacy": 125,
+          "derived": 125,
+          "deltaPct": 0,
+          "inBand": true
+        },
+        {
+          "ch": "crit",
+          "legacy": 25,
+          "derived": 25,
+          "deltaPct": 0,
+          "inBand": true
+        },
+        {
+          "ch": "critDmg",
+          "legacy": 190,
+          "derived": 190,
+          "deltaPct": 0,
+          "inBand": true
+        },
+        {
+          "ch": "dodge",
+          "legacy": 20,
+          "derived": 20,
+          "deltaPct": 0,
+          "inBand": true
+        },
+        {
+          "ch": "speed",
+          "legacy": 1.3,
+          "derived": 1.3,
+          "deltaPct": 0,
+          "inBand": true
+        }
+      ],
+      "dmgLegacy": 245.28301886792448,
+      "dmgDerived": 245.28301886792448,
+      "dmgInBand": true
+    },
+    {
+      "realm": {
+        "index": 4,
+        "rung": 5,
+        "id": "soul_formation",
+        "name": "Soul Formation"
+      },
+      "channels": [
+        {
+          "ch": "maxHp",
+          "legacy": 50000,
+          "derived": 50000,
+          "deltaPct": 0,
+          "inBand": true
+        },
+        {
+          "ch": "atk",
+          "legacy": 8125,
+          "derived": 8125,
+          "deltaPct": 0,
+          "inBand": true
+        },
+        {
+          "ch": "def",
+          "legacy": 2812.5,
+          "derived": 2812.5,
+          "deltaPct": 0,
+          "inBand": true
+        },
+        {
+          "ch": "regen",
+          "legacy": 625,
+          "derived": 625,
+          "deltaPct": 0,
+          "inBand": true
+        },
+        {
+          "ch": "crit",
+          "legacy": 28,
+          "derived": 28,
+          "deltaPct": 0,
+          "inBand": true
+        },
+        {
+          "ch": "critDmg",
+          "legacy": 200,
+          "derived": 200,
+          "deltaPct": 0,
+          "inBand": true
+        },
+        {
+          "ch": "dodge",
+          "legacy": 23,
+          "derived": 23,
+          "deltaPct": 0,
+          "inBand": true
+        },
+        {
+          "ch": "speed",
+          "legacy": 1.4,
+          "derived": 1.4,
+          "deltaPct": 0,
+          "inBand": true
+        }
+      ],
+      "dmgLegacy": 278.9699570815453,
+      "dmgDerived": 278.9699570815453,
+      "dmgInBand": true
+    },
+    {
+      "realm": {
+        "index": 5,
+        "rung": 6,
+        "id": "spirit_severing",
+        "name": "Spirit Severing"
+      },
+      "channels": [
+        {
+          "ch": "maxHp",
+          "legacy": 250000,
+          "derived": 250000,
+          "deltaPct": 0,
+          "inBand": true
+        },
+        {
+          "ch": "atk",
+          "legacy": 40625,
+          "derived": 40625,
+          "deltaPct": 0,
+          "inBand": true
+        },
+        {
+          "ch": "def",
+          "legacy": 14062.5,
+          "derived": 14062.5,
+          "deltaPct": 0,
+          "inBand": true
+        },
+        {
+          "ch": "regen",
+          "legacy": 3125,
+          "derived": 3125,
+          "deltaPct": 0,
+          "inBand": true
+        },
+        {
+          "ch": "crit",
+          "legacy": 32,
+          "derived": 32,
+          "deltaPct": 0,
+          "inBand": true
+        },
+        {
+          "ch": "critDmg",
+          "legacy": 215,
+          "derived": 215,
+          "deltaPct": 0,
+          "inBand": true
+        },
+        {
+          "ch": "dodge",
+          "legacy": 27,
+          "derived": 27,
+          "deltaPct": 0,
+          "inBand": true
+        },
+        {
+          "ch": "speed",
+          "legacy": 1.5,
+          "derived": 1.5,
+          "deltaPct": 0,
+          "inBand": true
+        }
+      ],
+      "dmgLegacy": 286.84907325684134,
+      "dmgDerived": 286.84907325684134,
+      "dmgInBand": true
+    }
+  ]
+}

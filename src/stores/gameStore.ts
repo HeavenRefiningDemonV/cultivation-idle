@@ -37,6 +37,12 @@ import { useInventoryStore } from './inventoryStore.js';
 import { getLiveRealmByIndex } from '../systems/progression/runtime/index.js';
 import { performPrestigeReset as performCentralPrestigeReset } from '../services/prestige/PrestigeResetService.js';
 import { useTrialStore } from './trialStore.js';
+// F1 SA-A1 — the stat-engine seam. These imports are all PURE/leaf (no store reads), so
+// gameStore gains no new import cycle. The store-reading input assembly is injected lazily
+// (setDerivedStatInputGetter, below) from the gameLoop bootstrap, mirroring _getPrestigeStore.
+import { isDerivedStatEngineAuthoritative } from '../systems/meridians/statEngineFlag.js';
+import { calibrateGeoBase, deriveLegacyCombatStats } from '../systems/meridians/combatStatBridge.js';
+import { computeDerivedStats, type DerivedStatInput } from '../systems/meridians/derivedStats.js';
 import { progressionTimingTracker } from '../services/diagnostics/progressionTimingTracker.js';
 import { adaptProgressionAuthoredContent } from '../systems/progression/contract/contentAdapter.js';
 import { getProgressionContract } from '../systems/progression/contract/progressionContract.js';
@@ -93,6 +99,17 @@ export function setInventoryStoreGetter(getter: () => InventoryStoreDeps) {
 let _getPrestigeStore: (() => PrestigeStoreDeps) | null = null;
 export function setPrestigeStoreGetter(getter: () => PrestigeStoreDeps) {
   _getPrestigeStore = getter;
+}
+
+/**
+ * F1 SA-A1 — lazy getter for the derived-stat input (assembled from the training/court
+ * stores). Injected from the gameLoop bootstrap to avoid the gameStore↔trainingStore cycle.
+ * Null until wired (and during the first init-time calculatePlayerStats), in which case the
+ * engine flag safely falls back to the legacy REALMS path.
+ */
+let _getDerivedStatInput: (() => DerivedStatInput) | null = null;
+export function setDerivedStatInputGetter(getter: () => DerivedStatInput) {
+  _getDerivedStatInput = getter;
 }
 
 export function getSpiritRootSnapshot(): SpiritRoot | null {
@@ -962,7 +979,28 @@ export const useGameStore = create<GameState>()(
     calculatePlayerStats: () => {
       const state = get();
       const currentRealm = REALMS[clampRealmIndexToSemesterSlice(state.realm.index)] ?? REALMS[0];
-      const baseStats = currentRealm.baseStats;
+      // F1 SA-A1 — the cutover seam. Behind the dev-OFF STAT_ENGINE_DERIVED_AUTHORITATIVE
+      // flag (and only when the input getter is wired), source the GEO base (hp/atk/def/regen)
+      // from the Three-Treasures derived engine instead of the REALMS row. GENTLE channels
+      // (crit/critDmg/dodge/speed) are CARVED OUT to the realm row — their derived sources
+      // cannot reproduce the per-realm GENTLE constants (§3.1/App.D), so SA-A2 tunes only the
+      // GEO scalar. Everything downstream (the entire multiplier stack) is UNCHANGED: the seam
+      // changes only the SOURCE of the base, never its shape (§1.3). Flag-off ⇒ byte-identical
+      // legacy path (the default for the whole feature-layer build; forceLegacy always wins).
+      const derivedInputGetter = _getDerivedStatInput;
+      const baseStats: typeof currentRealm.baseStats =
+        isDerivedStatEngineAuthoritative() && derivedInputGetter
+          ? (() => {
+              const mapped = calibrateGeoBase(deriveLegacyCombatStats(computeDerivedStats(derivedInputGetter(), {})));
+              return {
+                ...currentRealm.baseStats, // GENTLE carve-out: crit/critDmg/dodge/speed from the realm row
+                hp: mapped.hp,
+                atk: mapped.atk,
+                def: mapped.def,
+                regen: mapped.regen,
+              };
+            })()
+          : currentRealm.baseStats;
 
       const now = Date.now();
       const activeBuffs = state.activeBuffs.filter((buff) => buff.expiresAt > now);

@@ -204,9 +204,22 @@ export const DERIVED_BASE: Partial<Record<DerivedStatKey, number>> = {
 /** Meridian weight → contribution coefficient (‹tune W12›). */
 export const DERIVED_WEIGHT_COEF: Record<DerivedWeight, number> = { up: 0.6, upup: 1.2 };
 
+/**
+ * F1 SA-A2 — the realm-scalar growth ratio (Option A, derived-authoritative). The derived
+ * layer carries the realm magnitude HERE; the legacy REALMS curve is the parity TARGET (read,
+ * never edited). The legacy ladder is a clean geometric ×5.0 per realm (REALMS HP
+ * 100→312,500), so the scalar is geometric at the same ratio — and the GEO calibration
+ * (combatStatBridge.GEO_CALIBRATION) aligns the per-channel shape so derived base × scalar
+ * reproduces the legacy band at every realm. [tune → D15 §7.1]; fixed by the SA-A2 parity gate.
+ */
+export const REALM_SCALAR_RATIO = 5;
+
+/** The Court realm ladder length (1..7; R7 sealed). Mirrors MERIDIAN_REALM_CAPS.length. */
+const REALM_LADDER_LENGTH = 7;
+
 export function derivedRealmScalar(realmIndex1to7: number): number {
-  const clamped = Math.min(Math.max(realmIndex1to7, 1), 7);
-  return 1 + (clamped - 1) * 0.25;
+  const clamped = Math.min(Math.max(Math.trunc(realmIndex1to7), 1), REALM_LADDER_LENGTH);
+  return Math.pow(REALM_SCALAR_RATIO, clamped - 1); // realm 1 → ρ^0 = 1.0 (preserves the pinned anchor)
 }
 
 export interface DerivedStatInput {
