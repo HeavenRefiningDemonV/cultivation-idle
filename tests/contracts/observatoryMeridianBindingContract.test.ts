@@ -17,6 +17,20 @@ import {
   type MeridianConstellationInput,
 } from '../../src/systems/meridians/observatoryMeridianBinding.js';
 import { STATUS_OBSERVATORY_STAT_NODE_GEOMETRY } from '../../src/systems/ui/status/statusObservatoryPresentation.js';
+// M.I.1 — the combat-read engine (the exact functions gameStore.calculatePlayerStats consumes), so
+// the parity test below can prove the constellation reads the SAME computeDerivedStats output combat
+// fights with, sourced from ONE input — not a parallel computation.
+import {
+  computeDerivedStats,
+  type DerivedStatInput,
+} from '../../src/systems/meridians/derivedStats.js';
+import { toDerivedStatInput } from '../../src/systems/meridians/derivedStatInput.js';
+import { toObservatoryConstellationInput } from '../../src/systems/meridians/observatoryConstellationInput.js';
+import {
+  GEO_CALIBRATION,
+  calibrateGeoBase,
+  deriveLegacyCombatStats,
+} from '../../src/systems/meridians/combatStatBridge.js';
 
 /**
  * W8 — the Observatory ⇄ Three-Treasures re-bind (D8/D9), ADDITIVE + flag-gated.
@@ -168,12 +182,19 @@ test('W8 builder threads meridian-stat values onto the bound nodes', () => {
   assert.equal(byId.get('body_tempering')?.currentRating, 24);
   assert.equal(byId.get('body_tempering')?.branchId, 'earth');
 
-  // Tier-2 derived: physAttack -> weapon_intent (lit, gold, no cap)
-  assert.equal(byId.get('weapon_intent')?.currentRating, 120);
-  assert.equal(byId.get('weapon_intent')?.cap, 0);
+  // Tier-2 derived: physAttack -> weapon_intent. M.I.1b — bounded PERCENT-OF-PEAK standing, not a bare
+  // magnitude. physAttack (120) is the peak martial channel in this fixture, so weapon_intent reads 100% of
+  // peak with cap 100; its copy reads as a relative standing, never a combat total.
+  assert.equal(byId.get('weapon_intent')?.currentRating, 100);
+  assert.equal(byId.get('weapon_intent')?.cap, 100);
   assert.equal(byId.get('weapon_intent')?.nodeState, 'lit');
   assert.equal(byId.get('weapon_intent')?.tone, 'gold');
   assert.equal(byId.get('weapon_intent')?.displayName, DERIVED_STAT_DISPLAY.physAttack.label);
+  assert.match(byId.get('weapon_intent')?.effectSummary ?? '', /peak|not a combat total/i);
+  // a NON-peak martial node reads as a bounded percent-of-peak standing (accuracy 88 / peak 120 = 73%).
+  assert.equal(byId.get('precision')?.currentRating, Math.round((88 / 120) * 100));
+  assert.equal(byId.get('precision')?.cap, 100);
+  assert.match(byId.get('precision')?.effectSummary ?? '', /% of your peak|not a combat total/i);
 
   // socket: heaven node + the spare spine node
   assert.equal(byId.get('dao_resonance')?.nodeState, 'future');
@@ -208,4 +229,96 @@ test('W8 astrolabe aptitude chips surface the rolled root grade per meridian (D8
   });
   assert.equal(chips[2].gradeLabel, 'Chaos Root');
   for (const chip of chips) assert.ok(chip.chipClass.length > 0);
+});
+
+test('M.I.1 source-parity — the constellation surfaces a percent-of-peak SHAPE of the SAME computeDerivedStats output combat GEO derives from (one input, no fork)', () => {
+  // The anti-drift guarantee (§10): the Observatory and combat consume ONE engine on ONE input — not a
+  // parallel computation. gameStore.calculatePlayerStats() (the F1 branch) sources its GEO base from
+  // `calibrateGeoBase(deriveLegacyCombatStats(computeDerivedStats(toDerivedStatInput(), {})))`.
+  //
+  // M.I.1b — the 7 Tier-2 martial nodes are a BOUNDED percent-of-peak STANDING (role/shape axis, D2
+  // anti-funnel): each is its derived channel as a fraction of the cultivator's strongest martial channel,
+  // 0..100. They are a SHAPE readout, never a combat magnitude — the Vitals Ribbon owns the literal fight
+  // number. Per-instrument parity (the corrected §19): SOURCE-parity here, VALUE-parity at the Vitals Ribbon.
+  const input: DerivedStatInput = {
+    foundation: { physique: 80, vitality: 90, agility: 70, perception: 60, willpower: 75 },
+    axes: {
+      cultivationBase: 88,
+      qiPool: 64,
+      qiPurity: 52,
+      meridianOpenness: 70,
+      spiritualSense: 49,
+      soulStrength: 58,
+      daoComprehension: 41,
+    },
+    meridianRatings: { martial_sword_heart: 60 }, // a non-zero martial set, so the shape is well-defined
+    realmIndex1to7: 3,
+  };
+  const derived = computeDerivedStats(input, {}); // the exact call combat makes
+
+  const surface = buildMeridianConstellationSurface({
+    currentPath: 'martial',
+    axes: AXES,
+    foundation: FOUNDATION,
+    derived, // the same engine output combat's GEO base derives from — NOT a parallel computation
+    realmCap: 100,
+  });
+  const byId = new Map(surface.nodes.map((node) => [node.id, node]));
+
+  const MARTIAL_NODE_CHANNEL: Record<string, DerivedStatKey> = {
+    weapon_intent: 'physAttack',
+    battle_rhythm: 'attackSpeed',
+    flow_step: 'speed',
+    precision: 'accuracy',
+    counter_sense: 'evasion',
+    killing_momentum: 'critChance',
+    weapon_bond: 'armorPen',
+  };
+  const peak = Math.max(...Object.values(MARTIAL_NODE_CHANNEL).map((ch) => derived[ch]));
+  assert.ok(peak > 0, 'fixture yields a non-zero martial peak so the percent-of-peak shape is well-defined');
+
+  // Each martial node is the BOUNDED percent-of-peak standing of its derived channel — faithful to the same
+  // engine output (no fork), and never a bare magnitude (cap 100, value in 0..100).
+  for (const [nodeId, channel] of Object.entries(MARTIAL_NODE_CHANNEL)) {
+    assert.equal(
+      byId.get(nodeId)?.currentRating,
+      Math.round((derived[channel] / peak) * 100),
+      `${nodeId} must be the percent-of-peak standing of derived ${channel}`,
+    );
+    assert.equal(byId.get(nodeId)?.cap, 100, `${nodeId} is a bounded standing, not a magnitude`);
+    const rating = byId.get(nodeId)?.currentRating ?? -1;
+    assert.ok(rating >= 0 && rating <= 100, `${nodeId} standing is within 0..100`);
+  }
+
+  // Combat consumes the SAME engine output (one source): its GEO atk is the derived.physAttack channel run
+  // through GEO_CALIBRATION — a distinct SCALE the Vitals Ribbon owns, NOT the constellation. This documents
+  // the per-instrument split honestly rather than asserting a false node==combat-fight equality.
+  const combatAtk = Number(calibrateGeoBase(deriveLegacyCombatStats(derived)).atk);
+  assert.ok(
+    Math.abs(combatAtk - derived.physAttack * GEO_CALIBRATION.atk) < 1e-9,
+    'combat GEO atk = derived.physAttack x GEO_CALIBRATION.atk (same source, combat scale)',
+  );
+});
+
+test('M.I.1b — an all-zero martial set reads as 0 standing (divide-by-zero guard), never 100', () => {
+  // Fresh / locked cultivator: every martial channel is 0, so martialPeak is 0. The guard must render every
+  // martial node dim (0), never a spurious 100 from a 0/0.
+  const surface = buildMeridianConstellationSurface({ ...INPUT, derived: {} });
+  const martial = surface.nodes.filter((node) => node.branchId === 'martial');
+  assert.equal(martial.length, 7);
+  for (const node of martial) {
+    assert.equal(node.currentRating, 0, `${node.id} standing is 0 when no martial channel has value`);
+    assert.equal(node.cap, 100);
+    assert.equal(node.nodeState, 'lit');
+  }
+});
+
+test('M.I.1 live seam — toObservatoryConstellationInput().derived equals computeDerivedStats(toDerivedStatInput()) (no parallel computation)', () => {
+  // The LIVE input the Observatory feeds the binding must be the exact engine call combat consumes:
+  // gameStore.calculatePlayerStats() reads computeDerivedStats(toDerivedStatInput(), {}). Lock that the seam
+  // reads the same input, so a regression (a stray gear arg, a different realm source, a stale read) is
+  // caught even though the dev-off flag keeps the surface builder's derived branch out of node:test.
+  const expected = computeDerivedStats(toDerivedStatInput(), {});
+  const seam = toObservatoryConstellationInput();
+  assert.deepEqual(seam.derived, expected);
 });

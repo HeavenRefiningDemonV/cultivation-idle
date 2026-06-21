@@ -132,6 +132,7 @@ function boundNode(
   input: MeridianConstellationInput,
   axisById: Map<string, CourtStatView>,
   foundationById: Map<string, CourtStatView>,
+  martialPeak: number,
 ): StatusObservatoryStatNodeSurface {
   const tier = binding.tier as MeridianStatTier;
   const realmCap = input.realmCap ?? 0;
@@ -160,12 +161,23 @@ function boundNode(
     detail = `${displayName} · foundation`;
   } else if (binding.source.kind === 'derived') {
     const display = DERIVED_STAT_DISPLAY[binding.source.key];
+    const raw = input.derived[binding.source.key] ?? 0;
+    // M.I.1b — present the Tier-2 martial channel as a BOUNDED relative STANDING (percent of your
+    // strongest martial channel), NOT a bare combat magnitude. The constellation is a role/shape axis
+    // (D2 anti-funnel): it shows the SILHOUETTE of your martial build — which channels lead, which lag —
+    // never a fight total (the Vitals Ribbon owns literal combat numbers). Divide-by-zero guard: an
+    // all-zero martial set (fresh / locked) reads as 0 (dim), never 100. Stat SOURCE is unchanged
+    // (still reads input.derived[key]) — this is value-presentation + copy only.
+    const standing = martialPeak > 0 ? Math.round((raw / martialPeak) * 100) : 0;
+    const isPeak = martialPeak > 0 && raw >= martialPeak;
     displayName = display.label;
     shortLabel = display.label.split(/\s+/)[0] ?? display.label;
-    currentRating = Math.round(input.derived[binding.source.key] ?? 0);
-    cap = 0;
-    effectSummary = `Combat-derived (${display.tone}) — produced by the meridian tiers.`;
-    detail = `${displayName} · derived ${display.tone}`;
+    currentRating = standing;
+    cap = 100;
+    effectSummary = isPeak
+      ? 'Peak of your martial shape — the brightest channel. A relative standing within your build, not a combat total.'
+      : `${standing}% of your peak martial channel — relative emphasis within your martial shape, not a combat total.`;
+    detail = isPeak ? `${displayName} · peak martial channel` : `${displayName} · ${standing}% of peak`;
   } else {
     // Unreachable: boundNode is only called for tier !== null (non-socket) bindings.
     throw new Error(`boundNode called for socket binding ${binding.nodeId}`);
@@ -175,7 +187,16 @@ function boundNode(
   const nodeState = tier === 'tier2' ? 'lit' : 'foundation';
   const contributionState = tier === 'tier2' ? 'current_path' : 'foundation';
   const tone: StatusLedgerTone = tier === 'tier2' ? 'gold' : 'jade';
-  const value = cap > 0 ? `${currentRating} of ${cap}` : `${currentRating}`;
+  // Tier-2 reads as a percent-of-peak STANDING (peak channel = "peak martial channel", others "N% of
+  // peak"); Tier-0/1 keep the rating-of-cap reading. Keeps the martial nodes from voicing a magnitude.
+  const value =
+    tier === 'tier2'
+      ? currentRating >= cap
+        ? 'peak martial channel'
+        : `${currentRating}% of peak`
+      : cap > 0
+        ? `${currentRating} of ${cap}`
+        : `${currentRating}`;
 
   return {
     id: binding.nodeId,
@@ -260,10 +281,14 @@ export function buildMeridianConstellationSurface(
   const axisById = new Map(input.axes.map((view) => [view.id, view]));
   const foundationById = new Map(input.foundation.map((view) => [view.id, view]));
 
+  // M.I.1b — the Tier-2 normalization reference: the cultivator's STRONGEST martial channel. Each martial
+  // node renders as a percent-of-peak standing (peak = 100%), so the branch reads as the SHAPE of the
+  // martial build, not seven competing magnitudes. Guard: an all-zero set leaves martialPeak 0 → all 0.
+  const martialPeak = Math.max(0, ...MERIDIAN_CONSTELLATION_TIER2_KEYS.map((key) => input.derived[key] ?? 0));
   const nodes = MERIDIAN_CONSTELLATION_NODE_MAP.map((binding) =>
     binding.tier === null
       ? socketNode(binding, input.currentPath)
-      : boundNode(binding, input, axisById, foundationById),
+      : boundNode(binding, input, axisById, foundationById, martialPeak),
   );
 
   const branchCounts = { universal: 0, heaven: 0, earth: 0, martial: 0 };
