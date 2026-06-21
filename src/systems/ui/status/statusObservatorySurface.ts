@@ -44,6 +44,19 @@ import {
   type StatusStatBranchSurface,
   type StatusWorkWheelSpokeSurface,
 } from './statusObservatoryTypes.js';
+// M.I.1 — STATUS-RECONCILE-MECH: re-point the Stat Meridian Constellation at the LIVE
+// Three-Treasures derived engine — the SAME source combat consumes post-F1
+// (gameStore.calculatePlayerStats → computeDerivedStats(toDerivedStatInput())). Behind the
+// dev-on stat-engine flag; forceLegacy always wins; flag-off ⇒ byte-identical legacy path.
+import { isDerivedStatEngineAuthoritative, isForceLegacy } from '../../meridians/statEngineFlag.js';
+import {
+  buildMeridianConstellationSurface,
+  type MeridianConstellationInput,
+  type MeridianConstellationSurface,
+} from '../../meridians/observatoryMeridianBinding.js';
+// The store-reading assembly lives in the meridians/ seam (mirroring derivedStatInput.ts) so THIS
+// adapter stays pure — no store import, no .getState — per the statusObservatorySurface purity contract.
+import { toObservatoryConstellationInput } from '../../meridians/observatoryConstellationInput.js';
 
 type OrganId = keyof StatusCurrentStateSurfaceV1['blocks'];
 
@@ -851,15 +864,50 @@ function selectedContext(args: {
   };
 }
 
-export function buildStatusObservatorySurface(ledger: StatusLedgerSurfaceV1): StatusObservatorySurfaceV1 {
+/**
+ * M.I.1 / W8.3 perf — memoize the derived constellation on its INPUT signature. The derived input
+ * never changes on a raw qi tick (training ratings / Court meridians / realm are unchanged), so this
+ * returns a STABLE reference across ticks: the deep-equal-memoized StatusStatMeridianConstellation
+ * never re-renders, and the 28 nodes are rebuilt only when the derived inputs actually change.
+ */
+let _derivedConstellationMemo: { sig: string; surface: MeridianConstellationSurface } | null = null;
+function buildDerivedConstellation(input: MeridianConstellationInput): MeridianConstellationSurface {
+  const sig = JSON.stringify(input);
+  if (_derivedConstellationMemo && _derivedConstellationMemo.sig === sig) {
+    return _derivedConstellationMemo.surface;
+  }
+  const surface = buildMeridianConstellationSurface(input);
+  _derivedConstellationMemo = { sig, surface };
+  return surface;
+}
+
+export function buildStatusObservatorySurface(
+  ledger: StatusLedgerSurfaceV1,
+  // M.I.1 — optional derived-constellation input override. The LIVE call site stays
+  // `buildStatusObservatorySurface(surface)` (pinned by statusObservatoryRouteSafety); tests and
+  // fixtures inject a deterministic input here. When omitted under the flag, the input is resolved
+  // from the same live getters combat reads.
+  derivedConstellationInput?: MeridianConstellationInput | null,
+): StatusObservatorySurfaceV1 {
   const noLoss = buildStatusObservatoryNoLoss(ledger);
   const classification = classifyVisualState(ledger);
   const organs = buildMeridianOrgans(ledger);
   const focusOrgan = selectedOrgan(organs);
-  const nodes = ledger.namedStats.allStats.map(statNodeFromSource);
-  const selectedStatId = selectLensDefault(nodes);
+  // M.I.1 — when the derived stat engine is authoritative (and not forceLegacy), the Stat Meridian
+  // Constellation reads the live derived/meridian model instead of the legacy training snapshot.
+  // forceLegacy and flag-off both leave `derivedConstellation` null ⇒ byte-identical legacy path.
+  const useDerived = isDerivedStatEngineAuthoritative() && !isForceLegacy();
+  const derivedConstellation = useDerived
+    ? buildDerivedConstellation(derivedConstellationInput ?? toObservatoryConstellationInput())
+    : null;
+  const nodes = derivedConstellation
+    ? derivedConstellation.nodes
+    : ledger.namedStats.allStats.map(statNodeFromSource);
+  const selectedStatId = derivedConstellation
+    ? derivedConstellation.selectedLensDefaultStatId
+    : selectLensDefault(nodes);
   const selectedStat = selectedStatId ? nodes.find((node) => node.id === selectedStatId) ?? null : null;
-  const weakLinks = nodes.filter((node) => node.weakLink);
+  const weakLinks = derivedConstellation ? derivedConstellation.weakLinks : nodes.filter((node) => node.weakLink);
   const bridge = bridgeForRootLaw(ledger);
   const talismanSlips = buildTalismanSlips(ledger, classification.visualState, bridge, weakLinks);
   const causalThreads = [
@@ -923,25 +971,30 @@ export function buildStatusObservatorySurface(ledger: StatusLedgerSurfaceV1): St
       nextBottleneck: ledger.currentState.nextBottleneck,
       legend: STATUS_OBSERVATORY_ORGAN_LEGEND,
     },
-    statConstellation: {
-      rootTestId: 'status-stat-constellation',
-      title: ledger.namedStats.title,
-      subtitle: '28 Named Stats - all paths visible',
-      currentPath: ledger.namedStats.currentPath,
-      nodes,
-      selectedLensDefaultStatId: selectedStatId,
-      branchCounts: {
-        universal: ledger.namedStats.universal.length,
-        heaven: ledger.namedStats.heaven.length,
-        earth: ledger.namedStats.earth.length,
-        martial: ledger.namedStats.martial.length,
-      },
-      branchPaths: branchPaths(ledger),
-      weakLinks,
-      bridgeSockets: ledger.namedStats.bridgeSockets,
-      legend: STATUS_OBSERVATORY_STAT_LEGEND,
-      causalThreads: weakLinks.map(statThread),
-    },
+    // M.I.1 — derived path: drop in the Three-Treasures-bound constellation (28 ids / 8-7-6-7 /
+    // status-stat-constellation rootTestId preserved by the binding), keeping the FROZEN subtitle
+    // literal so the contract shape is untouched. Legacy path is the verbatim pre-M.I.1 literal.
+    statConstellation: derivedConstellation
+      ? { ...derivedConstellation, subtitle: '28 Named Stats - all paths visible' }
+      : {
+          rootTestId: 'status-stat-constellation',
+          title: ledger.namedStats.title,
+          subtitle: '28 Named Stats - all paths visible',
+          currentPath: ledger.namedStats.currentPath,
+          nodes,
+          selectedLensDefaultStatId: selectedStatId,
+          branchCounts: {
+            universal: ledger.namedStats.universal.length,
+            heaven: ledger.namedStats.heaven.length,
+            earth: ledger.namedStats.earth.length,
+            martial: ledger.namedStats.martial.length,
+          },
+          branchPaths: branchPaths(ledger),
+          weakLinks,
+          bridgeSockets: ledger.namedStats.bridgeSockets,
+          legend: STATUS_OBSERVATORY_STAT_LEGEND,
+          causalThreads: weakLinks.map(statThread),
+        },
     bottleneckCanopy: {
       rootTestId: 'status-bottleneck-canopy',
       title: 'Bottleneck Talisman Canopy',
