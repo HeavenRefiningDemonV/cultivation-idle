@@ -51,3 +51,31 @@ test('P2-04 semantic role tokens remain explicit and legal', () => {
   assert.doesNotMatch(tokenSheet, /--paper-[^:\n]*blue\s*:/i, 'no blue token names should be introduced');
   assert.doesNotMatch(tokenSheet, /linear-gradient\(/i, 'token sheet should not encode gradient defaults');
 });
+
+test('F0-KIT item-language tokens resolve and respect the kit guards', () => {
+  for (const token of [
+    '--rarity-mortal',
+    '--rarity-spirit',
+    '--rarity-earth',
+    '--rarity-heaven',
+    '--rarity-immortal',
+    '--affix-prefix-tint',
+    '--affix-suffix-tint',
+    '--affix-bond-tint',
+    '--path-heaven-accent',
+    '--path-earth-accent',
+    '--path-martial-accent',
+  ]) {
+    assert.match(
+      tokenSheet,
+      new RegExp(`${token}:\\s*[^;]+;`),
+      `${token} should resolve to a non-empty value`,
+    );
+  }
+
+  // The deposit references existing sanctioned tokens via color-mix/var only:
+  // no new raw hex, no sheet-level gradient, no blue token name. Re-assert the
+  // kit guards still hold after the deposit.
+  assert.doesNotMatch(tokenSheet, /--paper-[^:\n]*blue\s*:/i, 'no blue token names should be introduced');
+  assert.doesNotMatch(tokenSheet, /linear-gradient\(/i, 'token sheet should not encode gradient defaults');
+});

@@ -16,6 +16,21 @@ const PAPER_TOKENS = [
   '--paper-gold-deep', '--paper-jade-ink', '--paper-cinnabar-deep', '--paper-foxing',
 ];
 
+// F0-KIT item-language deposit. The rarity ladder proves grayscale legibility by
+// FRAME WEIGHT + SEAL + LABEL, not hue alone (Codex D-E2/D-E3/D-E10): r1->r5
+// escalate single-hairline -> heavier rule -> double rule -> gold-leaf double ->
+// gold-leaf double + corner-bracket + apex wax-seal. Affix/path rows are swatches.
+const RARITY_RUNGS = [
+  { token: '--rarity-mortal', label: 'Mortal', rung: 'common', frame: 'r1', seal: false },
+  { token: '--rarity-spirit', label: 'Spirit', rung: 'uncommon', frame: 'r2', seal: false },
+  { token: '--rarity-earth', label: 'Earth', rung: 'rare', frame: 'r3', seal: false },
+  { token: '--rarity-heaven', label: 'Heaven', rung: 'epic', frame: 'r4', seal: false },
+  { token: '--rarity-immortal', label: 'Immortal', rung: 'legendary', frame: 'r5', seal: true },
+] as const;
+
+const AFFIX_TOKENS = ['--affix-prefix-tint', '--affix-suffix-tint', '--affix-bond-tint'];
+const PATH_TOKENS = ['--path-heaven-accent', '--path-earth-accent', '--path-martial-accent'];
+
 /**
  * Dev-only Wave 0 materials gallery. Renders the shared painterly primitives on
  * the void stage so they can be screenshot-matched against the artifact crops:
@@ -82,6 +97,53 @@ export function StatusObservatoryMaterialsGallery() {
         <h2 className="materialsGallery__swTitle">New paper tokens</h2>
         <div className="materialsGallery__swatchStrip">
           {PAPER_TOKENS.map((t) => (
+            <div key={t} className="materialsGallery__swatch">
+              <span className="materialsGallery__chip" style={{ background: `var(${t})` }} />
+              <span className="materialsGallery__swatchLabel">{t}</span>
+            </div>
+          ))}
+        </div>
+
+        <h2 className="materialsGallery__swTitle">Item-rarity ramp (frame weight + seal, not hue alone)</h2>
+        <div className="materialsGallery__rarityLadder">
+          {RARITY_RUNGS.map(({ token, label, rung, frame, seal }) => (
+            <figure key={token} className="materialsGallery__rarityCell">
+              <span className="materialsGallery__chip" style={{ background: `var(${token})` }} />
+              <div className={`materialsGallery__rarityFrame materialsGallery__rarityFrame--${frame} obsParchmentPlate`}>
+                {seal && (
+                  <span className="materialsGallery__brackets obsCornerBrackets" aria-hidden="true">
+                    <span className="obsCornerBrackets__lower" />
+                  </span>
+                )}
+                {seal && (
+                  <InkWaxSeal
+                    chars="極"
+                    size={40}
+                    rotation={-3}
+                    variant="cinnabar"
+                    className="materialsGallery__raritySeal"
+                  />
+                )}
+                <span className="materialsGallery__rarityName">{label}</span>
+              </div>
+              <span className="materialsGallery__swatchLabel">{token} · {rung}</span>
+            </figure>
+          ))}
+        </div>
+
+        <h2 className="materialsGallery__swTitle">Affix-tier tints</h2>
+        <div className="materialsGallery__swatchStrip">
+          {AFFIX_TOKENS.map((t) => (
+            <div key={t} className="materialsGallery__swatch">
+              <span className="materialsGallery__chip" style={{ background: `var(${t})` }} />
+              <span className="materialsGallery__swatchLabel">{t}</span>
+            </div>
+          ))}
+        </div>
+
+        <h2 className="materialsGallery__swTitle">Per-path accents</h2>
+        <div className="materialsGallery__swatchStrip">
+          {PATH_TOKENS.map((t) => (
             <div key={t} className="materialsGallery__swatch">
               <span className="materialsGallery__chip" style={{ background: `var(${t})` }} />
               <span className="materialsGallery__swatchLabel">{t}</span>

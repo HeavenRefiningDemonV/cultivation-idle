@@ -294,4 +294,31 @@
   --root-void: #3a332d;
   --root-time: var(--element-earth);
   --root-astral: #b59a55;
+
+  /* ============================================================
+     F0-KIT — cross-surface ITEM-LANGUAGE ramp (Phase 0).
+     Names + shape owned by F0; VALUES are [tune] and owned downstream:
+       rarity multipliers -> D15 §7.1 (D7-RARITY-MULT);
+       affix-count bands  -> D15 §8 / D8 §D.4-D.5 (D8-AFFIX-COUNT);
+       per-path cast      -> D5 Parts 2-4 + Codex §0.15/I.16.
+     Declared as color-mix/var references to existing sanctioned tokens:
+     NO new raw hex, grayscale-legible via FRAME WEIGHT + SEAL downstream,
+     never hue alone. Consuming SCSS builds any gradient from these.
+     Rarity rungs are the 5-RUNG ITEM rarity (D7/D8 Common->Legendary),
+     NOT the 4 spirit-root grades (--root-* already deposited). See packet App. A.
+     ============================================================ */
+  /* The five item-rarity rungs (Common -> Legendary), cultivation-flavoured. */
+  --rarity-mortal:   color-mix(in oklab, var(--paper-ink-muted) 70%, var(--paper-parchment-deep));   /* common: muted ink */
+  --rarity-spirit:   color-mix(in oklab, var(--paper-jade) 55%, var(--paper-parchment-warm));         /* uncommon: faint jade wash */
+  --rarity-earth:    color-mix(in oklab, var(--paper-jade-bright) 62%, var(--paper-bronze) 38%);      /* rare: deeper jade + bronze edge */
+  --rarity-heaven:   color-mix(in oklab, var(--paper-gold-leaf) 78%, var(--paper-gold-deep) 22%);     /* epic: gold-leaf double edge */
+  --rarity-immortal: color-mix(in oklab, var(--paper-cinnabar-bright) 58%, var(--paper-gold-leaf) 42%); /* legendary: cinnabar-and-gold apex */
+  /* Affix-tier tints (D8 §D.5 prefix/suffix + the set/bond accent, D8 composeGear bond law). */
+  --affix-prefix-tint: color-mix(in oklab, var(--paper-jade-bright) 50%, var(--paper-parchment-warm)); /* prefix affix accent */
+  --affix-suffix-tint: color-mix(in oklab, var(--paper-gold-strong) 50%, var(--paper-parchment-warm)); /* suffix affix accent */
+  --affix-bond-tint:   color-mix(in oklab, var(--paper-cinnabar-deep) 46%, var(--paper-gold-leaf) 54%); /* set/bond accent */
+  /* Per-path accents (D5 Heaven/Earth/Martial cast; consumed by Movements as named tokens, never raw hex). */
+  --path-heaven-accent:  color-mix(in oklab, var(--root-astral) 60%, var(--paper-jade-ink) 40%);  /* Heaven: aloof/astral cool-gold */
+  --path-earth-accent:   color-mix(in oklab, var(--element-earth) 64%, var(--paper-bronze) 36%);  /* Earth: mineral/grounded */
+  --path-martial-accent: color-mix(in oklab, var(--paper-gold-strong) 52%, var(--paper-stamp) 48%); /* Martial: edged/kinetic edge-gold */
 }

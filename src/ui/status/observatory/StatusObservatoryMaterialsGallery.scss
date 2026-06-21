@@ -123,3 +123,96 @@
   text-align: center;
   word-break: break-all;
 }
+
+/* F0-KIT — the item-rarity ladder. Rarity is carried by FRAME WEIGHT + SEAL, not
+   hue alone: r1->r5 escalate rule-count and border thickness monotonically, so a
+   desaturated capture still ranks the five rungs in order (Codex D-E2/D-E3/D-E10).
+   Tokens only; gradients/mixes are legal here (illegal only in the token sheet). */
+.materialsGallery__rarityLadder {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 20px;
+  margin-top: 4px;
+}
+
+.materialsGallery__rarityCell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 150px;
+  margin: 0;
+}
+
+.materialsGallery__rarityFrame {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 132px;
+  height: 96px;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.materialsGallery__rarityName {
+  position: relative;
+  z-index: 6;
+  font-size: 15px;
+  letter-spacing: 0.08em;
+  color: var(--paper-ink);
+}
+
+/* r1 mortal — a single thin hairline rule (the flattest rung). */
+.materialsGallery__rarityFrame--r1 {
+  border: 1px solid var(--paper-shell-border-subtle);
+}
+
+/* r2 spirit — a single heavier rule + a faint inner glow. */
+.materialsGallery__rarityFrame--r2 {
+  border: 2px solid var(--paper-shell-border-strong);
+  box-shadow: inset 0 0 12px color-mix(in oklab, var(--rarity-spirit) 38%, transparent);
+}
+
+/* r3 earth — a double rule (the .gframe motif at standard weight). */
+.materialsGallery__rarityFrame--r3 {
+  border: 2px solid var(--paper-bronze);
+  box-shadow:
+    inset 0 0 0 4px var(--paper-parchment-soft),
+    inset 0 0 0 6px var(--paper-bronze);
+}
+
+/* r4 heaven — the gold-leaf double rule, a clear step up in weight. */
+.materialsGallery__rarityFrame--r4 {
+  border: 3px solid var(--paper-gold-leaf);
+  box-shadow:
+    inset 0 0 0 5px var(--paper-parchment-soft),
+    inset 0 0 0 9px var(--paper-gold-leaf),
+    inset 0 0 16px color-mix(in oklab, var(--paper-gold-leaf) 32%, transparent);
+}
+
+/* r5 immortal — gold-leaf double at apex weight + corner brackets + wax seal:
+   the unmistakable apex, legible with all colour removed. */
+.materialsGallery__rarityFrame--r5 {
+  border: 4px solid var(--paper-gold-leaf);
+  box-shadow:
+    inset 0 0 0 6px var(--paper-parchment-soft),
+    inset 0 0 0 12px var(--paper-gold-leaf),
+    inset 0 0 0 14px var(--paper-cinnabar-deep),
+    inset 0 0 24px color-mix(in oklab, var(--rarity-immortal) 42%, transparent);
+}
+
+.materialsGallery__rarityFrame .materialsGallery__brackets {
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  pointer-events: none;
+}
+
+.materialsGallery__raritySeal {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  z-index: 8;
+}
