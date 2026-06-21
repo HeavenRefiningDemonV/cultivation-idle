@@ -11,6 +11,14 @@ export type RitualModalFrameSize = 'md' | 'lg';
 export const RITUAL_MODAL_FRAME_VARIANT_OPTIONS = ['ritual', 'chapterEnd', 'summary'] as const satisfies readonly RitualModalFrameVariant[];
 export const RITUAL_MODAL_FRAME_SIZE_OPTIONS = ['md', 'lg'] as const satisfies readonly RitualModalFrameSize[];
 
+// F2-S1 — the rite discriminator + the state-keyed backdrop dimension. Additive: both props are
+// optional with safe defaults (`'default'` riteState), so every existing call site is unaffected
+// and the default state renders identically to the pre-S1 frame (preserve-first).
+export type RitualModalFrameRite = 'neutral' | 'breakthrough' | 'tribulation' | 'echo' | 'lifeSummary' | 'rootUpgrade';
+export type RitualModalFrameRiteState = 'default' | 'prestige' | 'postFailure';
+export const RITUAL_MODAL_FRAME_RITE_OPTIONS = ['neutral', 'breakthrough', 'tribulation', 'echo', 'lifeSummary', 'rootUpgrade'] as const satisfies readonly RitualModalFrameRite[];
+export const RITUAL_MODAL_FRAME_RITE_STATE_OPTIONS = ['default', 'prestige', 'postFailure'] as const satisfies readonly RitualModalFrameRiteState[];
+
 export interface RitualModalFrameProps {
   open: boolean;
   onClose: () => void;
@@ -22,6 +30,10 @@ export interface RitualModalFrameProps {
   footer?: ReactNode;
   variant?: RitualModalFrameVariant;
   size?: RitualModalFrameSize;
+  /** F2-S1 — the rite skin discriminator (defaults to 'neutral'; chrome-only). */
+  rite?: RitualModalFrameRite;
+  /** F2-S1 — the state-keyed backdrop (defaults to 'default' = the existing resting frame). */
+  riteState?: RitualModalFrameRiteState;
   scrollBody?: boolean;
   showCloseButton?: boolean;
   className?: string;
@@ -60,6 +72,8 @@ export function RitualModalFrame({
   footer,
   variant = 'ritual',
   size = 'md',
+  rite = 'neutral',
+  riteState = 'default',
   scrollBody = true,
   showCloseButton = true,
   className,
@@ -201,6 +215,7 @@ export function RitualModalFrame({
       className={classNames(
         'ritualModalFrame',
         `ritualModalFrame--${variant}`,
+        `ritualModalFrame--state-${riteState}`,
         { 'ritualModalFrame--static': prefersReducedMotion },
         className,
       )}
@@ -209,7 +224,7 @@ export function RitualModalFrame({
       contentScrollOwner={scrollBody}
       panelOnKeyDown={handleKeyDown}
     >
-      <div className="ritualModalFrame__inner" tabIndex={-1} data-ritual-zone="frame">
+      <div className="ritualModalFrame__inner" tabIndex={-1} data-ritual-zone="frame" data-rite={rite} data-rite-state={riteState}>
         {resolvedHeader ? <header className="ritualModalFrame__header" data-ritual-zone="header" id={internalHeaderId}>{resolvedHeader}</header> : null}
         {ornament ? <div className="ritualModalFrame__ornament" data-ritual-zone="ornament">{ornament}</div> : null}
 

@@ -24,6 +24,9 @@ export type NotificationHierarchyState = {
   activeOnboardingPrompt: unknown | null;
   combatPresentationMode: 'hidden' | 'preview' | 'active' | 'docked';
   lifeStartWizardOpen?: boolean;
+  // F2-S5 — the shared modals block notifications so a toast never pops over a ceremony / inspector.
+  showItemDetailInspector?: boolean;
+  showRitualCeremony?: boolean;
 };
 
 export const MAX_VISIBLE_NOTIFICATIONS = 3;
@@ -95,7 +98,9 @@ export const isNotificationOverlayBlocked = (state: NotificationHierarchyState):
   || state.showMigrationIssuesModal === true
   || state.pendingCityArrivalId !== null
   || state.activeOnboardingPrompt !== null
-  || state.combatPresentationMode !== 'hidden';
+  || state.combatPresentationMode !== 'hidden'
+  || state.showItemDetailInspector === true
+  || state.showRitualCeremony === true;
 
 export const applyNotificationPolicy = (
   context: NotificationPolicyContext,

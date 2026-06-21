@@ -42,6 +42,25 @@ import {
   type NotificationOptions,
 } from '../systems/ui/notificationPolicy.js';
 import type { SpiritRootObservationTabId } from '../features/spiritRootObservation/index.js';
+import type { ItemDetailVariant, RitualRite } from '../systems/ui/modals/index.js';
+
+/**
+ * F2-S5 — the shared-modal open intents. The store tracks open/close + an intent payload of WHAT to
+ * show; it never holds the resolved SurfaceV1. The owning surface (in its own Movement) reads the
+ * payload, builds the typed surface from its authoritative store, and passes it to the modal.
+ */
+export type ItemDetailIntent = {
+  /** what to inspect (an item/technique instance id). */
+  refId: string;
+  variant: ItemDetailVariant;
+  /** the opening surface (equipment/inventory/forge/techniques/...). */
+  source: string;
+};
+export type RitualCeremonyIntent = {
+  rite: RitualRite;
+  /** the opening system (gateTrial/reincarnation/rootUpgrade/echo). */
+  source: string;
+};
 
 /**
  * UI notification types
@@ -207,6 +226,11 @@ interface UIStateBase {
   daoHeartModalInitialTab: DaoHeartModalTabId;
   spiritRootObservationOpen: boolean;
   spiritRootObservationActiveTab: SpiritRootObservationTabId;
+  // F2-S5 — the shared modals (open/close + intent payload only; content lives with the owner).
+  showItemDetailInspector: boolean;
+  itemDetailPayload: ItemDetailIntent | null;
+  showRitualCeremony: boolean;
+  ritualCeremonyPayload: RitualCeremonyIntent | null;
   currentChapterExhaustedAcknowledgedThisLife: boolean;
   activeOnboardingPrompt: OnboardingPromptInstance | null;
   queuedOnboardingPrompts: OnboardingPromptInstance[];
@@ -321,6 +345,11 @@ export interface UIState extends UIStateBase {
   openSpiritRootObservation: (tab?: SpiritRootObservationTabId) => void;
   closeSpiritRootObservation: () => void;
   setSpiritRootObservationTab: (tab: SpiritRootObservationTabId) => void;
+  // F2-S5 — shared-modal open/close machinery (brokers open/close + intent payload; mutates no gameplay).
+  openItemDetailInspector: (payload: ItemDetailIntent) => void;
+  closeItemDetailInspector: () => void;
+  openRitualCeremony: (payload: RitualCeremonyIntent) => void;
+  closeRitualCeremony: () => void;
   hardResetUI: () => void;
 }
 
@@ -360,6 +389,10 @@ const INITIAL_UI_STATE: UIStateBase = {
   daoHeartModalInitialTab: 'sanctuary',
   spiritRootObservationOpen: false,
   spiritRootObservationActiveTab: 'profile',
+  showItemDetailInspector: false,
+  itemDetailPayload: null,
+  showRitualCeremony: false,
+  ritualCeremonyPayload: null,
   currentChapterExhaustedAcknowledgedThisLife: false,
   activeOnboardingPrompt: null,
   queuedOnboardingPrompts: [],
@@ -535,6 +568,8 @@ export const useUIStore = create<UIState>()(
         activeOnboardingPrompt: snapshot.activeOnboardingPrompt,
         combatPresentationMode: snapshot.combatPresentation.mode,
         lifeStartWizardOpen: snapshot.lifeStartWizardOpenForNotifications,
+        showItemDetailInspector: snapshot.showItemDetailInspector,
+        showRitualCeremony: snapshot.showRitualCeremony,
       });
       const result = applyNotificationPolicy({
         now,
@@ -611,6 +646,8 @@ export const useUIStore = create<UIState>()(
         activeOnboardingPrompt: snapshot.activeOnboardingPrompt,
         combatPresentationMode: snapshot.combatPresentation.mode,
         lifeStartWizardOpen: snapshot.lifeStartWizardOpenForNotifications,
+        showItemDetailInspector: snapshot.showItemDetailInspector,
+        showRitualCeremony: snapshot.showRitualCeremony,
       });
       const promoted = promotePendingNotifications(snapshot.notifications, snapshot.pendingNotifications, overlayBlocked);
       if (promoted.becameVisible.length === 0) return;
@@ -1166,6 +1203,35 @@ export const useUIStore = create<UIState>()(
       if (!get().spiritRootObservationOpen) return;
       set((state) => {
         state.spiritRootObservationOpen = false;
+      });
+    },
+
+    // F2-S5 — the shared modals: open/close + intent payload ONLY. No gameplay mutation; the owning
+    // surface builds the typed SurfaceV1 from the payload and resolves the modal's intent routes.
+    openItemDetailInspector: (payload: ItemDetailIntent) => {
+      set((state) => {
+        state.showItemDetailInspector = true;
+        state.itemDetailPayload = payload;
+      });
+    },
+    closeItemDetailInspector: () => {
+      if (!get().showItemDetailInspector) return;
+      set((state) => {
+        state.showItemDetailInspector = false;
+        state.itemDetailPayload = null;
+      });
+    },
+    openRitualCeremony: (payload: RitualCeremonyIntent) => {
+      set((state) => {
+        state.showRitualCeremony = true;
+        state.ritualCeremonyPayload = payload;
+      });
+    },
+    closeRitualCeremony: () => {
+      if (!get().showRitualCeremony) return;
+      set((state) => {
+        state.showRitualCeremony = false;
+        state.ritualCeremonyPayload = null;
       });
     },
 

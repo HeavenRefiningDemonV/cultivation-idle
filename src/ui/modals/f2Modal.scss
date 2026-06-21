@@ -1,0 +1,318 @@
+/* ============================================================================
+   F2-MODALS · shared scrim + material
+   Ported 1:1 from the design artifact (modal-stage.html, lines ~89-180).
+   Mechanical port: raw colours -> paperInkTokens, selectors scoped under
+   .f2Scrim (with special root mappings), @keyframes f2-prefixed. Geometry,
+   properties and rule order are preserved verbatim — no redesign.
+   NOTE: block comments only here (this sheet is served via the plain-CSS path,
+   so no line comments and no nested comment markers).
+   ============================================================================ */
+
+/* ============================ THE SCRIM ============================ */
+/* special root mappings: .scrim -> .f2Scrim */
+.f2Scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  background: color-mix(in oklab, var(--obs-void-deep) 62%, transparent);
+  animation: f2ScrimIn 260ms ease-out;
+
+  /* font + motion vars live on the scrim root (record/rite CSS reference them) */
+  --serif: Georgia, "Times New Roman", serif;
+  --kai: "Kaiti SC", "STKaiti", "KaiTi", "Songti SC", serif;
+  --t-modal: 210ms cubic-bezier(.25, .1, .25, 1);
+  --t-hover: 140ms cubic-bezier(.2, .75, .25, 1);
+}
+/* (the .scrim::after and svg.scrim-grain grain rules are intentionally omitted) */
+
+/* ritual scrim = full dim + state-keyed void glow (.scrim.ritual -> .f2Scrim--ritual) */
+.f2Scrim--ritual {
+  background:
+    radial-gradient(120% 90% at 50% 12%, color-mix(in oklab, var(--paper-jade-ink) 42%, transparent), transparent 62%),
+    radial-gradient(150% 120% at 50% 110%, color-mix(in oklab, var(--obs-void-deep) 60%, transparent), transparent 55%),
+    color-mix(in oklab, var(--obs-void-deep) 86%, transparent);
+}
+.f2Scrim--ritual.f2Scrim--prestige {
+  background:
+    radial-gradient(120% 90% at 50% 12%, color-mix(in oklab, var(--paper-bronze-lo) 40%, transparent), transparent 62%),
+    radial-gradient(150% 120% at 50% 110%, var(--obs-void-deep), transparent 55%),
+    color-mix(in oklab, var(--obs-void-deep) 88%, transparent);
+}
+.f2Scrim--ritual.f2Scrim--postfail {
+  background:
+    radial-gradient(120% 90% at 50% 12%, color-mix(in oklab, var(--paper-cinnabar-bright) 40%, transparent), transparent 60%),
+    radial-gradient(150% 120% at 50% 110%, color-mix(in oklab, var(--obs-void-deep) 55%, transparent), transparent 55%),
+    color-mix(in oklab, var(--obs-void-deep) 88%, transparent);
+}
+/* inspector scrim picks up a faint state edge */
+.f2Scrim--inspector.f2Scrim--prestige {
+  box-shadow: inset 0 0 220px color-mix(in oklab, var(--paper-bronze-lo) 28%, transparent);
+}
+.f2Scrim--inspector.f2Scrim--postfail {
+  box-shadow: inset 0 0 220px color-mix(in oklab, var(--paper-cinnabar-bright) 26%, transparent);
+}
+
+@keyframes f2ScrimIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* centered dialog wrapper holding the box (not in the artifact) */
+.f2Scrim__center {
+  display: flex;
+}
+
+/* reduced-FX freeze (not in the artifact) */
+.f2Scrim--still :where([class*="ritualScene__"]) {
+  animation: none !important;
+}
+.f2Scrim--still .ritualScene__bolt {
+  opacity: .85 !important;
+}
+
+/* ============================ SHARED MATERIAL ============================ */
+.f2Scrim .gframe {
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  pointer-events: none;
+  border-radius: 5px;
+  border: 2.5px solid transparent;
+  background: linear-gradient(135deg, var(--paper-gold-leaf-hi), var(--paper-gold-strong) 45%, var(--paper-gold-deep)) border-box;
+  -webkit-mask: linear-gradient(var(--paper-ink) 0 0) padding-box, linear-gradient(var(--paper-ink) 0 0);
+  mask: linear-gradient(var(--paper-ink) 0 0) padding-box, linear-gradient(var(--paper-ink) 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+.f2Scrim .gframe2 {
+  position: absolute;
+  inset: 5px;
+  z-index: 7;
+  pointer-events: none;
+  border: 1px solid color-mix(in oklab, var(--paper-gold-strong) 45%, transparent);
+  border-radius: 3px;
+}
+.f2Scrim .gc {
+  position: absolute;
+  width: 17px;
+  height: 17px;
+  z-index: 8;
+  pointer-events: none;
+}
+.f2Scrim .gc.tl {
+  left: 6px;
+  top: 6px;
+  border-left: 2.4px solid var(--paper-gold-strong);
+  border-top: 2.4px solid var(--paper-gold-strong);
+}
+.f2Scrim .gc.tr {
+  right: 6px;
+  top: 6px;
+  border-right: 2.4px solid var(--paper-gold-strong);
+  border-top: 2.4px solid var(--paper-gold-strong);
+}
+.f2Scrim .gc.bl {
+  left: 6px;
+  bottom: 6px;
+  border-left: 2.4px solid var(--paper-gold-strong);
+  border-bottom: 2.4px solid var(--paper-gold-strong);
+}
+.f2Scrim .gc.br {
+  right: 6px;
+  bottom: 6px;
+  border-right: 2.4px solid var(--paper-gold-strong);
+  border-bottom: 2.4px solid var(--paper-gold-strong);
+}
+
+.f2Scrim .banner {
+  position: absolute;
+  top: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9;
+  white-space: nowrap;
+  padding: 5px 24px;
+  font: 700 12px/1 var(--serif);
+  letter-spacing: .16em;
+  color: var(--paper-gold-pale);
+  background: linear-gradient(180deg, var(--paper-jade-ink), var(--paper-jade-ink) 55%, var(--paper-jade-ink));
+  border: 1px solid var(--paper-gold-deep);
+  border-radius: 0 0 3px 3px;
+  box-shadow: 0 3px 6px color-mix(in oklab, var(--obs-void-deep) 50%, transparent), inset 0 1px 0 color-mix(in oklab, var(--paper-gold-pale) 35%, transparent);
+}
+.f2Scrim .banner::before,
+.f2Scrim .banner::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 9px;
+  height: 9px;
+  background: linear-gradient(135deg, var(--paper-gold-leaf-hi), var(--paper-gold-deep));
+  transform: translateY(-50%) rotate(45deg);
+}
+.f2Scrim .banner::before { left: -4px; }
+.f2Scrim .banner::after { right: -4px; }
+.f2Scrim .banner.cinn {
+  background: linear-gradient(180deg, var(--paper-stamp), var(--paper-cinnabar-deep) 55%, var(--paper-cinnabar-deep));
+  border-color: var(--paper-cinnabar-deep);
+}
+
+.f2Scrim .tag {
+  position: absolute;
+  left: 15px;
+  top: 15px;
+  width: 44px;
+  height: 78px;
+  z-index: 10;
+  background: linear-gradient(160deg, var(--paper-cinnabar-bright), var(--paper-stamp) 55%, var(--paper-cinnabar-deep));
+  border: 1px solid var(--paper-cinnabar-deep);
+  border-radius: 3px;
+  box-shadow: 0 3px 8px color-mix(in oklab, var(--obs-void-deep) 50%, transparent), inset 0 1px 0 color-mix(in oklab, var(--paper-parchment-soft) 30%, transparent);
+  display: grid;
+  place-items: center;
+}
+.f2Scrim .tag.jadechop {
+  background: linear-gradient(160deg, var(--paper-jade-ink), var(--paper-jade-ink) 55%, var(--paper-jade-ink));
+  border-color: var(--paper-jade-ink);
+}
+.f2Scrim .tag .glyphs {
+  writing-mode: vertical-rl;
+  font-family: var(--kai);
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: 5px;
+  color: var(--paper-parchment-soft);
+  text-shadow: 0 1px 2px color-mix(in oklab, var(--obs-void-deep) 60%, transparent);
+}
+.f2Scrim .tag.jadechop .glyphs {
+  color: var(--paper-jade-muted);
+}
+
+/* buttons */
+.f2Scrim .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  font: 700 12.5px var(--serif);
+  color: var(--paper-lacquer-deep);
+  cursor: pointer;
+  border: 1px solid var(--paper-gold-deep);
+  border-radius: 3px;
+  letter-spacing: .02em;
+  background: linear-gradient(180deg, var(--paper-gold-leaf-hi), var(--paper-gold-pale));
+  box-shadow: 0 1px 2px color-mix(in oklab, var(--obs-void-deep) 30%, transparent), inset 0 1px 0 color-mix(in oklab, var(--paper-parchment-soft) 50%, transparent);
+  user-select: none;
+  transition: transform var(--t-hover), box-shadow var(--t-hover), filter var(--t-hover);
+}
+.f2Scrim .btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 7px color-mix(in oklab, var(--obs-void-deep) 32%, transparent), inset 0 1px 0 color-mix(in oklab, var(--paper-parchment-soft) 60%, transparent);
+}
+.f2Scrim .btn:active {
+  transform: scale(.975);
+}
+.f2Scrim .btn:focus-visible {
+  outline: 2px solid var(--paper-gold-strong);
+  outline-offset: 2px;
+}
+.f2Scrim .btn.jade {
+  background: linear-gradient(180deg, var(--paper-jade), var(--paper-jade-ink));
+  color: var(--paper-parchment-soft);
+  border-color: var(--paper-jade-ink);
+}
+.f2Scrim .btn.cinn {
+  background: linear-gradient(180deg, var(--paper-cinnabar-bright), var(--paper-stamp));
+  color: var(--paper-parchment-soft);
+  border-color: var(--paper-cinnabar-deep);
+}
+.f2Scrim .btn.ghost {
+  background: linear-gradient(180deg, color-mix(in oklab, var(--paper-parchment) 50%, transparent), color-mix(in oklab, var(--paper-parchment-deep) 50%, transparent));
+  color: color-mix(in oklab, var(--paper-ink) 70%, transparent);
+}
+.f2Scrim .btn.big {
+  padding: 11px 26px;
+  font: 700 14px var(--serif);
+}
+.f2Scrim .btn.is-disabled {
+  opacity: .46;
+  cursor: not-allowed;
+  filter: grayscale(.45);
+}
+.f2Scrim .btn .ico {
+  width: 13px;
+  height: 13px;
+  display: inline-block;
+}
+
+/* chips */
+.f2Scrim .chip {
+  font: 800 9.5px var(--serif);
+  letter-spacing: .06em;
+  padding: 2px 8px;
+  border-radius: 2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+.f2Scrim .chip.jade {
+  background: color-mix(in oklab, var(--paper-jade-bright) 15%, transparent);
+  color: var(--paper-jade-bright);
+  border: 1px solid color-mix(in oklab, var(--paper-jade-bright) 42%, transparent);
+}
+.f2Scrim .chip.gold {
+  background: color-mix(in oklab, var(--paper-gold-strong) 16%, transparent);
+  color: var(--paper-gold-deep);
+  border: 1px solid color-mix(in oklab, var(--paper-gold-strong) 46%, transparent);
+}
+.f2Scrim .chip.cinn {
+  background: color-mix(in oklab, var(--paper-cinnabar-bright) 14%, transparent);
+  color: var(--paper-cinnabar-deep);
+  border: 1px solid color-mix(in oklab, var(--paper-cinnabar-bright) 46%, transparent);
+}
+.f2Scrim .chip.ink {
+  background: color-mix(in oklab, var(--paper-ink) 8%, transparent);
+  color: color-mix(in oklab, var(--paper-ink) 70%, transparent);
+  border: 1px solid color-mix(in oklab, var(--paper-ink) 25%, transparent);
+}
+.f2Scrim .chip.bronze {
+  background: color-mix(in oklab, var(--paper-bronze-lo) 14%, transparent);
+  color: var(--paper-bronze-lo);
+  border: 1px solid color-mix(in oklab, var(--paper-bronze-lo) 50%, transparent);
+}
+
+.f2Scrim .sub {
+  font: 700 9.5px var(--serif);
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--paper-ink) 45%, transparent);
+}
+.f2Scrim .micro {
+  font: 600 11px var(--serif);
+  color: color-mix(in oklab, var(--paper-ink) 70%, transparent);
+}
+.f2Scrim .val {
+  font: 800 12px var(--serif);
+  color: var(--paper-ink);
+}
+.f2Scrim .divider {
+  font: 700 9px var(--serif);
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--paper-ink) 25%, transparent);
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  justify-content: center;
+  margin: 2px 0;
+}
+.f2Scrim .divider::before,
+.f2Scrim .divider::after {
+  content: "";
+  height: 1px;
+  flex: 1;
+  background: color-mix(in oklab, var(--paper-ink) 12%, transparent);
+}

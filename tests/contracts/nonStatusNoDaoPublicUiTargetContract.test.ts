@@ -24,6 +24,10 @@ const PUBLIC_NON_STATUS_ROOTS = [
   'src/features/world/bountiesExact',
   'src/features/world/expeditionsExact',
   'src/ui/world',
+  // F2-MODALS — the shared public modals (concrete xianxia vocabulary only; no Omen/Proof/Mandate/Source).
+  'src/ui/modals',
+  'src/ui/shell/RitualCeremonyShell.tsx',
+  'src/systems/ui/modals',
 ];
 
 const FORBIDDEN_PUBLIC_COMPONENTS = [

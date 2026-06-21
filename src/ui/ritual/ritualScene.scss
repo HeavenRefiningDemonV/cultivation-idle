@@ -1,0 +1,62 @@
+/* F2.UI — rite-scene layout + motion. Token-only (colours/timings via paperInkTokens). Every
+   rotating ring rotates around its OWN scene-centre via `transform-box: view-box; transform-origin`
+   set inline on the element (the modal-stage.html drift-bug fix). Motion freezes to a legible still
+   under prefers-reduced-motion AND when the shell adds `.ritualScene--still` (FxQuality low). */
+
+.ritualSceneDefs { position: absolute; width: 0; height: 0; overflow: hidden; pointer-events: none; }
+
+.ritualScene {
+  position: relative;
+  width: 100%;
+  height: 466px;
+  max-height: 52vh;
+  overflow: hidden;
+  border-radius: 6px;
+  /* state-keyed void backdrop (default slate-teal). */
+  background: radial-gradient(120% 90% at 50% 18%, var(--obs-void-high), var(--obs-void-mid) 52%, var(--obs-void-deep));
+}
+.ritualScene--prestige {
+  background: radial-gradient(120% 90% at 50% 18%, var(--obs-void-bronze-high), var(--obs-void-bronze-mid) 52%, var(--obs-void-bronze-deep));
+}
+.ritualScene--danger {
+  background: radial-gradient(120% 90% at 50% 22%, color-mix(in oklab, var(--obs-void-cinnabar-deep) 60%, var(--paper-stamp) 20%), var(--obs-void-cinnabar-deep) 55%, var(--obs-void-deep));
+}
+.ritualScene__svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.ritualScene__vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(120% 120% at 50% 50%, transparent 52%, color-mix(in oklab, var(--obs-void-deep) 66%, transparent));
+}
+
+/* ── scene animations (reduced-motion gated) ── */
+@keyframes ritualSceneMoteUp { 0% { transform: translateY(8px); opacity: 0; } 16% { opacity: 0.85; } 70% { opacity: 0.5; } 100% { transform: translateY(-46px); opacity: 0; } }
+@keyframes ritualSceneBreathe { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.06); opacity: 1; } }
+@keyframes ritualSceneThreshold { 0%, 100% { opacity: 0.72; } 50% { opacity: 1; } }
+@keyframes ritualSceneSpin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
+@keyframes ritualSceneSpinR { from { transform: rotate(0); } to { transform: rotate(-360deg); } }
+@keyframes ritualSceneBolt { 0%, 92%, 100% { opacity: 0.18; } 94% { opacity: 0.95; } 96% { opacity: 0.4; } 98% { opacity: 0.9; } }
+@keyframes ritualSceneDrift { 0% { transform: translateX(0); } 50% { transform: translateX(-14px); } 100% { transform: translateX(0); } }
+@keyframes ritualSceneGlow { 0%, 100% { opacity: 0.55; } 50% { opacity: 0.95; } }
+
+.ritualScene__mote { animation: ritualSceneMoteUp 6s linear infinite; }
+.ritualScene__breathe { animation: ritualSceneBreathe var(--ui-motion-ritual-breathe-duration, 7s) ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.ritualScene__threshold { animation: ritualSceneThreshold 5s ease-in-out infinite; }
+.ritualScene__spin { animation: ritualSceneSpin 60s linear infinite; }
+.ritualScene__spinR { animation: ritualSceneSpinR 80s linear infinite; }
+.ritualScene__bolt { animation: ritualSceneBolt 6s ease-in-out infinite; }
+.ritualScene__drift { animation: ritualSceneDrift var(--ui-motion-ritual-drift-duration, 22s) ease-in-out infinite; }
+.ritualScene__glow { animation: ritualSceneGlow var(--ui-motion-ritual-pulse-duration, 8s) ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+
+/* freeze to a composed still (no motion-only meaning). */
+.ritualScene--still [class*='ritualScene__']:where(.ritualScene__mote, .ritualScene__breathe, .ritualScene__threshold, .ritualScene__spin, .ritualScene__spinR, .ritualScene__bolt, .ritualScene__drift, .ritualScene__glow) {
+  animation: none !important;
+}
+.ritualScene--still .ritualScene__bolt { opacity: 0.85 !important; }
+@media (prefers-reduced-motion: reduce) {
+  .ritualScene__mote, .ritualScene__breathe, .ritualScene__threshold, .ritualScene__spin,
+  .ritualScene__spinR, .ritualScene__bolt, .ritualScene__drift, .ritualScene__glow {
+    animation: none !important;
+  }
+  .ritualScene__bolt { opacity: 0.85 !important; }
+}

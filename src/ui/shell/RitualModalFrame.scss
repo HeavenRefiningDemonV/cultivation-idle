@@ -101,6 +101,29 @@
   --ritual-modal-header-gap: 10px;
 }
 
+/* F2-S1 — the state-keyed ritual backdrop (never flat brown). The scrim is InkModalFrame's, so
+   the state is keyed as a panel atmosphere on __inner: a faint top wash + a disciplined edge.
+   `default` is a NO-OP (the existing resting frame — unchanged call sites look identical);
+   `prestige` warms to bronze; `postFailure` carries a cinnabar EDGE (a disciplined edge, never an
+   alarm fill — the failure body stays sober). Token-driven; no raw hex. */
+.ritualModalFrame--state-prestige .ritualModalFrame__inner {
+  border-radius: 12px;
+  background:
+    radial-gradient(140% 70% at 50% 0%, color-mix(in oklab, var(--paper-gold-leaf) 13%, transparent), transparent 62%);
+  box-shadow:
+    inset 0 3px 0 color-mix(in oklab, var(--paper-gold-strong) 42%, transparent),
+    inset 0 0 0 1px color-mix(in oklab, var(--paper-gold-deep) 26%, transparent);
+}
+
+.ritualModalFrame--state-postFailure .ritualModalFrame__inner {
+  border-radius: 12px;
+  background:
+    radial-gradient(140% 68% at 50% 0%, color-mix(in oklab, var(--paper-cinnabar-deep) 9%, transparent), transparent 60%);
+  box-shadow:
+    inset 0 3px 0 color-mix(in oklab, var(--paper-cinnabar-bright) 46%, transparent),
+    inset 0 0 0 1px color-mix(in oklab, var(--paper-cinnabar-deep) 34%, transparent);
+}
+
 .ritualModalFrame--static .ritualModalFrame__panel,
 .ritualModalFrame--static .ritualModalFrame__content {
   animation: none;

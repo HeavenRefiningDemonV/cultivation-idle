@@ -89,12 +89,19 @@ export { RitualModalFrame } from './RitualModalFrame.js';
 export {
   RITUAL_MODAL_FRAME_VARIANT_OPTIONS,
   RITUAL_MODAL_FRAME_SIZE_OPTIONS,
+  RITUAL_MODAL_FRAME_RITE_OPTIONS,
+  RITUAL_MODAL_FRAME_RITE_STATE_OPTIONS,
 } from './RitualModalFrame.js';
 export type {
   RitualModalFrameProps,
   RitualModalFrameVariant,
   RitualModalFrameSize,
+  RitualModalFrameRite,
+  RitualModalFrameRiteState,
 } from './RitualModalFrame.js';
+
+export { RitualCeremonyShell } from './RitualCeremonyShell.js';
+export type { RitualCeremonyShellProps } from './RitualCeremonyShell.js';
 
 export { ScenicLabel } from './ScenicLabel.js';
 export {
