@@ -13,6 +13,8 @@ type AstrolabeSurface = StatusObservatorySurfaceV1['rootLawInstrument']['astrola
 
 export interface StatusSpiritRootAstrolabeProps {
   surface: AstrolabeSurface;
+  /** M.I.3 (G3) — true when the rootLaw family is the selected/related cross-highlight context. */
+  related?: boolean;
 }
 
 const C = 168;
@@ -53,7 +55,7 @@ function fracturePath(aAng: number): string {
   return d.trim();
 }
 
-export function StatusSpiritRootAstrolabe({ surface }: StatusSpiritRootAstrolabeProps) {
+export function StatusSpiritRootAstrolabe({ surface, related = false }: StatusSpiritRootAstrolabeProps) {
   const uid = useId().replace(/[:]/g, '');
   const ritual = useRitualMotion();
 
@@ -105,6 +107,7 @@ export function StatusSpiritRootAstrolabe({ surface }: StatusSpiritRootAstrolabe
     <section
       className="statusSpiritRootAstrolabe"
       data-active-root-id={surface.activeRootId}
+      data-related={related ? 'true' : 'false'}
       data-fit-tier={surface.fitTier}
       data-tone={surface.spiritRoot.tone}
       data-animate={ritual.animate ? 'true' : undefined}
@@ -119,7 +122,14 @@ export function StatusSpiritRootAstrolabe({ surface }: StatusSpiritRootAstrolabe
         className="statusSpiritRootAstrolabe__ring"
         role="img"
         aria-label={surface.ariaLabel}
-        style={motion as CSSProperties}
+        // M.I.3 (G1) — set ONLY the per-instrument vars here; the global tick-spin / qi-flow / breath
+        // cascade from the stage (.obsStageViewport) so live telemetry never re-renders this SVG.
+        style={
+          {
+            '--needle-target-deg': motion['--needle-target-deg'],
+            '--purity-fill': motion['--purity-fill'],
+          } as CSSProperties
+        }
       >
         <svg viewBox="0 0 336 336" aria-hidden="true" focusable={false}>
           <circle cx={C} cy={C} r={R_RIM} fill="url(#goldG)" />

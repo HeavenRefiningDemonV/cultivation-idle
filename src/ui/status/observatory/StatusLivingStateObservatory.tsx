@@ -33,6 +33,7 @@ import { InkGrain } from '../../ink/InkGrain.js';
 import { InkObservatoryDefs } from '../../ink/InkObservatoryDefs.js';
 import { ObservatorySelectionProvider } from './useObservatorySelection.js';
 import { useObservatoryScale } from './useObservatoryScale.js';
+import { useObservatoryMotion } from './useObservatoryMotion.js';
 import './StatusLivingStateObservatory.scss';
 
 export const STATUS_OBSERVATORY_PUBLIC_DEFAULT_ENABLED = true;
@@ -49,6 +50,19 @@ export function StatusLivingStateObservatory({ surface, onAction, fixtureId }: S
   const [activeOverlay, setActiveOverlay] = useState<'constellation' | 'rootLaw' | 'vessel' | 'canopy' | 'build' | 'work' | 'ledger' | null>(null);
   const presentation = resolveObservatoryPresentation(surface);
   const { viewportRef, scale, atFloor } = useObservatoryScale();
+
+  // M.I.3 (G1) — the GLOBAL telemetry-driven motion vars (qi-flow ∝ qi/s, tick-spin ∝ cultivation rate,
+  // breath) are set ONCE here on the stage from the typed surface (meta.motionHints) and CASCADE via CSS
+  // to every instrument's keyframes. The shell already re-renders each tick with the new surface, while
+  // the deep-equal-memoized instruments (whose slices never carry motionHints) do NOT — so live motion
+  // costs zero heavy-SVG re-renders (stop condition #3). Per-instrument vars (needle/purity) stay local.
+  // useObservatoryMotion collapses these to 0 off the high quality tier, keeping the default board static.
+  const stageMotion = useObservatoryMotion({
+    qiPerSecond: surface.meta.motionHints.qiPerSecond,
+    cultivationRate: surface.meta.motionHints.cultivationRate,
+    purityPct: null,
+    fitAngleDeg: null,
+  });
 
   // Stable handler so the memoized constellation isn't re-rendered every game
   // tick by a fresh inline arrow. setActiveOverlay is referentially stable.
@@ -89,7 +103,13 @@ export function StatusLivingStateObservatory({ surface, onAction, fixtureId }: S
         ref={viewportRef}
         className="obsStageViewport"
         data-obs-at-floor={atFloor ? 'true' : undefined}
-        style={{ '--obs-scale': scale } as unknown as CSSProperties}
+        style={{
+          '--obs-scale': scale,
+          // M.I.3 (G1) — global motion vars cascade from here to all instruments (no per-instrument re-render).
+          '--qi-flow-rate': stageMotion['--qi-flow-rate'],
+          '--tick-spin-dur': stageMotion['--tick-spin-dur'],
+          '--breath-period': stageMotion['--breath-period'],
+        } as unknown as CSSProperties}
       >
         <div className="obsStage">
           <InkObservatoryDefs />

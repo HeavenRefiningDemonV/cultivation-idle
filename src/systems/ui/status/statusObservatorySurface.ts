@@ -57,6 +57,9 @@ import {
 // The store-reading assembly lives in the meridians/ seam (mirroring derivedStatInput.ts) so THIS
 // adapter stays pure — no store import, no .getState — per the statusObservatorySurface purity contract.
 import { toObservatoryConstellationInput } from '../../meridians/observatoryConstellationInput.js';
+// M.I.3 (S0) — read-only motion telemetry from the live store, via a meridians-style seam so THIS adapter
+// stays pure (no store import, no .getState). Display-only; never feeds gameplay.
+import { toObservatoryMotionHints } from './observatoryMotionInput.js';
 
 type OrganId = keyof StatusCurrentStateSurfaceV1['blocks'];
 
@@ -939,6 +942,8 @@ export function buildStatusObservatorySurface(
         ...ledger.namedStats.debugNotes,
         ...classification.debugNotes,
       ],
+      // M.I.3 (S0) — read-only telemetry the liveness layer (stage motion vars) consumes; display-only.
+      motionHints: toObservatoryMotionHints(),
     },
     lifeDecree: {
       rootTestId: 'status-ledger-hero',

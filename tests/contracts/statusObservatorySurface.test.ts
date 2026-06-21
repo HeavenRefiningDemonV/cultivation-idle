@@ -20,6 +20,17 @@ test('Status Observatory adapter exposes schema, source metadata, and major no-r
   assert.equal(surface.meta.currentPath, 'heaven');
   assert.match(surface.meta.visualState, /^(blocked|healthy|postFailure|prestigePressure|contentCap|unknown)$/);
   assert.equal(surface.meta.selectedContext !== null, true);
+
+  // M.I.3 (S0) — additive read-only motion telemetry; present + null-safe; cultivationRate is a 0..1 hint.
+  assert.ok('motionHints' in surface.meta, 'meta carries the additive motionHints block');
+  const motion = surface.meta.motionHints;
+  assert.ok(motion.qiPerSecond === null || typeof motion.qiPerSecond === 'number');
+  assert.ok(
+    motion.cultivationRate === null ||
+      (typeof motion.cultivationRate === 'number' && motion.cultivationRate >= 0 && motion.cultivationRate <= 1),
+    'cultivationRate is null or a normalized 0..1 scalar',
+  );
+
   assert.equal(surface.rawLedger, ledger);
 
   assert.equal(surface.lifeDecree.title, 'Life Decree');

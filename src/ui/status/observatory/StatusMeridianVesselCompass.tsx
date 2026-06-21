@@ -16,7 +16,6 @@ import { StatusMeridianFocusLens } from './StatusMeridianFocusLens.js';
 import { StatusObservatoryDrawers } from './StatusObservatoryDrawers.js';
 import { useObservatorySelection } from './useObservatorySelection.js';
 import { useRitualMotion } from './fx/useRitualMotion.js';
-import { useObservatoryMotion } from './useObservatoryMotion.js';
 
 export interface StatusMeridianVesselCompassProps {
   surface: StatusObservatorySurfaceV1['meridianVessel'];
@@ -187,12 +186,8 @@ function StatusMeridianVesselCompassBase({
   const selectedOrgan = organsById.get(state.selectedOrganId) ?? organs[0] ?? null;
 
   const ritual = useRitualMotion();
-  const motion = useObservatoryMotion({
-    purityPct: 0,
-    fitAngleDeg: 0,
-    qiPerSecond: null,
-    cultivationRate: null,
-  });
+  // M.I.3 (G1) — the vessel's qi-flow / breath motion vars cascade from the stage (.obsStageViewport)
+  // via CSS; no per-instrument motion is computed here, so live telemetry never re-renders this heavy SVG.
 
   const organsByOrdinal = useMemo(
     () => new Map(organs.map((organ) => [organ.ordinal as number, organ])),
@@ -264,7 +259,6 @@ function StatusMeridianVesselCompassBase({
             preserveAspectRatio="xMidYMid meet"
             role="img"
             data-animate={ritual.animate ? 'true' : 'false'}
-            style={motion as CSSProperties}
             aria-label="Seated cultivator with qi threads to the six organs"
           >
             <defs>

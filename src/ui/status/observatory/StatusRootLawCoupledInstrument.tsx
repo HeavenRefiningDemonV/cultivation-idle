@@ -4,6 +4,13 @@ import type { StatusObservatorySurfaceV1 } from '../../../systems/ui/status/stat
 import { deepEqualProps } from './fx/memoProps.js';
 import { StatusHeartLawSeal } from './StatusHeartLawSeal.js';
 import { StatusSpiritRootAstrolabe } from './StatusSpiritRootAstrolabe.js';
+import { useObservatorySelection } from './useObservatorySelection.js';
+
+// M.I.3 (G3) — the canonical rootLaw selection id, mirroring the surface seed (statusObservatorySurface
+// selectedContext emits kind:'rootLaw', id:'root-law-bridge' when the bridge is broken). The 4th thread
+// family participates in the cross-highlight via the SELECTION path: no causalThread targets rootLaw, so
+// the bridge + astrolabe brighten when this id is the selected/related context.
+const ROOT_LAW_SELECTION_ID = 'root-law-bridge';
 
 export interface StatusRootLawCoupledInstrumentProps {
   surface: StatusObservatorySurfaceV1['rootLawInstrument'];
@@ -42,6 +49,19 @@ function StatusRootLawCoupledInstrumentBase({
     if (!action.disabled && onAction) onAction(action);
   };
 
+  // M.I.3 (G3) — the 4th cross-highlight family: brighten the bridge + astrolabe when the rootLaw context
+  // is selected/related (seeded when bridge.broken), and make the bridge selectable for parity with the
+  // constellation/vessel/canopy. Selection changes are user-driven (never per tick), so the deep-equal
+  // memo is unaffected and this never re-renders on a qi tick.
+  const sharedSelection = useObservatorySelection();
+  // rootLaw can never be a causal-thread endpoint (the surface emits only meridianVessel/statConstellation →
+  // bottleneckCanopy threads), so isRelated (thread-derived) is ALWAYS false for it. The 4th family must
+  // honor its OWN selection via isSelected — OR'd with isRelated so a future rootLaw thread also lights it.
+  const rootLawRelated =
+    sharedSelection.isSelected('rootLawInstrument', ROOT_LAW_SELECTION_ID) ||
+    sharedSelection.isRelated('rootLawInstrument', ROOT_LAW_SELECTION_ID);
+  const selectRootLaw = () => sharedSelection.select('rootLaw', ROOT_LAW_SELECTION_ID);
+
   // Artifact rootFoot: a thin full-width row of small stats below both columns.
   // "bad" (cinnabar) reads off the fit tier — opposed/strained suppress expression,
   // run validity, and the fit verdict.
@@ -77,10 +97,21 @@ function StatusRootLawCoupledInstrumentBase({
       aria-label={surface.bridge.ariaLabel}
     >
       <div className="statusRootLawCoupledInstrument__body">
-        <StatusSpiritRootAstrolabe surface={surface.astrolabe} />
+        <StatusSpiritRootAstrolabe surface={surface.astrolabe} related={rootLawRelated} />
 
         <div
           className="statusRootLawBridge"
+          data-related={rootLawRelated ? 'true' : 'false'}
+          role="button"
+          tabIndex={0}
+          aria-pressed={rootLawRelated}
+          onClick={selectRootLaw}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault();
+              selectRootLaw();
+            }
+          }}
           data-bridge-state={surface.bridge.state}
           data-bridge-broken={surface.bridge.broken ? 'true' : 'false'}
           data-fit-tier={surface.bridge.fitTier}

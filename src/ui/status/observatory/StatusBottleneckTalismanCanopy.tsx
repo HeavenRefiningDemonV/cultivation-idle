@@ -7,7 +7,6 @@ import { StatusBottleneckInspector } from './StatusBottleneckInspector.js';
 import { StatusCausalThreadLayer } from './StatusCausalThreadLayer.js';
 import { useObservatorySelection } from './useObservatorySelection.js';
 import { useRitualMotion } from './fx/useRitualMotion.js';
-import { useObservatoryMotion } from './useObservatoryMotion.js';
 import { InkWaxSeal } from '../../ink/InkWaxSeal.js';
 import { InkTassel } from '../../ink/InkTassel.js';
 
@@ -155,12 +154,8 @@ function StatusBottleneckTalismanCanopyBase({
   const [selectedSlipId, setSelectedSlipId] = useState<string | null>(fallbackSlipId);
   const sharedSelection = useObservatorySelection();
   const ritual = useRitualMotion();
-  const motion = useObservatoryMotion({
-    purityPct: 0,
-    fitAngleDeg: 0,
-    qiPerSecond: null,
-    cultivationRate: null,
-  });
+  // M.I.3 (G1) — the canopy's qi-flow / breath motion vars cascade from the stage (.obsStageViewport)
+  // via CSS; no per-instrument motion is computed here, so live telemetry never re-renders these parts.
 
   useEffect(() => {
     setSelectedSlipId((current) => (current && slipsById.has(current) ? current : fallbackSlipId));
@@ -225,7 +220,6 @@ function StatusBottleneckTalismanCanopyBase({
         data-visual-state={surface.centralEdict.visualState}
         data-canopy-mode={resolvedCanopyMode}
         data-animate={ritual.animate ? 'true' : 'false'}
-        style={motion as CSSProperties}
         aria-label="Best Improvement Charms"
       >
         <span className="statusBottleneckTalismanCanopy__charmsCaption" aria-hidden="true">Best Improvement Charms</span>
@@ -296,7 +290,6 @@ function StatusBottleneckTalismanCanopyBase({
         data-visual-state={surface.centralEdict.visualState}
         data-canopy-mode={resolvedCanopyMode}
         data-animate={ritual.animate ? 'true' : 'false'}
-        style={motion as CSSProperties}
         aria-label="Safety Net"
       >
         <div
@@ -354,7 +347,6 @@ function StatusBottleneckTalismanCanopyBase({
         data-visual-state={surface.centralEdict.visualState}
         data-canopy-mode={resolvedCanopyMode}
         data-animate={ritual.animate ? 'true' : 'false'}
-        style={motion as CSSProperties}
         aria-label="Bottleneck Talisman Canopy"
       >
         {resolvedCanopyMode === 'capNotice' ? (
@@ -538,7 +530,6 @@ function StatusBottleneckTalismanCanopyBase({
       data-canopy-mode={resolvedCanopyMode}
       data-selected-slip-id={selectedSlip?.id ?? 'none'}
       data-animate={ritual.animate ? 'true' : 'false'}
-      style={motion as CSSProperties}
       aria-label="Bottleneck Talisman Canopy"
     >
       <div className="statusBottleneckTalismanCanopy__board">

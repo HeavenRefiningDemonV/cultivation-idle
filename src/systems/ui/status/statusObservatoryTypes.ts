@@ -339,6 +339,17 @@ export interface StatusObservatoryDrawerRequest {
   sourceId?: string;
 }
 
+/**
+ * M.I.3 (S0) — read-only telemetry hints for the Observatory's liveness layer (the tick-driven motion
+ * vars). Display-only; NEVER consumed by gameplay. Nullable by design (unknown ⇒ motion falls back to its
+ * constant, never throws). cultivationRate is a normalized 0..1 presentational scalar ([tune]→D15);
+ * qiPerSecond is the raw gain rate (the motion model log10s it itself for the qi-flow scalar).
+ */
+export interface StatusObservatoryMotionHints {
+  qiPerSecond: number | null;
+  cultivationRate: number | null;
+}
+
 export interface StatusObservatorySurfaceV1 {
   meta: {
     rootTestId: 'status-ledger-root';
@@ -351,6 +362,8 @@ export interface StatusObservatorySurfaceV1 {
     generatedAt: number;
     contentLoaded: boolean;
     debugNotes: string[];
+    /** M.I.3 (S0) — additive read-only motion telemetry; see StatusObservatoryMotionHints. */
+    motionHints: StatusObservatoryMotionHints;
   };
   lifeDecree: {
     rootTestId: 'status-ledger-hero';

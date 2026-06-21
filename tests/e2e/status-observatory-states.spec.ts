@@ -24,6 +24,7 @@ const REGION_TESTIDS = [
   'obs-region-canopy',
   'obs-region-constellation',
   'obs-region-scales',
+  'obs-region-jars',
   'obs-region-wheel',
   'obs-region-ledgers',
 ] as const;

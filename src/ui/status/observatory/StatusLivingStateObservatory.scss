@@ -1919,6 +1919,10 @@
 .statusMeridianVesselCompass__bodyLinework[data-animate='true'] .statusMeridianVesselCompass__channelFlow,
 .statusMeridianVesselCompass__bodyLinework[data-animate='true'] .statusMeridianVesselCompass__threadGlow {
   animation: statusMeridianVesselQiFlow var(--obs-motion-drift) linear infinite;
+  /* M.I.3 (G2) — qi-flow drift speed ∝ live qi/s: divide the base by the --qi-flow-rate scalar (cascaded
+     from the stage; the model floors it at 0.2 while animating, so calc never divides by zero; reduced
+     motion freezes via the animation:none block below). Fallback 1 preserves the legacy constant speed. */
+  animation-duration: calc(var(--obs-motion-drift) / var(--qi-flow-rate, 1));
 }
 
 /* (B/I/J) twinkle pulse on the halo ring, meridian points, and thread anchor discs (artifact class=twk / mp) */
@@ -2739,7 +2743,11 @@
    enhancement, never the only signal. */
 .statusStatConstellation__node[data-related='true'],
 .statusMeridianVesselCompass__organSeal[data-related='true'],
-.statusBottleneckTalismanCanopy__slip[data-related='true'] {
+.statusBottleneckTalismanCanopy__slip[data-related='true'],
+/* M.I.3 (G3) — the 4th family: the rootLaw bridge + astrolabe brighten on a kind:'rootLaw' selection.
+   Same tokenized static outline (no layout shift, no motion); reduced-motion / colorblind lose nothing. */
+.statusRootLawBridge[data-related='true'],
+.statusSpiritRootAstrolabe[data-related='true'] {
   outline: 1px solid var(--obs-glow-gold);
   outline-offset: 1px;
 }
@@ -3539,6 +3547,8 @@
 .statusBottleneckTalismanCanopy[data-animate='true'] .statusBottleneckTalismanCanopy__cord {
   stroke-dasharray: 2 6;
   animation: statusBottleneckCanopyCordShimmer 2.4s linear infinite;
+  /* M.I.3 (G2) — cord shimmer speed ∝ live qi/s (divide the 2.4s base by the cascaded --qi-flow-rate). */
+  animation-duration: calc(2.4s / var(--qi-flow-rate, 1));
 }
 
 .statusBottleneckTalismanCanopy[data-animate='true'] .statusBottleneckTalismanCanopy__charmMedallion,
