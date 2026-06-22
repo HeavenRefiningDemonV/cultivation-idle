@@ -83,8 +83,9 @@ export async function seedCultivationTab(page: Page) {
  * substage, qi at the cost, the gate item in inventory, and a forced tribulation roll. roll 0.99
  * succeeds (0.99 ≥ risk/100), roll 0 fails — so both ceremony paths can be exercised for real.
  */
-export async function seedPeakReadyCrossing(page: Page, roll: number) {
-  await page.evaluate(async (rollValue) => {
+export async function seedPeakReadyCrossing(page: Page, roll: number, opts: { gateItem?: boolean } = {}) {
+  const gateItem = opts.gateItem !== false;
+  await page.evaluate(async ({ rollValue, withGateItem }) => {
     const importModule = new Function('specifier', 'return import(specifier)') as (specifier: string) => Promise<any>;
     const { useGameStore } = await importModule('/src/stores/gameStore.ts');
     const { useInventoryStore } = await importModule('/src/stores/inventoryStore.ts');
@@ -96,9 +97,11 @@ export async function seedPeakReadyCrossing(page: Page, roll: number) {
     useGameStore.setState({ realm: { index: 0, substage: finalSub, name: REALMS[0].name } });
     const required = useGameStore.getState().getBreakthroughRequirement();
     useGameStore.setState({ qi: String(required) });
-    useInventoryStore.getState().addItem('gate_foundation_pill', 2);
+    const inv = useInventoryStore.getState();
+    if (withGateItem) inv.addItem('gate_foundation_pill', 2);
+    else inv.removeItem?.('gate_foundation_pill', 9999); // ensure the missing-item path is deterministic
     useGameStore.getState().__setBreakthroughRiskRollForTest?.(() => rollValue);
-  }, roll);
+  }, { rollValue: roll, withGateItem: gateItem });
 }
 
 /** Navigate to a Seat fixture, seed, and wait for the root. */

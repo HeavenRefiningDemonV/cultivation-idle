@@ -21,6 +21,8 @@ import { useActivityStore } from '../../../stores/activityStore.js';
 import { usePrestigeStore } from '../../../stores/prestigeStore.js';
 import { useContentStore } from '../../../stores/contentStore.js';
 import { useTrialStore } from '../../../stores/trialStore.js';
+import { useInventoryStore } from '../../../stores/inventoryStore.js';
+import { getGateTransitionItemIdForRealmIndex } from '../../progression/runtime/gateResolver.js';
 
 export interface CultivationSeatRawInput {
   game: {
@@ -67,8 +69,20 @@ export function readCultivationSeatRawInput(opts: { reducedMotion?: boolean; sel
   const turbulence = cultivation.turbulence ?? 0;
   const turbulencePreview = resolveDaoHeartTurbulencePreview({ turbulence });
 
-  // Gate trial (for pity + item gate) — read the current realm's gate trial if any.
-  const requiredGateItemId = willAdvanceRealm ? null : null; // item gate resolved by the builder's check; kept simple here
+  // Item gate: at the major-crossing edge, the gate item must be held in inventory — the SAME check
+  // gameStore.breakthrough() enforces. (Earlier waves stubbed this to null, so live gate-readiness
+  // ignored the item and could read "ready" while the crossing fails on the missing item.)
+  const requiredGateItemId = willAdvanceRealm ? getGateTransitionItemIdForRealmIndex(content.raw, liveRealmIndex) : null;
+  let gateItemHeld = requiredGateItemId == null;
+  if (requiredGateItemId) {
+    try {
+      gateItemHeld = useInventoryStore.getState().getItemCount(requiredGateItemId) > 0;
+    } catch {
+      gateItemHeld = false;
+    }
+  }
+
+  // Gate trial (for pity + the safety band) — read the current realm's gate trial if any.
   let pity: { banked: number; toGuarantee: number } | null = null;
   let gateResolution: 'none' | 'cleared' | 'bypassed' = 'none';
   try {
@@ -134,7 +148,7 @@ export function readCultivationSeatRawInput(opts: { reducedMotion?: boolean; sel
     prestige: { lifeMerit },
     activity: { foregroundType: active?.type ?? null, combatHeld },
     pity,
-    gate: { itemRequired: requiredGateItemId != null, itemSatisfied: gateResolution === 'cleared' || gateResolution === 'bypassed', resolution: gateResolution },
+    gate: { itemRequired: requiredGateItemId != null, itemSatisfied: gateItemHeld, resolution: gateResolution },
     offline: { capHours: MAX_OFFLINE_HOURS, efficiencyPct: Math.round(offlineEfficiency * 100) },
     ui: { reducedMotion: opts.reducedMotion ?? false, selectedScroll: opts.selectedScroll ?? null },
     content: { loaded: content.isLoaded === true || content.raw != null },
