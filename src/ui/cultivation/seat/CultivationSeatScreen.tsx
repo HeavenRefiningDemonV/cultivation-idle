@@ -1,132 +1,158 @@
 import type { CultivationSeatSurfaceV1 } from '../../../systems/ui/cultivation/cultivationSeatTypes.js';
 import { resolveCultivationSeatPresentation } from '../../../systems/ui/cultivation/cultivationSeatPresentation.js';
 import type { CultivationSeatActions } from '../../../features/cultivation/seat/useCultivationSeatActionController.js';
+import { useObservatoryScale, OBS_STAGE_WIDTH, OBS_STAGE_HEIGHT } from '../../status/observatory/useObservatoryScale.js';
 import { CultivationScene } from './scene/CultivationScene.js';
+import {
+  buildFocusDialSvg,
+  buildPathInstrumentSvg,
+  buildAscentSvg,
+  buildTreasureTriadSvg,
+} from './scene/cultivationSeatInstrumentsSvg.js';
 import './cultivationSeat.scss';
 
+const SVG = (html: string) => ({ __html: html });
+
 /**
- * M.II.3 Wave 1 — the render-only Seat screen. STRUCTURAL: it renders the typed surface and
- * emits intents, with zero store reads and zero gameplay math (the render-only law, §6/§14.4).
- * The full SVG scene + instruments + scroll fidelity + motion + SCSS are Wave 2; this scaffold
- * carries every datum and region so the contract floor and the flag mount are real today.
+ * M.II.3 Wave 3 — the Seat screen on a fixed 2048×1152 scaled stage (the Observatory scale
+ * pattern). The scene paints full-bleed; the floating instruments are SVG objects at the
+ * artifact's exact coordinates; the chrome and the gate diagnosis are diegetic overlays; the
+ * scrolls pop over everything. Render-only: zero store reads, zero gameplay math — it reads the
+ * surface and emits intents. The app shell owns the bottom nav (§10.3), so the Seat is the
+ * scene + lintel + breath + instruments only.
  */
 export function CultivationSeatScreen({ surface, actions }: { surface: CultivationSeatSurfaceV1; actions: CultivationSeatActions }) {
   const presentation = resolveCultivationSeatPresentation(surface);
-  const { identity, idle, focus, realmProgress, ascent, breakthrough, instrument } = surface;
+  const { meta, identity, scene, idle, focus, realmProgress, breakthrough, instrument } = surface;
   const gate = breakthrough.gateReadiness;
   const scroll = actions.selectedScroll;
+  const { viewportRef, scale } = useObservatoryScale();
+
+  const emphasisIndex = Math.max(0, focus.axes.findIndex((a) => a.id === focus.emphasisId));
+  const dialAxes = focus.axes.map((a) => ({ glyph: a.glyph }));
 
   return (
     <div
       className="cultivationSeatRoot"
-      data-testid={surface.meta.rootTestId}
-      data-path={surface.meta.path}
+      ref={viewportRef}
+      data-testid={meta.rootTestId}
+      data-path={meta.path}
       data-realm={identity.realmIndex}
-      data-visual-state={surface.meta.visualState}
-      data-reduced-motion={surface.meta.reducedMotion ? 'true' : 'false'}
+      data-visual-state={meta.visualState}
+      data-reduced-motion={meta.reducedMotion ? 'true' : 'false'}
     >
-      {/* a11y live region — announces meaningful state transitions */}
-      <p className="cultivationSeatLive" role="status" aria-live="polite" style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0 0 0 0)' }}>
-        {presentation.visualStateLabel}
-      </p>
+      <p className="cultivationSeatLive" role="status" aria-live="polite">{presentation.visualStateLabel}</p>
 
-      {/* ── LINTEL ── */}
-      <header data-region="lintel">
-        <span data-pathchop={surface.meta.path} aria-hidden="true">{identity.pathGlyph}</span>
-        <span className="roomsub">{identity.roomSub}</span>
-        <h1 className="roomtitle">{identity.roomTitle}</h1>
-        <span className="realmline">{identity.realmName} · {identity.realmZh} — {identity.stageLabel}</span>
-        <span className="fgchip" data-foreground={scene.foreground}>{scene.foregroundLabel}</span>
-      </header>
+      <div className="cultivationSeatStage" data-path={meta.path} style={{ width: OBS_STAGE_WIDTH, height: OBS_STAGE_HEIGHT, transform: `scale(${scale})` }}>
+        {/* ── the full-bleed painting ── */}
+        <CultivationScene surface={surface} />
 
-      {/* ── SCENE — the full-bleed painting (Wave 2): 7 SVG layers, evolving on realmIndex ── */}
-      <CultivationScene surface={surface} />
+        {/* ── LINTEL ── */}
+        <header data-region="lintel">
+          <span className="cultivationSeatChop" data-pathchop={meta.path} aria-hidden="true">{identity.pathGlyph}</span>
+          <span className="nameblock">
+            <span className="roomsub">{identity.roomSub}</span>
+            <span className="roomtitle">{identity.roomTitle}</span>
+            <span className="realmline">{identity.realmName} · {identity.realmZh} — {identity.stageLabel}</span>
+          </span>
+          <span className="fgchip" data-foreground={scene.foreground}>{scene.foregroundLabel}</span>
+        </header>
 
-      {/* ── BASE PLATE (single dominant progress) ── */}
-      <div data-region="base-plate">
-        <span className="bk">Cultivation Base</span>
-        <span className="bv" data-testid="cultivation-seat-progress">{Math.round(realmProgress.pct * 100)}%</span>
-        <span className="bsub">{realmProgress.qiText} · {realmProgress.towardLabel}</span>
-      </div>
+        {/* ── BREATH-LINE (the idle read; the whole band opens the ledger) ── */}
+        <button type="button" data-region="breath-line" data-testid="cultivation-seat-breathline" onClick={() => actions.onOpenScroll('ledger')}>
+          <span className="brread"><span className="coin">率</span><span className="v big">{idle.qiPerSec}</span><span className="l">qi / s</span></span>
+          <span className="brread"><span className="coin">藏</span><span className="v">{idle.offlineCapLabel}</span><span className="l">offline cap</span></span>
+          <span className="brread"><span className="coin">風</span><span className="v">{idle.offlineEfficiency}</span><span className="l">offline efficiency</span></span>
+          <span className="brread"><span className="coin">業</span><span className="v">{idle.stateWord}</span><span className="l">the Seat is —</span></span>
+          <span className="expandhint">touch for the ledger ↗</span>
+        </button>
 
-      {/* ── BREATH-LINE (the idle read; the whole band opens the ledger) ── */}
-      <button type="button" data-region="breath-line" data-testid="cultivation-seat-breathline" onClick={() => actions.onOpenScroll('ledger')}>
-        <span className="brread">率 {idle.qiPerSec} qi/s</span>
-        <span className="brread">藏 {idle.offlineCapLabel} offline cap</span>
-        <span className="brread">風 {idle.offlineEfficiency} offline efficiency</span>
-        <span className="brread">業 the Seat is {idle.stateWord}</span>
-        <span className="expandhint">touch for the ledger ↗</span>
-      </button>
+        {/* ── FLOATING INSTRUMENTS (positioned at the artifact coordinates) ── */}
+        <div data-region="instruments">
+          {/* Focus Dial — the jade compass (6 canonical axes + Balanced; emphasis set in the scroll) */}
+          <button type="button" className="cultivationSeatInst" data-instrument="focus-dial" data-testid="cultivation-seat-focus" style={{ left: 150, top: 494 }} aria-label="Open the Focus dial" onClick={() => actions.onOpenScroll('focus')}>
+            <span className="cultivationSeatInst__svg" dangerouslySetInnerHTML={SVG(buildFocusDialSvg(dialAxes, emphasisIndex, meta.reducedMotion))} />
+            <span className="cultivationSeatInst__cap"><i>Emphasis · tap to tune</i>{focus.axes.find((a) => a.id === focus.emphasisId)?.label} · {focus.leanCaption}</span>
+          </button>
 
-      {/* ── FLOATING INSTRUMENTS ── */}
-      <section data-region="instruments">
-        {/* Focus Dial — 6 canonical axes + Balanced (R-1: no Body spoke) */}
-        <div data-instrument="focus-dial" data-testid="cultivation-seat-focus">
-          <span className="instlabel">Emphasis · tap a spoke</span>
-          {focus.axes.map((axis) => (
-            <button
-              key={axis.id}
-              type="button"
-              data-axis={axis.id}
-              aria-pressed={axis.id === focus.emphasisId}
-              aria-label={`Emphasize ${axis.label}`}
-              onClick={() => actions.onSetFocusEmphasis(axis.id)}
-            >
-              {axis.label}
-            </button>
-          ))}
-          <span className="dialcap">{focus.axes.find((a) => a.id === focus.emphasisId)?.label} · {focus.leanCaption}</span>
+          {/* Per-path unique instrument */}
+          <button
+            type="button"
+            className="cultivationSeatInst"
+            data-instrument="path-mechanic"
+            data-kind={instrument.kind}
+            style={{ left: 1716, top: 520 }}
+            aria-label={`Open ${instrument.label}`}
+            onClick={() => actions.onOpenScroll(instrument.kind === 'heaven' ? 'premonition' : instrument.kind === 'earth' ? 'beastlore' : 'weaponbond')}
+          >
+            <span className="cultivationSeatInst__svg" dangerouslySetInnerHTML={SVG(buildPathInstrumentSvg(meta.path, scene.figureBeat, meta.reducedMotion))} />
+            <span className="cultivationSeatInst__label">{instrument.label}</span>
+            <span className="cultivationSeatInst__val">{instrument.valLabel}</span>
+          </button>
+
+          {/* Ascent thread */}
+          <button type="button" className="cultivationSeatInst" data-instrument="ascent" style={{ left: 14, top: 236 }} aria-label="Open the Ascent ladder" onClick={() => actions.onOpenScroll('ascent')}>
+            <span className="cultivationSeatInst__svg" dangerouslySetInnerHTML={SVG(buildAscentSvg(identity.realmIndex, identity.atPeak, meta.reducedMotion))} />
+            <span className="cultivationSeatInst__label">Ascent</span>
+          </button>
+
+          {/* Three Treasures triad → Status */}
+          <button type="button" className="cultivationSeatTriad" data-instrument="treasures" style={{ left: 744, top: 430 }} aria-label="Open the full constellation in Status" onClick={() => actions.onDeepLink('status.constellation')}>
+            <span className="cultivationSeatTriad__row" dangerouslySetInnerHTML={SVG(buildTreasureTriadSvg(surface.treasures.lead))} />
+            <span className="cultivationSeatTriad__cap">Three Treasures · {surface.treasures.leadLabel}</span>
+          </button>
+
+          {/* Base plate — the single dominant progress readout */}
+          <div className="cultivationSeatBasePlate" data-region="base-plate" style={{ left: '50%', bottom: 180 }}>
+            <span className="kai">修為</span>
+            <span className="bk">Cultivation Base</span>
+            <span className="bv" data-testid="cultivation-seat-progress">{idle.combatHeld ? '—' : `${Math.round(realmProgress.pct * 100)}%`}</span>
+            {!idle.combatHeld && (
+              <>
+                <span className="bbar"><span className="bf" style={{ width: `${Math.round(realmProgress.pct * 100)}%` }} /></span>
+                <span className="bsub">{realmProgress.qiText} · {realmProgress.towardLabel}</span>
+              </>
+            )}
+          </div>
+
+          {/* Ambient whisper line */}
+          <span className="cultivationSeatWhisper" style={{ left: '50%', top: 148 }}>
+            {meta.visualState === 'combatHeld'
+              ? 'The seclusion holds; cultivation resumes when the fight is done.'
+              : identity.atPeak
+                ? gate?.verdict === 'ready'
+                  ? 'The climb is complete — the gate of light has formed above you.'
+                  : gate?.verdict === 'held'
+                    ? 'The gate would open, but the heart is not yet still.'
+                    : 'The gate nears — yet the base is not yet full.'
+                : identity.verse}
+          </span>
+
+          {/* The diegetic Cultivate seal */}
+          <CultivateSeal surface={surface} actions={actions} />
         </div>
 
-        {/* Ascent thread */}
-        <button type="button" data-instrument="ascent" aria-label="Open the Ascent ladder" onClick={() => actions.onOpenScroll('ascent')}>
-          Ascent · {ascent.realmsCrossed} of {ascent.realmsTotalLive}
-        </button>
+        {/* ── GATE READINESS (at the Peak only) ── */}
+        {gate && (
+          <section data-region="gate-readiness" data-testid="cultivation-seat-gate" data-verdict={gate.verdict}>
+            <h2>The crossing diagnosis</h2>
+            <ul>
+              {gate.checks.map((check) => (
+                <li key={check.id} data-check={check.id} data-state={check.state}>{check.label}: {check.value} — {check.detail}</li>
+              ))}
+            </ul>
+            <p data-safety-band={gate.safetyBand}>{gate.safetyOdds}</p>
+            <p>Assembled from {gate.safetyTerms.join(', ')}.</p>
+            {gate.pity && <p data-testid="cultivation-seat-pity">{gate.pity.banked} of {gate.pity.toGuarantee} toward a guaranteed crossing</p>}
+            <p className="neverregress">A failed crossing costs no realm you have earned.</p>
+            <button type="button" data-testid="cultivation-seat-commit" disabled={!gate.canCommit} onClick={() => actions.onCommitCrossing()}>
+              {gate.canCommit ? 'Cross the Threshold →' : 'The crossing waits'}
+            </button>
+          </section>
+        )}
+      </div>
 
-        {/* Three Treasures triad → Status */}
-        <button type="button" data-instrument="treasures" aria-label="Open the full constellation in Status" onClick={() => actions.onDeepLink('status.constellation')}>
-          Three Treasures · {surface.treasures.leadLabel}
-        </button>
-
-        {/* Per-path unique instrument */}
-        <button
-          type="button"
-          data-instrument="path-mechanic"
-          data-kind={instrument.kind}
-          aria-label={`Open ${instrument.label}`}
-          onClick={() => actions.onOpenScroll(instrument.kind === 'heaven' ? 'premonition' : instrument.kind === 'earth' ? 'beastlore' : 'weaponbond')}
-        >
-          {instrument.label} · {instrument.valLabel}
-        </button>
-
-        {/* The diegetic Cultivate seal */}
-        <CultivateSeal surface={surface} actions={actions} />
-      </section>
-
-      {/* ── GATE READINESS (at the Peak only) ── */}
-      {gate && (
-        <section data-region="gate-readiness" data-testid="cultivation-seat-gate" data-verdict={gate.verdict}>
-          <h2>The crossing diagnosis</h2>
-          <ul>
-            {gate.checks.map((check) => (
-              <li key={check.id} data-check={check.id} data-state={check.state}>
-                {check.label}: {check.value} — {check.detail}
-              </li>
-            ))}
-          </ul>
-          <p data-safety-band={gate.safetyBand}>{gate.safetyOdds}</p>
-          <p>Assembled from {gate.safetyTerms.map((t) => t).join(', ')}.</p>
-          {gate.pity && (
-            <p data-testid="cultivation-seat-pity">{gate.pity.banked} of {gate.pity.toGuarantee} toward a guaranteed crossing</p>
-          )}
-          <p className="neverregress">A failed crossing costs no realm you have earned.</p>
-          <button type="button" data-testid="cultivation-seat-commit" disabled={!gate.canCommit} onClick={() => actions.onCommitCrossing()}>
-            {gate.canCommit ? 'Cross the Threshold →' : 'The crossing waits'}
-          </button>
-        </section>
-      )}
-
-      {/* ── SCROLL HOST ── */}
+      {/* ── SCROLL HOST (full-viewport overlay, outside the scaled stage) ── */}
       {scroll && <SeatScroll surface={surface} actions={actions} scroll={scroll} />}
     </div>
   );
@@ -135,18 +161,18 @@ export function CultivationSeatScreen({ surface, actions }: { surface: Cultivati
 function CultivateSeal({ surface, actions }: { surface: CultivationSeatSurfaceV1; actions: CultivationSeatActions }) {
   const { meta, identity, breakthrough } = surface;
   if (meta.visualState === 'combatHeld') {
-    return <span data-instrument="cultivate-seal" data-seal-state="held">Held — cultivation resumes after combat</span>;
+    return <span className="cultivationSeatSeal" data-instrument="cultivate-seal" data-seal-state="held">Held — cultivation resumes after combat</span>;
   }
   if (identity.atPeak) {
     const ready = breakthrough.gateReadiness?.verdict === 'ready';
     return (
-      <button type="button" data-instrument="cultivate-seal" data-seal-state={ready ? 'ready' : 'blocked'} onClick={() => actions.onOpenScroll('gatereadiness')}>
+      <button type="button" className="cultivationSeatSeal" data-instrument="cultivate-seal" data-seal-state={ready ? 'ready' : 'blocked'} onClick={() => actions.onOpenScroll('gatereadiness')}>
         {ready ? 'Approach the Threshold →' : 'The Threshold waits'}
       </button>
     );
   }
   return (
-    <button type="button" data-instrument="cultivate-seal" data-seal-state="cultivate" onClick={() => actions.onSetForeground('cultivate')}>
+    <button type="button" className="cultivationSeatSeal" data-instrument="cultivate-seal" data-seal-state="cultivate" onClick={() => actions.onSetForeground('cultivate')}>
       {meta.visualState === 'cultivating' ? 'Deepen the cultivation' : `Resume seclusion · ${identity.verb}`}
     </button>
   );
@@ -154,38 +180,56 @@ function CultivateSeal({ surface, actions }: { surface: CultivationSeatSurfaceV1
 
 function SeatScroll({ surface, actions, scroll }: { surface: CultivationSeatSurfaceV1; actions: CultivationSeatActions; scroll: string }) {
   return (
-    <div role="dialog" aria-modal="true" aria-label={`${scroll} scroll`} data-region="scroll-host" data-scroll={scroll}>
-      <button type="button" aria-label="Close scroll" onClick={() => actions.onCloseScroll()}>×</button>
-      {scroll === 'ledger' && (
-        <div data-scroll-body="ledger" data-testid="cultivation-seat-ledger">
-          <p>{surface.scrolls.ledger.rate.base} × {surface.scrolls.ledger.rate.realmMult} × {surface.scrolls.ledger.rate.focusMult} = {surface.scrolls.ledger.rate.result} qi/s</p>
-          <p>Seclusion: {surface.scrolls.ledger.clocks.seclusion} · Sojourn: {surface.scrolls.ledger.clocks.sojourn}</p>
-          <p>Offline cap {surface.scrolls.ledger.offline.capHours}h · efficiency {surface.scrolls.ledger.offline.efficiency}</p>
-          <p>Idle is never taxed — accrual simply pauses at the cap, and never decays.</p>
-          <p>{surface.scrolls.ledger.foregroundTerms}</p>
-        </div>
-      )}
-      {scroll === 'focus' && (
-        <ul data-scroll-body="focus">
-          {surface.focus.axes.map((axis) => (
-            <li key={axis.id} data-axis={axis.id}>{axis.label} ({axis.glyph}) — {axis.effect}</li>
-          ))}
-        </ul>
-      )}
-      {scroll === 'ascent' && (
-        <ol data-scroll-body="ascent">
-          {surface.ascent.rungs.map((rung) => (
-            <li key={rung.realmIndex} data-rung-state={rung.state}>{rung.name} · {rung.zh} — {rung.detail}</li>
-          ))}
-        </ol>
-      )}
-      {scroll === 'gatereadiness' && surface.breakthrough.gateReadiness && (
-        <div data-scroll-body="gatereadiness">
-          {surface.breakthrough.gateReadiness.checks.map((c) => (
-            <p key={c.id} data-check={c.id} data-state={c.state}>{c.label}: {c.value}</p>
-          ))}
-        </div>
-      )}
+    <div
+      className="cultivationSeatScrollOverlay"
+      data-region="scroll-host"
+      data-scroll={scroll}
+      onClick={(e) => { if (e.target === e.currentTarget) actions.onCloseScroll(); }}
+    >
+      <div role="dialog" aria-modal="true" aria-label={`${scroll} scroll`} className="cultivationSeatScroll">
+        <button type="button" className="cultivationSeatScroll__close" aria-label="Close scroll" onClick={() => actions.onCloseScroll()}>×</button>
+        {scroll === 'ledger' && (
+          <div data-scroll-body="ledger" data-testid="cultivation-seat-ledger">
+            <p>{surface.scrolls.ledger.rate.base} × {surface.scrolls.ledger.rate.realmMult} × {surface.scrolls.ledger.rate.focusMult} = {surface.scrolls.ledger.rate.result} qi/s</p>
+            <p>{surface.scrolls.ledger.rate.terms}</p>
+            <p>Seclusion: {surface.scrolls.ledger.clocks.seclusion} · Sojourn: {surface.scrolls.ledger.clocks.sojourn}</p>
+            <p>Offline cap {surface.scrolls.ledger.offline.capHours}h · efficiency {surface.scrolls.ledger.offline.efficiency}</p>
+            <p>Idle is never taxed — accrual simply pauses at the cap, and never decays.</p>
+            <p>{surface.scrolls.ledger.foregroundTerms}</p>
+            <p>Life Merit this incarnation: {surface.scrolls.ledger.lifeMerit}</p>
+          </div>
+        )}
+        {scroll === 'focus' && (
+          <ul data-scroll-body="focus">
+            {surface.focus.axes.map((axis) => (
+              <li key={axis.id} data-axis={axis.id}>
+                <button type="button" aria-pressed={axis.id === surface.focus.emphasisId} aria-label={`Emphasize ${axis.label}`} onClick={() => actions.onSetFocusEmphasis(axis.id)}>
+                  {axis.label} ({axis.glyph}) — {axis.effect}{axis.id === surface.focus.emphasisId ? ' · current emphasis' : ''}
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+        {scroll === 'ascent' && (
+          <ol data-scroll-body="ascent">
+            {surface.ascent.rungs.map((rung) => (
+              <li key={rung.realmIndex} data-rung-state={rung.state}>{rung.name} · {rung.zh} — {rung.detail}</li>
+            ))}
+          </ol>
+        )}
+        {scroll === 'gatereadiness' && surface.breakthrough.gateReadiness && (
+          <div data-scroll-body="gatereadiness">
+            {surface.breakthrough.gateReadiness.checks.map((c) => (
+              <p key={c.id} data-check={c.id} data-state={c.state}>{c.label}: {c.value}</p>
+            ))}
+          </div>
+        )}
+        {(scroll === 'premonition' || scroll === 'beastlore' || scroll === 'weaponbond') && (
+          <div data-scroll-body="mechanic">
+            <p>{surface.instrument.label} · {surface.instrument.valLabel}</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

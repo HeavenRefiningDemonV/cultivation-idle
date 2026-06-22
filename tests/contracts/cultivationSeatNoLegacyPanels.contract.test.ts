@@ -34,7 +34,7 @@ void test('M.II.3 — the Seat screen and the scene import no store and never re
 });
 
 void test('M.II.3 — the screen renders the surface contract regions and the root testId', () => {
-  assert.match(SCREEN, /data-testid=\{surface\.meta\.rootTestId\}/);
+  assert.match(SCREEN, /data-testid=\{(?:surface\.)?meta\.rootTestId\}/);
   // the scene region moved into the CultivationScene component (Wave 2)
   assert.match(SCREEN, /<CultivationScene surface=\{surface\}/);
   assert.ok(SCENE.includes('data-region="scene"'), 'the scene component owns the scene region');
