@@ -1,6 +1,8 @@
 import type { CultivationSeatSurfaceV1 } from '../../../systems/ui/cultivation/cultivationSeatTypes.js';
 import { resolveCultivationSeatPresentation } from '../../../systems/ui/cultivation/cultivationSeatPresentation.js';
 import type { CultivationSeatActions } from '../../../features/cultivation/seat/useCultivationSeatActionController.js';
+import { CultivationScene } from './scene/CultivationScene.js';
+import './cultivationSeat.scss';
 
 /**
  * M.II.3 Wave 1 — the render-only Seat screen. STRUCTURAL: it renders the typed surface and
@@ -10,7 +12,7 @@ import type { CultivationSeatActions } from '../../../features/cultivation/seat/
  */
 export function CultivationSeatScreen({ surface, actions }: { surface: CultivationSeatSurfaceV1; actions: CultivationSeatActions }) {
   const presentation = resolveCultivationSeatPresentation(surface);
-  const { identity, scene, idle, focus, realmProgress, ascent, breakthrough, instrument } = surface;
+  const { identity, idle, focus, realmProgress, ascent, breakthrough, instrument } = surface;
   const gate = breakthrough.gateReadiness;
   const scroll = actions.selectedScroll;
 
@@ -37,10 +39,8 @@ export function CultivationSeatScreen({ surface, actions }: { surface: Cultivati
         <span className="fgchip" data-foreground={scene.foreground}>{scene.foregroundLabel}</span>
       </header>
 
-      {/* ── SCENE (Wave 2 paints the 7 layers; the watermark + beats carry now) ── */}
-      <div data-region="scene" data-sky-beat={scene.skyBeat} data-figure-beat={scene.figureBeat} data-qi-beat={scene.qiBeat} aria-hidden="true">
-        <span className="watermark">{scene.watermarkZh}</span>
-      </div>
+      {/* ── SCENE — the full-bleed painting (Wave 2): 7 SVG layers, evolving on realmIndex ── */}
+      <CultivationScene surface={surface} />
 
       {/* ── BASE PLATE (single dominant progress) ── */}
       <div data-region="base-plate">

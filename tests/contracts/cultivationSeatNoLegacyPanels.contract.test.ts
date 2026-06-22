@@ -9,30 +9,36 @@ import { readFileSync } from 'node:fs';
  * the at-Peak threshold block, never as always-on default-scene chrome.
  */
 const SCREEN = readFileSync('src/ui/cultivation/seat/CultivationSeatScreen.tsx', 'utf8');
+const SCENE = readFileSync('src/ui/cultivation/seat/scene/CultivationScene.tsx', 'utf8');
 
-void test('M.II.3 — the Seat screen imports no store and never reads store state', () => {
-  const forbidden = [
-    'useGameStore',
-    'useCultivationStore',
-    'useActivityStore',
-    'usePrestigeStore',
-    'useContentStore',
-    'useTrialStore',
-    'useUIStore',
-    'useHeartLawStore',
-    '.getState(',
-    'RewardService',
-    'readCultivationSeatRawInput',
-    'buildCultivationSeatSurface',
-  ];
-  for (const token of forbidden) {
+const FORBIDDEN_STORE_TOKENS = [
+  'useGameStore',
+  'useCultivationStore',
+  'useActivityStore',
+  'usePrestigeStore',
+  'useContentStore',
+  'useTrialStore',
+  'useUIStore',
+  'useHeartLawStore',
+  '.getState(',
+  'RewardService',
+  'readCultivationSeatRawInput',
+  'buildCultivationSeatSurface',
+];
+
+void test('M.II.3 — the Seat screen and the scene import no store and never read store state', () => {
+  for (const token of FORBIDDEN_STORE_TOKENS) {
     assert.equal(SCREEN.includes(token), false, `screen must not contain "${token}" (render-only)`);
+    assert.equal(SCENE.includes(token), false, `scene must not contain "${token}" (render-only)`);
   }
 });
 
 void test('M.II.3 — the screen renders the surface contract regions and the root testId', () => {
   assert.match(SCREEN, /data-testid=\{surface\.meta\.rootTestId\}/);
-  for (const region of ['lintel', 'scene', 'breath-line', 'instruments', 'scroll-host']) {
+  // the scene region moved into the CultivationScene component (Wave 2)
+  assert.match(SCREEN, /<CultivationScene surface=\{surface\}/);
+  assert.ok(SCENE.includes('data-region="scene"'), 'the scene component owns the scene region');
+  for (const region of ['lintel', 'breath-line', 'instruments', 'scroll-host']) {
     assert.ok(SCREEN.includes(`data-region="${region}"`), `region ${region} present`);
   }
 });
