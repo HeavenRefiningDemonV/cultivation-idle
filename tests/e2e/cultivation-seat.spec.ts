@@ -1,16 +1,15 @@
 import { expect, test } from '@playwright/test';
-import { openSeatFixture } from './cultivationSeatHarness.js';
+import { openSeatFixture, waitForApp, seedCultivationTab } from './cultivationSeatHarness.js';
 
 /**
- * M.II.3 Wave 4 — smoke test for the Seat of Becoming visual oracle. Proves the harness end to
- * end: the dev server, the `?cultivationSeat=fixture&cultivationSeatFixture=<id>` route, the
- * cultivation-tab seed, and the render-only Seat surface. The full state matrix lives in
- * cultivation-seat-states.spec.ts; this guards the entry path + the preserve-first invariant.
+ * M.II.3 — smoke + the cutover invariant. As of flip #2 (§26.4) the Seat of Becoming is the PUBLIC
+ * DEFAULT; the legacy screen is preserved beside it, reachable via `?cultivationSeat=legacy`. This
+ * guards both directions: default → Seat (legacy unmounted), override → legacy (Seat unmounted).
  */
-test.describe('M.II.3 Seat of Becoming — smoke', () => {
+test.describe('M.II.3 Seat of Becoming — smoke + cutover invariant', () => {
   test.use({ viewport: { width: 1440, height: 900 } });
 
-  test('the Seat renders behind the flag and the legacy screen is not mounted', async ({ page }) => {
+  test('the Seat renders behind the fixture override and the legacy screen is not mounted', async ({ page }) => {
     test.setTimeout(120_000);
     page.on('pageerror', (e) => console.log('PAGEERROR:', e.message));
     page.on('console', (m) => { if (m.type() === 'error') console.log('CONSOLE.ERROR:', m.text()); });
@@ -21,7 +20,24 @@ test.describe('M.II.3 Seat of Becoming — smoke', () => {
     await expect(root).toBeVisible();
     await expect(root).toHaveAttribute('data-path', 'heaven');
     await expect(root).toHaveAttribute('data-visual-state', 'seclusion');
-    // preserve-first: the legacy screen must NOT be mounted when the Seat flag is on
     await expect(page.locator('[data-testid="cultivation-exact-page"]')).toHaveCount(0);
+  });
+
+  test('CUTOVER: the Seat is the public default (no query) — legacy unmounted', async ({ page }) => {
+    test.setTimeout(120_000);
+    await page.goto('/');
+    await waitForApp(page);
+    await seedCultivationTab(page);
+    await expect(page.getByTestId('cultivation-seat-root')).toBeVisible();
+    await expect(page.locator('[data-testid="cultivation-exact-page"]')).toHaveCount(0);
+  });
+
+  test('PRESERVE-FIRST: the legacy screen stays reachable via ?cultivationSeat=legacy — Seat unmounted', async ({ page }) => {
+    test.setTimeout(120_000);
+    await page.goto('/?cultivationSeat=legacy');
+    await waitForApp(page);
+    await seedCultivationTab(page);
+    await expect(page.locator('[data-testid="cultivation-exact-page"]')).toBeVisible();
+    await expect(page.getByTestId('cultivation-seat-root')).toHaveCount(0);
   });
 });

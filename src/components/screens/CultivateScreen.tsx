@@ -3,10 +3,13 @@ import { CultivationSeatScreenOwner } from '../../features/cultivation/seat/Cult
 import { resolveCultivationSeatFlag } from '../../features/cultivation/seat/cultivationSeatFlag.js';
 
 export function CultivateScreen() {
-  // M.II.3 — preserve-first: the Seat of Becoming ships BESIDE the legacy screen behind a flag
-  // (default off). `?cultivationSeat=live|fixture` forces it on for dev/QA + the screenshot harness.
-  const seat = resolveCultivationSeatFlag(typeof window !== 'undefined' ? window.location.search : '');
-  if (seat.enabled) {
+  // M.II.3 — the Seat of Becoming is the public default (flip #2 / §26.4 cutover). Preserve-first:
+  // the legacy screen is kept BESIDE it and stays reachable via `?cultivationSeat=legacy`, OR via the
+  // legacy screen's own `?cultivationExactMode=` dev/QA query (whose presence requests the legacy).
+  const search = typeof window !== 'undefined' ? window.location.search : '';
+  const wantsLegacyExact = new URLSearchParams(search).has('cultivationExactMode');
+  const seat = resolveCultivationSeatFlag(search);
+  if (seat.enabled && !wantsLegacyExact) {
     return <CultivationSeatScreenOwner mode={seat.mode} fixtureId={seat.fixtureId} />;
   }
   return <CultivationExactScreenOwner />;
