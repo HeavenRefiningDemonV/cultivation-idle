@@ -10,6 +10,7 @@ import {
   buildTreasureTriadSvg,
 } from './scene/cultivationSeatInstrumentsSvg.js';
 import { CultivationSeatScrolls } from './scrolls/CultivationSeatScrolls.js';
+import { CultivationBreakthroughHost } from './CultivationBreakthroughHost.js';
 import './cultivationSeat.scss';
 
 const SVG = (html: string) => ({ __html: html });
@@ -155,6 +156,9 @@ export function CultivationSeatScreen({ surface, actions }: { surface: Cultivati
 
       {/* ── SCROLL HOST (full-viewport overlay, outside the scaled stage) ── */}
       {scroll && <CultivationSeatScrolls surface={surface} actions={actions} scroll={scroll} />}
+
+      {/* ── BREAKTHROUGH CEREMONY (the F2 RitualCeremonyShell, Seat-scoped host) ── */}
+      <CultivationBreakthroughHost surface={surface} actions={actions} />
     </div>
   );
 }

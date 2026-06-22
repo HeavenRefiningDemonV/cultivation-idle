@@ -8,6 +8,10 @@ import type {
   CultivationFocusAxisId,
   CultivationScrollId,
 } from '../../../systems/ui/cultivation/cultivationSeatTypes.js';
+import {
+  CULTIVATION_CEREMONY_EXIT_INTENT,
+  type BreakthroughCeremonyResult,
+} from '../../../systems/ui/cultivation/cultivationBreakthroughCeremony.js';
 
 /**
  * M.II.3 — the ONLY mutation path (§6). The screen emits these intents; the runtime decides
@@ -21,6 +25,10 @@ export interface CultivationSeatActions {
   onCloseScroll: () => void;
   onDeepLink: (target: CultivationDeepLink) => void;
   selectedScroll: CultivationScrollId | null;
+  // M.II.3 Wave 6 — the F2 ceremony seam (the crossing is resolved by the engine; the shell presents it).
+  ceremony: { open: boolean; result: BreakthroughCeremonyResult | null };
+  onCeremonyIntent: (intent: string) => void;
+  onCeremonyClose: () => void;
 }
 
 // R-1: the canonical Focus axis mapped back onto the live 3-way FocusMode (lossy until F1).
@@ -44,6 +52,7 @@ const DEEP_LINK_TAB: Record<CultivationDeepLink, GameTab> = {
 
 export function useCultivationSeatActionController(): CultivationSeatActions {
   const [selectedScroll, setSelectedScroll] = useState<CultivationScrollId | null>(null);
+  const [ceremony, setCeremony] = useState<{ open: boolean; result: BreakthroughCeremonyResult | null }>({ open: false, result: null });
 
   const onSetFocusEmphasis = useCallback((axisId: CultivationFocusAxisId) => {
     try {
@@ -63,11 +72,29 @@ export function useCultivationSeatActionController(): CultivationSeatActions {
   }, []);
 
   const onCommitCrossing = useCallback(() => {
-    // Requests the crossing; the runtime resolves it. No client-side outcome.
+    // The menu REQUESTS the crossing; the engine resolves it (realm advance on success, pity bank
+    // on failure — never-regress is enforced in gameStore.breakthrough(), M.II.1). The ceremony
+    // then PRESENTS the held outcome via the F2 RitualCeremonyShell. No client-side dice.
+    setSelectedScroll(null);
+    let result: BreakthroughCeremonyResult = { ok: false, advanced: false, fromRealmName: '' };
     try {
-      useGameStore.getState().breakthrough();
+      const game = useGameStore.getState();
+      const fromRealmName = game.realm.name;
+      const fromIndex = game.realm.index;
+      const ok = game.breakthrough();
+      const after = useGameStore.getState();
+      result = { ok: ok === true, advanced: after.realm.index > fromIndex, fromRealmName };
     } catch {
-      // breakthrough trigger unavailable
+      // breakthrough trigger unavailable — present the held (not-yet) outcome rather than crash
+    }
+    setCeremony({ open: true, result });
+  }, []);
+
+  const onCeremonyClose = useCallback(() => setCeremony({ open: false, result: null }), []);
+  const onCeremonyIntent = useCallback((intent: string) => {
+    // exit / skip both close the ceremony (the outcome is already held in the surface).
+    if (intent === CULTIVATION_CEREMONY_EXIT_INTENT || intent.endsWith('.skip') || intent.endsWith('.exit')) {
+      setCeremony({ open: false, result: null });
     }
   }, []);
 
@@ -82,5 +109,5 @@ export function useCultivationSeatActionController(): CultivationSeatActions {
     }
   }, []);
 
-  return { onSetFocusEmphasis, onSetForeground, onCommitCrossing, onOpenScroll, onCloseScroll, onDeepLink, selectedScroll };
+  return { onSetFocusEmphasis, onSetForeground, onCommitCrossing, onOpenScroll, onCloseScroll, onDeepLink, selectedScroll, ceremony, onCeremonyIntent, onCeremonyClose };
 }

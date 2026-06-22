@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { mkdirSync } from 'node:fs';
 import path from 'node:path';
-import { openSeatFixture } from './cultivationSeatHarness.js';
+import { openSeatFixture, seedPeakReadyCrossing } from './cultivationSeatHarness.js';
 
 /**
  * M.II.3 Wave 4 — the Chromium state matrix: the visual oracle + the structural acceptance
@@ -145,5 +145,60 @@ test.describe('M.II.3 Seat of Becoming — contract invariants (visual oracle)',
       await page.locator('.cultivationSeatScroll').screenshot({ path: path.join(SHOT_DIR, `scroll-mechanic-${p}.png`) });
       await page.keyboard.press('Escape').catch(() => {});
     }
+  });
+});
+
+async function realmIndex(page: import('@playwright/test').Page): Promise<number> {
+  return page.evaluate(async () => {
+    const importModule = new Function('specifier', 'return import(specifier)') as (s: string) => Promise<any>;
+    const { useGameStore } = await importModule('/src/stores/gameStore.ts');
+    return useGameStore.getState().realm.index as number;
+  });
+}
+
+test.describe('M.II.3 Seat of Becoming — the F2 ceremony seam (Wave 6)', () => {
+  test.use({ viewport: { width: 2080, height: 1180 }, deviceScaleFactor: 2 });
+
+  test('success: the crossing advances the realm and the F2 shell shows the success outcome', async ({ page }) => {
+    test.setTimeout(120_000);
+    await openSeatFixture(page, 'heaven-peak-ready', false);
+    await seedPeakReadyCrossing(page, 0.99); // 0.99 ≥ risk/100 ⇒ the tribulation roll succeeds
+    expect(await realmIndex(page)).toBe(0);
+
+    await page.locator('[data-region="gate-readiness"] [data-testid="cultivation-seat-commit"]').click();
+
+    // the F2 RitualCeremonyShell presents the held SUCCESS outcome + the never-regress readout
+    const reveal = page.locator('[data-ceremony-zone="reveal"]');
+    await expect(reveal).toBeVisible();
+    await expect(reveal).toHaveAttribute('data-outcome', 'success');
+    await expect(page.locator('[data-ceremony-zone="never-regress"]')).toBeVisible();
+    // the ENGINE advanced the realm (the menu only requested it)
+    expect(await realmIndex(page)).toBe(1);
+
+    ensure();
+    await page.screenshot({ path: path.join(SHOT_DIR, 'ceremony-success.png') });
+
+    // exit closes the ceremony
+    await page.locator('[data-ceremony-zone="exit"] button').click();
+    await expect(reveal).toHaveCount(0);
+  });
+
+  test('post-failure: the crossing fails, the realm is invariant (never-regress), and the shell shows not-yet', async ({ page }) => {
+    test.setTimeout(120_000);
+    await openSeatFixture(page, 'heaven-peak-ready', false);
+    await seedPeakReadyCrossing(page, 0); // roll 0 < risk/100 ⇒ the tribulation roll fails
+    expect(await realmIndex(page)).toBe(0);
+
+    await page.locator('[data-region="gate-readiness"] [data-testid="cultivation-seat-commit"]').click();
+
+    const reveal = page.locator('[data-ceremony-zone="reveal"]');
+    await expect(reveal).toBeVisible();
+    await expect(reveal).toHaveAttribute('data-outcome', 'not-yet');
+    await expect(page.locator('[data-ceremony-zone="never-regress"]')).toBeVisible();
+    // never-regress: a failed crossing leaves the earned realm untouched
+    expect(await realmIndex(page)).toBe(0);
+
+    ensure();
+    await page.screenshot({ path: path.join(SHOT_DIR, 'ceremony-notyet.png') });
   });
 });

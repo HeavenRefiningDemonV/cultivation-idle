@@ -78,6 +78,29 @@ export async function seedCultivationTab(page: Page) {
   await dismissTransientPrompts(page);
 }
 
+/**
+ * Seed the live game store to a real peak-ready major crossing (realm 0 → Foundation): final
+ * substage, qi at the cost, the gate item in inventory, and a forced tribulation roll. roll 0.99
+ * succeeds (0.99 ≥ risk/100), roll 0 fails — so both ceremony paths can be exercised for real.
+ */
+export async function seedPeakReadyCrossing(page: Page, roll: number) {
+  await page.evaluate(async (rollValue) => {
+    const importModule = new Function('specifier', 'return import(specifier)') as (specifier: string) => Promise<any>;
+    const { useGameStore } = await importModule('/src/stores/gameStore.ts');
+    const { useInventoryStore } = await importModule('/src/stores/inventoryStore.ts');
+    const { REALMS } = await importModule('/src/constants/index.ts');
+
+    // NOTE: do NOT resetForNewLife here — it wipes the committed life identity and re-triggers the
+    // Life-Start screen, which occludes the Seat. The seed only sets the realm/qi/gate/roll.
+    const finalSub = REALMS[0].substages;
+    useGameStore.setState({ realm: { index: 0, substage: finalSub, name: REALMS[0].name } });
+    const required = useGameStore.getState().getBreakthroughRequirement();
+    useGameStore.setState({ qi: String(required) });
+    useInventoryStore.getState().addItem('gate_foundation_pill', 2);
+    useGameStore.getState().__setBreakthroughRiskRollForTest?.(() => rollValue);
+  }, roll);
+}
+
 /** Navigate to a Seat fixture, seed, and wait for the root. */
 export async function openSeatFixture(page: Page, fixtureId: string, reducedMotion: boolean) {
   await page.emulateMedia({ reducedMotion: reducedMotion ? 'reduce' : 'no-preference' });
