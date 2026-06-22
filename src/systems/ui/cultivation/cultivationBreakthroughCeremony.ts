@@ -37,7 +37,12 @@ export function buildBreakthroughCeremonySurface(
   const path = seat.meta.path;
   const def = CULTIVATION_PATH_DATA[isCultivationPath(seat.meta.currentPath) ? seat.meta.currentPath : path];
   const success = result.ok && result.advanced;
-  const pity = seat.breakthrough.gateReadiness?.pity ?? null;
+  const rawPity = seat.breakthrough.gateReadiness?.pity ?? null;
+  // Only trust a pity readout that is finite and bounded — never render NaN% in the ceremony.
+  const pity =
+    rawPity && Number.isFinite(rawPity.banked) && Number.isFinite(rawPity.toGuarantee) && rawPity.toGuarantee > 0
+      ? rawPity
+      : null;
 
   const stakes = {
     risked: success ? ['A portion of banked qi, spent in the crossing.'] : ['Banked qi spent, and a wound left to settle in the Dao Heart.'],

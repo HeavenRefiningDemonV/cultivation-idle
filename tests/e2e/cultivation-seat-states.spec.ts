@@ -175,12 +175,19 @@ test.describe('M.II.3 Seat of Becoming — the F2 ceremony seam (Wave 6)', () =>
     // the ENGINE advanced the realm (the menu only requested it)
     expect(await realmIndex(page)).toBe(1);
 
+    // the realm-perk choice is DEFERRED while the ceremony is open (no overlap with the F2 shell)
+    await expect(page.locator('.perkSelectionModalOverlay')).toHaveCount(0);
+
     ensure();
     await page.screenshot({ path: path.join(SHOT_DIR, 'ceremony-success.png') });
 
     // exit closes the ceremony
     await page.locator('[data-ceremony-zone="exit"] button').click();
     await expect(reveal).toHaveCount(0);
+
+    // …and the realm-perk choice is then surfaced, not silently lost (Wave 6 review fix)
+    await expect(page.locator('.perkSelectionModalOverlay')).toBeVisible();
+    await page.screenshot({ path: path.join(SHOT_DIR, 'ceremony-success-perk.png') });
   });
 
   test('post-failure: the crossing fails, the realm is invariant (never-regress), and the shell shows not-yet', async ({ page }) => {

@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useGameStore } from '../../../stores/gameStore.js';
 import { useActivityStore } from '../../../stores/activityStore.js';
 import { useUIStore, type GameTab } from '../../../stores/uiStore.js';
@@ -53,6 +53,9 @@ const DEEP_LINK_TAB: Record<CultivationDeepLink, GameTab> = {
 export function useCultivationSeatActionController(): CultivationSeatActions {
   const [selectedScroll, setSelectedScroll] = useState<CultivationScrollId | null>(null);
   const [ceremony, setCeremony] = useState<{ open: boolean; result: BreakthroughCeremonyResult | null }>({ open: false, result: null });
+  // Single-fire guard: one crossing resolves/presents at a time. A rapid double-click (before the
+  // ceremony modal renders over the commit button) must not call game.breakthrough() twice.
+  const crossingInFlightRef = useRef(false);
 
   const onSetFocusEmphasis = useCallback((axisId: CultivationFocusAxisId) => {
     try {
@@ -75,6 +78,8 @@ export function useCultivationSeatActionController(): CultivationSeatActions {
     // The menu REQUESTS the crossing; the engine resolves it (realm advance on success, pity bank
     // on failure — never-regress is enforced in gameStore.breakthrough(), M.II.1). The ceremony
     // then PRESENTS the held outcome via the F2 RitualCeremonyShell. No client-side dice.
+    if (crossingInFlightRef.current) return; // ignore re-entry while a crossing is resolving/presenting
+    crossingInFlightRef.current = true;
     setSelectedScroll(null);
     let result: BreakthroughCeremonyResult = { ok: false, advanced: false, fromRealmName: '' };
     try {
@@ -84,19 +89,27 @@ export function useCultivationSeatActionController(): CultivationSeatActions {
       const ok = game.breakthrough();
       const after = useGameStore.getState();
       result = { ok: ok === true, advanced: after.realm.index > fromIndex, fromRealmName };
-    } catch {
+    } catch (err) {
       // breakthrough trigger unavailable — present the held (not-yet) outcome rather than crash
+      console.warn('[cultivationSeat] breakthrough() threw; presenting the held (not-yet) outcome', err);
     }
     setCeremony({ open: true, result });
   }, []);
 
-  const onCeremonyClose = useCallback(() => setCeremony({ open: false, result: null }), []);
-  const onCeremonyIntent = useCallback((intent: string) => {
-    // exit / skip both close the ceremony (the outcome is already held in the surface).
-    if (intent === CULTIVATION_CEREMONY_EXIT_INTENT || intent.endsWith('.skip') || intent.endsWith('.exit')) {
-      setCeremony({ open: false, result: null });
-    }
+  const closeCeremony = useCallback(() => {
+    crossingInFlightRef.current = false;
+    setCeremony({ open: false, result: null });
   }, []);
+  const onCeremonyClose = closeCeremony;
+  const onCeremonyIntent = useCallback(
+    (intent: string) => {
+      // exit / skip both close the ceremony (the outcome is already held in the surface).
+      if (intent === CULTIVATION_CEREMONY_EXIT_INTENT || intent.endsWith('.skip') || intent.endsWith('.exit')) {
+        closeCeremony();
+      }
+    },
+    [closeCeremony],
+  );
 
   const onOpenScroll = useCallback((id: CultivationScrollId) => setSelectedScroll(id), []);
   const onCloseScroll = useCallback(() => setSelectedScroll(null), []);
