@@ -5,8 +5,10 @@ import {
   setCombatStoreGetter,
   setInventoryStoreGetter as setGameInventoryStoreGetter,
   setDerivedStatInputGetter,
+  setBreakthroughRiskStatSourceGetter,
 } from '../stores/gameStore.js';
 import { toDerivedStatInput } from './meridians/derivedStatInput.js';
+import { toBreakthroughRiskStatInput } from './breakthrough/breakthroughRiskStatSource.js';
 import { useCombatStore } from '../stores/combatStore.js';
 import {
   usePrestigeStore,
@@ -324,6 +326,7 @@ export function initializeGame(): boolean {
     setPrestigeStoreGetter(() => usePrestigeStore.getState());
     setCombatStoreGetter(() => useCombatStore.getState());
     setDerivedStatInputGetter(() => toDerivedStatInput()); // F1 SA-A1 — wire the derived-stat seam input
+    setBreakthroughRiskStatSourceGetter(() => toBreakthroughRiskStatInput()); // M.II.1 — wire the live breakthrough-risk stat source
     setGameInventoryStoreGetter(() => useInventoryStore.getState());
     setPrestigeInventoryStoreGetter(() => useInventoryStore.getState());
     console.log('[GameLoop] Store dependencies wired');

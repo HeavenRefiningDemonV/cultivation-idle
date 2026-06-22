@@ -93,6 +93,15 @@ function buildUnlockCascade(
       category: 'realm',
     },
   ];
+  // M.II.1 sub-objective B — the revealed path meridian (the wax-seal-break flourish).
+  if (snapshot.meridianRevealed) {
+    unlocks.push({
+      id: `meridian:${snapshot.meridianRevealed.meridianId}`,
+      title: `${snapshot.meridianRevealed.label} meridian opened`,
+      detail: snapshot.meridianRevealed.effectLine,
+      category: 'meridian',
+    });
+  }
   if (cityUnlocked) {
     unlocks.push({
       id: `city:${cityUnlocked.cityId}`,
@@ -163,6 +172,7 @@ export function buildBreakthroughRitualSurfaceFromSnapshot(
     statDelta: buildStatDeltas(snapshot),
     unlockCascade,
     cityUnlocked,
+    meridianRevealed: snapshot.meridianRevealed ?? null,
     doctrineEcho,
     lifeMemoryLine: buildLifeMemoryLine(snapshot),
     nextMilestone: snapshot.nextRoute ?? null,
@@ -280,5 +290,7 @@ export function buildLiveBreakthroughRitualResultSurface(
     currentCityId: payload.currentCityId ?? base.currentCityId,
     method: payload.method ?? 'unknown',
     contentCapReached: payload.method === 'cap_transition' || base.contentCapReached,
+    // M.II.1 — carry the revealed meridian from the success event into the ritual result.
+    meridianRevealed: payload.meridianRevealed ?? null,
   });
 }

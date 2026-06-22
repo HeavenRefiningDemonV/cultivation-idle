@@ -160,3 +160,25 @@ void test('Cultivation Exact live surface maps gate-blocked, ready, and content-
   assert.equal(contentCap.lifeCycleWhisper.visible, false);
   assert.equal(contentCap.lifeCycleWhisper.active, false);
 });
+
+void test('M.II.1 — the live surface carries the additive path-identity, drip, idle, and readiness blocks', () => {
+  const surface = build({
+    selectedPathId: 'heaven',
+    foregroundMode: 'cultivation',
+    realm: { index: 1, substage: 1, name: 'Foundation Establishment' },
+    accruedWhileAwayLabel: '8.2M Qi while away',
+  });
+
+  // C — path identity in data
+  assert.equal(surface.pathIdentity.pathId, 'heaven');
+  assert.equal(surface.pathIdentity.signatureMeridianId, 'heaven_void_gaze');
+  // B — drip column derived from realm + path (slots 1..2 at Foundation)
+  assert.equal(surface.meridianDrip.unlockedCount, 2);
+  // §F — idle accrual readout
+  assert.equal(surface.idleAccrual.foregroundMode, 'cultivation');
+  assert.equal(surface.idleAccrual.isPreemptedByCombat, false);
+  assert.equal(surface.idleAccrual.accruedWhileAwayLabel, '8.2M Qi while away');
+  // A/threads — the live-stat-fed proof and never-regress guarantee
+  assert.equal(surface.breakthroughReadiness.riskInputsLiveStatFed, true);
+  assert.equal(surface.breakthroughReadiness.neverRegress.guaranteed, true);
+});

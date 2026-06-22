@@ -5,8 +5,34 @@ import type {
   RunCompassSurface,
 } from '../../../systems/ui/runCompass/index.js';
 import type { CultivationMindAlignmentSnapshot } from '../../../systems/cultivation/cultivationMindAlignmentResolver.js';
+import type {
+  CultivationPathIdentitySurface,
+  MeridianDripSurface,
+} from '../../../systems/cultivation/cultivationPathIdentityResolver.js';
+import type { ForegroundGrowthKind } from '../../../systems/cultivation/foregroundGrowthResolver.js';
 import type { SpiritRootObservationTabId } from '../../spiritRootObservation/index.js';
-import type { SpiritRootElement } from '../../../types/index.js';
+import type { CultivationPath, SpiritRootElement } from '../../../types/index.js';
+
+/** M.II.1 sub-objective D/§F — the idle-accrual readout (legible with motion off). */
+export interface IdleAccrualSurface {
+  ratePerSecondLabel: string;
+  offlineCapHours: number;
+  offlineEfficiencyLabel: string;
+  /** "what your absence earned" — null when there was no offline return. */
+  accruedWhileAwayLabel: string | null;
+  foregroundMode: ForegroundGrowthKind;
+  /** true → idle accrual paused (the COMBAT foreground state). */
+  isPreemptedByCombat: boolean;
+}
+
+/** M.II.1 — pity progress toward the Safety Net guaranteed clear (trialLifecycle.failSafe). */
+export interface CultivationPitySurface {
+  eligibleFailures: number;
+  threshold: number;
+  guaranteedClearReady: boolean;
+}
+
+export type CultivationGateTrialState = 'locked' | 'available' | 'cleared' | 'bypassed';
 
 export type CultivationExactSurfaceMode = 'fixture' | 'live';
 export type CultivationExactActivityState =
@@ -150,6 +176,14 @@ export interface CultivationBreakthroughReadinessSurfaceV1 {
     failurePreview: string;
     confirmationRequired: boolean;
   } | null;
+  // M.II.1 sub-objective A/threads — the risk model now reads the live stat layer, never
+  // regresses earned realm state on a failed rite, and accrues pity toward a guaranteed clear.
+  /** literal proof the four risk terms read the live qi_purity/body_integrity/dao_stability layer. */
+  riskInputsLiveStatFed: true;
+  isAtSemesterCap: boolean;
+  gateTrialState: CultivationGateTrialState;
+  neverRegress: { guaranteed: true; explanation: string };
+  pity: CultivationPitySurface;
   topFixActions?: CultivationButtonSurface[];
 }
 
@@ -236,6 +270,10 @@ export interface CultivationExactSurfaceV1 {
     supportLine: string;
   };
   breakthroughReadiness: CultivationBreakthroughReadinessSurfaceV1;
+  // M.II.1 additive blocks — the three lives in data (C), the drip column (B), the idle readout (D).
+  pathIdentity: CultivationPathIdentitySurface;
+  meridianDrip: MeridianDripSurface;
+  idleAccrual: IdleAccrualSurface;
   runCompassCompact?: RunCompassCompactSurface | null;
 
   lifeCycleWhisper: {
@@ -301,6 +339,14 @@ export interface CultivationExactBuildSnapshot {
     runCompassCompact?: RunCompassCompactSurface | null;
     breakthroughRisk?: import('../../../systems/breakthrough/breakthroughStabilityResolver.js').BreakthroughStabilitySnapshot | null;
     mindAlignment?: CultivationMindAlignmentSnapshot | null;
+    // M.II.1 additive snapshot inputs (soul-side path + live idle/pity state).
+    selectedPathId?: CultivationPath | null;
+    foregroundMode?: ForegroundGrowthKind;
+    offlineCapHours?: number;
+    offlineEfficiencyLabel?: string;
+    accruedWhileAwayLabel?: string | null;
+    gateTrialState?: CultivationGateTrialState;
+    pity?: CultivationPitySurface;
   }
 
 export interface BuildCultivationExactSurfaceOptions {

@@ -53,8 +53,16 @@ import { bumpVersion } from './versionCounters.js';
 import { registerCultivationStageNumberGetter } from './cultivationStageBridge.js';
 import {
   resolveBreakthroughStabilitySnapshot,
+  breakthroughTransitionRiskForRealm,
   type RootResonanceForRisk,
 } from '../systems/breakthrough/breakthroughStabilityResolver.js';
+import {
+  resolveBreakthroughRiskInputs,
+  realmInjuryRiskPressure,
+  EMPTY_BREAKTHROUGH_RISK_INPUTS,
+  type BreakthroughRiskStatInput,
+} from '../systems/breakthrough/breakthroughRiskInputs.js';
+import { revealNextPathMeridian, type MeridianRevealResult } from '../systems/cultivation/cultivationPathIdentityResolver.js';
 import { resolveCalmFirstBreathRiskReduction } from '../systems/prestige/prestigeMemory.js';
 import { getCanonicalCultivationStageNumber } from '../systems/progression/cultivationStageIndex.js';
 import { resolveForegroundGrowthMode } from '../systems/cultivation/foregroundGrowthResolver.js';
@@ -110,6 +118,17 @@ export function setPrestigeStoreGetter(getter: () => PrestigeStoreDeps) {
 let _getDerivedStatInput: (() => DerivedStatInput) | null = null;
 export function setDerivedStatInputGetter(getter: () => DerivedStatInput) {
   _getDerivedStatInput = getter;
+}
+
+/**
+ * M.II.1 sub-objective A — lazy getter for the live breakthrough-risk stat source (qi_purity /
+ * body_integrity / dao_stability ratings + training fatigue, read from the training store).
+ * Injected from the gameLoop bootstrap exactly like _getDerivedStatInput. Null until wired ⇒
+ * the four risk inputs resolve to 0 (today's inert behavior; never a regression — §K.1).
+ */
+let _getBreakthroughRiskStatSource: (() => BreakthroughRiskStatInput) | null = null;
+export function setBreakthroughRiskStatSourceGetter(getter: () => BreakthroughRiskStatInput) {
+  _getBreakthroughRiskStatSource = getter;
 }
 
 export function getSpiritRootSnapshot(): SpiritRoot | null {
@@ -621,6 +640,18 @@ export const useGameStore = create<GameState>()(
         });
         const purchasesById = _getPrestigeStore?.().purchasesById ?? {};
         const spiritRoot = getSpiritRootSnapshot();
+        // M.II.1 sub-objective A — supply the four formerly-omitted risk inputs from the LIVE
+        // stat layer (qi_purity / body_integrity / dao_stability ratings + training fatigue).
+        // Until now these read 0 (inert); the resolver already had the rows. Falls back to all-
+        // zero when the source getter is unwired (e.g. unit tests without the bootstrap) — the
+        // pre-packet behavior, never a regression (§K.1).
+        const riskStatSource = _getBreakthroughRiskStatSource?.() ?? null;
+        const transitionRisk = breakthroughTransitionRiskForRealm(currentRealmIndex);
+        const statRiskInputs = riskStatSource
+          ? resolveBreakthroughRiskInputs(riskStatSource, {
+              injuryPressure: realmInjuryRiskPressure(transitionRisk.minorInjuryPct, transitionRisk.majorInjuryPct),
+            })
+          : EMPTY_BREAKTHROUGH_RISK_INPUTS;
         const snapshot = resolveBreakthroughStabilitySnapshot({
           fromRealmIndex: currentRealmIndex,
           toRealmIndex: currentRealmIndex + 1,
@@ -637,6 +668,10 @@ export const useGameStore = create<GameState>()(
             heartLawStage,
             cultivationEffectiveStage,
           }),
+          qiPurityRiskReduction: statRiskInputs.qiPurityRiskReduction,
+          safetyPrepRiskReduction: statRiskInputs.safetyPrepRiskReduction,
+          injuryRiskDelta: statRiskInputs.injuryRiskDelta,
+          fatigueRiskDelta: statRiskInputs.fatigueRiskDelta,
           recklessConfirmation: true,
           mindAlignment,
         });
@@ -764,8 +799,15 @@ export const useGameStore = create<GameState>()(
       });
       let cityUnlockedIds: string[] = [];
       let bonusStability = 0;
+      // M.II.1 sub-objective B — on a successful MAJOR breakthrough, reveal exactly one new
+      // path meridian (the slip whose unlockRealm == newRealmIndex + 1). Pure/derived from
+      // realm.index + selectedPath (no persisted set — §I); the Tempering Court's training
+      // gate already opens it via isMeridianUnlocked, so this only surfaces the reveal event
+      // for the ritual flourish (M.II.3). The capstone (slot 7) never reveals in the live slice.
+      let meridianRevealed: MeridianRevealResult | null = null;
       if (newRealmIndex > previousRealmIndex) {
         unlockContentForRealm(newRealmIndex);
+        meridianRevealed = revealNextPathMeridian(get().selectedPath, newRealmIndex);
         cityUnlockedIds = useCityStore.getState().syncRealmEntry(getLiveRealmByIndex(newRealmIndex).id);
         bonusStability = useCultivationStore.getState().consumeMajorBreakthroughBonus(Date.now());
         if (bonusStability > 0) {
@@ -827,6 +869,7 @@ export const useGameStore = create<GameState>()(
           method,
           statSnapshotBefore,
           statSnapshotAfter,
+          meridianRevealed,
         },
       });
       if (majorAttemptTelemetry) {

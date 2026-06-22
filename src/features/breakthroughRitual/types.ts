@@ -32,8 +32,16 @@ export interface BreakthroughUnlockSurface {
   id: string;
   title: string;
   detail: string;
-  category: 'realm' | 'city' | 'technique_slot' | 'path_perk' | 'heart_law' | 'module' | 'content_cap' | 'other';
+  category: 'realm' | 'city' | 'technique_slot' | 'path_perk' | 'heart_law' | 'meridian' | 'module' | 'content_cap' | 'other';
   routeTarget?: RunCompassActionTarget | null;
+}
+
+/** M.II.1 — the single path meridian a major breakthrough reveals (the wax-seal-break, M.II.3). */
+export interface BreakthroughMeridianRevealSurface {
+  meridianId: string;
+  label: string;
+  effectLine: string;
+  pathId: 'heaven' | 'earth' | 'martial';
 }
 
 export interface BreakthroughCityHandoffSurface {
@@ -78,6 +86,8 @@ export interface BreakthroughRitualSurfaceV1 {
   statDelta: BreakthroughStatDeltaSurface[];
   unlockCascade: BreakthroughUnlockSurface[];
   cityUnlocked: BreakthroughCityHandoffSurface | null;
+  /** M.II.1 — null on minor substage / no path / capstone-beyond-cap. */
+  meridianRevealed: BreakthroughMeridianRevealSurface | null;
   doctrineEcho: BreakthroughDoctrineEchoSurface | null;
   lifeMemoryLine: string;
   nextMilestone: {
@@ -108,6 +118,7 @@ export interface BreakthroughRitualBuildSnapshot {
   heartLawId?: string | null;
   heartLawLabel?: string | null;
   resonanceLabel?: string | null;
+  meridianRevealed?: BreakthroughMeridianRevealSurface | null;
   method?: BreakthroughMethod;
   contentCapReached?: boolean;
   nextRoute?: BreakthroughRitualSurfaceV1['nextMilestone'];

@@ -40,10 +40,24 @@ import {
 } from './cultivationExactPresentation.js';
 import {
   resolveBreakthroughStabilitySnapshot,
+  breakthroughTransitionRiskForRealm,
   type GateResolutionForRisk,
   type RootResonanceForRisk,
 } from '../../../systems/breakthrough/breakthroughStabilityResolver.js';
+import {
+  resolveBreakthroughRiskInputs,
+  realmInjuryRiskPressure,
+  EMPTY_BREAKTHROUGH_RISK_INPUTS,
+} from '../../../systems/breakthrough/breakthroughRiskInputs.js';
+import { toBreakthroughRiskStatInput } from '../../../systems/breakthrough/breakthroughRiskStatSource.js';
 import { resolveCalmFirstBreathRiskReduction } from '../../../systems/prestige/prestigeMemory.js';
+import {
+  resolveCultivationPathIdentity,
+  resolvePathMeridianDrip,
+} from '../../../systems/cultivation/cultivationPathIdentityResolver.js';
+import { resolveForegroundGrowthMode } from '../../../systems/cultivation/foregroundGrowthResolver.js';
+import { resolveTrialFailSafeConfig } from '../../../systems/progression/runtime/trialLifecycle.js';
+import { MAX_OFFLINE_HOURS, resolveOfflineCultivationEfficiency } from '../../../services/time/offlineShared.js';
 import type {
   BuildCultivationExactSurfaceOptions,
   CultivationBreakthroughReadinessSurfaceV1,
@@ -493,7 +507,32 @@ function createBreakthroughReadiness(
           confirmationRequired: risk.confirmationRequired,
         }
       : null,
+    // M.II.1 — the risk model reads the live stat layer (A); a failed rite never lowers earned
+    // realm state (threads); pity accrues toward the Safety Net guaranteed clear.
+    riskInputsLiveStatFed: true,
+    isAtSemesterCap: snapshot.atContentCap,
+    gateTrialState: snapshot.gateTrialState ?? 'locked',
+    neverRegress: {
+      guaranteed: true,
+      explanation: 'A failed breakthrough costs Qi and stability but never lowers your realm or stage.',
+    },
+    pity: snapshot.pity ?? { eligibleFailures: 0, threshold: 3, guaranteedClearReady: false },
     topFixActions,
+  };
+}
+
+function createIdleAccrual(snapshot: CultivationExactBuildSnapshot): CultivationExactSurfaceV1['idleAccrual'] {
+  // M.II.1 sub-objective D/§F — cultivation is the idle activity: offline-capable (12h cap ×
+  // efficiency, no decay), legible with motion off. foregroundMode comes straight from
+  // resolveForegroundGrowthMode; combat preempts idle accrual.
+  const foregroundMode = snapshot.foregroundMode ?? 'cultivation';
+  return {
+    ratePerSecondLabel: `${formatNumber(snapshot.qiPerSecond)} Qi/s`,
+    offlineCapHours: snapshot.offlineCapHours ?? MAX_OFFLINE_HOURS,
+    offlineEfficiencyLabel: snapshot.offlineEfficiencyLabel ?? `${Math.round(resolveOfflineCultivationEfficiency({ prestigeEfficiencyAdd: 0 }) * 100)}% offline efficiency`,
+    accruedWhileAwayLabel: snapshot.accruedWhileAwayLabel ?? null,
+    foregroundMode,
+    isPreemptedByCombat: foregroundMode === 'combat',
   };
 }
 
@@ -659,6 +698,9 @@ function createSurface(
     },
     commandDeck,
     breakthroughReadiness,
+    pathIdentity: resolveCultivationPathIdentity(snapshot.selectedPathId ?? null),
+    meridianDrip: resolvePathMeridianDrip(snapshot.selectedPathId ?? null, snapshot.realm.index),
+    idleAccrual: createIdleAccrual(snapshot),
     runCompassCompact: snapshot.runCompassCompact ?? buildRunCompassCompactSurface(snapshot.runCompassFull ?? null),
     lifeCycleWhisper: {
       visible: false,
@@ -719,6 +761,11 @@ export function createCultivationExactMockupFixture(): CultivationExactSurfaceV1
     runCompassFull: null,
     runCompassCompact: null,
     breakthroughRisk: null,
+    selectedPathId: 'heaven',
+    foregroundMode: 'cultivation',
+    gateTrialState: 'available',
+    pity: { eligibleFailures: 0, threshold: 3, guaranteedClearReady: false },
+    accruedWhileAwayLabel: null,
   };
 
   return createSurface(snapshot, {
@@ -829,6 +876,15 @@ export function buildCultivationExactSnapshotFromStores(
     clarity: cultivation.daoHeartClarity,
     turbulence: cultivation.turbulence,
   });
+  // M.II.1-A — the preview must show the SAME live-stat-fed risk that gameStore.breakthrough()
+  // will roll (so riskInputsLiveStatFed isn't a lie and the player isn't misled). Source the
+  // four inputs from the same training-store seam, scaled by the realm's injury pressure.
+  const previewTransitionRisk = breakthroughTransitionRiskForRealm(liveRealmIndex);
+  const previewStatRiskInputs = willAdvanceRealm
+    ? resolveBreakthroughRiskInputs(toBreakthroughRiskStatInput(), {
+        injuryPressure: realmInjuryRiskPressure(previewTransitionRisk.minorInjuryPct, previewTransitionRisk.majorInjuryPct),
+      })
+    : EMPTY_BREAKTHROUGH_RISK_INPUTS;
   const breakthroughRisk = willAdvanceRealm
     ? resolveBreakthroughStabilitySnapshot({
         fromRealmIndex: liveRealmIndex,
@@ -846,10 +902,31 @@ export function buildCultivationExactSnapshotFromStores(
           heartLawStage: selectedHeartLawLevel,
           cultivationEffectiveStage,
         }),
+        qiPurityRiskReduction: previewStatRiskInputs.qiPurityRiskReduction,
+        safetyPrepRiskReduction: previewStatRiskInputs.safetyPrepRiskReduction,
+        injuryRiskDelta: previewStatRiskInputs.injuryRiskDelta,
+        fatigueRiskDelta: previewStatRiskInputs.fatigueRiskDelta,
         recklessConfirmation: false,
         mindAlignment,
       })
     : null;
+
+  // M.II.1 — live idle/pity/path inputs for the additive surface blocks.
+  const foregroundMode = resolveForegroundGrowthMode(active).mode;
+  const offlineEfficiency = resolveOfflineCultivationEfficiency({
+    prestigeEfficiencyAdd: prestige.getOfflineEfficiencyBonusAdditive(),
+  });
+  const gateProgress = gateTrialForItem ? useTrialStore.getState().getProgress(gateTrialForItem.id) : null;
+  const pityThreshold = resolveTrialFailSafeConfig(gateTrialForItem).threshold;
+  const pityEligibleFailures = gateProgress?.eligibleFailures ?? 0;
+  const gateTrialState: CultivationExactBuildSnapshot['gateTrialState'] =
+    gateResolution === 'cleared'
+      ? 'cleared'
+      : gateResolution === 'bypassed'
+        ? 'bypassed'
+        : requiredGateItemId && requiredGateItemCount > 0
+          ? 'available'
+          : 'locked';
 
   return {
     realm: game.realm,
@@ -900,6 +977,17 @@ export function buildCultivationExactSnapshotFromStores(
     runCompassCompact,
     breakthroughRisk,
     mindAlignment,
+    selectedPathId: game.selectedPath,
+    foregroundMode,
+    offlineCapHours: MAX_OFFLINE_HOURS,
+    offlineEfficiencyLabel: `${Math.round(offlineEfficiency * 100)}% offline efficiency`,
+    accruedWhileAwayLabel: null,
+    gateTrialState,
+    pity: {
+      eligibleFailures: pityEligibleFailures,
+      threshold: pityThreshold,
+      guaranteedClearReady: pityEligibleFailures >= pityThreshold,
+    },
   };
 }
 

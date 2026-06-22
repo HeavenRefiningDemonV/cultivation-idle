@@ -83,7 +83,29 @@ test('minor substage preview is non-mutating and does not show city handoff', ()
   assert.equal(surface.proofItemSpent, null);
   assert.equal(surface.cityUnlocked, null);
   assert.equal(surface.unlockCascade.some((entry) => entry.category === 'city'), false);
+  assert.equal(surface.meridianRevealed, null);
+  assert.equal(surface.unlockCascade.some((entry) => entry.category === 'meridian'), false);
   assert.match(surface.lifeMemoryLine, /Foundation Establishment/i);
+});
+
+test('M.II.1-B — a revealed meridian surfaces on the result and as a meridian unlock-cascade entry', () => {
+  const surface = buildBreakthroughRitualSurfaceFromSnapshot({
+    ...baseSnapshot,
+    id: 'ritual-meridian',
+    meridianRevealed: {
+      meridianId: 'heaven_mind_eye',
+      label: 'Mind Eye',
+      effectLine: 'Reveal weaknesses; anti-ambush',
+      pathId: 'heaven',
+    },
+  });
+
+  assert.equal(surface.meridianRevealed?.meridianId, 'heaven_mind_eye');
+  assert.equal(surface.meridianRevealed?.pathId, 'heaven');
+  const meridianUnlock = surface.unlockCascade.find((entry) => entry.category === 'meridian');
+  assert.ok(meridianUnlock, 'a meridian unlock-cascade entry is present');
+  assert.match(meridianUnlock?.title ?? '', /Mind Eye/);
+  assert.match(meridianUnlock?.detail ?? '', /weakness/i);
 });
 
 test('content cap handoff is honest and does not imply hidden future content', () => {

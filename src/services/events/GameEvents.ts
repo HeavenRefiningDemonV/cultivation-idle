@@ -691,6 +691,14 @@ export type ProgressionBreakthroughCompletedEvent = {
     method?: BreakthroughMethod;
     statSnapshotBefore?: Record<string, string | number>;
     statSnapshotAfter?: Record<string, string | number>;
+    /** M.II.1 — the single path meridian revealed by this major breakthrough (null on minor
+     *  substage / no path / capstone-beyond-cap). Painted as the wax-seal-break in M.II.3. */
+    meridianRevealed?: {
+      meridianId: string;
+      label: string;
+      effectLine: string;
+      pathId: 'heaven' | 'earth' | 'martial';
+    } | null;
   };
 };
 
