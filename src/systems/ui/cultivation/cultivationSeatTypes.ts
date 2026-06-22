@@ -107,11 +107,17 @@ export interface CultivationGateReadiness {
 }
 
 // ── the per-path discriminated instrument (only one renders) ─────────
+export interface PremonitionOmen { label: string; value: string; detail: string; tone: CultivationTone }
+export interface BeastEssence { name: string; glyph: string; trait: string }
+export interface WeaponArt { name: string; detail: string }
+
 export interface HeavenInstrument {
   kind: 'heaven';
   label: 'PREMONITION';
   valLabel: string;
   foresightHorizon: number;
+  fortuneOmens: PremonitionOmen[];
+  riskOmens: PremonitionOmen[];
 }
 export interface EarthInstrument {
   kind: 'earth';
@@ -119,6 +125,8 @@ export interface EarthInstrument {
   valLabel: string;
   temperingDepthPct: number; // 0..100
   absorbedCount: number;
+  capacity: number;
+  essences: BeastEssence[]; // the absorbed subset (realm-gated)
 }
 export interface MartialInstrument {
   kind: 'martial';
@@ -126,7 +134,11 @@ export interface MartialInstrument {
   valLabel: string;
   bondDepthPct: number; // 0..100
   artsCount: number;
+  artsCapacity: number;
   communion: 'deepening' | 'held' | 'idle';
+  weaponName: string;
+  weaponGrade: string;
+  arts: WeaponArt[]; // the unlocked subset (realm-gated)
 }
 export type CultivationInstrument = HeavenInstrument | EarthInstrument | MartialInstrument;
 

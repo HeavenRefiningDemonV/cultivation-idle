@@ -141,6 +141,38 @@ export interface FocusAxisDef {
   lean: string;
 }
 
+/** M.II.3 Wave 5 — static mechanic-scroll content (D5-authored), realm-gated by the builder. */
+export interface BeastEssenceDef { name: string; glyph: string; trait: string }
+export const BEAST_ESSENCES: readonly BeastEssenceDef[] = [
+  { name: 'Iron-Hide Boar', glyph: '獸', trait: 'endurance — a deeper vitality pool' },
+  { name: 'Storm-Sinew Ape', glyph: '力', trait: 'force — heavier strikes' },
+  { name: 'Deep-Root Tortoise', glyph: '甲', trait: 'defense — chip-damage negation' },
+  { name: 'Marrow-Wyrm', glyph: '髓', trait: 'vitality — faster recovery' },
+  { name: 'Stone-Lung Rhino', glyph: '岩', trait: 'poise — stagger resistance' },
+  { name: 'Thunder-Vein Serpent', glyph: '雷', trait: 'tempo — quicker tempering' },
+  { name: 'Sovereign Qilin', glyph: '麒', trait: 'dominion — a true-body trait' },
+];
+
+export interface WeaponArtDef { name: string; detail: string }
+export const WEAPON_ARTS: readonly WeaponArtDef[] = [
+  { name: 'Whetting Draw', detail: 'an opening strike that builds intent' },
+  { name: 'Flowing Step', detail: 'close distance, gain tempo' },
+  { name: 'Tide-Turn', detail: 'convert a block into a counter' },
+  { name: 'Killing Window', detail: 'a critical strike that cuts past defense' },
+  { name: 'Heaven-Sever', detail: 'the finisher — sunders armor and ward' },
+];
+
+export interface PremonitionOmenDef { label: string; value: string; detail: string; tone: 'jade' | 'gold' | 'cinnabar' | 'neutral' }
+export const PREMONITION_FORTUNE_OMENS: readonly PremonitionOmenDef[] = [
+  { label: 'Cultivation wind', value: 'favorable', detail: 'an auspicious day — idle gains run warm', tone: 'jade' },
+  { label: 'A technique to seek', value: 'foreseen', detail: 'a worthy art may be found in the World today', tone: 'jade' },
+];
+export const PREMONITION_RISK_OMENS: readonly PremonitionOmenDef[] = [
+  { label: 'Danger on the road', value: 'faint', detail: 'a minor ill omen — ward before long expeditions', tone: 'gold' },
+];
+
+export const MARTIAL_BONDED_WEAPON = { name: 'Cinnabar-Vein Sabre', grade: 'natal grade' } as const;
+
 export const CANONICAL_FOCUS_AXES: readonly FocusAxisDef[] = [
   { id: 'qiPool', label: 'Qi Pool', glyph: '灵力', effect: 'raises maximum banked qi — the depth of the reserve', lean: 'a deeper reserve' },
   { id: 'qiPurity', label: 'Qi Purity', glyph: '气纯', effect: 'lifts qi purity — a calmer, safer crossing', lean: 'a serene crossing' },

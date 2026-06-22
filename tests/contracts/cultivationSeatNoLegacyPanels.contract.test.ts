@@ -10,6 +10,7 @@ import { readFileSync } from 'node:fs';
  */
 const SCREEN = readFileSync('src/ui/cultivation/seat/CultivationSeatScreen.tsx', 'utf8');
 const SCENE = readFileSync('src/ui/cultivation/seat/scene/CultivationScene.tsx', 'utf8');
+const SCROLLS = readFileSync('src/ui/cultivation/seat/scrolls/CultivationSeatScrolls.tsx', 'utf8');
 
 const FORBIDDEN_STORE_TOKENS = [
   'useGameStore',
@@ -26,32 +27,35 @@ const FORBIDDEN_STORE_TOKENS = [
   'buildCultivationSeatSurface',
 ];
 
-void test('M.II.3 — the Seat screen and the scene import no store and never read store state', () => {
+void test('M.II.3 — the screen, scene, and scrolls import no store and never read store state', () => {
   for (const token of FORBIDDEN_STORE_TOKENS) {
     assert.equal(SCREEN.includes(token), false, `screen must not contain "${token}" (render-only)`);
     assert.equal(SCENE.includes(token), false, `scene must not contain "${token}" (render-only)`);
+    assert.equal(SCROLLS.includes(token), false, `scrolls must not contain "${token}" (render-only)`);
   }
 });
 
 void test('M.II.3 — the screen renders the surface contract regions and the root testId', () => {
   assert.match(SCREEN, /data-testid=\{(?:surface\.)?meta\.rootTestId\}/);
-  // the scene region moved into the CultivationScene component (Wave 2)
+  // the scene + scroll host moved into their own components (Wave 2 / Wave 5)
   assert.match(SCREEN, /<CultivationScene surface=\{surface\}/);
   assert.ok(SCENE.includes('data-region="scene"'), 'the scene component owns the scene region');
-  for (const region of ['lintel', 'breath-line', 'instruments', 'scroll-host']) {
+  assert.ok(SCROLLS.includes('data-region="scroll-host"'), 'the scrolls component owns the scroll host');
+  for (const region of ['lintel', 'breath-line', 'instruments']) {
     assert.ok(SCREEN.includes(`data-region="${region}"`), `region ${region} present`);
   }
 });
 
 void test('M.II.3 — the dense panels live in the conditional scroll host, not the always-on scene', () => {
-  // the ledger / focus / ascent / gate-readiness bodies are gated behind the open-scroll state
-  assert.match(SCREEN, /scroll === 'ledger'/);
-  assert.match(SCREEN, /scroll === 'focus'/);
-  assert.match(SCREEN, /scroll === 'ascent'/);
-  // the scroll host itself only renders when a scroll is selected
-  assert.match(SCREEN, /\{scroll && <SeatScroll/);
+  // the scroll host only renders when a scroll is selected
+  assert.match(SCREEN, /\{scroll && <CultivationSeatScrolls/);
   // the gate-readiness diagnosis only renders at the Peak
   assert.match(SCREEN, /\{gate && \(/);
+  // the dense scroll bodies are gated behind the open-scroll id in the scrolls component
+  assert.match(SCROLLS, /scroll === 'ledger'/);
+  assert.match(SCROLLS, /scroll === 'focus'/);
+  assert.match(SCROLLS, /scroll === 'ascent'/);
+  assert.match(SCROLLS, /scroll === 'gatereadiness'/);
 });
 
 void test('M.II.3 — the Focus Dial renders no "Body" spoke (R-1) and the seal carries the diegetic action', () => {

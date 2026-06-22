@@ -9,6 +9,7 @@ import {
   buildAscentSvg,
   buildTreasureTriadSvg,
 } from './scene/cultivationSeatInstrumentsSvg.js';
+import { CultivationSeatScrolls } from './scrolls/CultivationSeatScrolls.js';
 import './cultivationSeat.scss';
 
 const SVG = (html: string) => ({ __html: html });
@@ -153,7 +154,7 @@ export function CultivationSeatScreen({ surface, actions }: { surface: Cultivati
       </div>
 
       {/* ── SCROLL HOST (full-viewport overlay, outside the scaled stage) ── */}
-      {scroll && <SeatScroll surface={surface} actions={actions} scroll={scroll} />}
+      {scroll && <CultivationSeatScrolls surface={surface} actions={actions} scroll={scroll} />}
     </div>
   );
 }
@@ -175,61 +176,5 @@ function CultivateSeal({ surface, actions }: { surface: CultivationSeatSurfaceV1
     <button type="button" className="cultivationSeatSeal" data-instrument="cultivate-seal" data-seal-state="cultivate" onClick={() => actions.onSetForeground('cultivate')}>
       {meta.visualState === 'cultivating' ? 'Deepen the cultivation' : `Resume seclusion · ${identity.verb}`}
     </button>
-  );
-}
-
-function SeatScroll({ surface, actions, scroll }: { surface: CultivationSeatSurfaceV1; actions: CultivationSeatActions; scroll: string }) {
-  return (
-    <div
-      className="cultivationSeatScrollOverlay"
-      data-region="scroll-host"
-      data-scroll={scroll}
-      onClick={(e) => { if (e.target === e.currentTarget) actions.onCloseScroll(); }}
-    >
-      <div role="dialog" aria-modal="true" aria-label={`${scroll} scroll`} className="cultivationSeatScroll">
-        <button type="button" className="cultivationSeatScroll__close" aria-label="Close scroll" onClick={() => actions.onCloseScroll()}>×</button>
-        {scroll === 'ledger' && (
-          <div data-scroll-body="ledger" data-testid="cultivation-seat-ledger">
-            <p>{surface.scrolls.ledger.rate.base} × {surface.scrolls.ledger.rate.realmMult} × {surface.scrolls.ledger.rate.focusMult} = {surface.scrolls.ledger.rate.result} qi/s</p>
-            <p>{surface.scrolls.ledger.rate.terms}</p>
-            <p>Seclusion: {surface.scrolls.ledger.clocks.seclusion} · Sojourn: {surface.scrolls.ledger.clocks.sojourn}</p>
-            <p>Offline cap {surface.scrolls.ledger.offline.capHours}h · efficiency {surface.scrolls.ledger.offline.efficiency}</p>
-            <p>Idle is never taxed — accrual simply pauses at the cap, and never decays.</p>
-            <p>{surface.scrolls.ledger.foregroundTerms}</p>
-            <p>Life Merit this incarnation: {surface.scrolls.ledger.lifeMerit}</p>
-          </div>
-        )}
-        {scroll === 'focus' && (
-          <ul data-scroll-body="focus">
-            {surface.focus.axes.map((axis) => (
-              <li key={axis.id} data-axis={axis.id}>
-                <button type="button" aria-pressed={axis.id === surface.focus.emphasisId} aria-label={`Emphasize ${axis.label}`} onClick={() => actions.onSetFocusEmphasis(axis.id)}>
-                  {axis.label} ({axis.glyph}) — {axis.effect}{axis.id === surface.focus.emphasisId ? ' · current emphasis' : ''}
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-        {scroll === 'ascent' && (
-          <ol data-scroll-body="ascent">
-            {surface.ascent.rungs.map((rung) => (
-              <li key={rung.realmIndex} data-rung-state={rung.state}>{rung.name} · {rung.zh} — {rung.detail}</li>
-            ))}
-          </ol>
-        )}
-        {scroll === 'gatereadiness' && surface.breakthrough.gateReadiness && (
-          <div data-scroll-body="gatereadiness">
-            {surface.breakthrough.gateReadiness.checks.map((c) => (
-              <p key={c.id} data-check={c.id} data-state={c.state}>{c.label}: {c.value}</p>
-            ))}
-          </div>
-        )}
-        {(scroll === 'premonition' || scroll === 'beastlore' || scroll === 'weaponbond') && (
-          <div data-scroll-body="mechanic">
-            <p>{surface.instrument.label} · {surface.instrument.valLabel}</p>
-          </div>
-        )}
-      </div>
-    </div>
   );
 }

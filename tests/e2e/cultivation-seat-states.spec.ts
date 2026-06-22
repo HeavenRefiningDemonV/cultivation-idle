@@ -87,7 +87,7 @@ test.describe('M.II.3 Seat of Becoming — contract invariants (visual oracle)',
     await page.locator('[data-instrument="focus-dial"]').click();
     const focusBody = page.locator('[data-scroll-body="focus"]');
     await expect(focusBody).toBeVisible();
-    const options = focusBody.locator('li button');
+    const options = focusBody.locator('button[data-axis]');
     await expect(options).toHaveCount(7);
     await expect(focusBody.getByText('Body', { exact: true })).toHaveCount(0);
     await expect(focusBody).toContainText('Qi Pool');
@@ -127,7 +127,7 @@ test.describe('M.II.3 Seat of Becoming — contract invariants (visual oracle)',
     await expect(ledger).toBeVisible();
     // §F reassurance is present, and the real mechanic is pause-at-cap × efficiency (never a deduction)
     await expect(ledger).toContainText('never taxed');
-    await expect(ledger).toContainText('efficiency');
+    await expect(ledger).toContainText('Accrual cap'); // the §F mechanic: pause-at-cap, never a deduction
     // after stripping the "never taxed / never decays" reassurance, no tax/penalty/deduction/decay term remains
     const stripped = (await ledger.innerText()).toLowerCase().replace(/never (taxed|decays)/g, '');
     expect(/\btax(ed|es)?\b|\bpenalt|\bdeduct|\bdecay/.test(stripped)).toBe(false);

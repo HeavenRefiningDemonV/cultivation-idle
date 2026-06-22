@@ -7,7 +7,15 @@
  */
 import type { CultivationPath } from '../../../types/index.js';
 import type { PathId } from '../../../content/types.js';
-import { CULTIVATION_PATH_DATA, CANONICAL_FOCUS_AXES } from './cultivationPathData.js';
+import {
+  CULTIVATION_PATH_DATA,
+  CANONICAL_FOCUS_AXES,
+  BEAST_ESSENCES,
+  WEAPON_ARTS,
+  PREMONITION_FORTUNE_OMENS,
+  PREMONITION_RISK_OMENS,
+  MARTIAL_BONDED_WEAPON,
+} from './cultivationPathData.js';
 import type { CultivationSeatRawInput } from './cultivationSeatInput.js';
 import {
   CULTIVATION_SEAT_SCHEMA_VERSION,
@@ -50,17 +58,43 @@ function mapFocusModeToAxis(focusMode: string): CultivationFocusAxisId {
 function buildInstrument(path: CultivationPath, rf: number, foreground: string): CultivationInstrument {
   if (path === 'heaven') {
     const horizon = Math.round(2 + rf * 4);
-    return { kind: 'heaven', label: 'PREMONITION', valLabel: `Foresight horizon · ${horizon}`, foresightHorizon: horizon };
+    return {
+      kind: 'heaven',
+      label: 'PREMONITION',
+      valLabel: `Foresight horizon · ${horizon}`,
+      foresightHorizon: horizon,
+      fortuneOmens: PREMONITION_FORTUNE_OMENS.map((o) => ({ ...o })),
+      riskOmens: PREMONITION_RISK_OMENS.map((o) => ({ ...o })),
+    };
   }
   if (path === 'earth') {
     const depth = Math.round((0.2 + rf * 0.8) * 100);
     const beasts = Math.min(7, 1 + Math.round(rf * 6));
-    return { kind: 'earth', label: 'BEAST LORE', valLabel: `Essences ${beasts} · depth ${depth}%`, temperingDepthPct: depth, absorbedCount: beasts };
+    return {
+      kind: 'earth',
+      label: 'BEAST LORE',
+      valLabel: `Essences ${beasts} · depth ${depth}%`,
+      temperingDepthPct: depth,
+      absorbedCount: beasts,
+      capacity: BEAST_ESSENCES.length,
+      essences: BEAST_ESSENCES.slice(0, beasts).map((e) => ({ ...e })),
+    };
   }
   const bond = Math.round((0.18 + rf * 0.82) * 100);
   const arts = Math.min(5, 1 + Math.round(rf * 4));
   const communion = foreground === 'cultivating' ? 'deepening' : foreground === 'combat-held' ? 'held' : 'idle';
-  return { kind: 'martial', label: 'WEAPON-BOND', valLabel: `Bond depth ${bond}% · ${arts} arts`, bondDepthPct: bond, artsCount: arts, communion };
+  return {
+    kind: 'martial',
+    label: 'WEAPON-BOND',
+    valLabel: `Bond depth ${bond}% · ${arts} arts`,
+    bondDepthPct: bond,
+    artsCount: arts,
+    artsCapacity: WEAPON_ARTS.length,
+    communion,
+    weaponName: MARTIAL_BONDED_WEAPON.name,
+    weaponGrade: MARTIAL_BONDED_WEAPON.grade,
+    arts: WEAPON_ARTS.slice(0, arts).map((a) => ({ ...a })),
+  };
 }
 
 function buildGateReadiness(
