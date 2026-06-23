@@ -125,6 +125,11 @@ Slices A/B/C built, all bases held 0; control roll + shred unblocked; controlPow
   (×1.00/1.08/1.18/1.30/1.45) · `ItemDef.baseChannels` base power + the itemTier 1–7 curve · armor refine
   caps + channel weighting · the `status_resist`→`evasion` legacy overload (split to tribResist/
   controlPower?) · WeaponBondState growth/art gates (D5/D11). All typed-but-held; none authored.
+- **D8 equip/loadout model (landed, structure-only, unconsumed):** `gearLoadout.ts` (Loadout +
+  validateEquip + resolveSetBonus + bondEligible). Integer gates use a distinct `HELD_COUNT = -1`
+  sentinel. **F-BAL deposits:** the accessory mounting count per realm (held ⇒ floors at 1, never-zero-
+  gate) · the armor set-bonus thresholds (2-piece / 3-piece; held ⇒ set bonus inactive) · the realm
+  soft-gate effectiveness cap (DR-8a: held wire caps, never blocks equip). None authored.
 
 ## 6. The shipped engine flag (flip #2)
 - **Where:** `STAT_ENGINE_DERIVED_AUTHORITATIVE_DEFAULT = false` (`src/systems/meridians/statEngineFlag.ts`).
