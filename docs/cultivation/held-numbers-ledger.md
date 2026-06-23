@@ -89,11 +89,16 @@ coeffs all held/inert; S9/S10 live-instrument fidelity matrix landed).
   resolver's existing held reaction amount (reactionBase × realmScalar) — NO new magnitude. Live-
   provisional (negligible until D15 tunes reactionBase). Surfaces via ICD-rotation (lower-priority than
   the same-trigger dot/shred).
-- **D11 3b remaining — the ARCHITECTURE WALL (needs infra + author mechanics, not a clean slice):**
-  shred (enemy def/resist DEBUFF state — enemies have none), the real `controlPower`-vs-`stagger` roll
-  (enemy Stagger/CC-Resist source — enemies have no derived layer), spread (1-vs-N target model — combat
-  is 1-v-1), cleanse (player-affliction side — unmodeled). soft-CC action-rate (3b-iii-b) + tempo/
-  catalyst magnitudes are D15-held. The wall items want a packet + a decision.
+- **Enemy-derived-layer (packet built, Slices A/B/C — UNBLOCKS the control roll + shred):** a resolver
+  seam `resolveEnemyDefensiveProfile` (flat/realm-scaled stub) backs the control roll's stagger
+  denominator + the enemy element-resist that shred lowers. ALL HELD 0 (`enemyStaggerBase`,
+  `enemyCcResistBase`, `enemyElementResistBase`, `enemyShredApplyBase`) ⇒ byte-identical until F-BAL;
+  later a symmetric `computeEnemyDerivedSnapshot` backs the SAME seam (no re-port). **DEFERRED SUB-ITEM
+  (MUST land before F-BAL sets `controlSkipChance` > 0):** the live player `controlPower` read — passed
+  as 0 at combatStore.enemyAttack today (moot while the base is 0), else the player could never control.
+- **D11 3b STILL on the wall (need infra, not a clean slice):** spread (1-vs-N target model — combat is
+  1-v-1), cleanse (player-affliction side — unmodeled). soft-CC action-rate (3b-iii-b) + tempo/catalyst
+  magnitudes are D15-held.
 - **Beast-Lore drop rate + per-beast→essence mapping (D11/D15):** the placeholder absorbs the next
   essence per kill; the real drop rate + which beast drops which essence are held.
 - **Weapon-Bond curve (D5/D15):** `BOND_KILLS_FOR_FULL=25` + the per-art unlock bands (in
