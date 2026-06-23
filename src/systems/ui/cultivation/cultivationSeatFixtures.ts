@@ -134,7 +134,51 @@ export const CULTIVATION_SEAT_MATRIX: SeatMatrixCell[] = [
   { id: 'edge-peak-noPity', label: 'Peak ready, pity null', raw: { game: { ...baseRaw().game, substage: 9, qi: '500000000', breakthroughRequirement: '500000000' }, pity: null } },
 ];
 
-const MATRIX_BY_ID: Record<string, SeatMatrixCell> = Object.fromEntries(CULTIVATION_SEAT_MATRIX.map((c) => [c.id, c]));
+// ── S9/S10 — the LIVE per-path instrument matrix (engine-ON) ──────────────────────────────────────
+// Proves the three live instruments render TRUE across the fidelity states (not just the engine-off
+// preview): Heaven Premonition (perception → foresight), Earth Beast-Lore (absorbed essences), Martial
+// Weapon-Bond (bond depth + arts). Each carries the path's live `derived` payload so the instrument
+// flips active; the five states exercise the Seat across its conditions. States are mapped to the
+// closest Seat conditions (canonical S9/S10 defs may refine these).
+const LIVE_DERIVED: Record<'heaven' | 'earth' | 'martial', NonNullable<CultivationSeatRawInput['derived']>> = {
+  heaven: { engineActive: true, perception: 50 },
+  earth: { engineActive: true, perception: 0, absorbedEssences: 3 },
+  martial: { engineActive: true, perception: 0, bondKills: 25 },
+};
+
+export type SeatLiveState = 'healthy' | 'blocked' | 'postFailure' | 'prestige' | 'contentCap';
+const LIVE_STATES: SeatLiveState[] = ['healthy', 'blocked', 'postFailure', 'prestige', 'contentCap'];
+
+function liveStateRaw(state: SeatLiveState) {
+  switch (state) {
+    case 'healthy':     return { game: RG(2, 3, '12000000', '61000000'),   daoHeart: { turbulence: 12, fractured: false }, activity: { foregroundType: 'meditate', combatHeld: false } };
+    case 'blocked':     return { game: RG(5, 9, '300000000', '500000000'), daoHeart: { turbulence: 92, fractured: true },  activity: { foregroundType: null, combatHeld: false } };
+    case 'postFailure': return { game: RG(5, 9, '300000000', '500000000'), daoHeart: { turbulence: 58, fractured: false }, activity: { foregroundType: null, combatHeld: false } };
+    case 'prestige':    return { game: RG(5, 9, '500000000', '500000000'), daoHeart: { turbulence: 8, fractured: false },  activity: { foregroundType: null, combatHeld: false } };
+    case 'contentCap':  return { game: RG(5, 9, '500000000', '500000000'), daoHeart: { turbulence: 12, fractured: false }, activity: { foregroundType: 'meditate', combatHeld: false } };
+  }
+}
+
+export const CULTIVATION_SEAT_LIVE_MATRIX: SeatMatrixCell[] = PATHS3.flatMap((path) =>
+  LIVE_STATES.map((state): SeatMatrixCell => {
+    const s = liveStateRaw(state);
+    return {
+      id: `live-${path}-${state}`,
+      label: `${path} live · ${state}`,
+      raw: {
+        game: { ...baseRaw().game, selectedPath: path, ...(s.game ?? {}) },
+        daoHeart: s.daoHeart,
+        activity: s.activity,
+        derived: LIVE_DERIVED[path],
+        ui: { reducedMotion: false, selectedScroll: null },
+      },
+    };
+  }),
+);
+
+const MATRIX_BY_ID: Record<string, SeatMatrixCell> = Object.fromEntries(
+  [...CULTIVATION_SEAT_MATRIX, ...CULTIVATION_SEAT_LIVE_MATRIX].map((c) => [c.id, c]),
+);
 
 export function getSeatFixture(id: string): CultivationSeatSurfaceV1 | null {
   const factory = CULTIVATION_SEAT_FIXTURES[id];

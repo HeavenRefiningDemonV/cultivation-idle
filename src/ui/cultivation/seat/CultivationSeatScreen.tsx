@@ -111,6 +111,7 @@ export function CultivationSeatScreen({ surface, actions }: { surface: Cultivati
             className="cultivationSeatInst"
             data-instrument="path-mechanic"
             data-kind={instrument.kind}
+            data-active={instrument.active ? 'true' : 'false'}
             style={{ left: 1716, top: 520 }}
             aria-label={`Open ${instrument.label}`}
             onClick={() => actions.onOpenScroll(instrument.kind === 'heaven' ? 'premonition' : instrument.kind === 'earth' ? 'beastlore' : 'weaponbond')}
