@@ -83,6 +83,12 @@
   opacity: 0;
 }
 
+/* M.II.3-FIDELITY: the Cultivation route runs the Seat of Becoming as a full-bleed painting (the
+   artifact has no paper grain). Drop the global parchment texture overlay here, like records. */
+.gameLayoutRoot--cultivation .gameLayoutTextureOverlay {
+  opacity: 0;
+}
+
 /* Status route runs the Observatory Stage full-bleed: the void fills the
    viewport edge-to-edge (no page-background leak, no scroll at the big sizes);
    the stage scales itself to fit. */

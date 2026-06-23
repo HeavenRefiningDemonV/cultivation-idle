@@ -72,3 +72,10 @@
   mix-blend-mode: overlay;
   opacity: 10%;
 }
+
+/* M.II.3-FIDELITY: this global paper-texture <img> overlays the WHOLE app at z-index 99999999 — on
+   the Cultivation route it muddies the Seat of Becoming's full-bleed painting (the artifact has no
+   paper grain). Drop it there only; every other route keeps the parchment texture. */
+body:has(.gameLayoutRoot--cultivation) .paper-texture {
+  opacity: 0;
+}
