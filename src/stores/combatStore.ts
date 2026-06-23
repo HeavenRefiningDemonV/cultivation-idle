@@ -33,6 +33,7 @@ import { D, subtract, greaterThan, lessThanOrEqualTo, add, clamp } from '../util
 import { BossMechanics } from '../systems/bossMechanics.js';
 import { resolveMeridianSignaturesForCombat, combineArmorPenWithSignatures, isIronSkinNegated, mountainStanceReflectAmount, momentumDamageMultiplier } from '../systems/meridians/meridianCombatSignatures.js';
 import { resolvePlayerElementAffinity, elementAffinityDamageMultiplier, resolvePlayerElementResist, elementResistDamageMultiplier } from '../systems/elements/elementCombatAffinity.js';
+import { stepEnemyElementOnHit, EMPTY_ENEMY_ELEMENT_STATES } from '../systems/elements/elementCombatReactions.js';
 import { isDerivedStatEngineAuthoritative } from '../systems/meridians/statEngineFlag.js';
 import { generateLoot, formatLootMessage } from '../systems/loot.js';
 import { RewardService, type RewardBundle, type RewardItemBundle } from '../services/rewards/index.js';
@@ -564,6 +565,7 @@ const createInitialCombatState = () => ({
   currentZone: null as string | null,
   currentEnemy: null as EnemyDefinition | null,
   momentumStacks: 0, // B-MERID Unbroken-Momentum — transient, per-encounter (reset here every combat)
+  enemyElementStates: EMPTY_ENEMY_ELEMENT_STATES, // D11 element afflictions — transient, reset each combat
   combatContext: { type: null } as CombatContext,
   playerHP: '0',
   playerMaxHP: '0',
@@ -1548,13 +1550,23 @@ export const useCombatStore = create<ExtendedCombatState>()(
       });
       const elementAffinityMult = D(elementAffinityDamageMultiplier(elementAffinity));
 
+      // D11 slice 3 — element reaction/state: apply this hit's signature affliction to the enemy and
+      // fire any eligible combo. INERT (off / no root element) ⇒ no state change + 0 bonus ⇒ byte-identical.
+      const elementStep = stepEnemyElementOnHit({
+        appliedElement: getSpiritRootSnapshot()?.element ?? null,
+        states: state.enemyElementStates ?? EMPTY_ENEMY_ELEMENT_STATES,
+        realm: useGameStore.getState().realm.index + 1,
+        engineActive: isDerivedStatEngineAuthoritative(),
+      });
+
       const finalDamage = baseDamage
         .times(damageMultiplier)
         .times(heartLawMultiplier)
         .times(critMultiplier)
         .times(rootProc.modifiers.damageMult)
         .times(momentumMult)
-        .times(elementAffinityMult);
+        .times(elementAffinityMult)
+        .plus(D(elementStep.bonusDamage)); // instant burst/sever reaction damage (0 unless one fires)
       const currentEnemyHp = D(state.enemyHP);
       const appliedDamage = currentEnemyHp.lessThan(finalDamage) ? currentEnemyHp : finalDamage;
 
@@ -1576,7 +1588,13 @@ export const useCombatStore = create<ExtendedCombatState>()(
         if (meridianSig.unbrokenMomentumStacking > 0) {
           state.momentumStacks = (state.momentumStacks ?? 0) + 1;
         }
+        // D11 — refresh the enemy's element afflictions (flag-off ⇒ unchanged empty set).
+        state.enemyElementStates = elementStep.states;
       });
+
+      if (elementStep.reactionLabel) {
+        get().addLogEntry('damage', `Element reaction — ${elementStep.reactionLabel}!`, '#a78bfa');
+      }
 
       emitEvent('HIT', {
         source: 'player',

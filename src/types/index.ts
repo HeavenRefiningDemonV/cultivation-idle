@@ -1,5 +1,6 @@
 import type { CraftSessionSaveState } from "../systems/crafting/craftingTypes.js";
 import type { BreakthroughStabilitySnapshot } from "../systems/breakthrough/breakthroughStabilityResolver.js";
+import type { EnemyElementStates } from "../systems/elements/elementCombatReactions.js";
 import type { RewardBundle } from "../services/rewards/index.js";
 import type { PavilionSaveState } from "../features/pavilion/pavilionTypes.js";
 import type { StoryMotionMode, StorySaveState } from "../features/story/storyTypes.js";
@@ -1127,6 +1128,13 @@ export interface CombatState {
    * save migration is needed; only the flag-on derived engine ever increments it. Never persisted.
    */
   momentumStacks?: number;
+
+  /**
+   * D11 — transient element afflictions on the CURRENT enemy (the slice-3 reaction/state machine).
+   * Optional ⇒ no save migration; re-initialised each combat; only the flag-on derived engine writes
+   * it (flag-off it stays the empty set). Never persisted.
+   */
+  enemyElementStates?: EnemyElementStates;
 
   // Context
   combatContext: CombatContext;
