@@ -34,6 +34,7 @@ import { BossMechanics } from '../systems/bossMechanics.js';
 import { resolveMeridianSignaturesForCombat, combineArmorPenWithSignatures, isIronSkinNegated, mountainStanceReflectAmount, momentumDamageMultiplier } from '../systems/meridians/meridianCombatSignatures.js';
 import { resolvePlayerElementAffinity, elementAffinityDamageMultiplier, resolvePlayerElementResist, elementResistDamageMultiplier } from '../systems/elements/elementCombatAffinity.js';
 import { stepEnemyElementOnHit, EMPTY_ENEMY_ELEMENT_STATES } from '../systems/elements/elementCombatReactions.js';
+import { expireEnemyElementStates } from '../systems/elements/elementStateTick.js';
 import { useBeastLoreStore } from '../features/court/useBeastLoreStore.js';
 import { useWeaponBondStore } from '../features/court/useWeaponBondStore.js';
 import { isDerivedStatEngineAuthoritative } from '../systems/meridians/statEngineFlag.js';
@@ -2339,6 +2340,22 @@ export const useCombatStore = create<ExtendedCombatState>()(
         });
       } else {
         incrementCounter(PERF_LABELS.combatBuffSweepSkipped);
+      }
+
+      // D11 slice 3b-0 — age enemy element afflictions on the same maintenance heartbeat as the buff
+      // sweep: decrement remainingMs by the frame's deltaTime and drop the expired. Flag-gated +
+      // preserve-first: flag-off (or no afflictions) ⇒ the helper returns the same ref ⇒ no `set`,
+      // byte-identical. No effect is applied yet (DoT damage is the next slice) — this is lifecycle only.
+      const currentEnemyElementStates = latestForMaintenance.enemyElementStates ?? EMPTY_ENEMY_ELEMENT_STATES;
+      const agedEnemyElementStates = expireEnemyElementStates({
+        states: currentEnemyElementStates,
+        elapsedMs: deltaTime,
+        engineActive: isDerivedStatEngineAuthoritative(),
+      });
+      if (agedEnemyElementStates !== currentEnemyElementStates) {
+        set((draft) => {
+          draft.enemyElementStates = agedEnemyElementStates;
+        });
       }
 
       if (state.autoCombatAI && now >= state.nextAiDecisionAt) {
