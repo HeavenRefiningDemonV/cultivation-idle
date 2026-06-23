@@ -27,13 +27,13 @@ export function buildFocusDialSvg(axes: readonly FocusDialAxis[], emphasisIndex:
   s += `<circle cx="${C}" cy="${C}" r="86" fill="none" stroke="rgba(255,244,210,.4)" stroke-width="1"/>`;
   axes.forEach((ax, i) => {
     const a = (i / N) * 360, [x, y] = PT(C, C, RG, a), on = i === emphasisIndex;
-    s += `<g transform="translate(${x.toFixed(1)},${y.toFixed(1)})"><circle r="13" fill="${on ? 'var(--acc)' : 'rgba(243,234,215,.16)'}" stroke="${on ? 'var(--acc-bright)' : 'rgba(217,189,128,.5)'}" stroke-width="${on ? 2.4 : 1.2}"/><text y="5" text-anchor="middle" font-family="var(--kai)" font-size="14" font-weight="700" fill="${on ? '#241a10' : 'rgba(243,234,215,.8)'}">${ax.glyph}</text></g>`;
+    s += `<g transform="translate(${x.toFixed(1)},${y.toFixed(1)})"><circle r="13" fill="${on ? 'var(--acc)' : 'rgba(243,234,215,.16)'}" stroke="${on ? 'var(--acc-bright)' : 'rgba(217,189,128,.5)'}" stroke-width="${on ? 2.4 : 1.2}"/><text y="5" text-anchor="middle" font-family="var(--kai)" font-size="15" font-weight="700" fill="${on ? '#241a10' : 'rgba(243,234,215,.8)'}">${ax.glyph}</text></g>`;
   });
   const a = (emphasisIndex / N) * 360, [tx, ty] = PT(C, C, RG - 14, a), [lx, ly] = PT(C, C, 16, a - 90), [rx, ry] = PT(C, C, 16, a + 90), [bx, by] = PT(C, C, 22, a + 180);
   s += `<g ${rm ? '' : 'class="seatSpin"'} style="transform-origin:${C}px ${C}px;animation:seat-quiver 4.8s ease-in-out infinite">`;
   s += `<path d="M${tx.toFixed(1)},${ty.toFixed(1)} L${lx.toFixed(1)},${ly.toFixed(1)} L${C},${C} L${rx.toFixed(1)},${ry.toFixed(1)}Z" fill="var(--acc-bright)" filter="url(#glowJ)"/>`;
   s += `<path d="M${bx.toFixed(1)},${by.toFixed(1)} L${lx.toFixed(1)},${ly.toFixed(1)} L${C},${C} L${rx.toFixed(1)},${ry.toFixed(1)}Z" fill="var(--acc)" opacity=".4"/></g>`;
-  s += `<g><circle cx="${C}" cy="${C}" r="22" fill="url(#inkHub)" stroke="url(#goldG)" stroke-width="2.4"/><text x="${C}" y="${C + 6}" text-anchor="middle" font-family="var(--kai)" font-size="20" fill="var(--acc-rim)">${axes[emphasisIndex]?.glyph ?? ''}</text></g>`;
+  s += `<g><circle cx="${C}" cy="${C}" r="22" fill="url(#inkHub)" stroke="url(#goldG)" stroke-width="2.4"/><circle cx="${C}" cy="${C}" r="22" fill="rgba(31,26,23,.6)" stroke="url(#goldG)" stroke-width="2.4"/><text x="${C}" y="${C + 6}" text-anchor="middle" font-family="var(--kai)" font-size="20" fill="var(--acc-rim)">${axes[emphasisIndex]?.glyph ?? ''}</text></g>`;
   s += `</svg>`;
   return s;
 }
@@ -89,15 +89,6 @@ export function buildAscentSvg(realmIndex1to7: number, atPeak: boolean, reducedM
   if (atPeak && realmIndex1to7 < 7) { const ny = ys[realmIndex1to7]; s += `<circle cx="${lx}" cy="${ny}" r="9" fill="none" stroke="var(--acc-bright)" stroke-width="1.6" ${rm ? '' : 'class="seatBreathe"'}/><circle cx="${lx}" cy="${ny}" r="3.5" fill="var(--acc-bright)" ${rm ? '' : 'class="seatTwk"'} style="animation-duration:2s"/>`; }
   return s + `</svg>`;
 }
-
-/** The Three-Treasures triad (Body 精 / Energy 气 / Spirit 神), the lead highlighted. */
-export function buildTreasureTriadSvg(lead: 'jing' | 'qi' | 'shen'): string {
-  const items: Array<{ id: 'jing' | 'qi' | 'shen'; glyph: string; name: string }> = [
-    { id: 'jing', glyph: '精', name: 'Body' },
-    { id: 'qi', glyph: '气', name: 'Energy' },
-    { id: 'shen', glyph: '神', name: 'Spirit' },
-  ];
-  return items
-    .map((it) => `<span class="cultivationSeatTriad__tre${it.id === lead ? ' is-lead' : ''}"><b>${it.glyph}</b><span class="cultivationSeatTriad__nm">${it.name}</span></span>`)
-    .join('');
-}
+// (B1) The Three-Treasures triad now renders as native React medallions in the screen — no injected
+// HTML — so the .cultivationSeatTriad__tre classes are guaranteed to land (the glyphs were flowing
+// as flat text when injected). See CultivationSeatScreen.tsx.

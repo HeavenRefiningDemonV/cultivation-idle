@@ -174,10 +174,12 @@ export const PREMONITION_RISK_OMENS: readonly PremonitionOmenDef[] = [
 export const MARTIAL_BONDED_WEAPON = { name: 'Cinnabar-Vein Sabre', grade: 'natal grade' } as const;
 
 export const CANONICAL_FOCUS_AXES: readonly FocusAxisDef[] = [
-  { id: 'qiPool', label: 'Qi Pool', glyph: '灵力', effect: 'raises maximum banked qi — the depth of the reserve', lean: 'a deeper reserve' },
-  { id: 'qiPurity', label: 'Qi Purity', glyph: '气纯', effect: 'lifts qi purity — a calmer, safer crossing', lean: 'a serene crossing' },
-  { id: 'meridianOpenness', label: 'Meridian Openness', glyph: '经脉', effect: 'widens the meridians — throughput and technique power', lean: 'wider meridians' },
-  { id: 'spiritualSense', label: 'Spiritual Sense', glyph: '神识', effect: 'sharpens spiritual sense — perception, foresight, control', lean: 'sharper foresight' },
+  // Single traditional glyphs in the artifact's calligraphic hand (D1 / §6 Option A — the live six
+  // emphasis axes + Balanced; Body 體 stays out per R-1, Balanced 衡 is the seventh spoke).
+  { id: 'qiPool', label: 'Qi Pool', glyph: '氣', effect: 'raises maximum banked qi — the depth of the reserve', lean: 'a deeper reserve' },
+  { id: 'qiPurity', label: 'Qi Purity', glyph: '純', effect: 'lifts qi purity — a calmer, safer crossing', lean: 'a serene crossing' },
+  { id: 'meridianOpenness', label: 'Meridian Openness', glyph: '脈', effect: 'widens the meridians — throughput and technique power', lean: 'wider meridians' },
+  { id: 'spiritualSense', label: 'Spiritual Sense', glyph: '識', effect: 'sharpens spiritual sense — perception, foresight, control', lean: 'sharper foresight' },
   { id: 'soulStrength', label: 'Soul Strength', glyph: '魂', effect: 'builds soul strength — pressure, will, resistance', lean: 'soul-pressure' },
   { id: 'daoComprehension', label: 'Dao Comprehension', glyph: '道', effect: 'quickens comprehension — faster learning of the Dao', lean: 'swifter comprehension' },
   { id: 'balanced', label: 'Balanced', glyph: '衡', effect: 'spreads evenly — no axis starves', lean: 'a steady, even climb' },

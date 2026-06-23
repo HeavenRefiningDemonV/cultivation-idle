@@ -7,13 +7,23 @@ import {
   buildFocusDialSvg,
   buildPathInstrumentSvg,
   buildAscentSvg,
-  buildTreasureTriadSvg,
 } from './scene/cultivationSeatInstrumentsSvg.js';
 import { CultivationSeatScrolls } from './scrolls/CultivationSeatScrolls.js';
 import { CultivationBreakthroughHost } from './CultivationBreakthroughHost.js';
 import './cultivationSeat.scss';
 
 const SVG = (html: string) => ({ __html: html });
+
+const TREASURE_GLYPHS = { jing: { g: '精', nm: 'Body' }, qi: { g: '氣', nm: 'Energy' }, shen: { g: '神', nm: 'Spirit' } } as const;
+
+/** The gold affordance cue (C1) — faint on every tappable instrument, brightens on hover/focus. */
+function Cue() {
+  return (
+    <span className="cue" aria-hidden="true">
+      <svg viewBox="0 0 12 12" width="11" height="11"><path d="M1.5 4.5V1.5H4.5M7.5 1.5H10.5V4.5M10.5 7.5V10.5H7.5M4.5 10.5H1.5V7.5" fill="none" stroke="#3a2a0e" strokeWidth="1.4" strokeLinecap="round" /></svg>
+    </span>
+  );
+}
 
 /**
  * M.II.3 Wave 3 — the Seat screen on a fixed 2048×1152 scaled stage (the Observatory scale
@@ -74,7 +84,8 @@ export function CultivationSeatScreen({ surface, actions }: { surface: Cultivati
           {/* Focus Dial — the jade compass (6 canonical axes + Balanced; emphasis set in the scroll) */}
           <button type="button" className="cultivationSeatInst" data-instrument="focus-dial" data-testid="cultivation-seat-focus" style={{ left: 150, top: 494 }} aria-label="Open the Focus dial" onClick={() => actions.onOpenScroll('focus')}>
             <span className="cultivationSeatInst__svg" dangerouslySetInnerHTML={SVG(buildFocusDialSvg(dialAxes, emphasisIndex, meta.reducedMotion))} />
-            <span className="cultivationSeatInst__cap"><i>Emphasis · tap to tune</i>{focus.axes.find((a) => a.id === focus.emphasisId)?.label} · {focus.leanCaption}</span>
+            <Cue />
+            <span className="cultivationSeatInst__cap"><i>Emphasis · tap a spoke</i>{focus.axes.find((a) => a.id === focus.emphasisId)?.label} · {focus.leanCaption}</span>
           </button>
 
           {/* Per-path unique instrument */}
@@ -88,6 +99,7 @@ export function CultivationSeatScreen({ surface, actions }: { surface: Cultivati
             onClick={() => actions.onOpenScroll(instrument.kind === 'heaven' ? 'premonition' : instrument.kind === 'earth' ? 'beastlore' : 'weaponbond')}
           >
             <span className="cultivationSeatInst__svg" dangerouslySetInnerHTML={SVG(buildPathInstrumentSvg(meta.path, scene.figureBeat, meta.reducedMotion))} />
+            <Cue />
             <span className="cultivationSeatInst__label">{instrument.label}</span>
             <span className="cultivationSeatInst__val">{instrument.valLabel}</span>
           </button>
@@ -95,14 +107,21 @@ export function CultivationSeatScreen({ surface, actions }: { surface: Cultivati
           {/* Ascent thread */}
           <button type="button" className="cultivationSeatInst" data-instrument="ascent" style={{ left: 14, top: 236 }} aria-label="Open the Ascent ladder" onClick={() => actions.onOpenScroll('ascent')}>
             <span className="cultivationSeatInst__svg" dangerouslySetInnerHTML={SVG(buildAscentSvg(identity.realmIndex, identity.atPeak, meta.reducedMotion))} />
-            <span className="cultivationSeatInst__label">Ascent</span>
+            <Cue />
+            <span className="cultivationSeatInst__label" style={{ marginTop: 2 }}>Ascent</span>
           </button>
 
-          {/* Three Treasures triad → Status */}
+          {/* Three Treasures triad → Status (B1: native React medallions; B2: caption is a separate element) */}
           <button type="button" className="cultivationSeatTriad" data-instrument="treasures" style={{ left: 744, top: 430 }} aria-label="Open the full constellation in Status" onClick={() => actions.onDeepLink('status.constellation')}>
-            <span className="cultivationSeatTriad__row" dangerouslySetInnerHTML={SVG(buildTreasureTriadSvg(surface.treasures.lead))} />
-            <span className="cultivationSeatTriad__cap">Three Treasures · {surface.treasures.leadLabel}</span>
+            {(['jing', 'qi', 'shen'] as const).map((k) => (
+              <span key={k} className={`cultivationSeatTriad__tre${surface.treasures.lead === k ? ' is-lead' : ''}`}>
+                <b>{TREASURE_GLYPHS[k].g}</b>
+                <span className="cultivationSeatTriad__nm">{TREASURE_GLYPHS[k].nm}</span>
+              </span>
+            ))}
+            <Cue />
           </button>
+          <span className="cultivationSeatTriadCap" style={{ left: 744, top: 480 }}>Three Treasures · {surface.treasures.leadLabel}</span>
 
           {/* Base plate — the single dominant progress readout */}
           <div className="cultivationSeatBasePlate" data-region="base-plate" style={{ left: '50%', bottom: 180 }}>

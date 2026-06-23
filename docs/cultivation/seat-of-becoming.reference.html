@@ -1,0 +1,1164 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<title>The Seat of Becoming · Cultivation</title>
+<style>
+:root{
+ /* ===== paperInkTokens (canonical) ===== */
+ --paper:#f3ead7;--ink:#1f1a17;--jade:#4e6b5e;--jade-deep:#0f6f5a;--gold:#a2712a;--gold-bright:#b2832d;
+ --cinnabar:#8b3028;--cinnabar-bright:#a94835;--paper-warm:#efe3c9;--paper-deep:#e7d9ba;--paper-shade:#d9c79e;
+ --ink-70:rgba(31,26,23,.7);--ink-45:rgba(31,26,23,.45);--ink-25:rgba(31,26,23,.25);--ink-12:rgba(31,26,23,.12);
+ --bronze:#7a5b26;--gold-pale:#d9bd80;--gold-deep:#84591b;--jade-ink:#2f4a40;--cinn-deep:#6e241e;
+ --el-wood:#2d7844;--el-fire:#a44731;--el-earth:#8d642d;--el-metal:#69717c;--el-water:#2a668d;
+ --serif:Georgia,"Songti SC","Noto Serif SC",serif;--kai:"Kaiti SC","STKaiti",serif;
+ /* per-path accent cast (set by data-path; never blue as chrome) */
+ --acc:#cbb06a;--acc-bright:#f0d896;--acc-deep:#6e4c16;--acc-core:#ffe9b0;--acc-rim:#d9bd80;
+ --sky-0:#243042;--sky-1:#33415a;--sky-2:#4e6b5e;--scene-ink:#f3ead7;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:#0a0805;font-family:var(--serif);display:flex;align-items:center;justify-content:center;overflow:hidden}
+#scaler{transform-origin:center center}
+.stage{width:2048px;height:1152px;position:relative;overflow:hidden;border-radius:5px;
+ box-shadow:0 30px 90px rgba(0,0,0,.7);background:#10100e}
+/* the outer gold frame in the dark gutter */
+.stage::after{content:"";position:absolute;inset:7px;z-index:80;pointer-events:none;border-radius:3px;
+ border:1px solid rgba(178,131,45,.5);outline:1px solid rgba(120,86,38,.3);outline-offset:3px}
+svg{display:block}
+
+/* ====== THE SCENE (full-bleed painting) ====== */
+.scene{position:absolute;inset:0;z-index:1}
+.scene svg.field{position:absolute;inset:0;width:100%;height:100%}
+.skywash{position:absolute;inset:0;z-index:0;transition:background 1.1s ease}
+.vignette{position:absolute;inset:0;z-index:6;pointer-events:none;
+ background:radial-gradient(120% 86% at 50% 38%,transparent 52%,rgba(20,14,8,.30) 86%,rgba(12,8,4,.52) 100%)}
+.scrim{position:absolute;inset:0;z-index:5;pointer-events:none;transition:background .8s ease;background:transparent}
+.watermark{position:absolute;z-index:2;font-family:var(--kai);font-weight:700;color:rgba(243,234,215,.05);
+ pointer-events:none;line-height:.9;letter-spacing:.04em;user-select:none}
+
+/* motes float over the scene */
+.mote{position:absolute;width:5px;height:5px;border-radius:50%;z-index:4;pointer-events:none;
+ background:radial-gradient(circle at 35% 30%,#fff2c8,var(--acc) 60%,transparent 75%);
+ filter:blur(.3px) drop-shadow(0 0 4px rgba(231,200,120,.7));animation:moteUpK 6s linear infinite}
+
+/* ====== CHROME — thin diegetic edges ====== */
+.lintel{position:absolute;top:0;left:0;right:0;height:96px;z-index:20;display:flex;align-items:center;
+ padding:0 26px;gap:18px;
+ background:linear-gradient(180deg,rgba(18,22,18,.82),rgba(18,22,18,.32) 70%,transparent);
+ -webkit-backdrop-filter:blur(1.5px);backdrop-filter:blur(1.5px)}
+.lintel .gildrule{position:absolute;left:18px;right:18px;bottom:14px;height:1px;
+ background:linear-gradient(90deg,transparent,rgba(178,131,45,.55) 14%,rgba(178,131,45,.55) 86%,transparent)}
+.chop{position:relative;width:62px;height:74px;border-radius:4px;display:grid;place-items:center;flex:0 0 auto;
+ background:linear-gradient(180deg,var(--cinnabar),#6e231c);border:1px solid var(--gold-deep);
+ box-shadow:0 5px 14px rgba(40,12,8,.6),inset 0 1px 0 rgba(217,189,128,.3)}
+.chop[data-pathchop="heaven"]{background:linear-gradient(180deg,#5b6f72,#36474a)}
+.chop[data-pathchop="earth"]{background:linear-gradient(180deg,#7a5b26,#4a330e)}
+.chop[data-pathchop="martial"]{background:linear-gradient(180deg,#8b2f27,#5e1c16)}
+.chop b{font-family:var(--kai);font-size:34px;font-weight:700;color:#f0d9a0;line-height:1}
+.lintel .nameblock{display:flex;flex-direction:column;gap:1px;min-width:0}
+.lintel .roomsub{font:700 10px var(--serif);letter-spacing:.2em;text-transform:uppercase;color:var(--gold-pale);opacity:.85}
+.lintel .roomtitle{font:800 23px var(--serif);color:#f3ead7;letter-spacing:.01em;display:flex;align-items:center;gap:9px;text-shadow:0 2px 8px rgba(0,0,0,.6)}
+.lintel .realmline{display:flex;align-items:center;gap:8px;margin-top:2px}
+.lintel .realmname{font:800 13px var(--serif);color:var(--acc-rim)}
+.lintel .stagepips{display:inline-flex;gap:3px;align-items:center}
+.lintel .sp{width:8px;height:8px;border-radius:50%;background:rgba(243,234,215,.16);box-shadow:inset 0 0 0 1px rgba(243,234,215,.25)}
+.lintel .sp.on{background:var(--acc-rim);box-shadow:0 0 7px var(--acc)}
+.lintel .sp.cur{background:var(--acc-bright);box-shadow:0 0 10px var(--acc-bright)}
+.lintel .spacer{flex:1}
+.fgchip{display:inline-flex;align-items:center;gap:7px;padding:5px 13px;border-radius:20px;
+ font:700 11px var(--serif);letter-spacing:.04em;color:#f3ead7;
+ background:linear-gradient(180deg,rgba(58,91,77,.85),rgba(36,58,48,.85));border:1px solid var(--gold-deep)}
+.fgchip .dot{width:9px;height:9px;border-radius:50%;background:var(--acc-core);box-shadow:0 0 8px var(--acc-core);animation:ovBreathe 3.2s ease-in-out infinite}
+.fgchip.held{background:linear-gradient(180deg,rgba(122,42,34,.9),rgba(94,28,22,.9))}
+.fgchip.held .dot{border-radius:1px;background:var(--cinnabar-bright);box-shadow:0 0 7px var(--cinnabar);animation:none}
+.fgchip.cultivating .dot{animation:mpulseK 2.4s ease-in-out infinite}
+
+/* breath-line */
+.breath{position:absolute;left:0;right:0;bottom:58px;height:58px;z-index:20;display:flex;align-items:center;gap:0;
+ padding:0 30px;cursor:pointer;
+ background:linear-gradient(0deg,rgba(18,22,18,.8),rgba(18,22,18,.3) 70%,transparent);
+ -webkit-backdrop-filter:blur(1.5px);backdrop-filter:blur(1.5px)}
+.breath .brrule{position:absolute;left:24px;right:24px;top:13px;height:1px;
+ background:linear-gradient(90deg,transparent,rgba(178,131,45,.5) 12%,rgba(178,131,45,.5) 88%,transparent)}
+.breath .light{position:absolute;left:24px;top:13px;height:1px;width:120px;
+ background:linear-gradient(90deg,transparent,var(--acc-bright),transparent);opacity:.0;animation:breathPass 6s linear infinite}
+.brread{display:flex;align-items:baseline;gap:8px;padding:0 22px;border-right:1px solid rgba(243,234,215,.12);white-space:nowrap}
+.brread:first-child{padding-left:8px}
+.brread.last{border-right:none}
+.brread .coin{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;flex:0 0 auto;
+ background:radial-gradient(circle at 40% 34%,#f3e3b0,#c08f3a 55%,#6e4c16);font-family:var(--kai);font-size:11px;color:#3a2a0e;font-weight:700;align-self:center}
+.brread .v{font:800 16px var(--serif);color:#f6efda;text-shadow:0 1px 4px rgba(0,0,0,.5)}
+.brread .v.big{font-size:19px;color:#fff6df}
+.brread .l{font:700 8.5px var(--serif);letter-spacing:.13em;text-transform:uppercase;color:rgba(243,234,215,.5)}
+.brread.heldmark .v{color:var(--cinnabar-bright)}
+.breath .expandhint{position:absolute;right:26px;top:50%;transform:translateY(-50%);font:700 8.5px var(--serif);
+ letter-spacing:.08em;color:var(--gold-pale);opacity:.7}
+
+/* nav */
+.nav{position:absolute;left:0;right:0;bottom:0;height:58px;z-index:20;display:flex;align-items:center;justify-content:space-around;
+ background:linear-gradient(180deg,#1c140c,#120c07);border-top:1px solid var(--gold-deep)}
+.nav .it{display:flex;align-items:center;gap:9px;font:700 14px var(--serif);color:#7a6a4a;letter-spacing:.04em;padding:8px 20px;position:relative}
+.nav .it .ico{width:20px;height:20px;display:grid;place-items:center}
+.nav .it.on{color:#f3ead7;background:linear-gradient(180deg,#3a5b4d,#243a30);border:1px solid var(--gold-deep);border-radius:5px;box-shadow:0 0 14px rgba(78,107,94,.5)}
+
+/* ====== FLOATING INSTRUMENTS ====== */
+.inst{position:absolute;z-index:14}
+.instlabel{font:700 9px var(--serif);letter-spacing:.12em;text-transform:uppercase;color:rgba(247,240,222,.92);text-align:center;margin-top:5px;text-shadow:0 1px 4px rgba(0,0,0,.6)}
+.instval{font:800 12.5px var(--serif);color:#fff7e6;text-align:center}
+.tapwrap{cursor:pointer;transition:filter .15s,transform .15s}
+.tapwrap:hover{filter:brightness(1.06) drop-shadow(0 0 12px rgba(201,168,90,.45))}
+
+/* focus dial caption */
+.dialcap{position:absolute;left:50%;transform:translateX(-50%);bottom:-34px;white-space:nowrap;
+ font:700 10.5px var(--serif);color:var(--acc-rim);text-align:center}
+.dialcap i{display:block;font:700 8px var(--serif);letter-spacing:.13em;text-transform:uppercase;color:rgba(247,240,222,.8);font-style:normal;margin-bottom:1px}
+
+/* treasures triad */
+.triad{position:absolute;z-index:15;display:flex;gap:7px;cursor:pointer}
+.triad .tre{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;position:relative;
+ background:radial-gradient(circle at 38% 32%,rgba(243,234,215,.92),rgba(217,189,128,.5) 60%,rgba(120,90,46,.3));
+ border:1.4px solid var(--gold-deep);box-shadow:0 2px 7px rgba(0,0,0,.5)}
+.triad .tre b{font-family:var(--kai);font-size:17px;font-weight:700;color:#4a330e}
+.triad .tre.lead{box-shadow:0 0 12px var(--acc),0 2px 7px rgba(0,0,0,.5);border-color:var(--acc-bright)}
+.triad .tre .nm{position:absolute;bottom:-13px;left:50%;transform:translateX(-50%);font:700 7px var(--serif);letter-spacing:.04em;color:rgba(243,234,215,.62);white-space:nowrap}
+
+/* threshold legend */
+.threslbl{position:absolute;font:800 12px var(--serif);color:var(--acc-rim);white-space:nowrap;text-shadow:0 1px 6px rgba(0,0,0,.75);letter-spacing:.02em}
+.threslbl i{display:block;font:700 8px var(--serif);letter-spacing:.12em;text-transform:uppercase;color:rgba(247,240,222,.82);font-style:normal;margin-bottom:1px}
+
+/* the diegetic Cultivate seal */
+.cultseal{position:absolute;z-index:15;left:50%;transform:translateX(-50%);bottom:128px;cursor:pointer;
+ display:flex;flex-direction:column;align-items:center;gap:6px;transition:opacity .6s,transform .15s}
+.cultseal .pressed{padding:8px 22px;border-radius:26px;font:800 13px var(--serif);letter-spacing:.04em;color:#f3ead7;
+ background:linear-gradient(180deg,rgba(58,91,77,.92),rgba(33,53,45,.92));border:1px solid var(--gold-deep);
+ box-shadow:0 4px 14px rgba(0,0,0,.5),inset 0 1px 0 rgba(217,189,128,.3)}
+.cultseal .pressed.held{background:linear-gradient(180deg,rgba(122,42,34,.92),rgba(94,28,22,.92))}
+.cultseal:hover{transform:translateX(-50%) translateY(-1px)}
+
+/* realm-light base reading */
+.rlread{position:absolute;z-index:15;font:800 13px var(--serif);color:#f6efda;white-space:nowrap;
+ text-shadow:0 1px 6px rgba(0,0,0,.8);text-align:center}
+.rlread i{display:block;font:700 8px var(--serif);letter-spacing:.1em;text-transform:uppercase;color:var(--acc-rim);font-style:normal}
+
+/* reveal whisper line */
+.whisper{position:absolute;left:50%;transform:translateX(-50%);z-index:13;font:italic 600 13px var(--serif);
+ color:rgba(243,234,215,.66);white-space:nowrap;text-shadow:0 1px 6px rgba(0,0,0,.7);letter-spacing:.01em}
+
+/* ====== SCROLL OVERLAY (unrolled scroll) ====== */
+#scrollov{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;
+ background:rgba(16,11,6,.55);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+.scrollpanel{position:relative;width:1180px;max-width:94vw;max-height:90vh;overflow:hidden;border-radius:7px;display:flex;flex-direction:column;
+ background:radial-gradient(120% 150% at 50% 0%,#f6ecd6,#efe3c9 48%,#e6d8b8);
+ border:1px solid var(--gold-deep);
+ box-shadow:0 30px 80px rgba(0,0,0,.6),inset 0 0 0 6px rgba(243,234,215,.5),inset 0 0 0 7px rgba(120,90,46,.4)}
+.scrollpanel::before{content:"";position:absolute;inset:0;pointer-events:none;mix-blend-mode:multiply;background:
+ radial-gradient(circle at 16% 12%,rgba(150,110,60,.1),transparent 22%),
+ radial-gradient(circle at 84% 80%,rgba(120,86,40,.1),transparent 26%),
+ radial-gradient(160% 130% at 50% 120%,transparent 58%,rgba(70,48,20,.2))}
+/* rolled rods top & bottom */
+.scrollpanel .rod{position:absolute;left:-6px;right:-6px;height:20px;z-index:5;
+ background:linear-gradient(180deg,#8a6a36,#5e4218 55%,#4a330e);border-radius:11px;box-shadow:0 3px 8px rgba(0,0,0,.4)}
+.scrollpanel .rod.top{top:-7px}.scrollpanel .rod.bot{bottom:-7px}
+.scrollpanel .rod .cap{position:absolute;top:50%;transform:translateY(-50%);width:26px;height:26px;border-radius:50%;
+ background:radial-gradient(circle at 38% 34%,#f3e3b0,#c08f3a 55%,#6e4c16);border:1px solid #4a330e}
+.scrollpanel .rod .cap.l{left:-4px}.scrollpanel .rod .cap.r{right:-4px}
+.schead{position:relative;z-index:3;display:flex;align-items:flex-start;justify-content:space-between;gap:14px;
+ padding:24px 30px 12px;border-bottom:2px solid rgba(120,90,46,.36)}
+.schead .stag{width:46px;height:64px;border-radius:3px;display:grid;place-items:center;flex:0 0 auto;
+ background:linear-gradient(180deg,var(--cinnabar),#6e231c);border:1px solid var(--gold-deep);box-shadow:0 4px 10px rgba(40,12,8,.5)}
+.schead .stag b{font-family:var(--kai);font-size:18px;color:#f0d9a0;font-weight:700;text-align:center;line-height:1.18}
+.schead .ht{flex:1;min-width:0}
+.schead .ht .k{font:700 10px var(--serif);letter-spacing:.16em;text-transform:uppercase;color:var(--ink-45)}
+.schead .ht .t{font:800 25px var(--serif);color:var(--ink);margin-top:1px}
+.schead .ht .d{font:italic 600 12px var(--serif);color:var(--ink-70);margin-top:3px}
+.scclose{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;cursor:pointer;flex:0 0 auto;
+ font:700 17px var(--serif);color:#f3ead7;background:linear-gradient(180deg,#8b2f27,#6e231c);border:1px solid var(--gold-deep);box-shadow:0 2px 6px rgba(40,12,8,.5)}
+.sccontent{position:relative;z-index:3;padding:18px 30px 26px;overflow-y:auto}
+.sccard{background:linear-gradient(168deg,rgba(248,243,224,.94),rgba(233,221,191,.88));
+ border:1px solid rgba(120,90,46,.32);border-radius:5px;padding:13px 15px;
+ box-shadow:0 4px 10px rgba(40,26,12,.12),inset 0 1px 0 rgba(255,250,235,.5);margin-bottom:12px}
+.sccard .cardk{font:700 10px var(--serif);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-45);margin-bottom:8px}
+.scgrid{display:grid;gap:11px}
+.checkrow{display:flex;align-items:center;gap:11px;padding:8px 11px;border-radius:4px;background:rgba(255,250,235,.45);border:1px solid var(--ink-12)}
+.checkrow .med{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;flex:0 0 auto;font:800 13px var(--serif);color:#fff}
+.checkrow .med.ok{background:var(--jade-deep)}.checkrow .med.caution{background:var(--gold)}.checkrow .med.blocked{background:var(--cinnabar)}
+.checkrow .cn{font:700 13px var(--serif);color:var(--ink)}
+.checkrow .cs{font:600 11px var(--serif);margin-left:auto}
+.checkrow .cs.ok{color:var(--jade-deep)}.checkrow .cs.caution{color:var(--gold-deep)}.checkrow .cs.blocked{color:var(--cinn-deep)}
+.band{display:flex;height:26px;border-radius:4px;overflow:hidden;border:1px solid var(--ink-25);margin:6px 0}
+.band .seg{flex:1;display:grid;place-items:center;font:800 9px var(--serif);letter-spacing:.06em;color:rgba(255,255,255,.85);text-transform:uppercase}
+.band .seg.dim{opacity:.28}
+.terms{font:600 11.5px var(--serif);color:var(--ink-70);line-height:1.5}
+.terms b{color:var(--ink)}
+.pity{display:flex;gap:6px;align-items:center;margin-top:4px}
+.pity .pip{width:16px;height:16px;border-radius:50%;border:1.5px solid var(--gold-deep);background:rgba(255,250,235,.4)}
+.pity .pip.on{background:radial-gradient(circle at 38% 34%,#f3e3b0,#c08f3a);box-shadow:0 0 6px var(--gold)}
+.commit{display:inline-flex;align-items:center;gap:8px;margin-top:6px;padding:9px 20px;border-radius:5px;cursor:pointer;
+ font:800 14px var(--serif);color:#eef3ea;background:linear-gradient(180deg,#3a5b4d,#274034);border:1px solid #1c3128;box-shadow:0 3px 9px rgba(20,40,30,.4)}
+.commit.disabled{filter:grayscale(.7) brightness(.85);cursor:not-allowed;opacity:.6}
+.blocker{display:flex;align-items:flex-start;gap:9px;padding:9px 11px;border-radius:4px;background:rgba(139,48,40,.08);border-left:3px solid var(--cinnabar);margin-bottom:7px}
+.blocker .bx{font:700 12.5px var(--serif);color:var(--ink)}
+.blocker .route{font:700 10px var(--serif);color:var(--cinn-deep);margin-top:2px;cursor:pointer;text-decoration:underline dotted}
+.ledrow{display:flex;justify-content:space-between;align-items:baseline;padding:6px 0;border-bottom:1px dashed var(--ink-12);font:600 12.5px var(--serif);color:var(--ink-70)}
+.ledrow:last-child{border-bottom:none}
+.ledrow b{font-weight:800;color:var(--ink)}
+.ladder{display:flex;flex-direction:column-reverse;gap:0}
+.rung{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;padding:9px 12px;border-radius:4px;margin:2px 0;border:1px solid var(--ink-12)}
+.rung .se{flex-basis:100%;font:600 10.5px var(--serif);color:var(--ink-45);margin-top:-1px}
+.rung.crossed{background:rgba(15,111,90,.07)}
+.rung.current{background:linear-gradient(90deg,rgba(201,168,90,.14),rgba(201,168,90,.04));border-color:rgba(162,113,42,.4)}
+.rung.sealed{opacity:.5}
+.rung .rn{font:800 14px var(--serif);color:var(--ink)}
+.rung .rz{font-family:var(--kai);font-size:15px;color:var(--ink-45)}
+.rung .rs{margin-left:auto;font:700 10px var(--serif);letter-spacing:.05em;text-transform:uppercase}
+.rung.crossed .rs{color:var(--jade-deep)}.rung.current .rs{color:var(--gold-deep)}.rung.sealed .rs{color:var(--ink-45)}
+.deeplink{display:inline-flex;align-items:center;gap:6px;margin-top:8px;font:700 11px var(--serif);color:var(--cinn-deep);cursor:pointer}
+.deeplink:hover{text-decoration:underline}
+.axisrow{display:flex;align-items:center;gap:10px;padding:5px 0}
+.axisrow .ab{flex:1;height:9px;border-radius:5px;background:var(--paper-shade);overflow:hidden;box-shadow:inset 0 0 0 1px var(--ink-12)}
+.axisrow .ab .f{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-bright))}
+.axisrow .an{font:700 11.5px var(--serif);color:var(--ink-70);width:128px}
+.axisrow .av{font:800 11px var(--serif);color:var(--ink);width:34px;text-align:right}
+.axisrow.emph .an{color:var(--ink)}.axisrow.emph .ab .f{background:linear-gradient(90deg,var(--jade-deep),#1a8f74)}
+
+/* ====== BREAKTHROUGH CEREMONY (full-screen) ====== */
+#ceremony{position:fixed;inset:0;z-index:120;display:none;align-items:center;justify-content:center;overflow:hidden}
+#ceremony .cbg{position:absolute;inset:0;transition:background 1s ease}
+#ceremony .cveil{position:absolute;inset:0;background:radial-gradient(120% 90% at 50% 42%,transparent 40%,rgba(8,6,3,.6) 100%)}
+.cstage{position:relative;z-index:3;width:1100px;max-width:92vw;text-align:center;color:#f3ead7}
+.cact{font:700 11px var(--serif);letter-spacing:.34em;text-transform:uppercase;color:var(--acc-rim);opacity:.9}
+.ctitle{font:800 40px var(--serif);margin:10px 0 4px;text-shadow:0 3px 16px rgba(0,0,0,.7);letter-spacing:.01em}
+.cfiction{font:italic 600 17px var(--serif);color:rgba(243,234,215,.82);max-width:760px;margin:6px auto 0;line-height:1.5}
+.crevealbox{margin:20px auto 0;max-width:760px;display:flex;flex-direction:column;gap:9px}
+.crbeat{display:flex;align-items:center;gap:13px;padding:11px 18px;border-radius:6px;text-align:left;
+ background:linear-gradient(168deg,rgba(248,243,224,.14),rgba(120,90,46,.07));border:1px solid rgba(217,189,128,.32);
+ opacity:0;transform:translateY(8px);animation:beatIn .5s ease forwards}
+.crbeat .bi{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;flex:0 0 auto;font-family:var(--kai);font-size:17px;color:#3a2a0e;
+ background:radial-gradient(circle at 38% 34%,#f3e3b0,#c08f3a 55%,#6e4c16)}
+.crbeat .bt{font:800 15px var(--serif);color:#fff6df}
+.crbeat .bd{font:600 12px var(--serif);color:rgba(243,234,215,.72);margin-top:1px}
+.cbtns{margin-top:22px;display:flex;gap:14px;justify-content:center}
+.cbtn{padding:11px 26px;border-radius:6px;cursor:pointer;font:800 14px var(--serif);color:#f3ead7;
+ background:linear-gradient(180deg,#3a5b4d,#274034);border:1px solid var(--gold-deep);box-shadow:0 4px 12px rgba(0,0,0,.4)}
+.cbtn.ghost{background:linear-gradient(180deg,rgba(120,90,46,.3),rgba(74,51,14,.3))}
+.cbtn.danger{background:linear-gradient(180deg,#8b2f27,#5e1c16)}
+.failcost{margin:16px auto 0;max-width:640px;font:600 13.5px var(--serif);color:rgba(243,234,215,.8);line-height:1.55}
+.failcost b{color:#fff6df}
+.neverregress{margin-top:12px;font:italic 700 14px var(--serif);color:var(--jade-deep);
+ background:rgba(243,234,215,.9);display:inline-block;padding:7px 16px;border-radius:5px}
+
+/* ====== DEV TOOLBAR ====== */
+#dev{position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:200;display:flex;flex-wrap:wrap;gap:7px;align-items:center;
+ padding:7px 11px;border-radius:8px;background:rgba(18,22,18,.92);border:1px solid var(--gold-deep);
+ box-shadow:0 6px 20px rgba(0,0,0,.6);max-width:96vw;justify-content:center}
+#dev .grp{display:flex;align-items:center;gap:3px;padding:2px 7px;border-right:1px solid rgba(243,234,215,.14)}
+#dev .grp:last-child{border-right:none}
+#dev .gl{font:700 8px var(--serif);letter-spacing:.1em;text-transform:uppercase;color:rgba(243,234,215,.5);margin-right:3px}
+#dev button{font:700 10.5px var(--serif);color:#d8cba8;background:linear-gradient(180deg,#2a2013,#1a130c);
+ border:1px solid var(--gold-deep);border-radius:4px;padding:4px 9px;cursor:pointer;transition:all .1s}
+#dev button:hover{color:#f3ead7}
+#dev button.on{color:#f3ead7;background:linear-gradient(180deg,#3a5b4d,#243a30);box-shadow:0 0 8px rgba(78,107,94,.5)}
+#dev .hint{font:600 9px var(--serif);color:rgba(243,234,215,.4);width:100%;text-align:center;margin-top:1px}
+
+/* ===== VFX / MOTION (canonical keyframes) ===== */
+@keyframes ovBreathe{0%,100%{opacity:.55;transform:scale(1)}50%{opacity:1;transform:scale(1.05)}}
+@keyframes qiflowK{to{stroke-dashoffset:-64}}
+@keyframes quiver{0%,100%{transform:rotate(0deg)}28%{transform:rotate(1.5deg)}55%{transform:rotate(-1.1deg)}80%{transform:rotate(.6deg)}}
+@keyframes spinSlowK{to{transform:rotate(360deg)}}
+@keyframes mpulseK{0%,100%{transform:scale(1);opacity:.85}50%{transform:scale(1.4);opacity:1}}
+@keyframes twkK{0%,100%{opacity:.3}50%{opacity:.95}}
+@keyframes weakPK{0%,100%{opacity:.45;transform:scale(1)}50%{opacity:1;transform:scale(1.16)}}
+@keyframes flickK{0%,100%{opacity:.88;transform:scaleY(1)}30%{opacity:1;transform:scaleY(1.06)}60%{opacity:.8;transform:scaleY(.96)}}
+@keyframes swayK{0%,100%{transform:rotate(-2.6deg)}50%{transform:rotate(2.6deg)}}
+@keyframes moteUpK{0%{transform:translateY(10px) translateX(0);opacity:0}14%{opacity:.85}55%{transform:translateY(-46px) translateX(5px)}88%{opacity:.4}100%{transform:translateY(-92px) translateX(-4px);opacity:0}}
+@keyframes breathPass{0%{left:24px;opacity:0}20%{opacity:.8}80%{opacity:.8}100%{left:calc(100% - 150px);opacity:0}}
+@keyframes beatIn{to{opacity:1;transform:translateY(0)}}
+@keyframes driftK{0%{transform:translateX(0)}100%{transform:translateX(40px)}}
+@keyframes glintK{0%{opacity:0;transform:translateX(-40px)}40%{opacity:.85}100%{opacity:0;transform:translateX(80px)}}
+@keyframes blazeK{0%{opacity:.25;transform:scale(.7)}60%{opacity:.95;transform:scale(1.18)}100%{opacity:.7;transform:scale(1.05)}}
+@keyframes floodK{0%{transform:scaleY(0);opacity:0}30%{opacity:1}100%{transform:scaleY(1);opacity:.9}}
+@keyframes sigK{0%{opacity:0;transform:scale(.6) rotate(-8deg)}100%{opacity:.9;transform:scale(1) rotate(0)}}
+@keyframes shudK{0%,100%{transform:translate(0,0)}25%{transform:translate(-3px,2px)}50%{transform:translate(2px,-2px)}75%{transform:translate(-2px,-1px)}}
+.qiflow{stroke-dasharray:3 13;animation:qiflowK 2.4s linear infinite}
+.qiflow.fast{animation-duration:1.4s}
+.breatheA{transform-box:fill-box;transform-origin:center;animation:ovBreathe 5.6s ease-in-out infinite}
+.mp{transform-box:fill-box;transform-origin:center;animation:mpulseK 3s ease-in-out infinite}
+.twk{animation:twkK 3.8s ease-in-out infinite}
+.weakP{transform-box:fill-box;transform-origin:center;animation:weakPK 2.1s ease-in-out infinite}
+.flick{transform-box:fill-box;transform-origin:50% 100%;animation:flickK 2.6s ease-in-out infinite}
+.swayT{transform-box:fill-box;transform-origin:50% 0%;animation:swayK 5.2s ease-in-out infinite}
+.spinG{animation:spinSlowK 90s linear infinite}
+.driftG{animation:driftK 30s ease-in-out infinite alternate}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+/* legibility: tight dark outline + soft glow so diegetic labels hold on dark OR pale scenes */
+.dialcap,.dialcap i,.instlabel,.instval,.threslbl,.threslbl i,.rlread,.rlread i,.whisper,.cact,
+.lintel .roomtitle,.lintel .realmname,.brread .v,.brread .l,.baseplate .bk,.baseplate .bv,.crosshint{
+ text-shadow:0 1px 2px rgba(0,0,0,.92),0 0 6px rgba(0,0,0,.62),0 0 15px rgba(0,0,0,.4)!important}
+
+/* ===== AFFORDANCE: every tappable instrument carries a faint gold cue that wakes on hover ===== */
+.cue{position:absolute;top:-3px;right:-3px;width:19px;height:19px;border-radius:50%;display:grid;place-items:center;z-index:6;
+ background:radial-gradient(circle at 38% 34%,#f7e9bf,#c08f3a 60%,#6e4c16);border:1px solid #4a330e;color:#3a2a0e;
+ font:800 11px var(--serif);opacity:.5;transition:opacity .15s,transform .15s,box-shadow .15s;box-shadow:0 1px 4px rgba(0,0,0,.5)}
+.tapwrap:hover .cue,.triad:hover .cue,.inst:hover .cue{opacity:1;transform:scale(1.14);box-shadow:0 0 10px rgba(217,189,128,.7),0 1px 4px rgba(0,0,0,.5)}
+.inst.tapwrap,.triad{transition:transform .15s,filter .15s}
+.inst.tapwrap:hover,.triad:hover{transform:translateY(-2px)}
+
+/* ===== BASE PLATE (single clean progress readout under the figure) ===== */
+.baseplate{position:absolute;left:50%;transform:translateX(-50%);z-index:13;display:flex;flex-direction:column;align-items:center;gap:4px;white-space:nowrap}
+.baseplate .top{display:flex;align-items:baseline;gap:7px}
+.baseplate .kai{font-family:var(--kai);font-size:13px;color:var(--acc-rim)}
+.baseplate .bk{font:700 8px var(--serif);letter-spacing:.14em;text-transform:uppercase;color:var(--acc-rim)}
+.baseplate .bv{font:800 15px var(--serif);color:#fff7e6}
+.baseplate .bsub{font:600 9.5px var(--serif);color:rgba(243,234,215,.7)}
+.baseplate .bbar{width:196px;height:4px;border-radius:3px;background:rgba(20,14,8,.5);overflow:hidden;box-shadow:inset 0 0 0 1px rgba(243,234,215,.2)}
+.baseplate .bbar .bf{height:100%;background:linear-gradient(90deg,var(--acc),var(--acc-bright));box-shadow:0 0 8px var(--acc)}
+
+/* ===== ACTION SEAL states + gentle attention pulse ===== */
+.cultseal{position:absolute;z-index:15;left:50%;transform:translateX(-50%);bottom:120px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;transition:transform .15s}
+.cultseal:hover{transform:translateX(-50%) translateY(-1px)}
+.cultseal .pressed.crossing{background:linear-gradient(180deg,#3a5b4d,#1f4233);border-color:var(--gold-bright);animation:crossGlowK 2.8s ease-in-out infinite}
+.cultseal .pressed.waiting{background:linear-gradient(180deg,rgba(150,96,42,.94),rgba(94,60,22,.94));border-color:var(--gold-deep)}
+.crosshint{font:600 10px var(--serif);color:var(--acc-rim);letter-spacing:.02em}
+@keyframes crossGlowK{0%,100%{box-shadow:0 4px 14px rgba(0,0,0,.5),0 0 0 0 rgba(217,189,128,0)}50%{box-shadow:0 4px 18px rgba(0,0,0,.5),0 0 26px 2px rgba(217,189,128,.55)}}
+
+/* ===== SCROLL: richer card components ===== */
+.cardtop{display:flex;align-items:center;gap:9px;margin-bottom:10px}
+.cardtop .cm{width:25px;height:25px;border-radius:50%;display:grid;place-items:center;flex:0 0 auto;font-family:var(--kai);font-size:14px;color:#3a2a0e;background:radial-gradient(circle at 38% 34%,#f3e3b0,#c08f3a 60%,#6e4c16);box-shadow:inset 0 1px 0 rgba(255,250,235,.5)}
+.cardtop .cm.jade{background:radial-gradient(circle at 38% 34%,#cfdccb,#5f7d6e 60%,#2f4a40);color:#eef3ea}
+.cardtop .cm.cinn{background:radial-gradient(circle at 38% 34%,#d98e80,#8b3028 60%,#54190f);color:#f4dccb}
+.cardtop .ct{font:700 11px var(--serif);letter-spacing:.13em;text-transform:uppercase;color:var(--ink-45)}
+.cardtop .cx2{font:600 10px var(--serif);color:var(--ink-45);margin-left:auto;text-align:right}
+.eqn{display:flex;align-items:stretch;gap:7px;flex-wrap:wrap;padding:4px 0 8px}
+.eqn .term{padding:5px 11px;border-radius:4px;background:rgba(255,250,235,.62);border:1px solid var(--ink-12);text-align:center;line-height:1.15;min-width:62px}
+.eqn .term b{display:block;font:800 14px var(--serif);color:var(--ink)}
+.eqn .term i{font:700 7px var(--serif);letter-spacing:.07em;text-transform:uppercase;color:var(--ink-45);font-style:normal}
+.eqn .op{align-self:center;font:800 15px var(--serif);color:var(--ink-45)}
+.eqn .res{padding:6px 13px;border-radius:4px;background:linear-gradient(180deg,#3a5b4d,#274034);color:#eef3ea;text-align:center;line-height:1.15;align-self:center}
+.eqn .res b{display:block;font:800 15px var(--serif)}
+.eqn .res i{font:700 7px var(--serif);letter-spacing:.07em;text-transform:uppercase;color:rgba(233,242,236,.7);font-style:normal}
+.statrow{display:flex;align-items:baseline;gap:8px;padding:7px 0;border-bottom:1px dashed var(--ink-12);flex-wrap:wrap}
+.statrow:last-child{border-bottom:none}
+.statrow .sn{font:700 12.5px var(--serif);color:var(--ink)}
+.statrow .sz{font-family:var(--kai);font-size:12px;color:var(--ink-45)}
+.statrow .sv{margin-left:auto;font:800 12.5px var(--serif);color:var(--ink)}
+.statrow .sv.ok{color:var(--jade-deep)}.statrow .sv.caution{color:var(--gold-deep)}.statrow .sv.bad{color:var(--cinn-deep)}
+.statrow .se{font:600 10.5px var(--serif);color:var(--ink-45);flex-basis:100%}
+.grant{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:5px;margin-top:4px;background:linear-gradient(168deg,rgba(15,111,90,.09),rgba(15,111,90,.02));border:1px solid rgba(15,111,90,.24)}
+.grant .gm{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;flex:0 0 auto;font-family:var(--kai);font-size:15px;color:#eef3ea;background:radial-gradient(circle at 38% 34%,#cfdccb,#5f7d6e 60%,#2f4a40)}
+.grant .gt{font:800 13.5px var(--serif);color:var(--ink)}
+.grant .gd{font:600 11px var(--serif);color:var(--ink-70);margin-top:1px}
+.versefoot{text-align:center;font:italic 600 12.5px var(--serif);color:var(--ink-45);padding:8px 0 2px}
+.lockmini{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:3px;background:rgba(31,26,23,.1);border:1px solid var(--ink-25);font-family:var(--kai);font-size:10px;color:var(--ink-45)}
+.raisehint{font:600 11px var(--serif);color:var(--ink-70);padding:6px 10px;border-radius:4px;background:rgba(162,113,42,.08);border-left:3px solid var(--gold);margin-top:6px}
+.raisehint b{color:var(--gold-deep)}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+body.rm *,body.rm *::before,body.rm *::after{animation:none!important;transition:none!important}
+</style></head>
+<body>
+<div id="dev"></div>
+<div id="scaler"><div class="stage" id="stage" data-path="heaven" data-realm="3"></div></div>
+<div id="scrollov"><div id="scrollbody" class="scrollpanel"></div></div>
+<div id="ceremony"></div>
+
+<script>
+/* ===================== HELPERS (house grammar) ===================== */
+const PT=(cx,cy,r,a)=>[cx+r*Math.cos((a-90)*Math.PI/180),cy+r*Math.sin((a-90)*Math.PI/180)];
+const arc=(cx,cy,r,a0,a1)=>{const[x0,y0]=PT(cx,cy,r,a0),[x1,y1]=PT(cx,cy,r,a1);return `M${x0.toFixed(1)},${y0.toFixed(1)} A${r},${r} 0 ${Math.abs(a1-a0)>180?1:0} 1 ${x1.toFixed(1)},${y1.toFixed(1)}`};
+const lerp=(a,b,t)=>a+(b-a)*t;
+function mix(h1,h2,t){const p=h=>[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];const a=p(h1),b=p(h2);return '#'+a.map((v,i)=>Math.round(lerp(v,b[i],t)).toString(16).padStart(2,'0')).join('')}
+function waxSeal(chars,size,rot,jade){
+ const C=size/2,r=size/2-2,N=22;let p='';
+ for(let i=0;i<=N;i++){const a=i/N*2*Math.PI;const rr=r*(0.9+0.06*Math.sin(i*2.7+1.3)+0.04*Math.cos(i*1.6+0.5));const x=C+rr*Math.cos(a),y=C+rr*Math.sin(a);p+=(i?'L':'M')+x.toFixed(1)+','+y.toFixed(1)+' '}
+ p+='Z';const cs=[...chars],fs=size*(cs.length>2?0.27:0.34),gap=fs*1.02,y0=C-(cs.length-1)*gap/2;
+ const txt=cs.map((c,i)=>`<tspan x="${C}" y="${(y0+i*gap+fs*0.34).toFixed(1)}">${c}</tspan>`).join('');
+ const fill=jade?'url(#jadeRad)':'url(#cinnDisc)',str=jade?'#1c3128':'#54190f',inner=jade?'rgba(220,240,225,.4)':'rgba(255,214,196,.4)',tx=jade?'#e9efe2':'#f4dccb';
+ return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="transform:rotate(${rot||0}deg);overflow:visible">
+  <path d="${p}" fill="${fill}" stroke="${str}" stroke-width="1.3"/>
+  <path d="${p}" fill="none" stroke="${inner}" stroke-width=".8" transform="translate(${C} ${C}) scale(.82) translate(${-C} ${-C})"/>
+  <text text-anchor="middle" font-family="var(--kai)" font-weight="700" font-size="${fs.toFixed(1)}" fill="${tx}">${txt}</text></svg>`}
+
+/* ===================== PATH DATA MODEL ===================== */
+const REALM_GENERIC=["Qi Condensation","Foundation Establishment","Core Formation","Nascent Soul","Spirit Severing","Tribulation","Immortal Ascension"];
+
+const PATHS={
+ heaven:{
+  id:'heaven',glyph:'天',name:'HEAVEN',roomsub:'Path of the Heavens · 觀天',
+  verb:'Contemplate',counter:'Heaven',peak:'Empyrean',
+  verse:'The sky does not strive, yet nothing escapes its measure.',
+  mech:{label:'Premonition · Heaven\u2019s Eye',short:'PREMONITION',glyph:'目',scroll:'premonition'},
+  acc:{a:'#a9c4bb',ab:'#eaf2ec',ad:'#3c5849',ac:'#fbe6b4',ar:'#d7e2dc'},
+  qi:'#f3e3a8',core:'#fbe6b4',rim:'#dfeae4',aura:'#bfe0d4',
+  treasures:{jing:38,qi:50,shen:84,lead:'shen'},
+  realms:[
+   {n:'Mist-Gathering',z:'聚雾',m:'Spirit Sense'},
+   {n:'Cloud-Terrace Founding',z:'云台',m:'Mind Eye'},
+   {n:'Still-Mirror Core',z:'明镜结',m:'Soul Clarity'},
+   {n:'Cloudborne Soul',z:'云魂',m:'Heart of Dao'},
+   {n:'Void-Severed Spirit',z:'裂虚',m:'Void Gaze'},
+   {n:'Heaven-Mandate Trial',z:'天命',m:'Heavenly Mandate'},
+   {n:'Ascend Beyond',z:'登霄',m:'Mandate of the Firmament'}],
+  fantasy:["the world becomes legible","weaknesses become visible","the mind steadies","the heart becomes unshakeable","the cultivator sees the crack in anything","perception becomes authority","comprehension becomes a weapon"],
+  tribName:'the heart-tribulation, fought as a duel of comprehension',heartDevil:'obsession \u2014 the madness of gazing too long into the void'
+ },
+ earth:{
+  id:'earth',glyph:'地',name:'EARTH',roomsub:'Path of the Body · 煉體',
+  verb:'Refine',counter:'Forging',peak:'Adamant',
+  verse:'Let heaven send its tribulations; the mountain does not move.',
+  mech:{label:'Beast Lore · Body Tempering',short:'BEAST LORE',glyph:'獸',scroll:'beastlore'},
+  acc:{a:'#b98a3e',ab:'#e7cd92',ad:'#4a330e',ac:'#ffcf7a',ar:'#d9bd80'},
+  qi:'#e0a martial',core:'#ffcf7a',rim:'#e7cd92',aura:'#caa05a',
+  treasures:{jing:86,qi:46,shen:40,lead:'jing'},
+  realms:[
+   {n:'Flesh-Tempering',z:'淬体',m:'Body Temper'},
+   {n:'Iron-Bone Foundation',z:'铁骨',m:'Bone Forging'},
+   {n:'Marrow-Forged Core',z:'锻髓结',m:'Marrow Essence'},
+   {n:'Deep-Root Spirit',z:'深根',m:'Root Depth'},
+   {n:'Iron-Body Severing',z:'金身斩',m:'Iron Skin'},
+   {n:'Mountain-Bearing Trial',z:'负山',m:'Mountain Stance'},
+   {n:'Sovereign Body Ascendant',z:'后土飞升',m:'Unmoving Sovereign'}],
+  fantasy:["the flesh begins to harden","the frame becomes iron","the marrow becomes a vessel","the cultivator becomes immovable","the body negates chip damage","the wall strikes back","the body becomes a treasure"],
+  tribName:'the body-tribulation \u2014 surviving the unsurvivable',heartDevil:'yielding \u2014 the temptation to despair under endless pressure'
+ },
+ martial:{
+  id:'martial',glyph:'武',name:'MARTIAL',roomsub:'Path of the Blade · 鑄道',
+  verb:'Forge',counter:'Edge',peak:'Peerless',
+  verse:'Heaven set no edge to my name, so I forged one.',
+  mech:{label:'Weapon-Bond · Arms-Mastery',short:'WEAPON-BOND',glyph:'劍',scroll:'weaponbond'},
+  acc:{a:'#a94835',ab:'#f0d896',ad:'#5e1c16',ac:'#ffb15a',ar:'#e3a884'},
+  qi:'#ff9d5a',core:'#ffb15a',rim:'#e8b48e',aura:'#c2563f',
+  treasures:{jing:58,qi:54,shen:50,lead:'jing'},
+  realms:[
+   {n:'Edge-Whetting',z:'砺锋',m:'Weapon Intent'},
+   {n:'Blade-Forging Foundation',z:'锻刃',m:'Flowing Step'},
+   {n:'Sword-Heart Core',z:'剑心结',m:'Battle Rhythm'},
+   {n:'Slaying Soul',z:'戮魂',m:'Killing Intent'},
+   {n:'Heaven-Severing',z:'斩天',m:'Sword Heart'},
+   {n:'Heaven-Defying Trial',z:'逆天',m:'Unbroken Momentum'},
+   {n:'Asura Ascendant',z:'修罗飞升',m:'Martial Dao \u00b7 Asura'}],
+  fantasy:["the bond with the blade begins","the cultivator learns to close","the tempo builds","the kill window opens","the true edge \u2014 crits cut past defense","the snowball that cannot be stopped","the sundering edge that parts heaven and earth"],
+  tribName:'a duel of blades \u2014 the heart held against the killing intent that would consume it',heartDevil:'hesitation \u2014 the fear of death, the mercy that gets you killed'
+ }
+};
+// fix typo'd literals safely
+PATHS.earth.qi='#e0a050';
+
+/* ===================== STATE ===================== */
+const S={path:'heaven',realm:3,peak:false,fg:'idle',rm:false,phase:'none'};
+// realmProgress within the realm (0..1). peak=true forces ~full.
+function realmPct(){return S.peak?0.985:[0.12,0.34,0.5,0.62,0.74,0.86][S.realm-1]||0.5}
+/* ===================== SCENE: SKY WASH ===================== */
+function skyWash(p,realm){
+ const rf=(realm-1)/5; // 0..1 across live realms
+ if(p==='heaven'){
+  const top=mix('#16202b','#9fb6bd',rf), up=mix('#1d2f33','#7d9c9b',rf), mid=mix('#324f48','#b7cdc5',rf), bot=mix('#13201d','#56756c',rf);
+  const indigo=rf>0.55?`,radial-gradient(60% 50% at 6% 18%,rgba(40,38,86,${(rf-0.55)*0.7}),transparent 60%),radial-gradient(60% 50% at 94% 16%,rgba(40,38,86,${(rf-0.55)*0.7}),transparent 60%)`:'';
+  return `radial-gradient(120% 78% at 50% -16%,rgba(247,240,215,${0.1+rf*0.22}),transparent 56%)${indigo},linear-gradient(180deg,${top},${up} 30%,${mid} 64%,${bot} 100%)`;
+ }
+ if(p==='earth'){
+  const top=mix('#241a10','#36281600'.slice(0,7),rf), mid=mix('#3a2c18','#5a4524',rf), low=mix('#4a3415','#7a5a28',rf);
+  const amber=rf>0.6?`,radial-gradient(50% 36% at 72% 22%,rgba(210,150,60,${(rf-0.6)*0.6}),transparent 58%)`:'';
+  return `radial-gradient(110% 60% at 50% 104%,rgba(150,104,45,${0.18+rf*0.16}),transparent 62%)${amber},linear-gradient(180deg,${mix('#241a10','#2e2214',rf)},${mid} 52%,${low} 100%)`;
+ }
+ // martial
+ const top=mix('#1c1410','#2a1713',rf), mid=mix('#3a1d18','#5e221a',rf), low=mix('#52201a','#7e2c1e',rf);
+ return `radial-gradient(100% 66% at 50% 98%,rgba(170,72,53,${0.22+rf*0.2}),transparent 64%),linear-gradient(180deg,${top},${mid} 58%,${low} 100%)`;
+}
+
+/* ===================== SCENE: ATMOSPHERICS (distant + mid layers) ===================== */
+function buildAtmos(p,realm,fg){
+ const rf=(realm-1)/5, rm=S.rm; let s='';
+ if(p==='heaven'){
+  // stars (denser/brighter as realm rises)
+  const N=30+Math.round(rf*30);
+  s+=`<g fill="#f3ead7">`;
+  for(let i=0;i<N;i++){const x=(i*149+60)%2008+20,y=(i*97+30)%560+12,r=(i%5)*0.5+0.9,o=(0.5+rf*0.4).toFixed(2);
+   s+=`<circle cx="${x}" cy="${y}" r="${r.toFixed(1)}" opacity="${o}" ${rm?'':`class="twk" style="animation-delay:${(i%9*.4).toFixed(1)}s"`}/>`}
+  s+=`</g>`;
+  // pale high disc (sun-moon of law) — rises with realm
+  const dy=lerp(210,150,rf);
+  s+=`<circle cx="1560" cy="${dy}" r="${lerp(56,72,rf)}" fill="url(#heavenDisc)"/><circle cx="1560" cy="${dy}" r="${lerp(56,72,rf)}" fill="none" stroke="rgba(223,234,228,.35)"/>`;
+  // celestial orrery (concentric star-charted rings; fuller higher)
+  const ocx=1024,ocy=lerp(360,300,rf),rings=2+Math.round(rf*3);
+  s+=`<g opacity="${0.5+rf*0.4}">`;
+  s+=`<g ${rm?'':'class="spinG"'} style="transform-origin:${ocx}px ${ocy}px">`;
+  for(let k=0;k<rings;k++){const rr=120+k*70;s+=`<circle cx="${ocx}" cy="${ocy}" r="${rr}" fill="none" stroke="rgba(215,226,220,${0.16+0.04*k})" stroke-width="1" stroke-dasharray="${k%2?'2 14':'1 0'}"/>`;
+   const npts=6+k*3;for(let j=0;j<npts;j++){const a=j/npts*360+k*11,[x,y]=PT(ocx,ocy,rr,a);s+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${k===rings-1?2.2:1.4}" fill="rgba(233,242,236,.7)"/>`}}
+  s+=`</g>`;
+  // a counter-rotating fine ring
+  s+=`<g ${rm?'':'class="spinG"'} style="transform-origin:${ocx}px ${ocy}px;animation-direction:reverse;animation-duration:130s"><circle cx="${ocx}" cy="${ocy}" r="${90}" fill="none" stroke="rgba(251,230,180,.3)" stroke-dasharray="2 10"/></g>`;
+  s+=`<text x="${ocx}" y="${ocy+18}" text-anchor="middle" font-family="var(--kai)" font-size="46" fill="rgba(247,240,215,.10)">道</text></g>`;
+  // drifting high mist bands
+  s+=`<g ${rm?'':'class="driftG"'}><path d="M-60,640 Q400,608 1024,642 Q1560,672 2110,632 L2110,720 L-60,720Z" fill="url(#heavenMist)" opacity=".45"/></g>`;
+  s+=`<g ${rm?'':'class="driftG"'} style="animation-duration:42s;animation-direction:reverse"><path d="M-60,712 Q520,684 1100,716 Q1620,742 2110,706 L2110,800 L-60,800Z" fill="url(#heavenMist)" opacity=".35"/></g>`;
+  // distant pale peaks FAR below (we look down from above)
+  s+=`<path d="M0,1152 L0,930 L300,968 L640,900 L1024,966 L1420,902 L1760,966 L2048,924 L2048,1152Z" fill="rgba(120,150,150,${0.16+rf*0.06})"/>`;
+  s+=`<path d="M0,1152 L0,996 L380,1028 L820,972 L1240,1030 L1660,976 L2048,1024 L2048,1152Z" fill="rgba(90,120,120,${0.2+rf*0.06})"/>`;
+  return s;
+ }
+ if(p==='earth'){
+  // towering ink-mountain hollow framing (grows taller/closer with realm)
+  const climb=lerp(0,120,rf);
+  s+=`<path d="M0,1152 L0,${360-climb} Q120,${300-climb} 230,${420-climb} Q320,${300-climb} 430,${470-climb} L470,1152Z" fill="rgba(34,24,15,.62)"/>`;
+  s+=`<path d="M2048,1152 L2048,${360-climb} Q1928,${300-climb} 1818,${420-climb} Q1728,${300-climb} 1618,${470-climb} L1578,1152Z" fill="rgba(34,24,15,.62)"/>`;
+  // far central massif
+  s+=`<path d="M360,1152 L360,${560-climb*0.6} L640,${430-climb*0.6} L900,${540-climb*0.6} L1024,${470-climb*0.6} L1148,${545-climb*0.6} L1408,${435-climb*0.6} L1688,${560-climb*0.6} L1688,1152Z" fill="rgba(48,34,20,.5)"/>`;
+  // beast-totem faint glyphs on the rock (more visible higher realm)
+  s+=`<g opacity="${0.05+rf*0.08}" fill="rgba(243,234,215,1)" font-family="var(--kai)" font-size="64" text-anchor="middle">`;
+  s+=`<text x="210" y="${560-climb}">獸</text><text x="1840" y="${560-climb}">山</text></g>`;
+  // storm-amber crack (R5+)
+  if(rf>0.6 && !rm){s+=`<path d="M1500,150 L1470,260 L1510,250 L1460,400" fill="none" stroke="rgba(232,182,90,${(rf-0.6)*1.4})" stroke-width="2.4" class="twk" style="animation-duration:5s"/>`;}
+  // low heavy mist
+  s+=`<g ${rm?'':'class="driftG"'} style="animation-duration:48s"><path d="M-60,840 Q500,812 1100,846 Q1620,872 2110,832 L2110,1000 L-60,1000Z" fill="url(#earthMist)" opacity=".5"/></g>`;
+  return s;
+ }
+ // martial — taut cinnabar dusk
+ // blood disc low
+ s+=`<circle cx="1024" cy="${lerp(720,760,rf)}" r="${lerp(150,180,rf)}" fill="url(#martialDisc)" opacity=".5"/>`;
+ // distant jagged ridgeline
+ s+=`<path d="M0,1152 L0,820 L260,870 L520,800 L820,872 L1024,812 L1240,876 L1520,802 L1800,872 L2048,824 L2048,1152Z" fill="rgba(40,18,14,.55)"/>`;
+ // sweeping blade-arcs (more/brighter higher realm)
+ const arcs=1+Math.round(rf*2);
+ for(let i=0;i<arcs;i++){const yo=180+i*150,op=(0.28+rf*0.4-i*0.08).toFixed(2),w=(11-i*3);
+  s+=`<path d="M${120+i*40},${yo+90} Q1024,${yo-100} ${1928-i*40},${yo+110}" fill="none" stroke="url(#bladeBrush)" stroke-width="${w}" filter="url(#brushRough)" opacity="${op}" ${rm||i?'':'class="spinG"'} style="animation:none"/>`}
+ // the splitting blade-arc of light at R5+
+ if(rf>0.6){s+=`<path d="M120,520 Q1024,180 1928,540" fill="none" stroke="rgba(255,240,196,${(rf-0.6)*1.5})" stroke-width="3" filter="url(#soft)"/>`;}
+ // hanging war-banners
+ s+=[[150,'武'],[1898,'勇']].map(([x,g])=>`<g ${rm?'':'class="swayT"'} style="transform-origin:${x}px 120px"><path d="M${x-30},120 L${x+30},120 L${x+24},520 L${x},540 L${x-24},520Z" fill="url(#bannerCloth)" opacity=".82"/><path d="M${x-30},120 L${x+30},120 L${x+27},150 L${x-27},150Z" fill="#3a1410"/><text x="${x}" y="240" text-anchor="middle" font-family="var(--kai)" font-size="40" fill="#f4dccb" opacity=".88">${g}</text><text x="${x}" y="320" text-anchor="middle" font-family="var(--kai)" font-size="40" fill="#f4dccb" opacity=".7">道</text></g>`).join('');
+ return s;
+}
+
+/* ===================== SCENE: MANDALA (ground glyph) ===================== */
+function buildMandala(p,realm){
+ const rf=(realm-1)/5,rm=S.rm,cx=1024,cy=902,P=PATHS[p];
+ const col=p==='heaven'?'rgba(215,226,220,':p==='earth'?'rgba(217,189,128,':'rgba(232,168,122,';
+ const spd=p==='martial'?70:p==='heaven'?96:110;
+ let s=`<g opacity="${0.5+rf*0.3}"><g ${rm?'':'class="spinG"'} style="transform-origin:${cx}px ${cy}px;animation-duration:${spd}s">`;
+ // outer ring of ticks
+ const R=300+rf*40;
+ for(let i=0;i<48;i++){const a=i*7.5,[x0,y0]=PT(cx,cy,R,a),[x1,y1]=PT(cx,cy,i%4?R+10:R+18,a);s+=`<line x1="${x0.toFixed(1)}" y1="${y0.toFixed(1)}" x2="${x1.toFixed(1)}" y2="${y1.toFixed(1)}" stroke="${col}${i%4?0.2:0.4})" stroke-width="${i%4?0.8:1.5}" transform="scale(1,0.34)" transform-origin="${cx} ${cy}"/>`}
+ s+=`<ellipse cx="${cx}" cy="${cy}" rx="${R}" ry="${R*0.34}" fill="none" stroke="${col}0.28)" stroke-width="1.2"/>`;
+ s+=`<ellipse cx="${cx}" cy="${cy}" rx="${R*0.66}" ry="${R*0.66*0.34}" fill="none" stroke="${col}0.22)" stroke-dasharray="3 10"/>`;
+ // path geometry: heaven = star-chart crisscross; earth = hexagon; martial = blade spokes
+ if(p==='heaven'){for(let i=0;i<8;i++){const a=i*45,[x,y]=PT(cx,cy,R*0.62,a);s+=`<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${(cy+(y-cy)).toFixed(1)}" stroke="${col}0.14)" stroke-width="1" transform="scale(1,0.34)" transform-origin="${cx} ${cy}"/>`}}
+ if(p==='earth'){let hp='';for(let i=0;i<=6;i++){const a=i*60,[x,y]=PT(cx,cy,R*0.6,a);hp+=(i?'L':'M')+x.toFixed(1)+','+(cy+(y-cy)*0.34).toFixed(1)+' '}s+=`<path d="${hp}Z" fill="none" stroke="${col}0.2)" stroke-width="1.4"/>`}
+ if(p==='martial'){for(let i=0;i<6;i++){const a=i*60,[x,y]=PT(cx,cy,R*0.66,a),[x2,y2]=PT(cx,cy,R*0.2,a);s+=`<path d="M${x2.toFixed(1)},${(cy+(y2-cy)*0.34).toFixed(1)} L${x.toFixed(1)},${(cy+(y-cy)*0.34).toFixed(1)}" stroke="${col}0.18)" stroke-width="1.6"/>`}}
+ s+=`</g>`;
+ // central path glyph (faint, beneath figure)
+ const gly=p==='heaven'?'道法天':p==='earth'?'體獸山':'兵戰武';
+ s+=`<text x="${cx}" y="${cy+14}" text-anchor="middle" font-family="var(--kai)" font-size="30" letter-spacing="8" fill="${col}0.10)">${gly}</text></g>`;
+ return s;
+}
+
+/* ===================== SCENE: DAIS / ALTAR ===================== */
+function buildDais(p,realm,fg){
+ const rf=(realm-1)/5,rm=S.rm,cx=1024,cy=900;let s='';
+ if(p==='heaven'){
+  // cloud-dais; figure lifts off at higher realm so dais lowers/glows
+  s+=`<ellipse cx="${cx}" cy="${cy+8}" rx="${lerp(210,250,rf)}" ry="${lerp(40,52,rf)}" fill="url(#cloudDais)" opacity="${0.45+rf*0.25}" ${rm?'':'class="breatheA"'}/>`;
+  for(let i=0;i<12;i++){const a=i/12*360,[x,y]=PT(cx,cy,lerp(170,200,rf),a);s+=`<path d="M${cx},${cy} Q${((cx+x)/2).toFixed(0)},${((cy+(cy+(y-cy)*0.3))/2-6).toFixed(0)} ${x.toFixed(0)},${(cy+(y-cy)*0.3).toFixed(0)}" fill="none" stroke="rgba(191,224,212,.4)" stroke-width="1.6"/>`}
+ } else if(p==='earth'){
+  // heavy living-stone slab; grows more massive
+  const w=lerp(220,300,rf);
+  s+=`<path d="M${cx-w},${cy-12} L${cx+w},${cy-12} L${cx+w*1.18},${cy+78} L${cx-w*1.18},${cy+78}Z" fill="rgba(40,26,16,.66)" stroke="rgba(120,80,46,.4)"/>`;
+  s+=`<path d="M${cx-w},${cy-12} L${cx+w},${cy-12} L${cx+w*1.02},${cy+8} L${cx-w*1.02},${cy+8}Z" fill="rgba(74,52,28,.6)"/>`;
+  s+=`<g stroke="rgba(224,118,42,.34)" stroke-width="1.6" ${rm?'':'class="twk"'} style="animation-duration:6s"><line x1="${cx-120}" y1="${cy+44}" x2="${cx-40}" y2="${cy+44}"/><line x1="${cx+40}" y1="${cy+54}" x2="${cx+150}" y2="${cy+54}"/></g>`;
+  // the Beast Cairn beside the figure (also the unique-mechanic instrument anchor) — to the right
+  const beasts=Math.min(6,1+Math.round(rf*5));
+  s+=`<g transform="translate(${cx+330},${cy-6})">`;
+  for(let i=0;i<beasts;i++){const bw=58-i*7,bh=26-i*1.5,by=-i*22;s+=`<rect x="${-bw/2}" y="${by-bh}" width="${bw}" height="${bh}" rx="5" fill="rgba(58,42,26,.8)" stroke="rgba(120,84,40,.5)"/><circle cx="0" cy="${by-bh/2}" r="3.5" fill="url(#earthEssence)" ${rm?'':'class="twk"'} style="animation-delay:${i*.5}s"/>`}
+  s+=`</g>`;
+ } else {
+  // weapon-altar-forge: the dais IS the altar with the bonded weapon planted
+  s+=`<ellipse cx="${cx}" cy="${cy+6}" rx="${lerp(190,220,rf)}" ry="36" fill="rgba(60,42,20,.5)" stroke="rgba(120,90,46,.4)"/>`;
+  s+=`<ellipse cx="${cx}" cy="${cy+6}" rx="${lerp(130,150,rf)}" ry="24" fill="none" stroke="rgba(178,131,45,.35)"/>`;
+  // forge brazier glow
+  s+=`<ellipse cx="${cx}" cy="${cy+2}" rx="90" ry="18" fill="url(#forgeGlow2)" opacity="${0.4+rf*0.3}" ${rm?'':'class="breatheA"'}/>`;
+  // the planted bonded blade behind/through figure (grows more central/bright)
+  const bx=cx+ (rf>0.5?0:0); // central
+  const bladeLen=lerp(300,400,rf), gl=(0.4+rf*0.5).toFixed(2);
+  s+=`<g transform="translate(${cx},${cy+4})">`;
+  s+=`<rect x="-5" y="${-bladeLen}" width="10" height="${bladeLen-40}" rx="4" fill="url(#bladeSteel)" opacity="${gl}"/>`; // blade
+  s+=`<path d="M-5,${-bladeLen} L5,${-bladeLen} L0,${-bladeLen-26}Z" fill="url(#bladeSteel)" opacity="${gl}"/>`; // tip
+  s+=`<rect x="-26" y="${-44}" width="52" height="12" rx="4" fill="#6e4c22"/>`; // guard
+  s+=`<rect x="-7" y="${-40}" width="14" height="44" rx="4" fill="#4a330e"/>`; // grip into altar
+  if(!rm){s+=`<rect x="-5" y="${-bladeLen}" width="10" height="${bladeLen-40}" rx="4" fill="rgba(255,177,90,${(rf*0.4).toFixed(2)})" filter="url(#soft)"/>`;}
+  s+=`</g>`;
+ }
+ return s;
+}
+/* ===================== SVG DEFS (injected once) ===================== */
+const DEFS=`<svg width="0" height="0" style="position:absolute"><defs>
+ <filter id="grainF"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="1" seed="7" stitchTiles="stitch"/><feColorMatrix type="matrix" values="0 0 0 0 0.42 0 0 0 0 0.33 0 0 0 0 0.20 0 0 0 0.05 0"/></filter>
+ <filter id="soft"><feGaussianBlur stdDeviation="2.2"/></filter>
+ <filter id="soft5"><feGaussianBlur stdDeviation="5"/></filter>
+ <filter id="glowJ" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+ <filter id="brushRough" x="-20%" y="-20%" width="140%" height="140%"><feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="1" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="9"/></filter>
+ <radialGradient id="jadeRad" cx="40%" cy="34%" r="78%"><stop offset="0" stop-color="#cfdccb"/><stop offset=".5" stop-color="#7f9a86"/><stop offset="1" stop-color="#3c5849"/></radialGradient>
+ <radialGradient id="cinnDisc" cx="40%" cy="34%" r="78%"><stop offset="0" stop-color="#b25347"/><stop offset=".5" stop-color="#8b3028"/><stop offset="1" stop-color="#54190f"/></radialGradient>
+ <radialGradient id="goldRad" cx="40%" cy="34%" r="75%"><stop offset="0" stop-color="#f3e3b0"/><stop offset=".5" stop-color="#c08f3a"/><stop offset="1" stop-color="#6e4c16"/></radialGradient>
+ <radialGradient id="inkHub" cx="38%" cy="32%" r="80%"><stop offset="0" stop-color="#3b342c"/><stop offset=".55" stop-color="#241f1a"/><stop offset="1" stop-color="#120e0a"/></radialGradient>
+ <linearGradient id="goldG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f0d896"/><stop offset=".5" stop-color="#a2712a"/><stop offset="1" stop-color="#6e4c16"/></linearGradient>
+ <radialGradient id="heavenDisc" cx="42%" cy="38%" r="70%"><stop offset="0" stop-color="#fbf3dc"/><stop offset=".6" stop-color="#d7e2dc"/><stop offset="1" stop-color="#9fb6bd" stop-opacity=".3"/></radialGradient>
+ <linearGradient id="heavenMist" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfe0d9" stop-opacity=".5"/><stop offset="1" stop-color="#cfe0d9" stop-opacity="0"/></linearGradient>
+ <radialGradient id="martialDisc" cx="50%" cy="46%" r="60%"><stop offset="0" stop-color="#e8714a"/><stop offset=".5" stop-color="#a93420" stop-opacity=".7"/><stop offset="1" stop-color="#5e1c16" stop-opacity="0"/></radialGradient>
+ <linearGradient id="earthMist" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a08458" stop-opacity=".5"/><stop offset="1" stop-color="#a08458" stop-opacity="0"/></linearGradient>
+ <radialGradient id="cloudDais" cx="50%" cy="40%" r="70%"><stop offset="0" stop-color="#dcefe7" stop-opacity=".8"/><stop offset="1" stop-color="#9fd0c4" stop-opacity="0"/></radialGradient>
+ <radialGradient id="forgeGlow2" cx="50%" cy="50%" r="60%"><stop offset="0" stop-color="#ffb15a"/><stop offset=".5" stop-color="#d2691e" stop-opacity=".6"/><stop offset="1" stop-color="#a93420" stop-opacity="0"/></radialGradient>
+ <radialGradient id="earthEssence" cx="40%" cy="34%" r="70%"><stop offset="0" stop-color="#ffcf7a"/><stop offset="1" stop-color="#a2712a" stop-opacity=".2"/></radialGradient>
+ <linearGradient id="bladeSteel" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8a9098"/><stop offset=".5" stop-color="#e6ecf2"/><stop offset="1" stop-color="#6a7078"/></linearGradient>
+ <linearGradient id="bannerCloth" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8b2f27"/><stop offset="1" stop-color="#5e1c16"/></linearGradient>
+ <linearGradient id="bladeBrush" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c9a85a" stop-opacity="0"/><stop offset=".4" stop-color="#f0d896" stop-opacity=".95"/><stop offset="1" stop-color="#6e4c16" stop-opacity=".2"/></linearGradient>
+ <radialGradient id="auraHeaven" cx="50%" cy="46%" r="55%"><stop offset="0" stop-color="#dcefe7" stop-opacity=".55"/><stop offset=".6" stop-color="#bfe0d4" stop-opacity=".2"/><stop offset="1" stop-color="#bfe0d4" stop-opacity="0"/></radialGradient>
+ <radialGradient id="auraEarth" cx="50%" cy="46%" r="55%"><stop offset="0" stop-color="#e7cd92" stop-opacity=".5"/><stop offset=".6" stop-color="#caa05a" stop-opacity=".2"/><stop offset="1" stop-color="#caa05a" stop-opacity="0"/></radialGradient>
+ <radialGradient id="auraMartial" cx="50%" cy="46%" r="55%"><stop offset="0" stop-color="#ffb15a" stop-opacity=".5"/><stop offset=".55" stop-color="#c2563f" stop-opacity=".24"/><stop offset="1" stop-color="#c2563f" stop-opacity="0"/></radialGradient>
+ <linearGradient id="rlGrad" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="var(--acc-core)"/><stop offset="1" stop-color="var(--acc-bright)" stop-opacity=".2"/></linearGradient>
+</defs></svg>`;
+
+/* ===================== THE FIGURE (evolving) ===================== */
+function buildFigure(p,realm,fg){
+ const rf=(realm-1)/5,rm=S.rm,P=PATHS[p];
+ const active=(fg==='cultivating')&&!rm, held=(fg==='held');
+ // transform: local Court coords → global. growth (earth) / lift (heaven)
+ let SC=0.92*(p==='earth'?lerp(1,1.16,rf):p==='heaven'?lerp(1,0.97,rf):1);
+ const lift=p==='heaven'?lerp(0,46,rf):0;
+ const TX=1024-606*SC, TY=384*SC-lift+12;
+ // figure luminosity/opacity per path-realm
+ const spectral=p==='heaven'?lerp(0,0.34,rf):0; // heaven grows translucent/remote
+ const robe=p==='heaven'?`rgba(231,242,238,${0.5-spectral*0.5})`:p==='earth'?'rgba(243,228,204,.56)':'rgba(243,234,215,.54)';
+ const stroke=p==='heaven'?`rgba(150,178,170,${0.62-spectral})`:'rgba(120,96,52,.66)';
+ const rim=`var(--acc-rim)`, core=`var(--acc-core)`;
+ const auraId=p==='heaven'?'auraHeaven':p==='earth'?'auraEarth':'auraMartial';
+ const auraOp=(held?0.3:active?lerp(0.7,0.95,rf):lerp(0.42,0.66,rf)).toFixed(2);
+ const auraScale=active?1.06:1;
+ let s=`<g transform="translate(${TX.toFixed(1)},${TY.toFixed(1)}) scale(${SC.toFixed(3)})" style="${held?'filter:grayscale(.35);opacity:.74':''}">`;
+ // aura (behind)
+ s+=`<ellipse cx="606" cy="402" rx="${236*auraScale}" ry="${320*auraScale}" fill="url(#${auraId})" ${rm?'':'class="breatheA"'} style="opacity:${auraOp}"/>`;
+ // per-path back element
+ if(p==='heaven'){ s+=`<circle cx="606" cy="150" r="${lerp(70,104,rf)}" fill="url(#auraHeaven)" ${rm?'':'class="breatheA"'} style="opacity:${0.4+rf*0.4}"/>`;
+  if(rf>0.45)s+=`<circle cx="606" cy="396" r="${lerp(180,230,rf)}" fill="none" stroke="rgba(215,226,220,${(rf-0.4)*0.5})" stroke-dasharray="2 16" ${rm?'':'class="spinG"'} style="transform-origin:606px 396px;animation-duration:120s"/>`; }
+ if(p==='martial'){ s+=`<circle cx="606" cy="396" r="200" fill="none" stroke="rgba(178,131,45,${0.22+rf*0.2})" stroke-dasharray="3 13" ${rm?'':'class="spinG"'} style="transform-origin:606px 396px;animation-duration:${lerp(80,46,rf)}s"/>`; }
+ // legs / lotus base
+ s+=`<path d="M452,560 Q540,612 606,612 Q672,612 760,560 Q792,600 700,624 Q606,640 512,624 Q420,600 452,560Z" fill="${robe}" stroke="${stroke}" stroke-width="1.6"/>`;
+ // robe body
+ s+=`<path d="M556,206 Q494,272 478,402 Q466,500 452,560 Q540,592 606,592 Q672,592 760,560 Q746,500 734,402 Q718,272 656,206 Q632,242 606,242 Q580,242 556,206Z" fill="${robe}" stroke="${stroke}" stroke-width="1.8"/>`;
+ // folds
+ s+=`<g fill="none" stroke="${stroke}" stroke-opacity=".6" stroke-width="1.4"><path d="M556,300 Q540,420 528,540"/><path d="M656,300 Q672,420 684,540"/><path d="M606,260 L606,560"/></g>`;
+ // collar V
+ s+=`<path d="M566,212 L606,300 L646,212" fill="none" stroke="${stroke}" stroke-width="2"/>`;
+ // rim light (path accent)
+ s+=`<path d="M656,206 Q718,272 734,402 Q746,500 760,560" fill="none" stroke="${rim}" stroke-width="${lerp(2.4,4,rf)}" opacity="${(0.5+rf*0.4)}" filter="url(#soft)"/>`;
+ // hands / mudra
+ s+=`<ellipse cx="606" cy="556" rx="46" ry="20" fill="${robe}" stroke="${stroke}" stroke-width="1.5"/>`;
+ s+=`<circle cx="606" cy="552" r="11" fill="${core}" opacity="${active?0.7:0.45}" filter="url(#soft)"/>`;
+ // shoulder cowl (reads the figure as a robed seated cultivator; connects head to body)
+ s+=`<path d="M520,270 Q548,210 596,202 Q606,210 616,202 Q664,210 692,270 Q606,248 520,270Z" fill="${robe}" stroke="${stroke}" stroke-width="1.5"/>`;
+ s+=`<path d="M586,212 Q606,198 626,212" fill="none" stroke="${stroke}" stroke-opacity=".5" stroke-width="1.3"/>`;
+ // neck + head + topknot
+ s+=`<rect x="592" y="168" width="28" height="40" rx="11" fill="${robe}" stroke="${stroke}" stroke-width="1.4"/>`;
+ s+=`<circle cx="606" cy="150" r="46" fill="${robe}" stroke="${stroke}" stroke-width="1.6"/>`;
+ s+=`<path d="M576,138 Q606,108 636,138" fill="none" stroke="${stroke}" stroke-opacity=".6" stroke-width="1.4"/>`;
+ s+=`<ellipse cx="606" cy="104" rx="16" ry="13" fill="${robe}" stroke="${stroke}" stroke-width="1.5"/><rect x="600" y="96" width="12" height="10" rx="3" fill="${stroke}"/>`;
+ // dantian core (path accent, never blue)
+ s+=`<circle cx="606" cy="470" r="${lerp(40,50,rf)}" fill="${core}" ${rm?'':'class="breatheA"'} style="opacity:${active?0.95:0.8}"/>`;
+ s+=`<circle cx="606" cy="470" r="22" fill="none" stroke="rgba(150,120,60,.65)" stroke-width="1.4"/>`;
+ s+=`<circle cx="606" cy="470" r="30" fill="none" stroke="${rim}" stroke-width="1.4" opacity=".5" ${rm?'':'class="breatheA"'}/>`;
+ // ===== per-path EVOLUTION accretion =====
+ if(p==='earth'){ // beast-marks accumulate on shoulders/arms
+  const marks=Math.round(rf*5);
+  for(let i=0;i<marks;i++){const sx=i%2?700:512,sy=300+i*44;s+=`<g stroke="rgba(180,120,60,${0.4+rf*0.3})" stroke-width="2" fill="none"><path d="M${sx-14},${sy} q8,-7 16,0 q-8,5 -16,0"/><path d="M${sx-12},${sy+10} q7,-6 14,0"/></g>`;}
+  if(rf>0.55)s+=`<path d="M540,206 Q606,176 672,206" fill="none" stroke="rgba(180,120,60,.5)" stroke-width="3"/>`; // brow ridge
+ }
+ if(p==='martial'){ // blade-intent lines + killing-poise glint along arms
+  const li=Math.round(1+rf*3);
+  for(let i=0;i<li;i++){s+=`<path d="M${500-i*6},${340+i*30} L${712+i*6},${330+i*28}" stroke="rgba(255,177,90,${0.18+rf*0.25})" stroke-width="1.3" opacity=".8"/>`;}
+  if(active&&!rm)s+=`<circle cx="606" cy="470" r="6" fill="#fff" class="twk" style="animation-duration:1.6s"/>`; // spark
+ }
+ if(p==='heaven'){ // star-glints around crown grow
+  const g=Math.round(2+rf*5);
+  for(let i=0;i<g;i++){const a=i/g*360,[x,y]=PT(606,150,lerp(64,96,rf),a);s+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${1.6}" fill="rgba(251,243,220,.9)" ${rm?'':'class="twk"'} style="animation-delay:${i*.4}s"/>`;}
+ }
+ s+=`</g>`;
+ return s;
+}
+
+/* ===================== QI FLOW + REALM-LIGHT SPINE ===================== */
+function buildQiLight(p,realm,fg){
+ const rf=(realm-1)/5,rm=S.rm,active=(fg==='cultivating')&&!rm,held=(fg==='held');
+ const FX=1024,P=PATHS[p];let s='';
+ const qiCol=`var(--acc-core)`, flowCls=rm||held?'':active?'qiflow fast':'qiflow';
+ // realm-light spine: rises up the figure's spine; height = progress
+ const baseY=886, topY=baseY-lerp(60,330,realmPct());
+ s+=`<line x1="${FX}" y1="${baseY}" x2="${FX}" y2="540" stroke="rgba(120,96,52,.14)" stroke-width="7" stroke-linecap="round"/>`;
+ s+=`<line x1="${FX}" y1="${baseY}" x2="${FX}" y2="${topY}" stroke="url(#rlGrad)" stroke-width="${active?8:6.5}" stroke-linecap="round" filter="url(#glowJ)" opacity="${held?0.4:0.9}"/>`;
+ if(!held)s+=`<line x1="${FX}" y1="${baseY}" x2="${FX}" y2="${topY}" stroke="rgba(255,250,225,.85)" stroke-width="2.2" class="${flowCls}"/>`;
+ // the Threshold forming above the crown at Peak — a gate of light, gently pulsing
+ if(S.peak){const gy=topY-6;
+  s+=`<circle cx="${FX}" cy="${gy}" r="46" fill="none" stroke="var(--acc-bright)" stroke-width="2" opacity=".5" ${rm?'':'class="breatheA"'}/>`;
+  s+=`<circle cx="${FX}" cy="${gy}" r="30" fill="none" stroke="var(--acc-rim)" stroke-width="1.4" opacity=".7" ${rm?'':'class="breatheA"'} style="animation-delay:.6s"/>`;
+  s+=`<path d="M${FX-46},${gy+8} Q${FX},${gy-58} ${FX+46},${gy+8}" fill="none" stroke="var(--acc-core)" stroke-width="2.4" opacity=".7" filter="url(#soft)"/>`;
+  if(!rm){s+=`<circle cx="${FX}" cy="${gy}" r="11" fill="rgba(255,250,225,.6)" class="mp"/>`;
+   for(let i=0;i<3;i++){const a=-40+i*40,[gx,gyy]=PT(FX,gy,40,a);s+=`<circle cx="${gx.toFixed(1)}" cy="${gyy.toFixed(1)}" r="2.4" fill="var(--acc-core)" class="twk" style="animation-delay:${i*.4}s"/>`;}}
+ }
+ // qi direction per path
+ if(p==='heaven'){ // drawn DOWN from sky into crown
+  for(let i=-1;i<=1;i++){const x=FX+i*60;s+=`<path d="M${x},${lerp(330,300,rf)} Q${(x+FX)/2},${460} ${FX},540" fill="none" stroke="${qiCol}" stroke-width="${active?2.6:1.8}" opacity="${held?0.25:0.7}" class="${flowCls}"/>`;}
+ } else if(p==='earth'){ // rising UP from stone into figure
+  for(let i=-1;i<=1;i++){const x=FX+i*70;s+=`<path d="M${x},900 Q${(x+FX)/2},740 ${FX},560" fill="none" stroke="${qiCol}" stroke-width="${active?2.8:1.9}" opacity="${held?0.25:0.7}" class="${flowCls}"/>`;}
+ } else { // flowing INTO the central blade (converging on the dantian/blade)
+  for(let i=-1;i<=1;i+=2){s+=`<path d="M${FX+i*120},${600} Q${FX+i*40},${540} ${FX},${500}" fill="none" stroke="${qiCol}" stroke-width="${active?2.6:1.8}" opacity="${held?0.25:0.75}" class="${flowCls}"/>`;}
+  s+=`<path d="M${FX},560 L${FX},${886-lerp(60,330,realmPct())-10}" fill="none" stroke="${qiCol}" stroke-width="${active?2.4:1.6}" opacity="${held?0.2:0.7}" class="${flowCls}"/>`;
+ }
+ return s;
+}
+
+/* ===================== PEAK: THE GATE OF LIGHT (crown halo) ===================== */
+function buildGateHalo(p,realm){
+ const rf=(realm-1)/5,rm=S.rm;
+ const SC=0.92*(p==='earth'?lerp(1,1.16,rf):p==='heaven'?lerp(1,0.97,rf):1);
+ const lift=p==='heaven'?lerp(0,46,rf):0;
+ const cx=1024, crownY=534*SC-lift+12, gy=crownY-106;
+ let s=`<g style="pointer-events:none">`;
+ // beam from crown rising into the gate
+ s+=`<line x1="${cx}" y1="${crownY-40}" x2="${cx}" y2="${gy+20}" stroke="var(--acc-core)" stroke-width="3" opacity=".5" filter="url(#soft)" ${rm?'':'class="qiflow"'}/>`;
+ // outer aura
+ s+=`<circle cx="${cx}" cy="${gy}" r="92" fill="url(#auraHeaven)" opacity=".0"/>`;
+ // concentric forming rings (gentle stagger)
+ [[36,.5],[58,.34],[82,.2]].forEach((r,i)=>{s+=`<circle cx="${cx}" cy="${gy}" r="${r[0]}" fill="none" stroke="var(--acc-rim)" stroke-width="${(2-i*0.4).toFixed(1)}" opacity="${r[1]}" ${rm?'':`class="breatheA" style="animation-delay:${(i*0.5).toFixed(1)}s"`}/>`;});
+ // the gate arch — a doorway of light
+ s+=`<path d="${arc(cx,gy,48,-88,88)}" fill="none" stroke="var(--acc-bright)" stroke-width="3" opacity=".72" filter="url(#glowJ)"/>`;
+ s+=`<path d="M${cx-48},${gy} L${cx-48},${gy+56} M${cx+48},${gy} L${cx+48},${gy+56}" stroke="var(--acc-bright)" stroke-width="2.4" opacity=".5"/>`;
+ // bright threshold core
+ s+=`<circle cx="${cx}" cy="${gy}" r="15" fill="var(--acc-core)" opacity=".82" ${rm?'':'class="mp"'} filter="url(#soft)"/>`;
+ s+=`<circle cx="${cx}" cy="${gy}" r="6.5" fill="#fff7e6"/>`;
+ // rising glints
+ if(!rm)for(let i=0;i<5;i++){const x=cx-30+i*15;s+=`<circle cx="${x}" cy="${gy+34}" r="1.8" fill="var(--acc-core)" class="twk" style="animation-delay:${(i*0.4).toFixed(1)}s"/>`;}
+ s+=`</g>`;
+ return s;
+}
+
+/* ===================== ASSEMBLE THE FIELD ===================== */
+function buildField(p,realm,fg){
+ return `<svg class="field" viewBox="0 0 2048 1152" preserveAspectRatio="xMidYMid slice">
+  ${buildAtmos(p,realm,fg)}
+  ${buildMandala(p,realm)}
+  ${buildDais(p,realm,fg)}
+  ${buildQiLight(p,realm,fg)}
+  ${buildFigure(p,realm,fg)}
+  ${(S.peak&&fg!=='held')?buildGateHalo(p,realm):''}
+ </svg>`;
+}
+/* ===================== FOCUS DIAL (the one build lever) ===================== */
+const FOCUS=[['Qi Pool','氣'],['Qi Purity','純'],['Spiritual Sense','識'],['Soul Strength','魂'],['Body','體'],['Meridian','脈'],['Dao','道']];
+const FOCUS_LEAN=['a deeper reserve','a serene crossing','sharper foresight','soul-pressure','a sturdier body','wider meridians','swifter comprehension'];
+S.emph=1;
+function buildFocusDial(){
+ const sz=200,C=100,rm=S.rm;const N=FOCUS.length,R=72,RG=78;
+ let s=`<svg viewBox="0 0 ${sz} ${sz}" width="${sz}" height="${sz}" style="overflow:visible">`;
+ // carved jade disc
+ s+=`<circle cx="${C}" cy="${C}" r="92" fill="url(#goldG)"/><circle cx="${C}" cy="${C}" r="92" fill="none" stroke="rgba(74,51,14,.8)" stroke-width="1.4"/><circle cx="${C}" cy="${C}" r="86" fill="url(#jadeRad)" opacity=".5"/><circle cx="${C}" cy="${C}" r="86" fill="rgba(31,26,23,.55)"/>`;
+ s+=`<circle cx="${C}" cy="${C}" r="86" fill="none" stroke="rgba(255,244,210,.4)" stroke-width="1"/>`;
+ // axis nodes
+ FOCUS.forEach((ax,i)=>{const a=i/N*360,[x,y]=PT(C,C,RG,a),on=i===S.emph;
+  s+=`<g class="tapwrap" onclick="setEmph(${i})" transform="translate(${x.toFixed(1)},${y.toFixed(1)})"><circle r="13" fill="${on?'var(--acc)':'rgba(243,234,215,.16)'}" stroke="${on?'var(--acc-bright)':'rgba(217,189,128,.5)'}" stroke-width="${on?2.4:1.2}"/><text y="5" text-anchor="middle" font-family="var(--kai)" font-size="15" font-weight="700" fill="${on?'#241a10':'rgba(243,234,215,.8)'}">${ax[1]}</text></g>`;});
+ // needle to emphasis
+ const a=S.emph/N*360,[tx,ty]=PT(C,C,RG-14,a),[lx,ly]=PT(C,C,16,a-90),[rx,ry]=PT(C,C,16,a+90),[bx,by]=PT(C,C,22,a+180);
+ s+=`<g ${rm?'':'class="spinG"'} style="transform-origin:${C}px ${C}px;animation:quiver 4.8s ease-in-out infinite">`;
+ s+=`<path d="M${tx.toFixed(1)},${ty.toFixed(1)} L${lx.toFixed(1)},${ly.toFixed(1)} L${C},${C} L${rx.toFixed(1)},${ry.toFixed(1)}Z" fill="var(--acc-bright)" filter="url(#glowJ)"/>`;
+ s+=`<path d="M${bx.toFixed(1)},${by.toFixed(1)} L${lx.toFixed(1)},${ly.toFixed(1)} L${C},${C} L${rx.toFixed(1)},${ry.toFixed(1)}Z" fill="var(--acc)" opacity=".4"/></g>`;
+ // hub (tap → Focus scroll)
+ s+=`<g class="tapwrap" onclick="openScroll('focus')"><circle cx="${C}" cy="${C}" r="22" fill="url(#inkHub)" stroke="url(#goldG)" stroke-width="2.4"/><circle cx="${C}" cy="${C}" r="22" fill="rgba(31,26,23,.6)" stroke="url(#goldG)" stroke-width="2.4"/><text x="${C}" y="${C+6}" text-anchor="middle" font-family="var(--kai)" font-size="20" fill="var(--acc-rim)">${FOCUS[S.emph][1]}</text></g>`;
+ s+=`</svg>`;
+ return s;
+}
+/* ===================== PER-PATH UNIQUE INSTRUMENT ===================== */
+function buildPathInstrument(){
+ const p=S.path,P=PATHS[p],rf=(S.realm-1)/5,rm=S.rm,sz=176,C=88;
+ let s=`<svg viewBox="0 0 ${sz} ${sz}" width="${sz}" height="${sz}" style="overflow:visible">`;
+ if(p==='heaven'){
+  // Heaven's Eye lens — hovering diviner disc
+  s+=`<circle cx="${C}" cy="${C}" r="78" fill="url(#goldG)"/><circle cx="${C}" cy="${C}" r="73" fill="rgba(28,34,38,.78)" stroke="rgba(223,234,228,.4)"/>`;
+  s+=`<g ${rm?'':'class="spinG"'} style="transform-origin:${C}px ${C}px;animation-duration:80s">`;
+  for(let i=0;i<24;i++){const a=i*15,[x0,y0]=PT(C,C,64,a),[x1,y1]=PT(C,C,i%3?68:72,a);s+=`<line x1="${x0.toFixed(1)}" y1="${y0.toFixed(1)}" x2="${x1.toFixed(1)}" y2="${y1.toFixed(1)}" stroke="rgba(215,226,220,.5)" stroke-width="${i%3?.7:1.3}"/>`}
+  s+=`</g>`;
+  // the eye
+  s+=`<ellipse cx="${C}" cy="${C}" rx="44" ry="26" fill="none" stroke="rgba(223,234,228,.7)" stroke-width="2"/>`;
+  s+=`<circle cx="${C}" cy="${C}" r="16" fill="url(#auraHeaven)"/><circle cx="${C}" cy="${C}" r="10" fill="var(--acc-core)" ${rm?'':'class="breatheA"'}/><circle cx="${C}" cy="${C}" r="4" fill="#1c2226"/>`;
+  // foresight horizon ticks (widen with realm)
+  const fh=Math.round(2+rf*4);for(let i=0;i<fh;i++){const a=-60+i*(120/(fh-1||1)),[x,y]=PT(C,C,58,a);s+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.4" fill="var(--acc-rim)" ${rm?'':'class="twk"'} style="animation-delay:${i*.3}s"/>`;}
+  s+=`</svg>`;
+  return {svg:s,label:'PREMONITION',val:`Foresight horizon · ${Math.round(2+rf*4)}`};
+ }
+ if(p==='earth'){
+  // Beast Lore tally — concentric stone codex with absorbed-essence pips
+  s+=`<circle cx="${C}" cy="${C}" r="78" fill="url(#goldG)"/><circle cx="${C}" cy="${C}" r="73" fill="rgba(44,30,18,.82)" stroke="rgba(120,84,40,.5)"/>`;
+  // tempering-depth ring
+  const depth=Math.min(1,0.2+rf*0.8);
+  s+=`<circle cx="${C}" cy="${C}" r="58" fill="none" stroke="rgba(120,90,46,.25)" stroke-width="8"/><path d="${arc(C,C,58,-130,-130+260*depth)}" fill="none" stroke="#caa05a" stroke-width="8" stroke-linecap="round"/>`;
+  // absorbed essences as pips around
+  const beasts=Math.min(7,1+Math.round(rf*6));
+  for(let i=0;i<beasts;i++){const a=i/7*360,[x,y]=PT(C,C,40,a);s+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="5" fill="url(#earthEssence)" stroke="#6e4c16" ${rm?'':'class="twk"'} style="animation-delay:${i*.35}s"/>`;}
+  s+=`<text x="${C}" y="${C+7}" text-anchor="middle" font-family="var(--kai)" font-size="30" fill="var(--acc-rim)">獸</text>`;
+  s+=`</svg>`;
+  return {svg:s,label:'BEAST LORE',val:`Essences ${beasts} · depth ${Math.round(depth*100)}%`};
+ }
+ // martial — Weapon-Bond gauge
+ s+=`<circle cx="${C}" cy="${C}" r="78" fill="url(#goldG)"/><circle cx="${C}" cy="${C}" r="73" fill="rgba(40,18,14,.82)" stroke="rgba(178,131,45,.4)"/>`;
+ const bond=Math.min(1,0.18+rf*0.82);
+ s+=`<circle cx="${C}" cy="${C}" r="58" fill="none" stroke="rgba(120,90,46,.25)" stroke-width="8"/><path d="${arc(C,C,58,-130,-130+260*bond)}" fill="none" stroke="#ffb15a" stroke-width="8" stroke-linecap="round"/>`;
+ // a small upright blade glyph in center
+ s+=`<rect x="${C-3}" y="${C-34}" width="6" height="50" rx="3" fill="url(#bladeSteel)"/><path d="M${C-3},${C-34} L${C+3},${C-34} L${C},${C-44}Z" fill="url(#bladeSteel)"/><rect x="${C-13}" y="${C+14}" width="26" height="7" rx="3" fill="#6e4c22"/>`;
+ // arts unlocked pips
+ const arts=Math.min(5,1+Math.round(rf*4));for(let i=0;i<arts;i++){s+=`<circle cx="${C-26+i*13}" cy="${C+34}" r="3.4" fill="var(--acc-core)" ${rm?'':'class="twk"'} style="animation-delay:${i*.3}s"/>`;}
+ s+=`</svg>`;
+ return {svg:s,label:'WEAPON-BOND',val:`Bond depth ${Math.round(bond*100)}% · ${arts} arts`};
+}
+/* ===================== ASCENT THREAD + THRESHOLD ===================== */
+function buildAscent(){
+ const rm=S.rm,P=PATHS[S.path],lx=20,top=16,bot=640,N=7;
+ const ys=[];for(let i=0;i<N;i++)ys.push(bot-(bot-top)*(i/(N-1)));
+ let s=`<svg viewBox="0 0 92 700" width="92" height="700" style="overflow:visible">`;
+ s+=`<line x1="${lx}" y1="${top}" x2="${lx}" y2="${bot}" stroke="rgba(120,96,52,.22)" stroke-width="4" stroke-linecap="round"/>`;
+ const curY=ys[S.realm-1];
+ s+=`<line x1="${lx}" y1="${bot}" x2="${lx}" y2="${curY}" stroke="var(--acc)" stroke-width="4" stroke-linecap="round" filter="url(#glowJ)" opacity=".8"/>`;
+ ys.forEach((y,i)=>{const realmN=i+1,crossed=realmN<S.realm,cur=realmN===S.realm,ascend=(i===N-1);
+  if(cur){s+=`<circle cx="${lx}" cy="${y}" r="13" fill="var(--acc-core)" opacity=".3" ${rm?'':'class="breatheA"'}/><circle cx="${lx}" cy="${y}" r="7.5" fill="var(--acc-core)" stroke="var(--acc-deep)" stroke-width="1.6"/>`;}
+  else if(crossed){s+=`<circle cx="${lx}" cy="${y}" r="5" fill="url(#jadeRad)" stroke="#1c3128" stroke-width="1.2"/>`;}
+  else{s+=`<circle cx="${lx}" cy="${y}" r="4" fill="rgba(243,234,215,.1)" stroke="rgba(217,189,128,.4)" stroke-width="1"/>`;if(ascend)s+=`<text x="${lx}" y="${y+3.6}" text-anchor="middle" font-size="10" fill="rgba(217,189,128,.6)">\u2727</text>`;}
+ });
+ if(S.peak&&S.realm<7){const ny=ys[S.realm];s+=`<circle cx="${lx}" cy="${ny}" r="9" fill="none" stroke="var(--acc-bright)" stroke-width="1.6" ${rm?'':'class="breatheA"'}/><circle cx="${lx}" cy="${ny}" r="3.5" fill="var(--acc-bright)" ${rm?'':'class="twk"'} style="animation-duration:2s"/>`;}
+ s+=`</svg>`;
+ return s;
+}
+/* ===================== CHROME: LINTEL ===================== */
+function lintelHTML(){
+ const P=PATHS[S.path],r=S.realm,R=P.realms[r-1];
+ const stage=S.peak?9:Math.max(1,Math.min(9,Math.ceil(realmPct()*9)));
+ let pips='';for(let i=0;i<9;i++){pips+=`<span class="sp ${i<stage-1?'on':''} ${i===stage-1?'cur on':''}"></span>`}
+ const stageTxt=S.peak?(P.counter==='Edge'?'9th Edge \u00b7 Peak':P.counter+' Peak'):'Stage '+stage+' / 9';
+ const fgLabel=S.fg==='cultivating'?'Cultivating':S.fg==='held'?'Held \u2014 resumes after combat':'In seclusion';
+ const fgcls=S.fg==='held'?'held':S.fg==='cultivating'?'cultivating':'';
+ return `<div class="gildrule"></div>
+  <div class="chop" data-pathchop="${S.path}"><b>${P.glyph}</b></div>
+  <div class="nameblock">
+   <div class="roomsub">${P.roomsub}</div>
+   <div class="roomtitle">The Seat of Becoming ${waxSeal('修',30,-6,S.path==='heaven')}</div>
+   <div class="realmline"><span class="realmname">${R.n} \u00b7 ${R.z}</span><span class="stagepips">${pips}</span><span class="realmname" style="color:rgba(243,234,215,.6);font-weight:700">${stageTxt}</span></div>
+  </div>
+  <div class="spacer"></div>
+  <div class="fgchip ${fgcls}"><span class="dot"></span>${fgLabel}</div>`;
+}
+/* ===================== CHROME: BREATH-LINE ===================== */
+function breathHTML(){
+ const held=S.fg==='held';
+ const rate=held?'\u2014':(S.fg==='cultivating'?'318.9':'274.3');
+ return `<div class="brrule"></div>${S.rm?'':'<div class="light"></div>'}
+  <div class="brread"><span class="coin">率</span><span class="v big">${rate}</span><span class="l">qi / s</span></div>
+  <div class="brread"><span class="coin">藏</span><span class="v">12h</span><span class="l">offline cap</span></div>
+  <div class="brread"><span class="coin">風</span><span class="v">86%</span><span class="l">offline efficiency</span></div>
+  <div class="brread ${held?'heldmark':''} ${held?'':'last'}"><span class="coin">業</span><span class="v">${held?'Held':PATHS[S.path].verb}</span><span class="l">the Seat is \u2014</span></div>
+  ${held?'<div class="brread heldmark last"><span class="coin" style="background:radial-gradient(circle at 40% 34%,#b25347,#8b3028)">戰</span><span class="v">combat</span><span class="l">resumes after</span></div>':''}
+  <div class="expandhint">touch for the ledger \u2197</div>`;
+}
+/* ===================== CHROME: NAV ===================== */
+function navHTML(){
+ const items=[['seat','Cultivation',true],['star','Status'],['mtn','World'],['box','Inventory'],['scroll','Records'],['gear','Settings']];
+ const ico={seat:'<circle cx="10" cy="11" r="6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M4 17 q6 -4 12 0" fill="none" stroke="currentColor" stroke-width="1.6"/>',
+  star:'<path d="M10 2 l2.4 5.4 L18 8 l-4 3.6 L15 18 l-5-3 -5 3 1-6.4 L2 8 l5.6-.6Z" fill="none" stroke="currentColor" stroke-width="1.4"/>',
+  mtn:'<path d="M2 16 L7 7 l3 5 3-7 5 11Z" fill="none" stroke="currentColor" stroke-width="1.5"/>',
+  box:'<rect x="3" y="5" width="14" height="11" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M3 9 h14" stroke="currentColor" stroke-width="1.3"/>',
+  scroll:'<rect x="4" y="3" width="12" height="14" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M7 7 h6 M7 10 h6 M7 13 h4" stroke="currentColor" stroke-width="1.2"/>',
+  gear:'<circle cx="10" cy="10" r="3.4" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.5 4.5l1.4 1.4M14 14l1.5 1.5M15.5 4.5l-1.4 1.4M6 14l-1.5 1.5" stroke="currentColor" stroke-width="1.3"/>'};
+ return items.map(([k,nm,on])=>`<div class="it ${on?'on':''}"><span class="ico"><svg viewBox="0 0 20 20" width="20" height="20">${ico[k]}</svg></span>${nm}</div>`).join('');
+}
+/* ===================== MASTER RENDER ===================== */
+const WATER={heaven:'道',earth:'山',martial:'武'};
+function applyAccent(){
+ const a=PATHS[S.path].acc,st=document.getElementById('stage').style;
+ st.setProperty('--acc',a.a);st.setProperty('--acc-bright',a.ab);st.setProperty('--acc-deep',a.ad);st.setProperty('--acc-core',a.ac);st.setProperty('--acc-rim',a.ar);
+}
+function render(){
+ const stage=document.getElementById('stage');
+ stage.dataset.path=S.path;stage.dataset.realm=S.realm;
+ document.body.classList.toggle('rm',S.rm);
+ applyAccent();
+ const P=PATHS[S.path];const held=S.fg==='held';
+ const pct=Math.round(realmPct()*100);
+ // motes
+ let motes='';if(!S.rm){const n=held?2:S.fg==='cultivating'?9:6;for(let i=0;i<n;i++){const x=1024+(i*53%180)-90+(i%2?20:-20),y=600+(i*37%260);motes+=`<div class="mote" style="left:${x}px;top:${y}px;animation-delay:${(i*0.7).toFixed(1)}s;animation-duration:${(5+i%4).toFixed(0)}s"></div>`;}}
+ const pi=buildPathInstrument();
+ const gv=S.grVerdict;
+ const CUE='<div class="cue"><svg viewBox="0 0 12 12" width="11" height="11"><path d="M1.5 4.5V1.5H4.5M7.5 1.5H10.5V4.5M10.5 7.5V10.5H7.5M4.5 10.5H1.5V7.5" fill="none" stroke="#3a2a0e" stroke-width="1.4" stroke-linecap="round"/></svg></div>';
+ const INSCRIBE={heaven:'\u89c0\u5929\u884d\u9053',earth:'\u7149\u9ad4\u6210\u5c71',martial:'\u9444\u9053\u70ba\u92d2'}[S.path];
+ const inscSide=S.path==='heaven'?'left:58px':'right:58px';
+ // ambient whisper (calm; reflects a Peak blocker without shouting)
+ const whisper=held?'The seclusion holds; cultivation resumes when the fight is done.'
+  :S.peak?(gv==='ready'?'The climb is complete \u2014 the gate of light has formed above you.':gv==='held'?'The gate would open, but the heart is not yet still.':'The gate nears \u2014 yet the base is not yet full.')
+  :P.fantasy[S.realm-1];
+ // bottom-centre action seal (the one clear thing to do here)
+ let actionSeal;
+ if(held){actionSeal=`<div class="cultseal"><div class="pressed held">Held \u2014 cultivation resumes after combat</div></div>`;}
+ else if(S.peak){
+  if(gv==='ready'){actionSeal=`<div class="cultseal" onclick="openScroll('gatereadiness')"><div class="pressed crossing">Approach the Threshold \u2192</div><div class="crosshint">the climb is complete \u00b7 read the crossing first</div></div>`;}
+  else{const why=gv==='held'?'the heart must settle first':'the base is not yet full';actionSeal=`<div class="cultseal" onclick="openScroll('gatereadiness')"><div class="pressed waiting">The Threshold waits</div><div class="crosshint">${why} \u00b7 see why \u2197</div></div>`;}
+ } else {actionSeal=`<div class="cultseal" onclick="cycleFg()"><div class="pressed">${S.fg==='cultivating'?'Deepen the cultivation':'Resume seclusion \u00b7 '+P.verb}</div></div>`;}
+ stage.innerHTML=`
+  <div class="scene">
+   <div class="skywash" style="background:${skyWash(S.path,S.realm)}"></div>
+   ${buildField(S.path,S.realm,S.fg)}
+   <div style="position:absolute;${inscSide};top:118px;writing-mode:vertical-rl;font-family:var(--kai);font-weight:700;font-size:50px;letter-spacing:16px;color:rgba(243,234,215,.055);z-index:2;pointer-events:none">${INSCRIBE}</div>
+   <div class="scrim" style="background:${held?'rgba(110,36,30,.12)':'transparent'}"></div>
+   <div class="vignette"></div>
+  </div>
+  ${motes}
+  <!-- chrome -->
+  <div class="lintel">${lintelHTML()}</div>
+  <div class="breath" onclick="openScroll('ledger')">${breathHTML()}</div>
+  <div class="nav">${navHTML()}</div>
+  <!-- instruments (each tappable instrument carries the gold cue) -->
+  <div class="inst tapwrap" style="left:150px;top:494px">${buildFocusDial()}${CUE}<div class="dialcap"><i>Emphasis \u00b7 tap a spoke</i>${FOCUS[S.emph][0]} \u00b7 favors ${FOCUS_LEAN[S.emph]}</div></div>
+  <div class="inst tapwrap" style="left:1716px;top:520px" onclick="openScroll('${P.mech.scroll}')">${pi.svg}${CUE}<div class="instlabel">${pi.label}</div><div class="instval">${pi.val}</div></div>
+  <div class="inst tapwrap" style="left:14px;top:236px" onclick="openScroll('ascent')">${buildAscent()}${CUE}<div class="instlabel" style="margin-top:2px">Ascent</div></div>
+  <div class="triad" style="left:744px;top:430px" onclick="deepLink('status.constellation')">
+   ${['jing','qi','shen'].map(k=>{const lead=P.treasures.lead===k;const g=k==='jing'?'\u7cbe':k==='qi'?'\u6c23':'\u795e';const nm=k==='jing'?'Body':k==='qi'?'Energy':'Spirit';return `<div class="tre ${lead?'lead':''}"><b>${g}</b><span class="nm">${nm}</span></div>`}).join('')}${CUE}
+  </div>
+  <div style="position:absolute;left:744px;top:480px;z-index:15;font:700 8px var(--serif);letter-spacing:.1em;text-transform:uppercase;color:rgba(243,234,215,.6);text-shadow:0 1px 4px rgba(0,0,0,.75);pointer-events:none">Three Treasures \u00b7 ${PATHS[S.path].treasures.lead==='jing'?'Body-led':PATHS[S.path].treasures.lead==='qi'?'Energy-led':'Spirit-led'}</div>
+  <div class="baseplate" style="bottom:180px"><div class="top"><span class="kai">\u4fee\u70ba</span><span class="bk">Cultivation Base</span><span class="bv">${held?'\u2014':pct+'%'}</span></div>${held?'':`<div class="bbar"><span class="bf" style="width:${pct}%"></span></div><div class="bsub">0.3M / 61.0M Qi \u00b7 toward ${S.peak?'the Threshold':'the next stage'}</div>`}</div>
+  <div class="whisper" style="top:148px">${whisper}</div>
+  ${actionSeal}
+ `;
+}
+function setEmph(i){S.emph=i;render()}
+function cycleFg(){S.fg=S.fg==='idle'?'cultivating':S.fg==='cultivating'?'idle':'idle';render();syncDev()}
+
+/* ===================== SCROLL OVERLAY SYSTEM ===================== */
+S.grVerdict='ready';
+function openScroll(id){
+ const body=document.getElementById('scrollbody');
+ body.innerHTML=`<div class="rod top"><span class="cap l"></span><span class="cap r"></span></div><div class="rod bot"><span class="cap l"></span><span class="cap r"></span></div>`+SCROLLS[id]();
+ document.getElementById('scrollov').style.display='flex';
+}
+function closeScroll(){document.getElementById('scrollov').style.display='none'}
+document.getElementById('scrollov').addEventListener('click',e=>{if(e.target.id==='scrollov')closeScroll()});
+function deepLink(t){ // demo: flash a toast-style note in a tiny scroll
+ const map={'status.constellation':['Status','The 28-stat constellation','You would now leave the Seat for the Status screen\u2019s expanded constellation \u2014 where the full stat picture is owned. Cultivation previews (the triad + the Focus Dial); Status owns the whole sky of stats.'],
+  'daoHeart':['Dao Heart','Settle the heart','You would route to the Dao Heart screen to settle Turbulence below the fracture line before attempting the crossing.'],
+  'court.meridians':['Tempering Court','The meridian roster','You would route to the Tempering Court, where the seven path meridians are tempered.'],
+  'world.map':['World','The newly-unlocked tier','You would route to the World map, where the realm\u2019s newly-unlocked content tier opens.'],
+  'forge.equipment':['Forge','The bonded weapon','You would route to the Forge / Equipment screen for the weapon\u2019s gear side.']};
+ const m=map[t]||['','',''];
+ const body=document.getElementById('scrollbody');
+ body.innerHTML=`<div class="rod top"><span class="cap l"></span><span class="cap r"></span></div><div class="rod bot"><span class="cap l"></span><span class="cap r"></span></div>
+  <div class="schead"><div class="stag"><b>${'\u9023'}</b></div><div class="ht"><div class="k">Deep-link \u00b7 ${m[0]}</div><div class="t">${m[1]}</div><div class="d">Cultivation previews and routes \u2014 it never duplicates the owning screen</div></div><div class="scclose" onclick="closeScroll()">\u00d7</div></div>
+  <div class="sccontent"><div class="sccard"><div class="terms">${m[2]}</div></div></div>`;
+ document.getElementById('scrollov').style.display='flex';
+}
+const schead=(tag,k,t,d)=>`<div class="schead"><div class="stag"><b>${tag}</b></div><div class="ht"><div class="k">${k}</div><div class="t">${t}</div>${d?`<div class="d">${d}</div>`:''}</div><div class="scclose" onclick="closeScroll()">\u00d7</div></div>`;
+
+/* card header helper + focus axis effects */
+const cardHead=(g,t,x,tone)=>`<div class="cardtop"><div class="cm ${tone||''}">${g}</div><div class="ct">${t}</div>${x?`<div class="cx2">${x}</div>`:''}</div>`;
+const FOCUS_EFFECT=[
+ 'raises maximum banked qi \u2014 the depth of the reserve',
+ 'lifts qi purity \u2014 a calmer, safer crossing',
+ 'sharpens spiritual sense \u2014 perception, foresight, control',
+ 'builds soul strength \u2014 pressure, will, resistance',
+ 'tempers the body \u2014 vitality and survivability',
+ 'widens the meridians \u2014 throughput and technique power',
+ 'quickens comprehension \u2014 faster learning of the Dao'];
+function focusAlloc(){const base=[14,14,14,14,14,14,16];base[S.emph]+=38;return base;}
+
+const SCROLLS={
+ ascent(){const P=PATHS[S.path];let rungs='';
+  for(let i=6;i>=0;i--){const R=P.realms[i],realmN=i+1,crossed=realmN<S.realm,cur=realmN===S.realm;
+   const cls=crossed?'crossed':cur?'current':'sealed';
+   const status=crossed?'crossed':cur?(S.peak?'at the Peak':'climbing'):'sealed';
+   const sub=crossed?`Meridian opened \u00b7 ${R.m}`:cur?`Tempering now \u00b7 ${R.m}`:`Will open \u00b7 ${R.m}`;
+   const prog=cur?`<div style="flex-basis:100%;margin-top:7px"><span class="bbar" style="display:block;width:100%;height:5px;border-radius:3px;background:var(--paper-shade);overflow:hidden;box-shadow:inset 0 0 0 1px var(--ink-12)"><span style="display:block;height:100%;width:${Math.round(realmPct()*100)}%;background:linear-gradient(90deg,var(--gold),var(--gold-bright))"></span></span></div>`:'';
+   rungs+=`<div class="rung ${cls}"><span class="rn">${R.n}</span><span class="rz">${R.z}</span><span class="rs">${status}</span><span class="se">${sub}</span>${prog}</div>`;}
+  const nxt=S.realm<7?P.realms[S.realm]:null;
+  const grant=nxt?`<div class="sccard">${cardHead('\u968e','This crossing grants','the next realm','jade')}<div class="grant"><div class="gm">${'\u8108'}</div><div><div class="gt">${nxt.n} \u00b7 ${nxt.z}</div><div class="gd">Opens the <b>${nxt.m}</b> meridian \u2014 ${P.fantasy[S.realm]}.</div></div></div></div>`:'';
+  return schead('\u767b','THE ASCENT','The realm ladder',`Counting in ${P.counter}s \u00b7 ${S.realm} of 6 walked \u00b7 the seventh sealed`)
+   +`<div class="sccontent">
+     <div class="sccard">${cardHead('\u9053','The road of the '+P.name.toLowerCase()+' path','toward '+P.peak)}<div class="ladder">${rungs}</div></div>
+     ${grant}
+     <div class="sccard">${cardHead('\u4fee','Cultivation Base','within this stage')}
+      <div class="statrow"><span class="sn">Toward the next stage</span><span class="sv">${Math.round(realmPct()*100)}%</span></div>
+      <div class="statrow"><span class="sn">Banked qi</span><span class="sv">0.3M / 61.0M</span></div>
+      <div class="statrow"><span class="sn">Realms walked</span><span class="sv">${S.realm} of 6 \u00b7 R7 sealed</span></div></div>
+     <div class="versefoot">\u201c${P.verse}\u201d</div></div>`;},
+
+ gatereadiness(){const P=PATHS[S.path];const v=S.grVerdict;
+  const verdict=v==='ready'?['Ready to attempt','\u9806\u9042',true]:v==='notyet'?['Not yet ready','\u74f6\u9838',false]:['Held back','\u89c0',false];
+  const C=(t,name,val,sub)=>`<div class="checkrow"><div class="med ${t}">${t==='ok'?'\u2713':t==='caution'?'!':'\u2715'}</div><div style="flex:1;min-width:0"><div class="cn">${name}</div><div style="font:600 10px var(--serif);color:var(--ink-45)">${sub}</div></div><div class="cs ${t}">${val}</div></div>`;
+  const checks=v==='held'?[C('ok','Cultivation Base','61.0M / 61.0M','at the breakthrough cost'),C('ok','Realm edge','9th \u00b7 Peak','the stage is full'),C('ok','Gate requirement','none','no pill or key needed here'),C('blocked','Heart & mind','Turbulence 72%','past the fracture line \u2014 settle first')]
+   :v==='notyet'?[C('caution','Cultivation Base','48.5M / 61.0M','short of the crossing cost'),C('ok','Realm edge','9th \u00b7 Peak','the stage is full'),C('ok','Gate requirement','none','no pill or key needed here'),C('ok','Heart & mind','Turbulence 18%','well below the fracture line')]
+   :[C('ok','Cultivation Base','61.0M / 61.0M','at the breakthrough cost'),C('ok','Realm edge','9th \u00b7 Peak','the stage is full'),C('ok','Gate requirement','none','no pill or key needed here'),C('ok','Heart & mind','Turbulence 18%','well below the fracture line')];
+  const bandIdx=v==='held'?4:v==='notyet'?3:1;const bands=['Serene','Steady','Perilous','Dire'];const bandcol=['#0f6f5a','#2c8f6a','#a2712a','#8b3028'];
+  const bandHTML=bands.map((b,i)=>`<div class="seg ${i===bandIdx-1?'':'dim'}" style="background:${bandcol[i]}">${b}</div>`).join('');
+  const odds=v==='ready'?'A <b>steady</b> crossing \u2014 most attempts at this band succeed.':v==='notyet'?'Cannot yet be read \u2014 reach the cost first.':'Capped at <b>Dire</b> while the heart is fractured.';
+  const raise=v==='held'?`<div class="raisehint">Settle the heart to lift the cap \u2014 a calmer mind raises the band most.</div>`:v==='ready'?`<div class="raisehint">To raise it further \u2014 <b>purer qi</b> and a <b>calmer heart</b> widen the safe band.</div>`:'';
+  let blockers='';
+  if(v==='held')blockers=`<div class="sccard">${cardHead('\u5fc3','What holds the crossing','','cinn')}<div class="blocker"><div><div class="bx">The heart is fractured \u2014 Turbulence has risen past the line.</div><div class="route" onclick="deepLink('daoHeart')">Settle the heart in the Dao Heart \u2197</div></div></div></div>`;
+  if(v==='notyet')blockers=`<div class="sccard">${cardHead('\u6c14','What is not yet ready','')}<div class="blocker" style="background:rgba(162,113,42,.08);border-color:var(--gold)"><div><div class="bx">Banked qi is below the crossing cost (48.5M / 61.0M).</div><div class="route">Cultivate in seclusion and return when the base is full</div></div></div></div>`;
+  const commit=v==='ready'?`<div class="commit" onclick="beginCeremony()">Cross the Threshold \u2192</div>`:`<div class="commit disabled">Cross the Threshold \u2192</div><div style="font:italic 600 11px var(--serif);color:var(--ink-45);margin-top:6px">The crossing cannot begin until the above is cleared.</div>`;
+  return schead(verdict[1],'GATE READINESS','The crossing diagnosis','A read-only reading \u2014 nothing here is decided in the menu')
+   +`<div class="sccontent">
+     <div class="sccard" style="display:flex;align-items:center;gap:15px"><div style="flex:0 0 auto">${waxSeal(verdict[1],58,-6,verdict[2])}</div><div><div class="ct" style="margin:0">The verdict</div><div style="font:800 24px var(--serif);color:${v==='ready'?'var(--jade-deep)':v==='notyet'?'var(--gold-deep)':'var(--cinn-deep)'}">${verdict[0]}</div></div></div>
+     <div class="sccard">${cardHead('\u5be9','The four checks','what the gate weighs')}<div class="scgrid">${checks.join('')}</div></div>
+     <div class="sccard">${cardHead('\u7b56','Crossing safety','how calculated')}<div class="band">${bandHTML}</div><div class="terms">${odds} Assembled from <b>qi purity</b>, <b>heart alignment</b>, <b>Turbulence</b> and <b>Luck</b> (the variance).</div>${raise}</div>
+     ${blockers}
+     <div class="sccard">${cardHead('\u6182','Safety net','never-regress','jade')}<div class="terms" style="margin-bottom:8px">A failed crossing costs <b>no realm you have earned</b>. Each attempt banks pity toward a sure crossing.</div><div class="pity"><span style="font:700 10px var(--serif);color:var(--ink-45);letter-spacing:.1em;text-transform:uppercase;margin-right:4px">Pity</span><span class="pip on"></span><span class="pip"></span><span class="pip"></span><span style="font:600 11px var(--serif);color:var(--ink-70);margin-left:6px">1 of 3 toward a guaranteed crossing</span></div>${commit}</div></div>`;},
+
+ ledger(){const held=S.fg==='held';const cult=S.fg==='cultivating';
+  return schead('\u85cf','THE IDLE LEDGER','How seclusion accrues','The full idle accounting \u2014 a whisper on the scene, a study here')
+   +`<div class="sccontent">
+     <div class="sccard">${cardHead('\u7387','Cultivation rate','how calculated')}
+      <div class="eqn"><div class="term"><b>1.00</b><i>Base</i></div><div class="op">\u00d7</div><div class="term"><b>3.2\u00d7</b><i>Realm</i></div><div class="op">\u00d7</div><div class="term"><b>${cult?'1.16\u00d7':'1.05\u00d7'}</b><i>Focus</i></div><div class="op">=</div><div class="res"><b>${held?'\u2014':cult?'318.9':'274.3'}</b><i>qi / s</i></div></div>
+      <div class="terms">Your banked stats set the base; the realm scalar multiplies it; the Focus emphasis (<b>${FOCUS[S.emph][0]}</b>) tilts it. ${cult?'Deepening adds a focus bonus.':'Resume seclusion to add the focus bonus.'}</div></div>
+     <div class="sccard">${cardHead('\u6f0f','The two clocks','idle vs active')}
+      <div class="statrow"><span class="sn">Seclusion</span><span class="se">idle cultivation \u00b7 accrues offline, even while away</span><span class="sv ${held?'':'ok'}">${held?'paused':'running'}</span></div>
+      <div class="statrow"><span class="sn">Sojourn</span><span class="se">active expeditions &amp; combat \u00b7 only while the app is open</span><span class="sv">${held?'in combat':'idle'}</span></div></div>
+     <div class="sccard">${cardHead('\u98a8','Offline accrual','the Tempering Wind')}
+      <div class="statrow"><span class="sn">Accrual cap</span><span class="sv">12 hours</span></div>
+      <div class="statrow"><span class="sn">Efficiency</span><span class="sv">86%</span></div>
+      <div class="terms">Idle is <b>never taxed</b> \u2014 accrual simply pauses at the cap, and never decays. Return any time and the seclusion is waiting.</div></div>
+     <div class="sccard">${cardHead('\u696d','The foreground gate','one at a time')}<div class="terms" style="margin-bottom:8px">A single foreground task runs at once \u2014 <b>${PATHS[S.path].verb}</b>, temper a meridian, or tend the Dao Heart. Combat preempts it and holds the Seat until the fight is done.</div><span class="deeplink" onclick="deepLink('world.map')">Expeditions \u2197</span> &nbsp; <span class="deeplink" onclick="closeScroll()">Alchemy \u2197</span> &nbsp; <span class="deeplink" onclick="deepLink('daoHeart')">Dao Heart \u2197</span></div>
+     <div class="sccard">${cardHead('\u529f','Life Merit','this life')}<div class="statrow"><span class="sn">Tallied this incarnation</span><span class="sv">4,820</span></div><span class="deeplink" onclick="closeScroll()">To Prestige &amp; records \u2197</span></div></div>`;},
+
+ focus(){const P=PATHS[S.path];const alloc=focusAlloc();
+  const rows=FOCUS.map((ax,i)=>`<div class="statrow ${i===S.emph?'':''}" style="cursor:pointer;${i===S.emph?'background:rgba(15,111,90,.06);border-radius:4px;padding:7px 8px':''}" onclick="setEmph(${i});openScroll('focus')"><span class="sn">${ax[0]}</span><span class="sz">${ax[1]}</span><span class="sv">${alloc[i]}%</span><span class="se">${FOCUS_EFFECT[i]}${i===S.emph?' \u00b7 <b style="color:var(--jade-deep)">current emphasis</b>':''}</span><span style="flex-basis:100%;margin-top:5px"><span style="display:block;height:6px;border-radius:3px;background:var(--paper-shade);overflow:hidden;box-shadow:inset 0 0 0 1px var(--ink-12)"><span style="display:block;height:100%;width:${alloc[i]}%;background:${i===S.emph?'linear-gradient(90deg,var(--jade-deep),#1a8f74)':'linear-gradient(90deg,var(--gold),var(--gold-bright))'}"></span></span></span></div>`).join('');
+  return schead('\u696d','THE FOCUS','The one build lever','The seven cultivation axes \u2014 the lever you act on at the Seat')
+   +`<div class="sccontent">
+     <div class="sccard">${cardHead('\u5fc3','The seven axes \u00b7 '+P.name,'tap to set emphasis')}${rows}</div>
+     <div class="sccard">${cardHead('\u5e8f','Your emphasis','the trade')}<div class="terms">Emphasising <b>${FOCUS[S.emph][0]}</b> ${FOCUS_LEAN[S.emph]} \u2014 it ${FOCUS_EFFECT[S.emph]}. Emphasis tilts where your cultivation flows; it never starves the others, so no single axis can dominate.</div></div>
+     <div class="sccard">${cardHead('\u661f','The whole picture lives in Status','preview only','jade')}<div class="terms" style="margin-bottom:8px">The Seat shows two slivers of stat-truth \u2014 this dial and the Three Treasures triad. The full 28-stat constellation is owned by the Status screen.</div><span class="deeplink" onclick="deepLink('status.constellation')">Open the full constellation in Status \u2197</span></div></div>`;},
+
+ premonition(){const rf=(S.realm-1)/5;const O=(g,tone,name,val,sub)=>`<div class="checkrow"><div class="med ${tone}">${g}</div><div style="flex:1;min-width:0"><div class="cn">${name}</div><div style="font:600 10px var(--serif);color:var(--ink-45)">${sub}</div></div><div class="cs ${tone}">${val}</div></div>`;
+  return schead('\u76ee','PREMONITION','Heaven\u2019s Eye','The aloof seer reads fortune, danger, and the shape of the crossing')
+   +`<div class="sccontent">
+     <div class="sccard">${cardHead('\u5409','Today\u2019s fortune','the day\u2019s omens','jade')}<div class="scgrid">
+      ${O('\u2713','ok','Cultivation wind','favorable','an auspicious day \u2014 idle gains run warm')}
+      ${O('\u2713','ok','A technique to seek','foreseen','a worthy art may be found in the World today')}</div></div>
+     <div class="sccard">${cardHead('\u96aa','Risk omens','what the eye warns')}<div class="scgrid">
+      ${O('!','caution','Danger on the road','faint','a minor ill omen \u2014 ward before long expeditions')}</div></div>
+     <div class="sccard">${cardHead('\u5929','Tribulation foresight','the crossing ahead','jade')}
+      <div class="statrow"><span class="sn">Foresight horizon</span><span class="sv">${Math.round(2+rf*4)} steps</span><span class="se">widens each realm \u2014 Heaven sees the crossing\u2019s danger most clearly</span></div>
+      <div class="terms">Built to its grain, Heaven breaks through most <b>serenely</b> \u2014 perception becomes the key that opens the gate.</div></div></div>`;},
+
+ beastlore(){const rf=(S.realm-1)/5,beasts=Math.min(7,1+Math.round(rf*6));const depth=Math.round((0.2+rf*0.8)*100);
+  const E=[['Iron-Hide Boar','\u7363','endurance \u2014 a deeper vitality pool'],['Storm-Sinew Ape','\u529b','force \u2014 heavier strikes'],['Deep-Root Tortoise','\u7532','defense \u2014 chip-damage negation'],['Marrow-Wyrm','\u9ad3','vitality \u2014 faster recovery'],['Stone-Lung Rhino','\u5ca9','poise \u2014 stagger resistance'],['Thunder-Vein Serpent','\u96f7','tempo \u2014 quicker tempering'],['Sovereign Qilin','\u9e92','dominion \u2014 a true-body trait']];
+  const rows=E.slice(0,beasts).map(b=>`<div class="grant"><div class="gm">${b[1]}</div><div><div class="gt">${b[0]}</div><div class="gd">${b[2]}</div></div></div>`).join('');
+  return schead('\u7363','BEAST LORE','Body Tempering','The body-refiner draws the strengths of the wild into its own marrow')
+   +`<div class="sccontent">
+     <div class="sccard">${cardHead('\u7363','Absorbed bestial essences','\u00b7 '+beasts+' of 7','jade')}<div class="scgrid">${rows}</div></div>
+     <div class="sccard">${cardHead('\u9ad3','Body-tempering depth','this realm')}<div class="band"><div class="seg" style="background:linear-gradient(90deg,#8d642d,#caa05a);flex:${(0.2+rf*0.8).toFixed(2)}">${depth}%</div><div class="seg dim" style="background:var(--paper-shade);flex:${(0.8-rf*0.8).toFixed(2)}"></div></div><div class="terms">The flesh hardens and bestializes each realm \u2014 deeper tempering negates more chip damage and turns the body itself into a treasure.</div></div>
+     <div class="sccard">${cardHead('\u72e9','Where to hunt','more essence')}<div class="terms" style="margin-bottom:8px">Demonic beasts drop essence in the World \u2014 the same signal that drives the body\u2019s growth here.</div><span class="deeplink" onclick="deepLink('world.map')">Hunt in the World \u2197</span></div></div>`;},
+
+ weaponbond(){const rf=(S.realm-1)/5,bond=Math.round((0.18+rf*0.82)*100),arts=Math.min(5,1+Math.round(rf*4));
+  const A=[['Whetting Draw','an opening strike that builds intent'],['Flowing Step','close distance, gain tempo'],['Tide-Turn','convert a block into a counter'],['Killing Window','a critical strike that cuts past defense'],['Heaven-Sever','the finisher \u2014 sunders armor and ward']];
+  const rows=A.slice(0,arts).map(a=>`<div class="grant"><div class="gm">${'\u5283'}</div><div><div class="gt">${a[0]}</div><div class="gd">${a[1]}</div></div></div>`).join('');
+  return schead('\u528d','WEAPON-BOND','Arms-Mastery','The weapon as a cultivable companion \u2014 a second body, tempered beside you')
+   +`<div class="sccontent">
+     <div class="sccard">${cardHead('\u528d','The bonded weapon','natal grade','cinn')}
+      <div class="statrow"><span class="sn">Cinnabar-Vein Sabre</span><span class="sv">natal grade</span></div>
+      <div class="statrow"><span class="sn">Bond depth</span><span class="sv">${bond}%</span><span class="se">deepens with cultivation \u2014 raises every weapon-art</span></div>
+      <div class="statrow"><span class="sn">Communion</span><span class="sv">${S.fg==='cultivating'?'deepening':S.fg==='held'?'held':'idle'}</span></div></div>
+     <div class="sccard">${cardHead('\u5283','Weapon-arts','\u00b7 '+arts+' of 5','jade')}<div class="scgrid">${rows}</div></div>
+     <div class="sccard">${cardHead('\u92d2','Re-bond','a new edge')}<div class="terms" style="margin-bottom:8px">Re-bonding a new weapon resets the current depth (${bond}%) but raises the ceiling. The gear side \u2014 forging, refining, gems \u2014 is owned by the Forge.</div><span class="deeplink" onclick="deepLink('forge.equipment')">To the Forge &amp; Equipment \u2197</span></div></div>`;}
+};
+
+/* ===================== BREAKTHROUGH CEREMONY (3 acts) ===================== */
+const cer={act:0,target:4};
+function cerWash(p,bright){const t=bright?0.7:0.2;
+ if(p==='heaven')return `radial-gradient(120% 90% at 50% 30%,rgba(220,239,231,${0.1+t*0.3}),transparent 60%),linear-gradient(180deg,${mix('#16202b','#5b7a72',t)},${mix('#12201d','#34514a',t)} 70%,#0c1714)`;
+ if(p==='earth')return `radial-gradient(110% 80% at 50% 60%,rgba(210,150,60,${0.12+t*0.4}),transparent 62%),linear-gradient(180deg,${mix('#241a10','#4a3415',t)},#1a130c 80%)`;
+ return `radial-gradient(100% 80% at 50% 50%,rgba(232,113,74,${0.16+t*0.5}),transparent 60%),linear-gradient(180deg,${mix('#1c1410','#4a1d16',t)},#120a07 82%)`;
+}
+function beginCeremony(){closeScroll();cer.target=Math.min(7,S.realm+1);cer.act=1;document.getElementById('ceremony').style.display='flex';renderCer();}
+function closeCeremony(){document.getElementById('ceremony').style.display='none';render();syncDev();}
+function jumpCer(act,outcome){cer.target=Math.min(7,S.realm+ (act===3&&outcome==='fail'?0:1));document.getElementById('ceremony').style.display='flex';cer.act=act;cer.outcome=outcome;renderCer(true);}
+function renderCer(jumped){
+ const cy=document.getElementById('ceremony');const P=PATHS[S.path],rm=S.rm;
+ const prev=P.realms[S.realm-1], tgt=P.realms[cer.target-1];
+ let cbg,blaze='',sig='',content='';
+ if(cer.act===1){
+  cbg=cerWash(S.path,false);
+  const gate=P.glyph==='天'?'Heaven sets its question before you; comprehension is the only key.':P.glyph==='地'?'The mountain asks whether you will break. Endure, and the gate is yours.':'The blade-gate bars the way \u2014 only an edge that defies heaven may pass.';
+  content=`<div class="cact">Act I \u00b7 The Gate Trial</div>
+   <div class="ctitle">The Gate of ${tgt.n}</div>
+   <div style="font-family:var(--kai);font-size:30px;color:var(--acc-rim);margin-top:-2px">${tgt.z}</div>
+   <div class="cfiction">${gate}</div>
+   <div class="crevealbox" style="max-width:560px">
+    <div class="crbeat" style="animation-delay:.05s"><div class="bi">${'\u9806'}</div><div><div class="bt">The diagnosis carries over</div><div class="bd">Crossing safety \u00b7 Steady \u00b7 pity 1 of 3 banked toward a sure crossing</div></div></div>
+   </div>
+   <div class="cbtns"><div class="cbtn" onclick="cer.act=2;renderCer()">Face the trial \u2192</div><div class="cbtn ghost" onclick="closeCeremony()">Withdraw</div></div>`;
+ } else if(cer.act===2){
+  cbg=cerWash(S.path,true);
+  const sigGly=P.glyph;
+  sig=`<div style="position:absolute;inset:0;display:grid;place-items:center;pointer-events:none"><div style="font-family:var(--kai);font-size:560px;color:var(--acc-bright);opacity:.12;${rm?'':'animation:sigK 1.2s ease forwards'}">${sigGly}</div></div>`;
+  // blaze: realm-light flood + radial blaze
+  blaze=`<div style="position:absolute;inset:0;pointer-events:none">
+    <div style="position:absolute;left:50%;bottom:0;width:14px;height:100%;transform:translateX(-50%);transform-origin:bottom;background:linear-gradient(0deg,var(--acc-core),transparent);filter:blur(3px);${rm?'':'animation:floodK 1.4s ease forwards'}"></div>
+    <div style="position:absolute;inset:0;background:radial-gradient(40% 40% at 50% 46%,var(--acc-core),transparent 70%);mix-blend-mode:screen;opacity:.5;${rm?'':'animation:blazeK 2.2s ease-in-out infinite'}"></div>
+   </div>`;
+  const trib=P.glyph==='天'?'The Heart-Tribulation':P.glyph==='地'?'The Body-Tribulation':'The Duel of Blades';
+  content=`<div class="cact">Act II \u00b7 Tribulation</div>
+   <div class="ctitle" ${rm?'':'style="animation:shudK .5s ease-in-out 3"'}>${trib}</div>
+   <div class="cfiction">${P.tribName}. The heart-devil rises: <b style="color:var(--acc-rim)">${P.heartDevil}</b>.</div>
+   <div class="cbtns"><div class="cbtn" onclick="cer.act=3;cer.outcome='win';renderCer()">Endure \u2014 hold the heart</div><div class="cbtn danger" onclick="cer.act=3;cer.outcome='fail';renderCer()">Should the heart break\u2026</div></div>`;
+ } else { // act 3
+  if(cer.outcome!=='fail'){ // SUCCESS — advance the realm beneath
+   if(!jumped){S.realm=cer.target;S.peak=false;}
+   cbg=cerWash(S.path,true);
+   const nb=P.fantasy[cer.target-1];
+   content=`<div class="cact">Act III \u00b7 The Reveal</div>
+    <div class="ctitle">${tgt.n}</div>
+    <div style="font-family:var(--kai);font-size:32px;color:var(--acc-rim);margin-top:-2px">${tgt.z}</div>
+    <div class="crevealbox">
+     <div class="crbeat" style="animation-delay:.1s"><div class="bi">${'\u9032'}</div><div><div class="bt">Realm advanced \u2014 ${prev.n} \u2192 ${tgt.n}</div><div class="bd">The ${P.counter} count rises. The scene behind you has already changed.</div></div></div>
+     <div class="crbeat" style="animation-delay:.45s"><div class="bi">${'\u8108'}</div><div><div class="bt">Meridian opened \u2014 ${tgt.m}</div><div class="bd">A new channel of the ${P.name.toLowerCase()} path runs clear.</div></div></div>
+     <div class="crbeat" style="animation-delay:.8s"><div class="bi">${'\u968e'}</div><div><div class="bt">A new tier opens</div><div class="bd">The realm\u2019s content unlocks across the World, Forge, and Alchemy.</div></div></div>
+     <div class="crbeat" style="animation-delay:1.15s"><div class="bi">${'\u8c61'}</div><div><div class="bt">The body changes</div><div class="bd">${nb.charAt(0).toUpperCase()+nb.slice(1)}.</div></div></div>
+    </div>
+    <div class="cfiction" style="margin-top:18px;font-size:15px;opacity:.78">\u201c${P.verse}\u201d</div>
+    <div class="cbtns"><div class="cbtn" onclick="closeCeremony()">Return to the Seat</div></div>`;
+  } else { // FAILURE — never-regress
+   cbg=cerWash(S.path,false);
+   content=`<div class="cact">Act III \u00b7 The Crossing Falters</div>
+    <div class="ctitle">The gate holds \u2014 for now</div>
+    <div class="failcost">The tribulation overwhelms the heart this time. A portion of <b>banked qi</b> is spent in the attempt, and a <b>wound</b> is left to settle in the Dao Heart.</div>
+    <div class="neverregress">No realm you have earned is lost. The climb only waits.</div>
+    <div class="crevealbox" style="max-width:520px;margin-top:18px"><div class="crbeat" style="animation-delay:.1s"><div class="bi">${'\u6182'}</div><div><div class="bt">Pity banked \u2014 2 of 3</div><div class="bd">Each failed crossing carries you nearer a guaranteed success.</div></div></div></div>
+    <div class="cbtns"><div class="cbtn" onclick="closeCeremony()">Return and recover</div><div class="cbtn ghost" onclick="cer.act=1;renderCer()">Attempt again</div></div>`;
+  }
+ }
+ cy.innerHTML=`<div class="cbg" style="background:${cbg}"></div>${blaze}${sig}<div class="cveil"></div><div class="cstage">${content}</div>`;
+}
+
+/* ===================== DEV TOOLBAR ===================== */
+function buildDev(){
+ const d=document.getElementById('dev');
+ const btn=(label,active,onclick)=>`<button class="${active?'on':''}" onclick="${onclick}">${label}</button>`;
+ let h='';
+ h+=`<div class="grp"><span class="gl">Path</span>${['heaven','earth','martial'].map(p=>btn(PATHS[p].glyph+' '+PATHS[p].name[0]+PATHS[p].name.slice(1).toLowerCase(),S.path===p,`setPath('${p}')`)).join('')}</div>`;
+ h+=`<div class="grp"><span class="gl">Realm</span>${[1,2,3,4,5,6].map(r=>btn('R'+r,S.realm===r&&!false,`setRealm(${r})`)).join('')}</div>`;
+ h+=`<div class="grp"><span class="gl">Stage</span>${btn('Climb',!S.peak,'setPeak(false)')}${btn('Peak',S.peak,'setPeak(true)')}</div>`;
+ h+=`<div class="grp"><span class="gl">Seat</span>${btn('Seclude',S.fg==='idle','setFg(\'idle\')')}${btn('Cultivate',S.fg==='cultivating','setFg(\'cultivating\')')}${btn('Held',S.fg==='held','setFg(\'held\')')}</div>`;
+ h+=`<div class="grp"><span class="gl">Gate</span>${btn('Ready',S.grVerdict==='ready','setGV(\'ready\')')}${btn('Not yet',S.grVerdict==='notyet','setGV(\'notyet\')')}${btn('Held-heart',S.grVerdict==='held','setGV(\'held\')')}${btn('open \u2197',false,"openScroll('gatereadiness')")}</div>`;
+ h+=`<div class="grp"><span class="gl">Ceremony</span>${btn('Trial',false,'jumpCer(1)')}${btn('Tribulation',false,'jumpCer(2)')}${btn('Reveal \u2713',false,"jumpCer(3,'win')")}${btn('Reveal \u2715',false,"jumpCer(3,'fail')")}</div>`;
+ h+=`<div class="grp"><span class="gl">Scrolls</span>${btn('Ascent',false,"openScroll('ascent')")}${btn('Ledger',false,"openScroll('ledger')")}${btn('Focus',false,"openScroll('focus')")}${btn('Mechanic',false,`openScroll('${PATHS[S.path].mech.scroll}')`)}</div>`;
+ h+=`<div class="grp"><span class="gl">Motion</span>${btn('Full',!S.rm,'setRM(false)')}${btn('Reduced',S.rm,'setRM(true)')}</div>`;
+ h+=`<div class="hint">Cultivation \u00b7 \u201cThe Seat of Becoming\u201d \u2014 the scene is the screen. Touch the dial spokes, the instruments, the threshold, or the breath-line. Every dense panel is a scroll.</div>`;
+ d.innerHTML=h;
+}
+function syncDev(){buildDev();}
+function setPath(p){S.path=p;render();syncDev();}
+function setRealm(r){S.realm=r;S.peak=false;render();syncDev();}
+function setPeak(v){S.peak=v;render();syncDev();}
+function setFg(v){S.fg=v;render();syncDev();}
+function setGV(v){S.grVerdict=v;render();syncDev();if(document.getElementById('scrollov').style.display==='flex')openScroll('gatereadiness');}
+function setRM(v){S.rm=v;render();syncDev();}
+
+/* ===================== INIT + SCALER ===================== */
+document.body.insertAdjacentHTML('afterbegin',DEFS);
+function fit(){const sc=Math.min(window.innerWidth/2048,window.innerHeight/1152)*0.99;document.getElementById('scaler').style.transform='scale('+sc+')';}
+window.addEventListener('resize',fit);
+buildDev();render();fit();
+</script></body></html>
