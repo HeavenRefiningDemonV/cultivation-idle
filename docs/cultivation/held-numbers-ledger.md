@@ -52,9 +52,14 @@ Last updated: 2026-06-23.
 - **Per-enemy element assignment (D11 DR-11j):** `EnemyDefinition.element` is a live optional FIELD,
   but WHICH enemy carries WHICH element is **D15-owned** ("fair anti-funnel distribution"). No enemy
   has one yet ⇒ the counter/resist matchup layer (D11 slice 2) is inert until D15 assigns them.
-- **Reaction/state effect magnitudes (D11 slice 3, pending):** `reactionBase`, `severCapMultiple`,
+- **Reaction/state effect magnitudes (D11 slice 3):** `reactionBase`, `severCapMultiple`,
   `burstCapMultiple`, `stateBaseDurationMs`, `stateMaxIntensity`, `stateEscalationThreshold`, the
   per-family ICD windows (`icdMsByFamily`) — all in `DEFAULT_ELEMENT_TUNING`, all D15-held.
+- **Beast-Lore drop rate + per-beast→essence mapping (D11/D15):** the placeholder absorbs the next
+  essence per kill; the real drop rate + which beast drops which essence are held.
+- **Weapon-Bond curve (D5/D15):** `BOND_KILLS_FOR_FULL=25` + the per-art unlock bands (in
+  cultivationSeatSurface buildInstrument martial branch) are placeholders — the real kills→depth and
+  art-unlock thresholds are held. The bond store's `bondKills` is a structural count, not a magnitude.
 
 ## 5. The shipped engine flag (flip #2)
 - **Where:** `STAT_ENGINE_DERIVED_AUTHORITATIVE_DEFAULT = false` (`src/systems/meridians/statEngineFlag.ts`).
