@@ -818,6 +818,12 @@ export interface EnemyDefinition {
   expReward: string; // Experience gained (Decimal string)
   lootTable?: LootDrop[]; // Possible item drops
   isBoss?: boolean; // Is this a boss enemy
+  /**
+   * D11 — the enemy's element, for element counter/resist matchups (read by the combat element seam).
+   * OPTIONAL: the FIELD is D11 structure, but the per-enemy ASSIGNMENT is D15/F-BAL-held (DR-11j —
+   * "fair anti-funnel distribution"). Undefined ⇒ no matchup (the offensive affinity still applies).
+   */
+  element?: SpiritRootElement;
 }
 
 export type EnemyMechanicType =

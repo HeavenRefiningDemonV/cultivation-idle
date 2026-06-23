@@ -1,4 +1,4 @@
-import { resolveAffinity } from './elementResolver.js';
+import { resolveAffinity, resolveResist } from './elementResolver.js';
 import { ELEMENT_ROSTER } from './elementCatalog.js';
 import { DEFAULT_ELEMENT_TUNING } from './elementTuning.js';
 import type { AffinityResult, ElementId, ElementWeights } from './elementTypes.js';
@@ -57,6 +57,9 @@ export function resolvePlayerElementAffinity(input: {
   rootElement: ElementId | null | undefined;
   realm: number;
   engineActive: boolean;
+  /** D11 slice 2 — the target (enemy) element, so a favourable matchup presses affinity and an
+   *  unfavourable one is blunted (never nullified). Omitted ⇒ no counter delta. */
+  targetElement?: ElementId | null;
 }): AffinityResult {
   if (!input.engineActive || !input.rootElement) return INERT_AFFINITY;
   return resolveAffinity(
@@ -64,6 +67,28 @@ export function resolvePlayerElementAffinity(input: {
     input.rootElement,
     { realm: Math.max(1, input.realm) },
     DEFAULT_ELEMENT_TUNING,
+    input.targetElement ?? undefined,
+  );
+}
+
+/**
+ * D11 slice 2 — the player's defensive RESIST fraction vs an incoming (enemy) element, in [0, hardcap)
+ * (hardcap < 1 always — no immunity). 0 when the engine is off, or there is no incoming element, or no
+ * root element. The element tuning (incl. the 75% cap) is D15/F-BAL-held; consumed, never authored.
+ */
+export function resolvePlayerElementResist(input: {
+  rootElement: ElementId | null | undefined;
+  incomingElement: ElementId | null | undefined;
+  realm: number;
+  engineActive: boolean;
+}): number {
+  if (!input.engineActive || !input.incomingElement || !input.rootElement) return 0;
+  return resolveResist(
+    buildPlayerElementWeights(input.rootElement),
+    input.incomingElement,
+    { realm: Math.max(1, input.realm) },
+    DEFAULT_ELEMENT_TUNING,
+    input.incomingElement,
   );
 }
 
@@ -75,4 +100,13 @@ export function resolvePlayerElementAffinity(input: {
  */
 export function elementAffinityDamageMultiplier(affinity: AffinityResult): number {
   return 1 + Math.max(0, affinity.effective);
+}
+
+/**
+ * D-COMBAT (D11) APPLICATION — the resist fraction as an incoming-damage multiplier `× (1 − fraction)`
+ * (D3 §6.2). fraction 0 ⇒ ×1 ⇒ byte-identical. The fraction is already hard-capped < 1 by the resolver,
+ * so this is always in (0, 1] — incoming damage is reduced, never erased (the no-immunity floor).
+ */
+export function elementResistDamageMultiplier(resistFraction: number): number {
+  return 1 - Math.min(Math.max(0, resistFraction), 0.99);
 }

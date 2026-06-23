@@ -32,7 +32,7 @@ import { rankMultiplier, useTechCollectionStore } from './techCollectionStore.js
 import { D, subtract, greaterThan, lessThanOrEqualTo, add, clamp } from '../utils/numbers.js';
 import { BossMechanics } from '../systems/bossMechanics.js';
 import { resolveMeridianSignaturesForCombat, combineArmorPenWithSignatures, isIronSkinNegated, mountainStanceReflectAmount, momentumDamageMultiplier } from '../systems/meridians/meridianCombatSignatures.js';
-import { resolvePlayerElementAffinity, elementAffinityDamageMultiplier } from '../systems/elements/elementCombatAffinity.js';
+import { resolvePlayerElementAffinity, elementAffinityDamageMultiplier, resolvePlayerElementResist, elementResistDamageMultiplier } from '../systems/elements/elementCombatAffinity.js';
 import { isDerivedStatEngineAuthoritative } from '../systems/meridians/statEngineFlag.js';
 import { generateLoot, formatLootMessage } from '../systems/loot.js';
 import { RewardService, type RewardBundle, type RewardItemBundle } from '../services/rewards/index.js';
@@ -1544,6 +1544,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
         rootElement: getSpiritRootSnapshot()?.element ?? null,
         realm: useGameStore.getState().realm.index + 1,
         engineActive: isDerivedStatEngineAuthoritative(),
+        targetElement: enemy.element ?? null, // D11 slice 2 — counter matchup (held until D15 assigns enemy elements)
       });
       const elementAffinityMult = D(elementAffinityDamageMultiplier(elementAffinity));
 
@@ -1652,9 +1653,19 @@ export const useCombatStore = create<ExtendedCombatState>()(
       const damageAfterCritRaw = baseDamage.times(critMultiplier).times(rootProc.modifiers.incomingDamageMult);
       // B-MERID Iron-Skin (Earth): a hit below the threshold is fully negated. The original Decimal is
       // preserved when not negated (no number round-trip), so legacy combat is byte-identical.
-      const damageAfterCrit = isIronSkinNegated(damageAfterCritRaw.toNumber(), meridianSig.ironSkinThreshold)
+      const damageAfterIron = isIronSkinNegated(damageAfterCritRaw.toNumber(), meridianSig.ironSkinThreshold)
         ? D(0)
         : damageAfterCritRaw;
+      // D11 slice 2 — element resist on incoming damage (flag-gated; INERT 0 ⇒ ×1 ⇒ byte-identical).
+      // No counter delta here — resist is the defender's read of the attacker's element. Held until D15
+      // assigns enemy elements (no enemy element ⇒ fraction 0 ⇒ unchanged).
+      const elementResistFraction = resolvePlayerElementResist({
+        rootElement: getSpiritRootSnapshot()?.element ?? null,
+        incomingElement: enemy.element ?? null,
+        realm: useGameStore.getState().realm.index + 1,
+        engineActive: isDerivedStatEngineAuthoritative(),
+      });
+      const damageAfterCrit = damageAfterIron.times(D(elementResistDamageMultiplier(elementResistFraction)));
       if (rootProc.modifiers.shieldPct > 0) {
         const shieldGain = D(state.playerMaxHP).times(rootProc.modifiers.shieldPct).toNumber();
         if (shieldGain > 0) {
