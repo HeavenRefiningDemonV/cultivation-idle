@@ -85,9 +85,15 @@ coeffs all held/inert; S9/S10 live-instrument fidelity matrix landed).
   canon `controlPower` vs `stagger` roll has no denominator); (2) **perma-lock risk** — refresh-not-stack
   (4000ms) vs 1000ms player-attack would lock the enemy all fight, so a live value needs a
   duration/CC-immunity-window model. Also confirm the player `controlPower` channel is combat-readable.
-- **D11 3b remaining (HELD):** the real `controlPower`-vs-`stagger` roll (3b-iii-c, blocked above) +
-  soft-CC action-rate reduction (3b-iii-b); spread radius/count; drain/tempo/cleanse/catalyst magnitudes
-  — all D15-held.
+- **D11 3b drain (landed):** Siphon/Devour return a self-heal extracted like burst/sever; reuses the
+  resolver's existing held reaction amount (reactionBase × realmScalar) — NO new magnitude. Live-
+  provisional (negligible until D15 tunes reactionBase). Surfaces via ICD-rotation (lower-priority than
+  the same-trigger dot/shred).
+- **D11 3b remaining — the ARCHITECTURE WALL (needs infra + author mechanics, not a clean slice):**
+  shred (enemy def/resist DEBUFF state — enemies have none), the real `controlPower`-vs-`stagger` roll
+  (enemy Stagger/CC-Resist source — enemies have no derived layer), spread (1-vs-N target model — combat
+  is 1-v-1), cleanse (player-affliction side — unmodeled). soft-CC action-rate (3b-iii-b) + tempo/
+  catalyst magnitudes are D15-held. The wall items want a packet + a decision.
 - **Beast-Lore drop rate + per-beast→essence mapping (D11/D15):** the placeholder absorbs the next
   essence per kill; the real drop rate + which beast drops which essence are held.
 - **Weapon-Bond curve (D5/D15):** `BOND_KILLS_FOR_FULL=25` + the per-art unlock bands (in
