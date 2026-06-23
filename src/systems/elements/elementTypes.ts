@@ -227,4 +227,5 @@ export interface ElementTuning {
   readonly stateEscalationThreshold: number;    // #9 — intensity at which weighted→petrified / chilled→frozen
   readonly dotTickCoeff: number;                // #10-adjacent — per-tick DoT damage coeff (× intensity × realmScalar); HELD 0 until D15
   readonly dotTickIntervalMs: number;           // #10-adjacent — DoT tick cadence (the interval-accumulator step); inert while coeff 0
+  readonly controlSkipChance: number;           // #control (DR-11c) — P(a hard-CC affliction skips the enemy's turn), 0..1; HELD 0 ⇒ never skips until D15
 }

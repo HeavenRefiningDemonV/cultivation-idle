@@ -35,6 +35,7 @@ import { resolveMeridianSignaturesForCombat, combineArmorPenWithSignatures, isIr
 import { resolvePlayerElementAffinity, elementAffinityDamageMultiplier, resolvePlayerElementResist, elementResistDamageMultiplier } from '../systems/elements/elementCombatAffinity.js';
 import { stepEnemyElementOnHit, EMPTY_ENEMY_ELEMENT_STATES } from '../systems/elements/elementCombatReactions.js';
 import { tickEnemyElementStates } from '../systems/elements/elementStateTick.js';
+import { resolveEnemyControlSkip } from '../systems/elements/elementControlGate.js';
 import { DEFAULT_ELEMENT_TUNING } from '../systems/elements/elementTuning.js';
 import { useBeastLoreStore } from '../features/court/useBeastLoreStore.js';
 import { useWeaponBondStore } from '../features/court/useWeaponBondStore.js';
@@ -1636,6 +1637,23 @@ export const useCombatStore = create<ExtendedCombatState>()(
       const dodgeRoll = Math.random() * 100;
       if (dodgeRoll < effectiveStats.dodge) {
         get().addLogEntry('enemy', `${enemy.name} attacked but it missed!`, '#94a3b8');
+        set((state) => {
+          state.lastEnemyAttackTime = now;
+        });
+        return;
+      }
+
+      // D11 3b-iii — hard-CC skip-turn: a frozen/petrified enemy loses its action (mirrors the dodge-miss
+      // slot consumption). INERT (controlSkipChance held 0) ⇒ never skips, never draws RNG ⇒ flag-on
+      // byte-identical; flag-off the helper short-circuits on !engineActive.
+      const controlSkip = resolveEnemyControlSkip({
+        states: state.enemyElementStates ?? EMPTY_ENEMY_ELEMENT_STATES,
+        engineActive: isDerivedStatEngineAuthoritative(),
+        tuning: DEFAULT_ELEMENT_TUNING,
+        rng: Math.random,
+      });
+      if (controlSkip.skip) {
+        get().addLogEntry('enemy', `${enemy.name} is locked in place and cannot act!`, '#94a3b8');
         set((state) => {
           state.lastEnemyAttackTime = now;
         });

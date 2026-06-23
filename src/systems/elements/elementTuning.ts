@@ -63,4 +63,12 @@ export const DEFAULT_ELEMENT_TUNING: ElementTuning = Object.freeze({
   dotTickCoeff: 0,
   // [tune] D15 — DoT tick cadence (ms). Inert while dotTickCoeff is 0 (0 × anything = 0); D15 owns it.
   dotTickIntervalMs: 1000,
+  // [tune] D15 (DR-11c) — P(a hard-CC affliction, frozen/petrified, skips the enemy's turn), 0..1.
+  //   HELD AT 0 ⇒ control NEVER skips a turn (INERT): the skip-turn gate is wired + contract-proven but
+  //   flag-on combat is byte-identical until D15 deposits a value. Held at 0 (not live) for two reasons:
+  //   (1) the canon success roll is Control Power vs the target's Stagger/CC-Resist, but enemies have NO
+  //   derived layer / no stagger source in code yet — there is no honest denominator to roll against;
+  //   (2) under refresh-not-stack a control rewritten every 1000ms player-attack vs a 4000ms duration
+  //   would PERMA-LOCK the enemy — a live value needs a duration/immunity-window model D15 owns first.
+  controlSkipChance: 0,
 });
