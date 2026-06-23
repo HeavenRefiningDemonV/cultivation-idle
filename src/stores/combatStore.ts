@@ -31,6 +31,7 @@ import { useHeartLawStore } from './heartLawStore.js';
 import { rankMultiplier, useTechCollectionStore } from './techCollectionStore.js';
 import { D, subtract, greaterThan, lessThanOrEqualTo, add, clamp } from '../utils/numbers.js';
 import { BossMechanics } from '../systems/bossMechanics.js';
+import { resolveMeridianSignaturesForCombat, combineArmorPenWithSignatures } from '../systems/meridians/meridianCombatSignatures.js';
 import { generateLoot, formatLootMessage } from '../systems/loot.js';
 import { RewardService, type RewardBundle, type RewardItemBundle } from '../services/rewards/index.js';
 import { applyLootBonuses } from '../services/rewards/applyLootBonuses.js';
@@ -1505,9 +1506,20 @@ export const useCombatStore = create<ExtendedCombatState>()(
         return;
       }
 
+      // Check for critical hit — rolled BEFORE the Defense step so a crit can drive Sword-Heart's
+      // DR-ignore (B-MERID). The RNG order (dodge → crit) is unchanged, so flag-off is byte-identical.
+      const critRoll = Math.random() * 100;
+      const isCrit = critRoll < effectiveStats.crit;
+
+      // B-MERID (flag-gated; INERT when the derived engine is off → legacy byte-identical): fold the
+      // armor-shredding meridian signatures — Void-Gaze (Heaven, always) + Sword-Heart (Martial, crit
+      // only) — into the SAME enemy-Defense reduction as the spirit-root armorPen, clamped ≤90%.
+      const meridianSig = resolveMeridianSignaturesForCombat();
+      const totalArmorPenPct = combineArmorPenWithSignatures(rootProc.modifiers.armorPenPct, meridianSig, isCrit);
+
       // Calculate base damage: ATK * (1 - DEF/(DEF + K))
       const atk = D(effectiveStats.atk);
-      const effectiveEnemyDef = Math.max(0, Number(enemy.def) * (1 - Math.min(rootProc.modifiers.armorPenPct, 90) / 100));
+      const effectiveEnemyDef = Math.max(0, Number(enemy.def) * (1 - totalArmorPenPct / 100));
       const def = D(effectiveEnemyDef);
       const defReduction = def.dividedBy(def.plus(DEFENSE_CONSTANT_K));
       const baseDamage = atk.times(D(1).minus(defReduction));
@@ -1516,9 +1528,6 @@ export const useCombatStore = create<ExtendedCombatState>()(
       const damageMultiplier = D(1).plus(D(bonusPct).dividedBy(100));
       const heartLawMultiplier = D(getHeartLawCombatMultiplier());
 
-      // Check for critical hit
-      const critRoll = Math.random() * 100;
-      const isCrit = critRoll < effectiveStats.crit;
       const critMultiplier = isCrit ? D(effectiveStats.critDmg).dividedBy(100) : D(1);
 
       const finalDamage = baseDamage
