@@ -66,3 +66,13 @@ export function resolvePlayerElementAffinity(input: {
     DEFAULT_ELEMENT_TUNING,
   );
 }
+
+/**
+ * D-COMBAT (D11) APPLICATION — the offensive affinity as an outgoing-damage multiplier `× (1 + effective)`
+ * (D3 §6.1: affinity "feeds D2's × (1 + Σ)"). INERT affinity ⇒ ×1 ⇒ byte-identical legacy. Composes
+ * alongside the existing damage multipliers (talisman / heart-law / crit / root / momentum), NEVER inside
+ * the frozen `ATK×(1−DEF/(DEF+K))` core. Negative effective is floored so it can't reduce below base.
+ */
+export function elementAffinityDamageMultiplier(affinity: AffinityResult): number {
+  return 1 + Math.max(0, affinity.effective);
+}

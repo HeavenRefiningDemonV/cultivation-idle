@@ -7,6 +7,7 @@ import {
   ZERO_ELEMENT_WEIGHTS,
   buildPlayerElementWeights,
   resolvePlayerElementAffinity,
+  elementAffinityDamageMultiplier,
 } from '../../src/systems/elements/elementCombatAffinity.js';
 
 const ROOT = ELEMENT_ROSTER[0].id; // a real element id from the live 14-roster
@@ -38,4 +39,13 @@ void test('B-ELEM — under the engine, the seam returns the F3 resolver\'s real
   // root-only build ⇒ no co-expressed allies ⇒ no resonance bonus; no target ⇒ no counter delta
   assert.equal(on.resonanceBonus, 0);
   assert.equal(on.counterDelta, 0);
+});
+
+void test('D11 — the affinity damage multiplier is ×1 when inert (byte-identical) and ×(1+effective) when real', () => {
+  assert.equal(elementAffinityDamageMultiplier(INERT_AFFINITY), 1, 'engine off ⇒ ×1 ⇒ combat unchanged');
+  const on = resolvePlayerElementAffinity({ rootElement: ROOT, realm: 3, engineActive: true });
+  assert.equal(elementAffinityDamageMultiplier(on), 1 + on.effective, 'engine on ⇒ × (1 + effective)');
+  assert.ok(elementAffinityDamageMultiplier(on) > 1, 'a real root affinity raises outgoing damage');
+  // negative effective can never reduce below the base hit
+  assert.equal(elementAffinityDamageMultiplier({ element: ROOT, effective: -5, resonanceBonus: 0, counterDelta: 0 }), 1);
 });

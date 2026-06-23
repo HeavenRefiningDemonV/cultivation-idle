@@ -32,6 +32,8 @@ import { rankMultiplier, useTechCollectionStore } from './techCollectionStore.js
 import { D, subtract, greaterThan, lessThanOrEqualTo, add, clamp } from '../utils/numbers.js';
 import { BossMechanics } from '../systems/bossMechanics.js';
 import { resolveMeridianSignaturesForCombat, combineArmorPenWithSignatures, isIronSkinNegated, mountainStanceReflectAmount, momentumDamageMultiplier } from '../systems/meridians/meridianCombatSignatures.js';
+import { resolvePlayerElementAffinity, elementAffinityDamageMultiplier } from '../systems/elements/elementCombatAffinity.js';
+import { isDerivedStatEngineAuthoritative } from '../systems/meridians/statEngineFlag.js';
 import { generateLoot, formatLootMessage } from '../systems/loot.js';
 import { RewardService, type RewardBundle, type RewardItemBundle } from '../services/rewards/index.js';
 import { applyLootBonuses } from '../services/rewards/applyLootBonuses.js';
@@ -1535,12 +1537,23 @@ export const useCombatStore = create<ExtendedCombatState>()(
       // (off / no rating) ⇒ coeff 0 ⇒ multiplier 1 ⇒ byte-identical; stacks only ever bank flag-on.
       const momentumMult = D(momentumDamageMultiplier(state.momentumStacks ?? 0, meridianSig.unbrokenMomentumStacking));
 
+      // D11 — offensive element affinity (flag-gated; INERT when the derived engine is off → ×1 →
+      // byte-identical legacy). Composes as an outgoing-damage multiplier, NEVER inside the frozen
+      // ATK×(1−DEF/(DEF+K)) core. The element tuning magnitudes are D15/F-BAL-held (consumed, not authored).
+      const elementAffinity = resolvePlayerElementAffinity({
+        rootElement: getSpiritRootSnapshot()?.element ?? null,
+        realm: useGameStore.getState().realm.index + 1,
+        engineActive: isDerivedStatEngineAuthoritative(),
+      });
+      const elementAffinityMult = D(elementAffinityDamageMultiplier(elementAffinity));
+
       const finalDamage = baseDamage
         .times(damageMultiplier)
         .times(heartLawMultiplier)
         .times(critMultiplier)
         .times(rootProc.modifiers.damageMult)
-        .times(momentumMult);
+        .times(momentumMult)
+        .times(elementAffinityMult);
       const currentEnemyHp = D(state.enemyHP);
       const appliedDamage = currentEnemyHp.lessThan(finalDamage) ? currentEnemyHp : finalDamage;
 
