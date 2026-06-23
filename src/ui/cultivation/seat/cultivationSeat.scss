@@ -1300,3 +1300,61 @@
 .cultivationSeatRoot[data-reduced-motion=true] .cultivationSeatMote {
   display: none;
 }
+/* ===========================================================================================
+   C2 (comprehensive) + font parity. global.css gives EVERY <button> a #d0d0d0 base, a #d9d9d9 hover
+   background, a buttoncorners.png border-image (the white "parchment card"), border-radius:0,
+   color:#000, box-shadow:none and the Julee font — all of which bleed onto Seat buttons on
+   hover/focus/active. Neutralize the lot by re-asserting each button's own appearance in EVERY
+   interactive state (root + the portaled scroll overlay), and pin the artifact serif/kai. */
+.cultivationSeatRoot,
+.cultivationSeatScrollOverlay {
+  --serif: Georgia, "Songti SC", "Noto Serif SC", serif;
+  --kai: "Kaiti SC", "STKaiti", serif;
+}
+.cultivationSeatRoot button,
+.cultivationSeatScrollOverlay button,
+.cultivationSeatRoot button:hover, .cultivationSeatRoot button:focus, .cultivationSeatRoot button:active, .cultivationSeatRoot button:focus-visible,
+.cultivationSeatScrollOverlay button:hover, .cultivationSeatScrollOverlay button:focus, .cultivationSeatScrollOverlay button:active, .cultivationSeatScrollOverlay button:focus-visible {
+  border-image: none !important;
+  font-family: var(--serif);
+}
+[data-region=breath-line], [data-region=breath-line]:hover, [data-region=breath-line]:focus, [data-region=breath-line]:active, [data-region=breath-line]:focus-visible {
+  background: linear-gradient(0deg, rgba(18, 22, 18, 0.8), rgba(18, 22, 18, 0.3) 70%, transparent);
+  color: #f6efda;
+  border-radius: 0;
+}
+.cultivationSeatSeal, .cultivationSeatSeal:hover, .cultivationSeatSeal:focus, .cultivationSeatSeal:active, .cultivationSeatSeal:focus-visible {
+  border-radius: 26px;
+  color: #f3ead7;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, rgba(58, 91, 77, 0.92), rgba(33, 53, 45, 0.92));
+}
+.cultivationSeatSeal[data-seal-state=ready], .cultivationSeatSeal[data-seal-state=ready]:hover, .cultivationSeatSeal[data-seal-state=ready]:focus, .cultivationSeatSeal[data-seal-state=ready]:active, .cultivationSeatSeal[data-seal-state=ready]:focus-visible {
+  background: linear-gradient(180deg, #3a5b4d, #1f4233);
+}
+.cultivationSeatSeal[data-seal-state=blocked], .cultivationSeatSeal[data-seal-state=blocked]:hover, .cultivationSeatSeal[data-seal-state=blocked]:focus, .cultivationSeatSeal[data-seal-state=blocked]:active, .cultivationSeatSeal[data-seal-state=blocked]:focus-visible {
+  background: linear-gradient(180deg, rgba(150, 96, 42, 0.94), rgba(94, 60, 22, 0.94));
+}
+.cultivationSeatScrollOverlay .seatScroll__close, .cultivationSeatScrollOverlay .seatScroll__close:hover, .cultivationSeatScrollOverlay .seatScroll__close:focus, .cultivationSeatScrollOverlay .seatScroll__close:active, .cultivationSeatScrollOverlay .seatScroll__close:focus-visible {
+  border-radius: 50%;
+  color: #f3ead7;
+  background: linear-gradient(180deg, #8b2f27, #6e231c);
+}
+.cultivationSeatScrollOverlay .seatCommit, .cultivationSeatScrollOverlay .seatCommit:hover, .cultivationSeatScrollOverlay .seatCommit:focus, .cultivationSeatScrollOverlay .seatCommit:active, .cultivationSeatScrollOverlay .seatCommit:focus-visible {
+  border-radius: 5px;
+  color: #eef3ea;
+  background: linear-gradient(180deg, #3a5b4d, #274034);
+}
+.cultivationSeatScrollOverlay .seatDeeplink, .cultivationSeatScrollOverlay .seatDeeplink:hover, .cultivationSeatScrollOverlay .seatDeeplink:focus, .cultivationSeatScrollOverlay .seatDeeplink:active, .cultivationSeatScrollOverlay .seatDeeplink:focus-visible,
+.cultivationSeatScrollOverlay .seatBlocker__route, .cultivationSeatScrollOverlay .seatBlocker__route:hover, .cultivationSeatScrollOverlay .seatBlocker__route:focus, .cultivationSeatScrollOverlay .seatBlocker__route:active, .cultivationSeatScrollOverlay .seatBlocker__route:focus-visible {
+  background: transparent;
+  color: var(--cinn-deep);
+  border-radius: 0;
+}
+.cultivationSeatScrollOverlay .seatAxisRow, .cultivationSeatScrollOverlay .seatAxisRow:hover, .cultivationSeatScrollOverlay .seatAxisRow:focus, .cultivationSeatScrollOverlay .seatAxisRow:active, .cultivationSeatScrollOverlay .seatAxisRow:focus-visible {
+  background: transparent;
+  border-radius: 4px;
+}
+.cultivationSeatScrollOverlay .seatAxisRow.is-emph, .cultivationSeatScrollOverlay .seatAxisRow.is-emph:hover, .cultivationSeatScrollOverlay .seatAxisRow.is-emph:focus, .cultivationSeatScrollOverlay .seatAxisRow.is-emph:active, .cultivationSeatScrollOverlay .seatAxisRow.is-emph:focus-visible {
+  background: rgba(15, 111, 90, 0.06);
+}
