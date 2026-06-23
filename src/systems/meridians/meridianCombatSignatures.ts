@@ -65,3 +65,13 @@ export function combineArmorPenWithSignatures(
   const swordHeart = isCrit ? sig.swordHeartDrIgnorePct : 0;
   return Math.min(90, armorPenPct + sig.voidGazeWeaknessPenPct + swordHeart);
 }
+
+/**
+ * PURE — Slice 2 (player defense, STEP 3). Iron-Skin (Earth): an incoming hit BELOW the threshold is
+ * fully negated (chip-damage immunity). A floor beneath the formula, never a term inside it. With an
+ * INERT signature the threshold is 0, so this is always false → legacy combat byte-identical. The
+ * caller keeps the original Decimal when not negated (no number round-trip) to preserve precision.
+ */
+export function isIronSkinNegated(incomingDamage: number, ironSkinThreshold: number): boolean {
+  return ironSkinThreshold > 0 && incomingDamage < ironSkinThreshold;
+}

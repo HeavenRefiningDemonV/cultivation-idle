@@ -31,7 +31,7 @@ import { useHeartLawStore } from './heartLawStore.js';
 import { rankMultiplier, useTechCollectionStore } from './techCollectionStore.js';
 import { D, subtract, greaterThan, lessThanOrEqualTo, add, clamp } from '../utils/numbers.js';
 import { BossMechanics } from '../systems/bossMechanics.js';
-import { resolveMeridianSignaturesForCombat, combineArmorPenWithSignatures } from '../systems/meridians/meridianCombatSignatures.js';
+import { resolveMeridianSignaturesForCombat, combineArmorPenWithSignatures, isIronSkinNegated } from '../systems/meridians/meridianCombatSignatures.js';
 import { generateLoot, formatLootMessage } from '../systems/loot.js';
 import { RewardService, type RewardBundle, type RewardItemBundle } from '../services/rewards/index.js';
 import { applyLootBonuses } from '../services/rewards/applyLootBonuses.js';
@@ -1616,7 +1616,14 @@ export const useCombatStore = create<ExtendedCombatState>()(
       const isCrit = critRoll < enemy.crit;
       const critMultiplier = isCrit ? D(enemy.critDmg).dividedBy(100) : D(1);
       const rootProc = resolveRootProcForCombat('incoming_damage', now);
-      const damageAfterCrit = baseDamage.times(critMultiplier).times(rootProc.modifiers.incomingDamageMult);
+      const damageAfterCritRaw = baseDamage.times(critMultiplier).times(rootProc.modifiers.incomingDamageMult);
+      // B-MERID Iron-Skin (Earth, flag-gated; INERT when off → threshold 0 → unchanged): a hit below
+      // the threshold is fully negated. The original Decimal is preserved when not negated (no
+      // number round-trip), so legacy combat is byte-identical.
+      const meridianSig = resolveMeridianSignaturesForCombat();
+      const damageAfterCrit = isIronSkinNegated(damageAfterCritRaw.toNumber(), meridianSig.ironSkinThreshold)
+        ? D(0)
+        : damageAfterCritRaw;
       if (rootProc.modifiers.shieldPct > 0) {
         const shieldGain = D(state.playerMaxHP).times(rootProc.modifiers.shieldPct).toNumber();
         if (shieldGain > 0) {
@@ -2305,7 +2312,14 @@ export const useCombatStore = create<ExtendedCombatState>()(
 
           const def = D(effectiveStats.def);
           const defReduction = def.dividedBy(def.plus(DEFENSE_CONSTANT_K));
-          const ultimateDamage = atk.times(D(1).minus(defReduction));
+          const ultimateDamageRaw = atk.times(D(1).minus(defReduction));
+          // B-MERID Iron-Skin also floors the boss ultimate (the second incoming-damage site; INERT
+          // when off → byte-identical). Ultimates are large, so this is normally a no-op, but the
+          // threshold must be honored consistently at every damage site.
+          const ultimateSig = resolveMeridianSignaturesForCombat();
+          const ultimateDamage = isIronSkinNegated(ultimateDamageRaw.toNumber(), ultimateSig.ironSkinThreshold)
+            ? D(0)
+            : ultimateDamageRaw;
 
           const { remainingDamage: postCombatShield, absorbed: combatAbsorbed } = applyCombatShield(
             ultimateDamage,

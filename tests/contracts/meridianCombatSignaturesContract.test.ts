@@ -6,6 +6,7 @@ import {
   INERT_MERIDIAN_SIGNATURES,
   resolveMeridianSignaturesForCombat,
   combineArmorPenWithSignatures,
+  isIronSkinNegated,
 } from '../../src/systems/meridians/meridianCombatSignatures.js';
 
 // Mirrors combatStore.DEFENSE_CONSTANT_K (a [live] invariant). Used only to demonstrate that the
@@ -57,6 +58,19 @@ void test('B-MERID Slice 1 — composed pen stacks with spirit-root armorPen and
   // a crit Sword-Heart + Void-Gaze + root pen also clamps, never exceeding 90 (DEF never goes negative)
   const both = meridianSignatureEffects({ heaven_void_gaze: 100, martial_sword_heart: 100 });
   assert.equal(combineArmorPenWithSignatures(20, both, true), 90);
+});
+
+void test('B-MERID Slice 2 — Iron-Skin (Earth) negates only hits below the threshold; inert ⇒ never (parity)', () => {
+  // INERT threshold 0 ⇒ never negated, at any incoming value (legacy combat byte-identical).
+  for (const dmg of [0, 1, 50, 999999]) {
+    assert.equal(isIronSkinNegated(dmg, INERT_MERIDIAN_SIGNATURES.ironSkinThreshold), false);
+  }
+  const ironSkin = meridianSignatureEffects({ earth_iron_skin: 100 }); // ×0.5 ⇒ threshold 50
+  assert.equal(ironSkin.ironSkinThreshold, 50);
+  assert.equal(isIronSkinNegated(30, ironSkin.ironSkinThreshold), true, 'a 30 hit < 50 is negated');
+  assert.equal(isIronSkinNegated(49.999, ironSkin.ironSkinThreshold), true);
+  assert.equal(isIronSkinNegated(50, ironSkin.ironSkinThreshold), false, 'a hit AT the threshold lands');
+  assert.equal(isIronSkinNegated(60, ironSkin.ironSkinThreshold), false, 'a 60 hit ≥ 50 lands in full');
 });
 
 void test('B-MERID Slice 1 — the signature DEMONSTRABLY raises damage through the frozen K=100 formula', () => {
