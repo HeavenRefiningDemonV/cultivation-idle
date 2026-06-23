@@ -567,16 +567,15 @@ export function GameLayout() {
 
           {!apothecaryExactFixtureRouteEnabled && <BottomTabBar />}
 
-          {/* M.II.3-FIDELITY E1 — DR (app-shell/onboarding-owned; NOT fixed here): the bottom-anchored
-              milestone scroll overlaps the Cultivation Seat's breath-line. Suppressing it on the
-              cultivation tab is NOT safe — mp3-onboarding-ui-smoke enforces it on the fresh-life
-              cultivation screen (it is intended onboarding guidance, not Seat chrome). Fixing the
-              overlap is an onboarding-card placement decision for the app-shell owner (e.g. raise the
-              card above the breath-line band, or anchor it to a corner on this route). Left as-is. */}
+          {/* M.II.3-FIDELITY E1: the milestone scroll's default bottom anchor sits over the Cultivation
+              Seat's diegetic breath-line. It stays VISIBLE on every route (onboarding needs it), but
+              `route` lets it relocate to the top on the cultivation tab so it no longer occludes the
+              breath-line — see MilestoneScroll.scss [data-route="cultivation"]. */}
           <MilestoneScroll
             surface={milestoneSurface}
             onAction={handleOnboardingGuidanceAction}
             onOpenLedger={openTutorialLedgerDrawer}
+            route={activeTab}
           />
           <UnlockCeremonyHost
             surface={unlockCeremonySurface}

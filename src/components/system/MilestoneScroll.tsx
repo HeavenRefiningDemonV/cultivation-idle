@@ -9,9 +9,12 @@ interface MilestoneScrollProps {
   surface: OnboardingMilestoneSurface;
   onAction: (action: OnboardingMilestoneActionSurface) => void;
   onOpenLedger: () => void;
+  /** the active route — lets the card relocate off a screen whose own bottom chrome it would occlude
+   *  (E1: the Cultivation Seat's diegetic breath-line sits where this card's default bottom anchor is). */
+  route?: string;
 }
 
-export function MilestoneScroll({ surface, onAction, onOpenLedger }: MilestoneScrollProps) {
+export function MilestoneScroll({ surface, onAction, onOpenLedger, route }: MilestoneScrollProps) {
   const [detailsOpen, setDetailsOpen] = useState(false);
 
   if (surface.state !== 'active' || !surface.primaryAction) return null;
@@ -20,7 +23,7 @@ export function MilestoneScroll({ surface, onAction, onOpenLedger }: MilestoneSc
   const hasDetails = surface.details.length > 0 || Boolean(surface.rewardPreview);
 
   return (
-    <section className="milestoneScroll" aria-live="polite" data-testid="milestone-scroll">
+    <section className="milestoneScroll" aria-live="polite" data-testid="milestone-scroll" data-route={route}>
       <div className="milestoneScroll__seal" aria-hidden />
       <div className="milestoneScroll__main">
         <div className="milestoneScroll__meta">

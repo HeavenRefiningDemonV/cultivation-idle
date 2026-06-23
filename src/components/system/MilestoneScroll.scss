@@ -23,6 +23,14 @@
   color: #2f2114;
 }
 
+/* M.II.3-FIDELITY E1: the Cultivation "Seat of Becoming" owns the bottom band with its diegetic
+   breath-line (the 率/藏/風/業 coin row). On that route only, anchor this card to the top — just
+   below the lintel — so it never occludes the breath-line. It stays fully visible. */
+.milestoneScroll[data-route='cultivation'] {
+  top: 104px;
+  bottom: auto;
+}
+
 .milestoneScroll__seal {
   width: 32px;
   height: 32px;
