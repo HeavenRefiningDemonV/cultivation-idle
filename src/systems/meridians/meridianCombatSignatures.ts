@@ -75,3 +75,22 @@ export function combineArmorPenWithSignatures(
 export function isIronSkinNegated(incomingDamage: number, ironSkinThreshold: number): boolean {
   return ironSkinThreshold > 0 && incomingDamage < ironSkinThreshold;
 }
+
+/**
+ * PURE — Slice 5 (post-application event). Mountain-Stance (Earth): when a physical hit lands on the
+ * defender, reflect `reflectPct%` of the defender's Defense back at the attacker. INERT pct 0 ⇒ 0,
+ * so legacy combat is unchanged. A separate event after the formula, never a term inside it.
+ */
+export function mountainStanceReflectAmount(defenderDefense: number, reflectPct: number): number {
+  if (reflectPct <= 0 || defenderDefense <= 0) return 0;
+  return (defenderDefense * reflectPct) / 100;
+}
+
+/**
+ * PURE — Slice 7 (structural, INERT today). Root-Depth (Earth): immune to displacement/forced
+ * movement while rooted. The live combat has no displacement system, so this is wired as a flag for
+ * C-PATH to read (it has no observable effect yet). Mirrors the signature's boolean.
+ */
+export function isDisplacementImmune(sig: MeridianSignatureEffects): boolean {
+  return sig.rootDepthRooted === true;
+}

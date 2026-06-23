@@ -31,7 +31,7 @@ import { useHeartLawStore } from './heartLawStore.js';
 import { rankMultiplier, useTechCollectionStore } from './techCollectionStore.js';
 import { D, subtract, greaterThan, lessThanOrEqualTo, add, clamp } from '../utils/numbers.js';
 import { BossMechanics } from '../systems/bossMechanics.js';
-import { resolveMeridianSignaturesForCombat, combineArmorPenWithSignatures, isIronSkinNegated } from '../systems/meridians/meridianCombatSignatures.js';
+import { resolveMeridianSignaturesForCombat, combineArmorPenWithSignatures, isIronSkinNegated, mountainStanceReflectAmount } from '../systems/meridians/meridianCombatSignatures.js';
 import { generateLoot, formatLootMessage } from '../systems/loot.js';
 import { RewardService, type RewardBundle, type RewardItemBundle } from '../services/rewards/index.js';
 import { applyLootBonuses } from '../services/rewards/applyLootBonuses.js';
@@ -1685,6 +1685,22 @@ export const useCombatStore = create<ExtendedCombatState>()(
           absorbed: absorbedAmount.greaterThan(0) ? absorbedAmount.toFixed(0) : undefined,
           kind: 'basic',
         });
+      }
+
+      // B-MERID Mountain-Stance (Earth, flag-gated; INERT when off → 0 reflect): a landed physical
+      // hit reflects a % of the defender's Defense back at the attacker. A post-application event,
+      // never a term in the frozen formula. Flag-off ⇒ reflectPct 0 ⇒ skipped ⇒ byte-identical.
+      const reflectAmount = mountainStanceReflectAmount(Number(effectiveStats.def), meridianSig.mountainStanceReflectPct);
+      if (reflectAmount > 0 && appliedDamage.greaterThan(0)) {
+        set((state) => {
+          state.enemyHP = clamp(subtract(state.enemyHP, String(reflectAmount)), 0, state.enemyMaxHP).toString();
+        });
+        get().addLogEntry('system', `Mountain-Stance reflects ${reflectAmount.toFixed(0)} damage back!`, '#a78bfa');
+        if (lessThanOrEqualTo(get().enemyHP, 0)) {
+          setTimeout(() => {
+            get().defeatEnemy();
+          }, 500);
+        }
       }
 
       triggerAutoMedicineEvent(now, { type: 'hpThresholdCrossed', previousHpPct, nextHpPct });

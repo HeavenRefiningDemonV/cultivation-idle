@@ -1,12 +1,14 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { meridianSignatureEffects } from '../../src/systems/meridians/derivedStats.js';
+import { meridianSignatureEffects, computeDerivedStats, type DerivedStatInput } from '../../src/systems/meridians/derivedStats.js';
 import {
   INERT_MERIDIAN_SIGNATURES,
   resolveMeridianSignaturesForCombat,
   combineArmorPenWithSignatures,
   isIronSkinNegated,
+  mountainStanceReflectAmount,
+  isDisplacementImmune,
 } from '../../src/systems/meridians/meridianCombatSignatures.js';
 
 // Mirrors combatStore.DEFENSE_CONSTANT_K (a [live] invariant). Used only to demonstrate that the
@@ -81,4 +83,33 @@ void test('B-MERID Slice 1 — the signature DEMONSTRABLY raises damage through 
   // sanity: legacy 200 DEF ⇒ 33.3; 50% pen ⇒ 100 DEF ⇒ 50.0
   assert.ok(Math.abs(legacyDmg - 33.333) < 0.01);
   assert.ok(Math.abs(engineDmg - 50) < 0.01);
+});
+
+void test('B-MERID Slice 5 — Mountain-Stance (Earth) reflects a % of Defense; inert ⇒ 0 (parity)', () => {
+  assert.equal(mountainStanceReflectAmount(200, INERT_MERIDIAN_SIGNATURES.mountainStanceReflectPct), 0);
+  const mtn = meridianSignatureEffects({ earth_mountain_stance: 100 }); // ×0.4 ⇒ 40%
+  assert.equal(mtn.mountainStanceReflectPct, 40);
+  assert.equal(mountainStanceReflectAmount(200, mtn.mountainStanceReflectPct), 80, '40% of 200 Defense');
+  assert.equal(mountainStanceReflectAmount(0, mtn.mountainStanceReflectPct), 0, 'no Defense ⇒ no reflect');
+});
+
+void test('B-MERID Slice 7 — Root-Depth (Earth) flags displacement immunity (inert today, for C-PATH)', () => {
+  assert.equal(isDisplacementImmune(INERT_MERIDIAN_SIGNATURES), false);
+  const rooted = meridianSignatureEffects({ earth_root_depth: 50 });
+  assert.equal(rooted.rootDepthRooted, true);
+  assert.equal(isDisplacementImmune(rooted), true);
+});
+
+void test('B-MERID Slice 3 — capstones already ride MERIDIAN_DERIVED_MAP → derived channels (no double-count)', () => {
+  const base = { foundation: {}, axes: {}, meridianRatings: {}, realmIndex1to7: 1 } as unknown as DerivedStatInput;
+  const baseline = computeDerivedStats(base);
+  // Asura (Martial) → physAttack + critDamage
+  const asura = computeDerivedStats({ ...base, meridianRatings: { martial_dao_asura: 100 } });
+  assert.ok(asura.physAttack > baseline.physAttack && asura.critDamage > baseline.critDamage);
+  // Sovereign (Earth) → maxHp + physDefense
+  const sovereign = computeDerivedStats({ ...base, meridianRatings: { earth_dao_sovereign: 100 } });
+  assert.ok(sovereign.maxHp > baseline.maxHp && sovereign.physDefense > baseline.physDefense);
+  // Firmament (Heaven) → controlPower + soulAttack
+  const firmament = computeDerivedStats({ ...base, meridianRatings: { heaven_dao_firmament: 100 } });
+  assert.ok(firmament.controlPower > baseline.controlPower && firmament.soulAttack > baseline.soulAttack);
 });
