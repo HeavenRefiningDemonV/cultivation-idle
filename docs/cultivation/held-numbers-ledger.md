@@ -72,9 +72,12 @@ Last updated: 2026-06-23 (consolidation checkpoint — D8 slice 1a landed; manif
   interval-accumulator (`dotTickCoeff × intensity × realmScalar` per interval) but deal **zero** damage
   until D15 deposits `dotTickCoeff` — F-BAL action: set `dotTickCoeff` (and tune `dotTickIntervalMs`),
   acknowledge the intended flag-on parity divergence.
+- **D11 3b-ii (landed):** reaction ICD write/decay/gate is now live — `isEligible` consumes the live
+  `icdByPathway` (reaction-id → ms), armed on fire with the **held** `icdMsByFamily = 3000` window
+  (consumed live under the flag, B-MERID-style; D15 owns the real per-family windows). Flag-on reactions
+  now respect ICD (anti-spam); flag-off byte-identical.
 - **D11 3b remaining (HELD):** control/CC success roll (`controlPower` vs `stagger`) + skip-turn; spread
-  radius/count; drain/tempo/cleanse/catalyst magnitudes — all D15-held. Per-pathway ICD windows already
-  `3000` placeholder (held); ICD write/decay (3b-ii) makes `isEligible` bite.
+  radius/count; drain/tempo/cleanse/catalyst magnitudes — all D15-held.
 - **Beast-Lore drop rate + per-beast→essence mapping (D11/D15):** the placeholder absorbs the next
   essence per kill; the real drop rate + which beast drops which essence are held.
 - **Weapon-Bond curve (D5/D15):** `BOND_KILLS_FOR_FULL=25` + the per-art unlock bands (in
