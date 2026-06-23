@@ -9,6 +9,8 @@ import {
   isIronSkinNegated,
   mountainStanceReflectAmount,
   isDisplacementImmune,
+  mandateSuppressedAttack,
+  momentumDamageMultiplier,
 } from '../../src/systems/meridians/meridianCombatSignatures.js';
 
 // Mirrors combatStore.DEFENSE_CONSTANT_K (a [live] invariant). Used only to demonstrate that the
@@ -98,6 +100,24 @@ void test('B-MERID Slice 7 — Root-Depth (Earth) flags displacement immunity (i
   const rooted = meridianSignatureEffects({ earth_root_depth: 50 });
   assert.equal(rooted.rootDepthRooted, true);
   assert.equal(isDisplacementImmune(rooted), true);
+});
+
+void test('B-MERID Slice 6 — Heavenly-Mandate (Heaven) suppresses enemy attack; inert ⇒ unchanged (parity)', () => {
+  assert.equal(mandateSuppressedAttack(100, INERT_MERIDIAN_SIGNATURES.heavenlyMandateAuraPct), 100);
+  const mandate = meridianSignatureEffects({ heaven_heavenly_mandate: 100 }); // ×0.3 ⇒ 30%
+  assert.equal(mandate.heavenlyMandateAuraPct, 30);
+  assert.equal(mandateSuppressedAttack(100, mandate.heavenlyMandateAuraPct), 70, '30% suppression');
+  // a >100% aura floors at 0 (cannot heal the enemy)
+  assert.equal(mandateSuppressedAttack(100, 150), 0);
+});
+
+void test('B-MERID Slice 4 — Unbroken-Momentum (Martial) multiplies damage by banked stacks; inert ⇒ 1 (parity)', () => {
+  const momentum = meridianSignatureEffects({ martial_unbroken_momentum: 100 }); // ×0.02 ⇒ 2.0 per stack
+  assert.equal(momentum.unbrokenMomentumStacking, 2);
+  assert.equal(momentumDamageMultiplier(0, momentum.unbrokenMomentumStacking), 1, 'no stacks ⇒ ×1');
+  assert.equal(momentumDamageMultiplier(3, momentum.unbrokenMomentumStacking), 7, '1 + 3×2 ⇒ ×7');
+  // inert coefficient (flag-off / no rating) ⇒ ×1 regardless of stacks (legacy byte-identical)
+  assert.equal(momentumDamageMultiplier(5, INERT_MERIDIAN_SIGNATURES.unbrokenMomentumStacking), 1);
 });
 
 void test('B-MERID Slice 3 — capstones already ride MERIDIAN_DERIVED_MAP → derived channels (no double-count)', () => {

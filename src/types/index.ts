@@ -1115,6 +1115,13 @@ export interface CombatState {
   currentZone: string | null;
   currentEnemy: EnemyDefinition | null;
 
+  /**
+   * B-MERID — transient Unbroken-Momentum (Martial) stacks for THIS encounter; re-initialised to 0
+   * each combat (createInitialCombatState) and reset to 0 when the player takes a hit. Optional so no
+   * save migration is needed; only the flag-on derived engine ever increments it. Never persisted.
+   */
+  momentumStacks?: number;
+
   // Context
   combatContext: CombatContext;
 

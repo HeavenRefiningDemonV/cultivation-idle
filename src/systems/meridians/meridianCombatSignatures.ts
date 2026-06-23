@@ -87,6 +87,27 @@ export function mountainStanceReflectAmount(defenderDefense: number, reflectPct:
 }
 
 /**
+ * PURE — Slice 4 (transient stacking). Unbroken-Momentum (Martial): each consecutive offensive turn
+ * banks a stack; the player's outgoing damage is multiplied by (1 + stacks × coeff). A landed hit on
+ * the player breaks the chain (stacks → 0). INERT coeff 0 ⇒ multiplier 1 ⇒ legacy byte-identical.
+ */
+export function momentumDamageMultiplier(stacks: number, unbrokenMomentumStacking: number): number {
+  if (unbrokenMomentumStacking <= 0 || stacks <= 0) return 1;
+  return 1 + stacks * unbrokenMomentumStacking;
+}
+
+/**
+ * PURE — Slice 6 (continuous suppression). Heavenly-Mandate (Heaven): a suppression aura that lowers
+ * the enemy's effective attack by `auraPct%` (the "lowers enemy stats" rule, applied continuously —
+ * this combat has no domain toggle). INERT auraPct 0 ⇒ unchanged ⇒ legacy byte-identical. Result is
+ * floored at 0 (a >100% aura cannot heal the enemy).
+ */
+export function mandateSuppressedAttack(enemyAttack: number, auraPct: number): number {
+  if (auraPct <= 0) return enemyAttack;
+  return Math.max(0, enemyAttack * (1 - auraPct / 100));
+}
+
+/**
  * PURE — Slice 7 (structural, INERT today). Root-Depth (Earth): immune to displacement/forced
  * movement while rooted. The live combat has no displacement system, so this is wired as a flag for
  * C-PATH to read (it has no observable effect yet). Mirrors the signature's boolean.

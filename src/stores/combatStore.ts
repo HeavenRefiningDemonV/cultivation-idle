@@ -31,7 +31,7 @@ import { useHeartLawStore } from './heartLawStore.js';
 import { rankMultiplier, useTechCollectionStore } from './techCollectionStore.js';
 import { D, subtract, greaterThan, lessThanOrEqualTo, add, clamp } from '../utils/numbers.js';
 import { BossMechanics } from '../systems/bossMechanics.js';
-import { resolveMeridianSignaturesForCombat, combineArmorPenWithSignatures, isIronSkinNegated, mountainStanceReflectAmount } from '../systems/meridians/meridianCombatSignatures.js';
+import { resolveMeridianSignaturesForCombat, combineArmorPenWithSignatures, isIronSkinNegated, mountainStanceReflectAmount, momentumDamageMultiplier } from '../systems/meridians/meridianCombatSignatures.js';
 import { generateLoot, formatLootMessage } from '../systems/loot.js';
 import { RewardService, type RewardBundle, type RewardItemBundle } from '../services/rewards/index.js';
 import { applyLootBonuses } from '../services/rewards/applyLootBonuses.js';
@@ -561,6 +561,7 @@ const createInitialCombatState = () => ({
   inCombat: false,
   currentZone: null as string | null,
   currentEnemy: null as EnemyDefinition | null,
+  momentumStacks: 0, // B-MERID Unbroken-Momentum — transient, per-encounter (reset here every combat)
   combatContext: { type: null } as CombatContext,
   playerHP: '0',
   playerMaxHP: '0',
@@ -1530,11 +1531,16 @@ export const useCombatStore = create<ExtendedCombatState>()(
 
       const critMultiplier = isCrit ? D(effectiveStats.critDmg).dividedBy(100) : D(1);
 
+      // B-MERID Unbroken-Momentum (Martial): (1 + bankedStacks × coeff) on outgoing damage. INERT
+      // (off / no rating) ⇒ coeff 0 ⇒ multiplier 1 ⇒ byte-identical; stacks only ever bank flag-on.
+      const momentumMult = D(momentumDamageMultiplier(state.momentumStacks ?? 0, meridianSig.unbrokenMomentumStacking));
+
       const finalDamage = baseDamage
         .times(damageMultiplier)
         .times(heartLawMultiplier)
         .times(critMultiplier)
-        .times(rootProc.modifiers.damageMult);
+        .times(rootProc.modifiers.damageMult)
+        .times(momentumMult);
       const currentEnemyHp = D(state.enemyHP);
       const appliedDamage = currentEnemyHp.lessThan(finalDamage) ? currentEnemyHp : finalDamage;
 
@@ -1552,6 +1558,10 @@ export const useCombatStore = create<ExtendedCombatState>()(
         const clampedHP = clamp(newHP, 0, state.enemyMaxHP);
         state.enemyHP = clampedHP.toString();
         state.lastAttackTime = now;
+        // B-MERID Unbroken-Momentum: bank a stack for the next consecutive offensive turn (flag-on only).
+        if (meridianSig.unbrokenMomentumStacking > 0) {
+          state.momentumStacks = (state.momentumStacks ?? 0) + 1;
+        }
       });
 
       emitEvent('HIT', {
@@ -1596,6 +1606,10 @@ export const useCombatStore = create<ExtendedCombatState>()(
         return;
       }
 
+      // B-MERID: resolve the meridian signatures ONCE for this incoming attack (flag-gated; INERT
+      // when off → every effect below is a no-op and legacy combat is byte-identical).
+      const meridianSig = resolveMeridianSignaturesForCombat();
+
       // Calculate base damage: ATK * (1 - DEF/(DEF + K))
       let enemyAttackPower = D(enemy.atk);
 
@@ -1605,6 +1619,12 @@ export const useCombatStore = create<ExtendedCombatState>()(
         if (enrageMultiplier > 1) {
           enemyAttackPower = enemyAttackPower.times(enrageMultiplier);
         }
+      }
+
+      // B-MERID Heavenly-Mandate aura (Heaven): a continuous suppression that lowers the enemy's
+      // effective attack by the aura %. INERT (off) ⇒ auraPct 0 ⇒ skipped ⇒ byte-identical.
+      if (meridianSig.heavenlyMandateAuraPct > 0) {
+        enemyAttackPower = enemyAttackPower.times(D(1).minus(D(meridianSig.heavenlyMandateAuraPct).dividedBy(100)));
       }
 
       const def = D(effectiveStats.def);
@@ -1617,10 +1637,8 @@ export const useCombatStore = create<ExtendedCombatState>()(
       const critMultiplier = isCrit ? D(enemy.critDmg).dividedBy(100) : D(1);
       const rootProc = resolveRootProcForCombat('incoming_damage', now);
       const damageAfterCritRaw = baseDamage.times(critMultiplier).times(rootProc.modifiers.incomingDamageMult);
-      // B-MERID Iron-Skin (Earth, flag-gated; INERT when off → threshold 0 → unchanged): a hit below
-      // the threshold is fully negated. The original Decimal is preserved when not negated (no
-      // number round-trip), so legacy combat is byte-identical.
-      const meridianSig = resolveMeridianSignaturesForCombat();
+      // B-MERID Iron-Skin (Earth): a hit below the threshold is fully negated. The original Decimal is
+      // preserved when not negated (no number round-trip), so legacy combat is byte-identical.
       const damageAfterCrit = isIronSkinNegated(damageAfterCritRaw.toNumber(), meridianSig.ironSkinThreshold)
         ? D(0)
         : damageAfterCritRaw;
@@ -1674,6 +1692,10 @@ export const useCombatStore = create<ExtendedCombatState>()(
       set((state) => {
         state.playerHP = clampedHP.toString();
         state.lastEnemyAttackTime = now;
+        // B-MERID Unbroken-Momentum: a landed hit on the player breaks the chain (no-op when off).
+        if (meridianSig.unbrokenMomentumStacking > 0 && appliedDamage.greaterThan(0)) {
+          state.momentumStacks = 0;
+        }
       });
 
       if (damageAfterAbsorption.greaterThan(0) || absorbedAmount.greaterThan(0)) {
