@@ -1,6 +1,7 @@
 import type { ElementId, ElementWeights, ElementTuning } from './elementTypes.js';
 import type { EnemyDefinition } from '../../types/index.js';
 import { ZERO_ELEMENT_WEIGHTS } from './elementCombatAffinity.js';
+import { resolveResist } from './elementResolver.js';
 import { derivedRealmScalar } from '../meridians/derivedStats.js';
 
 /**
@@ -52,4 +53,27 @@ export function resolveEnemyDefensiveProfile(input: {
     ccResist: input.tuning.enemyCcResistBase * scalar,
     resistByElement: buildEnemyElementWeights(input.enemy.element, input.tuning),
   });
+}
+
+/**
+ * D11 Slice C — the enemy's resist fraction to the player's incoming element, AFTER shred lowers it.
+ * Mirrors `resolvePlayerElementResist` (the same generic `resolveResist` saturating curve, no-immunity
+ * floor enforced in code). Flag-off / no element ⇒ 0. With `enemyElementResistBase` + shred held 0 the
+ * resist is 0 ⇒ the caller's `1 − fraction` multiplier is 1 ⇒ byte-identical. Pure.
+ */
+export function resolveEnemyElementResist(input: {
+  enemy: EnemyDefinition;
+  incomingElement: ElementId | null | undefined; // the player's applied element
+  realm: number;
+  engineActive: boolean;
+  shredResistDelta: number;                       // accumulated shred (reduces resist, pre-curve)
+  tuning: ElementTuning;
+}): number {
+  if (!input.engineActive || !input.incomingElement) return 0;
+  const profile = resolveEnemyDefensiveProfile({ enemy: input.enemy, realm: input.realm, engineActive: input.engineActive, tuning: input.tuning });
+  const shredded: ElementWeights = Object.freeze({
+    ...profile.resistByElement,
+    [input.incomingElement]: Math.max(0, (profile.resistByElement[input.incomingElement] ?? 0) - Math.max(0, input.shredResistDelta)),
+  });
+  return resolveResist(shredded, input.incomingElement, { realm: Math.max(1, input.realm) }, input.tuning, input.incomingElement);
 }

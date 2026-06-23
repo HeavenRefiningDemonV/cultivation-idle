@@ -33,6 +33,9 @@ export interface EnemyElementStates {
   /** D11 3b-ii — per-reaction-id internal-cooldown (ms remaining); set on fire, decayed each tick,
    *  read by the resolver's `isEligible` ICD gate. Optional ⇒ legacy/empty states default to no ICD. */
   icdByPathway?: Record<string, number>;
+  /** D11 Slice C — cumulative enemy element-resist reduction from shred reactions (persists for the
+   *  combat, reset each fight). Optional ⇒ default 0. HELD inert (enemyShredApplyBase 0) until F-BAL. */
+  shredResistDelta?: number;
 }
 export const EMPTY_ENEMY_ELEMENT_STATES: EnemyElementStates = Object.freeze({ active: [] });
 
@@ -84,6 +87,12 @@ export function stepEnemyElementOnHit(input: {
   //   trigger reaction is on ICD): a portion of the strike returns as self-healing. Reuses reactionBase
   //   (held) via the resolver's drain amount — no new magnitude.
   const drainHeal = reaction && reaction.effect.kind === 'drain' ? Math.max(0, reaction.effect.amount) : 0;
+  // D11 Slice C — shred folds the reaction's resistDelta into the enemy's cumulative resist reduction,
+  //   GATED by the held enemyShredApplyBase (0) — the byte-identity gate. Held 0 ⇒ += 0 ⇒ no-op.
+  const shredDelta = reaction && reaction.effect.kind === 'shred'
+    ? Math.max(0, reaction.effect.resistDelta) * DEFAULT_ELEMENT_TUNING.enemyShredApplyBase
+    : 0;
+  const nextShred = (input.states.shredResistDelta ?? 0) + shredDelta;
 
   // 2. apply/refresh this element's signature affliction.
   const delta = resolveState(input.appliedElement, target, ctx, DEFAULT_ELEMENT_TUNING);
@@ -94,7 +103,8 @@ export function stepEnemyElementOnHit(input: {
     ? { ...priorIcd, [reaction.reaction]: DEFAULT_ELEMENT_TUNING.icdMsByFamily[reaction.family] }
     : priorIcd;
   const nextActive = applyStateDelta(input.states.active, delta);
-  const states: EnemyElementStates =
-    Object.keys(nextIcd).length > 0 ? { active: nextActive, icdByPathway: nextIcd } : { active: nextActive };
+  const states: EnemyElementStates = { active: nextActive };
+  if (Object.keys(nextIcd).length > 0) states.icdByPathway = nextIcd;
+  if (nextShred > 0) states.shredResistDelta = nextShred;
   return { states, bonusDamage, drainHeal, reactionLabel: reaction?.label ?? null };
 }

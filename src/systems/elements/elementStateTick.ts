@@ -49,7 +49,10 @@ export function expireEnemyElementStates(input: {
     }
     if (Object.keys(decayed).length > 0) nextIcd = decayed;
   }
-  return nextIcd ? { active: survivors, icdByPathway: nextIcd } : { active: survivors };
+  const result: EnemyElementStates = { active: survivors };
+  if (nextIcd) result.icdByPathway = nextIcd;
+  if (input.states.shredResistDelta) result.shredResistDelta = input.states.shredResistDelta; // persists (no decay)
+  return result;
 }
 
 export interface ElementStateTickResult {
@@ -114,9 +117,9 @@ export function tickEnemyElementStates(input: {
     }
     return { ...s, accMs: acc - ticks * intervalMs };
   });
-  // preserve the (already-decayed) ICD map alongside the DoT-advanced afflictions.
-  const survivingStatesOut: EnemyElementStates = survivingStates.icdByPathway
-    ? { active, icdByPathway: survivingStates.icdByPathway }
-    : { active };
+  // preserve the (already-decayed) ICD map + the persistent shred delta alongside the DoT-advanced states.
+  const survivingStatesOut: EnemyElementStates = { active };
+  if (survivingStates.icdByPathway) survivingStatesOut.icdByPathway = survivingStates.icdByPathway;
+  if (survivingStates.shredResistDelta) survivingStatesOut.shredResistDelta = survivingStates.shredResistDelta;
   return { survivingStates: survivingStatesOut, dotDamage, dotEvents };
 }

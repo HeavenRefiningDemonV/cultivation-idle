@@ -91,3 +91,12 @@ void test('D11 3b — drain is INERT when the engine is off (preserve-first)', (
   const off = stepEnemyElementOnHit({ appliedElement: 'shadow', states: { active: [cursed], icdByPathway: { hex: 1500 } }, realm: 3, engineActive: false });
   assert.equal(off.drainHeal, 0);
 });
+
+// Metal on a Rent target fires Corrode (shred).
+const rent: ElementStateInstance = { state: 'rent', category: 'mark', remainingMs: 4000, intensity: 1 };
+
+void test('D11 Slice C — a shred reaction fires but does NOT accumulate at the held default (byte-identity gate)', () => {
+  const out = stepEnemyElementOnHit({ appliedElement: 'metal', states: { active: [rent] }, realm: 3, engineActive: true });
+  assert.equal(out.reactionLabel, '锈蚀', 'Metal on a Rent target fires Corrode (shred)');
+  assert.equal(out.states.shredResistDelta, undefined, 'held enemyShredApplyBase 0 ⇒ no accumulation ⇒ byte-identical');
+});

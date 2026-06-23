@@ -36,7 +36,7 @@ import { resolvePlayerElementAffinity, elementAffinityDamageMultiplier, resolveP
 import { stepEnemyElementOnHit, EMPTY_ENEMY_ELEMENT_STATES } from '../systems/elements/elementCombatReactions.js';
 import { tickEnemyElementStates } from '../systems/elements/elementStateTick.js';
 import { resolveEnemyControlSkip } from '../systems/elements/elementControlGate.js';
-import { resolveEnemyDefensiveProfile } from '../systems/elements/enemyDefensiveProfile.js';
+import { resolveEnemyDefensiveProfile, resolveEnemyElementResist } from '../systems/elements/enemyDefensiveProfile.js';
 import { DEFAULT_ELEMENT_TUNING } from '../systems/elements/elementTuning.js';
 import { useBeastLoreStore } from '../features/court/useBeastLoreStore.js';
 import { useWeaponBondStore } from '../features/court/useWeaponBondStore.js';
@@ -1556,6 +1556,19 @@ export const useCombatStore = create<ExtendedCombatState>()(
       });
       const elementAffinityMult = D(elementAffinityDamageMultiplier(elementAffinity));
 
+      // D11 Slice C — the enemy's element-resist REDUCES the player's outgoing element damage; shred
+      // (accumulated on prior hits) lowers that resist. INERT (enemyElementResistBase + shred held 0 ⇒
+      // resist 0 ⇒ ×1) ⇒ byte-identical. Post-core multiplier, NEVER inside the frozen ATK×(1−DEF/(DEF+K)).
+      const enemyElementResist = resolveEnemyElementResist({
+        enemy,
+        incomingElement: getSpiritRootSnapshot()?.element ?? null,
+        realm: useGameStore.getState().realm.index + 1,
+        engineActive: isDerivedStatEngineAuthoritative(),
+        shredResistDelta: (state.enemyElementStates ?? EMPTY_ENEMY_ELEMENT_STATES).shredResistDelta ?? 0,
+        tuning: DEFAULT_ELEMENT_TUNING,
+      });
+      const enemyElementResistMult = D(1 - enemyElementResist);
+
       // D11 slice 3 — element reaction/state: apply this hit's signature affliction to the enemy and
       // fire any eligible combo. INERT (off / no root element) ⇒ no state change + 0 bonus ⇒ byte-identical.
       const elementStep = stepEnemyElementOnHit({
@@ -1572,6 +1585,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
         .times(rootProc.modifiers.damageMult)
         .times(momentumMult)
         .times(elementAffinityMult)
+        .times(enemyElementResistMult) // Slice C — enemy element-resist (held 0 ⇒ ×1 ⇒ byte-identical)
         .plus(D(elementStep.bonusDamage)); // instant burst/sever reaction damage (0 unless one fires)
       const currentEnemyHp = D(state.enemyHP);
       const appliedDamage = currentEnemyHp.lessThan(finalDamage) ? currentEnemyHp : finalDamage;

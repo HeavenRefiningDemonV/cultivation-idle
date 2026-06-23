@@ -141,3 +141,9 @@ void test('D11 3b-ii — tick preserves the decayed ICD alongside DoT', () => {
   assert.equal(out.survivingStates.icdByPathway?.freeze, 2000, 'ICD decayed and carried through the DoT pass');
   assert.equal(out.dotDamage, 2);
 });
+
+void test('D11 Slice C — shredResistDelta persists through expire + tick (no decay)', () => {
+  const s: EnemyElementStates = { active: [inst(4000)], shredResistDelta: 0.3 };
+  assert.equal(expireEnemyElementStates({ states: s, elapsedMs: 1000, engineActive: true }).shredResistDelta, 0.3, 'shred persists through expiry');
+  assert.equal(tickEnemyElementStates({ states: s, elapsedMs: 1000, realm: 1, engineActive: true, tuning: dotTuning(2) }).survivingStates.shredResistDelta, 0.3, 'shred carried through the DoT pass');
+});
