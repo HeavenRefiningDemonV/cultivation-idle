@@ -336,7 +336,7 @@
 [data-region=breath-line] .brread.last { border-right: none; }
 [data-region=breath-line] .brread .coin { width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; flex: 0 0 auto; font-family: var(--kai); font-size: 11px; color: #3a2a0e; align-self: center; background: radial-gradient(circle at 40% 34%, #f3e3b0, #c08f3a 55%, #6e4c16); }
 [data-region=breath-line] .brread .coin.coin--cinn { background: radial-gradient(circle at 40% 34%, #b25347, #8b3028); }
-[data-region=breath-line] .brread .v { font: 800 16px var(--serif); text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5); }
+[data-region=breath-line] .brread .v { font: 800 16px var(--serif); color: #f6efda; text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5); }
 [data-region=breath-line] .brread .v.big { font-size: 19px; color: #fff6df; }
 [data-region=breath-line] .brread .l { font: 700 8.5px var(--serif); letter-spacing: 0.13em; text-transform: uppercase; color: rgba(243, 234, 215, 0.5); }
 [data-region=breath-line] .brread.heldmark .v { color: var(--paper-cinnabar-bright, #a94835); }
