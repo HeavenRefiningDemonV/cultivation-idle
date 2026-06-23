@@ -760,6 +760,11 @@
   align-items: center;
   gap: 15px;
 }
+/* M.II.3 truthful-now: the honest "not yet active" banner on an unshipped path-mechanic scroll. */
+.cultivationSeatScroll .seatCard--preview {
+  border: 1px dashed rgba(110, 36, 30, 0.5);
+  background: linear-gradient(168deg, rgba(246, 235, 224, 0.94), rgba(236, 220, 205, 0.88));
+}
 .cultivationSeatScroll .seatCard__top {
   display: flex;
   align-items: center;

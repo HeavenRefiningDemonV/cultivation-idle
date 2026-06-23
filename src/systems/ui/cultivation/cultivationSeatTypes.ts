@@ -97,6 +97,8 @@ export interface CultivationGateReadiness {
   checks: CultivationGateCheck[]; // the four checks (D6 §D.14)
   blockers: CultivationGateBlocker[];
   safetyBand: 'serene' | 'steady' | 'perilous' | 'dire' | 'guaranteed';
+  /** the real assembled risk % the next crossing rolls against (D6 §D.14); null when not at a crossing */
+  riskPercent: number | null;
   safetyOdds: string;
   safetyTerms: string[];
   raiseHint: string | null;
@@ -107,6 +109,9 @@ export interface CultivationGateReadiness {
 }
 
 // ── the per-path discriminated instrument (only one renders) ─────────
+// M.II.3 truthful-now: `active` is FALSE while the path-mechanic system is unshipped (D5 / D16 Wave C).
+// The lore (omens / essences / arts) renders as an honest PREVIEW of the forthcoming system; the
+// numeric metrics are NOT presented as live progress until a real backing system exists.
 export interface PremonitionOmen { label: string; value: string; detail: string; tone: CultivationTone }
 export interface BeastEssence { name: string; glyph: string; trait: string }
 export interface WeaponArt { name: string; detail: string }
@@ -115,6 +120,8 @@ export interface HeavenInstrument {
   kind: 'heaven';
   label: 'PREMONITION';
   valLabel: string;
+  active: boolean; // false until the Premonition system ships (D5 §5.1 / D16 Wave C)
+  previewNote: string; // the honest "not yet active" line shown in the scroll
   foresightHorizon: number;
   fortuneOmens: PremonitionOmen[];
   riskOmens: PremonitionOmen[];
@@ -123,6 +130,8 @@ export interface EarthInstrument {
   kind: 'earth';
   label: 'BEAST LORE';
   valLabel: string;
+  active: boolean; // false until the Beast-Lore system ships (D5 §5.2 / D16 Wave C)
+  previewNote: string;
   temperingDepthPct: number; // 0..100
   absorbedCount: number;
   capacity: number;
@@ -132,6 +141,8 @@ export interface MartialInstrument {
   kind: 'martial';
   label: 'WEAPON-BOND';
   valLabel: string;
+  active: boolean; // false until the Weapon-Bond + equipment system ships (D5 §5.3 / D8 / D16 Wave C)
+  previewNote: string;
   bondDepthPct: number; // 0..100
   artsCount: number;
   artsCapacity: number;
@@ -143,7 +154,7 @@ export interface MartialInstrument {
 export type CultivationInstrument = HeavenInstrument | EarthInstrument | MartialInstrument;
 
 export interface CultivationLedgerScroll {
-  rate: { base: string; realmMult: string; focusMult: string; result: string; terms: string };
+  rate: { base: string; stageMult: string; focusMult: string; pathMult: string; result: string; terms: string };
   clocks: { seclusion: string; sojourn: string };
   offline: { capHours: number; efficiency: string };
   foregroundTerms: string;
@@ -215,7 +226,7 @@ export interface CultivationSeatSurfaceV1 {
     offlineEfficiency: string;
     stateWord: string;
     combatHeld: boolean;
-    rateEquation: { base: string; realmMult: string; focusMult: string; result: string };
+    rateEquation: { base: string; stageMult: string; focusMult: string; pathMult: string; result: string };
     lifeMerit: string;
   };
 

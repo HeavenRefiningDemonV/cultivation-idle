@@ -55,6 +55,7 @@ import {
   resolveBreakthroughStabilitySnapshot,
   breakthroughTransitionRiskForRealm,
   type RootResonanceForRisk,
+  type BreakthroughStabilitySnapshot,
 } from '../systems/breakthrough/breakthroughStabilityResolver.js';
 import {
   resolveBreakthroughRiskInputs,
@@ -249,6 +250,66 @@ function resolveRootResonanceForRisk(
   if (affinity.status === 'match') return affinity.percent >= 10 ? 'exact' : 'soft';
   if (affinity.status === 'mismatch') return 'mismatch';
   return 'neutral';
+}
+
+/**
+ * The ONE place a live breakthrough risk snapshot is assembled from the stores. Both the real
+ * `breakthrough()` roll and the Seat's Gate-Readiness PREVIEW call this with identical inputs, so
+ * the previewed odds can never drift from the rolled odds (the M.II.3 truthful-now fix). The live
+ * stat seam (qi_purity / body_integrity / dao_stability via `_getBreakthroughRiskStatSource`) is
+ * honored here too — it stays inert (all-zero) until the stat-activation linchpin, exactly as the
+ * real roll does, so the preview shows today's honest pre-activation risk, not a future model.
+ */
+function buildLiveBreakthroughSnapshot(
+  state: GameState,
+  requiredQi: string | number,
+  gateItemId: string | null,
+  opts: { recklessConfirmation: boolean },
+): BreakthroughStabilitySnapshot {
+  const currentRealmIndex = clampRealmIndexToSemesterSlice(state.realm.index);
+  const cultivation = useCultivationStore.getState();
+  const heartLawId = cultivation.selectedHeartLawId;
+  const cultivationEffectiveStage = getCultivationEffectiveStageForBreakthrough(state);
+  const heartLawStage = heartLawId ? cultivation.heartLawLevelById[heartLawId] ?? 1 : 1;
+  const heartLawDef = heartLawId ? useContentStore.getState().maps.heartLawsById[heartLawId] ?? null : null;
+  const mindAlignment = resolveCultivationMindAlignment({
+    heartLawLevel: heartLawStage,
+    cultivationStageIndex: cultivationEffectiveStage,
+    clarity: cultivation.daoHeartClarity,
+    turbulence: cultivation.turbulence,
+  });
+  const purchasesById = _getPrestigeStore?.().purchasesById ?? {};
+  const spiritRoot = getSpiritRootSnapshot();
+  const riskStatSource = _getBreakthroughRiskStatSource?.() ?? null;
+  const transitionRisk = breakthroughTransitionRiskForRealm(currentRealmIndex);
+  const statRiskInputs = riskStatSource
+    ? resolveBreakthroughRiskInputs(riskStatSource, {
+        injuryPressure: realmInjuryRiskPressure(transitionRisk.minorInjuryPct, transitionRisk.majorInjuryPct),
+      })
+    : EMPTY_BREAKTHROUGH_RISK_INPUTS;
+  return resolveBreakthroughStabilitySnapshot({
+    fromRealmIndex: currentRealmIndex,
+    toRealmIndex: currentRealmIndex + 1,
+    currentQi: state.qi,
+    requiredQi,
+    heartLawStage,
+    cultivationEffectiveStage,
+    clarity: cultivation.daoHeartClarity,
+    turbulence: cultivation.turbulence,
+    gateResolution: getGateResolutionForRealm(gateItemId),
+    rootResonance: resolveRootResonanceForRisk(heartLawDef, spiritRoot),
+    calmFirstBreathRiskReduction: resolveCalmFirstBreathRiskReduction({
+      purchasesById,
+      heartLawStage,
+      cultivationEffectiveStage,
+    }),
+    qiPurityRiskReduction: statRiskInputs.qiPurityRiskReduction,
+    safetyPrepRiskReduction: statRiskInputs.safetyPrepRiskReduction,
+    injuryRiskDelta: statRiskInputs.injuryRiskDelta,
+    fatigueRiskDelta: statRiskInputs.fatigueRiskDelta,
+    recklessConfirmation: opts.recklessConfirmation,
+    mindAlignment,
+  });
 }
 
 function nextBreakthroughRoll(): number {
@@ -628,53 +689,13 @@ export const useGameStore = create<GameState>()(
 
       if (canAdvanceToNextRealm) {
         const cultivation = useCultivationStore.getState();
-        const heartLawId = cultivation.selectedHeartLawId;
+        // The live stat seam (qi_purity / body_integrity / dao_stability) and every other input are
+        // assembled in the ONE shared builder so the Seat's Gate-Readiness preview rolls the same
+        // odds (M.II.3 truthful-now). Parity stages are still read here for the attempt telemetry.
         const cultivationEffectiveStage = getCultivationEffectiveStageForBreakthrough(state);
+        const heartLawId = cultivation.selectedHeartLawId;
         const heartLawStage = heartLawId ? cultivation.heartLawLevelById[heartLawId] ?? 1 : 1;
-        const heartLawDef = heartLawId ? useContentStore.getState().maps.heartLawsById[heartLawId] ?? null : null;
-        const mindAlignment = resolveCultivationMindAlignment({
-          heartLawLevel: heartLawStage,
-          cultivationStageIndex: cultivationEffectiveStage,
-          clarity: cultivation.daoHeartClarity,
-          turbulence: cultivation.turbulence,
-        });
-        const purchasesById = _getPrestigeStore?.().purchasesById ?? {};
-        const spiritRoot = getSpiritRootSnapshot();
-        // M.II.1 sub-objective A — supply the four formerly-omitted risk inputs from the LIVE
-        // stat layer (qi_purity / body_integrity / dao_stability ratings + training fatigue).
-        // Until now these read 0 (inert); the resolver already had the rows. Falls back to all-
-        // zero when the source getter is unwired (e.g. unit tests without the bootstrap) — the
-        // pre-packet behavior, never a regression (§K.1).
-        const riskStatSource = _getBreakthroughRiskStatSource?.() ?? null;
-        const transitionRisk = breakthroughTransitionRiskForRealm(currentRealmIndex);
-        const statRiskInputs = riskStatSource
-          ? resolveBreakthroughRiskInputs(riskStatSource, {
-              injuryPressure: realmInjuryRiskPressure(transitionRisk.minorInjuryPct, transitionRisk.majorInjuryPct),
-            })
-          : EMPTY_BREAKTHROUGH_RISK_INPUTS;
-        const snapshot = resolveBreakthroughStabilitySnapshot({
-          fromRealmIndex: currentRealmIndex,
-          toRealmIndex: currentRealmIndex + 1,
-          currentQi: state.qi,
-          requiredQi,
-          heartLawStage,
-          cultivationEffectiveStage,
-          clarity: cultivation.daoHeartClarity,
-          turbulence: cultivation.turbulence,
-          gateResolution: getGateResolutionForRealm(gateItemId),
-          rootResonance: resolveRootResonanceForRisk(heartLawDef, spiritRoot),
-          calmFirstBreathRiskReduction: resolveCalmFirstBreathRiskReduction({
-            purchasesById,
-            heartLawStage,
-            cultivationEffectiveStage,
-          }),
-          qiPurityRiskReduction: statRiskInputs.qiPurityRiskReduction,
-          safetyPrepRiskReduction: statRiskInputs.safetyPrepRiskReduction,
-          injuryRiskDelta: statRiskInputs.injuryRiskDelta,
-          fatigueRiskDelta: statRiskInputs.fatigueRiskDelta,
-          recklessConfirmation: true,
-          mindAlignment,
-        });
+        const snapshot = buildLiveBreakthroughSnapshot(state, requiredQi, gateItemId, { recklessConfirmation: true });
         cultivation.recordBreakthroughRiskSnapshot(snapshot);
         majorAttemptTelemetry = {
           risk: snapshot.riskPercent,
@@ -908,6 +929,24 @@ export const useGameStore = create<GameState>()(
       }
 
       return true;
+    },
+
+    /**
+     * Render-only read of the risk snapshot the next major crossing WOULD roll against — the SAME
+     * `buildLiveBreakthroughSnapshot` the real `breakthrough()` uses, with no mutation and no dice.
+     * The Seat's Gate-Readiness preview calls this so the band/odds it shows are the real odds.
+     * Returns null when there is no major crossing to preview (mid-realm, capped, or no life yet).
+     */
+    previewBreakthroughSnapshot: () => {
+      const state = get();
+      if (!hasCommittedLifeIdentity(state)) return null;
+      const currentRealmIndex = clampRealmIndexToSemesterSlice(state.realm.index);
+      const currentRealm = REALMS[currentRealmIndex] ?? REALMS[0];
+      const isFinalSubstage = state.realm.substage >= currentRealm.substages;
+      if (!(isFinalSubstage && hasNextLiveRealm(currentRealmIndex))) return null;
+      const requiredQi = get().getBreakthroughRequirement();
+      const gateItemId = getGateTransitionItemIdForRealmIndex(useContentStore.getState().raw, currentRealmIndex);
+      return buildLiveBreakthroughSnapshot(state, requiredQi, gateItemId, { recklessConfirmation: false });
     },
 
     /**

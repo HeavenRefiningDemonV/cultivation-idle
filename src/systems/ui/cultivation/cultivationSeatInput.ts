@@ -12,7 +12,7 @@ import {
 } from '../../progression/runtime/index.js';
 import { resolveForegroundGrowthMode } from '../../cultivation/foregroundGrowthResolver.js';
 import { resolveDaoHeartTurbulencePreview } from '../../daoHeart/daoHeartTurbulenceResolver.js';
-import { resolveBreakthroughStabilitySnapshot, type BreakthroughStabilitySnapshot } from '../../breakthrough/breakthroughStabilityResolver.js';
+import type { BreakthroughStabilitySnapshot } from '../../breakthrough/breakthroughStabilityResolver.js';
 import { resolveTrialFailSafeConfig } from '../../progression/runtime/trialLifecycle.js';
 import { MAX_OFFLINE_HOURS, resolveOfflineCultivationEfficiency } from '../../../services/time/offlineShared.js';
 import { useGameStore } from '../../../stores/gameStore.js';
@@ -23,6 +23,7 @@ import { useContentStore } from '../../../stores/contentStore.js';
 import { useTrialStore } from '../../../stores/trialStore.js';
 import { useInventoryStore } from '../../../stores/inventoryStore.js';
 import { getGateTransitionItemIdForRealmIndex } from '../../progression/runtime/gateResolver.js';
+import { CULTIVATION_PATH_DATA } from './cultivationPathData.js';
 
 export interface CultivationSeatRawInput {
   game: {
@@ -104,20 +105,13 @@ export function readCultivationSeatRawInput(opts: { reducedMotion?: boolean; sel
     prestigeEfficiencyAdd: typeof prestige.getOfflineEfficiencyBonusAdditive === 'function' ? prestige.getOfflineEfficiencyBonusAdditive() : 0,
   });
 
+  // M.II.3 truthful-now (D6 §D.14): the Gate-Readiness preview must show the SAME odds the next real
+  // crossing will roll. previewBreakthroughSnapshot() runs the shared buildLiveBreakthroughSnapshot —
+  // real heart-law parity, root resonance, the live stat seam (inert pre-linchpin, exactly as the
+  // real roll), and mind alignment — instead of the old hardcoded parity-1/neutral-root stub that
+  // could understate the band. Returns null off a major crossing, so willAdvanceRealm still gates it.
   const breakthroughStability = willAdvanceRealm
-    ? resolveBreakthroughStabilitySnapshot({
-        fromRealmIndex: liveRealmIndex,
-        toRealmIndex: liveRealmIndex + 1,
-        currentQi: game.qi,
-        requiredQi: game.getBreakthroughRequirement(),
-        heartLawStage: 1,
-        cultivationEffectiveStage: 1,
-        clarity: cultivation.daoHeartClarity ?? 0,
-        turbulence,
-        gateResolution,
-        rootResonance: 'neutral',
-        recklessConfirmation: false,
-      })
+    ? useGameStore.getState().previewBreakthroughSnapshot()
     : null;
 
   const lifeMerit = typeof (prestige as { lifeMerit?: number }).lifeMerit === 'number' ? (prestige as { lifeMerit?: number }).lifeMerit ?? null : null;
@@ -163,7 +157,13 @@ export function readCultivationSeatRawInput(opts: { reducedMotion?: boolean; sel
  * preview balance. [tune] → D15 / bind to the live engine when the read is exposed.
  */
 function deriveTreasures(path: string | null): { jing: number; qi: number; shen: number; lead: 'jing' | 'qi' | 'shen' } {
-  if (path === 'earth') return { jing: 86, qi: 46, shen: 40, lead: 'jing' };
-  if (path === 'martial') return { jing: 58, qi: 54, shen: 50, lead: 'jing' };
-  return { jing: 38, qi: 50, shen: 84, lead: 'shen' };
+  // M.II.3 truthful-now: there is NO live jing/qi/shen stat layer (D15 §3.3 — "compositional, not a
+  // player-facing layer today"). The LEAD is real authored path content (D5 treasuresLead); the
+  // per-treasure values are only an ordinal illustration of that lead (the triad renders the lead,
+  // never a fabricated stat magnitude). When a real composition lands, derive these from live stats.
+  const def = path === 'earth' || path === 'martial' || path === 'heaven'
+    ? CULTIVATION_PATH_DATA[path]
+    : CULTIVATION_PATH_DATA.heaven;
+  const lead = def.treasuresLead;
+  return { jing: lead === 'jing' ? 2 : 1, qi: lead === 'qi' ? 2 : 1, shen: lead === 'shen' ? 2 : 1, lead };
 }

@@ -1,4 +1,5 @@
 import type { CraftSessionSaveState } from "../systems/crafting/craftingTypes.js";
+import type { BreakthroughStabilitySnapshot } from "../systems/breakthrough/breakthroughStabilityResolver.js";
 import type { RewardBundle } from "../services/rewards/index.js";
 import type { PavilionSaveState } from "../features/pavilion/pavilionTypes.js";
 import type { StoryMotionMode, StorySaveState } from "../features/story/storyTypes.js";
@@ -244,6 +245,13 @@ export interface GameState {
   selectPath: (path: CultivationPath) => void;
   selectPerk: (perkId: string) => boolean;
   breakthrough: () => boolean;
+  /**
+   * Render-only read of the SAME risk snapshot the next major `breakthrough()` would roll against
+   * (no mutation, no dice). The Seat's Gate-Readiness preview calls this so the displayed odds are
+   * the real odds — it shares the exact inputs (heart-law parity, root resonance, live stat seam,
+   * mind alignment) instead of a hardcoded approximation. Returns null when not at a major crossing.
+   */
+  previewBreakthroughSnapshot: () => BreakthroughStabilitySnapshot | null;
   calculateQiPerSecond: () => void;
   calculatePlayerStats: () => void;
   addBuff: (buff: {

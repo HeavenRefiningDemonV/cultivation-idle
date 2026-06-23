@@ -31,12 +31,17 @@ export interface CultivationSeatActions {
   onCeremonyClose: () => void;
 }
 
-// §6 Option B: each of the seven display axes maps to a real live 3-way FocusMode (the exact pick
-// is preserved separately in uiStore.cultivationFocusAxis; this drives the gameplay effect).
+// §6 Option B: each of the seven display axes maps to the real live 3-way FocusMode whose mechanical
+// trade MATCHES the axis's intent, so the pick never contradicts its own effect text (M.II.3
+// truthful-now). spirit = +50% qi/s, −20% HP; body = +50% HP & DEF, −20% qi/s; balanced = no trade.
+// The exact 7-way pick is preserved separately in uiStore.cultivationFocusAxis for the display.
 function axisToFocusMode(axisId: CultivationFocusAxisId): FocusMode {
-  if (axisId === 'spiritualSense' || axisId === 'soulStrength' || axisId === 'dao') return 'spirit';
-  if (axisId === 'qiPurity') return 'balanced'; // the serene/even axis
-  return 'body'; // qiPool / body / meridian
+  // qi / mind / throughput axes lean into faster cultivation (Spirit).
+  if (axisId === 'qiPool' || axisId === 'spiritualSense' || axisId === 'meridian' || axisId === 'dao') return 'spirit';
+  // endurance / survivability axes lean into the body (Body).
+  if (axisId === 'soulStrength' || axisId === 'body') return 'body';
+  // qiPurity = the even, balanced cycle.
+  return 'balanced';
 }
 
 // Deep-link → the live top tab (world-building modules route to the world tab; module-open is a follow-up).

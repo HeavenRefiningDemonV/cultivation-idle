@@ -110,11 +110,11 @@ function GateReadinessScroll({ s, actions, onClose }: { s: CultivationSeatSurfac
         </div>
       </div>
       <div className="seatCard">
-        <CardTop glyph="策" title="Crossing safety" right="how calculated" />
+        <CardTop glyph="策" title="Crossing safety" right={g.riskPercent != null ? `≈ ${g.riskPercent}% risk` : 'how calculated'} />
         <div className="seatBand" data-safety-band={g.safetyBand}>
           {BAND_ORDER.map((b, i) => (<div key={b} className={`seatBand__seg is-${b}${i === activeBand ? '' : ' is-dim'}`}>{BAND_LABEL[b]}</div>))}
         </div>
-        <div className="seatTerms">{g.safetyOdds} Assembled from {g.safetyTerms.map((t, i) => (<b key={t}>{t}{i < g.safetyTerms.length - 1 ? ', ' : ''}</b>))}.</div>
+        <div className="seatTerms">{g.safetyOdds}{g.riskPercent != null ? ` This is the same ${g.riskPercent}% the crossing rolls against — about ${100 - g.riskPercent} in 100 succeed.` : ''} Assembled from {g.safetyTerms.map((t, i) => (<b key={t}>{t}{i < g.safetyTerms.length - 1 ? ', ' : ''}</b>))}.</div>
         {g.raiseHint && <div className="seatRaiseHint">{g.raiseHint}</div>}
       </div>
       {g.blockers.length > 0 && (
@@ -154,9 +154,10 @@ function LedgerScroll({ s, actions, onClose }: { s: CultivationSeatSurfaceV1; ac
       <div className="seatCard">
         <CardTop glyph="率" title="Cultivation rate" right="how calculated" />
         <div className="seatEqn">
-          <div className="seatEqn__term"><b>{l.rate.base}</b><i>Base</i></div><div className="seatEqn__op">×</div>
-          <div className="seatEqn__term"><b>{l.rate.realmMult}</b><i>Realm</i></div><div className="seatEqn__op">×</div>
-          <div className="seatEqn__term"><b>{l.rate.focusMult}</b><i>Focus</i></div><div className="seatEqn__op">=</div>
+          <div className="seatEqn__term"><b>{l.rate.base}</b><i>Realm base</i></div><div className="seatEqn__op">×</div>
+          <div className="seatEqn__term"><b>{l.rate.stageMult}</b><i>Stage</i></div><div className="seatEqn__op">×</div>
+          <div className="seatEqn__term"><b>{l.rate.focusMult}</b><i>Focus</i></div><div className="seatEqn__op">×</div>
+          <div className="seatEqn__term"><b>{l.rate.pathMult}</b><i>Path</i></div><div className="seatEqn__op">× …</div>
           <div className="seatEqn__res"><b>{l.rate.result}</b><i>qi / s</i></div>
         </div>
         <div className="seatTerms">{l.rate.terms}</div>
@@ -209,8 +210,8 @@ function FocusScroll({ s, actions, onClose }: { s: CultivationSeatSurfaceV1; act
         ))}
       </div>
       <div className="seatCard">
-        <CardTop glyph="序" title="Your emphasis" right="the trade" />
-        <div className="seatTerms">Emphasising <b>{emph?.label}</b> {emph?.lean} — it {emph?.effect}. Emphasis tilts where your cultivation flows; it never starves the others, so no single axis can dominate.</div>
+        <CardTop glyph="序" title="Your emphasis" right="the real trade" />
+        <div className="seatTerms">Emphasising <b>{emph?.label}</b> sets {emph?.lean}; it {emph?.effect}. The Seat has three live cultivation modes — <b>Spirit</b>, <b>Body</b>, and <b>Balanced</b> — and each axis tilts you into one of them. A finer 7-axis emphasis engine is a forthcoming refinement; your pick persists either way.</div>
       </div>
       <div className="seatCard">
         <CardTop glyph="星" title="The whole picture lives in Status" right="preview only" tone="jade" />
@@ -221,62 +222,66 @@ function FocusScroll({ s, actions, onClose }: { s: CultivationSeatSurfaceV1; act
   );
 }
 
+/** The honest "not yet active" banner — the path mechanic is designed (D5) but unshipped (D16 Wave C). */
+function PreviewBanner({ note }: { note: string }) {
+  return (
+    <div className="seatCard seatCard--preview" data-scroll-body="mechanic" data-instrument-active="false">
+      <CardTop glyph="未" title="Not yet active" right="preview" tone="cinn" />
+      <div className="seatTerms">{note}</div>
+    </div>
+  );
+}
+
 function MechanicScroll({ s, actions, onClose }: { s: CultivationSeatSurfaceV1; actions: CultivationSeatActions; onClose: () => void }) {
   const inst = s.instrument;
   if (inst.kind === 'heaven') {
     return (
-      <ScrollFrame tag="目" kicker="PREMONITION" title="Heaven’s Eye" dek="The aloof seer reads fortune, danger, and the shape of the crossing" onClose={onClose}>
-        <div className="seatCard" data-scroll-body="mechanic">
-          <CardTop glyph="吉" title="Today’s fortune" right="the day’s omens" tone="jade" />
+      <ScrollFrame tag="目" kicker="PREMONITION" title="Heaven’s Eye" dek="The aloof seer will read fortune, danger, and the shape of the crossing — a forthcoming Heaven-path art" onClose={onClose}>
+        <PreviewBanner note={inst.previewNote} />
+        <div className="seatCard">
+          <CardTop glyph="吉" title="Fortune omens" right="preview" tone="jade" />
           <div className="seatGrid">{inst.fortuneOmens.map((o) => (<div key={o.label} className="seatCheckrow"><div className="seatCheckrow__med is-ok">√</div><div className="seatCheckrow__body"><div className="seatCheckrow__cn">{o.label}</div><div className="seatCheckrow__sub">{o.detail}</div></div><div className="seatCheckrow__cs is-ok">{o.value}</div></div>))}</div>
         </div>
         <div className="seatCard">
-          <CardTop glyph="隙" title="Risk omens" right="what the eye warns" />
+          <CardTop glyph="隙" title="Risk omens" right="preview" />
           <div className="seatGrid">{inst.riskOmens.map((o) => (<div key={o.label} className="seatCheckrow"><div className="seatCheckrow__med is-caution">!</div><div className="seatCheckrow__body"><div className="seatCheckrow__cn">{o.label}</div><div className="seatCheckrow__sub">{o.detail}</div></div><div className="seatCheckrow__cs is-caution">{o.value}</div></div>))}</div>
         </div>
         <div className="seatCard">
-          <CardTop glyph="天" title="Tribulation foresight" right="the crossing ahead" tone="jade" />
-          <div className="seatStatrow"><span className="seatStatrow__sn">Foresight horizon</span><span className="seatStatrow__sv">{inst.foresightHorizon} steps</span><span className="seatStatrow__se">widens each realm — Heaven sees the crossing’s danger most clearly</span></div>
-          <div className="seatTerms">Built to its grain, Heaven breaks through most <b>serenely</b> — perception becomes the key that opens the gate.</div>
+          <div className="seatTerms">Built to its grain, Heaven is meant to break through most <b>serenely</b> — perception becoming the key that opens the gate. The mechanic is designed; this scroll previews it.</div>
         </div>
       </ScrollFrame>
     );
   }
   if (inst.kind === 'earth') {
     return (
-      <ScrollFrame tag="獸" kicker="BEAST LORE" title="Body Tempering" dek="The body-refiner draws the strengths of the wild into its own marrow" onClose={onClose}>
-        <div className="seatCard" data-scroll-body="mechanic">
-          <CardTop glyph="獸" title="Absorbed bestial essences" right={`· ${inst.absorbedCount} of ${inst.capacity}`} tone="jade" />
+      <ScrollFrame tag="獸" kicker="BEAST LORE" title="Body Tempering" dek="The body-refiner will draw the strengths of the wild into its own marrow — a forthcoming Earth-path system" onClose={onClose}>
+        <PreviewBanner note={inst.previewNote} />
+        <div className="seatCard">
+          <CardTop glyph="獸" title="Bestial essences" right={`preview · ${inst.essences.length}`} tone="jade" />
           <div className="seatGrid">{inst.essences.map((e) => (<div key={e.name} className="seatGrant"><div className="seatGrant__gm">{e.glyph}</div><div><div className="seatGrant__gt">{e.name}</div><div className="seatGrant__gd">{e.trait}</div></div></div>))}</div>
         </div>
         <div className="seatCard">
-          <CardTop glyph="髓" title="Body-tempering depth" right="this realm" />
-          <div className="seatBand"><div className="seatBand__seg is-earthdepth" style={{ flex: inst.temperingDepthPct }}>{inst.temperingDepthPct}%</div><div className="seatBand__seg is-dim" style={{ flex: 100 - inst.temperingDepthPct }} /></div>
-          <div className="seatTerms">The flesh hardens and bestializes each realm — deeper tempering negates more chip damage and turns the body itself into a treasure.</div>
-        </div>
-        <div className="seatCard">
-          <CardTop glyph="狩" title="Where to hunt" right="more essence" />
-          <div className="seatTerms">Demonic beasts drop essence in the World — the same signal that drives the body’s growth here.</div>
+          <CardTop glyph="狩" title="Where you’ll hunt" right="more essence" />
+          <div className="seatTerms">Once this ships, demonic beasts will drop essence in the World — the signal that drives the body’s growth here.</div>
           <button type="button" className="seatDeeplink" onClick={() => actions.onDeepLink('world.map')}>Hunt in the World ↗</button>
         </div>
       </ScrollFrame>
     );
   }
   return (
-    <ScrollFrame tag="劍" kicker="WEAPON-BOND" title="Arms-Mastery" dek="The weapon as a cultivable companion — a second body, tempered beside you" onClose={onClose}>
-      <div className="seatCard" data-scroll-body="mechanic">
-        <CardTop glyph="劍" title="The bonded weapon" right="natal grade" tone="cinn" />
+    <ScrollFrame tag="劍" kicker="WEAPON-BOND" title="Arms-Mastery" dek="The weapon as a cultivable companion — a second body, tempered beside you; a forthcoming Martial-path system" onClose={onClose}>
+      <PreviewBanner note={inst.previewNote} />
+      <div className="seatCard">
+        <CardTop glyph="劍" title="The bonded weapon" right="preview" tone="cinn" />
         <div className="seatStatrow"><span className="seatStatrow__sn">{inst.weaponName}</span><span className="seatStatrow__sv">{inst.weaponGrade}</span></div>
-        <div className="seatStatrow"><span className="seatStatrow__sn">Bond depth</span><span className="seatStatrow__sv">{inst.bondDepthPct}%</span><span className="seatStatrow__se">deepens with cultivation — raises every weapon-art</span></div>
-        <div className="seatStatrow"><span className="seatStatrow__sn">Communion</span><span className="seatStatrow__sv">{inst.communion}</span></div>
       </div>
       <div className="seatCard">
-        <CardTop glyph="劃" title="Weapon-arts" right={`· ${inst.artsCount} of ${inst.artsCapacity}`} tone="jade" />
+        <CardTop glyph="劃" title="Weapon-arts" right={`preview · ${inst.arts.length}`} tone="jade" />
         <div className="seatGrid">{inst.arts.map((a) => (<div key={a.name} className="seatGrant"><div className="seatGrant__gm">劃</div><div><div className="seatGrant__gt">{a.name}</div><div className="seatGrant__gd">{a.detail}</div></div></div>))}</div>
       </div>
       <div className="seatCard">
-        <CardTop glyph="鍛" title="Re-bond" right="a new edge" />
-        <div className="seatTerms">Re-bonding a new weapon resets the current depth ({inst.bondDepthPct}%) but raises the ceiling. The gear side — forging, refining, gems — is owned by the Forge.</div>
+        <CardTop glyph="鍛" title="The Forge" right="equipment" />
+        <div className="seatTerms">Forging, refining and gems — the gear side — is owned by the Forge.</div>
         <button type="button" className="seatDeeplink" onClick={() => actions.onDeepLink('forge.equipment')}>To the Forge &amp; Equipment ↗</button>
       </div>
     </ScrollFrame>

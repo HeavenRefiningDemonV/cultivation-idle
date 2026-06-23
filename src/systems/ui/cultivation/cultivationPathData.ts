@@ -175,13 +175,21 @@ export const PREMONITION_RISK_OMENS: readonly PremonitionOmenDef[] = [
 
 export const MARTIAL_BONDED_WEAPON = { name: 'Cinnabar-Vein Sabre', grade: 'natal grade' } as const;
 
+// §6 Option B — the artifact's seven axes, in its order (Body is the fifth spoke; no Balanced).
+// M.II.3 truthful-now: the live engine has THREE real focus modes (FOCUS_MODE_MODIFIERS: balanced
+// 1.0× qi; body 0.8× qi / 1.5× HP & DEF; spirit 1.5× qi / 0.8× HP). Each axis maps to the mode that
+// matches its intent (see axisToFocusMode in useCultivationSeatActionController), and its `lean`
+// states that mode's REAL mechanical trade — no per-axis effect is fabricated. The true 7-axis
+// emphasis engine (D2 §2.3) is unshipped and intentionally NOT built here.
+const SPIRIT_LEAN = 'a Spirit emphasis: +50% qi/s, −20% HP';
+const BODY_LEAN = 'a Body emphasis: +50% HP & defense, −20% qi/s';
+const BALANCED_LEAN = 'a Balanced emphasis: steady qi/s, no trade-off';
 export const CANONICAL_FOCUS_AXES: readonly FocusAxisDef[] = [
-  // §6 Option B — the artifact's seven axes, in its order (Body is the fifth spoke; no Balanced).
-  { id: 'qiPool', label: 'Qi Pool', glyph: '氣', effect: 'raises maximum banked qi — the depth of the reserve', lean: 'a deeper reserve' },
-  { id: 'qiPurity', label: 'Qi Purity', glyph: '純', effect: 'lifts qi purity — a calmer, safer crossing', lean: 'a serene crossing' },
-  { id: 'spiritualSense', label: 'Spiritual Sense', glyph: '識', effect: 'sharpens spiritual sense — perception, foresight, control', lean: 'sharper foresight' },
-  { id: 'soulStrength', label: 'Soul Strength', glyph: '魂', effect: 'builds soul strength — pressure, will, resistance', lean: 'soul-pressure' },
-  { id: 'body', label: 'Body', glyph: '體', effect: 'tempers the body — vitality and survivability', lean: 'a sturdier body' },
-  { id: 'meridian', label: 'Meridian', glyph: '脈', effect: 'widens the meridians — throughput and technique power', lean: 'wider meridians' },
-  { id: 'dao', label: 'Dao', glyph: '道', effect: 'quickens comprehension — faster learning of the Dao', lean: 'swifter comprehension' },
+  { id: 'qiPool', label: 'Qi Pool', glyph: '氣', effect: 'raises maximum banked qi — the depth of the reserve', lean: SPIRIT_LEAN },
+  { id: 'qiPurity', label: 'Qi Purity', glyph: '純', effect: 'settles qi into a calm, even cycle', lean: BALANCED_LEAN },
+  { id: 'spiritualSense', label: 'Spiritual Sense', glyph: '識', effect: 'sharpens spiritual sense — perception, foresight, control', lean: SPIRIT_LEAN },
+  { id: 'soulStrength', label: 'Soul Strength', glyph: '魂', effect: 'builds soul strength — pressure, will, resistance', lean: BODY_LEAN },
+  { id: 'body', label: 'Body', glyph: '體', effect: 'tempers the body — vitality and survivability', lean: BODY_LEAN },
+  { id: 'meridian', label: 'Meridian', glyph: '脈', effect: 'widens the meridians — throughput and technique power', lean: SPIRIT_LEAN },
+  { id: 'dao', label: 'Dao', glyph: '道', effect: 'quickens comprehension — faster learning of the Dao', lean: SPIRIT_LEAN },
 ];

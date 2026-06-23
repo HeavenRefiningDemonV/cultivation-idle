@@ -7,6 +7,7 @@
  */
 import type { CultivationPath } from '../../../types/index.js';
 import type { PathId } from '../../../content/types.js';
+import { REALMS, PATH_MODIFIERS, FOCUS_MODE_MODIFIERS } from '../../../constants/index.js';
 import {
   CULTIVATION_PATH_DATA,
   CANONICAL_FOCUS_AXES,
@@ -56,45 +57,52 @@ function resolveFocusEmphasis(storedAxis: string | null | undefined): Cultivatio
     : DEFAULT_FOCUS_AXIS_ID;
 }
 
-function buildInstrument(path: CultivationPath, rf: number, foreground: string): CultivationInstrument {
+// M.II.3 truthful-now: the per-path mechanics (Premonition / Beast-Lore / Weapon-Bond) are designed
+// (D5) but UNSHIPPED (D16 Wave C, gated on the stat linchpin) — there is no foresight / tempering /
+// bond system in the live engine. So the instrument is an HONEST PREVIEW: active=false, the metric
+// fields are zeroed (never presented as live progress), and the authored lore renders as "what this
+// path will grant once it ships," not as fabricated current state. `communion` stays — it is a real
+// activity read. No realm-fraction (`rf`) fiction.
+function buildInstrument(path: CultivationPath, foreground: string): CultivationInstrument {
   if (path === 'heaven') {
-    const horizon = Math.round(2 + rf * 4);
     return {
       kind: 'heaven',
       label: 'PREMONITION',
-      valLabel: `Foresight horizon · ${horizon}`,
-      foresightHorizon: horizon,
+      valLabel: 'Not yet active',
+      active: false,
+      previewNote: 'Premonition — Heaven’s Eye — is a designed but not-yet-active path art (D5). The omens below preview what the Eye will read once it ships.',
+      foresightHorizon: 0,
       fortuneOmens: PREMONITION_FORTUNE_OMENS.map((o) => ({ ...o })),
       riskOmens: PREMONITION_RISK_OMENS.map((o) => ({ ...o })),
     };
   }
   if (path === 'earth') {
-    const depth = Math.round((0.2 + rf * 0.8) * 100);
-    const beasts = Math.min(7, 1 + Math.round(rf * 6));
     return {
       kind: 'earth',
       label: 'BEAST LORE',
-      valLabel: `Essences ${beasts} · depth ${depth}%`,
-      temperingDepthPct: depth,
-      absorbedCount: beasts,
+      valLabel: 'Not yet active',
+      active: false,
+      previewNote: 'Beast Lore — body-tempering by absorbing bestial essence — is a designed but not-yet-active path system (D5 / D11). The essences below preview what may be drawn in once it ships.',
+      temperingDepthPct: 0,
+      absorbedCount: 0,
       capacity: BEAST_ESSENCES.length,
-      essences: BEAST_ESSENCES.slice(0, beasts).map((e) => ({ ...e })),
+      essences: BEAST_ESSENCES.map((e) => ({ ...e })),
     };
   }
-  const bond = Math.round((0.18 + rf * 0.82) * 100);
-  const arts = Math.min(5, 1 + Math.round(rf * 4));
   const communion = foreground === 'cultivating' ? 'deepening' : foreground === 'combat-held' ? 'held' : 'idle';
   return {
     kind: 'martial',
     label: 'WEAPON-BOND',
-    valLabel: `Bond depth ${bond}% · ${arts} arts`,
-    bondDepthPct: bond,
-    artsCount: arts,
+    valLabel: 'Not yet active',
+    active: false,
+    previewNote: 'Weapon-Bond — the weapon as a cultivable companion — is a designed but not-yet-active path system (D5 / D8 equipment). The arts below preview what the bond will grant once it ships.',
+    bondDepthPct: 0,
+    artsCount: 0,
     artsCapacity: WEAPON_ARTS.length,
     communion,
     weaponName: MARTIAL_BONDED_WEAPON.name,
     weaponGrade: MARTIAL_BONDED_WEAPON.grade,
-    arts: WEAPON_ARTS.slice(0, arts).map((a) => ({ ...a })),
+    arts: WEAPON_ARTS.map((a) => ({ ...a })),
   };
 }
 
@@ -154,6 +162,8 @@ function buildGateReadiness(
       ...(!qiReady ? [{ reason: 'Cultivation Base is below the breakthrough cost.', routeTo: null, routeLabel: 'Cultivate in seclusion and return when the base is full.' }] : []),
     ],
     safetyBand,
+    // the real assembled odds the next crossing rolls against (D6 §D.14) — null when no live snapshot
+    riskPercent: typeof raw.breakthrough.stability?.riskPercent === 'number' ? raw.breakthrough.stability.riskPercent : null,
     safetyOdds: safetyOdds[safetyBand],
     safetyTerms: ['qi purity', 'heart alignment', 'Turbulence', 'Luck'],
     raiseHint: safetyBand === 'serene' || safetyBand === 'guaranteed' ? null : 'Purer qi and a calmer heart widen the safe band.',
@@ -226,7 +236,7 @@ export function buildCultivationSeatSurface(input: { raw: CultivationSeatRawInpu
   });
   const nextRealmDef = realmIndex1to7 < LIVE_REALMS_TOTAL ? def.realms[realmIndex1to7] : null; // next realm (null at cap)
 
-  const instrument = buildInstrument(path, rf, foreground);
+  const instrument = buildInstrument(path, foreground);
 
   const treasureItems: CultivationSeatSurfaceV1['treasures']['items'] = [
     { id: 'jing', label: 'Body', glyph: '精', value: raw.treasures.jing },
@@ -235,10 +245,21 @@ export function buildCultivationSeatSurface(input: { raw: CultivationSeatRawInpu
   ];
 
   const qiPerSec = raw.activity.combatHeld ? '—' : formatNumberLabel(raw.game.qiPerSecond);
+  // M.II.3 truthful-now: the REAL qi/s decomposition, mirroring gameStore.calculateQiPerSecond —
+  // realm base × substage bonus (1+0.2·(stage−1)) × focus mode × path, then your upgrades / prestige
+  // / spirit-root / Heart-Law modifiers carry it to the shown rate. Every named term is an actual
+  // engine factor (FOCUS_MODE_MODIFIERS / PATH_MODIFIERS / REALMS), not the old invented 1.00 / 1+rf·3.
+  const realmBaseQps = REALMS[raw.game.realmIndex]?.qiPerSecond ?? REALMS[0].qiPerSecond;
+  const substageBonus = 1 + 0.2 * Math.max(0, raw.game.substage - 1);
+  const focusQiMult = FOCUS_MODE_MODIFIERS[raw.game.focusMode]?.qiMultiplier ?? 1;
+  const pathQiMult = raw.game.selectedPath
+    ? PATH_MODIFIERS[raw.game.selectedPath as keyof typeof PATH_MODIFIERS]?.qiMultiplier ?? 1
+    : 1;
   const rateEquation = {
-    base: '1.00',
-    realmMult: `${(1 + rf * 3).toFixed(1)}×`, // [tune] → D15 (display only; not the live rate decomposition)
-    focusMult: foreground === 'cultivating' ? '1.16×' : '1.05×',
+    base: formatNumberLabel(realmBaseQps),
+    stageMult: `${substageBonus.toFixed(2)}×`,
+    focusMult: `${focusQiMult.toFixed(2)}×`,
+    pathMult: `${pathQiMult.toFixed(2)}×`,
     result: qiPerSec,
   };
 
@@ -333,7 +354,14 @@ export function buildCultivationSeatSurface(input: { raw: CultivationSeatRawInpu
     instrument,
     scrolls: {
       ledger: {
-        rate: { base: rateEquation.base, realmMult: rateEquation.realmMult, focusMult: rateEquation.focusMult, result: rateEquation.result, terms: `Your banked stats set the base; the realm scalar multiplies it; the Focus emphasis (${emphasisAxis.label}) tilts it.` },
+        rate: {
+          base: rateEquation.base,
+          stageMult: rateEquation.stageMult,
+          focusMult: rateEquation.focusMult,
+          pathMult: rateEquation.pathMult,
+          result: rateEquation.result,
+          terms: `Realm base × stage × Focus (${emphasisAxis.label}) × Path are the named factors; your upgrades, prestige, spirit-root and Heart-Law modifiers then carry it to the rate above.`,
+        },
         clocks: { seclusion: raw.activity.combatHeld ? 'paused' : 'running', sojourn: raw.activity.combatHeld ? 'in combat' : 'idle' },
         offline: { capHours: raw.offline.capHours, efficiency: `${raw.offline.efficiencyPct}%` },
         foregroundTerms: 'A single foreground task runs at once — cultivate, temper a meridian, or tend the Dao Heart. Combat preempts it and holds the Seat.',
