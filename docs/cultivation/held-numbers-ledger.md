@@ -10,8 +10,8 @@ against unbuilt consumers (D11 combat, D8 equipment) is the foundation-after-fra
 and (c) flipping the engine to players is a release decision gated on completion + a GO release gate.
 **Do NOT author any value below outside F-BAL.** This is a checklist, not a spec.
 
-Last updated: 2026-06-24 (consolidation checkpoint #3 — drain + the enemy-derived-layer packet
-Slices A/B/C built, all bases held 0; control roll + shred unblocked; controlPower read deferred).
+Last updated: 2026-06-24 (consolidation checkpoint #4 — D8 content batch banked: item-model schema +
+equip/loadout + roll + gear-drop, all unconsumed/held via HELD / HELD_COUNT / HELD_RATE sentinels).
 
 **F-BAL manifest (the single terminal-pass checklist — every held/inert magnitude this rework parked):**
 1. Breakthrough risk / failure table (progression regime) — §1
