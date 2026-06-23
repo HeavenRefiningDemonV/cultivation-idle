@@ -24,6 +24,8 @@ import { useTrialStore } from '../../../stores/trialStore.js';
 import { useInventoryStore } from '../../../stores/inventoryStore.js';
 import { getGateTransitionItemIdForRealmIndex } from '../../progression/runtime/gateResolver.js';
 import { CULTIVATION_PATH_DATA } from './cultivationPathData.js';
+import { useTrainingStore } from '../../../stores/trainingStore.js';
+import { isDerivedStatEngineAuthoritative } from '../../meridians/statEngineFlag.js';
 
 export interface CultivationSeatRawInput {
   game: {
@@ -47,6 +49,11 @@ export interface CultivationSeatRawInput {
   offline: { capHours: number; efficiencyPct: number };
   ui: { reducedMotion: boolean; selectedScroll: string | null; focusAxis?: string | null };
   content: { loaded: boolean };
+  /**
+   * C-PATH (Premonition) — live derived-engine reads for the per-path mechanics. OPTIONAL so fixtures
+   * (which omit them) default to engine-off ⇒ the honest "not yet active" preview is preserved.
+   */
+  derived?: { perception: number; engineActive: boolean };
 }
 
 /** Read the live raw input. Impure (store reads). */
@@ -146,6 +153,13 @@ export function readCultivationSeatRawInput(opts: { reducedMotion?: boolean; sel
     offline: { capHours: MAX_OFFLINE_HOURS, efficiencyPct: Math.round(offlineEfficiency * 100) },
     ui: { reducedMotion: opts.reducedMotion ?? false, selectedScroll: opts.selectedScroll ?? null, focusAxis: opts.focusAxis ?? null },
     content: { loaded: content.isLoaded === true || content.raw != null },
+    // C-PATH (Premonition): perception (the live spirit_sense rating — the same statRatingsById source
+    // the breakthrough risk seam reads) + whether the derived engine is authoritative. Off ⇒ the
+    // builder keeps the honest "not yet active" preview.
+    derived: {
+      perception: useTrainingStore.getState().statRatingsById.spirit_sense ?? 0,
+      engineActive: isDerivedStatEngineAuthoritative(),
+    },
     // nextRealm consumed by the builder via path data; not surfaced here directly
     ...(nextRealm ? {} : {}),
   };

@@ -8,13 +8,12 @@
 import type { CultivationPath } from '../../../types/index.js';
 import type { PathId } from '../../../content/types.js';
 import { REALMS, PATH_MODIFIERS, FOCUS_MODE_MODIFIERS } from '../../../constants/index.js';
+import { resolvePremonitionOmens, type PremonitionOmensResult } from '../../cultivation/premonitionOmenResolver.js';
 import {
   CULTIVATION_PATH_DATA,
   CANONICAL_FOCUS_AXES,
   BEAST_ESSENCES,
   WEAPON_ARTS,
-  PREMONITION_FORTUNE_OMENS,
-  PREMONITION_RISK_OMENS,
   MARTIAL_BONDED_WEAPON,
 } from './cultivationPathData.js';
 import type { CultivationSeatRawInput } from './cultivationSeatInput.js';
@@ -63,17 +62,22 @@ function resolveFocusEmphasis(storedAxis: string | null | undefined): Cultivatio
 // fields are zeroed (never presented as live progress), and the authored lore renders as "what this
 // path will grant once it ships," not as fabricated current state. `communion` stays — it is a real
 // activity read. No realm-fraction (`rf`) fiction.
-function buildInstrument(path: CultivationPath, foreground: string): CultivationInstrument {
+function buildInstrument(path: CultivationPath, foreground: string, premonition: PremonitionOmensResult): CultivationInstrument {
   if (path === 'heaven') {
+    // C-PATH slice 1 — Heaven Premonition (Day's Omen) is LIVE under the derived engine: active, a
+    // realm-graded precision, the perception rating as foresight depth, and a real idle-state read.
+    // Off (player default / forceLegacy) ⇒ premonition.active false ⇒ the honest preview, byte-for-byte.
     return {
       kind: 'heaven',
       label: 'PREMONITION',
-      valLabel: 'Not yet active',
-      active: false,
-      previewNote: 'Premonition — Heaven’s Eye — is a designed but not-yet-active path art (D5). The omens below preview what the Eye will read once it ships.',
-      foresightHorizon: 0,
-      fortuneOmens: PREMONITION_FORTUNE_OMENS.map((o) => ({ ...o })),
-      riskOmens: PREMONITION_RISK_OMENS.map((o) => ({ ...o })),
+      valLabel: premonition.active ? `Heaven’s Eye · ${premonition.precision} foresight` : 'Not yet active',
+      active: premonition.active,
+      previewNote: premonition.active
+        ? `${premonition.caption} — perception ${premonition.horizon}. Foresight sharpens each realm; combat & tribulation foresight follow in later packets.`
+        : 'Premonition — Heaven’s Eye — is a designed but not-yet-active path art (D5). The omens below preview what the Eye will read once it ships.',
+      foresightHorizon: premonition.horizon,
+      fortuneOmens: premonition.fortuneOmens,
+      riskOmens: premonition.riskOmens,
     };
   }
   if (path === 'earth') {
@@ -236,7 +240,15 @@ export function buildCultivationSeatSurface(input: { raw: CultivationSeatRawInpu
   });
   const nextRealmDef = realmIndex1to7 < LIVE_REALMS_TOTAL ? def.realms[realmIndex1to7] : null; // next realm (null at cap)
 
-  const instrument = buildInstrument(path, foreground);
+  // C-PATH slice 1 — resolve Heaven's Day's Omen from live reads (realm precision + perception +
+  // whether seclusion is accruing). Engine-off ⇒ inert ⇒ the honest "not yet active" preview holds.
+  const premonition = resolvePremonitionOmens({
+    realmIndex1to7,
+    perception: raw.derived?.perception ?? 0,
+    idleRunning: !raw.activity.combatHeld,
+    engineActive: raw.derived?.engineActive ?? false,
+  });
+  const instrument = buildInstrument(path, foreground, premonition);
 
   const treasureItems: CultivationSeatSurfaceV1['treasures']['items'] = [
     { id: 'jing', label: 'Body', glyph: '精', value: raw.treasures.jing },

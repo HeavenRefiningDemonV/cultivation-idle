@@ -236,18 +236,27 @@ function MechanicScroll({ s, actions, onClose }: { s: CultivationSeatSurfaceV1; 
   const inst = s.instrument;
   if (inst.kind === 'heaven') {
     return (
-      <ScrollFrame tag="目" kicker="PREMONITION" title="Heaven’s Eye" dek="The aloof seer will read fortune, danger, and the shape of the crossing — a forthcoming Heaven-path art" onClose={onClose}>
-        <PreviewBanner note={inst.previewNote} />
+      <ScrollFrame tag="目" kicker="PREMONITION" title="Heaven’s Eye" dek={inst.active ? 'The aloof seer reads the day — fortune, danger, and the shape ahead, sharpening each realm' : 'The aloof seer will read fortune, danger, and the shape of the crossing — a forthcoming Heaven-path art'} onClose={onClose}>
+        {inst.active
+          ? (
+            <div className="seatCard" data-scroll-body="mechanic" data-instrument-active="true">
+              <CardTop glyph="目" title="Day’s Omen" right="active" tone="jade" />
+              <div className="seatTerms">{inst.previewNote}</div>
+            </div>
+          )
+          : <PreviewBanner note={inst.previewNote} />}
         <div className="seatCard">
-          <CardTop glyph="吉" title="Fortune omens" right="preview" tone="jade" />
+          <CardTop glyph="吉" title="Fortune omens" right={inst.active ? 'today' : 'preview'} tone="jade" />
           <div className="seatGrid">{inst.fortuneOmens.map((o) => (<div key={o.label} className="seatCheckrow"><div className="seatCheckrow__med is-ok">√</div><div className="seatCheckrow__body"><div className="seatCheckrow__cn">{o.label}</div><div className="seatCheckrow__sub">{o.detail}</div></div><div className="seatCheckrow__cs is-ok">{o.value}</div></div>))}</div>
         </div>
+        {(!inst.active || inst.riskOmens.length > 0) && (
+          <div className="seatCard">
+            <CardTop glyph="隙" title="Risk omens" right={inst.active ? 'foreseen' : 'preview'} />
+            <div className="seatGrid">{inst.riskOmens.map((o) => (<div key={o.label} className="seatCheckrow"><div className="seatCheckrow__med is-caution">!</div><div className="seatCheckrow__body"><div className="seatCheckrow__cn">{o.label}</div><div className="seatCheckrow__sub">{o.detail}</div></div><div className="seatCheckrow__cs is-caution">{o.value}</div></div>))}</div>
+          </div>
+        )}
         <div className="seatCard">
-          <CardTop glyph="隙" title="Risk omens" right="preview" />
-          <div className="seatGrid">{inst.riskOmens.map((o) => (<div key={o.label} className="seatCheckrow"><div className="seatCheckrow__med is-caution">!</div><div className="seatCheckrow__body"><div className="seatCheckrow__cn">{o.label}</div><div className="seatCheckrow__sub">{o.detail}</div></div><div className="seatCheckrow__cs is-caution">{o.value}</div></div>))}</div>
-        </div>
-        <div className="seatCard">
-          <div className="seatTerms">Built to its grain, Heaven is meant to break through most <b>serenely</b> — perception becoming the key that opens the gate. The mechanic is designed; this scroll previews it.</div>
+          <div className="seatTerms">Built to its grain, Heaven breaks through most <b>serenely</b> — perception becoming the key that opens the gate. {inst.active ? 'Combat & tribulation foresight deepen this read in later packets.' : 'The mechanic is designed; this scroll previews it.'}</div>
         </div>
       </ScrollFrame>
     );

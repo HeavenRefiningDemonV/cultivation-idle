@@ -90,6 +90,24 @@ void test('M.II.3 §F — the idle ledger never shows a tax, penalty, or decay t
   }
 });
 
+void test('C-PATH — the Seat Heaven Premonition flips active under the derived engine; honest preview when off', () => {
+  const heavenGame = { ...makeSeatRawFixture().game, selectedPath: 'heaven' };
+  const off = makeSeatFixture({ game: heavenGame });
+  assert.equal(off.instrument.kind, 'heaven');
+  if (off.instrument.kind === 'heaven') {
+    assert.equal(off.instrument.active, false, 'engine off ⇒ honest "not yet active" preview (preserve-first)');
+    assert.equal(off.instrument.foresightHorizon, 0);
+    assert.equal(off.instrument.valLabel, 'Not yet active');
+  }
+  const on = makeSeatFixture({ game: heavenGame, derived: { perception: 50, engineActive: true } });
+  assert.equal(on.instrument.kind, 'heaven');
+  if (on.instrument.kind === 'heaven') {
+    assert.equal(on.instrument.active, true, 'engine on ⇒ live Premonition (Day’s Omen)');
+    assert.equal(on.instrument.foresightHorizon, 50, 'the live perception rating is surfaced as foresight depth');
+    assert.ok(on.instrument.fortuneOmens.length >= 1, 'the day reads at least the live cultivation-wind omen');
+  }
+});
+
 void test('M.II.3 — the per-path instrument is discriminated by path', () => {
   const heaven = makeSeatFixture({ game: { ...makeSeatRawFixture().game, selectedPath: 'heaven' } });
   const martial = makeSeatFixture({ game: { ...makeSeatRawFixture().game, selectedPath: 'martial' } });
