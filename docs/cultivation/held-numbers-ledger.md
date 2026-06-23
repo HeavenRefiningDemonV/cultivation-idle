@@ -118,6 +118,13 @@ Slices A/B/C built, all bases held 0; control roll + shred unblocked; controlPow
   gameStore MUST make the legacy refine/temper multiply (`gameStore.ts:1231-1269`) flag-aware so an
   equipped bonus counts exactly once; applying the multiplier at the derived-channel level vs the
   legacy-stat level is not guaranteed numerically identical — needs an equivalence check before flip.
+- **D8 item-model schema (landed, structure-only, unconsumed):** `gearModel.ts` (ItemDef/GearInstance/
+  AffixDef) + `gearAffixes.ts` (AFFIX_TABLE + RARITY_BANDS) + `gearItems.ts` (example defs). EVERY
+  magnitude is the shared `HELD = {min:0,max:0}` sentinel or identity (`powerMult: 1`). **F-BAL deposits:**
+  per-affix `rollRange` min/max · DR-08 affix-count bands (Common 1…Legendary 4–5) · rarity multipliers
+  (×1.00/1.08/1.18/1.30/1.45) · `ItemDef.baseChannels` base power + the itemTier 1–7 curve · armor refine
+  caps + channel weighting · the `status_resist`→`evasion` legacy overload (split to tribResist/
+  controlPower?) · WeaponBondState growth/art gates (D5/D11). All typed-but-held; none authored.
 
 ## 6. The shipped engine flag (flip #2)
 - **Where:** `STAT_ENGINE_DERIVED_AUTHORITATIVE_DEFAULT = false` (`src/systems/meridians/statEngineFlag.ts`).
