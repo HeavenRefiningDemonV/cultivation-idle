@@ -10,13 +10,15 @@ against unbuilt consumers (D11 combat, D8 equipment) is the foundation-after-fra
 and (c) flipping the engine to players is a release decision gated on completion + a GO release gate.
 **Do NOT author any value below outside F-BAL.** This is a checklist, not a spec.
 
-Last updated: 2026-06-23 (consolidation checkpoint — D8 slice 1a landed; manifest reconciled).
+Last updated: 2026-06-23 (consolidation checkpoint #2 — D8 law + D11 3b-0/i/ii/iii affliction-effect
+coeffs all held/inert; S9/S10 live-instrument fidelity matrix landed).
 
 **F-BAL manifest (the single terminal-pass checklist — every held/inert magnitude this rework parked):**
 1. Breakthrough risk / failure table (progression regime) — §1
 2. B-MERID path-meridian signature coefficients (`‹tune W12›`) — §2
 3. B-STATS focus-emphasis coefficient (`FOCUS_EMPHASIS_PRIMARY = 0`, inert) — §3
-4. B-ELEM element tuning + Beast-Lore drop + Weapon-Bond curve + per-enemy element assignment — §4
+4. B-ELEM element tuning + Beast-Lore drop + Weapon-Bond curve + per-enemy element assignment + the
+   D11 affliction-effect coeffs (DoT `dotTickCoeff`/interval, ICD windows, hard-CC `controlSkipChance`) — §4
 5. D8 equipment gear hook (`composeGear` mapping/rarity/affix/set magnitudes) + the slice-1b de-dup
    **refactor precondition** (a behavior change, not a magnitude — logged so it isn't lost) — §5
 6. The shipped engine flag (flip #2: default-on for players) — §6
