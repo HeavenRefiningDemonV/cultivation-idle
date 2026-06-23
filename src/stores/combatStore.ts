@@ -36,6 +36,7 @@ import { resolvePlayerElementAffinity, elementAffinityDamageMultiplier, resolveP
 import { stepEnemyElementOnHit, EMPTY_ENEMY_ELEMENT_STATES } from '../systems/elements/elementCombatReactions.js';
 import { tickEnemyElementStates } from '../systems/elements/elementStateTick.js';
 import { resolveEnemyControlSkip } from '../systems/elements/elementControlGate.js';
+import { resolveEnemyDefensiveProfile } from '../systems/elements/enemyDefensiveProfile.js';
 import { DEFAULT_ELEMENT_TUNING } from '../systems/elements/elementTuning.js';
 import { useBeastLoreStore } from '../features/court/useBeastLoreStore.js';
 import { useWeaponBondStore } from '../features/court/useWeaponBondStore.js';
@@ -1651,13 +1652,25 @@ export const useCombatStore = create<ExtendedCombatState>()(
         return;
       }
 
-      // D11 3b-iii — hard-CC skip-turn: a frozen/petrified enemy loses its action (mirrors the dodge-miss
-      // slot consumption). INERT (controlSkipChance held 0) ⇒ never skips, never draws RNG ⇒ flag-on
-      // byte-identical; flag-off the helper short-circuits on !engineActive.
+      // D11 3b-iii + Slice B — hard-CC skip-turn, now CONTESTED: a frozen/petrified enemy may lose its
+      // action when the player's Control Power overpowers the enemy's Stagger/CC-Resist (from the enemy
+      // defensive profile). INERT (controlSkipChance held 0) ⇒ never skips, never draws RNG ⇒ flag-on
+      // byte-identical; flag-off short-circuits on !engineActive.
+      const enemyDefense = resolveEnemyDefensiveProfile({
+        enemy,
+        realm: useGameStore.getState().realm.index + 1,
+        engineActive: isDerivedStatEngineAuthoritative(),
+        tuning: DEFAULT_ELEMENT_TUNING,
+      });
       const controlSkip = resolveEnemyControlSkip({
         states: state.enemyElementStates ?? EMPTY_ENEMY_ELEMENT_STATES,
         engineActive: isDerivedStatEngineAuthoritative(),
         tuning: DEFAULT_ELEMENT_TUNING,
+        // [Slice-B sub-item] live player Control Power read deferred — MOOT while controlSkipChance is held
+        // 0 (chance resolves to 0 regardless), but MUST be wired to the real derived controlPower before
+        // F-BAL deposits a non-zero base, else the player could never land control.
+        controlPower: 0,
+        staggerResist: enemyDefense.staggerResist,
         rng: Math.random,
       });
       if (controlSkip.skip) {

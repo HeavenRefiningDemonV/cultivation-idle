@@ -30,17 +30,30 @@ export interface EnemyControlSkip {
 
 const NO_SKIP: EnemyControlSkip = { skip: false, reason: null };
 
+/**
+ * D11 Slice B — the CONTESTED hard-CC skip chance: the HELD base (`controlSkipChance`) scaled by how much
+ * the player's Control Power overpowers the enemy's Stagger/CC-Resist. Structural shape; the magnitude is
+ * the held base. `base 0` (held) ⇒ 0 ⇒ inert. No player controlPower ⇒ 0 (can't control).
+ */
+function resolveControlSkipChance(controlPower: number, staggerResist: number, tuning: ElementTuning): number {
+  const base = tuning.controlSkipChance;
+  if (base <= 0 || controlPower <= 0) return 0;
+  return base * (controlPower / (controlPower + Math.max(0, staggerResist)));
+}
+
 export function resolveEnemyControlSkip(input: {
   states: EnemyElementStates;
   engineActive: boolean;
   tuning: ElementTuning;
-  rng: () => number; // [0,1); called lazily, only when a skip could fire
+  controlPower: number;   // Slice B — player Control Power (the contest numerator)
+  staggerResist: number;  // Slice B — enemy Stagger/CC-Resist (from resolveEnemyDefensiveProfile)
+  rng: () => number;      // [0,1); called lazily, only when a skip could fire
 }): EnemyControlSkip {
   if (!input.engineActive) return NO_SKIP; // preserve-first
-  const chance = input.tuning.controlSkipChance;
-  if (chance <= 0) return NO_SKIP; // HELD 0 ⇒ never skips, never draws ⇒ RNG stream preserved
   const lock = input.states.active.find((s) => s.remainingMs > 0 && HARD_CONTROL.has(s.state));
   if (!lock) return NO_SKIP; // no hard-control present ⇒ never draws
+  const chance = resolveControlSkipChance(input.controlPower, input.staggerResist, input.tuning);
+  if (chance <= 0) return NO_SKIP; // HELD base 0 (or no controlPower) ⇒ never draws ⇒ RNG stream preserved
   // a skip could fire — only NOW do we consume a roll.
   return input.rng() < chance ? { skip: true, reason: lock.state } : NO_SKIP;
 }
