@@ -195,9 +195,9 @@ function FocusScroll({ s, actions, onClose }: { s: CultivationSeatSurfaceV1; act
   const f = s.focus;
   const emph = f.axes.find((a) => a.id === f.emphasisId);
   return (
-    <ScrollFrame tag="業" kicker="THE FOCUS" title="The one build lever" dek={`The ${f.axes.length} cultivation axes — the lever you act on at the Seat`} onClose={onClose}>
+    <ScrollFrame tag="業" kicker="THE FOCUS" title="The one build lever" dek="The seven cultivation axes — the lever you act on at the Seat" onClose={onClose}>
       <div className="seatCard" data-scroll-body="focus">
-        <CardTop glyph="心" title={`The ${f.axes.length} axes · ${s.identity.pathName}`} right="tap to set emphasis" />
+        <CardTop glyph="心" title={`The seven axes · ${s.identity.pathName}`} right="tap to set emphasis" />
         {f.axes.map((axis) => (
           <button key={axis.id} type="button" className={`seatAxisRow${axis.id === f.emphasisId ? ' is-emph' : ''}`} data-axis={axis.id} aria-pressed={axis.id === f.emphasisId} onClick={() => actions.onSetFocusEmphasis(axis.id)}>
             <span className="seatAxisRow__sn">{axis.label}</span>
@@ -214,7 +214,7 @@ function FocusScroll({ s, actions, onClose }: { s: CultivationSeatSurfaceV1; act
       </div>
       <div className="seatCard">
         <CardTop glyph="星" title="The whole picture lives in Status" right="preview only" tone="jade" />
-        <div className="seatTerms">The Seat shows two slivers of stat-truth — this dial and the Three Treasures triad. The full constellation is owned by the Status screen.</div>
+        <div className="seatTerms">The Seat shows two slivers of stat-truth — this dial and the Three Treasures triad. The full 28-stat constellation is owned by the Status screen.</div>
         <button type="button" className="seatDeeplink" onClick={() => actions.onDeepLink('status.constellation')}>Open the full constellation in Status ↗</button>
       </div>
     </ScrollFrame>

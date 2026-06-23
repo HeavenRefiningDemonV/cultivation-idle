@@ -28,6 +28,7 @@ export function CultivationSeatScreenOwner({ mode = 'live', fixtureId = null }: 
   const qi = useGameStore((s) => s.qi);
   const qiPerSecond = useGameStore((s) => s.qiPerSecond);
   const focusMode = useGameStore((s) => s.focusMode);
+  const cultivationFocusAxis = useUIStore((s) => s.cultivationFocusAxis);
   const selectedPath = useGameStore((s) => s.selectedPath);
   const turbulence = useCultivationStore((s) => s.turbulence);
   const stability = useCultivationStore((s) => s.stability);
@@ -68,11 +69,11 @@ export function CultivationSeatScreenOwner({ mode = 'live', fixtureId = null }: 
       const fixture = getSeatFixture(fixtureId ?? 'heavenSeclusion');
       if (fixture) return fixture;
     }
-    const raw = readCultivationSeatRawInput({ reducedMotion, selectedScroll: actions.selectedScroll });
+    const raw = readCultivationSeatRawInput({ reducedMotion, selectedScroll: actions.selectedScroll, focusAxis: cultivationFocusAxis });
     return buildCultivationSeatSurface({ raw, mode, nowMs: Date.now() });
     // The subscribed primitives below are the rebuild signature.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode, fixtureId, reducedMotion, actions.selectedScroll, realmIndex, substage, qi, qiPerSecond, focusMode, selectedPath, turbulence, stability, activeType]);
+  }, [mode, fixtureId, reducedMotion, actions.selectedScroll, realmIndex, substage, qi, qiPerSecond, focusMode, cultivationFocusAxis, selectedPath, turbulence, stability, activeType]);
 
   return (
     <>

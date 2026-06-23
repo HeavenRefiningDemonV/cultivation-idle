@@ -47,12 +47,13 @@ function formatNumberLabel(value: string | number): string {
   return `${Math.round(n)}`;
 }
 
-// R-1: the live 3-way focusMode mapped onto a canonical D2 axis (lossy until F1 widens it).
-function mapFocusModeToAxis(focusMode: string): CultivationFocusAxisId {
-  if (focusMode === 'balanced') return 'balanced';
-  if (focusMode === 'body') return 'meridianOpenness';
-  if (focusMode === 'spirit') return 'spiritualSense';
-  return 'balanced';
+// §6 Option B: the emphasis IS the player's stored 7-way pick (uiStore.cultivationFocusAxis), so the
+// clicked axis is the one that stays emphasised. Defaults to Qi Purity (the artifact's S.emph=1).
+const DEFAULT_FOCUS_AXIS_ID: CultivationFocusAxisId = 'qiPurity';
+function resolveFocusEmphasis(storedAxis: string | null | undefined): CultivationFocusAxisId {
+  return storedAxis && CANONICAL_FOCUS_AXES.some((a) => a.id === storedAxis)
+    ? (storedAxis as CultivationFocusAxisId)
+    : DEFAULT_FOCUS_AXIS_ID;
 }
 
 function buildInstrument(path: CultivationPath, rf: number, foreground: string): CultivationInstrument {
@@ -199,18 +200,16 @@ export function buildCultivationSeatSurface(input: { raw: CultivationSeatRawInpu
           ? 'cultivating'
           : 'seclusion';
 
-  // ── focus (R-1: 6 canonical axes; live 3-way mapped onto the nearest spoke) ──
-  const emphasisId = mapFocusModeToAxis(raw.game.focusMode);
-  debugNotes.push(`focus: 6-axis display over 3-way live model (${raw.game.focusMode} → ${emphasisId}) — widen in F1`);
-  const axes = CANONICAL_FOCUS_AXES.map((axis) => ({
-    id: axis.id,
-    label: axis.label,
-    glyph: axis.glyph,
-    weight: axis.id === emphasisId ? 0.62 : 0.16, // [tune] → D15 display bias
-    effect: axis.effect,
-    lean: axis.lean,
-  }));
-  const emphasisAxis = CANONICAL_FOCUS_AXES.find((a) => a.id === emphasisId) ?? CANONICAL_FOCUS_AXES[CANONICAL_FOCUS_AXES.length - 1];
+  // ── focus (§6 Option B: the artifact's 7 axes; emphasis = the player's stored 7-way pick) ──
+  const emphasisId = resolveFocusEmphasis(raw.ui.focusAxis);
+  const emphasisIndex = CANONICAL_FOCUS_AXES.findIndex((a) => a.id === emphasisId);
+  debugNotes.push(`focus: 7-axis pick=${emphasisId}; gameplay focusMode=${raw.game.focusMode} (mapped)`);
+  // the artifact's focusAlloc: base [14,14,14,14,14,14,16], emphasis += 38 (raw % — a relative bias).
+  const axes = CANONICAL_FOCUS_AXES.map((axis, i) => {
+    const pct = (i === CANONICAL_FOCUS_AXES.length - 1 ? 16 : 14) + (i === emphasisIndex ? 38 : 0);
+    return { id: axis.id, label: axis.label, glyph: axis.glyph, weight: pct / 100, effect: axis.effect, lean: axis.lean };
+  });
+  const emphasisAxis = CANONICAL_FOCUS_AXES.find((a) => a.id === emphasisId) ?? CANONICAL_FOCUS_AXES[0];
 
   // ── ascent rungs ──
   const rungs = def.realms.map((r, i) => {

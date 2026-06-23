@@ -81,7 +81,7 @@ test.describe('M.II.3 Seat of Becoming — state matrix', () => {
 test.describe('M.II.3 Seat of Becoming — contract invariants (visual oracle)', () => {
   test.use({ viewport: { width: 2080, height: 1180 }, deviceScaleFactor: 2 });
 
-  test('R-1: the Focus dial offers the six canonical axes + Balanced and NO "Body" spoke', async ({ page }) => {
+  test('R-1 / §6 Option B: the Focus dial offers the artifact\'s seven axes (incl. Body, no Balanced)', async ({ page }) => {
     test.setTimeout(120_000);
     await openSeatFixture(page, 'heaven-r3-seclusion', false);
     await page.locator('[data-instrument="focus-dial"]').click();
@@ -89,9 +89,11 @@ test.describe('M.II.3 Seat of Becoming — contract invariants (visual oracle)',
     await expect(focusBody).toBeVisible();
     const options = focusBody.locator('button[data-axis]');
     await expect(options).toHaveCount(7);
-    await expect(focusBody.getByText('Body', { exact: true })).toHaveCount(0);
+    await expect(focusBody.getByText('Body', { exact: true })).toHaveCount(1); // Body is the 5th spoke
     await expect(focusBody).toContainText('Qi Pool');
-    await expect(focusBody).toContainText('Balanced');
+    await expect(focusBody.getByText('Balanced', { exact: true })).toHaveCount(0); // no Balanced spoke
+    // the default emphasis is Qi Purity (the artifact's S.emph=1), highlighted
+    await expect(focusBody.locator('button[data-axis="qiPurity"]')).toHaveClass(/is-emph/);
     ensure();
     await page.locator('.cultivationSeatScroll').screenshot({ path: path.join(SHOT_DIR, 'scroll-focus-heaven.png') });
   });

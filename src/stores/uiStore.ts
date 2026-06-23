@@ -175,6 +175,10 @@ interface UIStateBase {
   // Active tab
   activeTab: GameTab;
 
+  // Cultivation Seat — the player's 7-way Focus emphasis pick (display source of truth; the
+  // controller also maps it to the 3-way gameplay focusMode). null = the default axis.
+  cultivationFocusAxis: string | null;
+
   // Header titles
   headerTitle: string;
   headerSubtitle: string;
@@ -259,6 +263,7 @@ interface UIStateBase {
  */
 export interface UIState extends UIStateBase {
   setActiveTab: (tab: GameTab) => void;
+  setCultivationFocusAxis: (axisId: string) => void;
   setHeaderTitles: (title: string, subtitle?: string) => void;
   setHeaderTone: (tone: UIStateBase['headerTone']) => void;
   setLayoutBackgroundOverride: (backgroundUrl: string | null) => void;
@@ -355,6 +360,7 @@ export interface UIState extends UIStateBase {
 
 const INITIAL_UI_STATE: UIStateBase = {
   activeTab: 'cultivation',
+  cultivationFocusAxis: null,
   headerTitle: '',
   headerSubtitle: '',
   headerTone: 'dark',
@@ -494,6 +500,12 @@ export const useUIStore = create<UIState>()(
     /**
      * Set the active tab
      */
+    setCultivationFocusAxis: (axisId: string) => {
+      set((state) => {
+        state.cultivationFocusAxis = axisId;
+      });
+    },
+
     setActiveTab: (tab: GameTab) => {
       const previousTab = get().activeTab;
       if (previousTab === tab) return;

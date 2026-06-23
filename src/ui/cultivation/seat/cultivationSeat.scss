@@ -1211,28 +1211,32 @@
   color: rgba(233, 242, 236, 0.7);
   font-style: normal;
 }
+/* the artifact's .statrow focus layout: name + glyph (baseline left) and % (right) on the top line,
+   the effect on its own line, the bar full-width below; the emphasised row gets a highlighted box. */
 .cultivationSeatScroll .seatAxisRow {
   display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 6px 8px;
+  align-items: baseline;
+  gap: 8px;
   flex-wrap: wrap;
   width: 100%;
   text-align: left;
-  background: none;
-  border: none;
+  background: transparent;
+  border: 0;
   cursor: pointer;
-  border-radius: 4px;
+  padding: 7px 0;
+  border-bottom: 1px dashed var(--ink-12);
+}
+.cultivationSeatScroll .seatAxisRow:last-child {
+  border-bottom: none;
 }
 .cultivationSeatScroll .seatAxisRow.is-emph {
   background: rgba(15, 111, 90, 0.06);
+  border-radius: 4px;
+  padding: 7px 8px;
+  border-bottom-color: transparent;
 }
 .cultivationSeatScroll .seatAxisRow__sn {
-  font: 700 11.5px var(--serif);
-  color: var(--ink-70);
-  width: 150px;
-}
-.cultivationSeatScroll .seatAxisRow.is-emph .cultivationSeatScroll .seatAxisRow__sn {
+  font: 700 12.5px var(--serif);
   color: var(--ink);
 }
 .cultivationSeatScroll .seatAxisRow__sz {
@@ -1241,19 +1245,18 @@
   color: var(--ink-45);
 }
 .cultivationSeatScroll .seatAxisRow__sv {
-  font: 800 11px var(--serif);
+  margin-left: auto;
+  font: 800 12.5px var(--serif);
   color: var(--ink);
-  width: 34px;
-  text-align: right;
 }
 .cultivationSeatScroll .seatAxisRow__se {
+  flex-basis: 100%;
   font: 600 10.5px var(--serif);
   color: var(--ink-45);
-  flex: 1;
-  min-width: 120px;
 }
 .cultivationSeatScroll .seatAxisRow__bar {
   flex-basis: 100%;
+  margin-top: 5px;
   height: 6px;
   border-radius: 3px;
   background: var(--paper-shade);
@@ -1265,7 +1268,7 @@
   height: 100%;
   background: linear-gradient(90deg, var(--gold), var(--gold-bright));
 }
-.cultivationSeatScroll .seatAxisRow.is-emph .cultivationSeatScroll .seatAxisRow__bar span {
+.cultivationSeatScroll .seatAxisRow.is-emph .seatAxisRow__bar span {
   background: linear-gradient(90deg, var(--jade-deep), #1a8f74);
 }
 .cultivationSeatScroll .seatLinks {

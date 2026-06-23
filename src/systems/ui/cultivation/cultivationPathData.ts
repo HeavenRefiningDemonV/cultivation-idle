@@ -134,7 +134,9 @@ export const CULTIVATION_PATH_DATA: Record<CultivationPath, CultivationPathDef> 
 
 /** The six canonical D2 emphasis-able axes + Balanced (R-1: NO "Body" spoke — Body is Tier-0). */
 export interface FocusAxisDef {
-  id: 'qiPool' | 'qiPurity' | 'meridianOpenness' | 'spiritualSense' | 'soulStrength' | 'daoComprehension' | 'balanced';
+  // §6 Option B (owner-chosen): the artifact's seven axes verbatim — Body 體 is the fifth spoke (it
+  // maps to the live 'body' FocusMode, so it is a real emphasis, not fabricated). No Balanced spoke.
+  id: 'qiPool' | 'qiPurity' | 'spiritualSense' | 'soulStrength' | 'body' | 'meridian' | 'dao';
   label: string;
   glyph: string;
   effect: string;
@@ -174,13 +176,12 @@ export const PREMONITION_RISK_OMENS: readonly PremonitionOmenDef[] = [
 export const MARTIAL_BONDED_WEAPON = { name: 'Cinnabar-Vein Sabre', grade: 'natal grade' } as const;
 
 export const CANONICAL_FOCUS_AXES: readonly FocusAxisDef[] = [
-  // Single traditional glyphs in the artifact's calligraphic hand (D1 / §6 Option A — the live six
-  // emphasis axes + Balanced; Body 體 stays out per R-1, Balanced 衡 is the seventh spoke).
+  // §6 Option B — the artifact's seven axes, in its order (Body is the fifth spoke; no Balanced).
   { id: 'qiPool', label: 'Qi Pool', glyph: '氣', effect: 'raises maximum banked qi — the depth of the reserve', lean: 'a deeper reserve' },
   { id: 'qiPurity', label: 'Qi Purity', glyph: '純', effect: 'lifts qi purity — a calmer, safer crossing', lean: 'a serene crossing' },
-  { id: 'meridianOpenness', label: 'Meridian Openness', glyph: '脈', effect: 'widens the meridians — throughput and technique power', lean: 'wider meridians' },
   { id: 'spiritualSense', label: 'Spiritual Sense', glyph: '識', effect: 'sharpens spiritual sense — perception, foresight, control', lean: 'sharper foresight' },
   { id: 'soulStrength', label: 'Soul Strength', glyph: '魂', effect: 'builds soul strength — pressure, will, resistance', lean: 'soul-pressure' },
-  { id: 'daoComprehension', label: 'Dao Comprehension', glyph: '道', effect: 'quickens comprehension — faster learning of the Dao', lean: 'swifter comprehension' },
-  { id: 'balanced', label: 'Balanced', glyph: '衡', effect: 'spreads evenly — no axis starves', lean: 'a steady, even climb' },
+  { id: 'body', label: 'Body', glyph: '體', effect: 'tempers the body — vitality and survivability', lean: 'a sturdier body' },
+  { id: 'meridian', label: 'Meridian', glyph: '脈', effect: 'widens the meridians — throughput and technique power', lean: 'wider meridians' },
+  { id: 'dao', label: 'Dao', glyph: '道', effect: 'quickens comprehension — faster learning of the Dao', lean: 'swifter comprehension' },
 ];

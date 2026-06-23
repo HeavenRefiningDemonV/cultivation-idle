@@ -44,12 +44,12 @@ export interface CultivationSeatRawInput {
   pity: { banked: number; toGuarantee: number } | null;
   gate: { itemRequired: boolean; itemSatisfied: boolean; resolution: 'none' | 'cleared' | 'bypassed' };
   offline: { capHours: number; efficiencyPct: number };
-  ui: { reducedMotion: boolean; selectedScroll: string | null };
+  ui: { reducedMotion: boolean; selectedScroll: string | null; focusAxis?: string | null };
   content: { loaded: boolean };
 }
 
 /** Read the live raw input. Impure (store reads). */
-export function readCultivationSeatRawInput(opts: { reducedMotion?: boolean; selectedScroll?: string | null } = {}): CultivationSeatRawInput {
+export function readCultivationSeatRawInput(opts: { reducedMotion?: boolean; selectedScroll?: string | null; focusAxis?: string | null } = {}): CultivationSeatRawInput {
   const game = useGameStore.getState();
   const cultivation = useCultivationStore.getState();
   const activity = useActivityStore.getState();
@@ -150,7 +150,7 @@ export function readCultivationSeatRawInput(opts: { reducedMotion?: boolean; sel
     pity,
     gate: { itemRequired: requiredGateItemId != null, itemSatisfied: gateItemHeld, resolution: gateResolution },
     offline: { capHours: MAX_OFFLINE_HOURS, efficiencyPct: Math.round(offlineEfficiency * 100) },
-    ui: { reducedMotion: opts.reducedMotion ?? false, selectedScroll: opts.selectedScroll ?? null },
+    ui: { reducedMotion: opts.reducedMotion ?? false, selectedScroll: opts.selectedScroll ?? null, focusAxis: opts.focusAxis ?? null },
     content: { loaded: content.isLoaded === true || content.raw != null },
     // nextRealm consumed by the builder via path data; not surfaced here directly
     ...(nextRealm ? {} : {}),

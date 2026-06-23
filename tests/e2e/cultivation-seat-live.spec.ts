@@ -41,11 +41,11 @@ test.describe('M.II.3 Seat of Becoming — LIVE pipeline acceptance (cutover-rea
     await expect(root).toHaveAttribute('data-visual-state', /seclusion|cultivating|combatHeld|peakReady|peakBlocked/);
     // the breath-line binds the live qi/s
     await expect(page.getByTestId('cultivation-seat-breathline')).toContainText('qi / s');
-    // R-1 holds on the LIVE focus mapping: 6 canonical axes + Balanced, NO Body spoke
+    // §6 Option B on the LIVE surface: the artifact's seven axes incl. Body, no Balanced
     await page.locator('[data-instrument="focus-dial"]').click();
     const focusBody = page.locator('[data-scroll-body="focus"]');
     await expect(focusBody.locator('button[data-axis]')).toHaveCount(7);
-    await expect(focusBody.getByText('Body', { exact: true })).toHaveCount(0);
+    await expect(focusBody.getByText('Body', { exact: true })).toHaveCount(1);
     await page.keyboard.press('Escape').catch(() => {});
     ensure();
     await page.locator('.cultivationSeatStage').screenshot({ path: path.join(SHOT_DIR, 'live-heaven.png') });
@@ -90,5 +90,27 @@ test.describe('M.II.3 Seat of Becoming — LIVE pipeline acceptance (cutover-rea
     await expect(page.getByTestId('cultivation-seat-commit')).toBeDisabled();
     ensure();
     await page.screenshot({ path: path.join(SHOT_DIR, 'live-peak-noitem.png') });
+  });
+
+  test('the Focus pick works + persists exactly (artifact behaviour): the clicked axis stays the emphasis', async ({ page }) => {
+    test.setTimeout(120_000);
+    await openLiveSeat(page);
+    await page.locator('[data-instrument="focus-dial"]').click();
+    const focusBody = page.locator('[data-scroll-body="focus"]');
+    await expect(focusBody).toBeVisible();
+    // default emphasis is Qi Purity (the artifact S.emph=1)
+    await expect(focusBody.locator('button[data-axis="qiPurity"]')).toHaveClass(/is-emph/);
+    // click Body — THE CLICKED axis becomes the emphasis (not a lossy round-trip to another spoke)
+    await focusBody.locator('button[data-axis="body"]').click();
+    await expect(focusBody.locator('button[data-axis="body"]')).toHaveClass(/is-emph/);
+    await expect(focusBody.locator('button[data-axis="qiPurity"]')).not.toHaveClass(/is-emph/);
+    await expect(focusBody.locator('button[data-axis="body"]')).toContainText('52%'); // the emphasis bias
+    ensure();
+    await page.locator('.cultivationSeatScroll').screenshot({ path: path.join(SHOT_DIR, 'live-focus-body-picked.png') });
+    // persists: close + reopen, Body is still the emphasis (uiStore.cultivationFocusAxis)
+    await page.locator('.seatScroll__close').click();
+    await expect(focusBody).toHaveCount(0);
+    await page.locator('[data-instrument="focus-dial"]').click();
+    await expect(focusBody.locator('button[data-axis="body"]')).toHaveClass(/is-emph/);
   });
 });

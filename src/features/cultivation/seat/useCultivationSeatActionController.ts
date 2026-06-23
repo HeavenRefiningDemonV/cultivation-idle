@@ -31,11 +31,12 @@ export interface CultivationSeatActions {
   onCeremonyClose: () => void;
 }
 
-// R-1: the canonical Focus axis mapped back onto the live 3-way FocusMode (lossy until F1).
+// §6 Option B: each of the seven display axes maps to a real live 3-way FocusMode (the exact pick
+// is preserved separately in uiStore.cultivationFocusAxis; this drives the gameplay effect).
 function axisToFocusMode(axisId: CultivationFocusAxisId): FocusMode {
-  if (axisId === 'balanced') return 'balanced';
-  if (axisId === 'spiritualSense' || axisId === 'daoComprehension' || axisId === 'soulStrength') return 'spirit';
-  return 'body'; // qiPool / qiPurity / meridianOpenness
+  if (axisId === 'spiritualSense' || axisId === 'soulStrength' || axisId === 'dao') return 'spirit';
+  if (axisId === 'qiPurity') return 'balanced'; // the serene/even axis
+  return 'body'; // qiPool / body / meridian
 }
 
 // Deep-link → the live top tab (world-building modules route to the world tab; module-open is a follow-up).
@@ -58,6 +59,14 @@ export function useCultivationSeatActionController(): CultivationSeatActions {
   const crossingInFlightRef = useRef(false);
 
   const onSetFocusEmphasis = useCallback((axisId: CultivationFocusAxisId) => {
+    // Store the exact 7-way pick (the display source of truth) AND apply the mapped 3-way gameplay
+    // focus. This is why picking now "works the same" as the artifact — the clicked axis is the one
+    // that stays emphasised, instead of round-tripping lossily through the 3-way mode.
+    try {
+      useUIStore.getState().setCultivationFocusAxis(axisId);
+    } catch {
+      // ui focus setter unavailable
+    }
     try {
       useGameStore.getState().setFocusMode(axisToFocusMode(axisId));
     } catch {

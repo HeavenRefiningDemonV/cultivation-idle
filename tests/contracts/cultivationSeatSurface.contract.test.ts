@@ -36,13 +36,14 @@ void test('M.II.3-C — the three lives yield three distinct identities (path gl
   }
 });
 
-void test('M.II.3 R-1 — the Focus Dial shows the six canonical D2 axes + Balanced and NEVER a "Body" spoke', () => {
+void test('M.II.3 R-1 / §6 Option B — the Focus Dial shows the artifact\'s seven axes (incl. Body, no Balanced)', () => {
   const surface = makeSeatFixture();
   const ids = surface.focus.axes.map((a) => a.id);
-  assert.deepEqual(ids, ['qiPool', 'qiPurity', 'meridianOpenness', 'spiritualSense', 'soulStrength', 'daoComprehension', 'balanced']);
-  assert.equal(surface.focus.axes.some((a) => a.label === 'Body'), false, 'Body is Tier-0, never a Focus target');
+  assert.deepEqual(ids, ['qiPool', 'qiPurity', 'spiritualSense', 'soulStrength', 'body', 'meridian', 'dao']);
+  assert.equal(surface.focus.axes.some((a) => a.label === 'Body'), true, 'Body is the fifth spoke (Option B)');
+  assert.equal(surface.focus.axes.some((a) => (a.id as string) === 'balanced'), false, 'no Balanced spoke in the artifact set');
   assert.equal(surface.focus.axes.length, 7);
-  // R-1 lossy mapping is recorded in debugNotes
+  // the 7-way pick + its mapped gameplay focusMode are recorded in debugNotes
   assert.ok(surface.meta.debugNotes.some((n) => /focus/i.test(n)));
 });
 
