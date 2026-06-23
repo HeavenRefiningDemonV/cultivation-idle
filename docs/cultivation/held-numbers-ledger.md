@@ -125,6 +125,11 @@ Slices A/B/C built, all bases held 0; control roll + shred unblocked; controlPow
   (×1.00/1.08/1.18/1.30/1.45) · `ItemDef.baseChannels` base power + the itemTier 1–7 curve · armor refine
   caps + channel weighting · the `status_resist`→`evasion` legacy overload (split to tribResist/
   controlPower?) · WeaponBondState growth/art gates (D5/D11). All typed-but-held; none authored.
+- **D8 gear-drop structure (landed, structure-only, unconsumed):** `gearDrop.ts` (GearDropEntry +
+  rollGearDrop + pickWeighted) + `gearDrops.ts` (example entries). RELATES-TO the live loot system (reuses
+  LootDrop's itemId + 0-100 dropChance; wire into generateLoot PARKED). **F-BAL deposits:** per-source
+  drop rates (`dropChance`, held ⇒ no drop) · the rarity-weight distribution (`rarityPool` weights, held)
+  · which gear drops from which source (the entry pool). The `HELD_RATE = 0` sentinel; none authored.
 - **D8 GearInstance roll resolver (landed, structure-only, unconsumed):** `gearRoll.ts` (rollAffixes +
   rollGearInstance + resolveAffixPool). Authors NO new magnitude — consumes the held RARITY_BANDS
   affixCount (held ⇒ 0 affixes, INERT) + AFFIX_TABLE rollRange (held ⇒ 0 value). `RARITY_RANK` is a
