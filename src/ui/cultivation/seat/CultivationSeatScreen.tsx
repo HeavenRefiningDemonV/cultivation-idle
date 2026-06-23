@@ -170,24 +170,8 @@ export function CultivationSeatScreen({ surface, actions }: { surface: Cultivati
           <CultivateSeal surface={surface} actions={actions} />
         </div>
 
-        {/* ── GATE READINESS (at the Peak only) ── */}
-        {gate && (
-          <section data-region="gate-readiness" data-testid="cultivation-seat-gate" data-verdict={gate.verdict}>
-            <h2>The crossing diagnosis</h2>
-            <ul>
-              {gate.checks.map((check) => (
-                <li key={check.id} data-check={check.id} data-state={check.state}>{check.label}: {check.value} — {check.detail}</li>
-              ))}
-            </ul>
-            <p data-safety-band={gate.safetyBand}>{gate.safetyOdds}</p>
-            <p>Assembled from {gate.safetyTerms.join(', ')}.</p>
-            {gate.pity && <p data-testid="cultivation-seat-pity">{gate.pity.banked} of {gate.pity.toGuarantee} toward a guaranteed crossing</p>}
-            <p className="neverregress">A failed crossing costs no realm you have earned.</p>
-            <button type="button" data-testid="cultivation-seat-commit" disabled={!gate.canCommit} onClick={() => actions.onCommitCrossing()}>
-              {gate.canCommit ? 'Cross the Threshold →' : 'The crossing waits'}
-            </button>
-          </section>
-        )}
+        {/* F2: the Peak crossing diagnosis is the diegetic gatereadiness SCROLL (opened by the
+            cultivate-seal), not an on-scene box — matches the artifact. The seal at peak opens it. */}
       </div>
 
       {/* ── SCROLL HOST (full-viewport overlay, outside the scaled stage) ── */}

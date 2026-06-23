@@ -607,50 +607,9 @@
   cursor: default;
 }
 
-[data-region=gate-readiness] {
-  position: absolute;
-  right: 40px;
-  top: 120px;
-  z-index: 30;
-  width: 400px;
-  padding: 18px 20px;
-  border-radius: 7px;
-  color: var(--paper-ink, #1f1a17);
-  background: radial-gradient(120% 150% at 50% 0%, #f6ecd6, #efe3c9 48%, #e6d8b8);
-  border: 1px solid var(--paper-gold-deep, #84591b);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-}
-[data-region=gate-readiness] h2 {
-  font: 800 19px var(--serif);
-}
-[data-region=gate-readiness] ul {
-  list-style: none;
-  padding: 0;
-  margin: 8px 0;
-}
-[data-region=gate-readiness] li {
-  font: 600 12px var(--serif);
-  padding: 4px 0;
-}
-[data-region=gate-readiness] [data-testid=cultivation-seat-commit] {
-  margin-top: 8px;
-  padding: 9px 18px;
-  border-radius: 5px;
-  font: 800 14px var(--serif);
-  cursor: pointer;
-  color: #eef3ea;
-  background: linear-gradient(180deg, #3a5b4d, #274034);
-  border: 1px solid #1c3128;
-}
-[data-region=gate-readiness] [data-testid=cultivation-seat-commit]:disabled {
-  filter: grayscale(0.7) brightness(0.85);
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-[data-region=gate-readiness] .neverregress {
-  font: italic 700 12px var(--serif);
-  color: var(--paper-jade, #4e6b5e);
-}
+/* F2: the on-scene gate-readiness box is gone — the diagnosis lives in the gatereadiness scroll
+   (styled by the .seatCard / .seatCheckrow / .seatBand / .seatCommit rules above). The
+   [data-region=gate-readiness] wrapper now sits inside the scroll and needs no positioning. */
 
 .cultivationSeatScrollOverlay {
   position: fixed;
@@ -660,7 +619,14 @@
   align-items: center;
   justify-content: center;
   background: rgba(16, 11, 6, 0.55);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+  /* portaled to <body>, outside .cultivationSeatRoot — re-cast the kai font + the per-path accent. */
+  --kai: "Kaiti SC", "STKaiti", serif;
 }
+.cultivationSeatScrollOverlay[data-path=heaven] { --acc: #a9c4bb; --acc-bright: #eaf2ec; --acc-deep: #3c5849; --acc-core: #fbe6b4; --acc-rim: #d7e2dc; }
+.cultivationSeatScrollOverlay[data-path=earth] { --acc: #b98a3e; --acc-bright: #e7cd92; --acc-deep: #4a330e; --acc-core: #ffcf7a; --acc-rim: #d9bd80; }
+.cultivationSeatScrollOverlay[data-path=martial] { --acc: #a94835; --acc-bright: #f0d896; --acc-deep: #5e1c16; --acc-core: #ffb15a; --acc-rim: #e3a884; }
 
 .cultivationSeatScroll {
   position: relative;

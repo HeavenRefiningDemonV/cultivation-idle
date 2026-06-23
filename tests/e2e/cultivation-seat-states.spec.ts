@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { mkdirSync } from 'node:fs';
 import path from 'node:path';
-import { openSeatFixture, seedPeakReadyCrossing } from './cultivationSeatHarness.js';
+import { openSeatFixture, seedPeakReadyCrossing, openGateScroll } from './cultivationSeatHarness.js';
 
 /**
  * M.II.3 Wave 4 — the Chromium state matrix: the visual oracle + the structural acceptance
@@ -99,6 +99,7 @@ test.describe('M.II.3 Seat of Becoming — contract invariants (visual oracle)',
   test('R-2: the Heart check reads Turbulence and the safety band is a separate read', async ({ page }) => {
     test.setTimeout(120_000);
     await openSeatFixture(page, 'heaven-peak-held', false);
+    await openGateScroll(page);
     const gate = page.getByTestId('cultivation-seat-gate');
     await expect(gate).toHaveAttribute('data-verdict', 'held');
     await expect(gate.locator('[data-check="mind"]')).toContainText('Turbulence');
@@ -106,6 +107,7 @@ test.describe('M.II.3 Seat of Becoming — contract invariants (visual oracle)',
     await expect(gate.locator('[data-safety-band]')).toHaveCount(1);
 
     await openSeatFixture(page, 'heaven-peak-ready', false);
+    await openGateScroll(page);
     await expect(page.getByTestId('cultivation-seat-gate')).toHaveAttribute('data-verdict', 'ready');
     await expect(page.getByTestId('cultivation-seat-commit')).toBeEnabled();
   });
@@ -113,8 +115,10 @@ test.describe('M.II.3 Seat of Becoming — contract invariants (visual oracle)',
   test('R-3: pity is live when present, and absent (no row) when the failSafe yields none', async ({ page }) => {
     test.setTimeout(120_000);
     await openSeatFixture(page, 'heaven-peak-ready', false);
+    await openGateScroll(page);
     await expect(page.getByTestId('cultivation-seat-pity')).toBeVisible();
     await openSeatFixture(page, 'edge-peak-noPity', false);
+    await openGateScroll(page);
     await expect(page.getByTestId('cultivation-seat-gate')).toBeVisible();
     await expect(page.getByTestId('cultivation-seat-pity')).toHaveCount(0);
   });
@@ -165,7 +169,8 @@ test.describe('M.II.3 Seat of Becoming — the F2 ceremony seam (Wave 6)', () =>
     await seedPeakReadyCrossing(page, 0.99); // 0.99 ≥ risk/100 ⇒ the tribulation roll succeeds
     expect(await realmIndex(page)).toBe(0);
 
-    await page.locator('[data-region="gate-readiness"] [data-testid="cultivation-seat-commit"]').click();
+    await openGateScroll(page);
+    await page.getByTestId('cultivation-seat-commit').click();
 
     // the F2 RitualCeremonyShell presents the held SUCCESS outcome + the never-regress readout
     const reveal = page.locator('[data-ceremony-zone="reveal"]');
@@ -196,7 +201,8 @@ test.describe('M.II.3 Seat of Becoming — the F2 ceremony seam (Wave 6)', () =>
     await seedPeakReadyCrossing(page, 0); // roll 0 < risk/100 ⇒ the tribulation roll fails
     expect(await realmIndex(page)).toBe(0);
 
-    await page.locator('[data-region="gate-readiness"] [data-testid="cultivation-seat-commit"]').click();
+    await openGateScroll(page);
+    await page.getByTestId('cultivation-seat-commit').click();
 
     const reveal = page.locator('[data-ceremony-zone="reveal"]');
     await expect(reveal).toBeVisible();

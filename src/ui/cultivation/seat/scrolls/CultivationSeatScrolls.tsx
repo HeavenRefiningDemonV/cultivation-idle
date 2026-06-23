@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import type {
   CultivationGateReadiness,
   CultivationSeatSurfaceV1,
@@ -90,6 +91,8 @@ function GateReadinessScroll({ s, actions, onClose }: { s: CultivationSeatSurfac
   const activeBand = g.safetyBand === 'guaranteed' ? 0 : BAND_ORDER.indexOf(g.safetyBand);
   return (
     <ScrollFrame tag={g.verdictZh} kicker="GATE READINESS" title="The crossing diagnosis" dek="A read-only reading — nothing here is decided in the menu" onClose={onClose}>
+      {/* F2: the canonical crossing diagnosis (the on-scene stub is gone) — carries the gate test-ids */}
+      <div data-region="gate-readiness" data-testid="cultivation-seat-gate" data-verdict={g.verdict}>
       <div className="seatCard seatCard--verdict" data-scroll-body="gatereadiness" data-verdict={g.verdict}>
         <div className={`seatWaxSeal is-${g.verdict}`}>{g.verdictZh}</div>
         <div><div className="seatCard__ct">The verdict</div><div className={`seatVerdict is-${g.verdict}`}>{verdictText}</div></div>
@@ -137,6 +140,7 @@ function GateReadinessScroll({ s, actions, onClose }: { s: CultivationSeatSurfac
         {g.canCommit
           ? <button type="button" className="seatCommit" data-testid="cultivation-seat-commit" onClick={() => actions.onCommitCrossing()}>Cross the Threshold →</button>
           : <><button type="button" className="seatCommit is-disabled" data-testid="cultivation-seat-commit" disabled>Cross the Threshold →</button><div className="seatTerms seatTerms--muted">The crossing cannot begin until the above is cleared.</div></>}
+      </div>
       </div>
     </ScrollFrame>
   );
@@ -281,8 +285,11 @@ function MechanicScroll({ s, actions, onClose }: { s: CultivationSeatSurfaceV1; 
 
 export function CultivationSeatScrolls({ surface, actions, scroll }: { surface: CultivationSeatSurfaceV1; actions: CultivationSeatActions; scroll: CultivationScrollId }) {
   const onClose = actions.onCloseScroll;
-  return (
-    <div className="cultivationSeatScrollOverlay" data-region="scroll-host" data-scroll={scroll} onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+  // F1: portal to document.body so the fixed overlay escapes the scaled stage / app-shell transform
+  // (a transformed ancestor becomes the containing block for position:fixed and clips it otherwise).
+  // data-path re-casts the accent + kai vars on the overlay since it now lives outside the Seat root.
+  const overlay = (
+    <div className="cultivationSeatScrollOverlay" data-region="scroll-host" data-scroll={scroll} data-path={surface.meta.path} onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
       <div role="dialog" aria-modal="true" aria-label={`${scroll} scroll`} className="cultivationSeatScroll">
         {scroll === 'ascent' && <AscentScroll s={surface} onClose={onClose} />}
         {scroll === 'gatereadiness' && <GateReadinessScroll s={surface} actions={actions} onClose={onClose} />}
@@ -292,4 +299,5 @@ export function CultivationSeatScrolls({ surface, actions, scroll }: { surface: 
       </div>
     </div>
   );
+  return typeof document !== 'undefined' ? createPortal(overlay, document.body) : overlay;
 }

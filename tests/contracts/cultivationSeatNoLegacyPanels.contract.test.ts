@@ -49,8 +49,9 @@ void test('M.II.3 — the screen renders the surface contract regions and the ro
 void test('M.II.3 — the dense panels live in the conditional scroll host, not the always-on scene', () => {
   // the scroll host only renders when a scroll is selected
   assert.match(SCREEN, /\{scroll && <CultivationSeatScrolls/);
-  // the gate-readiness diagnosis only renders at the Peak
-  assert.match(SCREEN, /\{gate && \(/);
+  // F2: the gate-readiness diagnosis is the diegetic scroll, NOT an on-scene box
+  assert.match(SCROLLS, /data-testid="cultivation-seat-gate"/);
+  assert.equal(SCREEN.includes('data-region="gate-readiness"'), false, 'no on-scene gate-readiness box (F2)');
   // the dense scroll bodies are gated behind the open-scroll id in the scrolls component
   assert.match(SCROLLS, /scroll === 'ledger'/);
   assert.match(SCROLLS, /scroll === 'focus'/);

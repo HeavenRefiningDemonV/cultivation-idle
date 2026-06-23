@@ -104,6 +104,15 @@ export async function seedPeakReadyCrossing(page: Page, roll: number, opts: { ga
   }, { rollValue: roll, withGateItem: gateItem });
 }
 
+/**
+ * Open the gatereadiness scroll via the cultivate-seal (F2: the Peak crossing diagnosis lives in
+ * the scroll, not an on-scene box). The seal opens it at the Peak in any verdict state.
+ */
+export async function openGateScroll(page: Page) {
+  await page.locator('[data-instrument="cultivate-seal"]').click();
+  await page.getByTestId('cultivation-seat-gate').waitFor({ state: 'visible', timeout: 10_000 });
+}
+
 /** Navigate to a Seat fixture, seed, and wait for the root. */
 export async function openSeatFixture(page: Page, fixtureId: string, reducedMotion: boolean) {
   await page.emulateMedia({ reducedMotion: reducedMotion ? 'reduce' : 'no-preference' });

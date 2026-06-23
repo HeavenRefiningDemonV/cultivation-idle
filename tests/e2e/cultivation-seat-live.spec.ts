@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { mkdirSync } from 'node:fs';
 import path from 'node:path';
-import { waitForApp, seedCultivationTab, seedPeakReadyCrossing } from './cultivationSeatHarness.js';
+import { waitForApp, seedCultivationTab, seedPeakReadyCrossing, openGateScroll } from './cultivationSeatHarness.js';
 
 /**
  * M.II.3 — LIVE pipeline acceptance (cutover-readiness). Every other Seat e2e drives FIXTURE
@@ -55,15 +55,16 @@ test.describe('M.II.3 Seat of Becoming — LIVE pipeline acceptance (cutover-rea
     test.setTimeout(120_000);
     await openLiveSeat(page);
     await seedPeakReadyCrossing(page, 0.99, { gateItem: true });
+    ensure();
+    await page.locator('.cultivationSeatStage').screenshot({ path: path.join(SHOT_DIR, 'live-peak-ready.png') });
 
+    await openGateScroll(page); // the diagnosis lives in the gatereadiness scroll (F2)
     const gate = page.getByTestId('cultivation-seat-gate');
     await expect(gate).toBeVisible();
     await expect(gate.locator('[data-check="item"]')).toHaveAttribute('data-state', 'ok'); // the gate item is held
     await expect(gate).toHaveAttribute('data-verdict', 'ready');
-    const commit = page.locator('[data-region="gate-readiness"] [data-testid="cultivation-seat-commit"]');
+    const commit = page.getByTestId('cultivation-seat-commit');
     await expect(commit).toBeEnabled();
-    ensure();
-    await page.locator('.cultivationSeatStage').screenshot({ path: path.join(SHOT_DIR, 'live-peak-ready.png') });
 
     expect(await realmIndex(page)).toBe(0);
     await commit.click();
@@ -80,13 +81,14 @@ test.describe('M.II.3 Seat of Becoming — LIVE pipeline acceptance (cutover-rea
     await openLiveSeat(page);
     await seedPeakReadyCrossing(page, 0.99, { gateItem: false }); // qi + peak, but no gate item
 
+    await openGateScroll(page); // the diagnosis lives in the gatereadiness scroll (F2)
     const gate = page.getByTestId('cultivation-seat-gate');
     await expect(gate).toBeVisible();
     // the live seam now reads the real item gate (was stubbed to null pre-fix) — so the row blocks
     await expect(gate.locator('[data-check="item"]')).toHaveAttribute('data-state', 'blocked');
     await expect(gate).toHaveAttribute('data-verdict', 'not-yet');
-    await expect(page.locator('[data-region="gate-readiness"] [data-testid="cultivation-seat-commit"]')).toBeDisabled();
+    await expect(page.getByTestId('cultivation-seat-commit')).toBeDisabled();
     ensure();
-    await page.locator('.cultivationSeatStage').screenshot({ path: path.join(SHOT_DIR, 'live-peak-noitem.png') });
+    await page.screenshot({ path: path.join(SHOT_DIR, 'live-peak-noitem.png') });
   });
 });
