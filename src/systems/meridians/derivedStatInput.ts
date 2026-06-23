@@ -4,6 +4,8 @@ import { useCourtMeridianStore } from '../../features/court/useCourtMeridianStor
 import { resolveCourtSharedStats } from '../../features/court/courtSharedStats.js';
 import { resolveCourtRealmIndex } from '../../features/court/buildLiveCourtSurface.js';
 import { mapAxisViewsToRecord, mapFoundationViewsToRecord } from './combatStatBridge.js';
+import { applyFocusEmphasis } from './focusEmphasis.js';
+import { useUIStore } from '../../stores/uiStore.js';
 import type { DerivedStatInput } from './derivedStats.js';
 
 /**
@@ -31,5 +33,9 @@ export function toDerivedStatInput(): DerivedStatInput {
     meridianRatings[id] = (progress as { rating?: number }).rating ?? 0;
   }
 
-  return { foundation, axes, meridianRatings, realmIndex1to7 };
+  const base: DerivedStatInput = { foundation, axes, meridianRatings, realmIndex1to7 };
+  // B-STATS — bias the Tier-1 axes (and Body's Tier-0 foundation) by the Seat's focus pick. IDENTITY
+  // while the coefficient is held inert (FOCUS_EMPHASIS_PRIMARY=0), so derived-path parity stays exact;
+  // F-BAL flips the magnitude and the dial becomes a real build lever with no further wiring.
+  return applyFocusEmphasis(base, useUIStore.getState().cultivationFocusAxis);
 }
