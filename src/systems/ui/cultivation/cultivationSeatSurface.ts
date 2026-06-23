@@ -62,7 +62,12 @@ function resolveFocusEmphasis(storedAxis: string | null | undefined): Cultivatio
 // fields are zeroed (never presented as live progress), and the authored lore renders as "what this
 // path will grant once it ships," not as fabricated current state. `communion` stays — it is a real
 // activity read. No realm-fraction (`rf`) fiction.
-function buildInstrument(path: CultivationPath, foreground: string, premonition: PremonitionOmensResult): CultivationInstrument {
+function buildInstrument(
+  path: CultivationPath,
+  foreground: string,
+  premonition: PremonitionOmensResult,
+  beastLore: { absorbedCount: number; engineActive: boolean },
+): CultivationInstrument {
   if (path === 'heaven') {
     // C-PATH slice 1 — Heaven Premonition (Day's Omen) is LIVE under the derived engine: active, a
     // realm-graded precision, the perception rating as foresight depth, and a real idle-state read.
@@ -81,16 +86,22 @@ function buildInstrument(path: CultivationPath, foreground: string, premonition:
     };
   }
   if (path === 'earth') {
+    // D11 — Beast-Lore goes live once a beast essence has been absorbed under the derived engine (the
+    // count is the live useBeastLoreStore tally). Off / nothing absorbed ⇒ the honest preview, intact.
+    const beastActive = beastLore.engineActive && beastLore.absorbedCount > 0;
+    const n = Math.min(BEAST_ESSENCES.length, Math.max(0, beastLore.absorbedCount));
     return {
       kind: 'earth',
       label: 'BEAST LORE',
-      valLabel: 'Not yet active',
-      active: false,
-      previewNote: 'Beast Lore — body-tempering by absorbing bestial essence — is a designed but not-yet-active path system (D5 / D11). The essences below preview what may be drawn in once it ships.',
+      valLabel: beastActive ? `${n} essence${n === 1 ? '' : 's'} absorbed` : 'Not yet active',
+      active: beastActive,
+      previewNote: beastActive
+        ? `Body Tempering is live — ${n} bestial essence${n === 1 ? '' : 's'} drawn into the marrow. Each beast slain in the World adds to the lore.`
+        : 'Beast Lore — body-tempering by absorbing bestial essence — is a designed but not-yet-active path system (D5 / D11). The essences below preview what may be drawn in once it ships.',
       temperingDepthPct: 0,
-      absorbedCount: 0,
+      absorbedCount: beastActive ? n : 0,
       capacity: BEAST_ESSENCES.length,
-      essences: BEAST_ESSENCES.map((e) => ({ ...e })),
+      essences: (beastActive ? BEAST_ESSENCES.slice(0, n) : BEAST_ESSENCES).map((e) => ({ ...e })),
     };
   }
   const communion = foreground === 'cultivating' ? 'deepening' : foreground === 'combat-held' ? 'held' : 'idle';
@@ -248,7 +259,10 @@ export function buildCultivationSeatSurface(input: { raw: CultivationSeatRawInpu
     idleRunning: !raw.activity.combatHeld,
     engineActive: raw.derived?.engineActive ?? false,
   });
-  const instrument = buildInstrument(path, foreground, premonition);
+  const instrument = buildInstrument(path, foreground, premonition, {
+    absorbedCount: raw.derived?.absorbedEssences ?? 0,
+    engineActive: raw.derived?.engineActive ?? false,
+  });
 
   const treasureItems: CultivationSeatSurfaceV1['treasures']['items'] = [
     { id: 'jing', label: 'Body', glyph: '精', value: raw.treasures.jing },

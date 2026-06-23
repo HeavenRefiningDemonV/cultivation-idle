@@ -263,15 +263,22 @@ function MechanicScroll({ s, actions, onClose }: { s: CultivationSeatSurfaceV1; 
   }
   if (inst.kind === 'earth') {
     return (
-      <ScrollFrame tag="獸" kicker="BEAST LORE" title="Body Tempering" dek="The body-refiner will draw the strengths of the wild into its own marrow — a forthcoming Earth-path system" onClose={onClose}>
-        <PreviewBanner note={inst.previewNote} />
+      <ScrollFrame tag="獸" kicker="BEAST LORE" title="Body Tempering" dek={inst.active ? 'The body-refiner draws the strengths of the wild into its own marrow' : 'The body-refiner will draw the strengths of the wild into its own marrow — a forthcoming Earth-path system'} onClose={onClose}>
+        {inst.active
+          ? (
+            <div className="seatCard" data-scroll-body="mechanic" data-instrument-active="true">
+              <CardTop glyph="獸" title="Body Tempering" right="active" tone="jade" />
+              <div className="seatTerms">{inst.previewNote}</div>
+            </div>
+          )
+          : <PreviewBanner note={inst.previewNote} />}
         <div className="seatCard">
-          <CardTop glyph="獸" title="Bestial essences" right={`preview · ${inst.essences.length}`} tone="jade" />
+          <CardTop glyph="獸" title={inst.active ? 'Absorbed essences' : 'Bestial essences'} right={inst.active ? `${inst.absorbedCount} of ${inst.capacity}` : `preview · ${inst.essences.length}`} tone="jade" />
           <div className="seatGrid">{inst.essences.map((e) => (<div key={e.name} className="seatGrant"><div className="seatGrant__gm">{e.glyph}</div><div><div className="seatGrant__gt">{e.name}</div><div className="seatGrant__gd">{e.trait}</div></div></div>))}</div>
         </div>
         <div className="seatCard">
-          <CardTop glyph="狩" title="Where you’ll hunt" right="more essence" />
-          <div className="seatTerms">Once this ships, demonic beasts will drop essence in the World — the signal that drives the body’s growth here.</div>
+          <CardTop glyph="狩" title={inst.active ? 'Hunt for more' : 'Where you’ll hunt'} right="more essence" />
+          <div className="seatTerms">{inst.active ? 'Demonic beasts drop essence in the World — slay more to deepen the body’s lore.' : 'Once this ships, demonic beasts will drop essence in the World — the signal that drives the body’s growth here.'}</div>
           <button type="button" className="seatDeeplink" onClick={() => actions.onDeepLink('world.map')}>Hunt in the World ↗</button>
         </div>
       </ScrollFrame>

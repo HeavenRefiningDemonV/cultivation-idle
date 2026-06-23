@@ -108,6 +108,24 @@ void test('C-PATH — the Seat Heaven Premonition flips active under the derived
   }
 });
 
+void test('D11 — the Seat Earth Beast-Lore flips active once essences are absorbed under the engine', () => {
+  const earthGame = { ...makeSeatRawFixture().game, selectedPath: 'earth' };
+  const off = makeSeatFixture({ game: earthGame, derived: { perception: 0, engineActive: false, absorbedEssences: 3 } });
+  assert.equal(off.instrument.kind, 'earth');
+  if (off.instrument.kind === 'earth') {
+    assert.equal(off.instrument.active, false, 'engine off ⇒ honest preview even with a tally');
+    assert.equal(off.instrument.absorbedCount, 0);
+  }
+  const onNone = makeSeatFixture({ game: earthGame, derived: { perception: 0, engineActive: true, absorbedEssences: 0 } });
+  if (onNone.instrument.kind === 'earth') assert.equal(onNone.instrument.active, false, 'engine on but nothing absorbed ⇒ preview');
+  const on = makeSeatFixture({ game: earthGame, derived: { perception: 0, engineActive: true, absorbedEssences: 3 } });
+  if (on.instrument.kind === 'earth') {
+    assert.equal(on.instrument.active, true, 'engine on + absorbed ⇒ live Beast Lore');
+    assert.equal(on.instrument.absorbedCount, 3);
+    assert.equal(on.instrument.essences.length, 3, 'shows the absorbed subset, not the full preview roster');
+  }
+});
+
 void test('M.II.3 — the per-path instrument is discriminated by path', () => {
   const heaven = makeSeatFixture({ game: { ...makeSeatRawFixture().game, selectedPath: 'heaven' } });
   const martial = makeSeatFixture({ game: { ...makeSeatRawFixture().game, selectedPath: 'martial' } });
