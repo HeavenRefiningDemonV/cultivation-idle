@@ -10,8 +10,8 @@ against unbuilt consumers (D11 combat, D8 equipment) is the foundation-after-fra
 and (c) flipping the engine to players is a release decision gated on completion + a GO release gate.
 **Do NOT author any value below outside F-BAL.** This is a checklist, not a spec.
 
-Last updated: 2026-06-23 (consolidation checkpoint #2 — D8 law + D11 3b-0/i/ii/iii affliction-effect
-coeffs all held/inert; S9/S10 live-instrument fidelity matrix landed).
+Last updated: 2026-06-24 (consolidation checkpoint #3 — drain + the enemy-derived-layer packet
+Slices A/B/C built, all bases held 0; control roll + shred unblocked; controlPower read deferred).
 
 **F-BAL manifest (the single terminal-pass checklist — every held/inert magnitude this rework parked):**
 1. Breakthrough risk / failure table (progression regime) — §1
