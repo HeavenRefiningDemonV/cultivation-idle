@@ -10,7 +10,16 @@ against unbuilt consumers (D11 combat, D8 equipment) is the foundation-after-fra
 and (c) flipping the engine to players is a release decision gated on completion + a GO release gate.
 **Do NOT author any value below outside F-BAL.** This is a checklist, not a spec.
 
-Last updated: 2026-06-23 (D8 slice 1a — the composeGear gear-hook law — landed; see §6).
+Last updated: 2026-06-23 (consolidation checkpoint — D8 slice 1a landed; manifest reconciled).
+
+**F-BAL manifest (the single terminal-pass checklist — every held/inert magnitude this rework parked):**
+1. Breakthrough risk / failure table (progression regime) — §1
+2. B-MERID path-meridian signature coefficients (`‹tune W12›`) — §2
+3. B-STATS focus-emphasis coefficient (`FOCUS_EMPHASIS_PRIMARY = 0`, inert) — §3
+4. B-ELEM element tuning + Beast-Lore drop + Weapon-Bond curve + per-enemy element assignment — §4
+5. D8 equipment gear hook (`composeGear` mapping/rarity/affix/set magnitudes) + the slice-1b de-dup
+   **refactor precondition** (a behavior change, not a magnitude — logged so it isn't lost) — §5
+6. The shipped engine flag (flip #2: default-on for players) — §6
 
 ---
 
@@ -61,7 +70,7 @@ Last updated: 2026-06-23 (D8 slice 1a — the composeGear gear-hook law — land
   cultivationSeatSurface buildInstrument martial branch) are placeholders — the real kills→depth and
   art-unlock thresholds are held. The bond store's `bondKills` is a structural count, not a magnitude.
 
-## 6. D8 — equipment gear hook (`composeGear`)
+## 5. D8 — equipment gear hook (`composeGear`)
 - **Where:** `composeGear()` in `src/systems/equipment/equipmentGearResolver.ts` → the `gear` param of
   `computeDerivedStats` (`derivedStats.ts:265`), fed `{}` at `gameStore.ts:1076` today.
 - **Slice 1a (landed):** the LAW only, NOT wired. Re-expresses LIVE forge values (refine `1+0.02×lvl`
@@ -75,7 +84,7 @@ Last updated: 2026-06-23 (D8 slice 1a — the composeGear gear-hook law — land
   equipped bonus counts exactly once; applying the multiplier at the derived-channel level vs the
   legacy-stat level is not guaranteed numerically identical — needs an equivalence check before flip.
 
-## 5. The shipped engine flag (flip #2)
+## 6. The shipped engine flag (flip #2)
 - **Where:** `STAT_ENGINE_DERIVED_AUTHORITATIVE_DEFAULT = false` (`src/systems/meridians/statEngineFlag.ts`).
 - **Held because:** flip #2 (default-on for players) is F-BAL's, after the global balance pass + a GO
   release gate. F1 only did flip #1 (dev-on via `?statEngine=1`).
