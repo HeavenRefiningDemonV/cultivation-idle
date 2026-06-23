@@ -30,6 +30,9 @@ import type { ElementId, ElementStateInstance, StateDelta, TargetElementState } 
  */
 export interface EnemyElementStates {
   active: ElementStateInstance[];
+  /** D11 3b-ii — per-reaction-id internal-cooldown (ms remaining); set on fire, decayed each tick,
+   *  read by the resolver's `isEligible` ICD gate. Optional ⇒ legacy/empty states default to no ICD. */
+  icdByPathway?: Record<string, number>;
 }
 export const EMPTY_ENEMY_ELEMENT_STATES: EnemyElementStates = Object.freeze({ active: [] });
 
@@ -61,15 +64,16 @@ export function stepEnemyElementOnHit(input: {
 }): ElementHitOutcome {
   if (!input.engineActive || !input.appliedElement) return INERT(input.states);
 
+  const priorIcd = input.states.icdByPathway ?? {};
   const target: TargetElementState = {
     resistByElement: ZERO_ELEMENT_WEIGHTS,
     soulDefense: 0,
     activeStates: input.states.active,
-    icdByPathway: {}, // slice 3a: no ICD gating yet (slice 3b)
+    icdByPathway: priorIcd, // 3b-ii: the live ICD gates eligibility (a reaction on cooldown can't re-fire).
   };
   const ctx = { realm: Math.max(1, input.realm) };
 
-  // 1. the reaction fires on the states present BEFORE this hit's state is written.
+  // 1. the reaction fires on the states present BEFORE this hit's state is written (ICD-gated).
   const reaction = resolveReaction(input.appliedElement, target, ctx, DEFAULT_ELEMENT_TUNING);
   const bonusDamage =
     reaction && (reaction.effect.kind === 'burst' || reaction.effect.kind === 'sever')
@@ -78,5 +82,14 @@ export function stepEnemyElementOnHit(input: {
 
   // 2. apply/refresh this element's signature affliction.
   const delta = resolveState(input.appliedElement, target, ctx, DEFAULT_ELEMENT_TUNING);
-  return { states: { active: applyStateDelta(input.states.active, delta) }, bonusDamage, reactionLabel: reaction?.label ?? null };
+
+  // 3b-ii — on a fire, arm the reaction's ICD with its family window (held placeholder 3000). isEligible
+  //   only gates reactions whose `hasIcd` is true, so an entry for a non-ICD reaction is inert.
+  const nextIcd = reaction
+    ? { ...priorIcd, [reaction.reaction]: DEFAULT_ELEMENT_TUNING.icdMsByFamily[reaction.family] }
+    : priorIcd;
+  const nextActive = applyStateDelta(input.states.active, delta);
+  const states: EnemyElementStates =
+    Object.keys(nextIcd).length > 0 ? { active: nextActive, icdByPathway: nextIcd } : { active: nextActive };
+  return { states, bonusDamage, reactionLabel: reaction?.label ?? null };
 }

@@ -112,3 +112,32 @@ void test('D11 3b-i — only DoT-category afflictions deal damage; a control sta
   assert.equal(out.dotDamage, 0, 'control is not DoT ⇒ no per-tick damage (its CC application is a later slice)');
   assert.equal(out.survivingStates.active[0]?.remainingMs, 3000, 'but it still ages');
 });
+
+// ─── slice 3b-ii: reaction ICD decay ─────────────────────────────────────────────────────────────
+
+void test('D11 3b-ii — ICD decays by elapsedMs and the elapsed entry drops', () => {
+  const s: EnemyElementStates = { active: [], icdByPathway: { freeze: 3000 } };
+  const out = expireEnemyElementStates({ states: s, elapsedMs: 1000, engineActive: true });
+  assert.equal(out.icdByPathway?.freeze, 2000);
+  const gone = expireEnemyElementStates({ states: s, elapsedMs: 3000, engineActive: true });
+  assert.equal(gone.icdByPathway, undefined, 'fully-elapsed ICD drops (the reaction can re-fire)');
+});
+
+void test('D11 3b-ii — an ICD-only state still ages (not the same-ref fast path)', () => {
+  const s: EnemyElementStates = { active: [], icdByPathway: { freeze: 500 } };
+  const out = expireEnemyElementStates({ states: s, elapsedMs: 200, engineActive: true });
+  assert.notEqual(out, s, 'ICD with no afflictions is still aged');
+  assert.equal(out.icdByPathway?.freeze, 300);
+});
+
+void test('D11 3b-ii — flag-off leaves ICD untouched (preserve-first)', () => {
+  const s: EnemyElementStates = { active: [], icdByPathway: { freeze: 3000 } };
+  assert.equal(expireEnemyElementStates({ states: s, elapsedMs: 1000, engineActive: false }), s);
+});
+
+void test('D11 3b-ii — tick preserves the decayed ICD alongside DoT', () => {
+  const s: EnemyElementStates = { active: [inst(4000)], icdByPathway: { freeze: 3000 } };
+  const out = tickEnemyElementStates({ states: s, elapsedMs: 1000, realm: 1, engineActive: true, tuning: dotTuning(2) });
+  assert.equal(out.survivingStates.icdByPathway?.freeze, 2000, 'ICD decayed and carried through the DoT pass');
+  assert.equal(out.dotDamage, 2);
+});

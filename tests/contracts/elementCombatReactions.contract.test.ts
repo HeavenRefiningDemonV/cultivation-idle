@@ -7,8 +7,12 @@ import {
   EMPTY_ENEMY_ELEMENT_STATES,
   stepEnemyElementOnHit,
 } from '../../src/systems/elements/elementCombatReactions.js';
+import type { ElementStateInstance } from '../../src/systems/elements/elementTypes.js';
 
 const EL = ELEMENT_ROSTER[0].id;
+
+// Freeze (control) fires when Ice hits a Soaked target; it has an ICD.
+const soaked: ElementStateInstance = { state: 'soaked', category: 'amplifier', remainingMs: 4000, intensity: 1 };
 
 void test('D11 slice 3 — INERT when the engine is off or there is no applied element (byte-identical)', () => {
   const off = stepEnemyElementOnHit({ appliedElement: EL, states: EMPTY_ENEMY_ELEMENT_STATES, realm: 3, engineActive: false });
@@ -39,4 +43,26 @@ void test('D11 slice 3 — refresh-not-stack: re-applying the same element never
   }
   // the input is never mutated (pure)
   assert.deepEqual(EMPTY_ENEMY_ELEMENT_STATES.active, []);
+});
+
+void test('D11 3b-ii — a fired reaction arms its ICD with the family window', () => {
+  const fired = stepEnemyElementOnHit({ appliedElement: 'ice', states: { active: [soaked] }, realm: 3, engineActive: true });
+  assert.equal(fired.reactionLabel, '冰封', 'Ice on a Soaked target fires Freeze');
+  assert.equal(fired.states.icdByPathway?.freeze, DEFAULT_ELEMENT_TUNING.icdMsByFamily.control, 'ICD armed with the control-family window');
+});
+
+void test('D11 3b-ii — the ICD gate blocks a reaction from re-firing while on cooldown', () => {
+  const blocked = stepEnemyElementOnHit({
+    appliedElement: 'ice',
+    states: { active: [soaked], icdByPathway: { freeze: 1500 } },
+    realm: 3,
+    engineActive: true,
+  });
+  assert.notEqual(blocked.reactionLabel, '冰封', 'Freeze on cooldown does not re-fire');
+  assert.equal(blocked.states.icdByPathway?.freeze, 1500, 'the live ICD is carried (decay is the tick’s job, not the hit’s)');
+});
+
+void test('D11 3b-ii — preserve-first: flag-off carries no ICD and writes nothing', () => {
+  const off = stepEnemyElementOnHit({ appliedElement: 'ice', states: { active: [soaked], icdByPathway: { freeze: 1500 } }, realm: 3, engineActive: false });
+  assert.equal(off.states.icdByPathway?.freeze, 1500, 'flag-off returns the input states unchanged');
 });

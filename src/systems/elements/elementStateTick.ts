@@ -29,15 +29,27 @@ export function expireEnemyElementStates(input: {
   // preserve-first: with the engine off, the affliction lifecycle is inert (and nothing was written).
   if (!input.engineActive) return input.states;
   const active = input.states.active;
-  // fast-path: no afflictions ⇒ nothing to age (same-ref return ⇒ the store does not write).
-  if (active.length === 0) return input.states;
+  const icd = input.states.icdByPathway;
+  const hasIcd = icd !== undefined && Object.keys(icd).length > 0;
+  // fast-path: nothing to age (no afflictions AND no live ICD) ⇒ same-ref ⇒ the store does not write.
+  if (active.length === 0 && !hasIcd) return input.states;
 
   const survivors: ElementStateInstance[] = [];
   for (const s of active) {
     const remainingMs = s.remainingMs - input.elapsedMs;
     if (remainingMs > 0) survivors.push({ ...s, remainingMs });
   }
-  return { active: survivors };
+  // 3b-ii — decay each reaction's ICD by the elapsed time; drop the elapsed (the reaction can re-fire).
+  let nextIcd: Record<string, number> | undefined;
+  if (hasIcd) {
+    const decayed: Record<string, number> = {};
+    for (const key of Object.keys(icd)) {
+      const remaining = (icd[key] ?? 0) - input.elapsedMs;
+      if (remaining > 0) decayed[key] = remaining;
+    }
+    if (Object.keys(decayed).length > 0) nextIcd = decayed;
+  }
+  return nextIcd ? { active: survivors, icdByPathway: nextIcd } : { active: survivors };
 }
 
 export interface ElementStateTickResult {
@@ -102,5 +114,9 @@ export function tickEnemyElementStates(input: {
     }
     return { ...s, accMs: acc - ticks * intervalMs };
   });
-  return { survivingStates: { active }, dotDamage, dotEvents };
+  // preserve the (already-decayed) ICD map alongside the DoT-advanced afflictions.
+  const survivingStatesOut: EnemyElementStates = survivingStates.icdByPathway
+    ? { active, icdByPathway: survivingStates.icdByPathway }
+    : { active };
+  return { survivingStates: survivingStatesOut, dotDamage, dotEvents };
 }
