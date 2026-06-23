@@ -10,7 +10,7 @@ against unbuilt consumers (D11 combat, D8 equipment) is the foundation-after-fra
 and (c) flipping the engine to players is a release decision gated on completion + a GO release gate.
 **Do NOT author any value below outside F-BAL.** This is a checklist, not a spec.
 
-Last updated: 2026-06-23.
+Last updated: 2026-06-23 (D8 slice 1a — the composeGear gear-hook law — landed; see §6).
 
 ---
 
@@ -60,6 +60,20 @@ Last updated: 2026-06-23.
 - **Weapon-Bond curve (D5/D15):** `BOND_KILLS_FOR_FULL=25` + the per-art unlock bands (in
   cultivationSeatSurface buildInstrument martial branch) are placeholders — the real kills→depth and
   art-unlock thresholds are held. The bond store's `bondKills` is a structural count, not a magnitude.
+
+## 6. D8 — equipment gear hook (`composeGear`)
+- **Where:** `composeGear()` in `src/systems/equipment/equipmentGearResolver.ts` → the `gear` param of
+  `computeDerivedStats` (`derivedStats.ts:265`), fed `{}` at `gameStore.ts:1076` today.
+- **Slice 1a (landed):** the LAW only, NOT wired. Re-expresses LIVE forge values (refine `1+0.02×lvl`
+  cap 1.25; temper bands 2–5%) through the Tier-3 channels — **no new magnitude**. Parity-safe
+  (`composeGear([]) === {}`).
+- **Held (D8 content + D15/F-BAL):** the channel-mapping weights, rarity multiplier tuple, affix bands
+  (DR-08), bond/set/foresight curves, the hpRegen ½-share, and the whole item-instance model (armor
+  slots, drops, upgrade curve).
+- **Held refactor (slice 1b, NOT a magnitude — a behavior change):** wiring `composeGear` into
+  gameStore MUST make the legacy refine/temper multiply (`gameStore.ts:1231-1269`) flag-aware so an
+  equipped bonus counts exactly once; applying the multiplier at the derived-channel level vs the
+  legacy-stat level is not guaranteed numerically identical — needs an equivalence check before flip.
 
 ## 5. The shipped engine flag (flip #2)
 - **Where:** `STAT_ENGINE_DERIVED_AUTHORITATIVE_DEFAULT = false` (`src/systems/meridians/statEngineFlag.ts`).
