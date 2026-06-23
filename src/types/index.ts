@@ -829,6 +829,13 @@ export interface EnemyDefinition {
    * "fair anti-funnel distribution"). Undefined ⇒ no matchup (the offensive affinity still applies).
    */
   element?: SpiritRootElement;
+  /**
+   * D11 — the enemy's defensive layer (Stagger/CC-Resist), read by `resolveEnemyDefensiveProfile`.
+   * OPTIONAL + the per-enemy magnitude is D15/F-BAL-held: undefined gives the resolver a flat/realm-
+   * scaled stub (HELD 0). Later a symmetric enemy derived snapshot backs the same resolver, no re-port.
+   */
+  staggerResist?: number;
+  ccResist?: number;
 }
 
 export type EnemyMechanicType =

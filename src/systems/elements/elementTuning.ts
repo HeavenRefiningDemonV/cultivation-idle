@@ -71,4 +71,12 @@ export const DEFAULT_ELEMENT_TUNING: ElementTuning = Object.freeze({
   //   (2) under refresh-not-stack a control rewritten every 1000ms player-attack vs a 4000ms duration
   //   would PERMA-LOCK the enemy — a live value needs a duration/immunity-window model D15 owns first.
   controlSkipChance: 0,
+  // [tune] D15/F-BAL — the ENEMY DEFENSIVE LAYER (flat/realm-scaled stub behind resolveEnemyDefensiveProfile;
+  //   see docs/cultivation/enemy-derived-layer-packet.md). All HELD AT 0 ⇒ the seam is INERT: enemy
+  //   stagger/CC-resist 0, per-element resist 0, shred application 0 ⇒ flag-on byte-identical until D15
+  //   deposits the enemy stat model (later: a symmetric snapshot backs the SAME resolver, no combat re-port).
+  enemyStaggerBase: 0,
+  enemyCcResistBase: 0,
+  enemyElementResistBase: 0,
+  enemyShredApplyBase: 0,
 });
