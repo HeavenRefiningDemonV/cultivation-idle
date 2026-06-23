@@ -18,7 +18,7 @@ import type { DaoMandateGuidanceProfile } from "../systems/ui/daoMandate/daoMand
 import type { DaoMandateLessonMemory } from "../systems/ui/daoMandate/daoMandateLessons.js";
 import type { SaveOnboardingState } from "../systems/onboarding/onboardingTypes.js";
 import type { SaveTrainingState } from "../systems/training/trainingTypes.js";
-import type { SaveMeridianCourtState } from "../features/court/courtSaveTypes.js";
+import type { SaveMeridianCourtState, SaveBeastLoreState } from "../features/court/courtSaveTypes.js";
 import type { PrestigeMemoryLedger } from "../systems/prestige/prestigeMemory.js";
 import type {
   BreakthroughRiskCauseRow,
@@ -544,6 +544,8 @@ export interface SaveData {
   trainingState?: SaveTrainingState;
   /** W13a-5 — the live Court meridian-training slice (optional; absent on legacy saves). */
   meridianCourtState?: SaveMeridianCourtState;
+  /** D11 — the Earth Beast-Lore absorbed-essence tally (optional; legacy saves default to 0). */
+  beastLoreState?: SaveBeastLoreState;
 
   // Combat settings (not combat state, just settings)
   combatSettings: {

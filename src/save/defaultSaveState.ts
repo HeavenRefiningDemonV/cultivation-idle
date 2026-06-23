@@ -64,7 +64,7 @@ import {
   sanitizeTrainingSaveState,
 } from '../systems/training/index.js';
 import { sanitizePrestigeMemoryLedger } from '../systems/prestige/prestigeMemory.js';
-import { createDefaultMeridianCourtSaveState } from '../features/court/courtSaveTypes.js';
+import { createDefaultMeridianCourtSaveState, createDefaultBeastLoreSaveState } from '../features/court/courtSaveTypes.js';
 
 import { CURRENT_SAVE_VERSION, migrateIncomingSaveForHydration } from './migrations/index.js';
 import { normalizeCitySaveState } from './cityStateNormalization.js';
@@ -247,6 +247,7 @@ export function buildDefaultSaveState(): SaveData {
     recipeMasteryState: recipeMasteryState.toSaveState(),
     trainingState: trainingState.toSaveState(),
     meridianCourtState: createDefaultMeridianCourtSaveState(),
+    beastLoreState: createDefaultBeastLoreSaveState(),
     pavilionState: pavilionState.toSaveState(),
     storyState: storyState.toSaveState(),
     combatSettings: {

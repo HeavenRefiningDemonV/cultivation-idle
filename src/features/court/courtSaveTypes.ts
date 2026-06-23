@@ -28,3 +28,15 @@ export function createDefaultMeridianCourtSaveState(): SaveMeridianCourtState {
     fatigue: 0,
   };
 }
+
+/**
+ * D11 — the persisted Earth Beast-Lore slice (absorbed bestial essences). Plain serializable data, so
+ * the save layer can import it without pulling the store/UI. Optional on legacy saves ⇒ defaults to 0.
+ */
+export interface SaveBeastLoreState {
+  absorbedCount: number;
+}
+
+export function createDefaultBeastLoreSaveState(): SaveBeastLoreState {
+  return { absorbedCount: 0 };
+}
