@@ -76,8 +76,16 @@ Last updated: 2026-06-23 (consolidation checkpoint — D8 slice 1a landed; manif
   `icdByPathway` (reaction-id → ms), armed on fire with the **held** `icdMsByFamily = 3000` window
   (consumed live under the flag, B-MERID-style; D15 owns the real per-family windows). Flag-on reactions
   now respect ICD (anti-spam); flag-off byte-identical.
-- **D11 3b remaining (HELD):** control/CC success roll (`controlPower` vs `stagger`) + skip-turn; spread
-  radius/count; drain/tempo/cleanse/catalyst magnitudes — all D15-held.
+- **D11 3b-iii (landed, INERT):** the hard-CC skip-turn gate is wired (`elementControlGate.ts`,
+  `frozen`/`petrified` → enemy loses its turn) but `controlSkipChance = 0` (HELD) ⇒ never skips ⇒
+  flag-on byte-identical (DoT-coeff-0 flavor, not the live ICD flavor). **F-BAL/D15 BLOCKERS before a
+  non-zero value:** (1) **no enemy Stagger/CC-Resist source** exists (enemies have no derived layer — the
+  canon `controlPower` vs `stagger` roll has no denominator); (2) **perma-lock risk** — refresh-not-stack
+  (4000ms) vs 1000ms player-attack would lock the enemy all fight, so a live value needs a
+  duration/CC-immunity-window model. Also confirm the player `controlPower` channel is combat-readable.
+- **D11 3b remaining (HELD):** the real `controlPower`-vs-`stagger` roll (3b-iii-c, blocked above) +
+  soft-CC action-rate reduction (3b-iii-b); spread radius/count; drain/tempo/cleanse/catalyst magnitudes
+  — all D15-held.
 - **Beast-Lore drop rate + per-beast→essence mapping (D11/D15):** the placeholder absorbs the next
   essence per kill; the real drop rate + which beast drops which essence are held.
 - **Weapon-Bond curve (D5/D15):** `BOND_KILLS_FOR_FULL=25` + the per-art unlock bands (in
