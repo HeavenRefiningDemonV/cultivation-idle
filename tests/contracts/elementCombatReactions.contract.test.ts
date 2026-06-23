@@ -66,3 +66,28 @@ void test('D11 3b-ii — preserve-first: flag-off carries no ICD and writes noth
   const off = stepEnemyElementOnHit({ appliedElement: 'ice', states: { active: [soaked], icdByPathway: { freeze: 1500 } }, realm: 3, engineActive: false });
   assert.equal(off.states.icdByPathway?.freeze, 1500, 'flag-off returns the input states unchanged');
 });
+
+// Shadow on a Cursed target: Hex (dot, priority 7) out-prioritizes Siphon (drain, priority 8).
+const cursed: ElementStateInstance = { state: 'cursed', category: 'amplifier', remainingMs: 4000, intensity: 1 };
+
+void test('D11 3b — drain (Siphon) returns self-heal when it fires (Hex on ICD ⇒ the drain surfaces)', () => {
+  const out = stepEnemyElementOnHit({
+    appliedElement: 'shadow',
+    states: { active: [cursed], icdByPathway: { hex: 1500 } },
+    realm: 3,
+    engineActive: true,
+  });
+  assert.equal(out.reactionLabel, '噬生', 'with Hex on cooldown, the lower-priority Siphon (drain) wins');
+  assert.ok(out.drainHeal > 0, 'drain yields a self-heal (reuses the held reaction amount)');
+});
+
+void test('D11 3b — a non-drain reaction yields no self-heal', () => {
+  const hex = stepEnemyElementOnHit({ appliedElement: 'shadow', states: { active: [cursed] }, realm: 3, engineActive: true });
+  assert.equal(hex.reactionLabel, '诅咒', 'Hex (dot) wins by priority when off cooldown');
+  assert.equal(hex.drainHeal, 0, 'a dot reaction is not a drain ⇒ no heal');
+});
+
+void test('D11 3b — drain is INERT when the engine is off (preserve-first)', () => {
+  const off = stepEnemyElementOnHit({ appliedElement: 'shadow', states: { active: [cursed], icdByPathway: { hex: 1500 } }, realm: 3, engineActive: false });
+  assert.equal(off.drainHeal, 0);
+});

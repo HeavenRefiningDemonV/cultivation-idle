@@ -1595,10 +1595,18 @@ export const useCombatStore = create<ExtendedCombatState>()(
         }
         // D11 — refresh the enemy's element afflictions (flag-off ⇒ unchanged empty set).
         state.enemyElementStates = elementStep.states;
+        // D11 3b — drain self-heal (Siphon/Devour): a portion of the strike returns as health.
+        // flag-off ⇒ drainHeal 0 ⇒ no write ⇒ byte-identical. Never touches the frozen-core formula.
+        if (elementStep.drainHeal > 0) {
+          state.playerHP = clamp(D(state.playerHP).plus(elementStep.drainHeal), 0, state.playerMaxHP).toString();
+        }
       });
 
       if (elementStep.reactionLabel) {
         get().addLogEntry('damage', `Element reaction — ${elementStep.reactionLabel}!`, '#a78bfa');
+      }
+      if (elementStep.drainHeal > 0) {
+        get().addLogEntry('system', `Siphoned ${elementStep.drainHeal.toFixed(0)} health!`, '#a78bfa');
       }
 
       emitEvent('HIT', {

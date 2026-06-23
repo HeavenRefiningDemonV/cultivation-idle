@@ -39,10 +39,11 @@ export const EMPTY_ENEMY_ELEMENT_STATES: EnemyElementStates = Object.freeze({ ac
 export interface ElementHitOutcome {
   readonly states: EnemyElementStates; // the updated enemy states after this hit
   readonly bonusDamage: number;        // instant burst/sever reaction damage (0 otherwise)
+  readonly drainHeal: number;          // D11 3b — drain (Siphon/Devour) self-heal returned to the player (0 otherwise)
   readonly reactionLabel: string | null; // the fired reaction's label, for the combat log / UI
 }
 
-const INERT = (states: EnemyElementStates): ElementHitOutcome => ({ states, bonusDamage: 0, reactionLabel: null });
+const INERT = (states: EnemyElementStates): ElementHitOutcome => ({ states, bonusDamage: 0, drainHeal: 0, reactionLabel: null });
 
 /** Apply a StateDelta under refresh-not-stack (R2) + bounded intensity (R3); escalation swaps the state id. */
 function applyStateDelta(active: readonly ElementStateInstance[], delta: StateDelta | null): ElementStateInstance[] {
@@ -79,6 +80,10 @@ export function stepEnemyElementOnHit(input: {
     reaction && (reaction.effect.kind === 'burst' || reaction.effect.kind === 'sever')
       ? Math.max(0, reaction.effect.amount)
       : 0;
+  // D11 3b — drain (Siphon/Devour, a low-priority reaction that surfaces when the higher-priority same-
+  //   trigger reaction is on ICD): a portion of the strike returns as self-healing. Reuses reactionBase
+  //   (held) via the resolver's drain amount — no new magnitude.
+  const drainHeal = reaction && reaction.effect.kind === 'drain' ? Math.max(0, reaction.effect.amount) : 0;
 
   // 2. apply/refresh this element's signature affliction.
   const delta = resolveState(input.appliedElement, target, ctx, DEFAULT_ELEMENT_TUNING);
@@ -91,5 +96,5 @@ export function stepEnemyElementOnHit(input: {
   const nextActive = applyStateDelta(input.states.active, delta);
   const states: EnemyElementStates =
     Object.keys(nextIcd).length > 0 ? { active: nextActive, icdByPathway: nextIcd } : { active: nextActive };
-  return { states, bonusDamage, reactionLabel: reaction?.label ?? null };
+  return { states, bonusDamage, drainHeal, reactionLabel: reaction?.label ?? null };
 }
