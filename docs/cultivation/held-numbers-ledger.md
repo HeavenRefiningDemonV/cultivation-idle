@@ -49,6 +49,12 @@ Last updated: 2026-06-23.
 - **Held because:** D15 owns the values; applied in D11 combat (in progress) under `?statEngine=1`.
 - **Also held (B-ELEM seam):** `buildPlayerElementWeights` puts weight `1` on the root element — a
   structural placeholder, not a tuned magnitude; weights aggregate from D7/D8/D10 in later packets.
+- **Per-enemy element assignment (D11 DR-11j):** `EnemyDefinition.element` is a live optional FIELD,
+  but WHICH enemy carries WHICH element is **D15-owned** ("fair anti-funnel distribution"). No enemy
+  has one yet ⇒ the counter/resist matchup layer (D11 slice 2) is inert until D15 assigns them.
+- **Reaction/state effect magnitudes (D11 slice 3, pending):** `reactionBase`, `severCapMultiple`,
+  `burstCapMultiple`, `stateBaseDurationMs`, `stateMaxIntensity`, `stateEscalationThreshold`, the
+  per-family ICD windows (`icdMsByFamily`) — all in `DEFAULT_ELEMENT_TUNING`, all D15-held.
 
 ## 5. The shipped engine flag (flip #2)
 - **Where:** `STAT_ENGINE_DERIVED_AUTHORITATIVE_DEFAULT = false` (`src/systems/meridians/statEngineFlag.ts`).
