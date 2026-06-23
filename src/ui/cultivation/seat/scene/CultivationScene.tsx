@@ -27,11 +27,8 @@ export function CultivationScene({ surface }: { surface: CultivationSeatSurfaceV
       <div className="cultivationSeatScene__defs" dangerouslySetInnerHTML={{ __html: CULTIVATION_SEAT_SCENE_DEFS }} />
       <div className="cultivationSeatScene__sky" style={{ background: sky }} />
       <div className="cultivationSeatScene__fieldHost" dangerouslySetInnerHTML={{ __html: field }} />
-      <div className="cultivationSeatScene__watermark">
-        {scene.watermarkZh.split('').map((ch, i) => (
-          <span key={i}>{ch}</span>
-        ))}
-      </div>
+      {/* E3: the per-path vertical inscription — a single vertical-rl string at the artifact coords */}
+      <div className="cultivationSeatScene__watermark">{scene.watermarkZh}</div>
       <div className="cultivationSeatScene__scrim" data-held={scene.foreground === 'combat-held' ? 'true' : 'false'} />
       <div className="cultivationSeatScene__vignette" />
       {!reducedMotion &&

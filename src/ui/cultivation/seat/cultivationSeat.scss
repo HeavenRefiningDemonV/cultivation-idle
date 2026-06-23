@@ -92,22 +92,22 @@
 }
 .cultivationSeatScene__watermark {
   position: absolute;
-  top: 8%;
-  right: 4%;
+  top: 118px;
   z-index: 2;
   writing-mode: vertical-rl;
   font-family: var(--kai);
   font-weight: 700;
-  font-size: 96px;
+  font-size: 50px;
   line-height: 0.9;
-  letter-spacing: 0.04em;
-  color: rgba(243, 234, 215, 0.05);
+  letter-spacing: 16px;
+  color: rgba(243, 234, 215, 0.055);
   pointer-events: none;
   user-select: none;
 }
-.cultivationSeatScene__watermark span {
-  display: block;
-}
+/* E3: per-path side — heaven on the left, earth & martial on the right (the artifact placement) */
+.cultivationSeatScene[data-path=heaven] .cultivationSeatScene__watermark { left: 58px; }
+.cultivationSeatScene[data-path=earth] .cultivationSeatScene__watermark { right: 58px; }
+.cultivationSeatScene[data-path=martial] .cultivationSeatScene__watermark { right: 58px; }
 .cultivationSeatScene__scrim {
   position: absolute;
   inset: 0;
