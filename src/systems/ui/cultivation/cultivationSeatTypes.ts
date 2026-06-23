@@ -187,6 +187,8 @@ export interface CultivationSeatSurfaceV1 {
     realmZh: string;
     stageInRealm: number; // 1..9
     stageLabel: string;
+    stagePips: { index: number; on: boolean; current: boolean }[]; // the lintel stage-pip row (§4)
+    fantasyLine: string; // the current realm's fantasy beat (the ambient whisper, E4)
     atPeak: boolean;
     accentTokenId: string; // token id, never hex (R-7)
     glyphId: string;

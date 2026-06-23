@@ -276,6 +276,14 @@ export function buildCultivationSeatSurface(input: { raw: CultivationSeatRawInpu
       realmZh: realmDef.zh,
       stageInRealm: raw.game.substage,
       stageLabel: atPeak ? (def.counter === 'Edge' ? '9th Edge · Peak' : `${def.peak} Peak`) : `Stage ${raw.game.substage} / ${raw.game.substages}`,
+      // 9-pip-style stage row (lit to the live substage, the current marked) — §4 / Group A lintel.
+      stagePips: Array.from({ length: Math.max(1, raw.game.substages) }, (_, i) => ({
+        index: i,
+        on: i < raw.game.substage,
+        current: i === Math.min(raw.game.substages, raw.game.substage) - 1,
+      })),
+      // the current realm's fantasy beat — the ambient whisper line (E4).
+      fantasyLine: realmDef.fantasy,
       atPeak,
       accentTokenId: def.accentTokenId,
       glyphId: def.glyphId,

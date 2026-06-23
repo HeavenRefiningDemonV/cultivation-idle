@@ -7,6 +7,7 @@ import {
   buildFocusDialSvg,
   buildPathInstrumentSvg,
   buildAscentSvg,
+  buildWaxSealSvg,
 } from './scene/cultivationSeatInstrumentsSvg.js';
 import { CultivationSeatScrolls } from './scrolls/CultivationSeatScrolls.js';
 import { CultivationBreakthroughHost } from './CultivationBreakthroughHost.js';
@@ -59,23 +60,39 @@ export function CultivationSeatScreen({ surface, actions }: { surface: Cultivati
         {/* ── the full-bleed painting ── */}
         <CultivationScene surface={surface} />
 
-        {/* ── LINTEL ── */}
+        {/* ── LINTEL (the identity bar — Group A) ── */}
         <header data-region="lintel">
+          <div className="gildrule" aria-hidden="true" />
           <span className="cultivationSeatChop" data-pathchop={meta.path} aria-hidden="true">{identity.pathGlyph}</span>
           <span className="nameblock">
             <span className="roomsub">{identity.roomSub}</span>
-            <span className="roomtitle">{identity.roomTitle}</span>
-            <span className="realmline">{identity.realmName} · {identity.realmZh} — {identity.stageLabel}</span>
+            <span className="roomtitle">
+              {identity.roomTitle}
+              <span className="cultivationSeatWax" aria-hidden="true" dangerouslySetInnerHTML={SVG(buildWaxSealSvg('修', 30, -6, meta.path === 'heaven'))} />
+            </span>
+            <span className="realmline">
+              <span className="realmname">{identity.realmName} · {identity.realmZh}</span>
+              <span className="stagepips" aria-hidden="true">
+                {identity.stagePips.map((p) => <span key={p.index} className={`sp${p.on ? ' on' : ''}${p.current ? ' cur' : ''}`} />)}
+              </span>
+              <span className="stagetxt">{identity.stageLabel}</span>
+            </span>
           </span>
-          <span className="fgchip" data-foreground={scene.foreground}>{scene.foregroundLabel}</span>
+          <span className="spacer" />
+          <span className="fgchip" data-foreground={scene.foreground}><span className="dot" aria-hidden="true" />{scene.foregroundLabel}</span>
         </header>
 
         {/* ── BREATH-LINE (the idle read; the whole band opens the ledger) ── */}
         <button type="button" data-region="breath-line" data-testid="cultivation-seat-breathline" onClick={() => actions.onOpenScroll('ledger')}>
+          <span className="brrule" aria-hidden="true" />
+          {!meta.reducedMotion && <span className="light" aria-hidden="true" />}
           <span className="brread"><span className="coin">率</span><span className="v big">{idle.qiPerSec}</span><span className="l">qi / s</span></span>
           <span className="brread"><span className="coin">藏</span><span className="v">{idle.offlineCapLabel}</span><span className="l">offline cap</span></span>
           <span className="brread"><span className="coin">風</span><span className="v">{idle.offlineEfficiency}</span><span className="l">offline efficiency</span></span>
-          <span className="brread"><span className="coin">業</span><span className="v">{idle.stateWord}</span><span className="l">the Seat is —</span></span>
+          <span className={`brread${idle.combatHeld ? ' heldmark' : ' last'}`}><span className="coin">業</span><span className="v">{idle.stateWord}</span><span className="l">the Seat is —</span></span>
+          {idle.combatHeld && (
+            <span className="brread heldmark last"><span className="coin coin--cinn">戰</span><span className="v">combat</span><span className="l">resumes after</span></span>
+          )}
           <span className="expandhint">touch for the ledger ↗</span>
         </button>
 
@@ -146,7 +163,7 @@ export function CultivationSeatScreen({ surface, actions }: { surface: Cultivati
                   : gate?.verdict === 'held'
                     ? 'The gate would open, but the heart is not yet still.'
                     : 'The gate nears — yet the base is not yet full.'
-                : identity.verse}
+                : identity.fantasyLine}
           </span>
 
           {/* The diegetic Cultivate seal */}

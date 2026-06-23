@@ -28,6 +28,11 @@ void test('M.II.3-C — the three lives yield three distinct identities (path gl
   for (const s of [heaven, earth, martial]) {
     assert.match(s.identity.accentTokenId, /^path\.(heaven|earth|martial)\.accent$/);
     assert.doesNotMatch(s.identity.accentTokenId, /#/, 'token id, never hex (R-7)');
+    // §4 / Group A lintel: the stage-pip row + the per-realm fantasy whisper line bind from the surface.
+    assert.ok(Array.isArray(s.identity.stagePips) && s.identity.stagePips.length >= 1, 'stagePips present');
+    assert.equal(s.identity.stagePips.filter((p) => p.current).length <= 1, true, 'at most one current pip');
+    assert.equal(typeof s.identity.fantasyLine, 'string');
+    assert.ok(s.identity.fantasyLine.length > 0, 'fantasyLine is non-empty');
   }
 });
 

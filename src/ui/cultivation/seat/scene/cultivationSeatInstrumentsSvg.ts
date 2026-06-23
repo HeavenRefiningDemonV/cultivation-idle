@@ -92,3 +92,20 @@ export function buildAscentSvg(realmIndex1to7: number, atPeak: boolean, reducedM
 // (B1) The Three-Treasures triad now renders as native React medallions in the screen — no injected
 // HTML — so the .cultivationSeatTriad__tre classes are guaranteed to land (the glyphs were flowing
 // as flat text when injected). See CultivationSeatScreen.tsx.
+
+/** The blobby wax-seal stamp (the lintel 修 seal), ported 1:1 from the artifact's waxSeal(). */
+export function buildWaxSealSvg(chars: string, size: number, rot: number, jade: boolean): string {
+  const C = size / 2, r = size / 2 - 2, N = 22;
+  let p = '';
+  for (let i = 0; i <= N; i++) {
+    const a = (i / N) * 2 * Math.PI;
+    const rr = r * (0.9 + 0.06 * Math.sin(i * 2.7 + 1.3) + 0.04 * Math.cos(i * 1.6 + 0.5));
+    const x = C + rr * Math.cos(a), y = C + rr * Math.sin(a);
+    p += (i ? 'L' : 'M') + x.toFixed(1) + ',' + y.toFixed(1) + ' ';
+  }
+  p += 'Z';
+  const cs = [...chars], fs = size * (cs.length > 2 ? 0.27 : 0.34), gap = fs * 1.02, y0 = C - ((cs.length - 1) * gap) / 2;
+  const txt = cs.map((c, i) => `<tspan x="${C}" y="${(y0 + i * gap + fs * 0.34).toFixed(1)}">${c}</tspan>`).join('');
+  const fill = jade ? 'url(#jadeRad)' : 'url(#cinnDisc)', str = jade ? '#1c3128' : '#54190f', inner = jade ? 'rgba(220,240,225,.4)' : 'rgba(255,214,196,.4)', tx = jade ? '#e9efe2' : '#f4dccb';
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="transform:rotate(${rot || 0}deg);overflow:visible" aria-hidden="true"><path d="${p}" fill="${fill}" stroke="${str}" stroke-width="1.3"/><path d="${p}" fill="none" stroke="${inner}" stroke-width=".8" transform="translate(${C} ${C}) scale(.82) translate(${-C} ${-C})"/><text text-anchor="middle" font-family="var(--kai)" font-weight="700" font-size="${fs.toFixed(1)}" fill="${tx}">${txt}</text></svg>`;
+}

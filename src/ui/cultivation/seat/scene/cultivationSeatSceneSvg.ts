@@ -250,6 +250,7 @@ export const CULTIVATION_SEAT_SCENE_DEFS = `<svg width="0" height="0" style="pos
 <filter id="glowJ" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
 <filter id="brushRough" x="-20%" y="-20%" width="140%" height="140%"><feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="1" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="9"/></filter>
 <radialGradient id="jadeRad" cx="40%" cy="34%" r="78%"><stop offset="0" stop-color="#cfdccb"/><stop offset=".5" stop-color="#7f9a86"/><stop offset="1" stop-color="#3c5849"/></radialGradient>
+<radialGradient id="cinnDisc" cx="40%" cy="34%" r="78%"><stop offset="0" stop-color="#b25347"/><stop offset=".5" stop-color="#8b3028"/><stop offset="1" stop-color="#54190f"/></radialGradient>
 <radialGradient id="goldRad" cx="40%" cy="34%" r="75%"><stop offset="0" stop-color="#f3e3b0"/><stop offset=".5" stop-color="#c08f3a"/><stop offset="1" stop-color="#6e4c16"/></radialGradient>
 <radialGradient id="inkHub" cx="38%" cy="32%" r="80%"><stop offset="0" stop-color="#3b342c"/><stop offset=".55" stop-color="#241f1a"/><stop offset="1" stop-color="#120e0a"/></radialGradient>
 <linearGradient id="goldG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f0d896"/><stop offset=".5" stop-color="#a2712a"/><stop offset="1" stop-color="#6e4c16"/></linearGradient>
