@@ -125,6 +125,11 @@ Slices A/B/C built, all bases held 0; control roll + shred unblocked; controlPow
   (×1.00/1.08/1.18/1.30/1.45) · `ItemDef.baseChannels` base power + the itemTier 1–7 curve · armor refine
   caps + channel weighting · the `status_resist`→`evasion` legacy overload (split to tribResist/
   controlPower?) · WeaponBondState growth/art gates (D5/D11). All typed-but-held; none authored.
+- **D8 GearInstance roll resolver (landed, structure-only, unconsumed):** `gearRoll.ts` (rollAffixes +
+  rollGearInstance + resolveAffixPool). Authors NO new magnitude — consumes the held RARITY_BANDS
+  affixCount (held ⇒ 0 affixes, INERT) + AFFIX_TABLE rollRange (held ⇒ 0 value). `RARITY_RANK` is a
+  structural enumeration, not a magnitude. When F-BAL fills the count bands + roll ranges, the same algo
+  produces real items. (Element variance + the latent-affix gates remain held.)
 - **D8 equip/loadout model (landed, structure-only, unconsumed):** `gearLoadout.ts` (Loadout +
   validateEquip + resolveSetBonus + bondEligible). Integer gates use a distinct `HELD_COUNT = -1`
   sentinel. **F-BAL deposits:** the accessory mounting count per realm (held ⇒ floors at 1, never-zero-
