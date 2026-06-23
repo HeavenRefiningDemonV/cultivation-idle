@@ -67,12 +67,14 @@ Last updated: 2026-06-23 (consolidation checkpoint — D8 slice 1a landed; manif
 - **D11 slice 3b-0 (landed):** enemy element afflictions now AGE + EXPIRE on the tick heartbeat
   (`elementStateTick.ts`) — lifecycle only, NO new magnitude (decrement uses live deltaTime +
   the written `remainingMs`), parity-safe (no effect applied yet).
-- **D11 slice 3b-i (next, HELD):** the per-tick **DoT damage coefficient** is MISSING from
-  `DEFAULT_ELEMENT_TUNING` (today `dot` effects reuse `reactionBase`, which also caps burst/sever — not
-  a plausible final design). The DoT slice must add an independent held `dotTickCoeff` (ship at 0 ⇒
-  zero damage until D15) + a true interval-accumulator cadence (NOT frame-rate-coupled). Plus the
-  control/CC success roll (controlPower vs stagger), spread radius/count, drain/tempo/cleanse/catalyst
-  magnitudes — all D15-held. Per-pathway ICD windows already `3000` placeholder (held).
+- **D11 slice 3b-i (landed, HELD AT 0):** `dotTickCoeff = 0` + `dotTickIntervalMs = 1000` now exist in
+  `DEFAULT_ELEMENT_TUNING` (independent of `reactionBase`). DoT-category afflictions tick via a true
+  interval-accumulator (`dotTickCoeff × intensity × realmScalar` per interval) but deal **zero** damage
+  until D15 deposits `dotTickCoeff` — F-BAL action: set `dotTickCoeff` (and tune `dotTickIntervalMs`),
+  acknowledge the intended flag-on parity divergence.
+- **D11 3b remaining (HELD):** control/CC success roll (`controlPower` vs `stagger`) + skip-turn; spread
+  radius/count; drain/tempo/cleanse/catalyst magnitudes — all D15-held. Per-pathway ICD windows already
+  `3000` placeholder (held); ICD write/decay (3b-ii) makes `isEligible` bite.
 - **Beast-Lore drop rate + per-beast→essence mapping (D11/D15):** the placeholder absorbs the next
   essence per kill; the real drop rate + which beast drops which essence are held.
 - **Weapon-Bond curve (D5/D15):** `BOND_KILLS_FOR_FULL=25` + the per-art unlock bands (in
