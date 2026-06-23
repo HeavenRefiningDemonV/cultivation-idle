@@ -40,3 +40,15 @@ export interface SaveBeastLoreState {
 export function createDefaultBeastLoreSaveState(): SaveBeastLoreState {
   return { absorbedCount: 0 };
 }
+
+/**
+ * D5 — the persisted Martial Weapon-Bond meter (bond deepened by weapon kills). Optional on legacy
+ * saves ⇒ defaults to 0.
+ */
+export interface SaveWeaponBondState {
+  bondKills: number;
+}
+
+export function createDefaultWeaponBondSaveState(): SaveWeaponBondState {
+  return { bondKills: 0 };
+}

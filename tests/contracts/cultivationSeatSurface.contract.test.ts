@@ -126,6 +126,25 @@ void test('D11 — the Seat Earth Beast-Lore flips active once essences are abso
   }
 });
 
+void test('D5 — the Seat Martial Weapon-Bond flips active once the bond has deepened under the engine', () => {
+  const martialGame = { ...makeSeatRawFixture().game, selectedPath: 'martial' };
+  const off = makeSeatFixture({ game: martialGame, derived: { perception: 0, engineActive: false, bondKills: 10 } });
+  if (off.instrument.kind === 'martial') {
+    assert.equal(off.instrument.active, false, 'engine off ⇒ honest preview even with a bond');
+    assert.equal(off.instrument.bondDepthPct, 0);
+  }
+  const none = makeSeatFixture({ game: martialGame, derived: { perception: 0, engineActive: true, bondKills: 0 } });
+  if (none.instrument.kind === 'martial') assert.equal(none.instrument.active, false, 'engine on but no bond ⇒ preview');
+  const on = makeSeatFixture({ game: martialGame, derived: { perception: 0, engineActive: true, bondKills: 25 } });
+  assert.equal(on.instrument.kind, 'martial');
+  if (on.instrument.kind === 'martial') {
+    assert.equal(on.instrument.active, true, 'engine on + bonded ⇒ live Weapon-Bond');
+    assert.equal(on.instrument.bondDepthPct, 100, '25 kills ⇒ full bond (placeholder curve)');
+    assert.equal(on.instrument.artsCount, on.instrument.artsCapacity, 'full bond unlocks all arts');
+    assert.equal(on.instrument.arts.length, on.instrument.artsCount, 'shows the unlocked subset');
+  }
+});
+
 void test('M.II.3 — the per-path instrument is discriminated by path', () => {
   const heaven = makeSeatFixture({ game: { ...makeSeatRawFixture().game, selectedPath: 'heaven' } });
   const martial = makeSeatFixture({ game: { ...makeSeatRawFixture().game, selectedPath: 'martial' } });

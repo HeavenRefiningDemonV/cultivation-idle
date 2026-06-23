@@ -67,6 +67,7 @@ function buildInstrument(
   foreground: string,
   premonition: PremonitionOmensResult,
   beastLore: { absorbedCount: number; engineActive: boolean },
+  weaponBond: { bondKills: number; engineActive: boolean },
 ): CultivationInstrument {
   if (path === 'heaven') {
     // C-PATH slice 1 — Heaven Premonition (Day's Omen) is LIVE under the derived engine: active, a
@@ -105,19 +106,28 @@ function buildInstrument(
     };
   }
   const communion = foreground === 'cultivating' ? 'deepening' : foreground === 'combat-held' ? 'held' : 'idle';
+  // D5 — Weapon-Bond goes live once the natal bond has deepened (≥1 kill) under the derived engine.
+  // [tune → D15]-HELD placeholder curve (logged in the ledger): ~BOND_KILLS_FOR_FULL kills → full bond,
+  // an art unlocking as depth crosses even bands. The real curve is the balance pass's.
+  const BOND_KILLS_FOR_FULL = 25;
+  const bondActive = weaponBond.engineActive && weaponBond.bondKills > 0;
+  const bondDepthPct = Math.min(100, Math.round((weaponBond.bondKills / BOND_KILLS_FOR_FULL) * 100));
+  const artsCount = Math.min(WEAPON_ARTS.length, Math.floor((bondDepthPct / 100) * WEAPON_ARTS.length));
   return {
     kind: 'martial',
     label: 'WEAPON-BOND',
-    valLabel: 'Not yet active',
-    active: false,
-    previewNote: 'Weapon-Bond — the weapon as a cultivable companion — is a designed but not-yet-active path system (D5 / D8 equipment). The arts below preview what the bond will grant once it ships.',
-    bondDepthPct: 0,
-    artsCount: 0,
+    valLabel: bondActive ? `Bond ${bondDepthPct}% · ${artsCount} art${artsCount === 1 ? '' : 's'}` : 'Not yet active',
+    active: bondActive,
+    previewNote: bondActive
+      ? `Arms-Mastery is live — the ${MARTIAL_BONDED_WEAPON.name} bond is ${bondDepthPct}% deep; ${artsCount} weapon-art${artsCount === 1 ? '' : 's'} unlocked. Each kill deepens the bond.`
+      : 'Weapon-Bond — the weapon as a cultivable companion — is a designed but not-yet-active path system (D5 / D8 equipment). The arts below preview what the bond will grant once it ships.',
+    bondDepthPct: bondActive ? bondDepthPct : 0,
+    artsCount: bondActive ? artsCount : 0,
     artsCapacity: WEAPON_ARTS.length,
     communion,
     weaponName: MARTIAL_BONDED_WEAPON.name,
     weaponGrade: MARTIAL_BONDED_WEAPON.grade,
-    arts: WEAPON_ARTS.map((a) => ({ ...a })),
+    arts: (bondActive ? WEAPON_ARTS.slice(0, artsCount) : WEAPON_ARTS).map((a) => ({ ...a })),
   };
 }
 
@@ -259,10 +269,13 @@ export function buildCultivationSeatSurface(input: { raw: CultivationSeatRawInpu
     idleRunning: !raw.activity.combatHeld,
     engineActive: raw.derived?.engineActive ?? false,
   });
-  const instrument = buildInstrument(path, foreground, premonition, {
-    absorbedCount: raw.derived?.absorbedEssences ?? 0,
-    engineActive: raw.derived?.engineActive ?? false,
-  });
+  const instrument = buildInstrument(
+    path,
+    foreground,
+    premonition,
+    { absorbedCount: raw.derived?.absorbedEssences ?? 0, engineActive: raw.derived?.engineActive ?? false },
+    { bondKills: raw.derived?.bondKills ?? 0, engineActive: raw.derived?.engineActive ?? false },
+  );
 
   const treasureItems: CultivationSeatSurfaceV1['treasures']['items'] = [
     { id: 'jing', label: 'Body', glyph: '精', value: raw.treasures.jing },

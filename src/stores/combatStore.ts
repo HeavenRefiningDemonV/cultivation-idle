@@ -35,6 +35,7 @@ import { resolveMeridianSignaturesForCombat, combineArmorPenWithSignatures, isIr
 import { resolvePlayerElementAffinity, elementAffinityDamageMultiplier, resolvePlayerElementResist, elementResistDamageMultiplier } from '../systems/elements/elementCombatAffinity.js';
 import { stepEnemyElementOnHit, EMPTY_ENEMY_ELEMENT_STATES } from '../systems/elements/elementCombatReactions.js';
 import { useBeastLoreStore } from '../features/court/useBeastLoreStore.js';
+import { useWeaponBondStore } from '../features/court/useWeaponBondStore.js';
 import { isDerivedStatEngineAuthoritative } from '../systems/meridians/statEngineFlag.js';
 import { generateLoot, formatLootMessage } from '../systems/loot.js';
 import { RewardService, type RewardBundle, type RewardItemBundle } from '../services/rewards/index.js';
@@ -1794,8 +1795,12 @@ export const useCombatStore = create<ExtendedCombatState>()(
       // D11 / Earth Beast-Lore — a beast kill drops an essence that Earth absorbs (engine-gated +
       // Earth-path-only ⇒ preserve-first: shipped players still see "not yet active"). Drop rates +
       // the per-beast → essence mapping are D11/D15-held; this is the placeholder absorb mechanism.
-      if (isDerivedStatEngineAuthoritative() && useGameStore.getState().selectedPath === 'earth') {
-        useBeastLoreStore.getState().absorbEssence();
+      if (isDerivedStatEngineAuthoritative()) {
+        const path = useGameStore.getState().selectedPath;
+        // D11 / Earth Beast-Lore — a beast kill drops an essence Earth absorbs.
+        if (path === 'earth') useBeastLoreStore.getState().absorbEssence();
+        // D5 / Martial Weapon-Bond — a weapon kill deepens the natal bond (the active-clock growth).
+        else if (path === 'martial') useWeaponBondStore.getState().deepenBond();
       }
 
       const enemy = state.currentEnemy;

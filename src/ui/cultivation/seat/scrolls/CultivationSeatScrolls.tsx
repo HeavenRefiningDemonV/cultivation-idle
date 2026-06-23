@@ -285,19 +285,27 @@ function MechanicScroll({ s, actions, onClose }: { s: CultivationSeatSurfaceV1; 
     );
   }
   return (
-    <ScrollFrame tag="劍" kicker="WEAPON-BOND" title="Arms-Mastery" dek="The weapon as a cultivable companion — a second body, tempered beside you; a forthcoming Martial-path system" onClose={onClose}>
-      <PreviewBanner note={inst.previewNote} />
+    <ScrollFrame tag="劍" kicker="WEAPON-BOND" title="Arms-Mastery" dek={inst.active ? 'The weapon as a cultivable companion — a second body, tempered beside you' : 'The weapon as a cultivable companion — a second body, tempered beside you; a forthcoming Martial-path system'} onClose={onClose}>
+      {inst.active
+        ? (
+          <div className="seatCard" data-scroll-body="mechanic" data-instrument-active="true">
+            <CardTop glyph="劍" title="Arms-Mastery" right="active" tone="cinn" />
+            <div className="seatTerms">{inst.previewNote}</div>
+          </div>
+        )
+        : <PreviewBanner note={inst.previewNote} />}
       <div className="seatCard">
-        <CardTop glyph="劍" title="The bonded weapon" right="preview" tone="cinn" />
+        <CardTop glyph="劍" title="The bonded weapon" right={inst.active ? `bond ${inst.bondDepthPct}%` : 'preview'} tone="cinn" />
         <div className="seatStatrow"><span className="seatStatrow__sn">{inst.weaponName}</span><span className="seatStatrow__sv">{inst.weaponGrade}</span></div>
+        {inst.active && <div className="seatStatrow"><span className="seatStatrow__sn">Bond depth</span><span className="seatStatrow__sv">{inst.bondDepthPct}%</span></div>}
       </div>
       <div className="seatCard">
-        <CardTop glyph="劃" title="Weapon-arts" right={`preview · ${inst.arts.length}`} tone="jade" />
+        <CardTop glyph="劃" title={inst.active ? 'Weapon-arts unlocked' : 'Weapon-arts'} right={inst.active ? `${inst.artsCount} of ${inst.artsCapacity}` : `preview · ${inst.arts.length}`} tone="jade" />
         <div className="seatGrid">{inst.arts.map((a) => (<div key={a.name} className="seatGrant"><div className="seatGrant__gm">劃</div><div><div className="seatGrant__gt">{a.name}</div><div className="seatGrant__gd">{a.detail}</div></div></div>))}</div>
       </div>
       <div className="seatCard">
         <CardTop glyph="鍛" title="The Forge" right="equipment" />
-        <div className="seatTerms">Forging, refining and gems — the gear side — is owned by the Forge.</div>
+        <div className="seatTerms">{inst.active ? 'Each kill deepens the bond. The gear side — forging, refining, gems — is owned by the Forge (D8).' : 'Forging, refining and gems — the gear side — is owned by the Forge.'}</div>
         <button type="button" className="seatDeeplink" onClick={() => actions.onDeepLink('forge.equipment')}>To the Forge &amp; Equipment ↗</button>
       </div>
     </ScrollFrame>

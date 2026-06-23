@@ -30,6 +30,7 @@ import { useRecipeMasteryStore } from '../stores/recipeMasteryStore.js';
 import { useTrainingStore } from '../stores/trainingStore.js';
 import { useCourtMeridianStore } from '../features/court/useCourtMeridianStore.js';
 import { useBeastLoreStore } from '../features/court/useBeastLoreStore.js';
+import { useWeaponBondStore } from '../features/court/useWeaponBondStore.js';
 import { usePavilionStore } from '../stores/pavilionStore.js';
 import { useStoryStore } from '../features/story/storyStore.js';
 import { useContentStore } from '../stores/contentStore.js';
@@ -262,6 +263,7 @@ function gatherGameState(): SaveData {
     trainingState: trainingState.toSaveState(),
     meridianCourtState: meridianCourtState.toSaveState(),
     beastLoreState: useBeastLoreStore.getState().toSaveState(),
+    weaponBondState: useWeaponBondStore.getState().toSaveState(),
     pavilionState: pavilionState.toSaveState(),
     storyState: storyState.toSaveState(),
 
@@ -1465,6 +1467,7 @@ function applySaveData(saveData: SaveData): void {
     // W13a-5: restore the Court meridian slice (optional — legacy saves default to empty).
     useCourtMeridianStore.getState().hydrateFromSave(saveData.meridianCourtState ?? defaults.meridianCourtState);
     useBeastLoreStore.getState().hydrateFromSave(saveData.beastLoreState ?? defaults.beastLoreState);
+    useWeaponBondStore.getState().hydrateFromSave(saveData.weaponBondState ?? defaults.weaponBondState);
 
     useOutskirtsStore.setState({
       progressByOutskirtsId: {

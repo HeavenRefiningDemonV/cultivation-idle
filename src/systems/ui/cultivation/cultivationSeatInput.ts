@@ -27,6 +27,7 @@ import { CULTIVATION_PATH_DATA } from './cultivationPathData.js';
 import { useTrainingStore } from '../../../stores/trainingStore.js';
 import { isDerivedStatEngineAuthoritative } from '../../meridians/statEngineFlag.js';
 import { useBeastLoreStore } from '../../../features/court/useBeastLoreStore.js';
+import { useWeaponBondStore } from '../../../features/court/useWeaponBondStore.js';
 
 export interface CultivationSeatRawInput {
   game: {
@@ -54,7 +55,7 @@ export interface CultivationSeatRawInput {
    * C-PATH (Premonition) — live derived-engine reads for the per-path mechanics. OPTIONAL so fixtures
    * (which omit them) default to engine-off ⇒ the honest "not yet active" preview is preserved.
    */
-  derived?: { perception: number; engineActive: boolean; absorbedEssences?: number };
+  derived?: { perception: number; engineActive: boolean; absorbedEssences?: number; bondKills?: number };
 }
 
 /** Read the live raw input. Impure (store reads). */
@@ -161,6 +162,7 @@ export function readCultivationSeatRawInput(opts: { reducedMotion?: boolean; sel
       perception: useTrainingStore.getState().statRatingsById.spirit_sense ?? 0,
       engineActive: isDerivedStatEngineAuthoritative(),
       absorbedEssences: useBeastLoreStore.getState().absorbedCount,
+      bondKills: useWeaponBondStore.getState().bondKills,
     },
     // nextRealm consumed by the builder via path data; not surfaced here directly
     ...(nextRealm ? {} : {}),
