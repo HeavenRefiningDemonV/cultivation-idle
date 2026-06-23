@@ -55,4 +55,12 @@ export const DEFAULT_ELEMENT_TUNING: ElementTuning = Object.freeze({
   stateBaseDurationMs: 4000,
   stateMaxIntensity: 3,
   stateEscalationThreshold: 3,
+  // [tune] D15 #10-adjacent (DR-3e/DR-11a) — per-tick DoT damage coefficient, applied as
+  //   dotTickCoeff × intensity × realmScalar once per dotTickIntervalMs of elapsed time (interval-
+  //   accumulator, NOT frame-rate-coupled). HELD AT 0 ⇒ DoT-category afflictions deal ZERO damage
+  //   until D15 deposits a real value — afflictions still age + expire (3b-0), but melt nothing. The
+  //   coefficient is independent of reactionBase (which caps burst/sever) so DoT rate tunes separately.
+  dotTickCoeff: 0,
+  // [tune] D15 — DoT tick cadence (ms). Inert while dotTickCoeff is 0 (0 × anything = 0); D15 owns it.
+  dotTickIntervalMs: 1000,
 });

@@ -1,4 +1,4 @@
-import type { ElementStateInstance } from './elementTypes.js';
+import type { ElementStateInstance, ElementStateId, ElementTuning } from './elementTypes.js';
 import type { EnemyElementStates } from './elementCombatReactions.js';
 
 /**
@@ -38,4 +38,69 @@ export function expireEnemyElementStates(input: {
     if (remainingMs > 0) survivors.push({ ...s, remainingMs });
   }
   return { active: survivors };
+}
+
+export interface ElementStateTickResult {
+  /** the afflictions after aging + DoT-accumulator advance (drop the expired) */
+  readonly survivingStates: EnemyElementStates;
+  /** total HP to subtract this frame from DoT-category afflictions (0 if flag-off / no dot / coeff 0) */
+  readonly dotDamage: number;
+  /** per-affliction DoT breakdown (for the log / contracts); empty unless a tick fired */
+  readonly dotEvents: ReadonlyArray<{ readonly state: ElementStateId; readonly amount: number }>;
+}
+
+const EMPTY_TICK = (states: EnemyElementStates): ElementStateTickResult => ({ survivingStates: states, dotDamage: 0, dotEvents: [] });
+
+/**
+ * D11 slice 3b-i — the full per-tick step: age + expire every affliction (3b-0), then apply the only
+ * effect family this slice consumes — DAMAGE-OVER-TIME on `category:'dot'` afflictions — as a number the
+ * STORE subtracts as its own event (never folded into the frozen-core attack formula).
+ *
+ * The DoT model (per the design review's fixes):
+ *  - Driven by the written `category:'dot'` STATE (e.g. `burning`), NOT the `dot` reaction effect.
+ *  - TRUE interval-accumulator cadence: each affliction carries `accMs`; every `dotTickIntervalMs` of
+ *    elapsed time emits one discrete tick of `dotTickCoeff × intensity × realmScalar`. NOT frame-rate-
+ *    coupled — a large `elapsedMs` (tab-throttle) emits the right number of whole ticks, no double-count.
+ *  - `dotTickCoeff` is HELD at 0 ⇒ this layer is INERT today (returns the pure 3b-0 expiry result with
+ *    zero damage). When D15 deposits a coefficient, DoT activates end-to-end with no logic change.
+ *  - PRESERVE-FIRST / PARITY-SAFE: flag-off or no afflictions ⇒ same-ref expiry result, zero damage.
+ *    PURE — fresh arrays/instances, no mutation, no RNG.
+ *
+ * `realm` is the 1-based realm (already `realm.index + 1`); `realmScalar = max(1, realm)` and nothing else.
+ */
+export function tickEnemyElementStates(input: {
+  states: EnemyElementStates;
+  elapsedMs: number;
+  realm: number;
+  engineActive: boolean;
+  tuning: ElementTuning;
+}): ElementStateTickResult {
+  const survivingStates = expireEnemyElementStates({
+    states: input.states,
+    elapsedMs: input.elapsedMs,
+    engineActive: input.engineActive,
+  });
+  // flag-off / no afflictions ⇒ expiry returned the same ref ⇒ no DoT possible.
+  if (survivingStates === input.states) return EMPTY_TICK(survivingStates);
+
+  const coeff = input.tuning.dotTickCoeff;
+  const intervalMs = input.tuning.dotTickIntervalMs;
+  // held-inert (coeff 0) ⇒ expiry only, exactly the 3b-0 result. No accumulator churn.
+  if (coeff <= 0 || intervalMs <= 0) return EMPTY_TICK(survivingStates);
+
+  const realmScalar = Math.max(1, input.realm);
+  let dotDamage = 0;
+  const dotEvents: Array<{ state: ElementStateId; amount: number }> = [];
+  const active = survivingStates.active.map((s) => {
+    if (s.category !== 'dot') return s;
+    const acc = (s.accMs ?? 0) + input.elapsedMs;
+    const ticks = Math.floor(acc / intervalMs);
+    if (ticks > 0) {
+      const amount = coeff * s.intensity * realmScalar * ticks;
+      dotDamage += amount;
+      dotEvents.push({ state: s.state, amount });
+    }
+    return { ...s, accMs: acc - ticks * intervalMs };
+  });
+  return { survivingStates: { active }, dotDamage, dotEvents };
 }

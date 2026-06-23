@@ -34,7 +34,8 @@ import { BossMechanics } from '../systems/bossMechanics.js';
 import { resolveMeridianSignaturesForCombat, combineArmorPenWithSignatures, isIronSkinNegated, mountainStanceReflectAmount, momentumDamageMultiplier } from '../systems/meridians/meridianCombatSignatures.js';
 import { resolvePlayerElementAffinity, elementAffinityDamageMultiplier, resolvePlayerElementResist, elementResistDamageMultiplier } from '../systems/elements/elementCombatAffinity.js';
 import { stepEnemyElementOnHit, EMPTY_ENEMY_ELEMENT_STATES } from '../systems/elements/elementCombatReactions.js';
-import { expireEnemyElementStates } from '../systems/elements/elementStateTick.js';
+import { tickEnemyElementStates } from '../systems/elements/elementStateTick.js';
+import { DEFAULT_ELEMENT_TUNING } from '../systems/elements/elementTuning.js';
 import { useBeastLoreStore } from '../features/court/useBeastLoreStore.js';
 import { useWeaponBondStore } from '../features/court/useWeaponBondStore.js';
 import { isDerivedStatEngineAuthoritative } from '../systems/meridians/statEngineFlag.js';
@@ -2342,20 +2343,42 @@ export const useCombatStore = create<ExtendedCombatState>()(
         incrementCounter(PERF_LABELS.combatBuffSweepSkipped);
       }
 
-      // D11 slice 3b-0 — age enemy element afflictions on the same maintenance heartbeat as the buff
-      // sweep: decrement remainingMs by the frame's deltaTime and drop the expired. Flag-gated +
-      // preserve-first: flag-off (or no afflictions) ⇒ the helper returns the same ref ⇒ no `set`,
-      // byte-identical. No effect is applied yet (DoT damage is the next slice) — this is lifecycle only.
+      // D11 slice 3b — tick enemy element afflictions on the same maintenance heartbeat as the buff
+      // sweep: age + expire every affliction (3b-0), then apply DoT-category damage (3b-i) as a SEPARATE
+      // event. Flag-gated + preserve-first: flag-off (or no afflictions) ⇒ same-ref survivors ⇒ no `set`,
+      // byte-identical. DoT is HELD INERT (dotTickCoeff 0 ⇒ dotDamage 0) until F-BAL, so the damage block
+      // below is dormant today; it never touches the frozen-core attack formula.
       const currentEnemyElementStates = latestForMaintenance.enemyElementStates ?? EMPTY_ENEMY_ELEMENT_STATES;
-      const agedEnemyElementStates = expireEnemyElementStates({
+      const elementTick = tickEnemyElementStates({
         states: currentEnemyElementStates,
         elapsedMs: deltaTime,
+        realm: useGameStore.getState().realm.index + 1,
         engineActive: isDerivedStatEngineAuthoritative(),
+        tuning: DEFAULT_ELEMENT_TUNING,
       });
-      if (agedEnemyElementStates !== currentEnemyElementStates) {
+      if (elementTick.survivingStates !== currentEnemyElementStates) {
         set((draft) => {
-          draft.enemyElementStates = agedEnemyElementStates;
+          draft.enemyElementStates = elementTick.survivingStates;
         });
+      }
+      if (elementTick.dotDamage > 0) {
+        set((draft) => {
+          draft.enemyHP = clamp(subtract(draft.enemyHP, String(elementTick.dotDamage)), 0, draft.enemyMaxHP).toString();
+        });
+        // affliction DoT reuses the continuous-damage 'aura' kind (the HIT event union has no 'dot').
+        emitEvent('HIT', {
+          source: 'player',
+          target: 'enemy',
+          amount: elementTick.dotDamage.toFixed(0),
+          isCrit: false,
+          kind: 'aura',
+        });
+        get().addLogEntry('damage', `Affliction sears ${elementTick.dotDamage.toFixed(0)}!`, '#a78bfa');
+        if (lessThanOrEqualTo(get().enemyHP, 0)) {
+          setTimeout(() => {
+            get().defeatEnemy();
+          }, 500);
+        }
       }
 
       if (state.autoCombatAI && now >= state.nextAiDecisionAt) {

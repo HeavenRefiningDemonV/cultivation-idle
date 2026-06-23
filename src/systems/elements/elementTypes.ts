@@ -160,6 +160,7 @@ export interface ElementStateInstance {
   readonly category: StateCategory;
   readonly remainingMs: number;        // refresh-not-stack (D3 §4 R2)
   readonly intensity: number;          // bounded (D3 §4 R3)
+  readonly accMs?: number;             // D11 3b-i — DoT tick accumulator (residual ms across frames; undefined ⇒ 0)
 }
 
 /** The target's transient element state the resolver reads (D3 §7.2). */
@@ -224,4 +225,6 @@ export interface ElementTuning {
   readonly stateBaseDurationMs: number;         // #9 — refresh duration
   readonly stateMaxIntensity: number;           // #9 — bounded intensity cap
   readonly stateEscalationThreshold: number;    // #9 — intensity at which weighted→petrified / chilled→frozen
+  readonly dotTickCoeff: number;                // #10-adjacent — per-tick DoT damage coeff (× intensity × realmScalar); HELD 0 until D15
+  readonly dotTickIntervalMs: number;           // #10-adjacent — DoT tick cadence (the interval-accumulator step); inert while coeff 0
 }
