@@ -125,6 +125,10 @@ equip/loadout + roll + gear-drop, all unconsumed/held via HELD / HELD_COUNT / HE
   (×1.00/1.08/1.18/1.30/1.45) · `ItemDef.baseChannels` base power + the itemTier 1–7 curve · armor refine
   caps + channel weighting · the `status_resist`→`evasion` legacy overload (split to tribResist/
   controlPower?) · WeaponBondState growth/art gates (D5/D11). All typed-but-held; none authored.
+- **D8 gear-upgrade structure (landed, structure-only, unconsumed):** `gearUpgrade.ts` (upgradeMultiplier
+  + upgradeGearInstance). Held: `UPGRADE_RATE = 0` + `UPGRADE_CAP = 1` (multiplier ⇒ identity, inert) +
+  `UPGRADE_MAX_LEVEL = -1` (no upgrade). **F-BAL deposits:** the per-level power gain, the multiplier cap,
+  the level cap (cf. the live legacy refine `1+0.02×lvl` cap 1.25 — D8's gear-instance equivalent).
 - **D8 set-bonus effect (landed, structure-only, unconsumed):** `gearSetBonuses.ts` (SET_BONUS_DEFS) +
   `gearSetBonus.ts` (resolveSetBonusGrant). The grant is a per-channel multiplier set; every value is the
   held identity `HELD_MULT = 1` (×1 ⇒ no effect, composeGear-style). **F-BAL deposits:** the real partial/
