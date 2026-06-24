@@ -101,30 +101,17 @@ test('capture: live Panoply in-game', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(e.message));
   await page.addInitScript(() => { window.localStorage.clear(); window.sessionStorage.clear(); });
-  await page.goto('/?panoply=live');
+  // ?giveTestGear=1 grants 1 of each demo gear item (real instances) on the inventory tab.
+  await page.goto('/?panoply=live&giveTestGear=1');
   await page.waitForLoadState('domcontentloaded');
   await page.waitForTimeout(600);
   await seed(page);
   await dismissTransients(page);
   await setTab(page, 'inventory');
-  await page.waitForTimeout(400);
+  await page.waitForTimeout(700);
   await page.screenshot({ path: 'artifacts/mp-eq-port/live-ingame.png', fullPage: false });
 
-  // Equip legacy gear + add owned gear items → the bridge should populate the loadout + vault.
-  await page.evaluate(async () => {
-    const imp = new Function('s', 'return import(s)') as (s: string) => Promise<any>;
-    const { useEquipmentStore } = await imp('/src/stores/equipmentStore.ts');
-    const { useInventoryStore } = await imp('/src/stores/inventoryStore.ts');
-    const eq = useEquipmentStore.getState();
-    eq.equipWeapon('demo_cinnabar_sabre');
-    eq.equipAccessory('demo_foresight_pendant');
-    const inv = useInventoryStore.getState();
-    inv.addItem('demo_stoneforged_helm', 1);
-    inv.addItem('demo_foresight_pendant', 2);
-    inv.addItem('demo_cinnabar_sabre', 1);
-  });
-  await page.waitForTimeout(500);
-  await page.screenshot({ path: 'artifacts/mp-eq-port/live-ingame-geared.png', fullPage: false });
+  // Toggle to the Vault to confirm the spare gear renders as slips.
   await page.evaluate(async () => {
     const imp = new Function('s', 'return import(s)') as (s: string) => Promise<any>;
     const { usePanoplyUiStore } = await imp('/src/stores/panoplyUiStore.ts');
@@ -132,6 +119,11 @@ test('capture: live Panoply in-game', async ({ page }) => {
   });
   await page.waitForTimeout(400);
   await page.screenshot({ path: 'artifacts/mp-eq-port/live-ingame-vault.png', fullPage: false });
+
+  // Click the first vault slip → the rail should fill (select mechanic).
+  await page.locator('[data-slip-id]').first().click({ timeout: 1000 }).catch(() => {});
+  await page.waitForTimeout(300);
+  await page.screenshot({ path: 'artifacts/mp-eq-port/live-ingame-vault-selected.png', fullPage: false });
   // eslint-disable-next-line no-console
   console.log('PAGE_ERRORS:', JSON.stringify(errors));
 });

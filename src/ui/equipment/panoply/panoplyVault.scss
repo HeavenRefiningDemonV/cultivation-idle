@@ -20,7 +20,18 @@
 .panoplyRoot {
   flex: 0 0 auto;
   transform-origin: center center;
-  /* 14-roster scene colours (D3) + fonts + per-path accent — local scene tokens (mirror the artifact :root). */
+  /* Local scene tokens — ported VERBATIM from the artifact :root. The live paperInkTokens.scss only defines
+     the LONG names (--paper-parchment-*, --paper-jade, …); the artifact + this port use the SHORT names
+     (--paper-warm, --jade-deep, --cinn-deep, …), so they MUST be declared here or the parchment panels +
+     jade/gold titles fall back to nothing and the dark stage shows through (the brown-background bug). */
+  --paper:#f3ead7;--paper-warm:#efe3c9;--paper-deep:#e7d9ba;--paper-shade:#d9c79e;
+  --ink:#1f1a17;--ink-70:rgba(31,26,23,.70);--ink-45:rgba(31,26,23,.45);--ink-25:rgba(31,26,23,.25);--ink-12:rgba(31,26,23,.12);
+  --jade:#4e6b5e;--jade-deep:#0f6f5a;--jade-ink:#2f4a40;
+  --gold:#a2712a;--gold-bright:#b2832d;--gold-pale:#d9bd80;--gold-deep:#84591b;--gold-leaf:#caa24a;--gold-strong:#b2832d;
+  --bronze:#7a5b26;
+  --cinnabar:#8b3028;--cinnabar-bright:#a94835;--cinn-deep:#6e241e;
+  --element-wood:#2d7844;--element-fire:#a44731;--element-earth:#8d642d;--element-metal:#69717c;--element-water:#2a668d;
+  /* 14-roster scene colours (D3) + fonts + per-path accent. */
   --el-wind:#6f8a5e;--el-lightning:#b2832d;--el-ice:#6f93a8;--el-light:#c8a04b;--el-shadow:#4a4039;--el-soul:#9c5a4e;--el-void:#3a332d;--el-time:#8d642d;--el-astral:#b59a55;
   --serif:Georgia,"Songti SC","Noto Serif SC",serif;
   --kai:"Kaiti SC","STKaiti","KaiTi","Songti SC",serif;
