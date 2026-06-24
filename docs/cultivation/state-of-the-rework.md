@@ -59,8 +59,20 @@ this all session.
   enemy-derived seam · D8 composeGear law). The **S9/S10 live-instrument matrix is cleared and accepted**:
   3 live instruments × 5 states (healthy/blocked/postFailure/prestige/contentCap), 15 screenshots under
   `artifacts/mii3-seat-matrix/live-instruments/`.
-- Release gate **NO_GO = external/pre-existing only** — exactly two rows (`eng_build_green` +
-  `copy_visual_icon_consistency`), both rooted in the single pre-existing `chunks>500kB` build warning + the
-  manual visual audit. Every other row YES (content, full suite, migration matrix, fresh-run, balance,
-  runtime, save/reload). Classified identically across all 5 consolidation checkpoints — **the rework
-  introduced no new red.** This is the release-readiness input for the F-BAL/GO decision.
+- Release gate **NO_GO** — re-diagnosed 2026-06-24 (the earlier "two external rows = chunk warning + manual
+  visual audit" framing was partly mis-attributed):
+  - `eng_build_green` is now **YES** — the pre-existing `chunks>500kB` build warning is **FIXED** (`01f26e9a`,
+    vite `manualChunks` split; `build_audit` reports 0 warnings / `buildPassed`). The flaky release-handoff
+    bundle test was also fixed (`0d7eae0e`, temp-dir isolation).
+  - The remaining red is **`full_test_suite`** (and the `copy_visual_icon_consistency` row that links it) —
+    NOT a manual visual audit. Its check runs `npm run test`, a **parallel kitchen-sink** that bundles
+    Playwright e2e specs (wrong runner — they belong to `npm run test:e2e`), DOM-integration tests (need a
+    `localStorage` shim), and integration tests that **pollute each other under parallel `node --test`** (they
+    pass in isolation / sequentially). It is flaky-green at best and has never been a reliable gate target.
+    The curated, **sequential** node:test gate `npm run test:contracts` is deterministically green
+    (568 files / 2,025 tests, 0 fail). Fix tracked as tech debt — see the spawned task "Make `npm run test` a
+    reliable green full suite" (exclude e2e from the node:test compile + run sequentially + localStorage-only
+    shim; may surface real integration failures to triage). Do **not** simply repoint the gate at
+    `test:contracts` — that silently drops integration/matrices/services/story coverage.
+  - Every other row YES (content, migration matrix, fresh-run, balance, runtime, save/reload). **The rework
+    introduced no new red.** This is the release-readiness input for the F-BAL/GO decision.
