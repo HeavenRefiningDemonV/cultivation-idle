@@ -7,6 +7,18 @@ import type { GearInstance } from '../systems/equipment/gearModel.js';
 
 export type CurrencyKey = 'gold' | 'spiritStones' | 'merit';
 
+/** M.III.1 S4 — one salvage line from a dismantle. The amount/material curve is HELD → D15/F-BAL. */
+export interface GearDismantleYield {
+  readonly materialId: string;
+  readonly amount: number;
+}
+/** The dismantle outcome — the "yield event" shape. While HELD the yield is the empty list (no number authored). */
+export interface GearDismantleResult {
+  readonly ok: boolean;
+  readonly instanceId: string;
+  readonly yield: readonly GearDismantleYield[];
+}
+
 export type InventoryState = {
   currencies: Record<CurrencyKey, string>;
   items: Record<string, number>;
@@ -37,6 +49,8 @@ export type InventoryState = {
   addGearInstance: (instance: GearInstance) => void;
   removeGearInstance: (instanceId: string) => void;
   getGearInstance: (instanceId: string) => GearInstance | undefined;
+  /** D-F dismantle: remove the held instance and return the (HELD-empty) salvage yield. */
+  dismantleGearInstance: (instanceId: string) => GearDismantleResult;
 
   // item affordability helpers
   canAffordItem: (itemId: string, qty: number) => boolean;
@@ -244,6 +258,18 @@ export const useInventoryStore = create<InventoryState>()(
     },
 
     getGearInstance: (instanceId) => get().gearInstances[instanceId],
+
+    dismantleGearInstance: (instanceId) => {
+      const existing = get().gearInstances[instanceId];
+      if (!existing) return { ok: false, instanceId, yield: [] };
+      set((state) => {
+        delete state.gearInstances[instanceId];
+        state.inventoryVersion = bumpVersion(state.inventoryVersion);
+      });
+      // [dismantle yield → D15] credit salvage materials here once the yield curve leaves HELD; the
+      // result IS the yield event — empty list while held, never an authored placeholder number.
+      return { ok: true, instanceId, yield: [] };
+    },
 
     // compatibility wrappers
     addGold: (amount) => get().addCurrency('gold', amount),
