@@ -41,6 +41,8 @@ import { useTrialStore } from './trialStore.js';
 // gameStore gains no new import cycle. The store-reading input assembly is injected lazily
 // (setDerivedStatInputGetter, below) from the gameLoop bootstrap, mirroring _getPrestigeStore.
 import { isDerivedStatEngineAuthoritative } from '../systems/meridians/statEngineFlag.js';
+import { composeGear } from '../systems/equipment/equipmentGearResolver.js';
+import { toEquipmentGearInput } from '../systems/equipment/toEquipmentGearInput.js';
 import { calibrateGeoBase, deriveLegacyCombatStats } from '../systems/meridians/combatStatBridge.js';
 import { computeDerivedStats, type DerivedStatInput } from '../systems/meridians/derivedStats.js';
 import { progressionTimingTracker } from '../services/diagnostics/progressionTimingTracker.js';
@@ -1070,19 +1072,27 @@ export const useGameStore = create<GameState>()(
       // changes only the SOURCE of the base, never its shape (§1.3). Flag-off ⇒ byte-identical
       // legacy path (the default for the whole feature-layer build; forceLegacy always wins).
       const derivedInputGetter = _getDerivedStatInput;
-      const baseStats: typeof currentRealm.baseStats =
-        isDerivedStatEngineAuthoritative() && derivedInputGetter
-          ? (() => {
-              const mapped = calibrateGeoBase(deriveLegacyCombatStats(computeDerivedStats(derivedInputGetter(), {})));
-              return {
-                ...currentRealm.baseStats, // GENTLE carve-out: crit/critDmg/dodge/speed from the realm row
-                hp: mapped.hp,
-                atk: mapped.atk,
-                def: mapped.def,
-                regen: mapped.regen,
-              };
-            })()
-          : currentRealm.baseStats;
+      // M.III.1 S2 (slice 1b) — the gear WIRE. When the derived engine sources the base (forceLegacy already
+      // routes isDerivedStatEngineAuthoritative() to false), feed composeGear's per-channel multipliers
+      // through the existing `computeDerivedStats(input, gear)` hook so equipped gear modifies the GEO base
+      // (hp/atk/def/regen) exactly once. The GENTLE channels gear also composes (critChance/evasion) are
+      // discarded by the carve-out below, so gear crit/dodge does NOT enter here — it stays on the legacy
+      // additive temper path (kept in BOTH branches; see the GEO-only de-dup gate further down). Nothing
+      // equipped ⇒ composeGear ⇒ {} ⇒ ×1 ⇒ the SA-A0 parity baseline is untouched.
+      const gearInDerived = isDerivedStatEngineAuthoritative() && derivedInputGetter !== null;
+      const baseStats: typeof currentRealm.baseStats = gearInDerived
+        ? (() => {
+            const gearMult = composeGear(toEquipmentGearInput());
+            const mapped = calibrateGeoBase(deriveLegacyCombatStats(computeDerivedStats(derivedInputGetter!(), gearMult)));
+            return {
+              ...currentRealm.baseStats, // GENTLE carve-out: crit/critDmg/dodge/speed from the realm row
+              hp: mapped.hp,
+              atk: mapped.atk,
+              def: mapped.def,
+              regen: mapped.regen,
+            };
+          })()
+        : currentRealm.baseStats;
 
       const now = Date.now();
       const activeBuffs = state.activeBuffs.filter((buff) => buff.expiresAt > now);
@@ -1238,10 +1248,17 @@ export const useGameStore = create<GameState>()(
         ? Decimal.min(D(1.25), D(1).plus(D(0.02).times(accessoryLevel)))
         : D(1);
 
-      atk = multiply(atk, weaponMultiplier);
-      hp = multiply(hp, accessoryMultiplier);
-      def = multiply(def, accessoryMultiplier);
-      regen = multiply(regen, accessoryMultiplier);
+      // M.III.1 S2 — GEO-only de-dup gate. When gear entered the derived GEO base via the hook
+      // (`gearInDerived`), its refine + atk/def/hp temper multipliers are ALREADY applied — skip them here so
+      // they count EXACTLY ONCE. The crit/dodge temper is ADDITIVE to the GENTLE channels the GEO carve-out
+      // discards, so it is applied in BOTH branches (else gear crit/dodge would be lost in the derived path).
+      // Flag-off ⇒ gearInDerived false ⇒ the full legacy GEO stack runs unchanged (byte-identical).
+      if (!gearInDerived) {
+        atk = multiply(atk, weaponMultiplier);
+        hp = multiply(hp, accessoryMultiplier);
+        def = multiply(def, accessoryMultiplier);
+        regen = multiply(regen, accessoryMultiplier);
+      }
 
       const temperAffixes = [
         ...(equipmentState.temperBonusesBySlot.weapon ?? []),
@@ -1250,20 +1267,22 @@ export const useGameStore = create<GameState>()(
       temperAffixes.forEach((affix) => {
         switch (affix.stat) {
           case 'atkPct':
-            atk = multiply(atk, D(1).plus(affix.valuePct));
+            if (!gearInDerived) atk = multiply(atk, D(1).plus(affix.valuePct));
             break;
           case 'defPct':
-            def = multiply(def, D(1).plus(affix.valuePct));
+            if (!gearInDerived) def = multiply(def, D(1).plus(affix.valuePct));
             break;
           case 'hpPct':
-            hp = multiply(hp, D(1).plus(affix.valuePct));
-            regen = multiply(regen, D(1).plus(affix.valuePct * 0.5));
+            if (!gearInDerived) {
+              hp = multiply(hp, D(1).plus(affix.valuePct));
+              regen = multiply(regen, D(1).plus(affix.valuePct * 0.5));
+            }
             break;
           case 'critPct':
-            crit += affix.valuePct * 100;
+            crit += affix.valuePct * 100; // GENTLE — discarded by the GEO carve-out, so applied in BOTH branches
             break;
           case 'dodgePct':
-            dodge += affix.valuePct * 100;
+            dodge += affix.valuePct * 100; // GENTLE — applied in BOTH branches
             break;
         }
       });
