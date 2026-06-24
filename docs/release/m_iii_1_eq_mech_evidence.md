@@ -25,9 +25,20 @@ changing the flag-off (shipped) behaviour by one byte.
 The packet's §2 model ledger was verified against the live source before any code. Three drifts were found
 and reconciled (each load-bearing):
 
-- **Drift A — the unlisted 8th file.** `equipmentHandlingResolver.ts` was not in the §2 ledger. It is a
-  *training-based* read-model consumed by `combatStore` (applies `handling.statMultipliers`). It is
-  ORTHOGONAL to refine/temper, so it is **not** a double-count vector — the wire leaves it alone.
+- **Drift A — the unlisted 8th file.** `equipmentHandlingResolver.ts` was not in the §2 ledger. Its
+  multiplier magnitude is sourced from TRAINING ratings (`weapon_bond`/`armor_harmony`/`artifact_attunement`
+  × perRatingPct, capped) — **orthogonal in magnitude** to composeGear's forge values, so no single bonus is
+  counted twice. The wire correctly leaves it alone. Two honest qualifications the verdict must not bury:
+  - **It IS a real second multiply on the same channels.** `combatStore.ts:536-538` does
+    `updated.atk *= handling.statMultipliers.atk` (and `.def`, `.maxHp`) — the very channels composeGear
+    touches. Orthogonal in *value*, not *unrelated*: its active gate reads the equipped state
+    (`hasDefensiveAccessorySignal` even reads accessory `refineLevel>0` and `defPct`/`hpPct` temper,
+    `equipmentHandlingResolver.ts:56-60`). So the two share the equipped-state INPUT though not the value.
+  - **It is wired to the LEGACY 2-slot ids** (`equippedWeaponId`/`equippedAccessoryId`). When the S1 5-slot
+    loadout becomes the equip path, handling will read empty legacy ids and silently go inactive for
+    new-model gear (armor harmony / artifact attunement stop firing). That is a **live seam for Movement V
+    (combat)**, not this packet — marked in-code at `equipmentHandlingResolver.ts` (the `EquipmentHandlingInput`
+    contract): `// [handling: migrate equipmentHandling input to the 5-slot loadout when it becomes the equip path]`.
 - **Drift B — the wire target.** `gameStore.ts` already passed `{}` into the derived gear hook
   (`computeDerivedStats(input, {})`) — the explicit, parity-safe wire target. The wire replaces `{}` with
   `composeGear(...)` only when the derived engine is authoritative.
@@ -52,6 +63,11 @@ and reconciled (each load-bearing):
 | S5 — element/path | `toGearAffinity` element-vector seam (inert while payloads null) + `resolvePathIdentity` (the three paths read distinctly) | `51b59789` | 573 → 574 |
 | S6 — evidence | gear-catalog integrity contract + this doc | _this commit_ | 574 → 575 |
 
+> **Floor metric:** "568 → 575" is the **raw `test:contracts` file count** (`runNodeTestFilesSequential`
+> `passed=N total=N`, where N is *files*), monotonic per slice. It is a DIFFERENT metric from the M.I.3
+> handoff's compiled "543 files / 1875 cases" snapshot — a later reader should not think the floor fell from
+> 543. Both are monotonic; this packet reports the file count its battery prints.
+
 ---
 
 ## 4. The de-dup proof (S2 — the load-bearing claim)
@@ -66,6 +82,14 @@ the **reference cultivator** (all shared ratings = 100), so the derived GEO base
   The double-count bug is provably absent.
 - **branch agreement** — the same equipped state yields equal atk/hp/def/regen flag-on vs flag-off, AND equal
   crit/dodge (the GEO-only gate keeps the additive temper in both branches).
+- **GEO-only gate DUAL proof** (the load-bearing case for drift C) — ONE equipped state carries a GEO temper
+  (atkPct) AND two GENTLE tempers (critPct/dodgePct), so both halves of the gate are stressed at once: atk
+  de-dupes to **×1.155** (the gated GEO multiply counts once, not ×1.334) WHILE crit and dodge each rise by
+  **exactly +5** (the ungated additive temper survives the derived branch; a delta of *exactly* 5 also proves
+  composeGear's MULTIPLICATIVE critChance/evasion — computed then discarded by the carve-out — did not leak).
+  A "skip the whole legacy stack" bug fails the +5; a "no gate" bug fails the ×1.155. (Without this case the
+  branch-agreement "equal crit/dodge" is trivially true — no crit/dodge temper was equipped — so the drift-C
+  correction was *asserted, not proven*; this case proves it.)
 - **forceLegacy wins** — `?forceLegacy=1` suppresses the derived gear and runs the legacy stack (== flag-off).
 
 ---
@@ -78,6 +102,13 @@ the **reference cultivator** (all shared ratings = 100), so the derived GEO base
   depth is 0; tier-gap caps and element-affinity weights are structural/null.
 - dismantle yield is the **empty list** — the yield EVENT shape, never an authored placeholder number.
 - per-path identity is emphasis-only (lead/support/muted) — never a geometry or magnitude change.
+- **HELD-still-held, proven post-wire (named green run).** The six D8 inert-gear contracts assert the sentinels
+  are unchanged and ran GREEN in the S2 battery (and every battery since — they are part of the 575):
+  `gearModel.contract.test.ts` (affix `rollRange` + rarity band = `HELD`), `gearLoadout.contract.test.ts`
+  (`HELD_COUNT === -1`; `accessorySlotCount` floors at 1; `resolveSetBonus` `activeTier === null`),
+  `gearSetBonus.contract.test.ts` (`HELD_MULT === 1`), `gearDrop.contract.test.ts` (`HELD_RATE`; a held drop
+  never drops), `gearRoll.contract.test.ts` (a held ItemDef rolls zero affixes), `gearUpgrade.contract.test.ts`
+  (`upgradeMultiplier === 1`; `canUpgrade` false). S2 wired plumbing, not numbers — the sentinels are unchanged.
 
 ---
 
@@ -100,3 +131,23 @@ default. With the flag off (the shipped default) and under `?forceLegacy=1`, the
 `composeGear` is never called, the legacy refine/temper stack runs in full, and the new loadout/Vault state
 is inert — the build is byte-identical. The default-on flip remains F-BAL's separate, later, separately-gated
 decision (Closer C1), after the global balance pass deposits the magnitudes this packet held.
+
+---
+
+## 8. Carried-forward gotchas / handoff seams
+
+Recorded here (and in-code) so they do not become a mystery regression three Movements later:
+
+- **[F-BAL / C1] The GEO-only de-dup is correct ONLY while the carve-out discards GENTLE.**
+  `deriveLegacyCombatStats` DOES produce `crit: derived.critChance` / `dodge: derived.evasion`
+  (`combatStatBridge.ts:50-52`), so composeGear's MULTIPLICATIVE crit/evasion ARE computed in `mapped` — the
+  gameStore carve-out (`gameStore.ts:~1088`) is the only thing discarding them, and B-MERID is already layering
+  onto the GENTLE channels (`combatStatBridge.ts:38`). The moment a future packet wires crit/evasion OUT of the
+  carve-out, composeGear's multiplicative crit/evasion will land AND the additive crit/dodge temper the
+  GEO-gate keeps will land → crit/dodge **double-counts**. Revisit the de-dup at that flip. **Marked in-code at
+  the carve-out.**
+- **[Movement V — combat] `equipmentHandling` reads the legacy 2-slot ids** (see Drift A §2). When the 5-slot
+  loadout becomes the equip path, migrate `EquipmentHandlingInput.equipment` to the loadout or armor harmony /
+  artifact attunement go silently inactive for new-model gear. **Marked in-code** on the input contract.
+- **[5-slot compose] `toEquipmentGearInput` wires only the LEGACY equip state.** The 5-slot GearInstance affixes
+  compose through the SAME composeGear dict once their magnitudes leave HELD (D15). **Marked in-code.**

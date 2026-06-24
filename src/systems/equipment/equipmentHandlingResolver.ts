@@ -9,6 +9,13 @@ export interface EquipmentHandlingTemperAffix {
 
 export interface EquipmentHandlingInput {
   trainingSnapshot?: TrainingReadOnlySnapshot | null;
+  // [handling: migrate equipmentHandling input to the 5-slot loadout when it becomes the equip path]
+  // The active gates below read the LEGACY 2-slot equip state (equippedWeaponId/equippedAccessoryId, +
+  // accessory refine/temper via hasDefensiveAccessorySignal). This is a TRAINING-magnitude multiply on
+  // atk/def/maxHp (combatStore.ts:536-538) — orthogonal to composeGear's forge magnitude, NOT a double-count.
+  // But it shares the EQUIPPED-STATE input: when the M.III.1 5-slot loadout becomes the equip path, this
+  // resolver will read empty legacy ids and silently go inactive for new-model gear (armor harmony / artifact
+  // attunement stop firing). Live seam for Movement V (combat) — migrate the input to the loadout then.
   equipment: {
     equippedWeaponId: string | null;
     equippedAccessoryId: string | null;

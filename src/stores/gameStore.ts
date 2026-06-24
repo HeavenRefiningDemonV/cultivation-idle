@@ -1085,7 +1085,14 @@ export const useGameStore = create<GameState>()(
             const gearMult = composeGear(toEquipmentGearInput());
             const mapped = calibrateGeoBase(deriveLegacyCombatStats(computeDerivedStats(derivedInputGetter!(), gearMult)));
             return {
-              ...currentRealm.baseStats, // GENTLE carve-out: crit/critDmg/dodge/speed from the realm row
+              // GENTLE carve-out: crit/critDmg/dodge/speed from the realm row (mapped's derived crit/dodge —
+              // incl. composeGear's MULTIPLICATIVE critChance/evasion — are discarded here).
+              // [F-BAL/C1 double-count seam] the GEO-only de-dup gate below (gameStore:~1256) is correct ONLY
+              // while this carve-out discards GENTLE. If a future packet ever sources crit/evasion from `mapped`
+              // (B-MERID is already layering onto GENTLE — combatStatBridge.ts:38), composeGear's multiplicative
+              // crit/evasion will land HERE *and* the additive crit/dodge temper the gate keeps will land below
+              // → crit/dodge double-counts. Revisit the de-dup at that flip.
+              ...currentRealm.baseStats,
               hp: mapped.hp,
               atk: mapped.atk,
               def: mapped.def,

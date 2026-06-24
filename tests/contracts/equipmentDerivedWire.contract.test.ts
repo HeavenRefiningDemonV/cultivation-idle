@@ -98,3 +98,52 @@ test('S2 forceLegacy always wins: ?statEngine=1&forceLegacy=1 suppresses the der
   approxEqual(forced.hp, off.hp, 'hp');
   approxEqual(forced.def, off.def, 'def');
 });
+
+test('S2 GEO-only gate — DUAL proof: atkPct de-dupes (×1.155, not ×1.334) WHILE the additive crit/dodge temper is KEPT (+5, not vanished)', () => {
+  // One equipped state carrying BOTH a GEO temper (atkPct — gated, must de-dupe) and two GENTLE tempers
+  // (critPct/dodgePct — ungated, must survive). This exercises BOTH halves of the gate AT ONCE: the
+  // skip-block (atkPct counts exactly once) and the keep-path (crit/dodge additive survives the derived
+  // branch). A "skip the whole legacy stack" bug fails the crit/dodge +5; a "no gate at all" bug fails the
+  // atk de-dup (it would read ×1.334). critPct alone could not catch the former — it is ungated by design.
+  const withMixedGear = (search: string, geared: boolean) => {
+    setFlags(search);
+    useGameStore.getState().hardResetGameState();
+    useGameStore.setState((s) => {
+      s.realm.index = REALM_INDEX;
+    });
+    useEquipmentStore.setState((s) => {
+      s.equippedWeaponId = 'demo_cinnabar_sabre';
+      s.equippedAccessoryId = null;
+      s.refineLevelBySlot.weapon = geared ? 5 : 0;
+      s.refineLevelBySlot.accessory = 0;
+      s.temperBonusesBySlot.weapon = geared
+        ? [
+            { id: 'ta', label: 'Sharpened', stat: 'atkPct', valuePct: 0.05 },
+            { id: 'tc', label: 'Keen', stat: 'critPct', valuePct: 0.05 },
+            { id: 'td', label: 'Lithe', stat: 'dodgePct', valuePct: 0.05 },
+          ]
+        : [];
+      s.temperBonusesBySlot.accessory = [];
+    });
+    useGameStore.getState().calculatePlayerStats();
+    const st = useGameStore.getState().stats;
+    return { atk: Number(st.atk), crit: st.crit, dodge: st.dodge };
+  };
+
+  const base = withMixedGear('?statEngine=1', false); // flag-on, nothing equipped
+  const on = withMixedGear('?statEngine=1', true); // flag-on, atkPct + critPct + dodgePct
+  const off = withMixedGear('', true); // flag-off, same gear
+
+  // GEO half — the gate SKIPPED the legacy refine/atkPct multiply: atk rose ×1.155 ONCE, not ×1.155² (≈1.334).
+  approxRatio(on.atk, base.atk, EXPECTED_WEAPON_MULT, 'flag-on atk de-dup');
+  // GENTLE half — the additive crit/dodge temper is KEPT under the derived branch (rose by EXACTLY +5).
+  // composeGear's multiplicative critChance/evasion were computed-then-DISCARDED by the GEO carve-out, so a
+  // delta of exactly 5 also proves no multiplicative crit/dodge leaked through.
+  assert.ok(on.crit > base.crit && on.dodge > base.dodge, 'gear crit/dodge did NOT vanish under the derived path');
+  assert.ok(Math.abs((on.crit - base.crit) - 5) < 1e-9, `crit rose by the additive 5, got +${on.crit - base.crit}`);
+  assert.ok(Math.abs((on.dodge - base.dodge) - 5) < 1e-9, `dodge rose by the additive 5, got +${on.dodge - base.dodge}`);
+  // branch agreement across BOTH channel kinds — the gate moved WHERE atk applies and KEEPS crit/dodge, equally.
+  approxEqual(on.atk, off.atk, 'atk flag-on == flag-off');
+  assert.ok(Math.abs(on.crit - off.crit) < 1e-9, 'crit flag-on == flag-off (additive temper kept in both branches)');
+  assert.ok(Math.abs(on.dodge - off.dodge) < 1e-9, 'dodge flag-on == flag-off');
+});
