@@ -1,13 +1,21 @@
 import { create } from 'zustand';
+import { castDraft } from 'immer';
 import { immer } from 'zustand/middleware/immer';
 import { D, add, greaterThanOrEqualTo, subtract } from '../utils/numbers.js';
 import { bumpVersion } from './versionCounters.js';
+import type { GearInstance } from '../systems/equipment/gearModel.js';
 
 export type CurrencyKey = 'gold' | 'spiritStones' | 'merit';
 
 export type InventoryState = {
   currencies: Record<CurrencyKey, string>;
   items: Record<string, number>;
+  /**
+   * M.III.1 S1 — the per-instance Vault, ADDITIVE beside the stackable `items` counts. Each rolled
+   * GearInstance (its own affixes/upgrade/bond) lives here keyed by instanceId; `items` keeps the
+   * stackable consumable/material path untouched. Body-side state (D13) — cleared on reset/prestige.
+   */
+  gearInstances: Record<string, GearInstance>;
   gold: string;
   spiritStones: string;
   merit: string;
@@ -24,6 +32,11 @@ export type InventoryState = {
   addItem: (itemId: string, qty: number) => boolean;
   removeItem: (itemId: string, qty: number) => boolean;
   getQty: (itemId: string) => number;
+
+  // gear-instance (Vault) actions — the per-instance holdings
+  addGearInstance: (instance: GearInstance) => void;
+  removeGearInstance: (instanceId: string) => void;
+  getGearInstance: (instanceId: string) => GearInstance | undefined;
 
   // item affordability helpers
   canAffordItem: (itemId: string, qty: number) => boolean;
@@ -48,10 +61,11 @@ const initialCurrencies: Record<CurrencyKey, string> = {
 
 const createInitialState = (): Pick<
   InventoryState,
-  'currencies' | 'items' | 'gold' | 'spiritStones' | 'merit' | 'inventoryVersion' | 'currencyVersion'
+  'currencies' | 'items' | 'gearInstances' | 'gold' | 'spiritStones' | 'merit' | 'inventoryVersion' | 'currencyVersion'
 > => ({
   currencies: { ...initialCurrencies },
   items: {},
+  gearInstances: {},
   gold: '0',
   spiritStones: '0',
   merit: '0',
@@ -213,6 +227,24 @@ export const useInventoryStore = create<InventoryState>()(
       return get().removeItem(itemId, amount);
     },
 
+    addGearInstance: (instance) => {
+      if (!instance?.instanceId) return;
+      set((state) => {
+        state.gearInstances[instance.instanceId] = castDraft(instance);
+        state.inventoryVersion = bumpVersion(state.inventoryVersion);
+      });
+    },
+
+    removeGearInstance: (instanceId) => {
+      if (!instanceId || !get().gearInstances[instanceId]) return;
+      set((state) => {
+        delete state.gearInstances[instanceId];
+        state.inventoryVersion = bumpVersion(state.inventoryVersion);
+      });
+    },
+
+    getGearInstance: (instanceId) => get().gearInstances[instanceId],
+
     // compatibility wrappers
     addGold: (amount) => get().addCurrency('gold', amount),
     addSpiritStones: (amount) => get().addCurrency('spiritStones', amount),
@@ -223,6 +255,7 @@ export const useInventoryStore = create<InventoryState>()(
       set((state) => {
         state.currencies = { ...initialCurrencies };
         state.items = {};
+        state.gearInstances = {};
         state.inventoryVersion = bumpVersion(state.inventoryVersion);
         state.currencyVersion = bumpVersion(state.currencyVersion);
         syncCurrencyFields(state);

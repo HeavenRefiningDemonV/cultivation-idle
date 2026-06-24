@@ -1,8 +1,16 @@
 import { create } from 'zustand';
+import { castDraft } from 'immer';
 import { immer } from 'zustand/middleware/immer';
 import { useCityStore } from './cityStore.js';
 import { useContentStore } from './contentStore.js';
 import { bumpVersion } from './versionCounters.js';
+import {
+  EMPTY_LOADOUT,
+  validateEquip,
+  type EquipValidation,
+  type Loadout,
+} from '../systems/equipment/gearLoadout.js';
+import type { GearInstance, GearSlot, ItemDef } from '../systems/equipment/gearModel.js';
 
 export type EquipmentSlot = 'weapon' | 'accessory';
 
@@ -31,6 +39,14 @@ interface EquipmentState {
   temperBonusesBySlot: Record<EquipmentSlot, TemperAffix[]>;
   forgeToolTiers: ForgeToolTiers;
   equipmentVersion: number;
+  // M.III.1 S1 — the new 5-slot GearInstance loadout, ADDITIVE beside the legacy weapon/accessory ids.
+  // Inert until S2 reads it; the legacy fields above stay the flag-off default. `equipInstance` resolves the
+  // target slot from the item DEF (the slot lives on ItemDef, not the instance), validates via the pure
+  // `validateEquip` (slot-match + the held, floored-at-1 accessory limit), and returns the validation.
+  loadout: Loadout;
+  gearLoadoutVersion: number;
+  equipInstance: (instance: GearInstance, itemDef: ItemDef, slot: GearSlot, realm: number) => EquipValidation;
+  unequipSlot: (slot: GearSlot, instanceId?: string) => void;
   equipWeapon: (itemId: string | null) => void;
   equipAccessory: (itemId: string | null) => void;
   getRefineCapForCurrentProgress: () => number;
@@ -48,7 +64,7 @@ interface EquipmentState {
 
 const createInitialEquipmentState = (): Pick<
   EquipmentState,
-  'equippedWeaponId' | 'equippedAccessoryId' | 'refineLevelBySlot' | 'temperBonusesBySlot' | 'forgeToolTiers' | 'equipmentVersion'
+  'equippedWeaponId' | 'equippedAccessoryId' | 'refineLevelBySlot' | 'temperBonusesBySlot' | 'forgeToolTiers' | 'equipmentVersion' | 'loadout' | 'gearLoadoutVersion'
 > => ({
   equippedWeaponId: null,
   equippedAccessoryId: null,
@@ -56,6 +72,8 @@ const createInitialEquipmentState = (): Pick<
   temperBonusesBySlot: { weapon: [], accessory: [] },
   forgeToolTiers: { anvil: 1, hammer: 1, bellows: 1, quenchTub: 1 },
   equipmentVersion: 0,
+  loadout: EMPTY_LOADOUT,
+  gearLoadoutVersion: 0,
 });
 
 const sameTemperAffix = (left: TemperAffix | undefined, right: TemperAffix): boolean =>
@@ -92,6 +110,33 @@ function refineCapForTier(tier: number): number {
 export const useEquipmentStore = create<EquipmentState>()(
   immer((set, get) => ({
     ...createInitialEquipmentState(),
+
+    equipInstance: (instance, itemDef, slot, realm) => {
+      const validation = validateEquip({ loadout: get().loadout, itemDef, targetSlot: slot, realm });
+      if (!validation.ok) return validation;
+      set((draft) => {
+        if (slot === 'accessory') {
+          draft.loadout.accessories = [...draft.loadout.accessories, castDraft(instance)];
+        } else {
+          draft.loadout[slot] = castDraft(instance);
+        }
+        draft.gearLoadoutVersion = bumpVersion(draft.gearLoadoutVersion);
+      });
+      return validation;
+    },
+
+    unequipSlot: (slot, instanceId) => {
+      set((draft) => {
+        if (slot === 'accessory') {
+          draft.loadout.accessories = instanceId
+            ? draft.loadout.accessories.filter((entry) => entry.instanceId !== instanceId)
+            : [];
+        } else {
+          draft.loadout[slot] = null;
+        }
+        draft.gearLoadoutVersion = bumpVersion(draft.gearLoadoutVersion);
+      });
+    },
 
     equipWeapon: (itemId) => {
       const nextItemId = itemId || null;
