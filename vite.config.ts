@@ -26,8 +26,8 @@ export default defineConfig({
             if (/\/node_modules\/(react|react-dom|scheduler|use-sync-external-store)\//.test(m)) return 'vendor-react'
             return 'vendor'
           }
-          // `systems/economy` is large + flat (~50 files, no subdirs) — distribute its files across 3
-          // buckets by a stable name-hash (distribution-agnostic, ~⅓ each) so every chunk stays under 500 kB.
+          // `systems/economy` is large + flat (~50 files, no subdirs) — distribute its files across 6
+          // buckets by a stable name-hash so the heaviest economy chunk stays well under the warning limit.
           const econ = m.match(/\/src\/systems\/economy\/([^/]+)$/)
           if (econ) {
             let h = 0

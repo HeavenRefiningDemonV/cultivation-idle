@@ -86,16 +86,18 @@ void test('default mode writes expected docs and output lists paths', () => {
   const stubPath = path.join(tempDir, 'stub.json');
   writeFileSync(stubPath, JSON.stringify(mkStubReport(true)), 'utf8');
 
-  const run = runScript([], { RELEASE_HANDOFF_STUB_REPORT: stubPath });
+  // Write into the ISOLATED temp dir, not the shared docs/release/ — so parallel runs (the suite + the gate)
+  // never race on the same files (the root of the under-load flakiness).
+  const run = runScript([], { RELEASE_HANDOFF_STUB_REPORT: stubPath, RELEASE_HANDOFF_OUTPUT_DIR: tempDir });
   assert.equal(run.status, 0);
   assert.equal(run.stdout.includes('decision=GO'), true);
   assert.equal(run.stdout.includes('go_no_go_checklist.md'), true);
   assert.equal(run.stdout.includes('signoff_sheet.md'), true);
   assert.equal(run.stdout.includes('release_handoff_bundle.md'), true);
 
-  assert.equal(existsSync(path.resolve(process.cwd(), 'docs/release/go_no_go_checklist.md')), true);
-  assert.equal(existsSync(path.resolve(process.cwd(), 'docs/release/signoff_sheet.md')), true);
-  assert.equal(existsSync(path.resolve(process.cwd(), 'docs/release/release_handoff_bundle.md')), true);
+  assert.equal(existsSync(path.join(tempDir, 'go_no_go_checklist.md')), true);
+  assert.equal(existsSync(path.join(tempDir, 'signoff_sheet.md')), true);
+  assert.equal(existsSync(path.join(tempDir, 'release_handoff_bundle.md')), true);
 
   rmSync(tempDir, { recursive: true, force: true });
 });
@@ -105,7 +107,7 @@ void test('--fail-on-blockers exits nonzero for synthetic no-go report', () => {
   const stubPath = path.join(tempDir, 'stub.json');
   writeFileSync(stubPath, JSON.stringify(mkStubReport(false)), 'utf8');
 
-  const run = runScript(['--fail-on-blockers'], { RELEASE_HANDOFF_STUB_REPORT: stubPath });
+  const run = runScript(['--fail-on-blockers'], { RELEASE_HANDOFF_STUB_REPORT: stubPath, RELEASE_HANDOFF_OUTPUT_DIR: tempDir });
   assert.equal(run.status, 2);
   assert.equal(run.stdout.includes('decision=NO_GO'), true);
 

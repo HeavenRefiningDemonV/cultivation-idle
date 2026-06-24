@@ -1,13 +1,16 @@
-import { writeFileSync, readFileSync } from 'node:fs';
+import { writeFileSync, readFileSync, mkdirSync } from 'node:fs';
 import path from 'node:path';
 import { buildReleaseGateReport } from '../../src/services/diagnostics/release/releaseGate.js';
 import { buildReleaseDecisionDocsFromDefaults } from '../../src/services/diagnostics/release/releaseDecisionDocs.js';
 import type { ReleaseGateReport } from '../../src/services/diagnostics/release/releaseGateTypes.js';
 
+// Output dir is overridable via RELEASE_HANDOFF_OUTPUT_DIR so concurrent test invocations write to isolated
+// temp dirs instead of racing on the shared docs/release/ files (the source of the flaky-under-load failures).
+const OUTPUT_DIR = path.resolve(process.cwd(), process.env.RELEASE_HANDOFF_OUTPUT_DIR ?? 'docs/release');
 const OUTPUT_PATHS = {
-  checklist: path.resolve(process.cwd(), 'docs/release/go_no_go_checklist.md'),
-  signoff: path.resolve(process.cwd(), 'docs/release/signoff_sheet.md'),
-  handoff: path.resolve(process.cwd(), 'docs/release/release_handoff_bundle.md'),
+  checklist: path.join(OUTPUT_DIR, 'go_no_go_checklist.md'),
+  signoff: path.join(OUTPUT_DIR, 'signoff_sheet.md'),
+  handoff: path.join(OUTPUT_DIR, 'release_handoff_bundle.md'),
 } as const;
 
 type CliOptions = {
@@ -50,6 +53,7 @@ async function run() {
 
   const writtenPaths: string[] = [];
   if (!options.dryRun) {
+    mkdirSync(OUTPUT_DIR, { recursive: true });
     writeFileSync(OUTPUT_PATHS.checklist, docs.checklistMarkdown, 'utf8');
     writeFileSync(OUTPUT_PATHS.signoff, docs.signoffMarkdown, 'utf8');
     writeFileSync(OUTPUT_PATHS.handoff, docs.handoffMarkdown, 'utf8');
