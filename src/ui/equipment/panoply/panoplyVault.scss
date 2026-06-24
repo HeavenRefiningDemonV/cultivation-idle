@@ -74,6 +74,9 @@
   .panoplySurfaceToggle button.on{color:#f3ead7;background:linear-gradient(180deg,#3a5b4d,#243a30);box-shadow:0 0 12px rgba(78,107,94,.5)}
 
   /* ============================ SURFACE LAYOUT ============================ */
+  /* the injected defs host must NOT take a grid row (it would push the ribbon/body off their rows). */
+  .panoplyDefs{position:absolute;width:0;height:0;overflow:hidden;pointer-events:none}
+  .bodyWrap{min-height:0;height:100%}
   .ribbonPanel{overflow:visible}
   .ribbon{display:flex;align-items:center;justify-content:space-between;gap:0;padding:0 26px 0 70px;height:100%;position:relative;z-index:3}
   .rcell{display:flex;align-items:center;gap:8px;padding:0 16px;border-left:1px solid rgba(120,90,46,.22);height:54px}

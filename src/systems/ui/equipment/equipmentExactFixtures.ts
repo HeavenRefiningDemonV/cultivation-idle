@@ -202,10 +202,14 @@ const PANOPLY_SEED_BUILDERS: Record<PanoplyExactFixtureSeedId, () => PanoplyExac
   }),
 };
 
+/** M.III.3 — illustrative 战力 Gear Power per seed so the seal shows a number in the harness matrix ([tune]). */
+const PANOPLY_FIXTURE_GEAR_POWER: Record<string, number> = {
+  healthy: 1840, empty: 90, blocked: 0, contentCap: 540, 'detail-affix': 1180, 'detail-legendary': 2470, unknown: 0,
+};
 export function buildPanoplyExactFixture(seedId: string): PanoplyExactSurfaceV1 {
   const builder = PANOPLY_SEED_BUILDERS[seedId as PanoplyExactFixtureSeedId];
   if (!builder) throw new Error(`[equipmentExactFixtures] unknown panoply seed id: ${seedId}`);
-  return builder();
+  return { ...builder(), gearPower: PANOPLY_FIXTURE_GEAR_POWER[seedId] ?? 0 };
 }
 
 // ─── Vault ────────────────────────────────────────────────────────────────────────────────────
