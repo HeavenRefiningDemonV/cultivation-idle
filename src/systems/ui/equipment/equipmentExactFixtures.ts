@@ -97,7 +97,9 @@ const PANOPLY_SEED_BUILDERS: Record<PanoplyExactFixtureSeedId, () => PanoplyExac
       utility: [{ channel: 'critChance', label: 'Crit Chance', addText: '+5%', tone: 'gain' }],
     },
     elementLean: { entries: [{ element: 'wood', label: 'Wood', weight: 1, sceneColorToken: '--element-wood' }] },
-    selectedDetail: null,
+    // the focused worn weapon fills the rail (matches the artifact's healthy read); item-in-set-bonded IS the
+    // Oathbound Warblade with its set + weapon-bond, so the rail shows the focus piece, not the empty prompt.
+    selectedDetail: buildItemDetailSurface('item-in-set-bonded'),
   }),
   empty: () => ({
     schemaVersion: PANOPLY_EXACT_SCHEMA_VERSION,

@@ -19,10 +19,13 @@
   fixture's pathLean; the 3 path scenes pass + were visually confirmed distinct & faithful — martial
   (forge-dawn/weapon-rack/embers/martial-couplet/gold), earth (pagodas/山地-steles/stone-base/earth-couplet),
   heaven (nebula/crescent-moon/constellation/slate-robe/heaven-couplet). Spec now has the path-cross block.
-  REMAINING for full 1:1 (cosmetic/fixture-content, not port-fidelity): (a) the healthy fixtures don't set
-  selectedDetail so the rail shows "Choose a treasure" (the artifact showed the focus item — set focus in the
-  fixture); (b) richer vault fixture (S0 seed has 4 slips vs ~20); (c) the live-app scale-to-fit wrapper (the
-  2048×1152 oracle is unaffected); (d) per-cell pixel micro-diff vs the artifact.
+  DONE (cosmetic): the healthy panoply now sets selectedDetail = the focus weapon (item-in-set-bonded = the
+  Oathbound Warblade) so the rail shows the focused piece (affixes/set/bond/actions) — matches the artifact's
+  healthy read; contracts still 575/575.
+  REMAINING (low-priority follow-ups, not port-fidelity): (a) richer vault fixture (S0 seed has 4 slips vs ~20);
+  (b) the live-app scale-to-fit wrapper (the 2048×1152 screenshot oracle is unaffected; flag is OFF by default,
+  dev/QA only); (c) optional: ring the focused weapon in the figure on fixture load (rail shows it; figure rings
+  on click); (d) per-cell pixel micro-diff vs the artifact.
 
 ## Done this turn (the verifiable bottom-up SPINE — surface is real from first render)
 Files CREATED (all typecheck-green):
