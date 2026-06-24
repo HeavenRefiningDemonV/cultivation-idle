@@ -62,12 +62,17 @@ export function runLiveSurfaceVisualAudit(): LiveSurfaceVisualAuditReport {
         new RegExp(`\\b${prop}\\s*:`).test(body),
       );
       if (!riskyProperty) continue;
+      const excerpt = `${match[2].trim()} { ${body.trim().slice(0, 180)} }`;
+      // Honor narrowExceptions here too (parity with the blue-remnant path) so a documented false positive —
+      // e.g. a fixed-size, absolutely-positioned decorative pseudo-element that cannot shift document layout —
+      // can be scoped out without loosening overallPass.
+      if (isException(file, excerpt)) continue;
       findings.push({
         file,
         line: getLine(source, match.index ?? 0),
         category: 'layout_shift_risk',
         reason: `state_block_changes_${riskyProperty}`,
-        excerpt: `${match[2].trim()} { ${body.trim().slice(0, 180)} }`,
+        excerpt,
       });
     }
   });

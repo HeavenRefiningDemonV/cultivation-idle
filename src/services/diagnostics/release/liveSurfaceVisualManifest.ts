@@ -90,5 +90,10 @@ export const LIVE_SURFACE_VISUAL_MANIFEST: LiveSurfaceVisualManifest = {
       pattern: /rgba\(\s*15\s*,\s*23\s*,\s*42\s*,\s*0\.28\s*\)/i,
       reason: 'Cultivation action button base border keeps a subtle neutral ink edge, not dashboard-blue chrome.',
     },
+    {
+      file: 'src/ui/shell/BottomNavDock.scss',
+      pattern: /bottomNavDock__button--active::after/,
+      reason: 'The active-tab indicator is an absolutely-positioned decorative ::after with a fixed 26px glyph; its width sizes the pointer, not in-flow content, so it cannot shift document layout.',
+    },
   ],
 };
