@@ -6,6 +6,7 @@ import {
   getDuplicateFragmentValue,
   isDuplicateManualOffer,
 } from "../systems/manuals/index.js";
+import { resolvePavilionRerollCost } from "../systems/manuals/pavilionRerollCost.js";
 import {
   buildInitialStock,
   refreshStock as generateRefresh,
@@ -65,6 +66,12 @@ interface ManualPavilionStoreState extends ManualPavilionSaveState {
     pavilionId: string,
     now?: number,
   ) => { ok: boolean; reason?: string };
+  /** D7 §fortune — the PAID early reroll: spend the (HELD → D15) cost, force-refresh ignoring the free
+   *  cooldown, pity CARRIES (never-regress). Gated `reroll_not_configured` until content deposits the cost. */
+  rerollStock: (
+    pavilionId: string,
+    now?: number,
+  ) => { ok: boolean; reason?: string; cost?: RewardCurrencyBundle };
   getStock: (pavilionId: string) => PavilionStockState | null;
   buyManual: (options: {
     pavilionId: string;
@@ -240,6 +247,65 @@ export const useManualPavilionStore = create<ManualPavilionStoreState>()(
         },
       });
       return { ok: true };
+    },
+
+    rerollStock: (pavilionId: string, now = Date.now()) => {
+      const content = useContentStore.getState();
+      if (!content.isLoaded || !content.maps.pavilionsById[pavilionId]) {
+        GameEvents.emit({
+          type: "pavilion/refresh_denied",
+          payload: { pavilionId, reason: "content_loading" },
+        });
+        return { ok: false, reason: "content_loading" };
+      }
+      let existing = get().stockByPavilionId[pavilionId];
+      if (!existing) {
+        get().ensureStock(pavilionId, now);
+        existing = get().stockByPavilionId[pavilionId];
+      }
+      if (!existing) return { ok: false, reason: "stock_missing" };
+
+      // The cost is HELD → D15 (read from economy content). Until deposited, the reroll is gated.
+      const cost = resolvePavilionRerollCost(existing.cityIndex);
+      if (!cost) {
+        GameEvents.emit({
+          type: "pavilion/refresh_denied",
+          payload: { pavilionId, reason: "reroll_not_configured" },
+        });
+        return { ok: false, reason: "reroll_not_configured" };
+      }
+
+      const inventory = useInventoryStore.getState();
+      if (!inventory.canAffordCurrency(cost)) {
+        GameEvents.emit({
+          type: "pavilion/refresh_denied",
+          payload: { pavilionId, reason: "insufficient_funds" },
+        });
+        return { ok: false, reason: "insufficient_funds" };
+      }
+
+      const spent = RewardService.spendCurrency(cost, "Manual Pavilion Reroll");
+      if (!spent) return { ok: false, reason: "spend_failed" };
+
+      // Paid early refresh — bypass the free cooldown; pity CARRIES through generateRefresh (never-regress).
+      const refreshed = generateRefresh(existing, now, {
+        snapshot: buildDoctrineSnapshot(),
+        buildAnalysis: null,
+      });
+      set((state) => {
+        state.stockByPavilionId[pavilionId] = refreshed;
+        bumpPavilionVersion(state, pavilionId);
+      });
+      GameEvents.emit({
+        type: "pavilion/stock_refreshed",
+        payload: {
+          pavilionId,
+          cityId: refreshed.cityId,
+          cityIndex: refreshed.cityIndex,
+          at: now,
+        },
+      });
+      return { ok: true, cost };
     },
 
     getStock: (pavilionId: string) =>

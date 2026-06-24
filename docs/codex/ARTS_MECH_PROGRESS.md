@@ -69,4 +69,12 @@ meridian contract-anchor revision made IN-PACKET. Commit per step. Preserve-firs
       ItemDetailSurfaceV1 for selectedDetail; the 9-state matrix; the never-regress fate-thread surfaced.
       NOTE: the innerAltarSurface = the EXISTING TechniquesExactSurfaceV1 (the altar is a reconcile, M.IV.3);
       no new altar contract needed — only the net-new Fortune Draw ceremony got one.
-- [ ] Step 2 — the REROLL action (manualPavilionStore) + surface the live pity (the live fortuneDraw owner read).
+- [x] Step 2 — the REROLL action + the live pity surfacing (578, floor 577→578). DONE.
+      Files: src/systems/manuals/pavilionRerollCost.ts (cost resolver, HELD-in-content), manualPavilionStore
+      rerollStock (paid early refresh, bypasses free cooldown, pity CARRIES via generateRefresh → never-regress,
+      gated `reroll_not_configured` until D15), src/systems/ui/fortune/fortuneDrawLiveInput.ts (live owner →
+      surface, surfaces the live pity), tests/contracts/fortuneDrawReroll.contract.test.ts (4: the guarantee at
+      threshold-1, the never-regress sequence invariant, the reroll gating, the idle-parity live build).
+      KEY: the reroll cost is read from economy content (manualSystem.pavilions.refresh.rerollCost) — HELD → D15;
+      authored NO number in code; the reroll is honestly gated until content provides it.
+- [ ] Step 3 — technique scaling RE-POINT at the derived layer (flag-aware) + the F3 element query.
