@@ -39,10 +39,24 @@ export interface TechniqueScalingSnapshot {
   cappedBonusPct: number;
   maxTotalBonusPct: number;
   combatEffectActive: boolean;
+  /** M.IV.1 — the F3 elemental-art edge applied to the total (>= 1; exactly 1 = no edge / legacy). */
+  elementAffinityMult: number;
   contributions: readonly TechniqueScalingContribution[];
   activeTraits: readonly string[];
   nextTrait: null;
-  debug: { mode: 'mp4_v1' | 'inactive_missing_metadata' };
+  debug: { mode: 'mp4_v1' | 'mp4_derived_v1' | 'inactive_missing_metadata' };
+}
+
+/**
+ * M.IV.1 — the LIVE derived layer (post-F1). When present, the primary/secondary scaling reads the FULL
+ * canonical `statRatingsById` (all 28 derived stats — the same source the Court/breakthrough read), NOT the
+ * path-filtered legacy tri-stat view; and `elementAffinityMult` (the F3 query, computed by the seam) is folded
+ * in. Absent ⇒ byte-identical legacy. The caller (the flag-gated seam) decides whether to pass it.
+ */
+export interface TechniqueDerivedScalingInput {
+  statRatingsById: Record<string, number>;
+  cap: number;
+  elementAffinityMult?: number | null;
 }
 
 export interface ResolveTechniqueScalingSnapshotInput {
@@ -52,6 +66,8 @@ export interface ResolveTechniqueScalingSnapshotInput {
   rootResonance?: number | null;
   heartLawTags?: readonly string[] | null;
   heartLawLevel?: number | null;
+  /** M.IV.1 — flag-gated derived layer; absent ⇒ legacy tri-stat (byte-identical). */
+  derived?: TechniqueDerivedScalingInput | null;
 }
 
 function clamp(value: number, min: number, max: number): number {
@@ -82,6 +98,13 @@ function statScale(snapshot: TrainingReadOnlySnapshot | null | undefined, statId
   return clamp(statRating(snapshot, statId) / cap, 0, 1);
 }
 
+/** M.IV.1 — the DERIVED-layer scale for a stat: the full canonical statRatingsById / cap (all 28 stats). */
+function derivedStatScale(derived: TechniqueDerivedScalingInput, statId: string | null | undefined): number {
+  if (!statId) return 0;
+  const cap = Math.max(1, finiteNumber(derived.cap, 100));
+  return clamp(finiteNumber(derived.statRatingsById[statId]) / cap, 0, 1);
+}
+
 function hasAnyMatch(values: readonly string[] | undefined, candidates: readonly string[] | null | undefined): boolean {
   if (!values || values.length === 0 || !candidates || candidates.length === 0) return false;
   const set = new Set(values.map((value) => value.toLowerCase()));
@@ -105,6 +128,7 @@ function inactiveSnapshot(): TechniqueScalingSnapshot {
     cappedBonusPct: 0,
     maxTotalBonusPct: 0,
     combatEffectActive: false,
+    elementAffinityMult: 1,
     contributions: [],
     activeTraits: [],
     nextTrait: null,
@@ -132,12 +156,22 @@ export function resolveTechniqueScalingSnapshot(
   const rootScaled = clamp(finiteNumber(input.rootResonance) / 100, 0, 1);
   const heartScaled = clamp(finiteNumber(input.heartLawLevel, 1) / 45, 0, 1);
 
+  // M.IV.1 — when the derived layer is present (flag-gated by the seam), scale off the FULL canonical
+  // statRatingsById; otherwise the path-filtered legacy tri-stat (byte-identical).
+  const derived = input.derived ?? null;
+  const primaryScaled = derived
+    ? derivedStatScale(derived, technique.primaryScalingStatId)
+    : statScale(input.trainingSnapshot, technique.primaryScalingStatId);
+  const secondaryScaled = derived
+    ? derivedStatScale(derived, technique.secondaryScalingStatId)
+    : statScale(input.trainingSnapshot, technique.secondaryScalingStatId);
+
   const contributionInputs: TechniqueScalingContribution[] = [
     {
       id: 'primary',
       label: 'Primary Stat',
       statId: technique.primaryScalingStatId,
-      scaledValue: statScale(input.trainingSnapshot, technique.primaryScalingStatId),
+      scaledValue: primaryScaled,
       coef: primaryCoef,
       bonusPct: 0,
       active: true,
@@ -146,7 +180,7 @@ export function resolveTechniqueScalingSnapshot(
       id: 'secondary',
       label: 'Secondary Stat',
       statId: technique.secondaryScalingStatId,
-      scaledValue: statScale(input.trainingSnapshot, technique.secondaryScalingStatId),
+      scaledValue: secondaryScaled,
       coef: secondaryCoef,
       bonusPct: 0,
       active: true,
@@ -177,17 +211,23 @@ export function resolveTechniqueScalingSnapshot(
   const maxBonus = roleCaps.maxTotalBonusPct / 100;
   const cappedBonus = clamp(additiveBonus, 0, maxBonus);
 
+  // M.IV.1 — the F3 elemental-art edge (the seam supplies the affinity multiplier; 1 when off / non-elemental).
+  const elementMult = derived
+    ? Math.max(1, finiteNumber(derived.elementAffinityMult, 1))
+    : 1;
+
   return {
-    totalMultiplier: roundMultiplier(1 + cappedBonus),
+    totalMultiplier: roundMultiplier((1 + cappedBonus) * elementMult),
     additiveBonus: roundMultiplier(additiveBonus),
     additiveBonusPct: roundPct(additiveBonus),
     cappedBonus: roundMultiplier(cappedBonus),
     cappedBonusPct: roundPct(cappedBonus),
     maxTotalBonusPct: roleCaps.maxTotalBonusPct,
     combatEffectActive: cappedBonus > 0,
+    elementAffinityMult: roundMultiplier(elementMult),
     contributions,
     activeTraits: contributions.filter((row) => row.active && row.bonusPct > 0).map((row) => row.label),
     nextTrait: null,
-    debug: { mode: 'mp4_v1' },
+    debug: { mode: derived ? 'mp4_derived_v1' : 'mp4_v1' },
   };
 }

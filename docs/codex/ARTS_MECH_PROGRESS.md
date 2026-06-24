@@ -77,4 +77,13 @@ meridian contract-anchor revision made IN-PACKET. Commit per step. Preserve-firs
       threshold-1, the never-regress sequence invariant, the reroll gating, the idle-parity live build).
       KEY: the reroll cost is read from economy content (manualSystem.pavilions.refresh.rerollCost) — HELD → D15;
       authored NO number in code; the reroll is honestly gated until content provides it.
-- [ ] Step 3 — technique scaling RE-POINT at the derived layer (flag-aware) + the F3 element query.
+- [x] Step 3 — technique scaling RE-POINT at the derived layer (flag-aware) + the F3 element query (579, floor
+      578→579). DONE. techniqueScalingResolver: + optional `derived` input (full canonical statRatingsById, all
+      28 stats, not the path-filtered tri-stat) + `elementAffinityMult` folded into totalMultiplier + snapshot
+      field + 'mp4_derived_v1' debug mode. Flag-off byte-identical (the two RK-08 anchors green untouched).
+      techniqueDerivedScalingSource.ts: buildTechniqueDerivedScaling — the flag-gated seam (forceLegacy wins →
+      null), reads statRatingsById + queries F3 (resolvePlayerElementAffinity) for elemental arts only.
+      techniqueDerivedScaling.contract.test.ts (5): byte-identical off, derived-is-the-source (incl. out-of-path
+      stat scales under derived = 0 under legacy), the F3 edge folds + floors at 1, the seam flag-gate, the seam
+      F3 query matches resolvePlayerElementAffinity exactly. Combat consumption stays Movement V (not wired here).
+- [ ] Step 4 — the legendary technique catalog (+ unique mechanics) + the innerAltarSurface note.
