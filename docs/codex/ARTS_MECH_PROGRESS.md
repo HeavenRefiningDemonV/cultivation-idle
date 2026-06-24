@@ -12,15 +12,18 @@
 4. The legendary unique mechanics (+ the reroll + the pity guarantee).
 
 ## D17 deliverables (the checklist)
-- [ ] two-axis technique model (kind × grade) — src/systems/techniques/ + techniqueStore
-- [ ] technique effect scales off the LIVE DERIVED layer (was tri-stat split; flag-aware like composeGear) — techniqueScalingResolver re-point
-- [ ] per-path roll + rarity sub-stats — src/systems/techniques/ + techCollectionStore
-- [ ] legendary unique mechanics (a legendary technique catalog; validate over the ids)
-- [ ] the Fortune Draw weighted roll — manualOfferAnalysis / manualPavilionStore / pavilionStockGenerator
-- [ ] the reroll + the pity guarantee (never-regress on acquisition) — manualPavilionStore / pavilionCorrectionRules
-- [ ] technique→element interaction (elemental arts query the F3 resolver) — techniqueScalingResolver → F3
-- [ ] SurfaceV1: innerAltarSurface (loadout) + fortuneDrawSurface (offers/pity/reroll) — additive, contract-tested, render-only
-- [ ] [tune] → D15: roll weights, sub-stat ranges, pity threshold, reroll cost, legendary values, scaling coeffs
+- [x] two-axis technique model (kind × grade) — ALREADY LIVE (TechniqueDef.type KIND + techCollectionStore
+      manualGrade/rarity GRADE); recon-confirmed. No build needed.
+- [x] technique effect scales off the LIVE DERIVED layer (flag-aware like composeGear) — Step 3 resolver re-point.
+- [~] per-path roll + rarity sub-stats — the per-path roll is LIVE (pavilionStockGenerator poolByPath +
+      pavilionCorrectionRules path-alignment); the rarity sub-stat ROLLS are techCollectionStore traits (live).
+      No new build; recon-confirmed live.
+- [x] legendary unique mechanics (a legendary technique catalog; validate over the ids) — Step 4.
+- [x] the Fortune Draw weighted roll — ALREADY LIVE (pavilionStockGenerator.rollRarity); surfaced in Step 1/2.
+- [x] the reroll + the pity guarantee (never-regress on acquisition) — Step 2 (reroll new; pity was live, now surfaced+tested).
+- [x] technique→element interaction (elemental arts query the F3 resolver) — Step 3 seam (buildTechniqueDerivedScaling → F3).
+- [x] SurfaceV1: fortuneDrawSurface (Step 1) + innerAltarSurface = the EXISTING TechniquesExactSurfaceV1 (altar is a reconcile, M.IV.3).
+- [x] [tune] → D15: roll weights / sub-stat ranges / pity threshold / reroll cost / legendary values / scaling coeffs ALL HELD (read from content or arrive as inputs; none authored).
 
 ## Verification (D17)
 - Battery green; contract floor rises (the altar/draw surface additions + the anchor revisions in-packet).
@@ -86,4 +89,14 @@ meridian contract-anchor revision made IN-PACKET. Commit per step. Preserve-firs
       techniqueDerivedScaling.contract.test.ts (5): byte-identical off, derived-is-the-source (incl. out-of-path
       stat scales under derived = 0 under legacy), the F3 edge folds + floors at 1, the seam flag-gate, the seam
       F3 query matches resolvePlayerElementAffinity exactly. Combat consumption stays Movement V (not wired here).
-- [ ] Step 4 — the legendary technique catalog (+ unique mechanics) + the innerAltarSurface note.
+- [x] Step 4 — the legendary technique catalog (580, floor 579→580). DONE. src/content/techniqueLegendaries.ts
+      (TECHNIQUE_LEGENDARIES — 3 REAL apex ultimates elevated, one offense ultimate per path: Heavenly Cataclysm
+      / World Pillar Slam / Heaven-Splitting Slash, each with its signature edge grounded in its real effect,
+      magnitudes HELD), TechniqueDef.signature field (additive optional), findLegendaryTechnique +
+      LEGENDARY_TECHNIQUE_IDS, tests/contracts/techniqueLegendaries.contract.test.ts (5: structure, signature,
+      one-per-path, catalog-completeness against the LIVE content, resolver). innerAltarSurface = existing
+      TechniquesExactSurfaceV1 (no new contract).
+
+## M.IV.1 COMPLETE — all 4 steps green (commits 798c9de6 → this). Mechanical layer done for the artifact + port.
+The Fortune Draw artifact (M.IV.2, user-authored in chat) can target fortuneDrawSurface; the port (M.IV.3)
+consumes it + completes the techniquesExact altar. Combat consumption of the derived scaling = Movement V.

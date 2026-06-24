@@ -489,6 +489,9 @@ export interface TechniqueDef {
   secondaryAtMastery75?: unknown;
   rarity?: string;
   tier?: string;
+  /** D7 §G — the legendary apex art's named unique-mechanic edge (apex catalog only). The SHAPE is fixed;
+   *  any magnitude inside `body` is illustrative `[tune]` → D15. Absent on non-legendary techniques. */
+  signature?: { name: string; body: string };
 }
 
 export interface TechniquesConfig {
