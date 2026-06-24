@@ -10,8 +10,12 @@ against unbuilt consumers (D11 combat, D8 equipment) is the foundation-after-fra
 and (c) flipping the engine to players is a release decision gated on completion + a GO release gate.
 **Do NOT author any value below outside F-BAL.** This is a checklist, not a spec.
 
-Last updated: 2026-06-24 (consolidation checkpoint #4 — D8 content batch banked: item-model schema +
-equip/loadout + roll + gear-drop, all unconsumed/held via HELD / HELD_COUNT / HELD_RATE sentinels).
+Last updated: 2026-06-24 — **FINALIZED at the `rework-structure-complete` baseline.** This is the complete
+F-BAL packet input: every held magnitude across the rework (focus · element tuning · B-MERID · breakthrough
+risk · DoT/ICD/hard-CC/drain · enemy resist/stagger + control roll + shred · the full D8 content layer ·
+the engine-default flag) + the parked refactors (slice-1b composeGear wire + legacy refine/temper de-dup,
+the gear-drop→generateLoot wire, the controlPower read). Nothing lost. Sentinels: HELD={min:0,max:0} ·
+HELD_COUNT=-1 · HELD_RATE=0 · HELD_MULT=1. See `state-of-the-rework.md` for the live/held/parked/blocked map.
 
 **F-BAL manifest (the single terminal-pass checklist — every held/inert magnitude this rework parked):**
 1. Breakthrough risk / failure table (progression regime) — §1
