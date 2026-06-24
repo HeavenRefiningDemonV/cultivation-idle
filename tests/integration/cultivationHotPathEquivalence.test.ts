@@ -25,12 +25,17 @@ function resetCultivationRuntime() {
   useActivityStore.getState().hardResetActivity();
   useGameStore.getState().hardResetGameState();
   useCultivationStore.getState().resetForNewLife();
+  // Qi accrual is gated behind a committed life identity (the M.II.3 hot-path gate: tick()/flush early-return
+  // until path + Heart Law + breath are set). Commit one so the hot path actually accrues. Mirrors the
+  // now-passing cityUnlockRuntime/cityArrivalFlow setup.
   useGameStore.setState({
     qi: '0',
     qiPerSecond: '10',
     lastTickTime: 1_000,
     lastActiveTime: 1_000,
+    selectedPath: 'heaven',
   });
+  useCultivationStore.setState({ selectedHeartLawId: 'heartlaw_quiet_breath', breathMode: 'balanced' });
 }
 
 test('cultivation hot path preserves 60 seconds of exact Qi after an explicit flush', () => {

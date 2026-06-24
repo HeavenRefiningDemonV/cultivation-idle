@@ -7,6 +7,7 @@ import { REALMS } from '../../src/constants/index.js';
 import { useBountyStore } from '../../src/stores/bountyStore.js';
 import { useCityStore } from '../../src/stores/cityStore.js';
 import { useContentStore } from '../../src/stores/contentStore.js';
+import { useCultivationStore } from '../../src/stores/cultivationStore.js';
 import {
   setInventoryStoreGetter,
   setPrestigeStoreGetter,
@@ -35,7 +36,7 @@ const loadRuntimeContent = async (): Promise<RuntimeContent> => {
       economy: await readJson('economy.json'),
       cities: await readJson('cities.json'),
       items: await readJson('items.json'),
-      trials: await readJson('trials.json'),
+      trials: (await readJson<{ trials: RuntimeContent['trials'] }>('trials.json')).trials,
       bounties: await readJson('bounties.json'),
       prestige_store: await readJson('prestige_store.json'),
     }))();
@@ -67,6 +68,13 @@ const resetRuntimeStores = () => {
   useCityStore.getState().hardResetCity();
   useBountyStore.getState().hardResetBounties();
   useGameStore.getState().hardResetGameState();
+  // M.II.1 made breakthrough() refuse to run until a life identity is committed
+  // (path + Heart Law + breath). The realm-advance path it guards is exactly what these
+  // city-unlock tests exercise, so commit a complete identity and pin the major-realm risk
+  // roll high (>= riskPercent) so a successful gate attempt is deterministic, never a dice flake.
+  useGameStore.setState({ selectedPath: 'heaven' });
+  useCultivationStore.setState({ selectedHeartLawId: 'heartlaw_quiet_breath', breathMode: 'balanced' });
+  useGameStore.getState().__setBreakthroughRiskRollForTest?.(() => 1);
 };
 
 const installRuntimeDeps = (items: Record<string, number>) => {

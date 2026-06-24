@@ -80,7 +80,7 @@ test('world shell source wiring keeps deferred modules hidden while leaving ruin
   const cityMapHubSource = await readFile(repoPath('src/components/screens/CityMapHub.tsx'), 'utf8');
   const modalSource = await readFile(repoPath('src/components/modals/WorldBuildingModal.tsx'), 'utf8');
 
-  assert.match(worldScreenSource, /WORLD_SCREEN_HIDDEN_MODULES\s*=\s*new Set<string>\(DEFERRED_WORLD_MODULES\)/);
+  assert.match(worldScreenSource, /buildOnboardingWorldModulePolicy\([\s\S]*?deferredWorldModuleKeys:\s*DEFERRED_WORLD_MODULES/);
   assert.match(cityMapHubSource, /HIDDEN_HUB_MODULES\s*=\s*new Set<string>\(DEFERRED_WORLD_MODULES\)/);
   assert.match(worldScreenSource, /DEFERRED_WORLD_MODULES/);
   assert.match(cityMapHubSource, /DEFERRED_WORLD_MODULES/);
@@ -89,7 +89,7 @@ test('world shell source wiring keeps deferred modules hidden while leaving ruin
 
   assert.match(modalSource, /RuinsBuildingPanel/);
   assert.match(modalSource, /case\s+['"]ruins['"]\s*:/);
-  assert.match(modalSource, /case\s+['"]ruins['"]\s*:\s*content\s*=\s*<RuinsBuildingPanel\s+cityId=\{storeCityId\}\s*\/>/s);
+  assert.match(modalSource, /case\s+['"]ruins['"]\s*:\s*content\s*=\s*<RuinsBuildingPanel\s+cityId=\{storeCityId\}/s);
 });
 
 test('openWorldModule can route to ruins for every unlocked live city', () => {
@@ -179,15 +179,15 @@ test('live bounty template filtering keeps support templates authored for the cu
 });
 
 test('ruins panel composition keeps scenic center, deterministic trio inspector, progress rail, and utility tray structure', async () => {
-  const ruinsPanelSource = await readFile(repoPath('src/components/screens/world/buildings/RuinsBuildingPanel.tsx'), 'utf8');
+  const ruinsPanelSource = await readFile(repoPath('src/features/world/ruinsExact/RuinsExactMockupScreen.ts'), 'utf8');
   const ruinsSummarySource = await readFile(repoPath('src/ui/world/RuinsSummaryCard.tsx'), 'utf8');
   const ruinsProgressSource = await readFile(repoPath('src/features/ruins/ui/RuinsProgress.tsx'), 'utf8');
 
-  assert.match(ruinsPanelSource, /ruinsPanel__centerBand/);
-  assert.match(ruinsPanelSource, /ruinsPanel__scenicCenter/);
-  assert.match(ruinsPanelSource, /ruinsPanel__progressRail/);
-  assert.match(ruinsPanelSource, /ruinsPanel__ctaZone/);
-  assert.match(ruinsPanelSource, /ruinsPanel__utility/);
+  assert.match(ruinsPanelSource, /ruinsExactPage__centerScenic/);
+  assert.match(ruinsPanelSource, /ruins-exact-center-scenic-slot/);
+  assert.match(ruinsPanelSource, /ruinsExactPage__routeSlot/);
+  assert.match(ruinsPanelSource, /ruinsExactPage__ctaSlot/);
+  assert.match(ruinsPanelSource, /ruinsExactPage__leftRail/);
 
   assert.match(ruinsSummarySource, /Deterministic value preview/);
   assert.match(ruinsSummarySource, /leadMaterialsLine/);

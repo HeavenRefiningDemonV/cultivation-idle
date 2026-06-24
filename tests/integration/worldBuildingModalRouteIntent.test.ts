@@ -6,12 +6,16 @@ test('world module opener and modal support apothecary pouch intent wiring', asy
   const openWorldModuleSource = await fs.readFile('src/systems/world/openWorldModule.ts', 'utf8');
   const worldBuildingModalSource = await fs.readFile('src/components/modals/WorldBuildingModal.tsx', 'utf8');
   const uiStoreSource = await fs.readFile('src/stores/uiStore.ts', 'utf8');
+  const entrySurfaceSource = await fs.readFile('src/systems/ui/world/worldBuildingModalEntrySurface.ts', 'utf8');
 
   assert.match(openWorldModuleSource, /intent\?: WorldBuildingModalIntent/);
-  assert.match(openWorldModuleSource, /openWorldBuildingModal\(\{ cityId, buildingKey: normalizedModuleKey as WorldBuildingKey, intent \}\)/);
+  assert.match(openWorldModuleSource, /openWorldBuildingModal\(\{\s*cityId,\s*buildingKey: normalizedModuleKey as WorldBuildingKey,\s*intent: resolvedIntent,\s*\}\)/);
   assert.match(worldBuildingModalSource, /storeModalIntent\?\.apothecarySurface/);
-  assert.match(worldBuildingModalSource, /Opened to Brew/);
-  assert.match(worldBuildingModalSource, /Opened for Medicine Pouch/);
+  // The apothecary entry-surface subtitle (brew/pouch) was refactored out of the modal
+  // into resolveWorldModalEntrySurface; the modal renders entrySurface.contextReason.
+  assert.match(worldBuildingModalSource, /entrySurface\.contextReason/);
+  assert.match(entrySurfaceSource, /case 'brew':\s+return 'Opened to Brew'/);
+  assert.match(entrySurfaceSource, /case 'pouch':\s+return 'Opened for Medicine Pouch'/);
   assert.match(uiStoreSource, /worldBuildingModalIntent/);
   assert.match(uiStoreSource, /apothecarySurface\?: 'buy' \| 'brew' \| 'pouch'/);
 });
@@ -22,5 +26,5 @@ test('world building modal hard-gates to live world modules and city-supported t
   assert.match(worldBuildingModalSource, /inspectWorldFacingModuleTarget/);
   assert.match(worldBuildingModalSource, /!buildingAudit\.ok \|\| !citySupportsBuilding/);
   assert.match(worldBuildingModalSource, /WORLD_MODAL_LIVE_KEYS/);
-  assert.match(worldBuildingModalSource, /case 'alchemy':\s+content = <ApothecaryPanel shopId=\{moduleRefId \?\? null\} initialSurface="brew" \/>/);
+  assert.match(worldBuildingModalSource, /case 'alchemy':\s+content = \(\s*<ApothecaryExactScreenOwner[\s\S]*?shopId=\{moduleRefId \?\? null\}[\s\S]*?focus="brew"\s*\/>\s*\);/);
 });

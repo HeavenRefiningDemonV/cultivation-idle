@@ -10,12 +10,16 @@ function resetCultivationRuntime() {
   useActivityStore.getState().hardResetActivity();
   useGameStore.getState().hardResetGameState();
   useCultivationStore.getState().resetForNewLife();
+  // Qi accrual is gated behind a committed life identity (the M.II.3 hot-path gate: tick()/flush early-return
+  // until path + Heart Law + breath are set). Commit one so the scheduled ticks actually accrue.
   useGameStore.setState({
     qi: '0',
     qiPerSecond: '10',
     lastTickTime: 1_000_000,
     lastActiveTime: 1_000_000,
+    selectedPath: 'heaven',
   });
+  useCultivationStore.setState({ selectedHeartLawId: 'heartlaw_quiet_breath', breathMode: 'balanced' });
 }
 
 function runGameTickSeries(stepMs: number, elapsedMs: number): string {

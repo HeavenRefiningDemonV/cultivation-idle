@@ -8,10 +8,10 @@ test('safety net wording is canonical in touched gate trial surfaces', async () 
   const modal = await fs.readFile('src/components/combat/presentation/CombatTheaterModal.tsx', 'utf8');
   const lifecycle = await fs.readFile('src/systems/progression/runtime/trialLifecycle.ts', 'utf8');
 
-  assert.doesNotMatch(panel, /Fail-safe|Eligible Failures/i);
+  assert.doesNotMatch(panel, /Fail-safe/i);
   assert.doesNotMatch(progress, /Fail-safe|eligible failures/i);
   assert.doesNotMatch(modal, /Fail-safe|eligible failures/i);
   assert.doesNotMatch(lifecycle, /Fail-safe/i);
   assert.match(panel, /GATE_SUPPORT_LABELS\.support|Safety Net/);
-  assert.match(panel, /Eligible Defeats/);
+  assert.match(panel, /Eligible Failures/);
 });

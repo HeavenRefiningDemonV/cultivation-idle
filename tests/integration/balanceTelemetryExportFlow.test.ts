@@ -33,11 +33,11 @@ test('runtime balance telemetry can be exported and consumed by cli', () => {
   const inputFile = join(tempDir, 'input.json');
   writeFileSync(inputFile, JSON.stringify(envelope, null, 2));
 
-  const exportResult = spawnSync('node', ['--experimental-strip-types', 'scripts/exportBalanceTelemetry.ts', '--input', inputFile, '--out-dir', tempDir], { encoding: 'utf8' });
+  const exportResult = spawnSync('node', ['--loader=./scripts/relativeJsLoader.mjs', '--experimental-strip-types', 'scripts/exportBalanceTelemetry.ts', '--input', inputFile, '--out-dir', tempDir], { encoding: 'utf8' });
   assert.equal(exportResult.status, 0, exportResult.stderr || exportResult.stdout);
   assert.equal(existsSync(join(tempDir, 'balance_events.csv')), true);
 
-  const summaryResult = spawnSync('node', ['--experimental-strip-types', 'scripts/summarizeBalanceTelemetry.ts', '--input', inputFile], { encoding: 'utf8' });
+  const summaryResult = spawnSync('node', ['--loader=./scripts/relativeJsLoader.mjs', '--experimental-strip-types', 'scripts/summarizeBalanceTelemetry.ts', '--input', inputFile], { encoding: 'utf8' });
   assert.equal(summaryResult.status, 0, summaryResult.stderr || summaryResult.stdout);
   assert.equal(readFileSync(join(tempDir, 'balance_summary.txt'), 'utf8').length > 0, true);
   assert.equal(summaryResult.stdout.trim().length > 0, true);

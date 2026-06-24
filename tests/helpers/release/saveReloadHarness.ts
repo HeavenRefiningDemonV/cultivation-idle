@@ -64,6 +64,15 @@ const ensureWindowAndStorage = () => {
   if (typeof globalThis.window.confirm !== 'function') {
     (globalThis.window as Window & { confirm: (message?: string) => boolean }).confirm = () => true;
   }
+  // window === globalThis has no `location`; UI store paths read window.location.search. Provide a minimal stub.
+  if (!globalThis.window.location) {
+    (globalThis.window as { location: Location }).location = {
+      search: '',
+      hash: '',
+      href: 'http://localhost/',
+      pathname: '/',
+    } as unknown as Location;
+  }
 };
 
 const resetRuntimeStoresForReload = () => {

@@ -9,6 +9,7 @@ import { buildDefaultSaveState } from '../../src/save/defaultSaveState.js';
 import { useBountyStore } from '../../src/stores/bountyStore.js';
 import { useCityStore } from '../../src/stores/cityStore.js';
 import { useContentStore } from '../../src/stores/contentStore.js';
+import { useCultivationStore } from '../../src/stores/cultivationStore.js';
 import {
   setInventoryStoreGetter,
   setPrestigeStoreGetter,
@@ -38,7 +39,7 @@ const loadRuntimeContent = async (): Promise<RuntimeContent> => {
       economy: await readJson('economy.json'),
       cities: await readJson('cities.json'),
       items: await readJson('items.json'),
-      trials: await readJson('trials.json'),
+      trials: (await readJson<{ trials: RuntimeContent['trials'] }>('trials.json')).trials,
       bounties: await readJson('bounties.json'),
       prestige_store: await readJson('prestige_store.json'),
     }))();
@@ -72,6 +73,14 @@ const resetRuntimeStores = () => {
   useUIStore.getState().hardResetUI();
   useBountyStore.getState().hardResetBounties();
   useGameStore.getState().hardResetGameState();
+  // M.II.1 made breakthrough() refuse to run until a life identity is committed
+  // (path + Heart Law + breath). The real Foundation breakthrough these arrival tests
+  // exercise is exactly the realm-advance path it guards, so commit a complete identity
+  // and pin the major-realm risk roll high (>= riskPercent) so the gate clears
+  // deterministically rather than on a dice flake.
+  useGameStore.setState({ selectedPath: 'heaven' });
+  useCultivationStore.setState({ selectedHeartLawId: 'heartlaw_quiet_breath', breathMode: 'balanced' });
+  useGameStore.getState().__setBreakthroughRiskRollForTest?.(() => 1);
 };
 
 const installRuntimeDeps = (items: Record<string, number>) => {
@@ -286,11 +295,17 @@ test('CityArrivalBanner source uses canonical quick-open routing and blocks on o
 test('WorldScreen source surfaces the city lesson inside the current-city summary area', async () => {
   const source = await fs.readFile(path.resolve(process.cwd(), 'src/components/screens/WorldScreen.tsx'), 'utf8');
 
-  assert.equal(source.includes('buildCityPhaseTeachingSurface'), true);
-  assert.equal(source.includes('City role:'), true);
-  assert.equal(source.includes('Phase lesson:'), true);
-  assert.equal(source.includes('Lead Ruin:'), true);
-  assert.equal(source.includes('Gate Trial:'), true);
-  assert.equal(source.includes('Expeditions:'), true);
+  // The current-city lesson summary was refactored from the inline buildCityPhaseTeachingSurface
+  // block into the buildCityPhaseSurfaceFromSnapshot surface, rendered as condensed
+  // "City Phase:" / "Pressure:" lines fed to the WorldOverlayRibbon. Same intent: WorldScreen
+  // still surfaces the city's phase lesson and pressure in the current-city summary area.
+  assert.equal(source.includes('buildCityPhaseSurfaceFromSnapshot'), true);
+  assert.equal(source.includes('cityPhaseSurface'), true);
+  assert.equal(source.includes('City Phase:'), true);
+  assert.equal(source.includes('phaseLesson'), true);
+  assert.equal(source.includes('Pressure:'), true);
+  assert.equal(source.includes('newPressure'), true);
+  assert.equal(source.includes('phaseLine'), true);
+  assert.equal(source.includes('pressureLine'), true);
   assert.equal(source.includes('new_city'), false);
 });

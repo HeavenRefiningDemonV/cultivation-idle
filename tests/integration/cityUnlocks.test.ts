@@ -72,8 +72,9 @@ test('runtime helper backfills unlocked cities from entered-realm truth in canon
 });
 
 test('World screen source labels locked cities with explicit realm-entry requirement text', async () => {
-  const [worldScreenSource, economy, cities, items, trials, prestigeStore] = await Promise.all([
+  const [worldScreenSource, ribbonSource, economy, cities, items, trials, prestigeStore] = await Promise.all([
     fs.readFile(path.resolve(process.cwd(), 'src/components/screens/WorldScreen.tsx'), 'utf8'),
+    fs.readFile(path.resolve(process.cwd(), 'src/ui/world/WorldOverlayRibbon.tsx'), 'utf8'),
     readJson<RawProgressionContentLike['economy']>('economy.json'),
     readJson<RawProgressionContentLike['cities']>('cities.json'),
     readJson<RawProgressionContentLike['items']>('items.json'),
@@ -90,6 +91,12 @@ test('World screen source labels locked cities with explicit realm-entry require
     }),
   );
 
-  assert.equal(worldScreenSource.includes('Locked ('), true);
+  // The locked-city label moved out of WorldScreen into the WorldOverlayRibbon city
+  // selector during the world-surface rework. WorldScreen still wires the realm-entry
+  // requirement text into the ribbon's selector entries (requirementText), and the
+  // ribbon renders it as the explicit "Locked" label for each locked city.
+  assert.equal(worldScreenSource.includes('requirementText: requirementText'), true);
+  assert.equal(ribbonSource.includes('Locked'), true);
+  assert.equal(ribbonSource.includes('requirementText'), true);
   assert.equal(getCityUnlockRequirementText(contract, 'city_stonecrag_town'), 'Reach Foundation Establishment');
 });

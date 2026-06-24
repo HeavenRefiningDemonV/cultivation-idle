@@ -46,6 +46,11 @@ test('runtime catalog exposes only the live consumed prestige nodes and hides de
     'ap_idle_qi_mult',
     'ap_combat_mult',
     'ap_offline_efficiency',
+    'form_memory',
+    'scripture_echo',
+    'root_clarity',
+    'calm_first_breath',
+    'old_sparring_shadows',
     'ap_unlock_heartlaw_t1',
     'ap_unlock_heartlaw_t2',
     'ap_unlock_heartlaw_t3',
@@ -67,7 +72,7 @@ test('visible prestige category sections omit empty groups and hidden upgrades',
 
   assert.deepEqual(
     sections.map((section) => section.category.key),
-    ['laws', 'combat', 'techniques'],
+    ['laws', 'combat', 'techniques', 'misc'],
   );
   assert.equal(
     sections.some((section) => section.upgrades.some((upgrade) => upgrade.id === 'ap_unlock_meridian_hall')),

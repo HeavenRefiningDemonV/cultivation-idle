@@ -11,7 +11,7 @@
     "check:icons": "node --experimental-strip-types scripts/checkNoEmojiIcons.ts",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "npm run ensure:vendor-links && tsc --project tsconfig.tests.json && npm run build:progression-fixtures && node --loader=./scripts/relativeJsLoader.mjs --test tmp-tests/tests/**/*.js tmp-tests/src/features/story/__tests__/**/*.js",
+    "test": "npm run ensure:vendor-links && tsc --project tsconfig.tests.json && npm run build:progression-fixtures && node --loader=./scripts/relativeJsLoader.mjs tmp-tests/scripts/runNodeTestFilesSequential.js tmp-tests/tests tmp-tests/src/features/story/__tests__",
     "test:mp5": "npm run ensure:vendor-links && tsc --project tsconfig.tests.json && node --loader=./scripts/relativeJsLoader.mjs --test tmp-tests/tests/contracts/mp5*.test.js tmp-tests/tests/integration/mp5*.test.js tmp-tests/tests/contracts/balanceTelemetrySchema.test.js",
     "release:runtime-content-manifest": "node --loader=./scripts/relativeJsLoader.mjs --experimental-strip-types scripts/release/validateRuntimeContentManifest.ts --write",
     "release:runtime-content-manifest:json": "npm run release:runtime-content-manifest -- --json",

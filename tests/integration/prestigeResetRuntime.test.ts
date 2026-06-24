@@ -192,7 +192,11 @@ test('prestige reset service creates a clean new life while preserving permanent
   assert.deepEqual(useManualSatchelStore.getState().manuals, []);
   assert.equal(useProfessionStore.getState().alchemyQueue.length, 0);
   assert.equal(useExpeditionStore.getState().active.length, 0);
-  assert.equal(useExpeditionStore.getState().slots, 2);
+  // Expedition slots are now DERIVED from retained prestige purchases and recomputed on reset
+  // (PrestigeResetService -> recomputeAndApplyPrestigeUnlocks -> applyPrestigeDerivedUnlocks).
+  // The test's purchases grant no expedition-slot upgrade, so the reset normalizes the
+  // un-backed slots:2 above back to the derived baseline of 1 (BASE_EXPEDITION_SLOTS).
+  assert.equal(useExpeditionStore.getState().slots, 1);
   assert.deepEqual(useCityStore.getState().unlockedCityIds, ['city_pinewind_hamlet']);
   assert.equal(useCityStore.getState().currentCityId, 'city_pinewind_hamlet');
   assert.equal(summary.reset.cityBaselineId, 'city_pinewind_hamlet');

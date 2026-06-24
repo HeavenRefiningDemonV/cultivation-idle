@@ -50,6 +50,10 @@ test('reportOnly and plannedTransform steps never mutate; ordering and idempoten
     'v2_0_0_normalize_city_progression_state',
     'v2_0_0_plan_partial_reset_residue_cleanup',
     'v2_0_0_plan_offline_unification',
+    'v2_3_0_seed_three_treasures_from_legacy',
+    'v2_1_0_backfill_onboarding_state',
+    'v2_1_0_backfill_training_state',
+    'v2_2_0_backfill_prestige_memory_ledger',
   ]);
   assert.deepEqual(applyOnce.report.reportOnlySteps, ['m0_report_source_version']);
   assert.deepEqual(applyOnce.report.plannedTransformSteps, ['v2_0_0_plan_semester_slice_clamp']);
@@ -65,6 +69,7 @@ test('reportOnly and plannedTransform steps never mutate; ordering and idempoten
 
   assert.deepEqual(applyTwice.report.appliedTransformSteps, [
     'v2_0_0_plan_gate_item_alias_migration',
+    'v2_0_0_plan_deferred_prestige_refund',
     'v2_0_0_plan_trial_resolution_normalization',
     'v2_0_0_normalize_city_progression_state',
     'v2_0_0_plan_partial_reset_residue_cleanup',
@@ -105,6 +110,20 @@ test('load-path integration wrapper migrates legacy save and no-ops current save
     mode: 'apply',
     normalizeToCurrent: passthroughNormalizer,
   });
-  assert.equal(current.report.appliedTransformSteps.length, 0);
+  // A save already at the current version is not re-migrated wholesale: the structural v2_0_0
+  // transforms (re-seed version/meta, re-normalize path truth) must NOT fire. Additive backfill
+  // steps may still run idempotently to fill newly-introduced save slices that are absent.
+  const structuralV200Steps = ['v2_0_0_seed_version_and_meta', 'v2_0_0_normalize_path_truth'];
+  assert.equal(
+    current.report.appliedTransformSteps.some((stepId) => structuralV200Steps.includes(stepId)),
+    false,
+  );
+  assert.equal((current.migrated as Record<string, unknown>).version, CURRENT_SAVE_VERSION);
   assert.equal((current.migrated as Record<string, unknown>).marker, true);
+  // Re-running migration on a current save is a fixpoint (idempotent no-op on the data).
+  const currentAgain = runSaveMigrations(current.migrated, {
+    mode: 'apply',
+    normalizeToCurrent: passthroughNormalizer,
+  });
+  assert.deepEqual(currentAgain.migrated, current.migrated);
 });
