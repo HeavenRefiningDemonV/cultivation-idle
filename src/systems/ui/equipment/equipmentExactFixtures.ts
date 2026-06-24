@@ -202,7 +202,7 @@ const PANOPLY_SEED_BUILDERS: Record<PanoplyExactFixtureSeedId, () => PanoplyExac
   }),
 };
 
-export function buildPanoplyExactSurface(seedId: string): PanoplyExactSurfaceV1 {
+export function buildPanoplyExactFixture(seedId: string): PanoplyExactSurfaceV1 {
   const builder = PANOPLY_SEED_BUILDERS[seedId as PanoplyExactFixtureSeedId];
   if (!builder) throw new Error(`[equipmentExactFixtures] unknown panoply seed id: ${seedId}`);
   return builder();
@@ -319,7 +319,7 @@ const VAULT_SEED_BUILDERS: Record<VaultExactFixtureSeedId, () => VaultExactSurfa
   }),
 };
 
-export function buildVaultExactSurface(seedId: string): VaultExactSurfaceV1 {
+export function buildVaultExactFixture(seedId: string): VaultExactSurfaceV1 {
   const builder = VAULT_SEED_BUILDERS[seedId as VaultExactFixtureSeedId];
   if (!builder) throw new Error(`[equipmentExactFixtures] unknown vault seed id: ${seedId}`);
   return builder();

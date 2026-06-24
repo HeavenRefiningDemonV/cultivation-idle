@@ -8,8 +8,8 @@ import {
   PANOPLY_EXACT_SCHEMA_VERSION,
   VAULT_EXACT_FIXTURE_SEEDS,
   VAULT_EXACT_SCHEMA_VERSION,
-  buildPanoplyExactSurface,
-  buildVaultExactSurface,
+  buildPanoplyExactFixture as buildPanoplyExactSurface,
+  buildVaultExactFixture as buildVaultExactSurface,
 } from '../../src/systems/ui/equipment/index.js';
 
 /** The render-only guard: no field anywhere in the surface may be a function (no methods, no callbacks). */

@@ -45,7 +45,27 @@ export type {
 export {
   PANOPLY_EXACT_FIXTURE_SEEDS,
   VAULT_EXACT_FIXTURE_SEEDS,
-  buildPanoplyExactSurface,
-  buildVaultExactSurface,
+  buildPanoplyExactFixture,
+  buildVaultExactFixture,
 } from './equipmentExactFixtures.js';
 export type { PanoplyExactFixtureSeedId, VaultExactFixtureSeedId } from './equipmentExactFixtures.js';
+
+// M.III.1 S3 — the LIVE builders (canonical names). Pure over their input; the owning hook reads S1 state
+// + composeGear output via selectors and passes it in. The contracts (above) stay stable; the owner swaps
+// the painted port from the fixtures to these.
+export {
+  buildPanoplyExactSurface,
+  buildVaultExactSurface,
+  toItemDetailSurface,
+} from './equipmentExactBuilders.js';
+export type {
+  PanoplyBuildInput,
+  VaultBuildInput,
+  ItemDetailMapInput,
+} from './equipmentExactBuilders.js';
+export {
+  arrangeVaultInstances,
+  filterVaultInstances,
+  sortVaultInstances,
+} from './vaultSortFilter.js';
+export type { GetDef } from './vaultSortFilter.js';
