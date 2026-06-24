@@ -162,6 +162,11 @@ export interface PanoplyExactSurfaceV1 {
   /** "what the gear adds" — composeGear's output, labeled. */
   totals: GearTotalsSurface;
   elementLean?: GearElementLeanSurface | null;
+  /**
+   * D-E11 display aggregate — the worn set's combat-power (战力 seal), formatted UPSTREAM from composeGear's
+   * output; `[tune]` → D15 (the real weighting is HELD). Optional + never recomputed in JSX. (M.III.3 add.)
+   */
+  gearPower?: number | null;
   /** the F2 inspector payload for the focused slot. */
   selectedDetail: ItemDetailSurfaceV1 | null;
 }

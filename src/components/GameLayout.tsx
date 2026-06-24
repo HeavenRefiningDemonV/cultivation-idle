@@ -9,7 +9,7 @@ import { useTechCollectionStore } from '../stores/techCollectionStore.js';
 import { CultivateScreen } from './screens/CultivateScreen.js';
 import { StatusScreen } from './screens/StatusScreen.js';
 import { WorldScreen } from './screens/WorldScreen.js';
-import InventoryScreen from './screens/InventoryScreen.js';
+import EquipmentScreen from './screens/EquipmentScreen.js';
 import { PrestigeScreen } from './screens/PrestigeScreen.js';
 import { OfflineProgressModal } from './modals/OfflineProgressModal.js';
 import { ManualSatchelModal } from './modals/ManualSatchelModal.js';
@@ -408,7 +408,7 @@ export function GameLayout() {
       case 'adventure':
         return <WorldScreen />;
       case 'inventory':
-        return <InventoryScreen />;
+        return <EquipmentScreen />;
       case 'techniques':
         return <TechniquesTab />;
       case 'records':

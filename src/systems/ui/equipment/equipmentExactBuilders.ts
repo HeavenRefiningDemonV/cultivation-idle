@@ -190,6 +190,21 @@ function buildTotals(gearTotals: Partial<Record<DerivedStatKey, number>>): GearT
   return totals;
 }
 
+/**
+ * M.III.3 — the 战力 Gear Power display aggregate, computed UPSTREAM from composeGear's output so the
+ * view never recomputes it. [tune] → D15: this is an explicit HELD illustrative aggregate of the worn
+ * contribution; the real combat-power weighting is F-BAL's. (If the derived layer ever exposes a canonical
+ * combat-power metric, prefer that here.)
+ */
+function deriveGearPower(totals: Partial<Record<DerivedStatKey, number>>): number {
+  let p = 0;
+  for (const key of Object.keys(totals) as DerivedStatKey[]) {
+    const v = totals[key];
+    if (typeof v === 'number') p += v;
+  }
+  return Math.round(p);
+}
+
 export function buildPanoplyExactSurface(input: PanoplyBuildInput): PanoplyExactSurfaceV1 {
   const { loadout, getDef, gearTotals, path, realm, selectedInstanceId } = input;
 
@@ -281,6 +296,7 @@ export function buildPanoplyExactSurface(input: PanoplyBuildInput): PanoplyExact
     bond,
     totals: buildTotals(gearTotals),
     elementLean,
+    gearPower: deriveGearPower(gearTotals),
     selectedDetail,
   };
 }
