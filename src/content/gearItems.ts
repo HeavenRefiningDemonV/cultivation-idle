@@ -1,5 +1,6 @@
 import type { ItemDef, GearSlot } from '../systems/equipment/gearModel.js';
 import type { ItemType } from '../types/index.js';
+import { GEAR_LEGENDARIES } from './gearLegendaries.js';
 
 /**
  * D8 — a few example ItemDefs wearing the new gear fields. CONTENT-SHAPE DEMO ONLY: it exercises the
@@ -36,3 +37,11 @@ export const GEAR_ITEM_DEFS: readonly ItemDef[] = Object.freeze([
   // accessory — Heaven
   demo('demo_foresight_pendant', 'Foresight Pendant', 'accessory', 'accessory', { affixPool: ['status_resist'] }),
 ]);
+
+/** The whole D8 gear registry — the rolled common→epic demo set + the foundational legendary catalog (D8 §G). */
+export const ALL_GEAR_DEFS: readonly ItemDef[] = Object.freeze([...GEAR_ITEM_DEFS, ...GEAR_LEGENDARIES]);
+
+/** Resolve a gear `defId` → ItemDef across the demo set + the legendary catalog. */
+export function findGearItemDef(defId: string): ItemDef | undefined {
+  return ALL_GEAR_DEFS.find((d) => d.id === defId);
+}

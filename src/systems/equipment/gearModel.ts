@@ -60,6 +60,9 @@ export interface ItemDef extends ItemDefinition {
   readonly setId?: string | null;                   // Earth armor set family
   readonly weaponBondable?: boolean;                // PLACEHOLDER (Martial)
   readonly baseChannels?: Partial<Record<DerivedStatKey, number>>; // HELD base power
+  /** D8 §G — the legendary's named unique-mechanic edge (apex catalog only). The SHAPE is fixed here; the
+   *  magnitude inside `body` is illustrative `[tune]` → D15. Absent on non-legendary items. */
+  readonly signature?: { readonly name: string; readonly body: string };
 }
 
 /** A rolled per-copy item — the heart of D8. */

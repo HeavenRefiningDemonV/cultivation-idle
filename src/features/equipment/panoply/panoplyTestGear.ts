@@ -50,4 +50,18 @@ export function grantPanoplyTestGear(): void {
     // Array the figure: equip the "worn" copy into its slot (the spare stays in the Vault).
     if (def.gearSlot) eq.equipInstance(worn, def, def.gearSlot, realm);
   });
+
+  // + the foundational legendary apex in the Vault (immortal frame + the Vermilion-Echo signature in the rail).
+  inv.addGearInstance({
+    instanceId: 'test-legendary-spire',
+    defId: 'demo_cinnabar_phoenix_spire',
+    rarity: 'legendary',
+    itemTier: 5,
+    elementPayload: 'fire',
+    affixes: [
+      { affixId: 'spire-atk', channel: 'physAttack', valuePct: 0.45 },
+      { affixId: 'spire-critdmg', channel: 'critDamage', valuePct: 0.85 },
+      { affixId: 'spire-crit', channel: 'critChance', valuePct: 0.12 },
+    ],
+  });
 }

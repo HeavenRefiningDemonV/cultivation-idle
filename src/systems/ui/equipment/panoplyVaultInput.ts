@@ -2,7 +2,7 @@ import { useEquipmentStore, type TemperAffix } from '../../../stores/equipmentSt
 import { useInventoryStore } from '../../../stores/inventoryStore.js';
 import { useContentStore } from '../../../stores/contentStore.js';
 import { useGameStore } from '../../../stores/gameStore.js';
-import { GEAR_ITEM_DEFS } from '../../../content/gearItems.js';
+import { findGearItemDef } from '../../../content/gearItems.js';
 import { composeGear } from '../../equipment/equipmentGearResolver.js';
 import { toEquipmentGearInput } from '../../equipment/toEquipmentGearInput.js';
 import type { DerivedStatKey } from '../../meridians/derivedStats.js';
@@ -75,7 +75,7 @@ export function readPanoplyVaultRawInput(args: PanoplyVaultInputArgs): PanoplyVa
   const game = useGameStore.getState();
 
   const getDef: GetDef = (defId) => {
-    const gear = GEAR_ITEM_DEFS.find((d) => d.id === defId);
+    const gear = findGearItemDef(defId);
     if (gear) return gear;
     try {
       return content.getItem(defId);

@@ -133,7 +133,11 @@ export function toItemDetailSurface(input: ItemDetailMapInput): ItemDetailSurfac
         : { verb: 'Equip', enabled: true, route: 'equipment.equip' },
       { verb: 'Dismantle', enabled: true, route: 'vault.dismantle', confirm: { prompt: `Dismantle ${name}? (yield held — D15)` } },
     ],
-    signature: isLegendary ? { name: `${name} — signature held`, body: 'Legendary signature mechanic — D15.' } : null,
+    signature: def?.signature
+      ? { name: def.signature.name, body: def.signature.body }
+      : isLegendary
+        ? { name: `${name} — signature held`, body: 'Legendary signature mechanic — D15.' }
+        : null,
   };
 }
 

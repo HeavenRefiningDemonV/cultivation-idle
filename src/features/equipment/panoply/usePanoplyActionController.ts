@@ -4,7 +4,7 @@ import { useEquipmentStore } from '../../../stores/equipmentStore.js';
 import { useInventoryStore } from '../../../stores/inventoryStore.js';
 import { useContentStore } from '../../../stores/contentStore.js';
 import { useGameStore } from '../../../stores/gameStore.js';
-import { GEAR_ITEM_DEFS } from '../../../content/gearItems.js';
+import { findGearItemDef } from '../../../content/gearItems.js';
 import type { GearSlot, ItemDef } from '../../../systems/equipment/gearModel.js';
 import type { Loadout } from '../../../systems/equipment/gearLoadout.js';
 import type {
@@ -39,7 +39,7 @@ export interface PanoplyActions {
 }
 
 function resolveDef(defId: string): ItemDef | undefined {
-  const gear = GEAR_ITEM_DEFS.find((d) => d.id === defId);
+  const gear = findGearItemDef(defId);
   if (gear) return gear;
   try {
     return useContentStore.getState().getItem(defId);

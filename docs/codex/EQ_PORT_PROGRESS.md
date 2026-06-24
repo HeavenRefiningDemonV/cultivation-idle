@@ -4,6 +4,19 @@
 > `C:\Users\abdul\Downloads\M_III_2_panoply_vault.html`) into live React/TS/SCSS, flag-gated, preserve-first,
 > 1:1 with the artifact. Build bottom-up (data → paint → VFX → verify). Typecheck after each file.
 
+## M.III COMPLETENESS vs D17 (audit + the one closed gap)
+D17 Movement III = M.III.1 EQ-MECH (row 07) + M.III.3 EQ-PORT (row 08); M.III.2 is the artifact. Both packets
+DONE + verified. Audit vs the FULL D17 M.III.1 deliverable list found ONE gap — the **foundational legendary
+catalog** (named apex items + unique mechanics) — now CLOSED: `src/content/gearLegendaries.ts` (the Cinnabar
+Phoenix Spire apex, cited from the artifact/F2; the full per-path roster + magnitudes are D8 §G/D15), wired via
+`findGearItemDef` (ALL_GEAR_DEFS = demo + legendaries) into the seam/controller, the signature flows into the
+F2 inspector (toItemDetailSurface reads `def.signature`), and `gearLegendaries.contract.test.ts` validates the
+ids (catalog-completeness). The test gear includes the Spire. test:contracts 575→576.
+STRUCTURAL DIVERGENCE (not a gap): the port uses the Cultivation-Seat-mirror file layout (PanoplyScreenOwner,
+PanoplyVaultScreen, …) — the EQ-PORT packet's explicit choice — not D17's prescribed eight-file
+src/features/equipment/exact/ set. Functionally equivalent. Correctly HELD/deferred: all magnitudes → D15; the
+Weapon-Bond accrual loop → D5/D11; combat consuming composeGear → Movement V; the full legendary roster → D8 §G.
+
 ## CUTOVER + live fixes (owner-requested: "make the new inventory the live version")
 The new Panoply/Vault surface is now the **public default** for the Equipment tab (PANOPLY_PUBLIC_DEFAULT_ENABLED
 = true), reading LIVE data. Three root causes of "completely broken / very different from the artifact" fixed:
