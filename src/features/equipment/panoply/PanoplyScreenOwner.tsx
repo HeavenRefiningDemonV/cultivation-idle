@@ -14,6 +14,7 @@ import { PanoplyVaultScreen } from '../../../ui/equipment/panoply/PanoplyVaultSc
 import { ItemDetailInspector } from '../../../ui/modals/ItemDetailInspector.js';
 import { usePanoplyActionController } from './usePanoplyActionController.js';
 import type { PanoplyInitialSurface, PanoplyMode } from './panoplyFlag.js';
+import type { PanoplyPathLean } from '../../../systems/ui/equipment/equipmentExactTypes.js';
 
 /**
  * M.III.3 EQ-PORT — the owner: narrow store selectors → the input seam → the builders → the render-only
@@ -25,10 +26,13 @@ export function PanoplyScreenOwner({
   mode = 'live',
   fixtureId = null,
   initialSurface = null,
+  pathOverride = null,
 }: {
   mode?: PanoplyMode;
   fixtureId?: string | null;
   initialSurface?: PanoplyInitialSurface | null;
+  /** dev/QA only (fixture mode) — recasts the fixture's pathLean to exercise the path×state scene cross. */
+  pathOverride?: PanoplyPathLean | null;
 }) {
   const actions = usePanoplyActionController();
 
@@ -67,13 +71,17 @@ export function PanoplyScreenOwner({
   const surfaces = useMemo(() => {
     if (mode === 'fixture') {
       const seed = fixtureId ?? 'healthy';
-      return { panoply: buildPanoplyExactFixture(seed), vault: buildVaultExactFixture(seed) };
+      const panoplyFixture = buildPanoplyExactFixture(seed);
+      return {
+        panoply: pathOverride ? { ...panoplyFixture, pathLean: pathOverride } : panoplyFixture,
+        vault: buildVaultExactFixture(seed),
+      };
     }
     const raw = readPanoplyVaultRawInput({ vaultFilter, vaultSort, selectedInstanceId, newInstanceIds });
     return { panoply: buildPanoplyExactSurface(raw.panoply), vault: buildVaultExactSurface(raw.vault) };
     // The subscribed primitives below are the rebuild signature (reducedMotion threads to the scene paint).
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode, fixtureId, gearLoadoutVersion, inventoryVersion, selectedPath, realmIndex, vaultFilter, vaultSort, selectedInstanceId, newInstanceIds, reducedMotion]);
+  }, [mode, fixtureId, pathOverride, gearLoadoutVersion, inventoryVersion, selectedPath, realmIndex, vaultFilter, vaultSort, selectedInstanceId, newInstanceIds, reducedMotion]);
 
   const modalDetail =
     modalInstanceId !== null

@@ -10,18 +10,30 @@ import { expect, test, type Page } from '@playwright/test';
 
 const PANOPLY_STATES = ['healthy', 'empty', 'blocked', 'contentCap', 'detail-affix', 'detail-legendary', 'unknown'] as const;
 const VAULT_STATES = ['healthy', 'empty', 'detail-affix', 'detail-legendary'] as const;
+const PATHS = ['martial', 'earth', 'heaven'] as const;
 
 test.use({ viewport: { width: 2048, height: 1152 }, deviceScaleFactor: 2 });
 
-async function gotoStage(page: Page, fixture: string, surface: 'panoply' | 'vault'): Promise<string[]> {
+async function gotoStage(page: Page, fixture: string, surface: 'panoply' | 'vault', path?: string): Promise<string[]> {
   const errors: string[] = [];
   page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
   page.on('pageerror', (e) => errors.push(e.message));
-  await page.goto(`/panoply-stage.html?panoplyFixture=${encodeURIComponent(fixture)}&panoplySurface=${surface}`);
+  const pathParam = path ? `&panoplyPath=${path}` : '';
+  await page.goto(`/panoply-stage.html?panoplyFixture=${encodeURIComponent(fixture)}&panoplySurface=${surface}${pathParam}`);
   await expect(page.getByTestId(surface === 'vault' ? 'vault-surface' : 'panoply-surface')).toBeVisible();
   await page.evaluate(() => document.fonts.ready);
   return errors;
 }
+
+test.describe('Panoply path scenes', () => {
+  for (const path of PATHS) {
+    test(`panoply healthy ${path}`, async ({ page }) => {
+      const errors = await gotoStage(page, 'healthy', 'panoply', path);
+      await page.screenshot({ path: `artifacts/mp-eq-port/panoply-healthy-${path}.png` });
+      expect(errors, `console errors on panoply healthy/${path}`).toEqual([]);
+    });
+  }
+});
 
 test.describe('Panoply', () => {
   for (const state of PANOPLY_STATES) {

@@ -15,7 +15,14 @@
   - FOLLOW-UP: scale-to-fit wrapper (the live app shows the 2048×1152 stage at native size; the harness/screenshots are 2048×1152 exact — the oracle is fine). Add a React-measured transform like the Seat for live-app fit.
 - [x] Phase 7 — fixtures gearPower (per-seed map) + panoply-stage.html + __harness__/panoplyStageMain.tsx + tests/e2e/panoply.spec.ts. Owner mounts in fixture mode.
 - [~] Phase 8 — Playwright matrix GREEN: 12/12 cells pass (7 panoply states + 4 vault + reduced-motion), ZERO console errors per cell, reduced-motion 0 active animations. Self-verify loop STARTED: caught + fixed a real layout bug (the .panoplyDefs host was consuming the first grid row → ribbon/body off their rows; fixed with position:absolute). Verified visually: both surfaces render the framed artifact (chrome/ribbon/figure scene/rail/vault grid).
-  REMAINING for full 1:1: (a) deeper pixel self-verify vs the artifact per cell (Appendix K checklist); (b) path×state cross needs path-parameterised fixtures (the 7 seeds carry baked-in paths — extend equipmentExactFixtures); (c) richer vault fixture (S0 vault seed has 4 slips vs the artifact's ~20); (d) the live-app scale-to-fit wrapper.
+  PATH×STATE CROSS now verified: a ?panoplyPath= harness override (owner pathOverride prop) recasts the
+  fixture's pathLean; the 3 path scenes pass + were visually confirmed distinct & faithful — martial
+  (forge-dawn/weapon-rack/embers/martial-couplet/gold), earth (pagodas/山地-steles/stone-base/earth-couplet),
+  heaven (nebula/crescent-moon/constellation/slate-robe/heaven-couplet). Spec now has the path-cross block.
+  REMAINING for full 1:1 (cosmetic/fixture-content, not port-fidelity): (a) the healthy fixtures don't set
+  selectedDetail so the rail shows "Choose a treasure" (the artifact showed the focus item — set focus in the
+  fixture); (b) richer vault fixture (S0 seed has 4 slips vs ~20); (c) the live-app scale-to-fit wrapper (the
+  2048×1152 oracle is unaffected); (d) per-cell pixel micro-diff vs the artifact.
 
 ## Done this turn (the verifiable bottom-up SPINE — surface is real from first render)
 Files CREATED (all typecheck-green):

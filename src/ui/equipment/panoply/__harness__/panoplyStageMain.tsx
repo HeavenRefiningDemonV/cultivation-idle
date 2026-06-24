@@ -14,10 +14,12 @@ function main(): void {
   const fixtureId = params.get('panoplyFixture') ?? 'healthy';
   const surfaceParam = params.get('panoplySurface');
   const initialSurface: 'panoply' | 'vault' = surfaceParam === 'vault' ? 'vault' : 'panoply';
+  const pathParam = params.get('panoplyPath');
+  const pathOverride = pathParam === 'earth' || pathParam === 'heaven' || pathParam === 'martial' ? pathParam : null;
   const host = document.getElementById('root');
   if (host) {
     createRoot(host).render(
-      <PanoplyScreenOwner mode="fixture" fixtureId={fixtureId} initialSurface={initialSurface} />,
+      <PanoplyScreenOwner mode="fixture" fixtureId={fixtureId} initialSurface={initialSurface} pathOverride={pathOverride} />,
     );
   }
 }
