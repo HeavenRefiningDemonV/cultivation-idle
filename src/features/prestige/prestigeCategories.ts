@@ -76,6 +76,13 @@ const EXPLICIT_CATEGORY_MAP: Record<string, PrestigeCategoryKey> = {
   ap_unlock_heartlaw_t2: 'laws',
   ap_unlock_heartlaw_t3: 'laws',
   ap_extra_heartlaw_choice: 'laws',
+  // MP5 prestige-memory nodes — their content definitions declare category "laws"; listed here too so
+  // id-only callers (which can't pass the content category) still classify them correctly.
+  form_memory: 'laws',
+  scripture_echo: 'laws',
+  root_clarity: 'laws',
+  calm_first_breath: 'laws',
+  old_sparring_shadows: 'laws',
   ap_combat_mult: 'combat',
   ap_auto_retry_bosses: 'combat',
   ap_extra_technique_slot_1: 'techniques',
@@ -102,7 +109,21 @@ const EXPLICIT_CATEGORY_MAP: Record<string, PrestigeCategoryKey> = {
 const matchesPattern = (upgradeId: string, patterns: string[]) =>
   patterns.some((pattern) => upgradeId.includes(pattern));
 
-export function getPrestigeCategoryKey(upgradeId: string): PrestigeCategoryKey {
+const PRESTIGE_CATEGORY_KEY_SET = new Set<string>(PRESTIGE_CATEGORIES.map((category) => category.key));
+
+const isPrestigeCategoryKey = (value: string): value is PrestigeCategoryKey =>
+  PRESTIGE_CATEGORY_KEY_SET.has(value);
+
+/**
+ * Route a prestige upgrade to a UI category. Prefers the content node's own `category` field when it names a
+ * known category (so content authoring is the source of truth); otherwise falls back to the explicit id map
+ * and then the id-keyword heuristic. Callers that have the upgrade def should pass `contentCategory`.
+ */
+export function getPrestigeCategoryKey(upgradeId: string, contentCategory?: string | null): PrestigeCategoryKey {
+  if (contentCategory && isPrestigeCategoryKey(contentCategory)) {
+    return contentCategory;
+  }
+
   if (EXPLICIT_CATEGORY_MAP[upgradeId]) {
     return EXPLICIT_CATEGORY_MAP[upgradeId];
   }
@@ -137,7 +158,7 @@ export function getPrestigeCategoryKey(upgradeId: string): PrestigeCategoryKey {
 export const buildPrestigeCategorySections = (upgrades: PrestigeUpgradeDef[]) => {
   const buckets = new Map<PrestigeCategoryKey, PrestigeUpgradeDef[]>();
   upgrades.forEach((upgrade) => {
-    const key = getPrestigeCategoryKey(upgrade.id);
+    const key = getPrestigeCategoryKey(upgrade.id, upgrade.category);
     const list = buckets.get(key) ?? [];
     list.push(upgrade);
     buckets.set(key, list);

@@ -72,8 +72,18 @@ test('visible prestige category sections omit empty groups and hidden upgrades',
 
   assert.deepEqual(
     sections.map((section) => section.category.key),
-    ['laws', 'combat', 'techniques', 'misc'],
+    ['laws', 'combat', 'techniques'],
   );
+  // The MP5 prestige-memory nodes declare content category "laws" and must group under Heavenly Laws,
+  // not fall through to the 'misc' "Other Decrees" bucket.
+  const lawsSection = sections.find((section) => section.category.key === 'laws');
+  for (const id of ['form_memory', 'scripture_echo', 'root_clarity', 'calm_first_breath', 'old_sparring_shadows']) {
+    assert.equal(
+      lawsSection?.upgrades.some((upgrade) => upgrade.id === id) ?? false,
+      true,
+      `${id} should be grouped under Heavenly Laws`,
+    );
+  }
   assert.equal(
     sections.some((section) => section.upgrades.some((upgrade) => upgrade.id === 'ap_unlock_meridian_hall')),
     false,

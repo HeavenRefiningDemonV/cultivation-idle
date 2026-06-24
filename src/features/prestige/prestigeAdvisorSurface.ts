@@ -58,8 +58,8 @@ const getAdvisorDetail = (stateLabel: PrestigeAdvisorStateLabel): string => {
 };
 
 
-const getCategoryLabel = (upgradeId: string): string => {
-  const key = getPrestigeCategoryKey(upgradeId);
+const getCategoryLabel = (upgradeId: string, contentCategory?: string | null): string => {
+  const key = getPrestigeCategoryKey(upgradeId, contentCategory);
   return PRESTIGE_CATEGORIES.find((category) => category.key === key)?.title ?? 'Decree';
 };
 
@@ -76,12 +76,13 @@ const buildTopRecommendedPurchase = (): PrestigeAdvisorRecommendedPurchase | nul
   const top = plan.topRecommendation;
   if (!top) return null;
 
+  const topDef = visibleUpgrades.find((upgrade) => upgrade.id === top.id);
   const affordableNow = top.nextCost <= prestige.totalAP;
   return {
     mode: affordableNow ? 'buy_now' : 'save_for_next',
     id: top.id,
     name: top.name,
-    categoryLabel: getCategoryLabel(top.id),
+    categoryLabel: getCategoryLabel(top.id, topDef?.category),
     nextCost: top.nextCost,
     currentLevel: top.currentLevel,
     maxLevel: top.maxLevel,

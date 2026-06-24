@@ -83,7 +83,7 @@ export function PrestigeUpgradeModal({
 
   const isMaxed = upgradeDef ? currentLevel >= upgradeDef.maxLevel : false;
   const canAfford = nextCost !== null && totalAP >= nextCost;
-  const categoryKey = upgradeDef ? getPrestigeCategoryKey(upgradeDef.id) : null;
+  const categoryKey = upgradeDef ? getPrestigeCategoryKey(upgradeDef.id, upgradeDef.category) : null;
   const categoryIcon = categoryKey ? getPrestigeCategoryIcon(categoryKey) : null;
 
   const sections = useMemo(() => {

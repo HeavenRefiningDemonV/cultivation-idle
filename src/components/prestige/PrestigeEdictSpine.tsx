@@ -30,7 +30,7 @@ export function PrestigeEdictSpine({
   isPurchasing,
   onPurchase,
 }: PrestigeEdictSpineProps) {
-  const categoryKey = getPrestigeCategoryKey(upgrade.id);
+  const categoryKey = getPrestigeCategoryKey(upgrade.id, upgrade.category);
   const kind = getPrestigeEdictKind(upgrade.id);
   const categoryIcon = getPrestigeCategoryIcon(categoryKey);
   const kindIcon = getPrestigeKindIcon(kind);
