@@ -10,6 +10,36 @@ The discipline held the whole way: **flag-gated** (`?statEngine=1`, ships off), 
 
 ---
 
+## 🆕 Since the baseline — Movement III + IV.1 (2026-06-25)
+Three packets landed after the structure-complete tag, all flag-gated / held-magnitude / preserve-first:
+
+- **M.III.1 EQ-MECH** — the gear pillar goes mechanically live. `composeGear` is now **WIRED** into the
+  derived layer with the **GEO-only de-dup** (refine/temper mapped to gentle channels the carve-out discards,
+  additive crit/dodge kept) — single-count **proven** by a dual-affix temper test (`×1.155`, not `×1.155²`),
+  flag-off byte-identical. 5-slot loadout + per-instance Vault state. The **foundational gear legendary
+  catalog** (`gearLegendaries.ts`, the Cinnabar Phoenix Spire apex + its signature edge, magnitudes held).
+  *(This supersedes the old "slice-1b parked" note below.)*
+- **M.III.3 EQ-PORT** — the painted **Panoply + Vault is the LIVE default Inventory tab** (1:1 with the locked
+  artifact): parchment frames, the arrayed figure, rarity-ramp slips, the docked F2 inspector, the bond gauge /
+  compass / gear totals, every mechanic wired (select → rail, equip/unequip, dismantle, filter/sort).
+  `?giveTestGear=1` populates it; the legacy InventoryScreen is preserved (`?panoply=legacy`).
+- **M.IV.1 ARTS-MECH** — the Techniques + Fortune Draw mechanical layer. Recon found the two-axis model, the
+  per-path roll, and the **Fortune weighted-roll + pity already live**; this packet surfaced + extended them:
+  the render-only **`FortuneDrawSurfaceV1`** (the M.IV.2 artifact's target — fate-thread / lectern / reveal /
+  reroll / satchel), the **paid reroll** (cost held-in-content, gated until D15, pity carries = never-regress),
+  the **technique scaling re-point at the derived layer** (full `statRatingsById`, flag-aware byte-identical) +
+  the **F3 element query** for elemental arts, and the **foundational legendary-technique catalog** (3 real
+  apex ultimates, one per path, signatures grounded in their real effects). Combat consumption = Movement V.
+
+**Pending Movement IV:** M.IV.2 (the Fortune Draw artifact — user-authored, targets `FortuneDrawSurfaceV1`) and
+M.IV.3 (the port — consume the surface + reconcile the existing `techniquesExact` altar). The Inner Altar needs
+no fresh artifact (it has a built Exact screen).
+
+**Gate now:** `test:contracts` **580 files** green (was 568 at the tag); typecheck · icons · content · build all
+green. Ledgers: `docs/codex/EQ_PORT_PROGRESS.md`, `docs/codex/ARTS_MECH_PROGRESS.md`.
+
+---
+
 ## ✅ LIVE under `?statEngine=1` (flag-off byte-identical)
 - **Stat engine (F1)** — the 4-tier derived model (`computeDerivedStats`), parity-exact vs legacy.
 - **Seat of Becoming** — 3 live per-path instruments: Heaven **Premonition** · Earth **Beast-Lore**
@@ -32,8 +62,8 @@ weights, set-bonus grants, upgrade rate/cap/max) · the shipped engine-default f
 
 ## 🅿 PARKED wires (built systems, not yet connected — own gated packets)
 Activate the held systems; need F-BAL values + combat-validated drops + a release GO:
-- **slice-1b** — `composeGear` → the derived layer + the **legacy refine/temper de-dup** (a behavior-
-  changing refactor; needs an equivalence proof).
+- ~~**slice-1b** — `composeGear` → the derived layer + the legacy refine/temper de-dup~~ **✅ LANDED in
+  M.III.1** (the GEO-only de-dup, single-count proven, flag-off byte-identical — see the "Since the baseline" section).
 - **gear-drop wire** — `rollGearDrop` into the live `generateLoot` loop (+ its seed source; the live loot
   path is `Math.random`-seedless).
 - **controlPower live read** — wire the real derived `controlPower` into the control roll (passed 0 today;
