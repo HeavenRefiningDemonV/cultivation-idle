@@ -4,6 +4,21 @@
 > `C:\Users\abdul\Downloads\M_III_2_panoply_vault.html`) into live React/TS/SCSS, flag-gated, preserve-first,
 > 1:1 with the artifact. Build bottom-up (data → paint → VFX → verify). Typecheck after each file.
 
+## CUTOVER + live fixes (owner-requested: "make the new inventory the live version")
+The new Panoply/Vault surface is now the **public default** for the Equipment tab (PANOPLY_PUBLIC_DEFAULT_ENABLED
+= true), reading LIVE data. Three root causes of "completely broken / very different from the artifact" fixed:
+1. **Layout** (the "broken"): replaced my hand-rolled ResizeObserver with the shared `useObservatoryScale`
+   hook, and added a `.gameLayoutRoot--inventory .gameLayoutContent` rule (full vh + overflow hidden, like the
+   Seat) so the scaled 2048×1152 stage is constrained and the bottom nav sits BELOW it. Verified in-game at
+   1440×900 (artifacts/mp-eq-port/live-ingame*.png) — renders correctly, zero page errors.
+2. **Empty live data** (the "very different"): the new 5-slot loadout + Vault are unpopulated at runtime, so a
+   raw read rendered empty. panoplyVaultInput now BRIDGES the legacy/live gear (read-only): equippedWeaponId/
+   accessoryId + refine/temper → synthesised loadout weapon/accessory; owned weapon/accessory items in
+   inventoryStore.items → synthesised vault slips. Verified: equipping demo gear fills the loadout + vault.
+3. **Flag**: flipped to default-ON; legacy InventoryScreen preserved behind ?panoply=legacy / ?panoply=off.
+Gates: typecheck · check:icons · validate:content · test:contracts 575/575 · build · harness matrix 15/15 (the
+scale-hook swap keeps scale 1 at 2048×1152 — oracle preserved). Dev capture: tests/e2e/panoply-live-capture.spec.ts.
+
 ## Status board
 - [x] Phase 0 — recon (artifact read end-of-instruments; mirror/contract/store digests via workflow)
 - [x] Phase 1 — flag + screen-swap (panoplyFlag default OFF, EquipmentScreen, GameLayout line 411) — typecheck=0

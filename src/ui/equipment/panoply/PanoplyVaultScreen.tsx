@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useRef, useState, type MouseEvent } from 'react';
+import { useCallback, type MouseEvent } from 'react';
+import { useObservatoryScale } from '../../status/observatory/useObservatoryScale.js';
 import './panoplyVault.scss';
 import type {
   PanoplyExactSurfaceV1,
@@ -33,23 +34,10 @@ export function PanoplyVaultScreen({ panoply, vault, activeSurface, actions }: P
   const isVault = activeSurface === 'vault';
   const state = isVault ? vault.visualState : panoply.visualState;
 
-  // Scale-to-fit the fixed 2048×1152 stage into the host (mirrors the Seat). Pure presentation (no store/no
-  // gameplay). In the 2048×1152 harness/screenshot the scale resolves to 1 (the oracle is unchanged); in the
-  // smaller live tab it shrinks the stage to fit instead of overflowing.
-  const fitRef = useRef<HTMLDivElement>(null);
-  const [scale, setScale] = useState(1);
-  useEffect(() => {
-    const node = fitRef.current;
-    if (!node || typeof ResizeObserver === 'undefined') return;
-    const compute = () => {
-      const w = node.clientWidth, h = node.clientHeight;
-      if (w > 0 && h > 0) setScale(Math.min(1, w / 2048, h / 1152));
-    };
-    compute();
-    const ro = new ResizeObserver(compute);
-    ro.observe(node);
-    return () => ro.disconnect();
-  }, []);
+  // Scale-to-fit the fixed 2048×1152 stage into the host — the shared Observatory/Seat scale hook (measures
+  // the viewport, computes min(w/2048, h/1152), clamped). Pure presentation. In the 2048×1152 harness the
+  // scale resolves to 1 (the screenshot oracle is unchanged); in the live tab it fits to the content area.
+  const { viewportRef, scale } = useObservatoryScale();
 
   const onStageClick = useCallback(
     (e: MouseEvent<HTMLDivElement>) => {
@@ -73,7 +61,7 @@ export function PanoplyVaultScreen({ panoply, vault, activeSurface, actions }: P
   );
 
   return (
-    <div className="panoplyFit" ref={fitRef}>
+    <div className="panoplyFit" ref={viewportRef}>
     <div
       className="stage panoplyRoot"
       style={{ transform: `scale(${scale})` }}

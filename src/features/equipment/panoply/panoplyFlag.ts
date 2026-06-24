@@ -2,16 +2,16 @@
  * M.III.3 EQ-PORT — preserve-first flag for the live Panoply/Vault Equipment surface. LEAF module: no
  * React, no SCSS, no store imports — the screen-swap wrapper reads it without pulling a UI barrel.
  *
- * ADDITIVE / preserve-first: the public default is OFF (the legacy `InventoryScreen` is the shipped
- * Equipment tab). Dev/QA + the screenshot harness reach the live surface via `?panoply=live` /
- * `?panoply=fixture`; `?panoply=legacy` / `?panoply=off` force the legacy screen. The public-default flip
- * + legacy retirement is a separate, later, named §26.4 cutover packet — NOT this one.
+ * CUTOVER (owner-requested): the live Panoply/Vault surface is now the PUBLIC DEFAULT for the Equipment tab,
+ * reading live data (the legacy fields are bridged in panoplyVaultInput). Preserve-first still holds — the
+ * legacy `InventoryScreen` is kept BESIDE it and stays reachable via `?panoply=legacy` / `?panoply=off`. The
+ * screenshot harness uses `?panoply=fixture`.
  */
 
 export type PanoplyMode = 'live' | 'fixture';
 export type PanoplyInitialSurface = 'panoply' | 'vault';
 
-export const PANOPLY_PUBLIC_DEFAULT_ENABLED = false;
+export const PANOPLY_PUBLIC_DEFAULT_ENABLED = true;
 
 export interface PanoplyFlagResolution {
   enabled: boolean;

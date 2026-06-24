@@ -428,6 +428,7 @@ export function GameLayout() {
     renderedTab === 'adventure' ? 'gameLayoutRoot--world' : '',
     renderedTab === 'techniques' ? 'gameLayoutRoot--techniques' : '',
     renderedTab === 'records' ? 'gameLayoutRoot--records gameLayoutRoot--pavilion' : '',
+    renderedTab === 'inventory' ? 'gameLayoutRoot--inventory' : '',
   ]
     .filter(Boolean)
     .join(' ');
