@@ -307,12 +307,21 @@
      Rarity rungs are the 5-RUNG ITEM rarity (D7/D8 Common->Legendary),
      NOT the 4 spirit-root grades (--root-* already deposited). See packet App. A.
      ============================================================ */
-  /* The five item-rarity rungs (Common -> Legendary), cultivation-flavoured. */
-  --rarity-mortal:   color-mix(in oklab, var(--paper-ink-muted) 70%, var(--paper-parchment-deep));   /* common: muted ink */
-  --rarity-spirit:   color-mix(in oklab, var(--paper-jade) 55%, var(--paper-parchment-warm));         /* uncommon: faint jade wash */
-  --rarity-earth:    color-mix(in oklab, var(--paper-jade-bright) 62%, var(--paper-bronze) 38%);      /* rare: deeper jade + bronze edge */
-  --rarity-heaven:   color-mix(in oklab, var(--paper-gold-leaf) 78%, var(--paper-gold-deep) 22%);     /* epic: gold-leaf double edge */
-  --rarity-immortal: color-mix(in oklab, var(--paper-cinnabar-bright) 58%, var(--paper-gold-leaf) 42%); /* legendary: cinnabar-and-gold apex */
+  /* The five item-rarity rungs (Common -> Legendary). M.III.3 (Appendix H): the HUE-SEPARATED ramp adopted
+     from the M.III.2 artifact so rarity reads by COLOR as well as frame-grade + 凡良珍极仙 seal + label
+     (quad-coded, never hue-alone — colourblind-safe). ash -> jade -> azure -> purple-qi(紫气) -> immortal-gold.
+     Authorized raw hex (the one token-authority change the port-notes flagged); the artifact is the reference. */
+  --rarity-mortal:   #8a8074;   /* common    — ash */
+  --rarity-spirit:   #3f7d52;   /* uncommon  — jade */
+  --rarity-earth:    #2f74a3;   /* rare      — azure */
+  --rarity-heaven:   #7d52a0;   /* epic      — purple-qi 紫气 */
+  --rarity-immortal: #c47b22;   /* legendary — immortal-gold */
+  /* soft element-tinted glows for slot/slip auras + rail chip + census swatches (M.III.3). */
+  --rarity-mortal-soft:   rgba(138,128,116,.16);
+  --rarity-spirit-soft:   rgba(63,125,82,.16);
+  --rarity-earth-soft:    rgba(47,116,163,.16);
+  --rarity-heaven-soft:   rgba(125,82,160,.18);
+  --rarity-immortal-soft: rgba(196,123,34,.18);
   /* Affix-tier tints (D8 §D.5 prefix/suffix + the set/bond accent, D8 composeGear bond law). */
   --affix-prefix-tint: color-mix(in oklab, var(--paper-jade-bright) 50%, var(--paper-parchment-warm)); /* prefix affix accent */
   --affix-suffix-tint: color-mix(in oklab, var(--paper-gold-strong) 50%, var(--paper-parchment-warm)); /* suffix affix accent */

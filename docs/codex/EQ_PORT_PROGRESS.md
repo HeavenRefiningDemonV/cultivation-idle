@@ -10,8 +10,9 @@
 - [x] Phase 2 — panoplyUiStore + panoplyVaultInput + gearPower (contract field + builder helper; fixtures TODO)
 - [x] Phase 3 — owner + controller + skeleton screen — typecheck=0
 - [x] Phase 4 — panoplySvgDefs (verbatim defs) + panoplyFigureSvg (ALL SVG-string builders, 1:1) — typecheck=0
-- [~] Phase 5 — render-only components: PanoplyFigureScene DONE (injects defs+field+motes, click delegation, wired into the screen's panoply section). REMAINING: Ribbon, ItemDetailRail, VaultGrid/VaultSlip/VaultFilters/VaultCensus, SetBondBand, GearTotals, PanoplyLowerStrip, ElementLeanCompass, WeaponBondGauge (most can inject the panoplyFigureSvg strings via dangerouslySetInnerHTML inside JSX that emits intents)
-- [ ] Phase 6 — modal reuse [done in owner] + panoplyVault.scss + paperInkTokens rarity ramp (Appendix H)
+- [x] Phase 5 — instruments: panoplyInstrumentsHtml.ts (ribbon/rail/totals/setband/vault/census/chrome HTML, 1:1, intents via data-*) + PanoplyFigureScene (pure injector) + PanoplyVaultScreen REWRITTEN to the artifact's stage/chrome/ribbon/body/rail structure with ONE click-delegation (instance/slip/vfilter/route) + the real surface toggle. typecheck/icons/build=0.
+- [x] Phase 6 — panoplyVault.scss (the FULL <style> port, rule-for-rule, scoped to .panoplyRoot: stage 2048×1152, chrome, ribbon, rail, totals, setband, vault, slips, the 13 keyframes + VFX classes, reduced-motion law) + paperInkTokens hue-separated rarity ramp + -soft glows (Appendix H). Modal reuse done in the owner. build (sass) green.
+  - FOLLOW-UP: scale-to-fit wrapper (the live app shows the 2048×1152 stage at native size; the harness/screenshots are 2048×1152 exact — the oracle is fine). Add a React-measured transform like the Seat for live-app fit.
 - [ ] Phase 7 — fixtures gearPower + panoply-stage.html + tests/e2e/panoply.spec.ts
 - [ ] Phase 8 — five gates + Playwright matrix + self-verify loop (Appendix K)
 
