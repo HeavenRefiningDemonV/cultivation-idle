@@ -69,3 +69,7 @@ export {
   sortVaultInstances,
 } from './vaultSortFilter.js';
 export type { GetDef } from './vaultSortFilter.js';
+
+// M.III.1 S5 — the per-path emphasis identity (D-E12; shape-only, no geometry change, no magnitude).
+export { resolvePathIdentity } from './gearPathIdentity.js';
+export type { PathLeanIdentity, SlotEmphasis } from './gearPathIdentity.js';
