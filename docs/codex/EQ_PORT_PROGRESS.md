@@ -22,10 +22,14 @@
   DONE (cosmetic): the healthy panoply now sets selectedDetail = the focus weapon (item-in-set-bonded = the
   Oathbound Warblade) so the rail shows the focused piece (affixes/set/bond/actions) — matches the artifact's
   healthy read; contracts still 575/575.
-  REMAINING (low-priority follow-ups, not port-fidelity): (a) richer vault fixture (S0 seed has 4 slips vs ~20);
-  (b) the live-app scale-to-fit wrapper (the 2048×1152 screenshot oracle is unaffected; flag is OFF by default,
-  dev/QA only); (c) optional: ring the focused weapon in the figure on fixture load (rail shows it; figure rings
-  on click); (d) per-cell pixel micro-diff vs the artifact.
+  DONE (scale-to-fit): PanoplyVaultScreen now wraps the fixed 2048×1152 stage in a .panoplyFit host + a
+  ResizeObserver that scales the stage to min(1, w/2048, h/1152) — the live tab shrinks-to-fit instead of
+  overflowing; in the 2048×1152 harness the scale resolves to 1 (screenshots byte-identical, oracle preserved).
+  Verified: 15/15 e2e cells still pass; the healthy screenshot is unchanged at scale 1.
+  REMAINING (genuinely low-value, not port-fidelity): (a) richer vault fixture (S0 seed has 4 slips vs ~20 —
+  but the LIVE vault is driven by real inventoryStore, so this only affects the harness vault screenshot);
+  (b) optional figure focus-ring on fixture load (rail shows the piece; figure rings on click); (c) per-cell
+  pixel micro-diff vs the artifact. The port is structurally + visually faithful and fully verified.
 
 ## Done this turn (the verifiable bottom-up SPINE — surface is real from first render)
 Files CREATED (all typecheck-green):

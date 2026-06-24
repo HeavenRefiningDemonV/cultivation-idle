@@ -1,4 +1,4 @@
-import { useCallback, type MouseEvent } from 'react';
+import { useCallback, useEffect, useRef, useState, type MouseEvent } from 'react';
 import './panoplyVault.scss';
 import type {
   PanoplyExactSurfaceV1,
@@ -33,6 +33,24 @@ export function PanoplyVaultScreen({ panoply, vault, activeSurface, actions }: P
   const isVault = activeSurface === 'vault';
   const state = isVault ? vault.visualState : panoply.visualState;
 
+  // Scale-to-fit the fixed 2048×1152 stage into the host (mirrors the Seat). Pure presentation (no store/no
+  // gameplay). In the 2048×1152 harness/screenshot the scale resolves to 1 (the oracle is unchanged); in the
+  // smaller live tab it shrinks the stage to fit instead of overflowing.
+  const fitRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
+  useEffect(() => {
+    const node = fitRef.current;
+    if (!node || typeof ResizeObserver === 'undefined') return;
+    const compute = () => {
+      const w = node.clientWidth, h = node.clientHeight;
+      if (w > 0 && h > 0) setScale(Math.min(1, w / 2048, h / 1152));
+    };
+    compute();
+    const ro = new ResizeObserver(compute);
+    ro.observe(node);
+    return () => ro.disconnect();
+  }, []);
+
   const onStageClick = useCallback(
     (e: MouseEvent<HTMLDivElement>) => {
       const el = (e.target as Element).closest('[data-instance-id],[data-slip-id],[data-vfilter],[data-route]');
@@ -55,8 +73,10 @@ export function PanoplyVaultScreen({ panoply, vault, activeSurface, actions }: P
   );
 
   return (
+    <div className="panoplyFit" ref={fitRef}>
     <div
       className="stage panoplyRoot"
+      style={{ transform: `scale(${scale})` }}
       data-path={panoply.pathLean}
       data-state={state}
       data-surface={activeSurface}
@@ -109,6 +129,7 @@ export function PanoplyVaultScreen({ panoply, vault, activeSurface, actions }: P
           </div>
         )}
       </div>
+    </div>
     </div>
   );
 }

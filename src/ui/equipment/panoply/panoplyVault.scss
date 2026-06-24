@@ -5,7 +5,21 @@
    (--serif/--kai), and the per-path --accent cast are declared locally here (the sanctioned art zone). R-7:
    never blue. Reduced-motion law is verbatim + scoped to the root.
    ============================================================================ */
+/* scale-to-fit host: fills the live tab / harness viewport and centres the scaled fixed-size stage. */
+.panoplyFit {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .panoplyRoot {
+  flex: 0 0 auto;
+  transform-origin: center center;
   /* 14-roster scene colours (D3) + fonts + per-path accent — local scene tokens (mirror the artifact :root). */
   --el-wind:#6f8a5e;--el-lightning:#b2832d;--el-ice:#6f93a8;--el-light:#c8a04b;--el-shadow:#4a4039;--el-soul:#9c5a4e;--el-void:#3a332d;--el-time:#8d642d;--el-astral:#b59a55;
   --serif:Georgia,"Songti SC","Noto Serif SC",serif;
