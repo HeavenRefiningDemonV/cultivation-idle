@@ -125,6 +125,11 @@ equip/loadout + roll + gear-drop, all unconsumed/held via HELD / HELD_COUNT / HE
   (×1.00/1.08/1.18/1.30/1.45) · `ItemDef.baseChannels` base power + the itemTier 1–7 curve · armor refine
   caps + channel weighting · the `status_resist`→`evasion` legacy overload (split to tribResist/
   controlPower?) · WeaponBondState growth/art gates (D5/D11). All typed-but-held; none authored.
+- **D8 set-bonus effect (landed, structure-only, unconsumed):** `gearSetBonuses.ts` (SET_BONUS_DEFS) +
+  `gearSetBonus.ts` (resolveSetBonusGrant). The grant is a per-channel multiplier set; every value is the
+  held identity `HELD_MULT = 1` (×1 ⇒ no effect, composeGear-style). **F-BAL deposits:** the real partial/
+  full multipliers per set + which channels each set grants (the def shape is structural). Wire (compose
+  the grant into the gear multiplier) is the parked slice-1b.
 - **D8 gear-drop structure (landed, structure-only, unconsumed):** `gearDrop.ts` (GearDropEntry +
   rollGearDrop + pickWeighted) + `gearDrops.ts` (example entries). RELATES-TO the live loot system (reuses
   LootDrop's itemId + 0-100 dropChance; wire into generateLoot PARKED). **F-BAL deposits:** per-source
