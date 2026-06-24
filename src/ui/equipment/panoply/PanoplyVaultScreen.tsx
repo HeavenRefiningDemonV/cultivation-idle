@@ -3,6 +3,7 @@ import type {
   VaultExactSurfaceV1,
 } from '../../../systems/ui/equipment/equipmentExactTypes.js';
 import type { PanoplyActions } from '../../../features/equipment/panoply/usePanoplyActionController.js';
+import { PanoplyFigureScene } from './PanoplyFigureScene.js';
 
 /**
  * M.III.3 EQ-PORT — the render-only Panoply/Vault screen shell. Props ONLY (surfaces + actions); NO store
@@ -54,21 +55,11 @@ export function PanoplyVaultScreen({ panoply, vault, activeSurface, actions }: P
               <span className="panoplyRoot__pathLean">{panoply.pathLean}</span>
               <span className="panoplyRoot__gearPower">战力 {panoply.gearPower ?? 0}</span>
             </header>
-            <ul className="panoplyRoot__slots">
-              {panoply.slots.map((slot, i) => (
-                <li key={`${slot.slot}-${i}`} data-filled={slot.filled} data-slot={slot.slot}>
-                  {slot.filled && slot.item ? (
-                    <button type="button" onClick={() => actions.onSlotTap(slot.slot, slot.item?.instanceId ?? null)}>
-                      <span>{slot.item.name}</span>
-                      <span>{slot.item.rarityLabel}</span>
-                      <span>{slot.item.tierMark}</span>
-                    </button>
-                  ) : (
-                    <span className="panoplyRoot__mount">{slot.locked ? slot.locked.requirement : slot.mountLabel}</span>
-                  )}
-                </li>
-              ))}
-            </ul>
+            <PanoplyFigureScene
+              panoply={panoply}
+              focusId={actions.selectedInstanceId}
+              onSlotClick={actions.onOpenModal}
+            />
             {panoply.bond ? (
               <div className="panoplyRoot__bond">BOND {panoply.bond.level} / {panoply.bond.max ?? '—'}</div>
             ) : null}

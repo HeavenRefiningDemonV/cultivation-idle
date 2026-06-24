@@ -9,8 +9,8 @@
 - [x] Phase 1 — flag + screen-swap (panoplyFlag default OFF, EquipmentScreen, GameLayout line 411) — typecheck=0
 - [x] Phase 2 — panoplyUiStore + panoplyVaultInput + gearPower (contract field + builder helper; fixtures TODO)
 - [x] Phase 3 — owner + controller + skeleton screen — typecheck=0
-- [ ] Phase 4 — panoplySvgDefs (verbatim) + panoplyFigureSvg (verbatim SVG builders) — read artifact 700-1132
-- [ ] Phase 5 — render-only components (replace the skeleton's internals with the 1:1 instruments)
+- [x] Phase 4 — panoplySvgDefs (verbatim defs) + panoplyFigureSvg (ALL SVG-string builders, 1:1) — typecheck=0
+- [~] Phase 5 — render-only components: PanoplyFigureScene DONE (injects defs+field+motes, click delegation, wired into the screen's panoply section). REMAINING: Ribbon, ItemDetailRail, VaultGrid/VaultSlip/VaultFilters/VaultCensus, SetBondBand, GearTotals, PanoplyLowerStrip, ElementLeanCompass, WeaponBondGauge (most can inject the panoplyFigureSvg strings via dangerouslySetInnerHTML inside JSX that emits intents)
 - [ ] Phase 6 — modal reuse [done in owner] + panoplyVault.scss + paperInkTokens rarity ramp (Appendix H)
 - [ ] Phase 7 — fixtures gearPower + panoply-stage.html + tests/e2e/panoply.spec.ts
 - [ ] Phase 8 — five gates + Playwright matrix + self-verify loop (Appendix K)

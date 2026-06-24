@@ -4,3 +4,5 @@
  */
 export { PanoplyVaultScreen } from './PanoplyVaultScreen.js';
 export type { PanoplyVaultScreenProps } from './PanoplyVaultScreen.js';
+export { PanoplyFigureScene } from './PanoplyFigureScene.js';
+export { PANOPLY_SVG_DEFS } from './panoplySvgDefs.js';
