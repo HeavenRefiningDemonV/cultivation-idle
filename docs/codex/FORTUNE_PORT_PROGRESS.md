@@ -68,6 +68,11 @@ Manual Pavilion screen consuming `FortuneDrawSurfaceV1`. 1:1 fidelity, full func
       artifact 1:1 (incl. the populated inspector); live works (curated offers, the inspector fills on click, real
       purse/pity/stock). Captures at artifacts/fortune-port/.
 
-## CUTOVER (held for the user)
-Reachable now via `?pavilionView=fortune` or intent mode `fortune`. NOT yet the default Manual Pavilion view (the
-existing exact shop stays default, preserve-first) — flipping the default is the user's call (like the panoply cutover).
+## CUTOVER — DONE (user-approved)
+The Fortune Draw is now the DEFAULT Manual Pavilion view (WorldBuildingModal `manualPavilion`: no intent → Fortune).
+Verified by the capture opening with NO intent → Fortune renders. Preserve-first escape hatches kept:
+- the exact analysis shop: intent `live`/`fixture` or `?pavilionView=shop`
+- the legacy panel: intent `legacy` or `?pavilionView=legacy`
+The source-text anchor (ManualPavilionExactWorldModal.fixture) stays green — the literal `manualPavilionExactMode
+=== 'legacy'/'fixture'` strings are preserved (the new default branch uses `wantLegacy`/`wantShop`, not an alias).
+NOTE: the menu-capture "24-world-manual-pavilion" will now show the Fortune Draw (intentional).

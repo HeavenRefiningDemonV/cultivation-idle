@@ -113,22 +113,26 @@ export function WorldBuildingModal({
   if (isStoreMode) {
     switch (buildingKey) {
       case 'manualPavilion': {
-        // The Fortune Draw (M.IV.3) is a NEW pavilion mode; reachable via the intent or `?pavilionView=fortune`.
+        // CUTOVER (M.IV.3): the Fortune Draw is the DEFAULT Manual Pavilion view. The exact analysis shop + the
+        // legacy panel stay reachable — intent 'live'/'fixture'/'legacy', or `?pavilionView=shop|legacy`.
         const urlPavilionView = typeof window !== 'undefined'
           ? new URLSearchParams(window.location.search).get('pavilionView')
           : null;
-        const wantFortune = urlPavilionView === 'fortune' || storeModalIntent?.manualPavilionExactMode === 'fortune';
-        content = wantFortune
-          ? <FortuneDrawScreenOwner cityId={storeCityId} pavilionId={moduleRefId ?? undefined} />
-          : storeModalIntent?.manualPavilionExactMode === 'legacy'
-            ? <ManualPavilionPanel pavilionId={moduleRefId ?? null} />
-            : (
+        const wantLegacy = urlPavilionView === 'legacy' || storeModalIntent?.manualPavilionExactMode === 'legacy';
+        const wantShop = urlPavilionView === 'shop'
+          || storeModalIntent?.manualPavilionExactMode === 'live'
+          || storeModalIntent?.manualPavilionExactMode === 'fixture';
+        content = wantLegacy
+          ? <ManualPavilionPanel pavilionId={moduleRefId ?? null} />
+          : wantShop
+            ? (
               <ManualPavilionScreenOwner
                 cityId={storeCityId}
                 pavilionId={moduleRefId ?? null}
                 forceFixture={storeModalIntent?.manualPavilionExactMode === 'fixture'}
               />
-            );
+            )
+            : <FortuneDrawScreenOwner cityId={storeCityId} pavilionId={moduleRefId ?? undefined} />;
         break;
       }
       case 'apothecary':

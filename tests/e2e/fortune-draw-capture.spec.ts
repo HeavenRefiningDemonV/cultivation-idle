@@ -60,7 +60,8 @@ async function openFortune(page: Page) {
     const { useContentStore } = await imp('/src/stores/contentStore.ts');
     const pav = Object.values(useContentStore.getState().maps.pavilionsById).find((p: any) => p.cityId === cityId) as any;
     if (pav) useManualPavilionStore.getState().ensureStock(pav.id);
-    useUIStore.getState().openWorldBuildingModal({ cityId, buildingKey: 'manualPavilion', intent: { manualPavilionExactMode: 'fortune' } });
+    // CUTOVER: open with NO intent — the default Manual Pavilion view must now be the Fortune Draw.
+    useUIStore.getState().openWorldBuildingModal({ cityId, buildingKey: 'manualPavilion' });
   });
   await page.waitForTimeout(700);
 }
