@@ -81,6 +81,14 @@ export interface FateThreadSurface {
   legendary: FateThreadTrack;
 }
 
+/** The player's purse — currency the draw can spend. Bound from the CURRENCY store (cross-cutting; not the
+ *  draw surface proper), shown so the screen answers "what can I spend?". `id` drives the currency glyph. */
+export interface FortunePurseEntry {
+  id: 'fortune' | 'gold' | 'stones' | 'merit';
+  label: string;
+  amount: string;
+}
+
 /** A sealed-scroll offer on the lectern. Pre-draw it shows a faint rarity hint (`sealed`); the reveal unfurls it. */
 export interface FortuneOfferSurface {
   /** the buy/draw target (PavilionStockSlot.slotIndex). */
@@ -89,7 +97,9 @@ export interface FortuneOfferSurface {
   techniqueId: string;
   name: string;
   nameCjk?: string | null;
-  /** Active / Passive / Ultimate (the KIND axis). */
+  /** active / passive / ultimate (the KIND axis, raw — drives the kind glyph). */
+  kind: 'active' | 'passive' | 'ultimate';
+  /** Active / Passive / Ultimate (the KIND axis label). */
   kindLabel: string;
   /** Mortal / Earth / Heaven / Mystic (the GRADE axis — manualGrade). */
   gradeLabel: string;
@@ -155,6 +165,8 @@ export interface FortuneDrawSurfaceV1 {
   pavilionName: string;
   /** today's date label (the banner). */
   dateLabel: string;
+  /** the currency wallet (bound from the currency store by the live owner; null in pure fixtures). */
+  purse?: FortunePurseEntry[] | null;
   fateThread: FateThreadSurface;
   /** the 3–5 sealed-scroll offers on the lectern. */
   offers: FortuneOfferSurface[];

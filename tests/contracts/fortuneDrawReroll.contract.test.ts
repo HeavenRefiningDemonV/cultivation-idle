@@ -85,7 +85,7 @@ test('Fortune draw idle-parity: the daily fortune builds a live surface from idl
   const stock = useManualPavilionStore.getState().getStock(PAVILION);
   assert.ok(stock, 'stock ensured idle (no combat, no draw)');
 
-  const surface = buildFortuneDrawSurfaceLive(PAVILION, FIXED_NOW);
+  const surface = buildFortuneDrawSurfaceLive(PAVILION, { now: FIXED_NOW });
   assert.equal(surface.schemaVersion, FORTUNE_DRAW_SCHEMA_VERSION, 'a valid render-only surface');
   assert.ok(surface.offers.length > 0, 'the lectern carries the live offers');
   // the live pity is surfaced (the fate-thread mirrors the live counters).

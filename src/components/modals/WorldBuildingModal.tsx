@@ -22,6 +22,7 @@ import { ForgeExactScreenOwner } from '../../features/professions/forgeExact/ind
 import { BountiesExactScreenOwner } from '../../features/world/bountiesExact/index.js';
 import { ExpeditionsExactScreenOwner } from '../../features/world/expeditionsExact/index.js';
 import { ManualPavilionScreenOwner } from '../../features/world/manualPavilionExact/index.js';
+import { FortuneDrawScreenOwner } from '../../features/world/fortune/index.js';
 import { TrainingHallScreenOwner } from '../../features/trainingHall/index.js';
 import { CourtScreenOwner } from '../../features/court/index.js';
 import { isTemperingCourtEnabled } from '../../ui/court/index.js';
@@ -111,17 +112,25 @@ export function WorldBuildingModal({
 
   if (isStoreMode) {
     switch (buildingKey) {
-      case 'manualPavilion':
-        content = storeModalIntent?.manualPavilionExactMode === 'legacy'
-          ? <ManualPavilionPanel pavilionId={moduleRefId ?? null} />
-          : (
-            <ManualPavilionScreenOwner
-              cityId={storeCityId}
-              pavilionId={moduleRefId ?? null}
-              forceFixture={storeModalIntent?.manualPavilionExactMode === 'fixture'}
-            />
-          );
+      case 'manualPavilion': {
+        // The Fortune Draw (M.IV.3) is a NEW pavilion mode; reachable via the intent or `?pavilionView=fortune`.
+        const urlPavilionView = typeof window !== 'undefined'
+          ? new URLSearchParams(window.location.search).get('pavilionView')
+          : null;
+        const wantFortune = urlPavilionView === 'fortune' || storeModalIntent?.manualPavilionExactMode === 'fortune';
+        content = wantFortune
+          ? <FortuneDrawScreenOwner cityId={storeCityId} pavilionId={moduleRefId ?? undefined} />
+          : storeModalIntent?.manualPavilionExactMode === 'legacy'
+            ? <ManualPavilionPanel pavilionId={moduleRefId ?? null} />
+            : (
+              <ManualPavilionScreenOwner
+                cityId={storeCityId}
+                pavilionId={moduleRefId ?? null}
+                forceFixture={storeModalIntent?.manualPavilionExactMode === 'fixture'}
+              />
+            );
         break;
+      }
       case 'apothecary':
         content = (
           <ApothecaryExactScreenOwner

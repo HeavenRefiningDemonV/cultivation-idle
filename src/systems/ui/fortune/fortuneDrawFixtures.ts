@@ -9,7 +9,9 @@
 
 import {
   buildFortuneDrawSurface,
+  buildFortuneOfferDetail,
   type FortuneDrawBuildInput,
+  type FortuneOfferDetailInput,
   type FortuneOfferInput,
 } from './fortuneDrawBuilders.js';
 import {
@@ -92,10 +94,55 @@ function baseOffers(): FortuneOfferInput[] {
   ];
 }
 
+const PURSE: FortuneDrawBuildInput['purse'] = [
+  { id: 'fortune', label: 'Fortune Tokens', amount: '3' },
+  { id: 'gold', label: 'Gold', amount: '1,240' },
+  { id: 'stones', label: 'Spirit Stones', amount: '86' },
+  { id: 'merit', label: 'Merit', amount: '24' },
+];
+
 const SATCHEL: FortuneDrawBuildInput['satchel'] = [
   { instanceId: 'm-held-1', techId: 'tq-azure-tide', name: 'Azure Tide Verse', grade: 'earth', rarity: 'rare', studying: false },
   { instanceId: 'm-held-2', techId: 'tq-iron-skin', name: 'Iron-Skin Stance', grade: 'mortal', rarity: 'common', studying: true },
 ];
+
+// Per-offer inspector enrichment (the artifact's detailFor — illustrative; no faked roll bars, the live owner
+// reads the real technique). Keyed by stockId.
+const ENRICH: Record<number, FortuneOfferDetailInput> = {
+  0: {
+    realmTier: 'Qi Condensation tier', rarityBand: 'Body-art · 体诀',
+    scalesOff: ['Physical Defense 护体', 'Constitution 体魄'],
+    reroll: { cost: '1 Fortune Token', odds: '34% to improve a sub-stat', note: 'Honest odds, shown before you spend. Never-regress holds — no seated value drops.' },
+    lore: 'The mountain does not flinch when the storm leans on it.', provenance: 'Manual · Azure City pavilion',
+    actions: [{ verb: 'Buy & Study', enabled: true, route: 'fortune.buyAndStudy:0' }, { verb: 'Buy to Satchel', enabled: true, route: 'fortune.buy:0' }],
+  },
+  1: {
+    realmTier: 'Foundation Establishment tier', rarityBand: 'Water-art · 水诀',
+    scalesOff: ['Spirit Power 灵力', 'Qi Control 御气', 'Water Affinity 水性'],
+    reroll: { cost: '1 Fortune Token', odds: '31% to improve a sub-stat', note: 'Honest odds, shown before you spend. A reroll never lowers a seated value below its current roll — never-regress holds.' },
+    lore: 'The tide does not strike; it arrives, and the shore was always going to yield.', provenance: 'Manual · Azure City pavilion',
+    actions: [{ verb: 'Buy & Study', enabled: true, route: 'fortune.buyAndStudy:1' }, { verb: 'Buy to Satchel', enabled: true, route: 'fortune.buy:1' }],
+  },
+  2: {
+    realmTier: 'Core Formation tier', rarityBand: 'Apex ultimate · 绝学',
+    scalesOff: ['Spirit Power 灵力', 'Burst 爆发', 'Fire Affinity 火性'],
+    signature: { name: 'Rekindling Pyre', body: 'On the kill the rite reignites — its cost is partly refunded ([tune] → D15), so a clean finish flows straight into the next casting.' },
+    reroll: { cost: '2 Fortune Tokens', odds: '24% to improve a sub-stat', note: 'Honest odds. A reroll discards current sub-stats but never lowers a seated value — never-regress holds even at apex.' },
+    lore: 'Ash is not an ending. The bird remembers the shape of its own burning.', provenance: 'Featured · Azure City pavilion',
+    actions: [{ verb: 'Buy & Study', enabled: true, route: 'fortune.buyAndStudy:2' }, { verb: 'Buy to Satchel', enabled: true, route: 'fortune.buy:2' }],
+  },
+  3: {
+    realmTier: 'Qi Condensation tier', rarityBand: 'Breath-art · 息诀',
+    scalesOff: ['Stillness 静心', 'Qi Regen 回气'],
+    reroll: { cost: '1 Fortune Token', odds: '33% to improve a sub-stat', note: 'Honest odds. Never-regress holds.' },
+    lore: 'Still the breath, and the world grows quiet enough to hear the next step.', provenance: 'Manual · Azure City pavilion',
+    actions: [{ verb: 'Buy & Study', enabled: true, route: 'fortune.buyAndStudy:3' }, { verb: 'Buy to Satchel', enabled: true, route: 'fortune.buy:3' }],
+  },
+};
+
+const DETAIL_STATE: Partial<Record<FortuneDrawVisualState, number>> = {
+  preDraw: 2, revealing: 1, 'postDraw-common': 0, 'postDraw-rare': 2, pityGuaranteed: 2, rerollAvailable: 1, rerollSpent: 3,
+};
 
 function seed(state: FortuneDrawVisualState, patch: Partial<FortuneDrawBuildInput>): FortuneDrawSurfaceV1 {
   const base: FortuneDrawBuildInput = {
@@ -107,9 +154,19 @@ function seed(state: FortuneDrawVisualState, patch: Partial<FortuneDrawBuildInpu
     pity: { featuredEpic: 4, featuredLegendary: 11 },
     pityThresholds: PITY_THRESHOLDS,
     satchel: SATCHEL,
+    purse: PURSE,
     ...patch,
   };
-  return buildFortuneDrawSurface(base);
+  const surface = buildFortuneDrawSurface(base);
+  // Pre-seed the docked inspector (the artifact pre-selects a scroll per state) unless the patch set one.
+  if (!surface.selectedDetail) {
+    const stockId = DETAIL_STATE[state];
+    if (stockId !== undefined) {
+      const offer = surface.offers.find((o) => o.stockId === stockId);
+      if (offer) surface.selectedDetail = buildFortuneOfferDetail(offer, ENRICH[stockId]);
+    }
+  }
+  return surface;
 }
 
 const reveal = (stockId: number, name: string, rarity: FortuneDrawSurfaceV1['offers'][number]['rarity']) => ({

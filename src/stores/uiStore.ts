@@ -107,7 +107,7 @@ export type WorldBuildingModalIntent = null | {
   apothecaryExactMode?: 'live' | 'fixture';
   apothecaryFocus?: 'prescription' | 'buy' | 'brew' | 'pouch' | 'source';
   forgeExactMode?: 'live' | 'fixture' | 'legacy';
-  manualPavilionExactMode?: 'live' | 'fixture' | 'legacy';
+  manualPavilionExactMode?: 'live' | 'fixture' | 'legacy' | 'fortune';
   bountiesExactMode?: 'live' | 'fixture' | 'legacy';
   expeditionsExactMode?: 'live' | 'fixture' | 'legacy';
   ruinsExactMode?: 'live' | 'fixture';

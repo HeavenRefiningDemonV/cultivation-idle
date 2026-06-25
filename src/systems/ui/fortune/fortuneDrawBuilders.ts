@@ -7,7 +7,13 @@
  * (the reroll cost, the pity thresholds) arrive as inputs — never authored here as canon (HELD → D15).
  */
 
-import { type ItemDetailRarity, type ItemDetailSurfaceV1 } from '../modals/itemDetailTypes.js';
+import {
+  ITEM_DETAIL_SCHEMA_VERSION,
+  type ItemDetailAction,
+  type ItemDetailAffix,
+  type ItemDetailRarity,
+  type ItemDetailSurfaceV1,
+} from '../modals/itemDetailTypes.js';
 import type { ManualGrade, ManualRarity } from '../../../features/manuals/pavilionStockTypes.js';
 import {
   FORTUNE_DRAW_SCHEMA_VERSION,
@@ -17,6 +23,7 @@ import {
   type FortuneDrawVisualState,
   type FortuneElementEdge,
   type FortuneOfferSurface,
+  type FortunePurseEntry,
   type FortuneRarityFrame,
   type FortuneRevealSurface,
   type FortuneRerollSurface,
@@ -109,6 +116,8 @@ export interface FortuneDrawBuildInput {
   reroll?: Partial<FortuneRerollSurface> | null;
   satchel?: FortuneSatchelInput[];
   selectedDetail?: ItemDetailSurfaceV1 | null;
+  /** the currency wallet (the owner reads the currency store). */
+  purse?: FortunePurseEntry[] | null;
 }
 
 // ── the fate-thread (never-regress pity surfaced) ───────────────────────────────────────────────
@@ -149,6 +158,7 @@ function mapOffer(o: FortuneOfferInput): FortuneOfferSurface {
     techniqueId: o.techniqueId,
     name: o.name,
     nameCjk: o.nameCjk ?? null,
+    kind: o.kind,
     kindLabel: KIND_LABEL[o.kind] ?? 'Active',
     gradeLabel: fortuneGradeLabel(o.grade),
     rarity: o.rarity,
@@ -210,6 +220,7 @@ export function buildFortuneDrawSurface(input: FortuneDrawBuildInput): FortuneDr
     pavilionId: input.pavilionId,
     pavilionName: input.pavilionName,
     dateLabel: input.dateLabel,
+    purse: input.purse ?? null,
     fateThread,
     offers,
     reveal: input.reveal ?? null,
@@ -217,5 +228,65 @@ export function buildFortuneDrawSurface(input: FortuneDrawBuildInput): FortuneDr
     satchel: { count: satchelEntries.length, entries: satchelEntries },
     selectedDetail: input.selectedDetail ?? null,
     emptyLegend: visualState === 'empty' ? 'The lectern is bare — fate renews with the next cycle.' : null,
+  };
+}
+
+const SLOT_BY_KIND: Record<'active' | 'passive' | 'ultimate', string> = {
+  active: 'active seat',
+  passive: 'passive seat',
+  ultimate: 'ultimate seat',
+};
+
+/** The technique enrichment the owner reads from the live content (everything beyond the offer itself). */
+export interface FortuneOfferDetailInput {
+  realmTier?: string | null;
+  rarityBand?: string | null;
+  scalesOff?: string[] | null;
+  signature?: { name: string; body: string } | null;
+  lore?: string | null;
+  provenance?: string | null;
+  /** the reroll panel — HELD odds/cost (D13 Fortune-gated). */
+  reroll?: { cost: string; odds: string; note: string } | null;
+  /** the technique's sub-stat / effect rows (real, from the technique — not faked roll bars). */
+  affixes?: ItemDetailAffix[] | null;
+  actions?: ItemDetailAction[] | null;
+}
+
+/**
+ * Build the F2 `ItemDetailSurfaceV1` (technique-variant) for a focused Fortune offer. Pure: the owner supplies
+ * the live technique enrichment; this shapes it into the inspector contract. Mirrors the artifact's
+ * `toDetailSurface`.
+ */
+export function buildFortuneOfferDetail(
+  offer: FortuneOfferSurface,
+  input: FortuneOfferDetailInput = {},
+): ItemDetailSurfaceV1 {
+  return {
+    schemaVersion: ITEM_DETAIL_SCHEMA_VERSION,
+    visualState: 'technique-variant',
+    identity: {
+      name: offer.name,
+      nameCjk: offer.nameCjk ?? null,
+      variant: 'technique',
+      tier: null,
+      realmTier: input.realmTier ?? null,
+      rarity: offer.rarity,
+      rarityLabel: offer.rarityLabel,
+      rarityBand: input.rarityBand ?? null,
+      element: offer.element ? { id: offer.element.id, label: offer.element.label, sceneColorToken: offer.element.sceneColorToken } : null,
+      kind: offer.kindLabel,
+      slot: SLOT_BY_KIND[offer.kind] ?? null,
+      lean: offer.pathLean ?? null,
+    },
+    affixes: input.affixes ?? [],
+    setBond: null,
+    compareVsEquipped: null,
+    casting: offer.effectText ?? null,
+    scalesOff: input.scalesOff ?? null,
+    reroll: input.reroll ?? null,
+    signature: input.signature ?? null,
+    lore: input.lore ?? null,
+    provenance: input.provenance ?? null,
+    actions: input.actions ?? [],
   };
 }
