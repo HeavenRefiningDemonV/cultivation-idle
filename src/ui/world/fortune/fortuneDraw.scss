@@ -173,6 +173,8 @@
  .rollcap::after{content:"";position:absolute;left:6px;right:6px;top:50%;height:1px;transform:translateY(-50%);background:rgba(31,26,23,.32)}
  .rollcap::before{content:"";position:absolute;left:3px;top:2.5px;bottom:2.5px;width:3px;border-radius:2px;background:rgba(247,228,172,.4)}
  .vname{display:flex;flex-direction:column;align-items:center;gap:6px;font-family:var(--kai);font-weight:700;line-height:1;z-index:6;position:relative;text-shadow:0 1px 1px rgba(255,250,235,.7)}
+ /* D7 §E.6 — real (English) technique names read horizontally, centred + wrapped (not per-letter-stacked). */
+ .vname.vname-en{flex-direction:row;flex-wrap:wrap;justify-content:center;align-items:center;text-align:center;gap:0 4px;font-family:var(--serif);font-weight:800;line-height:1.16;letter-spacing:.01em;padding:0 8px;width:100%}
  .waxon{position:absolute;left:50%;top:16px;transform:translateX(-50%);z-index:9;filter:drop-shadow(0 3px 6px rgba(60,18,12,.5))}
  .rseal{position:absolute;left:50%;top:16px;z-index:9;transform:translateX(-50%)}
  .rhint{position:absolute;left:0;right:0;bottom:0;z-index:7;text-align:center;padding:5px 0 6px;font:800 9px var(--serif);letter-spacing:.05em;color:#fff;border-radius:0 0 9px 9px}

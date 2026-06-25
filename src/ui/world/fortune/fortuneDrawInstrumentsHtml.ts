@@ -51,9 +51,7 @@ export function renderHeader(S: FortuneDrawSurfaceV1): string {
     <div></div>
     <div class="datechop">
       <span class="dot">緣</span>
-      <div><i>Today</i><b>${day || S.dateLabel}</b></div>
-      <div style="width:1px;height:26px;background:rgba(120,90,46,.3)"></div>
-      <div><i>City</i><b>${city || '—'}</b></div>
+      <div><i>${day || 'The Daily Fortune'}</i><b>${city || S.pavilionName}</b></div>
     </div>
     ${renderPurse(S)}
    </div>`);
@@ -117,17 +115,18 @@ function scrollCard(o: FortuneOfferSurface, S: FortuneDrawSurfaceV1): string {
     ? `<div class="rseal" style="${isRevealTarget ? 'animation:sealDropK .7s ease-out .55s both' : ''}">${(o.rarity === 'epic' || o.rarity === 'legendary') ? goldSeal(rg, sealW, -5) : waxSeal(rg, sealW, -5, o.rarity === 'uncommon')}</div>`
     : `<div class="waxon">${waxSeal('封', sealW, -6)}</div>`;
   const wisp = o.element ? `<div class="elem-wisp">${elemGlyph(o.element)}</div>` : '';
-  // CJK names char-stack (the artifact idiom); English names read top-to-bottom (upright), never per-letter-stacked.
+  // D7 §E.6: technique display names are ENGLISH (path-flavored). CJK appears ONLY as the rarity glyph (on the
+  // seal) — so a CJK fixture name char-stacks (the artifact idiom), but a real English name reads HORIZONTALLY,
+  // centred + wrapped, never per-letter-stacked.
   const isCjk = !!o.nameCjk;
-  const vnameInner = isCjk
-    ? [...(o.nameCjk as string)].map((c) => `<span>${c}</span>`).join('')
-    : `<span style="writing-mode:vertical-rl;text-orientation:upright;letter-spacing:1.5px;white-space:nowrap">${o.name}</span>`;
-  const vnameSize = isCjk ? (o.isFeatured ? 25 : 22) : (o.isFeatured ? 19 : 16);
+  const vnameInner = isCjk ? [...(o.nameCjk as string)].map((c) => `<span>${c}</span>`).join('') : o.name;
+  const vnameSize = isCjk ? (o.isFeatured ? 25 : 22) : (o.isFeatured ? 17 : 15);
+  const vnameClass = isCjk ? 'vname' : 'vname vname-en';
   const face = `<div class="scrollbody ${claimed ? 'f-' + frame : 'sealedbody'}" style="height:${bodyH}px${isRevealTarget ? ';animation:unfurlK .9s ease-out both' : ''}">
       <div class="paperface"></div>
       <div class="rollcap t"></div><div class="rollcap b"></div>
-      <div style="position:absolute;inset:66px 0 34px;display:flex;align-items:center;justify-content:center">
-        <span class="vname" style="font-size:${vnameSize}px;color:${claimed ? RAMP_DEEP[frame] : '#4a4138'}">${vnameInner}</span>
+      <div style="position:absolute;inset:60px 0 34px;display:flex;align-items:center;justify-content:center">
+        <span class="${vnameClass}" style="font-size:${vnameSize}px;color:${claimed ? RAMP_DEEP[frame] : '#4a4138'}">${vnameInner}</span>
       </div>
       ${sealNode}
       <div class="rhint rib-${frame}">${o.rarityLabel}</div>

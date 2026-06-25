@@ -8,6 +8,7 @@
  */
 
 import { useContentStore } from '../../../stores/contentStore.js';
+import { useGameStore } from '../../../stores/gameStore.js';
 import { useInventoryStore } from '../../../stores/inventoryStore.js';
 import { useManualPavilionStore } from '../../../stores/manualPavilionStore.js';
 import { useManualSatchelStore } from '../../../stores/manualSatchelStore.js';
@@ -27,15 +28,21 @@ function elementEdge(technique: { rootAffinityIds?: string[] } | undefined): For
 
 const RARITY_ORDER: Record<string, number> = { legendary: 0, epic: 1, rare: 2, uncommon: 3, common: 4 };
 
-/** Curate the live stock down to the Fortune Draw's lectern (the featured apex + the best few non-filler). */
-function curateOffers(slots: readonly PavilionStockSlot[]): PavilionStockSlot[] {
-  const live = slots.filter((s) => !s.notSold);
-  const featured = live.filter((s) => s.shelf === 'featured');
-  const rest = live
-    .filter((s) => s.shelf !== 'featured' && s.shelf !== 'filler')
-    .sort((a, b) => (RARITY_ORDER[a.rarity] ?? 9) - (RARITY_ORDER[b.rarity] ?? 9));
-  const fillers = live.filter((s) => s.shelf === 'filler');
-  return [...featured, ...rest, ...fillers].slice(0, 5).sort((a, b) => a.slotIndex - b.slotIndex);
+/**
+ * Curate the live stock to the Fortune Draw's lectern (~5). D7: the daily fortune offers the cultivator's PATH
+ * first ("off-path manuals are never rolled") — so path-matches lead, then the featured apex, then the best of
+ * the rest fills only to keep the lectern from going bare.
+ */
+function curateOffers(offers: readonly FortuneOfferInput[], selectedPath: string | null): FortuneOfferInput[] {
+  const byRarity = (a: FortuneOfferInput, b: FortuneOfferInput) => (RARITY_ORDER[a.rarity] ?? 9) - (RARITY_ORDER[b.rarity] ?? 9);
+  const onPath = (o: FortuneOfferInput) => !!selectedPath && (o.pathLean ?? '').toLowerCase() === selectedPath.toLowerCase();
+  const live = offers.filter((o) => !o.notSold);
+  const featured = live.filter((o) => o.shelf === 'featured');
+  const core = live.filter((o) => o.shelf !== 'featured' && o.shelf !== 'filler');
+  const matched = core.filter(onPath).sort(byRarity);
+  const others = core.filter((o) => !onPath(o)).sort(byRarity);
+  const fillers = live.filter((o) => o.shelf === 'filler');
+  return [...featured, ...matched, ...others, ...fillers].slice(0, 5).sort((a, b) => a.stockId - b.stockId);
 }
 
 const GRADE_REALM_TIER: Record<string, string> = {
@@ -127,11 +134,11 @@ export interface FortuneDrawLiveOptions {
   selectedStockId?: number | null;
 }
 
-function buildPurse(cooldownActive: boolean): FortunePurseEntry[] {
+function buildPurse(): FortunePurseEntry[] {
+  // D14 §D.6 — the global wallet shows EXACTLY Gold / Spirit Stones / Merit. (Fortune is the prestige reroll
+  // currency, surfaced CONTEXTUALLY in the reroll readout, never in the global ribbon.)
   const inv = useInventoryStore.getState();
   return [
-    // "Fortune" = a ready free draw (real, honest binding; the token economy proper is D15).
-    { id: 'fortune', label: 'Fortune', amount: cooldownActive ? '0' : '1' },
     { id: 'gold', label: 'Gold', amount: formatAmount(inv.currencies.gold) },
     { id: 'stones', label: 'Spirit Stones', amount: formatAmount(inv.currencies.spiritStones) },
     { id: 'merit', label: 'Merit', amount: formatAmount(inv.currencies.merit) },
@@ -151,10 +158,12 @@ export function buildFortuneDrawSurfaceLive(pavilionId: string, opts: FortuneDra
   const satchelState = useManualSatchelStore.getState();
   const activeStudyId = satchelState.activeStudy?.manual.id ?? null;
 
-  const offers = curateOffers(stock?.slots ?? []).map(mapSlot);
+  const selectedPath = useGameStore.getState().selectedPath;
+  const offers = curateOffers((stock?.slots ?? []).map(mapSlot), selectedPath);
   const cityIndex = stock?.cityIndex ?? pavilion?.cityIndex ?? 0;
   const rerollCost = resolvePavilionRerollCost(cityIndex);
   const cooldownActive = stock ? now < stock.nextRefreshAt : false;
+  const cityName = pavilion?.cityId ? content.maps.citiesById[pavilion.cityId]?.name ?? 'the pavilion' : 'the pavilion';
 
   const satchel = satchelState.manuals.map((manual) => ({
     instanceId: manual.id,
@@ -168,8 +177,10 @@ export function buildFortuneDrawSurfaceLive(pavilionId: string, opts: FortuneDra
   const surface = buildFortuneDrawSurface({
     pavilionId,
     pavilionName: 'The Manual Pavilion',
-    dateLabel: pavilion?.cityId ? `${pavilion.cityId}` : 'The Manual Pavilion',
-    purse: buildPurse(cooldownActive),
+    // D14 §A.8 — public vocabulary, never a raw id. The game has no day counter, so the cadence is framed
+    // honestly as the daily fortune (left cell) + the real city NAME (right cell).
+    dateLabel: `Today's Fortune · ${cityName}`,
+    purse: buildPurse(),
     offers,
     pity: stock?.pity ?? { featuredEpic: 0, featuredLegendary: 0 },
     pityThresholds: pityThresholds(),
@@ -205,8 +216,8 @@ export function buildFortuneDrawSurfaceLive(pavilionId: string, opts: FortuneDra
         },
         provenance: `Manual · ${pavilion?.cityId ?? 'pavilion'}`,
         actions: [
-          { verb: 'Buy & Study', enabled: true, route: `fortune.buyAndStudy:${sel}` },
-          { verb: 'Buy to Satchel', enabled: true, route: `fortune.buy:${sel}` },
+          { verb: 'Study', enabled: true, route: `fortune.buyAndStudy:${sel}` },
+          { verb: 'Hold in Satchel', enabled: true, route: `fortune.buy:${sel}` },
         ],
       });
     }

@@ -68,6 +68,35 @@ Manual Pavilion screen consuming `FortuneDrawSurfaceV1`. 1:1 fidelity, full func
       artifact 1:1 (incl. the populated inspector); live works (curated offers, the inspector fills on click, real
       purse/pity/stock). Captures at artifacts/fortune-port/.
 
+## D7 POLISH PASS (live-screenshot review vs D7 / D14 / D15) — recon workflow ww8dweaam
+The live menu exposed gaps the fixtures didn't. FIXED (presentation adherence):
+- **Broken vertical scroll names** → English HORIZONTAL, centred + wrapped (D7 §E.6: technique names are English
+  path-flavoured; CJK appears ONLY as the rarity glyph 凡良珍极仙, which is already on the seals). `.vname-en`.
+- **Raw `city_pinewind_hamlet` in the header** (D14 §A.8 violation) → the real city NAME + a daily-fortune cadence
+  framing (the game has no day counter, so no faked "Day N").
+- **All-currency global ribbon** → the wallet now shows EXACTLY Gold / Spirit Stones / Merit (D14 §D.6; Fortune is
+  the prestige reroll currency, surfaced contextually, never in the global ribbon).
+- **Mixed-path offers** → curation now PATH-prioritises the cultivator's path (D7: "off-path manuals are never
+  rolled"), filling only to keep the lectern from going bare.
+- **"Buy & Study" / "Buy to Satchel"** → **Study / Hold in Satchel** (D7: studying adds to the collection; it is
+  not a purchase). Live + fixtures.
+Verified: typecheck · check:icons · build · test:contracts 580/580 · capture (zero page errors). Live render now
+reads correctly (names legible, city name, 3-currency wallet, heaven-path offers, Study verbs).
+
+## REMAINING D7/D14 ADHERENCE GAPS (surfaced to user — larger than presentation polish)
+These EXPAND the frozen M.IV.2 artifact (which omitted them) or rework mechanics — held for a decision:
+- **Build-gap "why" tags** on offers ("fills a build gap / upgrade over slotted X / new element") — D7's core
+  "reroll is build-DIRECTED" feature. Logic EXISTS (manualOfferAnalysis); needs the context wired into the
+  fortune surface. HIGH value, medium effort, fits the layout.
+- **History ribbon + the "ink gathers" pity build-up**; **the Legendary beat** (gold shimmer + heavier seal).
+- **Heaven-only Premonition pane** (tomorrow's fortune) — a new Heaven-gated panel.
+- **Reroll-confirm ritual modal** (D14 §E.2 — a prestige-currency spend must confirm).
+- **THE ECONOMY MODEL (fundamental)** — D7/D15 specify a FREE once-per-day gacha roll + a Fortune-token reroll;
+  the implemented manualPavilionStore is a GOLD SHOP (2500 Rare / 8000 Epic). D15 recon: the gold pricing is
+  "an out-of-ledger invention with NO basis in D15." Reconciling = a cross-system mechanical rework (the store +
+  the legacy panel + the existing exact shop all assume gold pricing). Decision needed: rework to the daily-roll
+  model, or deposit the priced-shop model into D15.
+
 ## CUTOVER — DONE (user-approved)
 The Fortune Draw is now the DEFAULT Manual Pavilion view (WorldBuildingModal `manualPavilion`: no intent → Fortune).
 Verified by the capture opening with NO intent → Fortune renders. Preserve-first escape hatches kept:
