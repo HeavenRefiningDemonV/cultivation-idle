@@ -173,6 +173,7 @@ export interface DamageNumber {
   life: number;
   maxLife: number;
   color: string;
+  fontSize: number;
   active: boolean;
 }
 
@@ -200,6 +201,7 @@ export class DamageNumberPool {
         life: 0,
         maxLife: 1,
         color: '#ffffff',
+        fontSize: 16,
         active: false,
       });
     }
@@ -208,15 +210,33 @@ export class DamageNumberPool {
   /**
    * Spawn a damage number
    */
-  public spawn(x: number, y: number, damage: number, isCrit: boolean = false): void {
+  public spawn(options: {
+    x: number;
+    y: number;
+    text: string;
+    color?: string;
+    fontSize?: number;
+    jitterX?: number;
+    jitterY?: number;
+  }): void {
+    const {
+      x,
+      y,
+      text,
+      color = '#ffffff',
+      fontSize = 16,
+      jitterX = 0,
+      jitterY = 0,
+    } = options;
     for (const num of this.numbers) {
       if (!num.active) {
-        num.x = x + (Math.random() - 0.5) * 20;
-        num.y = y;
-        num.text = Math.floor(damage).toString();
+        num.x = x + (Math.random() - 0.5) * jitterX;
+        num.y = y + (Math.random() - 0.5) * jitterY;
+        num.text = text;
         num.life = 1.5;
         num.maxLife = 1.5;
-        num.color = isCrit ? '#ff6b00' : '#ffffff';
+        num.color = color;
+        num.fontSize = fontSize;
         num.active = true;
         break;
       }
@@ -256,7 +276,7 @@ export class DamageNumberPool {
       ctx.save();
       ctx.globalAlpha = alpha;
       ctx.fillStyle = num.color;
-      ctx.font = `bold ${16 * scale}px monospace`;
+      ctx.font = `bold ${num.fontSize * scale}px "Protest Revolution", sans-serif`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
 
